@@ -11,8 +11,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
     switch(method,
            csv = {
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
-               scalarTmp <- read.table(workDir %+% scalarsOutName %+% '.csv', sep = csvDelim, 
-                                       header=TRUE, stringsAsFactors = FALSE, check.names = FALSE)
+               scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', csvDelim)
              }
            })
     
@@ -44,8 +43,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
         switch(method,
                csv = {
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
-                   ret$tabular[[i]] <<- read.table(workDir %+% names(modelOut)[[i]] %+% '.csv', sep = csvDelim, 
-                                                   header=TRUE, stringsAsFactors = FALSE, check.names = FALSE)
+                   ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', csvDelim)
                  }else{
                    stop(sprintf("Data for output dataset: '%s' could not be found.", names(modelOut)[[i]]), call. = FALSE)
                  }
