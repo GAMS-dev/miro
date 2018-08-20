@@ -42,8 +42,8 @@ observeEvent(input$btSolve, {
     
     # write csv files used to communicate with GAMS
     tryCatch({
-      write.table(csvData, file = workDir %+% names(data.tmp)[[i]] %+% ".csv", append = FALSE,
-                  row.names = FALSE, sep = config$csvDelim, na = "")
+      write_delim(csvData, workDir %+% names(data.tmp)[[i]] %+% ".csv", 
+                  delim = config$csvDelim, na = "")
     }, error = function(e) {
       fileName <- paste0(names(data.tmp)[[i]], ".csv")
       flog.error("Error writing csv file: '%s' (model: '%s').", fileName, modelName)

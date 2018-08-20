@@ -28,7 +28,7 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", "V8", "dplyr", "readxl", "writexl", "rhandsontable", "plotly",
+requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", "plotly",
                       "jsonlite", "jsonvalidate", "rpivotTable", "futile.logger", "dygraphs", "reshape2", "xts")
 source("./R/install_packages.R", local = TRUE)
 
