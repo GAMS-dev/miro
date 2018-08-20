@@ -1,0 +1,4 @@
+"Scalar","Description","Value"
+"gmspar_resolution","Time resolution","1"
+"gmspar_from_to_min","Time range (min)","0"
+"gmspar_from_to_max","Time range (max)","10"

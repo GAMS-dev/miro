@@ -1,0 +1,299 @@
+/* general */
+body{
+  font-family: "Helvetica", Times, "Times New Roman", serif;
+}
+.errMsg{
+  margin: 5px;
+  color: #F39619;
+  font-weight: bold;
+}
+.flex-design{
+  display: -webkit-box; 
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex; 
+  display: flex;
+}
+/* title field in boxes */
+.box-title{
+  width: 100%;
+}
+.no-animations {
+-webkit-animation: none !important;
+-moz-animation: none !important;
+-o-animation: none !important;
+-ms-animation: none !important;
+animation: none !important;
+}
+.loading-input {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -16px;  /* half of the spinner's height */
+  margin-left: -16px; /* half of the spinner's width */
+}
+.loading-input-l {
+  position: absolute;
+  left: 25%;
+  top: 50%;
+}
+.loading-input-r {
+  position: absolute;
+  left: 75%;
+  top: 50%;
+}
+.datepicker{
+  /* bring datepicker menu to the front */
+  z-index: 9999;
+}
+/* header */
+.main-header .logo {
+  background-size: cover;
+  background-repeat:no-repeat;
+  font-size: 0;
+}
+.skin-black .main-header .logo {
+  background-color:#fff;
+}
+/* sidebar*/
+.btOrange{
+  background-color: #F39619;
+}
+/* model input */
+.btClose{
+  padding: 0;
+  border: none;
+}
+.btClose:hover, .btClose:active{
+  background: none !important;
+}
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes glow{
+  from {box-shadow: none;}
+  to {
+    box-shadow: 0 0 20px 11px rgba(243,150,25, 0.6);
+	  background-color: rgb(244, 244, 244);
+    background-color: rgba(244, 244, 244, 0.85);
+  }
+}
+@keyframes glow{
+  from {box-shadow: none;}
+  to {
+    box-shadow: 0 0 20px 11px rgba(243,150,25, 0.6);
+	  background-color: rgb(244, 244, 244);
+    background-color: rgba(244, 244, 244, 0.85);
+  }
+}
+#btImport {
+  -webkit-animation-name: glow; 
+  -webkit-animation-duration: 800ms;  
+  -webkit-animation-timing-function: ease-out;  
+  -webkit-animation-delay: 3s; 
+  -webkit-animation-iteration-count: 6;  
+  -webkit-animation-direction: alternate; 
+  -moz-animation-name: glow; 
+  -moz-animation-duration: 800ms;  
+  -moz-animation-timing-function: ease-out;  
+  -moz-animation-delay: 3s; 
+  -moz-animation-iteration-count: 6;  
+  -moz-animation-direction: alternate;
+  animation-name: glow;
+  animation-duration: 800ms; 
+  animation-timing-function: ease-out;
+  animation-delay: 3s;
+  animation-iteration-count: 6;  
+  animation-direction: alternate;
+}
+
+.in-data-header{
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  height: 35px;
+}
+.in-buttons-wrapper{
+  position: absolute;
+  margin-right: 10px;
+  right: 0;
+}
+.in-no-data-dep{
+  margin    : 5px;
+  text-align: center;
+}
+.choose-input{ 
+  min-height: 80px;
+}
+/* gams interaction */
+#logStatus{
+  overflow-y:scroll;
+  min-height: 400px;
+  max-height: 60vh;
+}
+#listFile{
+  overflow-y:scroll; 
+  min-height: 400px;
+  max-height: 60vh;
+}
+/* model output*/
+.out-buttons-wrapper{
+  position: absolute;
+  right: 15px;
+}
+.pvtRows, .pvtCols { 
+  background: #DCDCDC none repeat scroll 0 0; 
+}
+.initErrors{
+  color:#f00;
+  font-weight:bold;
+  font-size:14pt;
+}
+.out-no-data{
+  font-weight: bold;
+  font-size: 12pt;
+  text-align: center;
+}
+.shiny-output-error { 
+  visibility: hidden; 
+}
+.shiny-output-error:before {
+  visibility: hidden; 
+}
+.render-output{
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.modal-lg{ 
+  width: 90%;
+}
+.space{
+  height:3vh;
+}
+.small-space{
+  height:1vh;
+}
+/* scen */
+#noScen {
+  margin-top: 50px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12pt;
+}
+.scen-header{
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  height: 35px;
+}
+.scen-buttons-wrapper{
+  position: absolute;
+  right: 5px;
+}
+.scen-date-wrapper{
+  position: absolute;
+  margin-top: 4px;
+  font-size: 9pt;
+  left: 5px;
+}
+.scen-button{
+  color: #fff; 
+  background-color: #337ab7; 
+  border-color: #2e6da4;
+}
+.scenSplit-button-load{
+  height: 400px;
+  width: 100%;
+  font-size: 20pt;
+  background-color: inherit;
+}
+/* scnario button tooltips */
+.scen-button-tt{
+  display: inline;
+}
+.scen-sort-by, .scen-sort-by:focus, .scen-sort-by:hover, .scen-sort-by:active{
+  font-size: 12px;
+  border: 1px solid #fff;
+  background: none;
+}
+
+.scen-sort-by-selected, .scen-sort-by-selected:hover, .scen-sort-by-selected:focus, .scen-sort-by-selected:active{
+  border: 1px solid #555555;
+}
+/* material checkboxes */
+.cb-label{
+    display: inline;
+    cursor: pointer;
+}
+.checkbox-material .checkbox{
+    display: inline-block;
+    line-height: 1;
+}
+
+.checkbox-material .checkbox input {
+    opacity: 0;
+}
+.checkbox-material .checkbox span {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    padding: .15em 1.5em .15em .15em;
+    transition: all ease 0.2s;
+    -webkit-transition: all ease 0.2s;
+    -o-transition: all ease 0.2s;
+    -moz-transition: all ease 0.2s;
+    border-radius: 1em;
+    background-color: gray;
+    overflow: hidden;
+}
+.checkbox-material .checkbox span::before {
+    display: block;
+    content: '';
+    width: 1em;
+    height: 1em;
+    border-radius: 1em;
+    background: white;
+}
+
+.checkbox-material .checkbox span::after {
+  position: absolute;
+  display: block;
+  text-transform: uppercase;
+  font-size: .5em;
+  font-style: normal;
+  top: 0;
+  color: #fff;
+  line-height: 1;
+  left: 0;
+  padding-left: 2em;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  height: 1em;
+  bottom: 0;
+  margin: auto;
+}
+
+.checkbox-material .checkbox :checked + span::after {
+  padding-left: 0;
+  padding-right: 2em;
+}
+
+.checkbox-material .checkbox :checked + span {
+    padding-right: .15em;
+    padding-left: 1.5em;
+    background-color: #F39619;
+}
+.checkbox-material .shiny-input-container {
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  width: 75px;
+  margin: 0;
+}
+.checkbox-material {
+  cursor: pointer;
+  align-items: center;
+}
+.dygraph-legend > span.highlight{
+  display: inline;
+  border: 2px solid grey;
+}

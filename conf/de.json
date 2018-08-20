@@ -1,0 +1,315 @@
+{  
+  "nav":{  
+    "sidebarMenu":{  
+      "inputScreen":"Eingabedaten",
+      "outputScreen":"Ergebnisse",
+      "gams":"GAMS Interaktion",
+      "scen":"Szenarien vergleichen",
+      "advanced":"Erweiterte Optionen"
+    },
+    "sidebarButtons":{  
+      "importInput":"Daten laden",
+      "solve":"Modell lösen",
+      "save":"Speichern",
+      "saveAs":"Speichern als",
+      "load":"Szenario laden",
+      "splitViewStart":"Split Screen Ansicht",
+      "splitViewStop":"Einzelansicht",
+      "remove":"Löschen",
+      "compareStart":"Vergleichsmodus",
+      "compareStop":"Stoppe Vergleich",
+      "download":"Download Ergebnisse",
+      "interrupt":"Stop"
+    },
+    "inputScreen":{  
+      "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
+      "tooltips":{  
+        "btGraphView":"Zur grafischen Ansicht wechseln"
+      }
+    },
+    "gams":{  
+      "boxModelStatus":{  
+        "title":"Modellstatus"
+      },
+      "boxGamsOutput":{  
+        "title":"GAMS Ausgabe",
+        "gamsOutputTabset":{  
+          "logFile":"Log-Datei",
+          "lstFile":"Listing-Datei",
+          "logUpdate":"Aktualisieren"
+        }
+      }
+    },
+    "outputScreen":{  
+      "boxResults":{  
+        "title":"Ergebnisse",
+        "noData":"Keine Daten"
+      }
+    },
+    "scen":{  
+      "noScen":"Kein Szenario geladen. Bitte laden Sie zuerst ein Szenario.",
+      "scalarsAlias":"Skalare",
+      "tooltips":{  
+        "btExport":"Exportiere Szenariodaten",
+        "btTableView":"Zur tabellaren Ansicht wechseln",
+        "btClose":"Szenario schließen",
+        "inputSheet":"Eingabedaten",
+        "outputSheet":"Ausgabedaten",
+        "split":{
+          "load":"Szenario öffnen"
+        }
+      }
+    },
+    "advanced":{
+      "titleDownloadTemp":"Download temporärer Dateien",
+      "downloadTempDesc":"Download temporärer Dateien aus dem Arbeitsverzeichnis",
+      "downloadTempButton": "Dateien laden"
+    },
+    "gamsModelStatus":{  
+      "exec":"Modell wird gelöst",
+      "success":"Das Modell wurde erfolgreich gelöst.",
+      "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
+    },
+    "notificationNewInput":{  
+      "new":" Datensätze importiert.",
+      "noNew":"Keine neuen Datensätze importiert."
+    },
+    "dialogSaveSuccess":{  
+      "title":"Erfolgreich",
+      "desc":" Datensätze wurden erfolgreich gespeichert."
+    },
+    "dialogNewScen":{  
+      "title":"Neues Szenario",
+      "desc":"Bitte wählen Sie einen Namen für das Szenario:",
+      "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
+      "newScenName":"Neues Szenario",
+      "scenExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "btNewName":"Anderen Namen wählen",
+      "btOverride":"Überschreiben",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
+    "dialogDeleteScen":{  
+      "title":"Szenario löschen",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario löschen möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja",
+      "removeFromUI":{  
+        "title":"Szenario aus Editor entfernen",
+        "desc":"Möchten Sie das Szenario aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "cancelButton":"Abbrechen",
+        "okButton":"Schließen"
+      }
+    },
+    "dialogRemoveScen":{  
+      "title":"Szenario schließen",
+      "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogCloseScen":{  
+      "title":"Szenario schließen",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario schließen möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogExistingOutput":{  
+      "title":"Es existieren Ausgabedaten",
+      "desc":"Das Szenario, das Sie sichern wollen, enthält Ausgabedaten, die möglicherweise nicht zu den Eingabedaten passen. Möchten Sie die Ausgabedaten verwerfen?",
+      "cancelButton"    : "Abbrechen",
+      "saveOutputButton":"Ausgabedaten speichern",
+      "discardOutputButton":"Ausgabedaten verwerfen"
+    },
+    "dialogSaveScen":{  
+      "title":"Szenario speichern",
+      "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario in der Datenbank speichern möchten?",
+      "cancelButton":"Nein",
+      "okButton":"Ja"
+    },
+    "dialogImport":{  
+      "title":"Daten importieren",
+      "tabLocal":"Lokal",
+      "tabDatabase":"Datenbank",
+      "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "descExcel":"Wählen Sie eine Datei mit Daten aus",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "cbOverride":"Vorhandene Datensätze überschreiben",
+      "overrideWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "okButton":"Importieren"
+    },
+    "dialogLoadScen":{  
+      "title":"Szenario laden",
+      "titleNoScen":"Keine Szenarien gefunden",
+      "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
+      "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
+      "titleOverrideInput":"Warnung",
+      "descOverrideInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "titleDataError":"Daten beschädigt",
+      "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
+      "sortBy":"Sortieren nach:",
+      "btSortNameASC":"Name (ASC)",
+      "btSortTimeASC":"Zeit (ASC)",
+      "btSortNameDESC":"Name (DESC)",
+      "btSortTimeDESC":"Zeit (DESC)",
+      "cancelButton":"Nein",
+      "okButton":"Importieren"
+    },
+    "dialogNewCol":{  
+      "title":"Neue Spalte",
+      "desc":"Bitte wählen Sie einen Namen für die neue Spalte:",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
+    "excelExport":{  
+      "metadataSheet":{  
+        "title":"Metadaten",
+        "uid":"Benutzer",
+        "sname":"Szenarioname",
+        "stime":"Erstellungsdatum"
+      },
+      "inputPrefix":"",
+      "inputSuffix":" (Eingabe)",
+      "outputPrefix":"",
+      "outputSuffix":" (Ausgabe)"
+    },
+    "dialogLockScen":{
+      "title":"Szenario gesperrt",
+      "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet. Bitte versuchen Sie es später erneut."
+    },
+    "dialogReadonly":{
+      "title": "No write permissions",
+      "desc": "Sie habe keine Schreibrechte für dieses Szenario. Möchten Sie es stattdessen als neues Szenario speichern?",
+      "okButton": "Speichern als",
+      "cancelButton": "Abbrechen"
+    },
+    "dialogDownloadTmp":{
+      "title": "Temporäre Dateien laden",
+      "desc": "Wählen Sie die zu ladende Datei aus",
+      "noFiles": "Es konnten keine Dateien gefunden werden",
+      "downloadZipButton":"Alle Dateien als zip laden",
+      "downloadButton":"Datei laden",
+      "cancelButton":"Abbrechen"
+    }
+  },
+  "progressBar":{  
+    "saveInputDb":{  
+      "title":"Modelleingabedaten werden in Datenbank gespeichert",
+      "progress":"Speichere Datensatz "
+    },
+    "renderOutput":{  
+      "title":"Rendern der Grafiken",
+      "progress":"Rendern von Grafik "
+    },
+    "loadScenDb":{  
+      "title":"Laden von Szenariodaten aus der Datenbank",
+      "progress":"Laden von Datensatz "
+    },
+    "saveScenDb":{  
+      "title":"Speichern von Szenariodaten in der Datenbank ",
+      "progress":"Speichern von Datensatz "
+    },
+    "removeScenDb":{  
+      "title":"Löschen von Szenario aus Datenbank",
+      "progress":"Löschen von Datensatz "
+    }
+  },
+  "errMsg":{  
+    "fileRead":{  
+      "title":"Fehler beim Lesen von Datei",
+      "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "fileWrite":{  
+      "title":"Fehler beim Schreiben von Datei",
+      "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "initErrors":{  
+      "title":"Es sind Fehler aufgetreten",
+      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie Shiny neu."
+    },
+    "fetchScenData":{  
+      "title":"Fehler beim Lesen der Szenariodaten",
+      "desc":"Die Szenario-Metadaten konnten nicht geladen werden."
+    },
+    "renderSlider":{  
+      "title":"Falsche Daten für Slider",
+      "desc":"Szenario-Metadaten konnten nicht abgerufen werden."
+    },
+    "saveInput":{  
+      "title":"Fehler beim Speichern der Daten",
+      "desc":"Beim Speichern der Daten in die Datenbank ist ein Fehler aufgetreten."
+    },
+    "readOutput":{  
+      "title":"Fehler beim Lesen der Ergebnisse",
+      "desc":"Beim Lesen der Ergebnisse von GAMS ist ein Fehler aufgetreten."
+    },
+    "dataConcat":{  
+      "title":"Fehler in den Daten",
+      "desc":"Ein Datenfehler ist aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt."
+    },
+    "ddLenMismatch":{  
+      "title":"Anzahl der Aliase und Werte stimmt nicht überein",
+      "desc":"Die Anzahl der Aliase für das Dropdown-Menü: '%s' stimmt nicht mit der Anzahl der Werte überein."
+    },
+    "fetchDataset": {
+      "title" : "Fehler beim Lesen der Daten",
+      "desc": "Beim Lesen des Datensatzes: '%s' aus der Datenbank ist ein Fehler aufgetreten.",
+      "badColName" : "Die Spalte(n): '%s' konnten im Datensatz : '%s' nicht gefunden werden.",
+      "noData":"Datensatz: '%s' konnte nicht geladen werden. Bitte stellen Sie sicher, dass der Datensatz Daten enthält."
+    },
+    "GAMSInput":{  
+      "title":"Fehler beim Schreiben der GAMS Eingabedaten",
+      "desc":"Beim Schreiben der GAMS Eingabedaten sind Fehler aufgetreten:",
+      "excelRead":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten.",
+      "badInputData":"Die GAMS Eingabedaten: '%s' sind ungültig. Bitte überprüfen Sie das Format der Daten, die Sie importieren möchten.",
+      "writeCsv":"Beim Schreiben der csv-Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "gamsExec":{  
+      "title":"Fehler beim Ausführen von GAMS",
+      "desc":"Bei der Ausführung von GAMS ist ein Fehler aufgetreten."
+    },
+    "gamsTerm":{  
+      "title":"Fehler beim Beenden von gams.exe",
+      "desc":"Bei dem Beenden von gams.exe ist ein Fehler aufgetreten."
+    },
+    "readLog":{  
+      "title":"Fehler beim Lesen der log-Datei",
+      "desc":"Beim Lesen der GAMS log-Datei ist ein Fehler aufgetreten."
+    },
+    "readLst":{  
+      "title":"Fehler beim Lesen der listing-Datei",
+      "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten."
+    },
+    "saveScen":{  
+      "title":"Fehler beim Speichern des Szenarios",
+      "desc":"Beim Speichern des Szenarios ist ein Fehler aufgetreten."
+    },
+    "loadScen":{  
+      "title":"Fehler beim Laden der Szenarien",
+      "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten."
+    },
+    "deleteScen":{  
+      "title":"Fehler beim Löschen des Szenarios",
+      "desc":"Beim Löschen des Szenarios ist ein Fehler aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie bitte den Administrator."
+    },
+    "renderTable":{  
+      "title":"Fehler beim Darstellen der Tabelle",
+      "desc":"Beim Darstellen der Daten: '%s' ist ein Fehler aufgetreten."
+    },
+    "renderGraph":{  
+      "title":"Fehler beim Darstellen der Grafik",
+      "desc":"Beim Darstellen der Grafik: '%s' ist ein Fehler aufgetreten."
+    },
+    "blankScenName":{  
+      "title":"Kein Name gewählt",
+      "desc":"Bitte wählen Sie für das Szenario, das Sie speichern möchten, einen gültigen Namen."
+    },
+    "maxScen":{
+      "title":"Maximale Anzahl an Szenarien erreicht",
+      "desc":"Sie haben die maximale Anzahl von Szenarien erreicht, die Sie gleichzeitig laden können. Bitte entfernen Sie zuerst einige Szenarien, bevor Sie neue importieren."
+    },
+    "lockScen":{
+      "title":"Fehler beim Setzen/Löschen der Szenariosperre",
+      "desc":"Beim Setzen oder Löschen der Szenariosperre ist ein Fehler aufgetreten. Fehlermeldung: '%s'"
+    }
+  }
+}

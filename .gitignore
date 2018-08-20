@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+packrat/lib*/
+.Rprofile
+logs
+gmswebui_git.Rproj
+*.dat
+*.cmd
+*.lst
+*.log
+*.lxi
+*.~gm
+*.gpr
+tmp

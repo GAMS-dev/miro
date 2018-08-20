@@ -1,0 +1,127 @@
+{
+    "pageTitle": "Product Portfolio Optimization",
+    "gamsMetaDelim": "###",
+    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "rdata": {
+            "alias": "Reactor data",
+            "headers": {
+                "Reactor": {
+                    "type": "set",
+					"readonly": true
+                },
+                "Scenario": {
+                    "type": "set"
+                },
+                "vmin": {
+                    "type": "parameter"
+                },
+                "vmax": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "pdata": {
+            "alias": "Product data",
+            "headers": {
+                "Product": {
+                    "type": "set"
+                },
+                "Scenario": {
+                    "type": "set"
+                },
+                "demand": {
+                    "type": "parameter"
+                },
+                "production time": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "actscen": {
+            "alias": "Active scenario",
+            "dropdown": {
+                "label": "Active scenario",
+                "choices": [
+                    "$scenario$",
+                    "_"
+                ],
+				"selected": "_"
+            }
+        },
+        "scalars": {
+            "alias": "Scalars",
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "cost": {
+            "alias": "Cost report",
+            "headers": {
+                "Cost report": {
+                    "type": "set"
+                },
+                "Cost": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "surplus": {
+            "alias": "Demand/Surplus report",
+            "headers": {
+                "Product": {
+                    "type": "set"
+                },
+                "demand": {
+                    "type": "parameter"
+                },
+                "surplus": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "productiontime": {
+            "alias": "Production time report",
+            "headers": {
+                "Reactor": {
+                    "type": "set"
+                },
+                "production time": {
+                    "type": "parameter"
+                },
+                "max. production time": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "rpreport": {
+            "alias": "Reactor/Product report",
+            "headers": {
+                "Reactor": {
+                    "type": "set"
+                },
+                "Product": {
+                    "type": "set"
+                },
+                "utilization rate": {
+                    "type": "parameter"
+                },
+                "number of batches": {
+                    "type": "parameter"
+                }
+            }
+        }
+    }
+}

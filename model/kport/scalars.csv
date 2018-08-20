@@ -1,0 +1,6 @@
+Scalar,Description,Value
+actScen,Active scenario,s1
+WHRS,Length of considered period [hours],168.0
+CSTI,Depreciation cost per m^3 reactor and period [kEuro],0.97
+CSTF,Fixed cost per week and reactor [kEuro],2.45
+ESF,Economies of scale factor,0.5

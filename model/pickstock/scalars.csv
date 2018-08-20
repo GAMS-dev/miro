@@ -1,0 +1,3 @@
+Scalar,Description,Value
+maxstock,maximum number of stocks to select,2.0
+trainingdays,number of days for training,99.0

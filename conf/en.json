@@ -1,0 +1,317 @@
+{  
+  "nav":{  
+    "sidebarMenu":{  
+      "inputScreen":"Input",
+      "outputScreen":"Output",
+      "gams":"GAMS interaction",
+      "scen":"Compare Scenarios",
+      "advanced":"Advanced Options"
+    },
+    "sidebarButtons":{  
+      "importInput":"Load data",
+      "solve":"Solve model",
+      "save":"Save",
+      "saveAs":"Save As",
+      "load":"Load",
+      "splitViewStart":"Switch to split view",
+      "splitViewStop":"Switch to single view",
+      "delete":"Remove",
+      "compareStart":"Compare mode",
+      "compareStop":"Stop compare",
+      "download":"Download output",
+      "interrupt":"Stop"
+    },
+    "inputScreen":{  
+      "noDataDep":"Please first import all data this element depends on.",
+      "tooltips":{  
+        "btGraphView":"switch to graph view"
+      }
+    },
+    "gams":{  
+      "boxModelStatus":{  
+        "title":"Model status"
+      },
+      "boxGamsOutput":{  
+        "title":"GAMS output",
+        "gamsOutputTabset":{  
+          "logFile":"Log file",
+          "lstFile":"Listing file",
+          "logUpdate":"Update"
+        }
+      }
+    },
+    "outputScreen":{  
+      "boxResults":{  
+        "title":"Results",
+        "noData":"no data"
+      }
+    },
+    "scen":{  
+      "noScen":"No scenarios loaded. Please first load a scenario",
+      "scalarsAlias":"Scalars",
+      "tooltips":{  
+        "btExport":"export scenario",
+        "btTableView":"switch to table view",
+        "btClose":"close scenario",
+        "inputSheet":"model input",
+        "outputSheet":"model output"
+      },
+      "split":{
+        "load":"Load scenario"
+      }
+    },
+    "advanced":{
+      "titleDownloadTemp":"Download temporary files",
+      "downloadTempDesc":"Download temporary files from the working directory",
+      "downloadTempButton": "Download files"
+    },
+    "gamsModelStatus":{  
+      "exec":"Model execution phase",
+      "success":"Run successfully terminated.",
+      "error":"Run did not terminate successfully: "
+    },
+    "notificationNewInput":{  
+      "new":" datasets imported.",
+      "noNew":"No dataset was imported."
+    },
+    "dialogSaveSuccess":{  
+      "title":"Success",
+      "desc":" %d datasets were saved successfully."
+    },
+    "dialogNewScen":{  
+      "title":"New scenario",
+      "desc":"Please enter a name for the scenario:",
+      "newScenName":"New Scenario",
+      "badName":"Please choose a valid name for the new scenario.",
+      "scenExits":"The scenario name you chose does already exist. Do you want to override the existing data?",
+      "btNewName":"Choose different name",
+      "btOverride":"Override",
+      "cancelButton":"Cancel",
+      "okButton":"Ok"
+    },
+    "dialogDeleteScen":{  
+      "title":"Delete scenario",
+      "desc":"Are you sure you want to delete the selected scenario from the database?",
+      "cancelButton":"No",
+      "okButton":"Yes",
+      "removeFromUI":{  
+        "title":"Remove scenario from editor",
+        "desc":"Do you want to remove the scenario from the editor? Unsaved data will be lost!",
+        "cancelButton":"Cancel",
+        "okButton":"Remove"
+      }
+    },
+    "dialogRemoveScen":{  
+      "title":"Close scenario",
+      "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogCloseScen":{  
+      "title":"Close scenario",
+      "desc":"Are you sure you want to close the selected scenario?",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogExistingOutput":{  
+      "title":"Output data exists",
+      "desc":"The scenario you want to save contains output data that may not match the input data. Do you want to discard the output data?",
+      "cancelButton"    : "Cancel",
+      "saveOutputButton":"Save output data",
+      "discardOutputButton":"Discard output data"
+    },
+    "dialogSaveScen":{  
+      "title":"Save scenario",
+      "desc":"Are you sure you want to save the selected scenario in the database?",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogImport":{  
+      "title":"Import data",
+      "tabLocal":"Local",
+      "tabDatabase":"Database",
+      "selInputData":"Select datasets to import",
+      "descExcel":"Choose file with data to import",
+      "btImportDb":"Import",
+      "cbSelectManually":"Manually choose datasets",
+      "cbOverride":"Replacing existing datasets",
+      "cbDatabase":"Import scenario from database",
+      "overrideWarning":"Already imported datasets might be lost if you did not save them!",
+      "okButton":"Import"
+    },
+    "dialogLoadScen":{  
+      "title":"Load scenario",
+      "titleNoScen":"No scenarios found",
+      "descNoScen":"No saved scenarios could be found.",
+      "selLoadScen":"Select the scenario(s) that you want to load",
+      "titleOverrideInput":"Warning",
+      "descOverrideInput":"You already have input data loaded. Are you sure you want to override this data?",
+      "titleDataError":"Data corrupted",
+      "descDataError":"The scenario data seems to be corrupted. Loading failed.",
+      "sortBy":"Sort by:",
+      "btSortNameASC":"Name (ASC)",
+      "btSortTimeASC":"Time (ASC)",
+      "btSortNameDESC":"Name (DESC)",
+      "btSortTimeDESC":"Time (DESC)",
+      "cancelButton":"Cancel",
+      "okButton":"Import"
+    },
+    "dialogNewCol":{  
+      "title":"New column",
+      "desc":"Please enter a name for the new column:",
+      "cancelButton":"Cancel",
+      "okButton":"Ok"
+    },
+    "excelExport":{  
+      "metadataSheet":{  
+        "title":"Info",
+        "uid":"User",
+        "sname":"Scenario name",
+        "stime":"Time created"
+      },
+      "inputPrefix":"",
+      "inputSuffix":" (Input)",
+      "outputPrefix":"",
+      "outputSuffix":" (Output)"
+    },
+    "dialogLockScen":{
+      "title":"Scenario locked",
+      "desc":"The scenario you want to load is currently being accessed by the user: '%s'. Please try again later."
+    },
+    "dialogReadonly":{
+      "title": "No write permissions",
+      "desc": "You do not have write permissions for this scenario. Do you want to save the scenario as a new scenario  instead?",
+      "okButton": "Save as new",
+      "cancelButton": "Cancel"
+    },
+    "dialogDownloadTmp":{
+      "title": "Download temporary files",
+      "desc": "Select the file you wish to download",
+      "noFiles": "No files found",
+      "downloadZipButton":"Download all as zip",
+      "downloadButton":"Download file",
+      "cancelButton":"Cancel"
+    }
+  },
+  "progressBar":{  
+    "saveInputDb":{  
+      "title":"Saving model input data in database",
+      "progress":"Saving dataset "
+    },
+    "renderOutput":{  
+      "title":"Rendering output graphs",
+      "progress":"Rendering output "
+    },
+    "loadScenDb":{  
+      "title":"Loading scenario data from database",
+      "progress":"Loading dataset "
+    },
+    "saveScenDb":{  
+      "title":"Saving scenario data in database",
+      "progress":"Saving dataset "
+    },
+    "deleteScenDb":{  
+      "title":"Deleting scenario from database",
+      "progress":"Deleting dataset "
+    }
+  },
+  "errMsg":{  
+    "fileRead":{  
+      "title":"Error reading file",
+      "desc":"Some error occurred reading file: '%s'."
+    },
+    "fileWrite":{  
+      "title":"Error writing file",
+      "desc":"Some error occurred writing file: '%s'."
+    },
+    "initErrors":{  
+      "title":"Some errors occurred",
+      "desc":"Please fix the errors mentioned below and restart Shiny:"
+    },
+    "fetchScenData":{  
+      "title":"Error fetching scenario metadata",
+      "desc":"Could not retrieve scenario metadata."
+    },
+    "renderSlider":{  
+      "title":"Incorrect input data for slider",
+      "desc":"The value '%d' for the slider: '%s' is not of numeric type."
+    },
+    "saveInput":{  
+      "title":"Error saving input data",
+      "desc":"Some error occurred saving the data to the database."
+    },
+    "readOutput":{  
+      "title":"Error reading the results",
+      "desc":"Some error occurred reading the results that were returned from GAMS."
+    },
+    "dataError":{  
+      "title":"Error in data",
+      "desc":"Some data error occurred. Please contact the system administrator in case this problem persists."
+    },
+    "ddLenMismatch":{  
+      "title":"Number of aliases and values does not match",
+      "desc":"The number of aliases for dropdown menu: '%s' does not match the number of values."
+    },
+    "fetchDataset": {
+      "title" : "Error reading dataset",
+      "desc": "Some error occurred fetching the dataset: '%s' from the database.",
+      "badColName" : "The column(s) '%s' was not found in the dataset : '%s'",
+      "noData":"Dataset: '%s' could not be loaded. Please make sure the dataset actually contains data."
+    },
+    "GAMSInput":{  
+      "title":"Errors occurred writing input files",
+      "desc":"Some errors occurred writing GAMS input files:",
+      "excelRead":"Some error occurred reading the file: '%s'.",
+      "badInputData":"The GAMS input dataset: '%s' is not valid. Please check the format of the data you wish to import.",
+      "writeCsv":"Some error occurred writing csv file: '%s'."
+    },
+    "gamsExec":{  
+      "title":"Error executing GAMS",
+      "desc":"Some error occurred while executing GAMS."
+    },
+    "gamsTerm":{  
+      "title":"Error terminating gams.exe",
+      "desc":"Some error occurred terminating gams.exe."
+    },
+    "readLog":{  
+      "title":"Error reading log file",
+      "desc":"Some error occurred reading the GAMS log file."
+    },
+    "readLst":{  
+      "title":"Error reading listing file",
+      "desc":"Some error occurred reading the GAMS listing file."
+    },
+    "saveScen":{  
+      "title":"Error saving scenario",
+      "desc":"An error occurred while trying to save the scenario."
+    },
+    "loadScen":{  
+      "title":"Error loading scenario",
+      "desc":"Some error occurred loading the selected scenarios."
+    },
+    "deleteScen":{  
+      "title":"Error deleting scenario",
+      "desc":"Some error occurred deleting the scenario. If this error persists please contact the system administrator."
+    },
+    "renderTable":{  
+      "title":"Error rendering table",
+      "desc":"Some error occurred rendering table for output data: '%s'."
+    },
+    "renderGraph":{  
+      "title":"Error rendering graph",
+      "desc":"Some error occurred rendering graph for output data: '%s'."
+    },
+    "blankScenName":{  
+      "title":"No name entered",
+      "desc":"Please select a valid name for the scenario you want to save."
+    },
+    "maxScen":{
+      "title":"Maximum number of scenarios reached",
+      "desc":"You have reached the maximum number of scenarios that you can load concurrently. Please first remove some scenarios before you import new ones."
+    },
+    "lockScen":{
+      "title":"Error setting/removing scenario lock",
+      "desc":"Some error occurred while locking or unlocking the currently active scenario. Error message: '%s'"
+    }
+  }
+}

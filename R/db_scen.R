@@ -1,0 +1,466 @@
+# R6 class for Scenario object
+Scenario <- R6Class("Scenario", 
+                    inherit = Db,
+                    public = list(
+                      initialize                    = function(db, sid = NULL, sname = NULL,
+                                                               readPerm = NULL, writePerm = NULL,
+                                                               tags = NULL){
+                        # Initialize scenario class
+                        #
+                        # Args:
+                        #   db:                R6 Database object
+                        #   sid:               scenario Id (optional)
+                        #   sname:             scenario name (optional)
+                        #   readPerm:          users/groups that have read permissions
+                        #   writePerm:         users/groups that have write permissions
+                        #   tags:              vector of tags that can be specified
+                        
+                        #BEGIN error checks 
+                        stopifnot(is.R6(db))
+                        private$conn <- db$getConn()
+                        private$uid  <- db$getUid()
+                        if(is.null(sid)){
+                          stopifnot(is.character(sname), length(sname) == 1)
+                          if(!is.null(tags)){
+                            stopifnot(is.character(tags), length(tags) >= 1)
+                            private$tags <- tags
+                          }
+                          # if permissions not explicitly set, restrict read/write access to active user
+                          if(!is.null(readPerm)){
+                            stopifnot(is.character(readPerm), length(readPerm) >=1)
+                            private$readPerm <- vector2Csv(readPerm)
+                          }else{
+                            private$readPerm <- private$uid
+                          }
+                          if(!is.null(writePerm)){
+                            stopifnot(is.character(writePerm), length(writePerm) >=1)  
+                            private$writePerm <- vector2Csv(writePerm)
+                          }else{
+                            private$writePerm <- private$uid
+                          }
+                        }else{
+                          sid <- suppressWarnings(as.integer(sid))
+                          stopifnot(!is.na(sid), length(sid) == 1)
+                        }
+                        #END error checks 
+                        
+                        private$slocktimeLimit      <- db$getSlocktimeLimit
+                        private$uidIdentifier       <- db$getUidIdentifier()
+                        private$sidIdentifier       <- db$getSidIdentifier()
+                        private$snameIdentifier     <- db$getSnameIdentifier()
+                        private$stimeIdentifier     <- db$getStimeIdentifier()
+                        private$slocktimeIdentifier <- db$getSlocktimeIdentifier()
+                        private$stagIdentifier      <- db$getStagIdentifier()
+                        private$accessIdentifier    <- db$getAccessIdentifier()
+                        private$accessRIdentifier   <- db$getAccessRIdentifier()
+                        private$userAccessGroups    <- db$accessGroups
+                        private$tableNameMetadata   <- db$getTableNameMetadata()
+                        private$tableNameScenLocks  <- db$getTableNameScenLocks()
+                        private$tableNamesScenario  <- db$getTableNamesScenario()
+                        private$accessRIdentifier   <- db$getAccessRIdentifier()
+                        
+                        
+                        if(is.null(sid)){
+                          tryCatch(private$fetchMetadata(sname = sname, uid = private$uid),
+                                   error = function(e){
+                                      # scenario with name/uid combination does not exist, so create it
+                                      private$stime     <- Sys.time()
+                                      private$suid      <- private$uid
+                                      private$sname     <- sname
+                                      private$writeMetadata()
+                                      private$fetchMetadata(sname = sname, uid = private$uid)
+                          })
+                        }else{
+                          private$fetchMetadata(sid = sid)
+                        }
+                        # set/refresh lock for scenario
+                        private$lock()
+                      },
+                      getSid      = function() private$sid,
+                      getScenUid  = function() private$suid,
+                      getScenName = function() private$sname,
+                      getScenTime = function() private$stime,
+                      getMetadata = function(uidAlias = private$uidIdentifier, snameAlias = private$snameIdentifier,
+                                             stimeAlias = private$stimeIdentifier){
+                        # Generates dataframe containing scenario metadata
+                        #
+                        # Args:
+                        #   uidAlias:                 User ID Description
+                        #   snameAlias:               Scenario name Description
+                        #   stimeAlias:               Scenario time description
+                        #
+                        # Returns:
+                        #   dataframe with metadata
+                        
+                        #BEGIN error checks 
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        super$getMetadata(uid = private$suid, sname = private$sname, stime = private$stime, 
+                                          uidAlias = uidAlias, snameAlias = snameAlias, stimeAlias = stimeAlias)
+                      },
+                      save = function(datasets, msgProgress){
+                        # Saves multiple dataframes to database
+                        #
+                        # Args:
+                        #   datasets :           dataframes to save
+                        #   msgProgress:         title and progress info for the progress bar
+                        #
+                        # Returns:
+                        #   object: invisibly returns reference to itself
+                        
+                        #BEGIN error checks
+                        if(private$isReadonly()){
+                          stop("Scenario is readonly. Saving failed.", call. = FALSE)
+                        }
+                        stopifnot(!is.null(private$sid))
+                        stopifnot(length(private$tableNamesScenario) >= 1)
+                        stopifnot(is.list(datasets), length(datasets) == length(private$tableNamesScenario))
+                        stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
+                        stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
+                        #END error checks 
+                        
+                        # initialize progress bar
+                        prog <- shiny::Progress$new()
+                        on.exit(prog$close())
+                        prog$set(message = msgProgress$title, value = 0)
+                        updateProgress <- NULL
+                        incAmount      <- 1/length(private$tableNamesScenario)
+                        updateProgress <- function(detail = NULL) {
+                          prog$inc(amount = incAmount, detail = detail)
+                        }
+                        
+                        # write scenario metadata
+                        private$writeMetadata()
+                        Map(function(dataset, tableName){
+                          if(!is.null(dataset) && nrow(dataset)){
+                            # bind scenario ID column to the left of the dataset
+                            dataset <- cbind(sid = private$sid, dataset)
+                            colnames(dataset)[1] <- private$sidIdentifier
+                            super$exportScenDataset(dataset, tableName)
+                          }
+                          # increment progress bar
+                          updateProgress(detail = msgProgress$progress)
+                        }, datasets, private$tableNamesScenario)
+                        
+                        # refresh lock for scenario
+                        private$lock()
+                        
+                        invisible(self)
+                      },
+                      delete = function(){
+                        # Wrapper to deleteRows function to easily remove scenario from database
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   logical: invisibly returns TRUE in case of success, FALSE in case of error
+                        
+                        #BEGIN error checks 
+                        stopifnot(!is.null(private$sid))
+                        #END error checks 
+                        noErr <- TRUE
+                        
+                        self$deleteRows(private$tableNameMetadata, private$sidIdentifier, private$sid)
+                        
+                        flog.debug("Scenario: '%s' unlocked.", private$sid)
+                        private$unlock()
+                        
+                        private$sid   <- integer(0)
+                        if(noErr){
+                          return(invisible(TRUE))
+                        }else{
+                          return(invisible(FALSE))
+                        }
+                      },
+                      finalize = function(){
+                        if(length(private$sid)){
+                          flog.debug("Scenario: '%s' unlocked.", private$sid)
+                          private$unlock()
+                        }
+                      }
+                    ),
+                    active = list(
+                      isReadonlyOrLocked = function(x){
+                        # Determines whether scenario is either readonly or locked
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        # logical: returns TRUE if scenario is either readonly or locked, FALSE otherwise
+                        
+                        #BEGIN error checks
+                        stopifnot(missing(x))
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        if(private$isLocked() || private$isReadonly())
+                          return(TRUE)
+                        else
+                          return(FALSE)
+                      }
+                    ),
+                    private = list(
+                      sid                 = integer(0L),
+                      suid                = character(0L),
+                      sname               = character(0L),
+                      stime               = character(0L),
+                      tags                = character(1L),
+                      readPerm            = character(0L),
+                      writePerm           = character(0L),
+                      fetchMetadata       = function(sid = NULL, sname = NULL, uid = NULL){
+                        # fetches scenario metadata from database
+                        #
+                        # Args:
+                        #   sid:           scenario ID (optional)
+                        #   sname:         scenario name (optional)
+                        #   uid:           user ID (optional)
+                        #
+                        #   object: invisibly returns reference to itself
+                        
+                        #BEGIN error checks
+                        if(!is.null(sid)){
+                          stopifnot(is.integer(sid), length(sid) == 1)
+                        }else{
+                          stopifnot(is.character(sname), length(sname) == 1)
+                          stopifnot(is.character(uid), length(uid) == 1)
+                        }
+                        #END error checks
+                        
+                        if(!is.null(sid)){
+                          metadata <- self$importDataset(private$tableNameMetadata, private$sidIdentifier, sid)
+                          if(!nrow(metadata)){
+                            stop(sprintf("A scenario with ID: '%s' could not be found.", sid), call. = FALSE)
+                          }
+                        }else{
+                          metadata <- self$importDataset(private$tableNameMetadata, c(private$uidIdentifier,
+                                                                                      private$snameIdentifier),
+                                                         c(uid, sname))
+                          if(!nrow(metadata)){
+                            stop(sprintf("A scenario with name: '%s' could not be found for user: '%s'.", 
+                                         sname, uid), call. = FALSE)
+                          }
+                        }
+                        
+                        private$sid       <- metadata[[private$sidIdentifier]][1]
+                        private$suid      <- metadata[[private$uidIdentifier]][1]
+                        private$sname     <- metadata[[private$snameIdentifier]][1]
+                        private$stime     <- metadata[[private$stimeIdentifier]][1]
+                        private$tags      <- metadata[[private$stagIdentifier]][1]
+                        private$readPerm  <- metadata[[private$accessRIdentifier]][1]
+                        private$writePerm <- metadata[[private$accessIdentifier]][1]
+                        
+                        invisible(self)
+                      },
+                      getUidLock = function(){
+                        # checks whether a scenario is currently locked
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   character: returns uid of user who locked scenario in case scenario is locked and NA_character_ otherwise, throws exception in case of error
+                        
+                        #BEGIN error checks 
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        sid <- private$sid
+                        
+                        if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
+                          return(NA_character_)
+                        }
+                        lockData <- self$importDataset(private$tableNameScenLocks, colNames = private$sidIdentifier, 
+                                                       values = sid, limit = 2L)
+                        if(!is.null(lockData) && nrow(lockData)){
+                          if(nrow(lockData) > 1){
+                            stop(sprintf("Db: %s: More than one lock was found for the scenario. This should never happen. (Scenario.getUidLock, table: '%s', scenario: '%s').", 
+                                         private$uid, private$tableNameScenLocks, sid), call. = FALSE)
+                          }
+                          if(!is.null(private$slocktimeLimit)){
+                            if((Sys.time() - as.POSIXct(lockData[[private$slocktimeIdentifier]])) > private$slocktimeLimit){
+                              # lock has expired, so remove it
+                              private$unlock()
+                              return(NA_character_)
+                            }else{
+                              # scenario is locked and lock has not yet expired
+                              return(lockData[[private$uidIdentifier]])
+                            }
+                          }else{
+                            # scenario is locked and no time limit was provided
+                            return(lockData[[private$uidIdentifier]])
+                          }
+                        }else{
+                          # no lock found
+                          return(NA_character_)
+                        }
+                      },
+                      writeMetadata   = function(){
+                        # Write scenario metadata to metadata table
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   Db class object:  invisibly returns reference to object if successful, throws exception in case of error
+                        
+                        if(!DBI::dbExistsTable(private$conn, private$tableNameMetadata)){
+                          tryCatch({
+                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), " (", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), " serial PRIMARY KEY,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$uidIdentifier), " varchar(50) NOT NULL,", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$snameIdentifier), " varchar(100) NOT NULL,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$stimeIdentifier), " timestamp with time zone,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$stagIdentifier), " text,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$accessRIdentifier), " text NOT NULL,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$accessIdentifier), " text NOT NULL);")
+                            DBI::dbExecute(private$conn, query)
+                          }, error = function(e){
+                            stop(sprintf("Metadata table could not be created (Scenario.writeMetadata). Error message: %s.", 
+                                         e), call. = FALSE)
+                          })
+                          flog.debug("Db: A table named: '%s' did not yet exist (Scenario.writeMetadata). Therefore it was created.", 
+                                     private$tableNameMetadata)
+                        }
+                        if(!length(private$sid)){
+                          # new scenario
+                          metadata           <- data.frame(private$suid, private$sname,
+                                                           private$stime, private$tags, 
+                                                           private$readPerm, private$writePerm,
+                                                           stringsAsFactors = FALSE)
+                          colnames(metadata) <- c(private$uidIdentifier, 
+                                                  private$snameIdentifier, private$stimeIdentifier, 
+                                                  private$stagIdentifier, private$accessRIdentifier,
+                                                  private$accessIdentifier)
+                        }else{
+                          # remove existing metadata
+                          self$deleteRows(private$tableNameMetadata, private$sidIdentifier, private$sid)
+                          
+                          metadata           <- data.frame(private$sid, private$suid, private$sname,
+                                                           private$stime, private$tags, 
+                                                           private$readPerm, private$writePerm,
+                                                           stringsAsFactors = FALSE)
+                          colnames(metadata) <- c(private$sidIdentifier, private$uidIdentifier, 
+                                                  private$snameIdentifier, private$stimeIdentifier, 
+                                                  private$stagIdentifier, private$accessRIdentifier,
+                                                  private$accessIdentifier)
+                        }
+                        
+                        
+                        # write new metadata
+                        tryCatch({
+                          DBI::dbWriteTable(private$conn, private$tableNameMetadata, metadata, row.names = FALSE, append = TRUE)
+                          flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
+                                     private$tableNameMetadata, sid, uid)
+                        }, error = function(e){
+                          stop(sprintf("Db: Metadata (table: '%s') could not be written to database (Scenario.writeMetadata , scenario: '%s', user: '%s'). Error message: %s.", 
+                                       private$tableNameMetadata, sid, uid, e), call. = FALSE)
+                        })
+                        
+                        invisible(self)
+                      },
+                      lock = function(){
+                        # adds new lock for scenario
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   Db object: invisibly returns object reference in case lock was set successfully, throws exception otherwise
+                        
+                        #BEGIN error checks 
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
+                          # in case table does not yet exist, create it
+                          tryCatch({
+                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameScenLocks), " (", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$uidIdentifier), " text,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), " integer UNIQUE,", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), " timestamp with time zone);")
+                            DBI::dbExecute(private$conn, query)
+                            flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)
+                          }, error = function(e){
+                            stop(sprintf("Db: %s: An error occurred while trying to create table. (Scenario.lock, table: '%s'). Error message: %s.", 
+                                         private$uid, private$tableNameScenLocks, e), call. = FALSE)
+                          })
+                        }
+                        # check whether scenario is already locked
+                        uidLocked <- private$getUidLock()
+                        if(!is.na(uidLocked)){
+                          # a lock already exists for the scenario
+                          if(!identical(uidLocked, private$uid)){
+                            # user who has currently locked the scenario is not the same as the active user provided
+                            stop(sprintf("Db: %s: The scenario: '%s' is already locked by user: '%s' (Scenario.lock).", private$uid, private$sid, uidLocked), call. = FALSE)
+                          }else{
+                            # user who currently has scenario locked is the same, so refresh lock
+                            private$unlock()
+                          }
+                        }
+                        lockData           <- data.frame(as.character(private$uid), as.integer(private$sid), Sys.time(), stringsAsFactors = FALSE)
+                        colnames(lockData) <- c(private$uidIdentifier, private$sidIdentifier, private$slocktimeIdentifier)
+                        tryCatch({
+                          DBI::dbWriteTable(private$conn, private$tableNameScenLocks, lockData, row.names = FALSE, append = TRUE)
+                          flog.debug("Db: %s: Lock was added for scenario: '%s' (Scenario.lock).", private$uid, private$sid)
+                        }, error = function(e){
+                          stop(sprintf("Db: %s: An error occurred writing to database (Scenario.lock, table: '%s', scenario: '%s'). Error message: %s", 
+                                       private$uid, private$tableNameScenLocks, private$sid, e), call. = FALSE)
+                        })
+                        invisible(self)
+                      },
+                      unlock = function(){
+                        # removes lock for scenario
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   Db object: invisibly returns object reference in case lock was removed, throws exception in case something went wrong
+                        
+                        #BEGIN error checks
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        if(DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
+                          self$deleteRows(private$tableNameScenLocks, colNames = private$sidIdentifier, values = private$sid)
+                        }
+                        invisible(self)
+                      },
+                      isLocked = function(){
+                        # Determines whether a scenario is locked by a user other than the user logged in
+                        #
+                        # Args:
+                        #
+                        # Returns:
+                        #   logical: returns TRUE in scenario is locked or error occurred, FALSE otherwise
+                        
+                        #BEGIN error checks
+                        stopifnot(!is.null(private$sid))
+                        #END error checks
+                        
+                        errMsg <- NULL
+                        tryCatch({
+                          uidLock <- private$getUidLock()
+                          if(is.na(uidLock) || identical(uidLock, private$uid)){
+                            # scenario is not locked or locked by current user
+                            return(FALSE)
+                          }else{
+                            # scenario is locked
+                            return(TRUE)
+                          }
+                        }, error = function(e){
+                          stop(sprintf("Db: Problems locking scenario: '%s'. Error message: %s.", private$sid, e), call. = FALSE)
+                        })
+                      },
+                      isReadonly = function(){
+                        # checks whether current scenario is readOnly
+                        # 
+                        # Args:
+                        #
+                        # Returns:
+                        #   logical: returns TRUE if scenario is readonly, FALSE otherwise  
+                        if(any(private$userAccessGroups %in% private$writePerm)){
+                          return(FALSE)
+                        }else{
+                          return(TRUE)
+                        }
+                      }
+                    )
+)

@@ -1,0 +1,140 @@
+{
+    "pageTitle": "Simplified Energy Systems Model",
+    "gamsMetaDelim": "###",
+    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "planttypedata": {
+            "alias": "Plant information",
+            "headers": {
+                "plant type": {
+                    "type": "set"
+                },
+                "co2": {
+                    "type": "parameter"
+                },
+                "cost": {
+                    "type": "parameter"
+                },
+                "expansion cost": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "timeseries": {
+            "alias": "base case time series [GWh]",
+            "headers": {
+                "Time Intervals": {
+                    "type": "set"
+                },
+                "photovoltaic": {
+                    "type": "parameter"
+                },
+                "wind": {
+                    "type": "parameter"
+                },
+                "demand": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "GMSPAR_RESOLUTION": {
+            "alias": "Time resolution",
+            "dropdown": {
+                "aliases": [
+                    "hours",
+                    "days",
+                    "weeks",
+                    "months"
+                ],
+                "choices": [
+                    1,
+                    24,
+                    168,
+                    720
+                ]
+            }
+        },
+        "GMSPAR_FROM_TO": {
+            "alias": "Time range",
+            "slider": {
+                "min": 0,
+                "max": 100,
+                "default": [
+                    5,
+                    70
+                ],
+                "step": 0.001
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "rep_emix": {
+            "alias": "energy mix report",
+            "headers": {
+                "time steps": {
+                    "type": "set"
+                },
+                "Regions": {
+                    "type": "set"
+                },
+                "lng": {
+                    "type": "parameter"
+                },
+                "lat": {
+                    "type": "parameter"
+                },
+                "total": {
+                    "type": "parameter"
+                },
+                "renewable": {
+                    "type": "parameter"
+                },
+                "fossil": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "rep_flow": {
+            "alias": "flow report",
+            "headers": {
+                "time steps": {
+                    "type": "set"
+                },
+                "Regions": {
+                    "type": "set"
+                },
+                "lng0": {
+                    "type": "parameter"
+                },
+                "lat0": {
+                    "type": "parameter"
+                },
+                "lng1": {
+                    "type": "parameter"
+                },
+                "lat1": {
+                    "type": "parameter"
+                },
+                "flow": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Scalars",
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
+            }
+        }
+    }
+}

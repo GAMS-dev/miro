@@ -1,0 +1,171 @@
+{
+	"UILogo"             : "pickstock.jpg",
+    "dataRendering"      : {
+		"stockdata"   	: {
+			"outType"               : "graph",
+			"height"				: 700,
+			"graph"                 : {
+				"tool"      			: "dygraph",
+				"title"     			: "Stock prices over time (year: 2016)",
+				"color"					: "stockSymbol",
+				"dyOptions"				:{
+					"includeZero"			: true,
+					"logscale"				: false,
+					"drawGrid"				: true,
+					"drawPoints"			: false,
+					"pointSize"				: 2,
+					"fillGraph"				: false,
+					"fillAlpha"				: 0.15
+				},
+				"dylegend"				:{
+					"width"					: 450,
+					"show"					: "always",
+					"hideOnMouseOut"		: true
+				},
+				"dyHighlight"			:{
+					"highlightSeriesOpts"	:{
+						"strokeWidth" 			: 3,
+						"strokeBorderWidth"		: 1,
+						"highlightCircleSize"	: 5
+					},
+					"hideOnMouseOut"		: true
+					
+				},
+				"dyRangeSelector"		:{
+					"height"				: 20,
+					"strokeColor"			: ""
+				},						
+				"xdata"     			:"date",
+				"ydata" 				: {
+					"price"    				: {
+						"label"					: "stockSymbol"
+					}
+				},
+				"xaxis"     :{
+					"title"         		: "date",
+                    "showgrid"              : true
+				},		
+				"yaxis"     :{		
+					"title"         		: "price",
+                    "showgrid"              : true
+				}
+			}
+		},
+		"partofportfolio"       : {
+            "outType"               : "dtGraph",
+            "graph"                 : {
+                "tool"                  : "plotly",
+                "type"                  : "pie",
+				"showlegend"			: true,
+                "title"                 : "Part of the portfolio",
+                "labels"                : "stockSymbol",
+                "values"                : "weight",
+                "xaxis"                 : {
+                    "showgrid"              : false,
+                    "zeroline"              : false,
+                    "showticklabels"        : false
+                },
+                "yaxis"                 : {
+                    "showgrid"              : false,
+                    "zeroline"              : false,
+                    "showticklabels"        : false
+                }
+            }
+        },
+		"dowvsindex"   	: {
+			"outType"               : "graph",
+			"height"				: 700,
+			"graph"                 : {
+				"tool"      			: "dygraph",
+				"title"     			: "Dow Jones vs. Index Fund",
+				"dyOptions"				:{
+					"includeZero"			: false,
+					"logscale"				: false,
+					"drawGrid"				: true,
+					"drawPoints"			: false,
+					"pointSize"				: 2,
+					"fillGraph"				: false,
+					"fillAlpha"				: 0.15
+				},
+				"dyHighlight"   :{
+					"highlightSeriesOpts" :{
+					  "strokeWidth"    : 3,
+					  "strokeBorderWidth"  : 1,
+					  "highlightCircleSize" : 5
+					},
+					"hideOnMouseOut"  : true
+				},
+				"dylegend"				:{
+					"width"					: 450,
+					"show"					: "always",
+					"hideOnMouseOut"		: true
+				},
+				"dyRangeSelector"		:{
+					"height"				: 20,
+					"strokeColor"			: ""
+				},
+				"dyEvent"    :{
+					"lastDayTraining"  : {
+						 "label"     	: "End of training phase",
+						 "labelLoc"     : "bottom",
+						 "color"        : "red"
+					}
+				},				
+				"xdata"     			: "date",
+				"ydata" 				: {
+					"dow jones"    			: {
+						"label"					: "Dow Jones index",
+						"stepPlot"      		: false,
+						"stemPlot"      		: false,
+						"fillGraph"				: true,
+						"drawpoints"			: true
+					},
+					"index fund"    		: {
+						"label"					: "Index fund",
+						"stepPlot"      		: false,
+						"stemPlot"      		: false,
+						"fillGraph"				: false,
+						"drawpoints"			: true
+					}
+				},
+				"xaxis"     :{
+					"title"         		: "Date"
+				},		
+				"yaxis"     :{		
+					"title"         		: "Price"
+				}
+			}
+		},
+		"abserror"       : {
+            "outType"               : "graph",
+			"height"				: 700,
+            "graph"                 : {
+                "tool"                  : "plotly",
+                "type"                  : "hist",
+				"histnorm"				: "percent",
+				"nbins"					: 20,
+				"barmode"				: "overlay",
+				"alpha"					: 0.6,
+                "title"                 : "Absolute Error: Dow Jones vs. Index Fund",
+				"xdata" 				: {
+					"absolute error train"	: {
+						"labels"				: "training",
+						"color"					: "darkgreen",
+						"alpha"					: 0.6
+					},
+					"absolute error test" 	: {
+						"labels"				: "test",
+						"color"					: "red",
+						"alpha"					: 0.6
+					}
+				},
+                "xaxis"                 : {
+				    "title"					: "Absolute Error"
+                },
+                "yaxis"                 : {
+					"title"					: "Frequency"
+                }
+            }
+		}
+	}
+}
