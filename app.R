@@ -47,9 +47,6 @@ if(is.null(errMsg)){
       })
     }
   })
-}
-
-if(is.null(errMsg)){
   # check whether shiny proxy is used to access this file
   isShinyProxy <- isShinyProxy()
   # get model Name
@@ -58,8 +55,6 @@ if(is.null(errMsg)){
   }, error = function(e){
     errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
   })
-}
-if(is.null(errMsg)){
   # check if GAMS model file exists
   if(file.exists(modelDir %+% tolower(modelName) %+% .Platform$file.sep %+% tolower(modelName) %+% ".gms")){
     currentModelDir  <- modelDir %+% tolower(modelName) %+% .Platform$file.sep
@@ -67,12 +62,10 @@ if(is.null(errMsg)){
     errMsg <- "The GAMS model file could not be found. Please make sure you create a new directory for your model in : '"  %+%
                      modelDir %+% "', so that it looks like this: '" %+% modelDir %+% tolower(modelName) %+% .Platform$file.sep %+% tolower(modelName) %+% ".gms'"
   }
-}
-
-if(is.null(errMsg)){ 
   # name of the R save file
   rSaveFileName <- paste0(tolower(modelName), '_', webuiVersion, '.RData')
-  
+}
+if(is.null(errMsg)){
   # set user ID (user name) and user groups
   if(isShinyProxy){
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
@@ -88,8 +81,6 @@ if(is.null(errMsg)){
       errMsg <- "Invalid user ID specified."
     }
   }
-}
-if(is.null(errMsg)){
   #initialise loggers
   if(!dir.exists(logFileDir)){
     tryCatch({
@@ -101,14 +92,14 @@ if(is.null(errMsg)){
   flog.appender(appender.file(logFileDir %+% modelName %+% "_" %+% uid %+% "_" %+% format(Sys.time(), "%y.%m.%d_%H.%M.%S") %+% ".log"))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
+  
+  if(!file.exists(rSaveFileName) || debug.mode){
+    source("./modules/init.R", local = TRUE)
+  }else{
+    load(rSaveFileName, envir = .GlobalEnv)
+  }
 }
 
-# if exist, include RData file (skip error checks etc.)
-if(!file.exists(rSaveFileName) || debug.mode){
-  source("./modules/init.R", local = TRUE)
-}else{
-  load(rSaveFileName, envir = .GlobalEnv)
-}
 if(is.null(errMsg)){ 
   # load default and custom renderers (output data)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
@@ -217,7 +208,7 @@ if(!is.null(errMsg)){
       tags$link(type = "text/css", rel = "stylesheet", href = "webui.css")
     ),
     titlePanel(
-      if(is.null(lang$errMsg$initErrors$title)){
+      if(!exists("lang") || is.null(lang$errMsg$initErrors$title)){
         "Some errors occurred"
       }else{
         lang$errMsg$initErrors$title
@@ -225,7 +216,7 @@ if(!is.null(errMsg)){
     fluidRow(align="center",
              HTML("<br>"),
              div(
-               if(is.null(lang$errMsg$initErrors$desc)){
+               if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
                  "Please fix the errors mentioned below and restart Shiny:"
                }else{
                  lang$errMsg$initErrors$desc
@@ -241,7 +232,7 @@ if(!is.null(errMsg)){
       errMsg
     )
     output$JSONErrorMessages <- renderTable(
-      jsonErrors, bordered = TRUE
+      if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
   }
   
@@ -279,6 +270,9 @@ if(!is.null(errMsg)){
     scalarData         <- list()
     # boolean that specifies whether handsontable is initialised
     hot.init           <- vector("logical", length = length(modelIn))
+    # boolean that specifies whether check if data is unsaved should be skipped
+    no.check      <- vector("logical", length = length(modelIn))
+    no.check[]    <- TRUE
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -296,9 +290,6 @@ if(!is.null(errMsg)){
       occupied.sid.slots <- vector("logical", length = maxNumberScenarios)
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sid.comp.order     <- NULL
-      # boolean that specifies whether check if data is unsaved should be skipped
-      no.check      <- vector("logical", length = length(modelIn))
-      no.check[]    <- TRUE
       # boolean that specifies whether input data does not match output data
       dirty.flag    <- FALSE
       # boolean that specifies whether nested tabset is active or not
@@ -343,7 +334,7 @@ if(!is.null(errMsg)){
           }
         }else if(isolate(input$btSplitView) %% 2 == 0){
           # split view comparison mode
-          flog.debug("Navigated to previous data tab in split view scenario comparison view (using shortcut).")
+          flog.debug("Navigated to next data tab in split view scenario comparison view (using shortcut).")
           current.scen <- 2
           current.sheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("content.scen_", current.scen)]])))
           updateTabsetPanel(session, paste0("content.scen_", current.scen), paste0("content.scen_", current.scen, "_", current.sheet + 1))

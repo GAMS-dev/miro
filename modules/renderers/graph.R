@@ -81,7 +81,6 @@ renderGraph <- function(data, config.data, options, height = NULL){
   }else if(options$tool == 'dygraph'){
     # set defaults
     # time series chart
-    
     p <- NULL
     lapply(seq_along(options$ydata), function(j){
       
@@ -96,13 +95,13 @@ renderGraph <- function(data, config.data, options, height = NULL){
         }else{
           idx.vector <- match(tolower(names(options$ydata)), tolower(colnames(data)))
           xts_data <- as.matrix(data[, idx.vector])
-          row.names(xts_data) <- data[[1]]
+          row.names(xts_data) <- as.character(data[[1]])
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
           p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
                          stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
                          pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, strokePattern = options$ydata[[j]]$strokePattern,
                          strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
-        }
+          }
         
       }else{
         p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
@@ -134,7 +133,7 @@ renderGraph <- function(data, config.data, options, height = NULL){
     # Event lines to note points within a time series. 
     if(!is.null (options$dyEvent)){
       lapply(seq_along(names(options$dyEvent)), function(j){
-        event <- get.event(config.data, names(options$dyEvent)[[j]])
+        event <- getEvent(config.data, names(options$dyEvent)[[j]])
         p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
       })
     }
@@ -144,34 +143,31 @@ renderGraph <- function(data, config.data, options, height = NULL){
         p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
       })
     }
-    
     return(dygraphs::renderDygraph(p))
-    
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }
 }
-get.event <- function(config.data, event.id){
+getEvent <- function(configData, eventId){
   # extracts event from config.data
   #
   # args:
-  # config.data : configuration dataframe
-  # event.id    : id of the event
+  # configData :     configuration dataframe
+  # eventId    :     id of the event
   #
   # returns:
   # string with event information extracted from config.data
   
-  #check whether index exists in scalar dataset
-  if(!is.null(config.data)){
-    idx <- match(tolower(event.id), tolower(config.data[[1]]))
+  if(!is.null(configData)){
+    idx <- match(tolower(eventId), tolower(configData[[1]][[1]]))
     if(is.na(idx)){
       # index could not be found so return the string (fixed value)
-      return(event.id)
+      return(eventId)
     }else{
-      return(config.data[[3]][idx])
+      return(configData[[3]][[idx]])
     }
   }else{
     # config data does not exist, so return string
-    return(event.id)
+    return(eventId)
   }
 }

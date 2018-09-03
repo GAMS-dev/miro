@@ -85,7 +85,7 @@ lapply(modelIn.tabular.data, function(sheet){
              shinyjs::toggle(paste0("data-in_", i))
              errMsg <- NULL
              tryCatch({
-               callModule(modelOutput, "in_" %+% i, type = config.graphs.in[[i]]$outType, data = rhandsontable::hot_to_r(input[["in_" %+% i]]),
+               callModule(renderData, "in_" %+% i, type = config.graphs.in[[i]]$outType, data = rhandsontable::hot_to_r(input[["in_" %+% i]]),
                           dt.options = config$datatable, graph.options = config.graphs.in[[i]]$graph, 
                           pivot.options = config.graphs.in[[i]]$pivottable, custom.options = config.graphs.in[[i]]$options,
                           roundPrecision = roundPrecision, modelDir = modelDir)

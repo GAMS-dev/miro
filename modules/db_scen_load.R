@@ -166,7 +166,6 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     if(!closeScenario()){
       return(NULL)
     }
-    print(sids.to.load[[1]])
     activeScen <<- Scenario$new(db = db, sid = sids.to.load[[1]])
 
     # check whether all input datasets were imported

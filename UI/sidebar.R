@@ -33,9 +33,7 @@ sidebar <- dashboardSidebar(
                   ),
                   actionButton("btSaveAs", lang$nav$sidebarButtons$saveAs, width = "85%", class = "btOrange"),
                   #downloadButton("export_1", lang$nav$sidebarButtons$exportData, width = "85%", class = "dl-button"),
-                  shinyjs::disabled(
-                    actionButton("btCompareScen", lang$nav$sidebarButtons$compareStart, width = "85%")
-                  ),
+                  actionButton("btCompareScen", lang$nav$sidebarButtons$compareStart, width = "85%"),
                   shinyjs::disabled(
                     actionButton("btDelete", lang$nav$sidebarButtons$delete, width = "85%")
                   )
