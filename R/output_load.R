@@ -11,7 +11,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
     switch(method,
            csv = {
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
-               scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', csvDelim)
+               scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
+                                       csvDelim, col_types = cols())
              }
            })
     
@@ -29,28 +30,28 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
           removeRows       <- grepl(hiddenMarker, scalarTmp[[2]])
           ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
           scalarTmp        <<- scalarTmp[removeRows, ]
-          
         }, error = function(e){
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
         })
       }else{
         # scalar output file does not exist, but is in modelOut vector
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", scalarsOutName %+% ".csv",
-                     modelName, e), call. = FALSE)
+        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
+                     scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
       }
     }else{
       tryCatch({
         switch(method,
                csv = {
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
-                   ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', csvDelim)
+                   ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
+                                                   csvDelim, col_types = cols())
                  }else{
                    stop(sprintf("Data for output dataset: '%s' could not be found.", names(modelOut)[[i]]), call. = FALSE)
                  }
                })
       }, error = function(e) {
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", names(modelOut)[[i]] %+% ".csv",
-                     modelName, e), call. = FALSE)
+        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
+                     names(modelOut)[[i]] %+% ".csv", modelName, e), call. = FALSE)
       })
     }
   })
@@ -59,5 +60,6 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
   if(!is.null(scalarTmp) && nrow(scalarTmp)){
     ret$scalar <- scalarTmp
   }
+
   return(ret)
 }
