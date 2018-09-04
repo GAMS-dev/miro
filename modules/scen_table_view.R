@@ -1,4 +1,4 @@
-observeEvent(input[[paste0("table_", i)]], {
+observeEvent(input[["table_" %+% i]], {
   # get sheet ID for current scenario
   j <- as.integer(strsplit(isolate(input[[paste0("content.scen_", i)]]), "_")[[1]][3])
   flog.debug("%s: Table view in scenario with id: %d for sheet: %d activated.", uid, i, j)
@@ -6,13 +6,13 @@ observeEvent(input[[paste0("table_", i)]], {
     # compare scenario mode active
     if(scen.comp.mode < 2L){
       # single view compare mode
-      lapply(seq_len(max.number.scenarios + 1), function(i){
+      lapply(seq_len(maxNumberScenarios + 1), function(i){
         shinyjs::toggle(paste0("scenTable_", k, "_", j))
         shinyjs::toggle(paste0("scenGraph_", k, "_", j))
       })
     }else{
       # split view comparison mode
-      lapply((max.number.scenarios + 2):(max.number.scenarios + 3), function(i){
+      lapply((maxNumberScenarios + 2):(maxNumberScenarios + 3), function(i){
         shinyjs::toggle(paste0("scenTable_", k, "_", j))
         shinyjs::toggle(paste0("scenGraph_", k, "_", j))
       })
