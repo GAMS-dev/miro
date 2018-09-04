@@ -57,7 +57,8 @@ if(is.null(errMsg)){
     }
   })
   if(identical(config$activateModules$sharedScenarios, TRUE) && identical(config$activateModules$scenario, FALSE)){
-    errMsg <- paste(errMsg, "Can not use module 'share scenarios' without having module 'scenario' activated. Please either deactivate module 'shared scenarios' or activate module 'scenario'.", sep = "\n")
+    flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
+    config$activateModules$sharedScenarios <- FALSE
   }
 }
 
