@@ -17,7 +17,7 @@ observeEvent(input$btCompareScen,{
     updateActionButton(session, "btCompareScen", label = lang$nav$sidebarButtons$compareStop)
     if(scen.comp.mode < 2L){
       # single view compare mode
-      lapply(seq_len(maxNumberScenarios + 3), function(i) obs.compare[[i]]$resume())
+      lapply(4:(maxNumberScenarios + 3), function(i) obs.compare[[i]]$resume())
     }else{
       # split view compare mode
       lapply(2:3, function(i) obs.compare[[i]]$resume())
