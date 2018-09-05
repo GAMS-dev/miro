@@ -215,7 +215,8 @@ with open(inc, 'w') as f:
             f.write("   f.write('" + s + ",\"" + extractSymText(db[s].text,1) + "\",'")
             f.write(" + str(db['" + s + "'].first_record().value) + '\\n')\n")
          if (type(db[s])==GamsSet) and (s not in domsets):
-            f.write("   f.write('" + s + ",\"" + extractSymText(db[s].text,1) + "\",'")
+            f.write("   if(len(db['" + s + "'])):\n")
+            f.write("      f.write('" + s + ",\"" + extractSymText(db[s].text,1) + "\",'")
             f.write(" + str(db['" + s + "'].first_record().key(0)) + '\\n')\n")
       f.write("   f.closed\n")
    f.write("db.__del__()\n")

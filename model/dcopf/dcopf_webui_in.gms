@@ -1,27 +1,26 @@
 *configuration of WebUI input
-$ifthen.UIin set gmswebui
 $onecho > webuiconf.json
-{ "GMSPAR_case": {
+{ "GMSPAR_casename": {
      "alias": "Input case",
      "dropdown": {
-         "label": "Select input case",
-	 "choices": "case$filename"
+         "label": "Select input case [case]",
+	 "choices": "casename$filename"
      }
   }, 
   "GMSPAR_timeperiod": {
      "alias": "Timeperiod",
      "slider": {
-         "label": "Select the time period to solve",
+         "label": "Select the time period to solve [t]",
          "min": 1,
-         "max": "max(case$noPeriods)",
-         "default": 1,
+         "max": "max(casename$noPeriods)",
+         "default": "max(casename$noPeriods)",
          "step": 1
      }
   },
   "GMSPAR_allon": {
      "alias": "allon",
      "dropdown": {
-         "label": "Turn on all gens and/or lines during solve",
+         "label": "Turn on all gens and/or lines during solve [allon]",
          "aliases": ["generators", "lines", "generators & lines", "none"],
          "choices": ["gens", "lines", "both", 0],
          "selected": "%allon%"
@@ -30,7 +29,7 @@ $onecho > webuiconf.json
   "GMSPAR_obj": {
      "alias": "Obj",
      "dropdown": {
-         "label": "Objective function",
+         "label": "Objective function [obj]",
          "aliases": ["quadratic","piecewise linear","linear","none"],
          "choices": ["quad", "pwl", "linear", 0],
          "selected": "%obj%"
@@ -39,7 +38,7 @@ $onecho > webuiconf.json
   "GMSPAR_linelimits": {
      "alias": "linelimits",
      "dropdown": {
-         "label": "Type of line limit data to use",
+         "label": "Type of line limit data to use [linelimits]",
          "choices": ["given", "uwcalc", "inf"],
          "selected": "%linelimits%"
      }
@@ -47,7 +46,7 @@ $onecho > webuiconf.json
   "GMSPAR_genPmin": {
      "alias": "genPmin",
      "dropdown": {
-         "label": "Data for Generator lower limit",
+         "label": "Data for Generator lower limit [genPmin]",
          "choices": ["0", "given", "uwcalc"],
          "selected": "%genPmin%"
      }
@@ -55,15 +54,7 @@ $onecho > webuiconf.json
   "GMSPAR_lineloss": {
      "alias": "lineloss",
      "checkbox": {
-         "label": "Approximate lineloss?",
-         "value": 0,
-         "class": "checkbox-material"
-     }
-  },
-  "GMSPAR_savesol": {
-     "alias": "savesol",
-     "checkbox": {
-         "label": "Save solution?",
+         "label": "Approximate lineloss? [lineloss]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -71,24 +62,48 @@ $onecho > webuiconf.json
   "GMSPAR_wind": {
      "alias": "wind",
      "checkbox": {
-         "label": "Turn off wind turbines?",
+         "label": "Turn off wind turbines? [wind]",
          "value": 0,
+         "class": "checkbox-material"
+     }
+  },
+  "GMSOPT_lp": {
+     "alias": "LP-Solver",
+     "dropdown": {
+         "label": "Solver to use for LP",
+         "aliases": ["BARON","BDMLP","CBC","CONOPT 3","CONOPT 4","CPLEX","DECIS","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","SNOPT","SOPLEX","XA","XPRESS"],
+         "choices": ["BARON","BDMLP","CBC","CONOPT3","CONOPT4","CPLEX","DECIS","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","SNOPT","SOPLEX","XA","XPRESS"],
+         "selected": "CPLEX"
+     }
+  },
+  "GMSOPT_qcp": {
+     "alias": "QCP-Solver",
+     "dropdown": {
+         "label": "Solver to use for QCP",
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "selected": "CPLEX"
+     }
+  },
+  "GMSPAR_savesol": {
+     "alias": "savesol",
+     "checkbox": {
+         "label": "Save solution? [savesol]",
+         "value": 0,
+         "class": "checkbox-material"
+     }
+  },
+  "GMSPAR_verbose": {
+     "alias": "verbose",
+     "checkbox": {
+         "label": "Print input in listing output? [verbose]",
+         "value": 1,
          "class": "checkbox-material"
      }
   }
 }
 $offecho
-$endif.UIin
 
-$ifthen.webui NOT set gmswebui
-$ifthen.inner NOT set GMSWEBUI
 * Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$endif.inner
-$else.webui
-* Define input case
-$if set case $setGlobal case ..%system.dirsep%..%system.dirsep%model%system.dirsep%cases%system.dirsep%%case%
-$log ### %case%
-$if not set case $setGlobal case ..%system.dirsep%..%system.dirsep%model%system.dirsep%cases%system.dirsep%case118.gdx
-$log ### %case%
-$endif.webui
+$if not set case $setGlobal case %MODELPATH%cases%system.dirsep%case118.gdx
+$if set casename $setGlobal case %MODELPATH%cases%system.dirsep%%casename%

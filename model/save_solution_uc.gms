@@ -91,7 +91,6 @@ $endif
 
 branchinfo(i,j,c,'LineSP',t_solved) = LineSP(i,j,c,t_solved) * baseMVA;
 
-
 execute_unload "%out%temp", version, total_cost, baseMVA, ints, t, bus, gen, circuit,
                         line, transformer, monitored_lines, demandbid, demandbidmap, interface, interfacemap
                         bus_t, bus_s, gen_t, gen_s, branch_t, branch_s, fuel_t, fuel_s, prime_mover
