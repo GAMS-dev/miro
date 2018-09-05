@@ -1,8 +1,8 @@
 # UI sidebar
 sidebar <- dashboardSidebar(
   sidebarMenu(id="sidebar.menu",
-              menuItem(lang$nav$sidebarMenu$input, tabName="inputData", icon = icon("th")),
-              menuItem(lang$nav$sidebarMenu$output, tabName="outputData", icon = icon("dashboard")),
+              menuItem(lang$nav$sidebarMenu$inputScreen, tabName="inputData", icon = icon("th")),
+              menuItem(lang$nav$sidebarMenu$outputScreen, tabName="outputData", icon = icon("dashboard")),
               menuItem(lang$nav$sidebarMenu$gams, tabName="gamsinter", icon = icon("cog", lib = "glyphicon")),
               if(config$activateModules$scenario){
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy"))
