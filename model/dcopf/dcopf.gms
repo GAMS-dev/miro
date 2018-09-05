@@ -45,19 +45,20 @@ $if not set lineloss $setGlobal lineloss 0
 * Default: Save solution option turned off
 $if not set savesol $setGlobal savesol 0
 
-$include dcopf_webui_in.gms
-$drop case
-
 * Define filepath, name and extension.
 $setnames "%gams.i%" filepath filename fileextension
+$setglobal MODELPATH '%filepath%..%system.dirsep%'
+
+$if set gmswebui $include dcopf_webui_in.gms
 
 * Define type of model
 $set modeltype "DC"
-
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
 $setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
-$batinclude extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
+$batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
 
 *===== SECTION: DATA MANIPULATION
 * DCOPF assumes reactive power = 0
@@ -139,7 +140,7 @@ c_AngleDifferenceJI(i,j)$isLine(i,j)..
 V_Theta(i)-V_Theta(j) =l= pi/3;
 
 * Objective functions and pwl costs are listed in a separate file
-$batinclude cost_objective.gms obj demandbids
+$batinclude %MODELPATH%cost_objective.gms obj demandbids
 
 *===== SECTION: VARIABLE BOUNDS
 * Generator power generation limits
@@ -236,18 +237,12 @@ lines_at_limit(i,j,c)$branchstatus(i,j,c) = yes$(abs(LineSP(i,j,c)) gt 1e-8);
 display lines_at_limit;
 
 *==== SECTION: Solution Save
-
-$set test %1
-$LOG ### %test%
-*$ifthen %savesol% == 1
-$SetGlobal out %filepath%%casename%_DC_base_solution.gdx
-execute_unload '%filepath%temp_solution.gdx',  Pg, Vm, Va, total_cost, LMP, LineSP;
-execute 'gams ..%system.dirsep%..%system.dirsep%model%system.dirsep%save_solution.gms gdxcompress=1 --ac=0 --case=%case% --solution=%filepath%temp_solution.gdx --out=%out% --timeperiod=%timeperiod% --savesol=%savesol%';
-*execute 'gams %filepath%..%system.dirsep%save_solution.gms gdxcompress=1 --ac=0 --case=.%system.dirsep%cases%system.dirsep%%casename%%caseextension% --solution=%filepath%temp_solution.gdx --out=%out% --timeperiod=%timeperiod% --savesol=%savesol% --filepath=%filepath%';
+$Set out %casename%_DC_base_solution.gdx
+execute_unload 'temp_solution.gdx',  Pg, Vm, Va, total_cost, LMP, LineSP;
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --case=%case% --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod% --savesol=%savesol%';
 if(errorlevel ne 0, abort "Saving solution failed!");
-execute 'rm %filepath%temp_solution.gdx'
-*$endif
+execute 'rm temp_solution.gdx'
 );
 
-$include webui_out.gms
-$batinclude webui.gms
+$if set gmswebui $include %MODELPATH%webui_out.gms
+$if set gmswebui $batinclude %MODELPATH%webui.gms

@@ -1,5 +1,5 @@
 $onExternalInput
-$kill stockData date symbol
+$kill stockData symbol date
 *$killUel
 $offExternalInput
 $offdigit

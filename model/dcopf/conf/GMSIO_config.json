@@ -5,27 +5,27 @@
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "GMSPAR_case": {
+        "GMSPAR_casename": {
             "alias": "Input case",
             "dropdown": {
-                "label": "Select input case",
-                "choices": "case$filename"
+                "label": "Select input case [case]",
+                "choices": "casename$filename"
             }
         },
-        "GMSOPT_timeperiod": {
+        "GMSPAR_timeperiod": {
             "alias": "Timeperiod",
             "slider": {
-                "label": "Select the time period to solve",
+                "label": "Select the time period to solve [t]",
                 "min": 1,
-                "max": "max(case$noPeriods)",
-                "default": [1,"max(case$noPeriods)"],
+                "max": "max(casename$noPeriods)",
+                "default": "max(casename$noPeriods)",
                 "step": 1
             }
         },
         "GMSPAR_allon": {
             "alias": "allon",
             "dropdown": {
-                "label": "Turn on all gens and/or lines during solve",
+                "label": "Turn on all gens and/or lines during solve [allon]",
                 "aliases": [
                     "generators",
                     "lines",
@@ -44,7 +44,7 @@
         "GMSPAR_obj": {
             "alias": "Obj",
             "dropdown": {
-                "label": "Objective function",
+                "label": "Objective function [obj]",
                 "aliases": [
                     "quadratic",
                     "piecewise linear",
@@ -63,7 +63,7 @@
         "GMSPAR_linelimits": {
             "alias": "linelimits",
             "dropdown": {
-                "label": "Type of line limit data to use",
+                "label": "Type of line limit data to use [linelimits]",
                 "choices": [
                     "given",
                     "uwcalc",
@@ -75,7 +75,7 @@
         "GMSPAR_genPmin": {
             "alias": "genPmin",
             "dropdown": {
-                "label": "Data for Generator lower limit",
+                "label": "Data for Generator lower limit [genPmin]",
                 "choices": [
                     "0",
                     "given",
@@ -87,15 +87,7 @@
         "GMSPAR_lineloss": {
             "alias": "lineloss",
             "checkbox": {
-                "label": "Approximate lineloss?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_savesol": {
-            "alias": "savesol",
-            "checkbox": {
-                "label": "Save solution?",
+                "label": "Approximate lineloss? [lineloss]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -103,11 +95,212 @@
         "GMSPAR_wind": {
             "alias": "wind",
             "checkbox": {
-                "label": "Turn off wind turbines?",
+                "label": "Turn off wind turbines? [wind]",
                 "value": 0,
+                "class": "checkbox-material"
+            }
+        },
+        "GMSOPT_lp": {
+            "alias": "LP-Solver",
+            "dropdown": {
+                "label": "Solver to use for LP",
+                "aliases": [
+                    "BARON",
+                    "BDMLP",
+                    "CBC",
+                    "CONOPT 3",
+                    "CONOPT 4",
+                    "CPLEX",
+                    "DECIS",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "MINOS",
+                    "MOSEK",
+                    "SNOPT",
+                    "SOPLEX",
+                    "XA",
+                    "XPRESS"
+                ],
+                "choices": [
+                    "BARON",
+                    "BDMLP",
+                    "CBC",
+                    "CONOPT3",
+                    "CONOPT4",
+                    "CPLEX",
+                    "DECIS",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "MINOS",
+                    "MOSEK",
+                    "SNOPT",
+                    "SOPLEX",
+                    "XA",
+                    "XPRESS"
+                ],
+                "selected": "CPLEX"
+            }
+        },
+        "GMSOPT_qcp": {
+            "alias": "QCP-Solver",
+            "dropdown": {
+                "label": "Solver to use for QCP",
+                "aliases": [
+                    "ANTIGONE",
+                    "BARON",
+                    "CONOPT 3",
+                    "CONOPT 4",
+                    "COUENNE",
+                    "CPLEX",
+                    "GLOMIQO",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "LOCALSOLVER",
+                    "MINOS",
+                    "MOSEK",
+                    "MSNLP",
+                    "OQNLP",
+                    "SCIP",
+                    "SNOPT",
+                    "XPRESS"
+                ],
+                "choices": [
+                    "ANTIGONE",
+                    "BARON",
+                    "CONOPT3",
+                    "CONOPT4",
+                    "COUENNE",
+                    "CPLEX",
+                    "GLOMIQO",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "LOCALSOLVER70",
+                    "MINOS",
+                    "MOSEK",
+                    "MSNLP",
+                    "OQNLP",
+                    "SCIP",
+                    "SNOPT",
+                    "XPRESS"
+                ],
+                "selected": "CPLEX"
+            }
+        },
+        "GMSPAR_savesol": {
+            "alias": "savesol",
+            "checkbox": {
+                "label": "Save solution? [savesol]",
+                "value": 0,
+                "class": "checkbox-material"
+            }
+        },
+        "GMSPAR_verbose": {
+            "alias": "verbose",
+            "checkbox": {
+                "label": "Print input in listing output? [verbose]",
+                "value": 1,
                 "class": "checkbox-material"
             }
         }
     },
-    "gamsOutputFiles": {}
+    "gamsOutputFiles": {
+        "businfo_report": {
+            "alias": "businfo",
+            "headers": {
+                "Set of buses": {
+                    "type": "set"
+                },
+                "Set of bus info data types": {
+                    "type": "set"
+                },
+                "Set of bus info selectors": {
+                    "type": "set"
+                },
+                "value": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "geninfo_report": {
+            "alias": "geninfo",
+            "headers": {
+                "Set of generators": {
+                    "type": "set"
+                },
+                "Set of generator info data types": {
+                    "type": "set"
+                },
+                "Set of generator info selectors": {
+                    "type": "set"
+                },
+                "value": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "branchinfo_report": {
+            "alias": "branchinfo",
+            "headers": {
+                "Set of buses": {
+                    "type": "set"
+                },
+                "Indices for multiple lines between buses": {
+                    "type": "set"
+                },
+                "Set of branch info data types": {
+                    "type": "set"
+                },
+                "Set of branch info selectors": {
+                    "type": "set"
+                },
+                "value": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "fuelinfo_report": {
+            "alias": "fuelinfo",
+            "headers": {
+                "Set of fuel types": {
+                    "type": "set"
+                },
+                "Set of fuel info selectors": {
+                    "type": "set"
+                },
+                "text": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Scalars",
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
+            }
+        }
+    }
 }

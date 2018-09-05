@@ -22,6 +22,18 @@ set webuis16_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,we
 set webuis17_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,webui8_,webui9_,webui10_,webui11_,webui12_,webui13_,webui14_,webui15_,webui16_);
 set webuis18_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,webui8_,webui9_,webui10_,webui11_,webui12_,webui13_,webui14_,webui15_,webui16_,webui17_);
 set webuis19_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,webui8_,webui9_,webui10_,webui11_,webui12_,webui13_,webui14_,webui15_,webui16_,webui17_,webui18_);
+webuis3_(webui0_,webui1_,webui2_) = sum(webui3_, businfo_Report(webui0_,webui1_,webui2_,webui3_));
+businfo_Report(webuis3_,businfoHdr) = businfo_Report(webuis3_,businfoHdr) + eps;
+option clear=webuis3_;
+webuis3_(webui0_,webui1_,webui2_) = sum(webui3_, geninfo_Report(webui0_,webui1_,webui2_,webui3_));
+geninfo_Report(webuis3_,geninfoHdr) = geninfo_Report(webuis3_,geninfoHdr) + eps;
+option clear=webuis3_;
+webuis5_(webui0_,webui1_,webui2_,webui3_,webui4_) = sum(webui5_, branchinfo_Report(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_));
+branchinfo_Report(webuis5_,branchinfoHdr) = branchinfo_Report(webuis5_,branchinfoHdr) + eps;
+option clear=webuis5_;
+webuis2_(webui0_,webui1_) = sum(webui2_, fuelinfo_Report(webui0_,webui1_,webui2_));
+fuelinfo_Report(webuis2_,fuelinfoHdr) = fuelinfo_Report(webuis2_,fuelinfoHdr) + eps;
+option clear=webuis2_;
 execute_unload "gmswebui.gdx";
 embeddedCode Python:
 def extractSymText(text, leavehash=0):
@@ -90,6 +102,60 @@ def writeCSVParam(sym, gdxname='none'):
 
 gams.wsWorkingDir = "."
 db = gams.ws.add_database_from_gdx("gmswebui.gdx")
+writeCSVParam(db["businfo_Report"],"gmswebui.gdx")
+writeCSVParam(db["geninfo_Report"],"gmswebui.gdx")
+writeCSVParam(db["branchinfo_Report"],"gmswebui.gdx")
+writeCSVParam(db["fuelinfo_Report"],"gmswebui.gdx")
+with open('scalars_out.csv', 'w') as f:
+   f.write('Scalar,Description,Value\n')
+   f.write('total_cost_Report,"Final objective value",' + str(db['total_cost_Report'].first_record().value) + '\n')
+   f.write('version_Report,"version",' + str(db['version_Report'].first_record().value) + '\n')
+   f.write('baseMVA_Report,"baseMVA",' + str(db['baseMVA_Report'].first_record().value) + '\n')
+   if(len(db['case_input'])):
+      f.write('case_input,"Selected Testcase",' + str(db['case_input'].first_record().key(0)) + '\n')
+   if(len(db['obj_input'])):
+      f.write('obj_input,"Objective function",' + str(db['obj_input'].first_record().key(0)) + '\n')
+   if(len(db['LP_solver'])):
+      f.write('LP_solver,"LP-solver",' + str(db['LP_solver'].first_record().key(0)) + '\n')
+   if(len(db['QCP_solver'])):
+      f.write('QCP_solver,"QCP-solver",' + str(db['QCP_solver'].first_record().key(0)) + '\n')
+   if(len(db['NLP_solver'])):
+      f.write('NLP_solver,"NLP-solver",' + str(db['NLP_solver'].first_record().key(0)) + '\n')
+   if(len(db['CNS_solver'])):
+      f.write('CNS_solver,"CNS-solver",' + str(db['CNS_solver'].first_record().key(0)) + '\n')
+   if(len(db['timeperiod_input'])):
+      f.write('timeperiod_input,"Selected time period to solve",' + str(db['timeperiod_input'].first_record().key(0)) + '\n')
+   if(len(db['allon_input'])):
+      f.write('allon_input,"Turned on gens and/or lines during solve",' + str(db['allon_input'].first_record().key(0)) + '\n')
+   if(len(db['linelimits_input'])):
+      f.write('linelimits_input,"Type of line limit data to use",' + str(db['linelimits_input'].first_record().key(0)) + '\n')
+   if(len(db['genPmin_input'])):
+      f.write('genPmin_input,"Data for Generator lower limit",' + str(db['genPmin_input'].first_record().key(0)) + '\n')
+   if(len(db['lineloss_input'])):
+      f.write('lineloss_input,"Whether to approximate lineloss",' + str(db['lineloss_input'].first_record().key(0)) + '\n')
+   if(len(db['qlim_input'])):
+      f.write('qlim_input,"Whether to enforce reactive power limits as D-curve circle constraints",' + str(db['qlim_input'].first_record().key(0)) + '\n')
+   if(len(db['slim_input'])):
+      f.write('slim_input,"Whether to use apparent power limits on line",' + str(db['slim_input'].first_record().key(0)) + '\n')
+   if(len(db['ic_input'])):
+      f.write('ic_input,"Choosen method for generating initial conditions, i.e. NLP starting point",' + str(db['ic_input'].first_record().key(0)) + '\n')
+   if(len(db['iter_input'])):
+      f.write('iter_input,"Number of iterations",' + str(db['iter_input'].first_record().key(0)) + '\n')
+   if(len(db['times_input'])):
+      f.write('times_input,"Time range",' + str(db['times_input'].first_record().key(0)) + '\n')
+   if(len(db['ramprates_input'])):
+      f.write('ramprates_input,"Type of ramprate data to use",' + str(db['ramprates_input'].first_record().key(0)) + '\n')
+   if(len(db['relax_input'])):
+      f.write('relax_input,"Whether to relax integer models",' + str(db['relax_input'].first_record().key(0)) + '\n')
+   if(len(db['demandbids_input'])):
+      f.write('demandbids_input,"Whether to turn on elastic demand bidding",' + str(db['demandbids_input'].first_record().key(0)) + '\n')
+   if(len(db['wind_input'])):
+      f.write('wind_input,"Whether to turn off wind turbines",' + str(db['wind_input'].first_record().key(0)) + '\n')
+   if(len(db['savesol_input'])):
+      f.write('savesol_input,"Whether to save the solution as GDX",' + str(db['savesol_input'].first_record().key(0)) + '\n')
+   if(len(db['verbose_input'])):
+      f.write('verbose_input,"Whether to print input in listing output",' + str(db['verbose_input'].first_record().key(0)) + '\n')
+   f.closed
 db.__del__()
 endEmbeddedCode
 execute 'rm -f gmswebui.gdx';
