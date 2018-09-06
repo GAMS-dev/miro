@@ -38,5 +38,5 @@ if os.path.isfile('scalars.csv'):
      scalars = csv.reader(csvfile)
      next(scalars) # skip header row
      for row in scalars:
-       os.environ['%fn%'.upper() + '_' + row[0].upper()] = row[2]
+       os.environ['%fn%'.upper() + '_' + row[0]] = row[2]
 $offembeddedCode
