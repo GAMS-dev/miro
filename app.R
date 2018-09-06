@@ -385,7 +385,7 @@ if(!is.null(errMsg)){
     roundPrecision <- config$roundingDecimals
     
     # set local working directory
-    workDir <- paste0(getwd(), .Platform$file.sep, "tmp", .Platform$file.sep, session$token, .Platform$file.sep)
+    workDir <- paste0(getwd(), .Platform$file.sep, tmpFileDir, session$token, .Platform$file.sep)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
