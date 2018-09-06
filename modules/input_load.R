@@ -31,7 +31,7 @@ lapply(datasets.to.fetch, function(dataset){
         if(verify.input(data.tmp, modelIn[[i]]$headers)){
           if(identical(names(modelIn)[[i]], tolower(scalars.file.name))){
             # remove those rows from scalar dataset that are represented as a slider or dropdown menu
-            scalar.dataset <<- data.tmp 
+            scalarDataset <<- data.tmp 
             model.input.data[[i]] <<- data.tmp[!(tolower(data.tmp[[1]]) %in% names(modelIn)), , drop = F]
           }else{
             model.input.data[[i]] <<- data.tmp
@@ -55,7 +55,7 @@ lapply(datasets.to.fetch, function(dataset){
       col.value <- scalars.file.headers[3]
       
       # check whether scalar dataset has already been imported
-      if(is.null(scalar.dataset)){
+      if(is.null(scalarDataset)){
         if(load.mode == "xls"){
           # load from excel workbook
           tryCatch({
@@ -76,20 +76,20 @@ lapply(datasets.to.fetch, function(dataset){
         # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
         # rather than setting them to NULL
         if(!is.null(data.tmp)){
-          scalar.dataset <<- data.tmp
+          scalarDataset <<- data.tmp
         }
       }
-      if(!is.null(scalar.dataset) && nrow(scalar.dataset)){
+      if(!is.null(scalarDataset) && nrow(scalarDataset)){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
           row.name <- paste0(row.name, c("_min", "_max"))
-          data.tmp <- unlist(scalar.dataset[tolower(scalar.dataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
+          data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
           if(!is.null(data.tmp) && length(data.tmp)){
             model.input.data[[i]] <<- data.tmp
             inputVerified <- TRUE
           }
         }else{
-          data.tmp <- unlist(scalar.dataset[tolower(scalar.dataset[[col.id]]) == row.name, 
+          data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) == row.name, 
                                             col.value, drop = FALSE], use.names = FALSE)
           if(!is.null(data.tmp) && length(data.tmp)){
             model.input.data[[i]] <<- data.tmp
@@ -103,7 +103,7 @@ lapply(datasets.to.fetch, function(dataset){
     # check if input data is valid
     if(inputVerified){
       flog.debug("Dataset: %s loaded successfully (mode: %s, override: %s)", dataset, load.mode, overrideInput)
-      count.new.input <<- count.new.input + 1
+      newInputCount <<- newInputCount + 1
       # set identifier that data was overwritten 
       is.empty.input[i] <<- TRUE
       if(!identical(load.mode, "scen")){

@@ -10,7 +10,7 @@ observeEvent(input$btImport, {
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      saved.scenarios <<- db$fetchScenList()
+      scenMetadata <<- db$fetchScenList()
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
       errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelIn.alias[i])
@@ -57,12 +57,12 @@ observeEvent(input$btImport, {
     tabLoadFromDb <- tabPanel(lang$nav$dialogImport$tabDatabase, value = "tb_importData_remote",
                               fluidRow(
                                 column(12,
-                                       if(is.null(nrow(saved.scenarios)) || !nrow(saved.scenarios)){
+                                       if(is.null(nrow(scenMetadata)) || !nrow(scenMetadata)){
                                          lang$nav$dialogLoadScen$descNoScen
                                        }else{
                                          list(
                                            tags$div(class = "space"),
-                                           selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, db$formatScenList(saved.scenarios, stime.identifier, desc = TRUE), 
+                                           selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, db$formatScenList(scenMetadata, stime.identifier, desc = TRUE), 
                                                        multiple = F, width = "100%"),
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
@@ -106,7 +106,7 @@ observeEvent(input$btImport, {
     )
   ))
   if(config$activateModules$scenario){
-    if(identical(nrow(saved.scenarios), 0L)){
+    if(identical(nrow(scenMetadata), 0L)){
       # no scenarios in database, so select local tab
       updateTabsetPanel(session, "tb_importData", selected = "tb_importData_local")
     }

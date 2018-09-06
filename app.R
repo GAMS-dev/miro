@@ -276,7 +276,7 @@ if(!is.null(errMsg)){
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
-      saved.scenarios  <- NULL
+      scenMetadata     <- NULL
       # currently active scenario (R6 object)
       activeScen       <- NULL
       # temporary name and sid of the scenario currently active in the UI
@@ -284,8 +284,8 @@ if(!is.null(errMsg)){
       # split screen identiier (0 = single view, 1 )
       # save the scenario ids loaded in UI
       scenCounterMultiComp <- 4L
-      sids.loaded.in.scen.comp  <- vector("integer", length = maxNumberScenarios + 1)
-      sids.loaded.in.split.comp <- vector("integer", length = 2)
+      sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
+      sidsInSplitComp  <- vector("integer", length = 2)
       # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupied.sid.slots <- vector("logical", length = maxNumberScenarios)
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
@@ -402,7 +402,7 @@ if(!is.null(errMsg)){
     # integer identifier to specify whether and which scenario comparison mode is active (0 = no comp mode, 1 = single comp, 2 = left window split, 3 = right window split)
     scen.comp.mode <- 0L
     # list of scenario IDs to load
-    sids.to.load <- list()
+    sidsToLoad <- list()
     # list with input data
     model.input.data  <- vector(mode = "list", length = length(modelIn))
     shared.input.data <- vector(mode = "list", length = length(modelIn))

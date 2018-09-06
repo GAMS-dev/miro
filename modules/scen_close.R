@@ -11,7 +11,7 @@ observeEvent(input[["btCloseFinal_" %+% i]],{
   scenData[[scen.str]]        <<- list(NULL)
   scalarData[[scen.str]]      <<- list(NULL)
   scenMetaData[[scen.str]]    <<- list(NULL)
-  sids.loaded.in.scen.comp[i] <<- 0
+  sidsInComp[i]               <<- 0
   number.scen.tabs            <<- number.scen.tabs - 1
   occupied.sid.slots[i - 3]   <<- FALSE
   rv$scenId                   <<- i

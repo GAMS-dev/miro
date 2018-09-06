@@ -56,9 +56,9 @@ observeEvent(virtualActionButton(rv$btOverrideLocal),{
     return(NULL)
   }
   # initialize new imported sheets counter
-  count.new.input <- 0
+  newInputCount <- 0
   errMsg <- NULL
-  scalar.dataset <- NULL
+  scalarDataset <- NULL
   # read Excel file
   tryCatch({
     xlsWbNames <- readxl::excel_sheets(input$localInput$datapath)
@@ -103,8 +103,8 @@ observeEvent(virtualActionButton(rv$btOverrideLocal),{
   
   # set no output identifier
   no.output.data <<- T
-  if(count.new.input){
-    showNotification(paste0(count.new.input, lang$nav$notificationNewInput$new))
+  if(newInputCount){
+    showNotification(paste0(newInputCount, lang$nav$notificationNewInput$new))
   }else{
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
   }

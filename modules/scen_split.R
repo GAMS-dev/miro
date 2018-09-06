@@ -41,7 +41,7 @@ observeEvent(input$btScenSplit2_open, {
 observeEvent(input$btScenSplit1_close, {
   flog.debug("%s: Close Scenario button clicked (left box in split view).", uid)
   
-  if(sids.loaded.in.split.comp[1] == 0){
+  if(sidsInSplitComp[1] == 0){
     return(NULL)
   }
   
@@ -50,7 +50,7 @@ observeEvent(input$btScenSplit1_close, {
   scenData[[scen.str]]                               <<- list(NULL)
   scalarData[[scen.str]]                             <<- list(NULL)
   scenMetaData[[scen.str]]                           <<- list(NULL)
-  sids.loaded.in.split.comp[1]                       <<- 0L
+  sidsInSplitComp[1]                                 <<- 0L
   
   # show button and hide content
   shinyjs::hide("scenSplit1_content")
@@ -59,7 +59,7 @@ observeEvent(input$btScenSplit1_close, {
 observeEvent(input$btScenSplit2_close, {
   flog.debug("%s: Close Scenario button clicked (right box in split view).", uid)
   
-  if(sids.loaded.in.split.comp[2] == 0){
+  if(sidsInSplitComp[2] == 0){
     return(NULL)
   }
   
@@ -68,7 +68,7 @@ observeEvent(input$btScenSplit2_close, {
   scenData[[scen.str]]                               <<- list(NULL)
   scalarData[[scen.str]]                             <<- list(NULL)
   scenMetaData[[scen.str]]                           <<- list(NULL)
-  sids.loaded.in.split.comp[2]                       <<- 0L
+  sidsInSplitComp[2]                                 <<- 0L
   
   # show button and hide content
   shinyjs::hide("scenSplit2_content")
