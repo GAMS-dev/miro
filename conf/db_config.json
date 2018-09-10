@@ -2,7 +2,5 @@
     "type"              : "postgres",
     "name"              : "shiny",
     "host"              : "localhost",
-    "port"              : 5432,
-    "username"          : "postgres",
-    "password"          : "shinydev"
+    "port"              : 5432
 }

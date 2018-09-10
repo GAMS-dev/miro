@@ -34,12 +34,12 @@
             "description"       : "Username used to connect to database",
             "type"              : "string",
             "minLength"         : 1,
-            "required"          : true
+            "required"          : false
         },
         "password"          : {
             "description"       : "Password used for authentication",
             "type"              : "string",
-            "required"          : true
+            "required"          : false
         }
     }
 }
