@@ -45,31 +45,23 @@ Scenario <- R6Class("Scenario",
                         #END error checks 
                         
                         private$slocktimeLimit      <- db$getSlocktimeLimit
-                        private$uidIdentifier       <- db$getUidIdentifier()
-                        private$sidIdentifier       <- db$getSidIdentifier()
-                        private$snameIdentifier     <- db$getSnameIdentifier()
-                        private$stimeIdentifier     <- db$getStimeIdentifier()
+                        private$scenMetaColnames    <- db$getScenMetaColnames()
                         private$slocktimeIdentifier <- db$getSlocktimeIdentifier()
-                        private$stagIdentifier      <- db$getStagIdentifier()
-                        private$accessIdentifier    <- db$getAccessIdentifier()
-                        private$accessRIdentifier   <- db$getAccessRIdentifier()
                         private$userAccessGroups    <- db$accessGroups
                         private$tableNameMetadata   <- db$getTableNameMetadata()
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
-                        private$accessRIdentifier   <- db$getAccessRIdentifier()
-                        
                         
                         if(is.null(sid)){
                           tryCatch(private$fetchMetadata(sname = sname, uid = private$uid),
                                    error = function(e){
-                                      # scenario with name/uid combination does not exist, so create it
-                                      private$stime     <- Sys.time()
-                                      private$suid      <- private$uid
-                                      private$sname     <- sname
-                                      private$writeMetadata()
-                                      private$fetchMetadata(sname = sname, uid = private$uid)
-                          })
+                                     # scenario with name/uid combination does not exist, so create it
+                                     private$stime     <- Sys.time()
+                                     private$suid      <- private$uid
+                                     private$sname     <- sname
+                                     private$writeMetadata()
+                                     private$fetchMetadata(sname = sname, uid = private$uid)
+                                   })
                         }else{
                           private$fetchMetadata(sid = sid)
                         }
@@ -80,8 +72,9 @@ Scenario <- R6Class("Scenario",
                       getScenUid  = function() private$suid,
                       getScenName = function() private$sname,
                       getScenTime = function() private$stime,
-                      getMetadata = function(uidAlias = private$uidIdentifier, snameAlias = private$snameIdentifier,
-                                             stimeAlias = private$stimeIdentifier){
+                      getMetadata = function(uidAlias = private$scenMetaColnames['uid'], 
+                                             snameAlias = private$scenMetaColnames['sname'],
+                                             stimeAlias = private$scenMetaColnames['stime']){
                         # Generates dataframe containing scenario metadata
                         #
                         # Args:
@@ -129,14 +122,15 @@ Scenario <- R6Class("Scenario",
                         updateProgress <- function(detail = NULL) {
                           prog$inc(amount = incAmount, detail = detail)
                         }
-                        
                         # write scenario metadata
                         private$writeMetadata()
                         Map(function(dataset, tableName){
                           if(!is.null(dataset) && nrow(dataset)){
                             # bind scenario ID column to the left of the dataset
-                            dataset <- cbind(sid = private$sid, dataset)
-                            colnames(dataset)[1] <- private$sidIdentifier
+                            dataset <- bind_cols(sid = rep.int(private$sid, 
+                                                               nrow(dataset)), 
+                                                 dataset)
+                            colnames(dataset)[1] <- private$scenMetaColnames['sid']
                             super$exportScenDataset(dataset, tableName)
                           }
                           # increment progress bar
@@ -161,7 +155,9 @@ Scenario <- R6Class("Scenario",
                         #END error checks 
                         noErr <- TRUE
                         
-                        self$deleteRows(private$tableNameMetadata, private$sidIdentifier, private$sid)
+                        self$deleteRows(private$tableNameMetadata, 
+                                        private$scenMetaColnames['sid'], 
+                                        private$sid)
                         
                         flog.debug("Scenario: '%s' unlocked.", private$sid)
                         private$unlock()
@@ -228,27 +224,29 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(!is.null(sid)){
-                          metadata <- self$importDataset(private$tableNameMetadata, private$sidIdentifier, sid)
+                          metadata <- self$importDataset(private$tableNameMetadata, 
+                                                         tibble(private$scenMetaColnames['sid'], 
+                                                                sid))
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with ID: '%s' could not be found.", sid), call. = FALSE)
                           }
                         }else{
-                          metadata <- self$importDataset(private$tableNameMetadata, c(private$uidIdentifier,
-                                                                                      private$snameIdentifier),
-                                                         c(uid, sname))
+                          metadata <- self$importDataset(private$tableNameMetadata, 
+                                                         tibble(c(private$scenMetaColnames['uid'],
+                                                                  private$scenMetaColnames['sname']),
+                                                                c(uid, sname)))
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with name: '%s' could not be found for user: '%s'.", 
                                          sname, uid), call. = FALSE)
                           }
                         }
-                        
-                        private$sid       <- metadata[[private$sidIdentifier]][1]
-                        private$suid      <- metadata[[private$uidIdentifier]][1]
-                        private$sname     <- metadata[[private$snameIdentifier]][1]
-                        private$stime     <- metadata[[private$stimeIdentifier]][1]
-                        private$tags      <- metadata[[private$stagIdentifier]][1]
-                        private$readPerm  <- metadata[[private$accessRIdentifier]][1]
-                        private$writePerm <- metadata[[private$accessIdentifier]][1]
+                        private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][1])
+                        private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
+                        private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                        private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
+                        private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                        private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
+                        private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
                         
                         invisible(self)
                       },
@@ -269,8 +267,9 @@ Scenario <- R6Class("Scenario",
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
                           return(NA_character_)
                         }
-                        lockData <- self$importDataset(private$tableNameScenLocks, colNames = private$sidIdentifier, 
-                                                       values = sid, limit = 2L)
+                        lockData <- self$importDataset(private$tableNameScenLocks, 
+                                                       tibble(private$scenMetaColnames['sid'], 
+                                                              sid), limit = 2L)
                         if(!is.null(lockData) && nrow(lockData)){
                           if(nrow(lockData) > 1){
                             stop(sprintf("Db: %s: More than one lock was found for the scenario. This should never happen. (Scenario.getUidLock, table: '%s', scenario: '%s').", 
@@ -283,11 +282,11 @@ Scenario <- R6Class("Scenario",
                               return(NA_character_)
                             }else{
                               # scenario is locked and lock has not yet expired
-                              return(lockData[[private$uidIdentifier]])
+                              return(lockData[[private$scenMetaColnames['uid']]])
                             }
                           }else{
                             # scenario is locked and no time limit was provided
-                            return(lockData[[private$uidIdentifier]])
+                            return(lockData[[private$scenMetaColnames['uid']]])
                           }
                         }else{
                           # no lock found
@@ -300,61 +299,31 @@ Scenario <- R6Class("Scenario",
                         # Args:
                         #
                         # Returns:
-                        #   Db class object:  invisibly returns reference to object if successful, throws exception in case of error
+                        #   Db class object:  invisibly returns reference to object if successful, 
+                        #   throws exception in case of error
                         
-                        if(!DBI::dbExistsTable(private$conn, private$tableNameMetadata)){
-                          tryCatch({
-                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), " (", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), " serial PRIMARY KEY,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$uidIdentifier), " varchar(50) NOT NULL,", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$snameIdentifier), " varchar(100) NOT NULL,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$stimeIdentifier), " timestamp with time zone,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$stagIdentifier), " text,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$accessRIdentifier), " text NOT NULL,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$accessIdentifier), " text NOT NULL);")
-                            DBI::dbExecute(private$conn, query)
-                          }, error = function(e){
-                            stop(sprintf("Metadata table could not be created (Scenario.writeMetadata). Error message: %s.", 
-                                         e), call. = FALSE)
-                          })
-                          flog.debug("Db: A table named: '%s' did not yet exist (Scenario.writeMetadata). Therefore it was created.", 
-                                     private$tableNameMetadata)
-                        }
                         if(!length(private$sid)){
                           # new scenario
                           metadata           <- data.frame(private$suid, private$sname,
                                                            private$stime, private$tags, 
                                                            private$readPerm, private$writePerm,
                                                            stringsAsFactors = FALSE)
-                          colnames(metadata) <- c(private$uidIdentifier, 
-                                                  private$snameIdentifier, private$stimeIdentifier, 
-                                                  private$stagIdentifier, private$accessRIdentifier,
-                                                  private$accessIdentifier)
+                          colnames(metadata) <- private$scenMetaColnames[-1]
                         }else{
                           # remove existing metadata
-                          self$deleteRows(private$tableNameMetadata, private$sidIdentifier, private$sid)
+                          self$deleteRows(private$tableNameMetadata, 
+                                          private$scenMetaColnames['sid'], 
+                                          private$sid)
                           
                           metadata           <- data.frame(private$sid, private$suid, private$sname,
                                                            private$stime, private$tags, 
                                                            private$readPerm, private$writePerm,
                                                            stringsAsFactors = FALSE)
-                          colnames(metadata) <- c(private$sidIdentifier, private$uidIdentifier, 
-                                                  private$snameIdentifier, private$stimeIdentifier, 
-                                                  private$stagIdentifier, private$accessRIdentifier,
-                                                  private$accessIdentifier)
+                          colnames(metadata) <- private$scenMetaColnames
                         }
-                        
-                        
-                        # write new metadata
-                        tryCatch({
-                          DBI::dbWriteTable(private$conn, private$tableNameMetadata, metadata, row.names = FALSE, append = TRUE)
-                          flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
-                                     private$tableNameMetadata, sid, uid)
-                        }, error = function(e){
-                          stop(sprintf("Db: Metadata (table: '%s') could not be written to database (Scenario.writeMetadata , scenario: '%s', user: '%s'). Error message: %s.", 
-                                       private$tableNameMetadata, sid, uid, e), call. = FALSE)
-                        })
-                        
+                        super$writeMetadata(metadata)
+                        flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
+                                   private$tableNameMetadata, private$sid, private$suid)
                         invisible(self)
                       },
                       lock = function(){
@@ -372,10 +341,14 @@ Scenario <- R6Class("Scenario",
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
                           # in case table does not yet exist, create it
                           tryCatch({
-                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameScenLocks), " (", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$uidIdentifier), " text,",
-                                            DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), " integer UNIQUE,", 
-                                            DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), " timestamp with time zone);")
+                            query <- paste0("CREATE TABLE ", DBI::dbQuoteIdentifier(private$conn, private$tableNameScenLocks), 
+                                            " (", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
+                                            " text,",
+                                            DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                            " bigint UNIQUE,", 
+                                            DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), 
+                                            " timestamp with time zone);")
                             DBI::dbExecute(private$conn, query)
                             flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)
                           }, error = function(e){
@@ -396,7 +369,9 @@ Scenario <- R6Class("Scenario",
                           }
                         }
                         lockData           <- data.frame(as.character(private$uid), as.integer(private$sid), Sys.time(), stringsAsFactors = FALSE)
-                        colnames(lockData) <- c(private$uidIdentifier, private$sidIdentifier, private$slocktimeIdentifier)
+                        colnames(lockData) <- c(private$scenMetaColnames['uid'], 
+                                                private$scenMetaColnames['sid'], 
+                                                private$slocktimeIdentifier)
                         tryCatch({
                           DBI::dbWriteTable(private$conn, private$tableNameScenLocks, lockData, row.names = FALSE, append = TRUE)
                           flog.debug("Db: %s: Lock was added for scenario: '%s' (Scenario.lock).", private$uid, private$sid)
@@ -419,7 +394,9 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
-                          self$deleteRows(private$tableNameScenLocks, colNames = private$sidIdentifier, values = private$sid)
+                          self$deleteRows(private$tableNameScenLocks, 
+                                          colNames = private$scenMetaColnames['sid'], 
+                                          values = private$sid)
                         }
                         invisible(self)
                       },
@@ -461,6 +438,11 @@ Scenario <- R6Class("Scenario",
                         }else{
                           return(TRUE)
                         }
+                      },
+                      spreadScalarData = function(dataset){
+                        # Spreads scalar dataset
+                        dataset <- dataset[, -2, drop = FALSE]
+                        spread(dataset, 1, 2)
                       }
                     )
 )

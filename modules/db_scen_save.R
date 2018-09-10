@@ -2,19 +2,19 @@
 
 # Save As button clicked
 observeEvent(input$btSaveAs, {
-  saveAsFlag <<- T
+  saveAsFlag <<- TRUE
   flog.debug("%s: Save As button clicked.", uid)
   rv$btRemoveOutputData <<- isolate(rv$btRemoveOutputData + 1)
 })
 #Save button clicked
 observeEvent(input$btSave, {
-  saveAsFlag <<- F
+  saveAsFlag <<- FALSE
   flog.debug("%s: Save button clicked.", uid)
   rv$btRemoveOutputData <<- isolate(rv$btRemoveOutputData + 1)
 })
 
 observeEvent(virtualActionButton(rv$btRemoveOutputData), {
-  save.output <<- T
+  save.output <<- TRUE
   if(dirty.flag){
     showRemoveExistingOutputDataDialog()
   }else{
@@ -22,33 +22,35 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overrride current scenario data
-      rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+      rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
     }
   }
 })
 observeEvent(input$btRemoveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be removed.", uid)
-  save.output <<- F
+  save.output <<- FALSE
   if(saveAsFlag || is.null(isolate(rv$active.sname))){
-    rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
+    rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overrride current scenario data
-    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
   }
 })
 observeEvent(input$btSaveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be saved regardless of possible corruption", uid)
-  save.output <<- T
+  save.output <<- TRUE
   if(saveAsFlag || is.null(isolate(rv$active.sname))){
-    rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
+    rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overrride current scenario data
-    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+    rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
   }
 })
-
+observeEvent(input$btSaveReadonly, 
+             rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
+             )
 # enter scenario name
-observeEvent(virtualActionButton(rv$btSaveAs, input$btSaveReadonly), {
+observeEvent(virtualActionButton(rv$btSaveAs), {
   if(!is.null(isolate(rv$active.sname))){
     tmpScenName <- isolate(rv$active.sname)
   }else if(!is.null(active.sname.tmp)){
@@ -105,8 +107,10 @@ observeEvent(input$btCheckName, {
     }
   }
 })
-
-observeEvent(virtualActionButton(input$btSaveConfirm, rv$btSaveConfirm), {
+observeEvent(input$btSaveConfirm, 
+             rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+             )
+observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether scenario is currently locked
   errMsg <- NULL
   if(config$activateModules$sharedScenarios && !is.null(activeScen)){
@@ -132,7 +136,7 @@ observeEvent(virtualActionButton(input$btSaveConfirm, rv$btSaveConfirm), {
   scen.str <- "scen_1_"
   tryCatch({
     if(is.null(activeScen) || saveAsFlag){
-      if(is.null(isolate(rv$active.sname))){
+      if(saveAsFlag){
         rv$active.sname <<- isolate(input$scenName)
       }
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$active.sname))
@@ -152,7 +156,8 @@ observeEvent(virtualActionButton(input$btSaveConfirm, rv$btSaveConfirm), {
   }
   
   # check whether output data was saved and in case it was set identifier accordingly
-  if(any(vapply(scenData[[scen.str]][seq_along(modelOut)], hasContent, logical(1L), USE.NAMES = FALSE))){
+  if(any(vapply(scenData[[scen.str]][seq_along(modelOut)], 
+                hasContent, logical(1L), USE.NAMES = FALSE))){
     no.output.data <<- FALSE
   }else{
     no.output.data <<- TRUE

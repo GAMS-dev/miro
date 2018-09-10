@@ -175,12 +175,15 @@ if(is.null(errMsg)){
     source("./R/db_scen.R")
     tryCatch({
       scen.metadata.table <- scen.metadata.table.prefix %+% modelName
-      db   <- Db$new(uid = uid, host = config$db$host, username = config$db$username, password = config$db$password, dbname = config$db$name,
-                     uidIdentifier = uid.identifier, sidIdentifier = sid.identifier, snameIdentifier = sname.identifier, stimeIdentifier = stime.identifier,
+      db   <- Db$new(uid = uid, host = config$db$host, username = config$db$username, 
+                     password = config$db$password, dbname = config$db$name,
+                     uidIdentifier = uid.identifier, sidIdentifier = sid.identifier, 
+                     snameIdentifier = sname.identifier, stimeIdentifier = stime.identifier,
                      slocktimeIdentifier = slocktime.identifier, stagIdentifier = stagIdentifier,
                      accessIdentifier = access.identifier, tableNameMetadata = scen.metadata.table, 
-                     tableNameScenLocks = scenLock.table.prefix %+% modelName, tableNamesScenario = scen.table.names, slocktimeLimit = slocktimeLimit,
-                     port = config$db$port, type = config$db$type)
+                     tableNameScenLocks = scenLock.table.prefix %+% modelName, 
+                     tableNamesScenario = scen.table.names, 
+                     slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type)
       conn <- db$getConn()
       flog.debug("Database connection established.")
     }, error = function(e){
@@ -190,9 +193,14 @@ if(is.null(errMsg)){
     # initialise access management
     source("./R/db_auth.R")
     tryCatch({
-      auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, tableNameGroups = am.tableName.groups, tableNameElements = am.tableName.elements, 
-                       tableNameHierarchy = am.tableName.hierarchy, tableNameMetadata = scen.metadata.table, uidIdentifier = uid.identifier, 
-                       accessIdentifier = access.identifier, accessElIdentifier = access.el.identifier)
+      auth <- Auth$new(conn, uid, defaultGroup = defaultGroup, 
+                       tableNameGroups = am.tableName.groups, 
+                       tableNameElements = am.tableName.elements, 
+                       tableNameHierarchy = am.tableName.hierarchy, 
+                       tableNameMetadata = scen.metadata.table, 
+                       uidIdentifier = uid.identifier, 
+                       accessIdentifier = access.identifier, 
+                       accessElIdentifier = access.el.identifier)
       db$accessGroups <- auth$getAccessGroups()
       flog.debug("Access Control initialised.")
     }, error = function(e){

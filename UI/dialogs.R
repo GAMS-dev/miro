@@ -93,3 +93,55 @@ showRemoveExistingOutputDataDialog <- function(){
       actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btOrange")),
     fade = TRUE, easyClose = FALSE))
 }
+showLoadScenDialog <- function(dbScenList, uiScenList, scenCompMode, noDBPanel = FALSE){
+  tabPanelUI <- NULL
+  tabPanelDB <- NULL
+  if(scenCompMode > 1L && length(uiScenList)){
+    tabPanelUI <- tabPanel(lang$nav$dialogLoadScen$titleUI, icon = icon("file"),
+                           value = "loadScenUI",
+                           tags$div(class = "space"),
+                           selectInput("selLoadScenUI", lang$nav$dialogLoadScen$selLoadScen, 
+                                       uiScenList, 
+                                       multiple = FALSE, width = "100%")
+    )
+  }
+  if(!noDBPanel){
+    tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$titleDB, icon = icon("database"),
+                           value = "loadScenDb",
+                           tags$div(class = "space"),
+                           selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
+                                       dbScenList, 
+                                       multiple = if(identical(scenCompMode, 1L)) TRUE else FALSE, width = "100%"),
+                           tags$div(class = "space"),
+                           tags$div(
+                             lang$nav$dialogLoadScen$sortBy,
+                             actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, 
+                                          icon = icon("sort-by-alphabet", lib = "glyphicon"), class = "scen-sort-by"), 
+                             actionButton("btSortTime", label = lang$nav$dialogLoadScen$btSortTimeASC, 
+                                          icon = icon("sort-by-order", lib = "glyphicon"), class = "scen-sort-by")
+                           )
+    )
+  }
+  showModal(modalDialog(
+    title = lang$nav$dialogLoadScen$title,
+    if(is.null(tabPanelUI)){
+      tabsetPanel(id = "tabsetLoadScen",
+                  tabPanelDB
+      )
+    }else if(is.null(tabPanelDB)){
+      tabsetPanel(id = "tabsetLoadScen",
+                  tabPanelUI
+      )
+    }else{
+      tabsetPanel(id = "tabsetLoadScen",
+                  tabPanelDB, tabPanelUI
+      )
+    },
+    footer = tagList(
+      modalButton(lang$nav$dialogLoadScen$cancelButton),
+      actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
+                   class = "btOrange")),
+    fade = TRUE, easyClose = FALSE
+    ))
+  shinyjs::addClass("btSortTime", class = "scen-sort-by-selected")
+}

@@ -7,6 +7,7 @@ if(!save.output){
   lapply(seq_along(modelOut), function(i){
     scenData[[scen.str]][[i]] <<- scenDataTemplate[[i]]
   })
+  scalarData[[scen.str]] <<- data.frame()
 }
 if(is.null(scalarData[[scen.str]]) || !nrow(scalarData[[scen.str]])){
   scalarData[[scen.str]] <<- data.frame()

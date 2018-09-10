@@ -23,7 +23,8 @@ Db <- R6Class("Db",
                   #   tableNameMetadata:   name of the database table where scenario metadata is stored
                   #   tableNameScenLocks:  name of the table where scenario locks are saved
                   #   tableNamesScenario:  names of tables where scenario data is saved
-                  #   slocktimeLimit:      maximum duration a lock is allowed to persist (without being refreshed), before it will be deleted (optional)
+                  #   slocktimeLimit:      maximum duration a lock is allowed to persist 
+                  #                        (without being refreshed), before it will be deleted (optional)
                   #   port:                port to connect to (optional)
                   #   type:                type of database used (optional)
                   
@@ -32,7 +33,8 @@ Db <- R6Class("Db",
                     private$info$isInitialized <- 1
                   }else{
                     flog.error("Db: Tried to create more than one Db object.")
-                    stop("An Object of class Db has already been initialized. Only one Db object allowed.", call. = FALSE)
+                    stop("An Object of class Db has already been initialized. Only one Db object allowed.", 
+                         call. = FALSE)
                   }
                   stopifnot(is.character(uid), length(uid) == 1)
                   stopifnot(is.character(host), length(host) == 1)
@@ -54,48 +56,45 @@ Db <- R6Class("Db",
                   stopifnot(is.character(type), length(type) == 1)
                   #END error checks 
                   
-                  private$uid                 <- uid
-                  private$userAccessGroups    <- uid
-                  private$uidIdentifier       <- uidIdentifier
-                  private$sidIdentifier       <- sidIdentifier
-                  private$snameIdentifier     <- snameIdentifier
-                  private$stimeIdentifier     <- stimeIdentifier
-                  private$slocktimeIdentifier <- slocktimeIdentifier
-                  private$stagIdentifier      <- stagIdentifier
-                  private$accessIdentifier    <- accessIdentifier
-                  private$tableNameMetadata   <- tableNameMetadata
-                  private$tableNameScenLocks  <- tableNameScenLocks
-                  private$tableNamesScenario  <- tableNamesScenario
-                  private$slocktimeLimit      <- slocktimeLimit
-                  
-                  # specify column names for readonly permission column
-                  private$accessRIdentifier   <- paste0(accessIdentifier, "r")
+                  private$uid                         <- uid
+                  private$userAccessGroups            <- uid
+                  private$scenMetaColnames['sid']     <- sidIdentifier
+                  private$scenMetaColnames['uid']     <- uidIdentifier
+                  private$scenMetaColnames['sname']   <- snameIdentifier
+                  private$scenMetaColnames['stime']   <- stimeIdentifier
+                  private$scenMetaColnames['stag']    <- stagIdentifier
+                  private$scenMetaColnames['accessR'] <- accessIdentifier %+% "r"
+                  private$scenMetaColnames['accessW'] <- accessIdentifier
+                  private$slocktimeIdentifier         <- slocktimeIdentifier
+                  private$tableNameMetadata           <- tableNameMetadata
+                  private$tableNameScenLocks          <- tableNameScenLocks
+                  private$tableNamesScenario          <- tableNamesScenario
+                  private$slocktimeLimit              <- slocktimeLimit
                   
                   if(type == "postgres"){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbname, host = host, port = port, user = username, password = password)
+                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbname, host = host, 
+                                                     port = port, user = username, password = password)
                     }, error = function(e){
-                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), call. = FALSE)
+                      stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
+                           call. = FALSE)
                     })
                   }else{
-                    stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.", type), call. = FALSE) 
+                    stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.", 
+                                 type), call. = FALSE) 
                   }
                 },
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
-                getUidIdentifier      = function() private$uidIdentifier,
-                getSidIdentifier      = function() private$sidIdentifier,
-                getSnameIdentifier    = function() private$snameIdentifier,
-                getStimeIdentifier    = function() private$stimeIdentifier,
+                getScenMetaColnames   = function() private$scenMetaColnames,
                 getSlocktimeIdentifier= function() private$slocktimeIdentifier,
-                getStagIdentifier     = function() private$stagIdentifier,
-                getAccessIdentifier   = function() private$accessIdentifier,
-                getAccessRIdentifier  = function() private$accessRIdentifier,
                 getTableNameMetadata  = function() private$tableNameMetadata,
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
-                getMetadata           = function(uid, sname, stime, uidAlias = private$uidIdentifier, 
-                                                 snameAlias = private$snameIdentifier, stimeAlias = private$stimeIdentifier){
+                getMetadata           = function(uid, sname, stime, 
+                                                 uidAlias = private$scenMetaColnames['uid'], 
+                                                 snameAlias = private$scenMetaColnames['sname'], 
+                                                 stimeAlias = private$scenMetaColnames['stime']){
                   # Generate dataframe containing scenario metadata
                   #
                   # Args:
@@ -125,14 +124,16 @@ Db <- R6Class("Db",
                   return(metadata)
                 },
                 checkSnameExists      = function(sname, uid = NULL){
-                  # test whether scenario with the given name already exists for the user specified
+                  # test whether scenario with the given name already exists 
+                  # for the user specified
                   # 
                   # Args:
                   #   sname:                scenario name
                   #   uid:                  user ID (optional)
                   #
                   # Returns: 
-                  #   boolean:              TRUE if id exists, FALSE otherwise, throws exception in case of error
+                  #   boolean:              TRUE if id exists, FALSE otherwise, 
+                  #   throws exception in case of error
                   
                   #BEGIN error checks 
                   if(!is.null(uid)){
@@ -145,18 +146,22 @@ Db <- R6Class("Db",
                   
                   #check whether table exists
                   if(!DBI::dbExistsTable(private$conn, private$tableNameMetadata)){
-                    flog.debug("Db: Db.checkScenExists returns FALSE (SID does not yet exist as metadata table does not exist either)")
+                    flog.debug("Db: Db.checkScenExists returns FALSE (SID does not yet exist " %+% 
+                                 "as metadata table does not exist either)")
                     return(FALSE)
                   }
                   
                   # check whether scenario name already exists
-                  scenExists <- self$importDataset(private$tableNameMetadata, colNames = c(private$uidIdentifier, private$snameIdentifier), 
-                                                    values = c(uid, sname), count = TRUE, limit = 1L)[[1]]
+                  scenExists <- self$importDataset(private$tableNameMetadata, tibble(
+                    c(private$scenMetaColnames['uid'], private$scenMetaColnames['sname']), 
+                    c(uid, sname)), count = TRUE, limit = 1L)[[1]]
                   if(scenExists >= 1){
-                    flog.trace("Db: Scenario with name: '%s' alreaddy exists for user: '%s' (Db.checkScenExists returns FALSE).", sname, uid)
+                    flog.trace("Db: Scenario with name: '%s' alreaddy exists for user: '%s' " %+%
+"(Db.checkScenExists returns FALSE).", sname, uid)
                     return(TRUE)
                   }else{
-                    flog.trace("Db: Scenario with name: '%s' does not yet exist for user: '%s' (Db.checkScenExists returns TRUE).", sname, uid)
+                    flog.trace("Db: Scenario with name: '%s' does not yet exist for user: '%s' " %+% 
+                                 "(Db.checkScenExists returns TRUE).", sname, uid)
                     return(FALSE)
                   }
                 },
@@ -181,15 +186,25 @@ Db <- R6Class("Db",
                   stopifnot(is.character(sname), length(sname) == 1)
                   # END error checks
                   
-                  metadataRow <- self$importDataset(private$tableNameMetadata, 
-                                                    c(private$uidIdentifier, 
-                                                      private$snameIdentifier),
-                                                    c(uid, sname), limit = 1)
+                  metadataRow <- self$importDataset(private$tableNameMetadata, tibble(
+                    c(private$scenMetaColnames['uid'], 
+                      private$scenMetaColnames['sname']),
+                    c(uid, sname)), limit = 1L)
                   if(nrow(metadataRow)){
-                    return(as.integer(metadataRow[[private$sidIdentifier]][1]))
+                    return(as.integer(metadataRow[[private$scenMetaColnames['sid']]][1]))
                   }else{
                     return(0L)
                   }
+                },
+                getLatestSid          = function(){
+                  # Fetch the latest exported sid from database 
+                  # This is a small wrapper around private getMaximum method
+                  #
+                  # Args:
+                  # 
+                  # Returns:
+                  # integer: latest scenario Id exported to database
+                  private$getMaximum(private$tableNameMetadata, private$scenMetaColnames['sid'])
                 },
                 loadScenarios = function(sids, limit = 1e7, msgProgress){
                   # Load multiple scenarios from database
@@ -220,10 +235,11 @@ Db <- R6Class("Db",
                   }
                   scenData <- lapply(seq_along(sids), function(i){
                     lapply(private$tableNamesScenario, function(tableName){
-                      dataset <- self$importDataset(tableName = tableName, colNames = private$sidIdentifier, 
-                                                    values = sids[i], limit = limit)
+                      dataset <- self$importDataset(tableName = tableName, 
+                                                    tibble(private$scenMetaColnames['sid'], 
+                                                           sids[i]), limit = limit)
                       # remove metadata column
-                      dataset[, private$sidIdentifier] <- NULL
+                      dataset[, private$scenMetaColnames['sid']] <- NULL
                       # increment progress bar
                       updateProgress(detail = msgProgress$progress %+% i)
                       return(dataset)
@@ -240,7 +256,8 @@ Db <- R6Class("Db",
                   #   values:           character vector of values that should be removed
                   #
                   # Returns:
-                  #   Db object: invisibly returns reference to object in case of success, throws exception if error
+                  #   Db object: invisibly returns reference to object in case of success, 
+                  #   throws exception if error
                   
                   #BEGIN error checks 
                   stopifnot(is.character(tableName), length(tableName) == 1)
@@ -251,7 +268,8 @@ Db <- R6Class("Db",
                   
                   affectedRows <- 0
                   subsetRows <- DBI::SQL(paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                                     DBI::dbQuoteString(private$conn, values), sep = " = "), collapse = " AND "))
+                                                     DBI::dbQuoteString(private$conn, values), sep = " = "), 
+                                               collapse = " AND "))
                   if(DBI::dbExistsTable(private$conn, tableName)){
                     tryCatch({
                       query <- paste0("DELETE FROM ", DBI::dbQuoteIdentifier(private$conn, tableName),
@@ -259,77 +277,103 @@ Db <- R6Class("Db",
                       DBI::dbExecute(private$conn, query)
                       flog.debug("Db: %s rows in table: '%s' were deleted. (Db.deleteRows)", affectedRows, tableName)
                     }, error = function(e){
-                      stop(sprintf("Db: An error occurred while deleting rows from the database (Db.deleteRows, table: '%s'). Error message: %s.", tableName, e), call. = FALSE)
+                      stop(sprintf("Db: An error occurred while deleting rows from the database (Db.deleteRows, " %+% 
+                                     "table: '%s'). Error message: %s.", tableName, e), call. = FALSE)
                     })
                   }
                   invisible(self)
                 },
-                importDataset = function(tableName, colNames = NULL, values = NULL, cols = NULL,
-                                         count = FALSE, limit = 1e7, union = FALSE){
-                  # Import the data corresponding to the table name provided from the database by considering scenario IDs specified.
+                importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
+                                         innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL){
+                  # Import the data corresponding to the table name provided from the database by 
+                  # considering scenario IDs specified.
                   #
                   # Args:
                   #   tableName :       name of the table to import dataframe from
-                  #   colNames:         column names to subset on (optional)
-                  #   cols:             column names to select, if NULL all will be selected (optional)
-                  #   values:           values to subset on (optional)
-                  #   count :           boolean that specifies whether to merely count number of rows or return actual values (optional)
+                  #   ...:              row subsetting: dataframes with 3 columns (column, value, operator)
+                  #                     these will be handled as a block of AND conditions
+                  #                     (if innerSep AND is TRUE) different blocks are concatenated with OR
+                  #   colNames:         column names to select, if NULL all will be selected (optional)
+                  #   count :           boolean that specifies whether to merely count number 
+                  #                     of rows or return actual values (optional)
                   #   limit:            maxmimum number of rows to fetch (optional)
-                  #   union:            boolean that specifies whether subset of rows should be union (OR) (optional)
-                  #                     or intersection (AND) of WHERE clauses (optional)
+                  #   innerSepAND:      boolean that specifies whether inner seperator in 
+                  #                     substrings should be AND (TRUE) or OR (FALSE)  
+                  #   distinct:         boolean that specifies whether to remove duplicate rows 
+                  #                     (TRUE) or not (FALSE)
+                  #   subsetSids:       vector of scenario IDs that query should be filtered on
                   #
                   # Returns:
                   #   tibble: dataset (cleaned of metadata columns) with data coming from the table selected.
                   #   In case table does not exist or no rows in dataset, returns NULL
                   
                   #BEGIN error checks 
+                  dots <- list(...)
+                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L), 
+                                       USE.NAMES = FALSE)))
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   if(!is.null(colNames)){
                     stopifnot(is.character(colNames), length(colNames) >= 1)
-                    values <- as.character(values)
-                    stopifnot(is.character(values), length(values) >= 1)
-                  }
-                  if(!is.null(cols)){
-                    stopifnot(is.character(cols), length(cols) >= 1)
                   }
                   stopifnot(is.logical(count), length(count) == 1)
                   stopifnot(is.numeric(limit), length(limit) == 1)
-                  stopifnot(is.logical(union), length(union) == 1)
+                  stopifnot(is.logical(innerSepAND), length(innerSepAND) == 1)
+                  stopifnot(is.logical(distinct), length(distinct) == 1)
+                  if(innerSepAND){
+                    innerSep <- " AND "
+                    outerSep <- " OR "
+                  }else{
+                    innerSep <- " OR "
+                    outerSep <- " AND "
+                  }
+                  if(!is.null(subsetSids)){
+                    subsetSids <- as.integer(subsetSids)
+                    stopifnot(!any(is.na(subsetSids)))
+                  }
                   #END error checks 
                   
-                  
-                  # check if table exists
                   if(!dbExistsTable(private$conn, tableName)){
-                    flog.debug("Db: A table named: '%s' does not exist in the database (Db.importDataset).", tableName)
+                    flog.debug("Db: A table named: '%s' does not exist in the database (Db.importDataset).", 
+                               tableName)
                     return(data.frame())
                   }else{
-                    # select which columns to fetch
-                    if(count){
-                      cols <- "COUNT(*)"
-                    }else if(!is.null(cols)){
-                      cols <- paste0("(", paste(DBI::dbQuoteIdentifier(private$conn, colNames),
-                                                  collapse = ","), ")")
+                    if(!is.null(colNames)){
+                      colNames <- paste(DBI::dbQuoteIdentifier(private$conn, colNames),
+                                        collapse = ",")
                     }else{
-                      cols <- "*"
+                      colNames <- "*"
                     }
-                    # fetch dataframe
+                    if(distinct){
+                      colNames <- "DISTINCT " %+% colNames
+                    }
+                    if(count){
+                      colNames <- "COUNT(" %+% colNames %+% ")"
+                    }
+                    innerJoin <- NULL
+                    if(!is.null(subsetSids) && length(subsetSids) >= 1L){
+                      innerJoin <- " INNER JOIN (VALUES " %+% paste("(" %+% subsetSids, collapse = "), ") %+%
+                        ")) vals(_v) ON " %+%  DBI::dbQuoteIdentifier(private$conn, 
+                                                                      private$scenMetaColnames['sid']) %+% "=_v"
+                      
+                    }
                     tryCatch({
-                      if(!is.null(colNames)){
-                        subsetRows <- DBI::SQL(paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                                           DBI::dbQuoteString(private$conn, values), sep = " = "), 
-                                                     collapse = if(union) " OR " else " AND "))
-                        sql     <- paste0("SELECT ", cols, " FROM ", 
-                                          DBI::dbQuoteIdentifier(private$conn, tableName), " WHERE ", 
-                                          subsetRows, " LIMIT ?lim ;")
+                      if(length(dots)){
+                        subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
+                        sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
+                                                   DBI::dbQuoteIdentifier(private$conn, tableName),
+                                                   innerJoin, if(length(subsetRows)) " WHERE ", 
+                                                   subsetRows, " LIMIT ?lim ;"))
                       }else{
-                        sql     <- paste0("SELECT ", cols, " FROM ", 
-                                          DBI::dbQuoteIdentifier(private$conn, tableName), " LIMIT ?lim ;")
+                        sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ",
+                                                   DBI::dbQuoteIdentifier(private$conn, tableName), 
+                                                   innerJoin, " LIMIT ?lim ;"))
                       }
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                       flog.debug("Db: Data was imported from table: '%s' (Db.importDataset).", tableName)
                     }, error = function(e){
-                      stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, table: '%s'). Error message: %s.",
+                      stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, " %+%
+                                     "table: '%s'). Error message: %s.",
                                    tableName, e), call. = FALSE)
                     })
                   }
@@ -353,17 +397,15 @@ Db <- R6Class("Db",
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   #END error checks 
                   
-                  ## remove existing data
                   if(DBI::dbExistsTable(private$conn, tableName)){
                     if(!is.null(dataset)){
-                      # write data to database
                       tryCatch({
                         DBI::dbWriteTable(private$conn, tableName, dataset, row.names = FALSE, append = TRUE)
                         flog.debug("Db: Data was added to table: '%s' (Db.exportScenDataset).", 
                                    tableName)
                       }, error = function(e){
                         stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, 
-                                     table: '%s'). Error message: %s", tableName, e),
+               table: '%s'). Error message: %s", tableName, e),
                              call. = FALSE)
                       })
                     }else{
@@ -372,40 +414,105 @@ Db <- R6Class("Db",
                     }
                   }else if(!is.null(dataset)){
                     flog.debug("Db: A database table named: '%s' did not yet exist. 
-                                   Therefore it was created (Db.exportScenDataset).", tableName)
-                    # get field types for dataframe and change integer to numeric type
-                    fieldTypes <- private$getFieldTypes(dataset)
-                    # write data to database
+        Therefore it was created (Db.exportScenDataset).", tableName)
                     tryCatch({
                       DBI::dbWriteTable(private$conn, tableName, dataset, row.names = FALSE, append = FALSE, 
-                                        field.types = fieldTypes)
+                                        field.types = private$getFieldTypes(dataset))
                       query    <- paste0("ALTER TABLE ", DBI::dbQuoteIdentifier(private$conn, tableName), 
                                          " ADD CONSTRAINT foreign_key FOREIGN KEY (", 
-                                         DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), ") REFERENCES ",
-                                         DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), "(",
-                                         DBI::dbQuoteIdentifier(private$conn, private$sidIdentifier), ") ON DELETE CASCADE;")
+                                         DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                         ") REFERENCES ",
+                                         DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
+                                         "(",
+                                         DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                         ") ON DELETE CASCADE;")
                       DBI::dbExecute(private$conn, query)
                       flog.info("Db: First data was written to table: '%s' (Db.exportScenDataset).", tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). 
-                                       Error message: %s", tableName, e), call. = FALSE)
+          Error message: %s", tableName, e), call. = FALSE)
                     })
                   }else{
                     flog.debug("Db: Nothing was written to table '%s' as no data was provided.", tableName)
                   }
                   invisible(self)
                 },
-                fetchScenList = function(){
+                writeMetadata = function(metadata){
+                  # Write scenario metadata to database
+                  #
+                  # Args:
+                  #   metadata:     dataframe containing metadata for one up 
+                  #                 to many scenarios
+                  #
+                  # Returns:
+                  #   reference to itself (Db R6 object)
+                  
+                  # BEGIN error checks
+                  stopifnot(inherits(metadata, "data.frame"))
+                  # END error checks
+                  
+                  if(!DBI::dbExistsTable(private$conn, private$tableNameMetadata)){
+                    tryCatch({
+                      query <- paste0("CREATE TABLE ", 
+                                      DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
+                                      " (", 
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                      " bigserial PRIMARY KEY,",
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
+                                      " varchar(50) NOT NULL,", 
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sname']), 
+                                      " varchar(255) NOT NULL,",
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stime']), 
+                                      " timestamp with time zone,",
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stag']), 
+                                      " text,",
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessR']), 
+                                      " text NOT NULL,",
+                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessW']), 
+                                      " text NOT NULL);")
+                      DBI::dbExecute(private$conn, query)
+                    }, error = function(e){
+                      stop(sprintf("Metadata table could not be created (Scenario.writeMetadata). " %+%
+                                     "Error message: %s.", e), call. = FALSE)
+                    })
+                    flog.debug("Db: A table named: '%s' did not yet exist (Scenario.writeMetadata). " %+%
+                                 "Therefore it was created.", private$tableNameMetadata)
+                  }
+                  # write new metadata
+                  tryCatch({
+                    DBI::dbWriteTable(private$conn, private$tableNameMetadata, 
+                                      metadata, row.names = FALSE, append = TRUE)
+                    flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
+                               private$tableNameMetadata)
+                  }, error = function(e){
+                    stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
+        be written to database (Db.writeMetadata). Error message: %s.", 
+                                 private$tableNameMetadata, e), call. = FALSE)
+                  })
+                  
+                  invisible(self)
+                },
+                fetchScenList = function(noBatch = FALSE){
                   # returns list of scenarios that the current user has access to
                   #
                   # Args:
+                  #   noBatch:           boolean that specifies whether to include scenarios that 
+                  #                      have been solved in batch mode or not (optional)
                   #
                   # Returns:
-                  #   tibble: tibble with all scenarios user has access to read as well as their metadata, throws exception in case of error
+                  #   tibble: tibble with all scenarios user has access to read as well 
+                  #   as their metadata, throws exception in case of error
+                  stopifnot(is.logical(noBatch), length(noBatch) == 1L)
                   
-                  scenList <- self$importDataset(private$tableNameMetadata, colNames = private$accessRIdentifier, 
-                                                 values = private$userAccessGroups, union = TRUE)
-                  #scenList[[private$accessIdentifier]]
+                  accessRights <- tibble(private$scenMetaColnames['accessR'],
+                                      private$userAccessGroups, "=")
+                  if(noBatch){
+                    noBatchRuns <- tibble(private$scenMetaColnames['sname'], 
+                                         "[0-9a-z]{32}", "NOT SIMILAR TO")
+                  }
+                  
+                  scenList <- self$importDataset(private$tableNameMetadata, accessRights, 
+                                                 noBatchRuns, innerSepAND = FALSE)
                   return(scenList)
                   
                 },
@@ -415,10 +522,12 @@ Db <- R6Class("Db",
                   # Args:
                   #   scenList:          dataframe with scenario metadata
                   #   orderBy:           column to use for ordering data frame (optional)
-                  #   desc:              boolean that specifies whether ordering should be descending(FALSE) or ascending (TRUE) (optional)
+                  #   desc:              boolean that specifies whether ordering should be 
+                  #                      descending(FALSE) or ascending (TRUE) (optional)
                   #
                   # Returns:
-                  #   character vector: named vector formatted to be used in dropdown menus, returns NULL in case no scenarios found
+                  #   character vector: named vector formatted to be used in dropdown menus, 
+                  #   returns NULL in case no scenarios found
                   
                   #BEGIN error checks
                   if(!hasContent(scenList)){
@@ -439,9 +548,32 @@ Db <- R6Class("Db",
                     }
                   }
                   
-                  setNames(paste0(scenList[[private$sidIdentifier]], "_", scenList[[private$uidIdentifier]]), 
-                           paste0(vapply(scenList[[private$uidIdentifier]], function(el){ if(identical(el, private$uid)) "" else paste0(el, ": ")}, 
-                                         character(1), USE.NAMES = FALSE), scenList[[private$snameIdentifier]], " (", scenList[[private$stimeIdentifier]], ")"))
+                  setNames(paste0(scenList[[private$scenMetaColnames['sid']]], "_", 
+                                  scenList[[private$scenMetaColnames['uid']]]), 
+                           paste0(vapply(scenList[[private$scenMetaColnames['uid']]], 
+                                         function(el){ 
+                                           if(identical(el, private$uid)) "" else paste0(el, ": ")}, 
+                                         character(1), USE.NAMES = FALSE), 
+                                  scenList[[private$scenMetaColnames['sname']]], " (", 
+                                  scenList[[private$scenMetaColnames['stime']]], ")"))
+                },
+                buildRowSubsetSubquery = function(subsetData, innerSep, outerSep, SQL = TRUE){
+                  brackets <- NULL
+                  if(identical(innerSep, " OR "))
+                    brackets <- c("(", ")")
+                  query <- paste(brackets[1], vapply(subsetData, private$buildSQLSubstring, 
+                                        character(1L), innerSep, SQL,
+                                        USE.NAMES = FALSE), brackets[2],  
+                                 collapse = outerSep)
+                  if(SQL){
+                    return(DBI::SQL(query))
+                  }else{
+                    return(query)
+                  }
+                },
+                escapePattern = function(pattern){
+                  pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
+                  return(pattern)
                 },
                 finalize = function(){
                   DBI::dbDisconnect(private$conn)
@@ -460,31 +592,67 @@ Db <- R6Class("Db",
               private = list(
                 conn                = NULL,
                 uid                 = character(0L),
-                uidIdentifier       = character(0L),
-                sidIdentifier       = character(0L),
-                snameIdentifier     = character(0L),
-                stimeIdentifier     = character(0L),
+                scenMetaColnames    = character(0L),
                 slocktimeIdentifier = character(0L),
-                stagIdentifier      = character(0L),
-                accessIdentifier    = character(0L),
-                accessRIdentifier   = character(0L),
                 userAccessGroups    = character(0L),
                 tableNameMetadata   = character(0L),
                 tableNameScenLocks  = character(0L),
                 tableNamesScenario  = character(0L),
                 slocktimeLimit      = character(0L),
                 info                = new.env(),
+                isValidSubsetGroup  = function(dataFrame){
+                  if(inherits(dataFrame, "data.frame") 
+                     && length(dataFrame) <= 3L
+                     && is.character(dataFrame[[1]])
+                     && (is.character(dataFrame[[2]])
+                         || is.numeric(dataFrame[[2]]))){
+                    if(length(dataFrame) < 3L){
+                      return(TRUE)
+                    }else if(all(dataFrame[[3]] %in% 
+                                 c("=", "<", ">", "<=", ">=", "!=", "<>", 
+                                   "SIMILAR TO", "NOT SIMILAR TO", 
+                                   "LIKE", "NOT LIKE"))){
+                      return(TRUE)
+                    }
+                  }
+                  return(FALSE)
+                },
+                buildSQLSubstring = function(dataFrame, sep = " ", SQL = TRUE){
+                  if(length(dataFrame) < 3L){
+                    dataFrame[[3]] <- "="
+                  }
+                  fields <- dataFrame[[1]]
+                  vals   <- as.character(dataFrame[[2]])
+                  if(SQL){
+                    fields <- dbQuoteIdentifier(private$conn, fields)
+                    vals   <- dbQuoteString(private$conn, vals)
+                  }else{
+                    fields <- "`" %+% fields %+% "`"
+                  }
+                  if(identical(length(dataFrame), 4L) && SQL){
+                    fields <- dbQuoteIdentifier(private$conn, dataFrame[[4]]) %+%
+                      "."  %+% fields 
+                  }
+                  query <- paste(paste(fields, dataFrame[[3]], vals), collapse = sep)
+                  if(SQL){
+                    return(SQL(query))
+                  }else{
+                    return(query)
+                  }
+                },
                 getFieldTypes = function(data){
                   # returns vector with field types of data frame and changes integer type to numeric
                   fieldTypes <- vapply(seq_along(data), function(i){
-                    if(typeof(data[[i]]) == "integer" && !is.factor(data[[i]])
-                       && !identical(names(data)[i], private$sidIdentifier)){
+                    if(identical(names(data)[[i]], private$scenMetaColnames[['sid']])){
+                      return("bigint")
+                    }else if(typeof(data[[i]]) == "integer" && !is.factor(data[[i]])){
                       data[[i]] <- as.numeric(data[[i]])
                     }
                     return(DBI::dbDataType(private$conn, data[[i]]))
                   }, character(1), USE.NAMES = FALSE)
                   names(fieldTypes) <- names(data)
-                  flog.trace("Db: Returned database field types: '%s'.", paste(fieldTypes, collapse = ", "))
+                  flog.trace("Db: Returned database field types: '%s'.", 
+                             paste(fieldTypes, collapse = ", "))
                   return(fieldTypes)
                 },
                 getMaximum = function(tableName, colName){
@@ -495,19 +663,24 @@ Db <- R6Class("Db",
                   #   colName:         column name to fetch maximum from
                   #
                   # Returns:
-                  #   numeric: largest value in the column specified, throws exception in case of error
+                  #   numeric: largest value in the column specified, 
+                  #   throws exception in case of error
                   
                   
                   if(!dbExistsTable(private$conn, tableName)){
                     return(0L)
                   }
                   tryCatch({
-                    query <- DBI::SQL(paste0("SELECT ", DBI::dbQuoteIdentifier(private$conn, colName), " FROM ", DBI::dbQuoteIdentifier(private$conn, tableName), 
-                                             " ORDER BY ", DBI::dbQuoteIdentifier(private$conn, colName), " DESC LIMIT 1;"))
+                    query <- DBI::SQL(paste0("SELECT ", DBI::dbQuoteIdentifier(private$conn, colName), 
+                                             " FROM ", DBI::dbQuoteIdentifier(private$conn, tableName), 
+                                             " ORDER BY ", DBI::dbQuoteIdentifier(private$conn, colName), 
+                                             " DESC LIMIT 1;"))
                     max   <- suppressWarnings(as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1]))
                   }, error = function(e){
-                    flog.error("Db: An error occurred while querying the database (Db.getMaximum). Error message: %s.", e)
-                    stop(sprintf("An error occurred while querying the database (Db.getMaximum). Error message: %s.", e), call. = FALSE)
+                    flog.error("Db: An error occurred while querying the database (Db.getMaximum). " %+%
+"Error message: %s.", e)
+                    stop(sprintf("An error occurred while querying the database (Db.getMaximum). " %+%
+"Error message: %s.", e), call. = FALSE)
                   })
                   
                   if(!is.na(max)){

@@ -10,7 +10,7 @@ observeEvent(input$btImport, {
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetadata <<- db$fetchScenList()
+      scenMetadata <<- db$fetchScenList(noBatch = TRUE)
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
       errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelIn.alias[i])
@@ -66,19 +66,27 @@ observeEvent(input$btImport, {
                                                        multiple = F, width = "100%"),
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
-                                             actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, icon = icon("sort-by-alphabet", lib = "glyphicon"), class = "scen-sort-by"), 
-                                             actionButton("btSortTime", label = lang$nav$dialogLoadScen$btSortTimeASC, icon = icon("sort-by-order", lib = "glyphicon"), class = "scen-sort-by")
+                                             actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, 
+                                                          icon = icon("sort-by-alphabet", lib = "glyphicon"), 
+                                                          class = "scen-sort-by"), 
+                                             actionButton("btSortTime", label = lang$nav$dialogLoadScen$btSortTimeASC, 
+                                                          icon = icon("sort-by-order", lib = "glyphicon"), 
+                                                          class = "scen-sort-by")
                                            ),
                                            fluidRow(
                                              div(class= "choose-input", 
                                                  column(6,
-                                                        tags$label(class = "checkbox-material", 'for'= "cbSelectManually", checkboxInput("cbSelectManually", "", F), lang$nav$dialogImport$cbSelectManually)
+                                                        tags$label(class = "checkbox-material", 'for'= "cbSelectManually", 
+                                                                   checkboxInput("cbSelectManually", "", F), 
+                                                                   lang$nav$dialogImport$cbSelectManually)
                                                  ),
                                                  column(6,
                                                         conditionalPanel(
                                                           condition = "input.cbSelectManually == true",
                                                           selectInput("selInputData", lang$nav$dialogImport$selInputData, 
-                                                                      setNames(as.list(names(modelIn.to.import)), modelIn.to.import.alias), multiple = TRUE, width = "100%")
+                                                                      setNames(as.list(names(modelIn.to.import)), 
+                                                                               modelIn.to.import.alias), 
+                                                                      multiple = TRUE, width = "100%")
                                                         )
                                                  )
                                              )
