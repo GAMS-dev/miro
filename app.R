@@ -655,6 +655,8 @@ if(!is.null(errMsg)){
     ####### Advanced options
     source("./modules/download_tmp.R", local = TRUE)
     
+    # delete scenario 
+    source("./modules/db_scen_remove.R", local = TRUE)
     # scenario module
     if(config$activateModules$scenario){
       #load shared datasets
@@ -663,8 +665,6 @@ if(!is.null(errMsg)){
       source("./modules/db_scen_load.R", local = TRUE)
       # save scenario
       source("./modules/db_scen_save.R", local = TRUE)
-      # delete scenario 
-      source("./modules/db_scen_remove.R", local = TRUE)
       # scenario split screen mode
       source("./modules/scen_split.R", local = TRUE)
 

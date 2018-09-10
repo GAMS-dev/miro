@@ -24,9 +24,17 @@ observeEvent(input$btImport, {
                                    tags$div(class = "space"),
                                    fluidRow(
                                      column(12,
-                                            fileInput("localInput", lang$nav$dialogImport$descExcel, width = "100%",
+                                            fileInput("localInput", lang$nav$dialogImport$descLocal, width = "100%",
                                                       multiple = FALSE,
-                                                      accept = c("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx"))
+                                                      accept = c("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx")),
+                                            if(is.null(isolate(rv$active.sname))){
+                                              tagList(
+                                                hidden(tags$div(id = "local_badScenName", class = "initErrors", 
+                                                                lang$nav$dialogImport$badScenName)
+                                                       ),
+                                                textInput("local_newScenName", lang$nav$dialogImport$newScenName)
+                                              )
+                                            }
                                      )
                                    ),
                                    fluidRow(
@@ -123,6 +131,10 @@ observeEvent(input$btImport, {
 })
 observeEvent(input$localInput$name, {
   if(!is.null(isolate(input$localInput$name))){
+    if(is.null(isolate(rv$active.sname))){
+      updateTextInput(session, "local_newScenName", value = gsub("\\.[^\\.]+$", "", 
+                                                                 isolate(input$localInput$name)))
+    }
     shinyjs::enable("btLoadLocal")
   }
 })

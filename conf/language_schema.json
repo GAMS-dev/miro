@@ -592,7 +592,17 @@
               "minLength":1,
               "required":true
             },
-            "descExcel":{  
+            "descLocal":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "newScenName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "badScenName":{  
               "type":"string",
               "minLength":1,
               "required":true

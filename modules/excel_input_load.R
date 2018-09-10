@@ -5,7 +5,13 @@ observeEvent(input$btLoadLocal,{
     return(NULL)
   }
   if(is.null(isolate(rv$active.sname))){
-    active.sname.tmp <<- gsub("\\.[^\\.]+$", "", isolate(input$localInput$name))
+    if(grepl("^\\s*$", isolate(input$local_newScenName))){
+      shinyjs::show("local_badScenName")
+      return(NULL)
+    }else{
+      #active.sname.tmp <<- gsub("\\.[^\\.]+$", "", isolate(input$localInput$name))
+      rv$active.sname <- isolate(input$local_newScenName)
+    }
   }
   # check whether current input datasets are empty
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){

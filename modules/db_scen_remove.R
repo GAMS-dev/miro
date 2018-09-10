@@ -52,7 +52,9 @@ closeScenario <- function(){
            },
            daterange = {
              if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
-               shiny::updateDateRangeInput(session, "daterange_" %+% i, start = modelIn[[i]]$daterange$start, end = modelIn[[i]]$daterange$end)
+               shiny::updateDateRangeInput(session, "daterange_" %+% i, 
+                                           start = modelIn[[i]]$daterange$start, 
+                                           end = modelIn[[i]]$daterange$end)
              }
              #previous.input.data[[i]] <<- isolate(input[[paste0("daterange_", i)]])
            },
@@ -91,11 +93,17 @@ observeEvent(input$btDeleteConfirm, {
     flog.error("No active scenario ID found to delete.")
     return(NULL)
   }
-  if(activeScen$delete()){
+  errMsg <- NULL
+  tryCatch({
+    activeScen$delete()
     showRemoveDeletedScenFromUIDialog()
-  }else{
-    flog.error("Problems deleting scenario: '%s'.", activeScen$getScenName())
-    showErrorMsg(lang$errMsg$deleteScen$title, lang$errMsg$deleteScen$desc)
+  }, error = function(e){
+    flog.error("Problems deleting scenario: '%s'. Error message: '%s'.", activeScen$getScenName(), e)
+    errMsg <<- lang$errMsg$deleteScen$desc
+  })
+  if(!is.null(errMsg)){
+    showErrorMsg(lang$errMsg$deleteScen$title, errMsg)
+    return()
   }
   activeScen <<- NULL
 })
@@ -105,7 +113,14 @@ observeEvent(virtualActionButton(input$btRemove, input$btRemoveO), {
   flog.debug("Remove scenario data from UI button clicked.")
   showRemoveActiveScenFromUIDialog()
 })
-observeEvent(virtualActionButton(input$btRemoveConfirm, input$btRemoveDeletedConfirm), {
+# button changes from NULL to 0 when initialised (modalDialog opens)
+# so code needs to be duplicated here
+observeEvent(input$btRemoveDeletedConfirm, {
+  flog.debug("Remove scenario data from UI confirmed.")
+  closeScenario()
+  removeModal()
+})
+observeEvent(input$btRemoveConfirm, {
   flog.debug("Remove scenario data from UI confirmed.")
   closeScenario()
   removeModal()

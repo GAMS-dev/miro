@@ -148,7 +148,8 @@ Scenario <- R6Class("Scenario",
                         # Args:
                         #
                         # Returns:
-                        #   logical: invisibly returns TRUE in case of success, FALSE in case of error
+                        #   R6 object: reference to itself,
+                        #   throws exception in case of error
                         
                         #BEGIN error checks 
                         stopifnot(!is.null(private$sid))
@@ -163,11 +164,8 @@ Scenario <- R6Class("Scenario",
                         private$unlock()
                         
                         private$sid   <- integer(0)
-                        if(noErr){
-                          return(invisible(TRUE))
-                        }else{
-                          return(invisible(FALSE))
-                        }
+                        
+                        invisible(self)
                       },
                       finalize = function(){
                         if(length(private$sid)){
