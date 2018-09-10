@@ -22,7 +22,8 @@ stagIdentifier <- "_stag"
 # define maximum duration a lock is allowed to persist (without being refreshed), before it will be deleted (in seconds)
 slocktimeLimit <- 3600
 # log file directory and name
-logFileDir  <- "./logs/"
+logFileDir <- paste0("logs", .Platform$file.sep)
+tmpFileDir <- paste0("tmp", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- "INFO"
 # name of table with scenario metadata as well as scenario locks
