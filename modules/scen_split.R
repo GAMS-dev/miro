@@ -1,19 +1,21 @@
 observeEvent(input$btSplitView, {
-  if(isolate(input$btSplitView)%%2 != 0){
+  if(isInSplitView){
     if(number.scen.tabs < 2){
       shinyjs::disable("btCompareScen")
     }
     scen.comp.mode <<- 1L
-    shinyjs::show("scenSingleView")
+    shinyjs::show("scenTabView")
     shinyjs::hide("scenSplitView")
-    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitViewStart)
+    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitView)
+    isInSplitView <<- FALSE
   }else{
     # enable scenario comparison button
     shinyjs::enable("btCompareScen")
     scen.comp.mode <<- 2L
     shinyjs::show("scenSplitView")
-    shinyjs::hide("scenSingleView")
-    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitViewStop)
+    shinyjs::hide("scenTabView")
+    updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$tabView)
+    isInSplitView <<- TRUE
   }
 })
 observeEvent(input$btScenSplit1_open, {

@@ -97,7 +97,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, scenCompMode, noDBPanel =
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if(scenCompMode > 1L && length(uiScenList)){
-    tabPanelUI <- tabPanel(lang$nav$dialogLoadScen$titleUI, icon = icon("file"),
+    tabPanelUI <- tabPanel(lang$nav$dialogLoadScen$tabUI, icon = icon("file"),
                            value = "loadScenUI",
                            tags$div(class = "space"),
                            selectInput("selLoadScenUI", lang$nav$dialogLoadScen$selLoadScen, 
@@ -106,7 +106,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, scenCompMode, noDBPanel =
     )
   }
   if(!noDBPanel){
-    tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$titleDB, icon = icon("database"),
+    tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB, icon = icon("database"),
                            value = "loadScenDb",
                            tags$div(class = "space"),
                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 

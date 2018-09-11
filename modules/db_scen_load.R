@@ -152,7 +152,7 @@ observeEvent(input$btOverrideScen, {
 observeEvent(virtualActionButton(rv$btOverrideScen, 
                                  input$btBatchLoad), {
   flog.debug("Loading and rendering scenarios: '%s'. Scenario comparison mode: '%s' 
-              (0 = no comp mode, 1 = multiple view comparison mode, 2= left window split view, 
+              (0 = no comp mode, 1 = tab view comparison mode, 2= left window split view, 
               3 = right window split view).", paste(sidsToLoad, collapse = ", "), scen.comp.mode)
   if(!length(sidsToLoad)){
     return()
@@ -279,7 +279,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen,
       if(identical(scen.comp.mode, 1L)){
         scenId   <- isolate(rv$scenId)
       }else{
-        # if in split view scenario id is max.number.scenarios + 2 (/3)
+        # if in split view scenario id is 2 (/3)
         scenId   <- scen.comp.mode
       }
       scen.str <- "scen_" %+% scenId %+% "_"

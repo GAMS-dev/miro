@@ -26,8 +26,9 @@ sidebar <- dashboardSidebar(
               #},
               if(config$activateModules$scenario){
                 tagList(
-                  conditionalPanel("input.btSplitView%2 != 0", actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btOrange")),
-                  actionButton("btSplitView", lang$nav$sidebarButtons$splitViewStop, width = "85%", class = "btOrange"),
+                  conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
+                                   actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btOrange")),
+                  actionButton("btSplitView", lang$nav$sidebarButtons$tabView, width = "85%", class = "btOrange"),
                   shinyjs::disabled(
                     actionButton("btSave", lang$nav$sidebarButtons$save, width = "85%")
                   ),

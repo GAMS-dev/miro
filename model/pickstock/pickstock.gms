@@ -3,8 +3,8 @@ $title Stock Selection Optimization
 * some weights, such that this portfolio has a similar behavior to our
 * overall Dow Jones index.
 
-set hrd /price/;
 $onExternalInput
+set hrd /price/;
 Set date   'date'
     symbol 'stockSymbol';
 

@@ -281,6 +281,8 @@ if(!is.null(errMsg)){
     # boolean that specifies whether check if data is unsaved should be skipped
     no.check      <- vector("logical", length = length(modelIn))
     no.check[]    <- TRUE
+    # boolean that specifies whether input data does not match output data
+    dirty.flag    <- FALSE
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -289,7 +291,6 @@ if(!is.null(errMsg)){
       activeScen       <- NULL
       # temporary name and sid of the scenario currently active in the UI
       active.sname.tmp <- NULL
-      # split screen identiier (0 = single view, 1 )
       # save the scenario ids loaded in UI
       scenCounterMultiComp <- 4L
       sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
@@ -298,8 +299,7 @@ if(!is.null(errMsg)){
       occupied.sid.slots <- vector("logical", length = maxNumberScenarios)
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sid.comp.order     <- NULL
-      # boolean that specifies whether input data does not match output data
-      dirty.flag    <- FALSE
+      isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
       # boolean that specifies whether nested tabset is active or not
       shortcut.nest <- FALSE
       observeEvent(input$tabset.shortcut.nest, {
@@ -324,7 +324,7 @@ if(!is.null(errMsg)){
         current.sheet <- as.numeric(gsub("\\D", "", isolate(input$content.current)))
         updateTabsetPanel(session, "content.current", paste0("content.current_", current.sheet + 1))
       }else if(isolate(input$sidebar.menu) == "scenarios"){
-        if(!is.null(sid.comp.order) && isolate(input$btSplitView)%%2 == 1){
+        if(!is.null(sid.comp.order) && !isInSplitView){
           current.scen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
           if(shortcut.nest){
             flog.debug("Navigated to next data tab in scenario comparison view (using shortcut).")
@@ -340,8 +340,7 @@ if(!is.null(errMsg)){
             }
             updateTabsetPanel(session, "scenTabset", paste0("scen_", sid.comp.order[idx + 1], "_"))
           }
-        }else if(isolate(input$btSplitView) %% 2 == 0){
-          # split view comparison mode
+        }else if(isInSplitView){
           flog.debug("Navigated to next data tab in split view scenario comparison view (using shortcut).")
           current.scen <- 2
           current.sheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("content.scen_", current.scen)]])))
@@ -360,8 +359,7 @@ if(!is.null(errMsg)){
         current.sheet <- as.numeric(gsub("\\D", "", isolate(input$content.current)))
         updateTabsetPanel(session, "content.current", paste0("content.current_", current.sheet - 1))
       }else if(isolate(input$sidebar.menu) == "scenarios"){
-        if(!is.null(sid.comp.order) && isolate(input$btSplitView)%%2 == 1){
-          # in single view scenario comparison mode
+        if(!is.null(sid.comp.order) && !isInSplitView){
           current.scen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
           if(shortcut.nest){
             flog.debug("Navigated to previous data tab in single scenario comparison view (using shortcut).")
@@ -377,8 +375,7 @@ if(!is.null(errMsg)){
             }
             updateTabsetPanel(session, "scenTabset", paste0("scen_", sid.comp.order[idx - 1], "_"))
           }
-        }else if(isolate(input$btSplitView)%%2 == 0){
-          # split view comparison mode
+        }else if(isInSplitView){
           flog.debug("Navigated to previous data tab in split view scenario comparison view (using shortcut).")
           current.scen <- 2
           current.sheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("content.scen_", current.scen)]])))
@@ -407,7 +404,8 @@ if(!is.null(errMsg)){
                          btLoadScen = 0L, btOverrideScen = 0L, btOverrideLocal = 0L, btSaveAs = 0L, btSaveConfirm = 0L,
                          btRemoveOutputData = 0L, active.sname = NULL)
     #btRemove = NULL, btRemoveConfirm = NULL, 
-    # integer identifier to specify whether and which scenario comparison mode is active (0 = no comp mode, 1 = single comp, 2 = left window split, 3 = right window split)
+    # integer identifier to specify whether and which scenario comparison mode is active 
+    # (0 = no comp mode, 1 = tab view, 2 = left window split, 3 = right window split)
     scen.comp.mode <- 0L
     # list of scenario IDs to load
     sidsToLoad <- list()

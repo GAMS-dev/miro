@@ -76,12 +76,12 @@
               "minLength":1,
               "required":true
             },
-            "splitViewStart":{  
+            "splitView":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-            "splitViewStop":{  
+            "tabView":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -645,6 +645,16 @@
           "required":true,
           "properties":{  
             "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "tabDB":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "tabUI":{  
               "type":"string",
               "minLength":1,
               "required":true

@@ -236,7 +236,7 @@ body <- dashboardBody(
     ),
     tabItem(tabName = "scenarios",
             shinyjs::hidden(
-              tags$div(id = "scenSingleView",
+              tags$div(id = "scenTabView",
                        tabsetPanel(id="scenTabset"),
                        tags$div(id = "noScen", lang$nav$scen$noScen)
               )

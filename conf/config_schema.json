@@ -44,6 +44,13 @@
 			"default"			: true, 
 			"required"			: false
 		},
+		"defCompMode": {
+		  "description"		: "Specifies the default scenario comparison mode (the one that is loaded on startup).",
+		  "type"				  : "string",
+			"enum"          : ["split", "tab"],
+			"default"			  : "split", 
+			"required"			: false
+		},
 		"activateModules"	: {
 			"description"			: "Activate/deactivate certain modules",
 			"type"					: "object",
