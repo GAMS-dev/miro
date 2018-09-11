@@ -3,8 +3,7 @@ observeEvent(input$btImport, {
   flog.debug("%s: Import input data button clicked.", uid)
   #disable button animation
   shinyjs::addClass("btImport", "no-animations")
-  # no scenario mode
-  scen.comp.mode <<- 0L
+  isInSolveMode <<- TRUE
   if(config$activateModules$scenario){
     # fetch list of saved scenarios
     # only load single scenario as not in comparison mode

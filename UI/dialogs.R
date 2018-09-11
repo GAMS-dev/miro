@@ -93,10 +93,10 @@ showRemoveExistingOutputDataDialog <- function(){
       actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btOrange")),
     fade = TRUE, easyClose = FALSE))
 }
-showLoadScenDialog <- function(dbScenList, uiScenList, scenCompMode, noDBPanel = FALSE){
+showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE){
   tabPanelUI <- NULL
   tabPanelDB <- NULL
-  if(scenCompMode > 1L && length(uiScenList)){
+  if(isInSplitView && length(uiScenList)){
     tabPanelUI <- tabPanel(lang$nav$dialogLoadScen$tabUI, icon = icon("file"),
                            value = "loadScenUI",
                            tags$div(class = "space"),
@@ -111,7 +111,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, scenCompMode, noDBPanel =
                            tags$div(class = "space"),
                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
                                        dbScenList, 
-                                       multiple = if(identical(scenCompMode, 1L)) TRUE else FALSE, width = "100%"),
+                                       multiple = if(isInSplitView) FALSE else TRUE, width = "100%"),
                            tags$div(class = "space"),
                            tags$div(
                              lang$nav$dialogLoadScen$sortBy,

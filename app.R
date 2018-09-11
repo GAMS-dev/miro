@@ -283,6 +283,8 @@ if(!is.null(errMsg)){
     no.check[]    <- TRUE
     # boolean that specifies whether input data does not match output data
     dirty.flag    <- FALSE
+    isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
+    isInSolveMode      <- TRUE
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -299,7 +301,7 @@ if(!is.null(errMsg)){
       occupied.sid.slots <- vector("logical", length = maxNumberScenarios)
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
       sid.comp.order     <- NULL
-      isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
+      loadInLeftBoxSplit <- TRUE
       # boolean that specifies whether nested tabset is active or not
       shortcut.nest <- FALSE
       observeEvent(input$tabset.shortcut.nest, {
@@ -403,10 +405,6 @@ if(!is.null(errMsg)){
     rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), unsavedFlag = TRUE,
                          btLoadScen = 0L, btOverrideScen = 0L, btOverrideLocal = 0L, btSaveAs = 0L, btSaveConfirm = 0L,
                          btRemoveOutputData = 0L, active.sname = NULL)
-    #btRemove = NULL, btRemoveConfirm = NULL, 
-    # integer identifier to specify whether and which scenario comparison mode is active 
-    # (0 = no comp mode, 1 = tab view, 2 = left window split, 3 = right window split)
-    scen.comp.mode <- 0L
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -521,6 +519,7 @@ if(!is.null(errMsg)){
       if(config$activateModules$scenario && input$sidebar.menu == "scenarios"){
         # reset nest level
         shortcut.nest <<- FALSE
+        isInSolveMode <<- FALSE
         shinyjs::hide("btImport")
         shinyjs::hide("btSolve")
         shinyjs::hide("btInterrupt")

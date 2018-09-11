@@ -1,6 +1,14 @@
 # generate tab panel for new scenario
 noData <- vector("logical", length = length(scen.table.names.to.display))
-if(identical(scen.comp.mode, 1L)){
+if(isInSplitView){
+  scenCounter <- scenId
+  # hide button and show content
+  local({
+    id <- if(loadInLeftBoxSplit) 1L else 2L
+    shinyjs::show(paste0("scenSplit", id, "_content"))
+    shinyjs::hide(paste0("scenSplit", id, "_open"))
+  })
+}else{
   scenCounter <- scenCounterMultiComp
   noData <- vapply(scen.table.names.to.display, function(sheetName){
     tabData <- getScenTabData(sheetName)
@@ -19,12 +27,6 @@ if(identical(scen.comp.mode, 1L)){
   }else{
     shinyjs::enable("btCompareScen")
   }
-}else{
-  scenCounter <- scenId
-  # hide button and show content
-  shinyjs::show(paste0("scenSplit", scen.comp.mode - 1, "_content"))
-  shinyjs::hide(paste0("scenSplit", scen.comp.mode - 1, "_open"))
-  #output[[paste0("scenSplit", scen.comp.mode)]] <- renderUI(split.content)
 }
 # generate title and date
 output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scen.str]][[2]][1])

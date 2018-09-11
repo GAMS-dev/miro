@@ -5,8 +5,6 @@ datasets.to.fetch <- names(modelIn)
 
 observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
-  # set comparison identifier to multiple scenarios comp view
-  scen.comp.mode <<- 1L
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
 #load scenario button clicked
@@ -26,10 +24,10 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   
   if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
     # fetch only those scenarios that are not already loaded into the ui
-    if(scen.comp.mode < 2L){
-      scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
-    }else{
+    if(isInSplitView){
       scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInSplitComp, ]
+    }else{
+      scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
     }
     
   }
@@ -37,9 +35,13 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
     # by default, put most recently saved scenario first
     dbSidList <- db$formatScenList(scenMetaDb, stime.identifier, desc = TRUE)
-    uiSidList <- scenMetaDb[as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
-    uiSidList <- db$formatScenList(uiSidList, stime.identifier, desc = TRUE)
-    showLoadScenDialog(dbSidList, uiSidList, scen.comp.mode)
+    if(isInSplitView){
+      uiSidList <- scenMetaDb[as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
+      uiSidList <- db$formatScenList(uiSidList, stime.identifier, desc = TRUE)
+    }else{
+      uiSidList <- NULL
+    }
+    showLoadScenDialog(dbSidList, uiSidList, isInSplitView)
   }else{
     if(is.null(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
                             lang$nav$dialogLoadScen$descNoScen))){
@@ -106,12 +108,8 @@ observeEvent(input$btLoadScenConfirm, {
   sidsToLoad  <<- lapply(scenSelected, '[[', 1)
   rm(scenSelected)
   # if in comparison mode skip input data check
-  if(scen.comp.mode){
-    if(is.null(isolate(rv$btOverrideScen))){
-      rv$btOverrideScen <<- 1
-    }else{
-      rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1)
-    }
+  if(!isInSolveMode){
+    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1)
     return()
   }
   
@@ -149,11 +147,9 @@ observeEvent(input$btOverrideScen, {
 })
 
 # update input button pressed
-observeEvent(virtualActionButton(rv$btOverrideScen, 
-                                 input$btBatchLoad), {
-  flog.debug("Loading and rendering scenarios: '%s'. Scenario comparison mode: '%s' 
-              (0 = no comp mode, 1 = tab view comparison mode, 2= left window split view, 
-              3 = right window split view).", paste(sidsToLoad, collapse = ", "), scen.comp.mode)
+observeEvent(virtualActionButton(rv$btOverrideScen), {
+  flog.debug("Loading and rendering scenarios: '%s'.",
+             paste(sidsToLoad, collapse = ", "))
   if(!length(sidsToLoad)){
     return()
   }
@@ -179,7 +175,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen,
     return()
   }
   
-  if(!scen.comp.mode){
+  if(isInSolveMode){
     # close currently opened scenario
     if(!closeScenario()){
       return()
@@ -276,11 +272,14 @@ observeEvent(virtualActionButton(rv$btOverrideScen,
   lapply(seq_along(scenDataTmp), function(i){
     noError <- TRUE
     tryCatch({
-      if(identical(scen.comp.mode, 1L)){
+      if(!isInSplitView){
         scenId   <- isolate(rv$scenId)
       }else{
-        # if in split view scenario id is 2 (/3)
-        scenId   <- scen.comp.mode
+        if(loadInLeftBoxSplit){
+          scenId   <- 2L
+        }else{
+          scenId   <- 3L
+        }
       }
       scen.str <- "scen_" %+% scenId %+% "_"
       
@@ -316,7 +315,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen,
       return()
     }
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
-    if(identical(scen.comp.mode, 1L)){
+    if(!isInSplitView){
       lastImportedSid <<- scenId
       sidsInComp[scenId] <<- sidsToLoad[[i]]
       occupied.sid.slots[scenId - 3] <<- TRUE
@@ -324,14 +323,17 @@ observeEvent(virtualActionButton(rv$btOverrideScen,
       rv$scenId <<- which.min(occupied.sid.slots) + 3
       scenCounterMultiComp <<- scenCounterMultiComp + 1
     }else{
-      sidsInSplitComp[scen.comp.mode - 1] <<- sidsToLoad[[i]]
+      local({
+        id <- if(loadInLeftBoxSplit) 1L else 2L
+        sidsInSplitComp[id] <<- sidsToLoad[[i]]
+      })
     }
   })
   rm(scenDataTmp)
   if(!is.list(sidsToLoad)){
     updateTabsetPanel(session, "sidebar.menu", selected = "scenarios")
   }
-  if(identical(scen.comp.mode, 1L)){
+  if(!isInSplitView){
     updateTabsetPanel(session, "scenTabset", selected = "scen_" %+% lastImportedSid %+% "_")
   }
   if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
