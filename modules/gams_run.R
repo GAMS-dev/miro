@@ -56,8 +56,9 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c("idir1=.." %+% .Platform$file.sep %+% ".." %+% .Platform$file.sep %+% modelDir, 
-                  "idir2=.." %+% .Platform$file.sep %+% ".." %+% .Platform$file.sep %+% currentModelDir, "curdir=" %+% workDir, "logOption=3")
+    homeDir <- ".." %+% .Platform$file.sep %+% ".." %+% .Platform$file.sep
+    gamsArgs <- c("idir1=" %+% homeDir %+% modelDir, "idir2=" %+% homeDir %+% currentModelDir, 
+                  "curdir=" %+% workDir, "workDir=" %+% workDir %+% homeDir %+% currentModelDir, "logOption=3")
     if(isWindows()){
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
     }

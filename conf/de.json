@@ -134,10 +134,12 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
+      "scenNameExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "cbSelectManually":"Datensätze manuell auswählen",
-      "cbOverride":"Vorhandene Datensätze überschreiben",
       "overrideWarning":"Bereits importierte Datensätze werden überschrieben!",
-      "okButton":"Importieren"
+      "okButton":"Importieren",
+      "overrideButton": "Existierende Daten überschreiben",
+      "newNameButton": "Neuer Name"
     },
     "dialogLoadScen":{  
       "title":"Szenario laden",

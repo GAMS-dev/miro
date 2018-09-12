@@ -1,18 +1,47 @@
 # load input data from excel sheet
-
-observeEvent(input$btLoadLocal,{
-  if(identical(config$activateModules$loadLocal, FALSE)){
-    return(NULL)
+observeEvent(input$btOverrideLocal, {
+  scenName <- isolate(input$local_newScenName)
+  flog.debug("Override existing scenario (name: '%s') button clicked.", scenName)
+  activeScen <<- Scenario$new(db = db, sname = scenName)
+  rv$active.sname <- scenName
+  rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
+})
+observeEvent(input$btCheckSnameLocal, {
+  if(length(isolate(rv$active.sname))){
+    rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
   }
+  scenNameTmp <- isolate(input$local_newScenName)
+  flog.debug("Button to upload local dataset clicked. Validating if scenario name: '%s' is valid and does not yet exist.", 
+             scenNameTmp)
   if(is.null(isolate(rv$active.sname))){
-    if(grepl("^\\s*$", isolate(input$local_newScenName))){
+    scenNameTmp <- isolate(input$local_newScenName)
+    if(grepl("^\\s*$", scenNameTmp)){
+      flog.debug("Scenario name is not valid.")
       shinyjs::show("local_badScenName")
-      return(NULL)
+      return()
     }else{
-      #active.sname.tmp <<- gsub("\\.[^\\.]+$", "", isolate(input$localInput$name))
-      rv$active.sname <- isolate(input$local_newScenName)
+      if(identical(config$activateModules$scenario, TRUE)){
+        flog.debug("Scenario name is valid, but already exists.")
+        if(db$checkSnameExists(scenNameTmp)){
+          shinyjs::show("loadLocal_scenNameExists")
+          hide("loadLocal_content")
+          hide("local_badScenName")
+          return()
+        }
+        activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
+      }
+      rv$active.sname <- scenNameTmp
+      rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
     }
   }
+})
+observeEvent(virtualActionButton(rv$btLoadLocal),{
+  flog.debug("Load local data button clicked.")
+  
+  if(identical(config$activateModules$loadLocal, FALSE)){
+    return()
+  }
+  
   # check whether current input datasets are empty
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
     ids.to.fetch <- match(tolower(isolate(input$selInputDataLoc)), tolower(names(modelIn)))
@@ -35,28 +64,20 @@ observeEvent(input$btLoadLocal,{
       lang$nav$dialogLoadScen$descOverrideInput,
       footer = tagList(
         modalButton(lang$nav$dialogLoadScen$cancelButton),
-        actionButton("btOverrideLocal", label = lang$nav$dialogLoadScen$okButton, class = "btOrange")),
+        actionButton("btOverrideInput", label = lang$nav$dialogLoadScen$okButton, class = "btOrange")),
       fade=FALSE, easyClose=FALSE))
   }else{
-    overrideInput <<- F
-    if(is.null(isolate(rv$btOverrideLocal))){
-      rv$btOverrideLocal <<- 1
-    }else{
-      rv$btOverrideLocal <<- isolate(rv$btOverrideLocal + 1)
-    }
+    overrideInput <<- FALSE
+    rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)
 }
 })
 
-observeEvent(input$btOverrideLocal, {
-  overrideInput <<- T
-  if(is.null(isolate(rv$btOverrideLocal))){
-    rv$btOverrideLocal <<- 1
-  }else{
-    rv$btOverrideLocal <<- isolate(rv$btOverrideLocal + 1)
-  }
+observeEvent(input$btOverrideInput, {
+  overrideInput <<- TRUE
+  rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)
 })
 
-observeEvent(virtualActionButton(rv$btOverrideLocal),{
+observeEvent(virtualActionButton(rv$btOverrideInput),{
   if(is.null(input$localInput$datapath)){
     flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)

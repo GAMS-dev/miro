@@ -52,7 +52,9 @@ Db <- R6Class("Db",
                   stopifnot(is.character(tableNameScenLocks), length(tableNameScenLocks) == 1)
                   stopifnot(is.character(tableNamesScenario), length(tableNamesScenario) >= 1)
                   stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1)
-                  stopifnot(!is.null(port) || (is.numeric(port) && length(port) == 1))
+                  if(!is.null(port)){
+                    stopifnot(is.numeric(port) && length(port) == 1)
+                  }
                   stopifnot(is.character(type), length(type) == 1)
                   #END error checks 
                   

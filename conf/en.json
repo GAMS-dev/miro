@@ -134,12 +134,14 @@
       "descLocal":"Choose file with data to import",
       "newScenName": "Choose a name for the new scenario",
       "badScenName": "Please specify a valid name",
+      "scenNameExists":"The scenario name you chose does already exist. Do you want to override the existing data?",
       "btImportDb":"Import",
       "cbSelectManually":"Manually choose datasets",
-      "cbOverride":"Replacing existing datasets",
       "cbDatabase":"Import scenario from database",
       "overrideWarning":"Already imported datasets might be lost if you did not save them!",
-      "okButton":"Import"
+      "okButton":"Import",
+      "overrideButton": "Override existing data",
+      "newNameButton": "New name"
     },
     "dialogLoadScen":{  
       "title":"Load scenario",

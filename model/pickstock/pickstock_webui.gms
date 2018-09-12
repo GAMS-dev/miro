@@ -113,7 +113,8 @@ writeCSVParam(db["dowVSindex"],"gmswebui.gdx")
 writeCSVParam(db["abserror"],"gmswebui.gdx")
 with open('scalars_out.csv', 'w') as f:
    f.write('Scalar,Description,Value\n')
-   f.write('lastDayTraining,"last date of training period ### vertical marker in chart",' + str(db['lastDayTraining'].first_record().key(0)) + '\n')
+   if(len(db['lastDayTraining'])):
+      f.write('lastDayTraining,"last date of training period ### vertical marker in chart",' + str(db['lastDayTraining'].first_record().key(0)) + '\n')
    f.closed
 db.__del__()
 endEmbeddedCode

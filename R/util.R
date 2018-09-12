@@ -30,38 +30,39 @@ hasContent <- function(x){
   return(TRUE)
 }
 
-get.model.name <- function(modelName = NULL, is.shiny.proxy = FALSE, env.var.name = NULL){
+getModelName <- function(modelName = NULL, isShinyProxy = FALSE, envVarName = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelName:                  name of the GAMS model as defined externally (e.g. in development mode)
-  # is.shiny.proxy:             boolean that specifies whether shiny proxy is used
+  # isShinyProxy:               boolean that specifies whether shiny proxy is used
+  # envVarName:                 name of the environment variable that specifies model name in shiny proxy
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
   
-  if(is.shiny.proxy){
+  if(isShinyProxy){
     # shiny proxy mode
-    if(is.null(env.var.name)){
+    if(is.null(envVarName)){
       if(is.null(modelName)){
-        stop("Model name could not be retrieved.", call. = F)
+        stop("Model name could not be retrieved.", call. = FALSE)
       }
     }else{
-      env.name <- Sys.getenv(env.var.name)
-      if(!is.null(env.name) && length(env.name)){
-        modelName <- env.name
+      envName <- Sys.getenv(envVarName)
+      if(length(envName)){
+        modelName <- envName
       }else if(is.null(modelName)){
-        stop("Model name could not be retrieved.", call. = F)
+        stop("Model name could not be retrieved.", call. = FALSE)
       }
     }
   }else{
     # local mode
-    args <- commandArgs(trailingOnly=T)
-    matches <- grepl("^-+modelName\\s?=\\s?", args, ignore.case = T)
+    args <- commandArgs(trailingOnly = TRUE)
+    matches <- grepl("^-+modelName\\s?=\\s?", args, ignore.case = TRUE)
     if(any(matches)){
-      modelName <- gsub("^-+modelName\\s?=\\s?", "", args[matches][1], ignore.case = T)
+      modelName <- gsub("^-+modelName\\s?=\\s?", "", args[matches][1], ignore.case = TRUE)
     }else if(is.null(modelName)){
-      stop("Model name could not be retrieved.", call. = F)
+      stop("Model name could not be retrieved.", call. = FALSE)
     }
   }
   

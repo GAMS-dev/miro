@@ -9,8 +9,11 @@ keywords.no.import <- c("noimport")
 # keywords that define data MUST not be imported in order to run the model
 keywords.no.must.import <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywords.type <- list("hot" = "headers", "slider" = "slider", "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", "date" = "date", "checkbox" = "checkbox")
-list.of.operators <- list("count" = "card", "max" = "max", "min" = "min", "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
+keywords.type <- list("hot" = "headers", "slider" = "slider", "dropdown" = "dropdown", 
+                      "dropdowne" = "dropdowne", "daterange" = "daterange", 
+                      "date" = "date", "checkbox" = "checkbox")
+list.of.operators <- list("count" = "card", "max" = "max", "min" = "min", 
+                          "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
 # define identifier names for user id and scenario id 
 # (_ sign as first character as it is not a valid identifier name in GAMS but in PostgreSQL)
 uid.identifier <- "_uid"
@@ -19,7 +22,8 @@ sname.identifier <- "_sname"
 stime.identifier <- "_stime"
 slocktime.identifier <- "_slocktime"
 stagIdentifier <- "_stag"
-# define maximum duration a lock is allowed to persist (without being refreshed), before it will be deleted (in seconds)
+# define maximum duration a lock is allowed to persist (without being refreshed),
+# before it will be deleted (in seconds)
 slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
@@ -29,7 +33,8 @@ loggingLevel <- "INFO"
 # name of table with scenario metadata as well as scenario locks
 scen.metadata.table.prefix <- "_sys_metadata_"
 scenLock.table.prefix      <- "_sys_scenlocks_"
-# maximum number ofscenarios that can be displayed at the same time (used in loop for observeEvent remove/save buttons)
+# maximum number ofscenarios that can be displayed at the same time 
+# (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
 # local user ID (single user)
 uid <- "Freddy"
@@ -40,7 +45,7 @@ def.in.type <- "pivot"
 # default height of pivot table
 pivot.default.height <- 800
 # folder with custom renderer functions
-customRendererDir <- "./customRenderer/"
+customRendererDirName <- "customRenderer"
 # name and headers of the csv file that scalars will be saved in
 scalars.file.name    <- "scalars"
 scalars.out.name     <- "scalars_out"

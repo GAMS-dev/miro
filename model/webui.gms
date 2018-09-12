@@ -12,7 +12,7 @@ $batinclude %fn%_webui
 $exit
 
 $label mkwebui
-$gdxout %fn%
+$gdxout %fn%_webui
 $unload
 $gdxout
 
@@ -90,7 +90,7 @@ import sys
 sys.path.append('.')
 from writecsv import *
 
-rmfiles = ['writecsv.py','%fn%.gdx']
+rmfiles = ['writecsv.py','%fn%_webui.gdx']
 gams.wsWorkingDir = '.'   
 ws = gams.ws
 input_tag = '%UIInput%'
@@ -98,7 +98,7 @@ output_tag = '%UIOutput%'
 inc = '%fn%_webui.gms'
 s_webuiconf = '%WEBUICONF%'
 
-db = ws.add_database_from_gdx('%fn%.gdx')
+db = ws.add_database_from_gdx('%fn%_webui.gdx')
 input_sym = []
 scalar_input_sym = []
 output_sym = []

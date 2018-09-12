@@ -12,7 +12,7 @@ simple1Output <- function(id, height = NULL, options = NULL, path = NULL){
 renderSimple1 <- function(input, output, server, data, options = NULL, path = NULL){
 
   tryCatch({
-    map.data <- sf::read_sf(paste0(path, options$geojsonloc))
+    map.data <- read_sf(paste0(path, options$geojsonloc))
   }, error = function(e){
     stop(paste0("Problems reading GEOJSON file. Error message: ", e), call. = FALSE)
   })

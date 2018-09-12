@@ -51,7 +51,7 @@ if(is.null(errMsg)){
   isShinyProxy <- isShinyProxy()
   # get model Name
   tryCatch({
-    modelName <- get.model.name(modelName, is.shiny.proxy = isShinyProxy, env.var.name = sp.modelName.env.var)
+    modelName <- getModelName(modelName, isShinyProxy, sp.modelName.env.var)
   }, error = function(e){
     errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
   })
@@ -99,9 +99,9 @@ if(is.null(errMsg)){
     load(rSaveFileName, envir = .GlobalEnv)
   }
 }
-
 if(is.null(errMsg)){ 
   # load default and custom renderers (output data)
+  customRendererDir <<- paste0(currentModelDir, customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
@@ -118,11 +118,12 @@ if(is.null(errMsg)){
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
     }
   }
-  rendererFiles <- list.files(currentModelDir %+% customRendererDir, pattern = "\\.R$")
+
+  rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
   lapply(rendererFiles, function(file){
-    if(!file.access(currentModelDir %+% customRendererDir %+% file, mode = 4)){
+    if(!file.access(customRendererDir %+% file, mode = 4)){
       tryCatch({
-        source(currentModelDir %+% customRendererDir %+% file)
+        source(customRendererDir %+% file)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
                          sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", file, e), sep = "\n")
@@ -135,8 +136,8 @@ if(is.null(errMsg)){
                                        file), sep = "\n")
     }
   })
-  
-  lapply(config.graphs.out, function(customRendererConfig){
+  requiredPackages <- NULL
+  for(customRendererConfig in config.graphs.out){
     # check whether non standard renderers were defined in graph config
     if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
       customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
@@ -158,11 +159,14 @@ if(is.null(errMsg)){
       })
       # find packages to install and install them
       if(!is.null(customRendererConfig$packages) && length(customRendererConfig$packages)){
-        list.of.packages <- customRendererConfig$packages
-        source("./R/install_packages.R", local = TRUE)
+        requiredPackages <- c(requiredPackages, customRendererConfig$packages)
       }
     }
-  })
+  }
+  if(!is.null(requiredPackages)){
+    requiredPackages <- unique(requiredPackages)
+    source("./R/install_packages.R", local = TRUE)
+  }
 }
 
 if(is.null(errMsg)){ 
@@ -402,9 +406,9 @@ if(!is.null(errMsg)){
     }
     
     # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), unsavedFlag = TRUE,
-                         btLoadScen = 0L, btOverrideScen = 0L, btOverrideLocal = 0L, btSaveAs = 0L, btSaveConfirm = 0L,
-                         btRemoveOutputData = 0L, active.sname = NULL)
+    rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), 
+                         unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
+                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, active.sname = NULL)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -532,7 +536,8 @@ if(!is.null(errMsg)){
       }
     })
     
-    # activate solve button when all datasets that have to be imported are actually imported
+    # activate solve button when all datasets that have to be 
+    # imported are actually imported
     lapply(seq_along(modelIn), function(i){
       observe({
         switch(modelIn[[i]]$type,

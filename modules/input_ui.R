@@ -21,42 +21,73 @@ observeEvent(input$btImport, {
   # local tab for data upload
   tabLoadFromLocalFile <- tabPanel(lang$nav$dialogImport$tabLocal, value = "tb_importData_local",
                                    tags$div(class = "space"),
-                                   fluidRow(
-                                     column(12,
-                                            fileInput("localInput", lang$nav$dialogImport$descLocal, width = "100%",
-                                                      multiple = FALSE,
-                                                      accept = c("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx")),
-                                            if(is.null(isolate(rv$active.sname))){
-                                              tagList(
-                                                hidden(tags$div(id = "local_badScenName", class = "initErrors", 
-                                                                lang$nav$dialogImport$badScenName)
-                                                       ),
-                                                textInput("local_newScenName", lang$nav$dialogImport$newScenName)
+                                   tags$div(id = "loadLocal_content",
+                                            fluidRow(
+                                              column(12,
+                                                     fileInput("localInput", lang$nav$dialogImport$descLocal, width = "100%",
+                                                               multiple = FALSE,
+                                                               accept = c("application/vnd.ms-excel", 
+                                                                          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                                                                          ".xlsx")),
+                                                     if(is.null(isolate(rv$active.sname))){
+                                                       tagList(
+                                                         hidden(tags$div(id = "local_badScenName", class = "errMsg", 
+                                                                         lang$nav$dialogImport$badScenName)
+                                                         ),
+                                                         textInput("local_newScenName", 
+                                                                   lang$nav$dialogImport$newScenName)
+                                                       )
+                                                     }
                                               )
-                                            }
-                                     )
+                                            ),
+                                            fluidRow(
+                                              div(class= "choose-input", 
+                                                  column(6,
+                                                         tags$label(class = "checkbox-material flex-design", 
+                                                                    'for'= "cbSelectManuallyLoc", 
+                                                                    checkboxInput("cbSelectManuallyLoc", "", F), 
+                                                                    lang$nav$dialogImport$cbSelectManually)
+                                                  ),
+                                                  column(6,
+                                                         conditionalPanel(
+                                                           condition = "input.cbSelectManuallyLoc == true",
+                                                           selectInput("selInputDataLoc", lang$nav$dialogImport$selInputData, 
+                                                                       setNames(as.list(names(modelIn.to.import)), 
+                                                                                modelIn.to.import.alias), 
+                                                                       multiple = TRUE, width = "100%")
+                                                         )
+                                                  )
+                                              )
+                                            ),
+                                            fluidRow(
+                                              tags$div(style = "text-align: center;",
+                                                       shinyjs::disabled(
+                                                         actionButton("btCheckSnameLocal", 
+                                                                      lang$nav$dialogImport$okButton, 
+                                                                      class = "btOrange")
+                                                       )
+                                              )
+                                            )
                                    ),
-                                   fluidRow(
-                                     div(class= "choose-input", 
-                                         column(6,
-                                                tags$label(class = "checkbox-material flex-design", 'for'= "cbSelectManuallyLoc", checkboxInput("cbSelectManuallyLoc", "", F), lang$nav$dialogImport$cbSelectManually)
-                                         ),
-                                         column(6,
-                                                conditionalPanel(
-                                                  condition = "input.cbSelectManuallyLoc == true",
-                                                  selectInput("selInputDataLoc", lang$nav$dialogImport$selInputData, 
-                                                              setNames(as.list(names(modelIn.to.import)), modelIn.to.import.alias), multiple = TRUE, width = "100%")
+                                   if(config$activateModules$scenario){
+                                     hidden(
+                                       tags$div(id = "loadLocal_scenNameExists",
+                                                fluidRow(
+                                                  tags$div(class = "errMsg",
+                                                           lang$nav$dialogImport$scenNameExists
+                                                  )
+                                                ),
+                                                fluidRow(
+                                                  tags$div(style = "text-align: center;",
+                                                           actionButton("btOverrideLocal", 
+                                                                        lang$nav$dialogImport$overrideButton),
+                                                           actionButton("btNewNameLocal", 
+                                                                        lang$nav$dialogImport$newNameButton, 
+                                                                        class = "btOrange")
+                                                  )
                                                 )
-                                         )
-                                     )
-                                   ),
-                                   fluidRow(
-                                     tags$div(style = "text-align: center;",
-                                              shinyjs::disabled(
-                                                actionButton("btLoadLocal", lang$nav$dialogImport$okButton, class = "btOrange")
-                                              )
-                                     )
-                                   ),
+                                       )
+                                     )},
                                    icon = icon("file"))
   
   # upload data from db tab
@@ -69,7 +100,8 @@ observeEvent(input$btImport, {
                                        }else{
                                          list(
                                            tags$div(class = "space"),
-                                           selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, db$formatScenList(scenMetadata, stime.identifier, desc = TRUE), 
+                                           selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
+                                                       db$formatScenList(scenMetadata, stime.identifier, desc = TRUE), 
                                                        multiple = F, width = "100%"),
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
@@ -100,7 +132,9 @@ observeEvent(input$btImport, {
                                            ),
                                            tags$div(class = "small-space"),
                                            tags$div(style = "text-align: center;",
-                                                    actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, class = "btOrange")
+                                                    actionButton("btLoadScenConfirm", 
+                                                                 lang$nav$dialogLoadScen$okButton, 
+                                                                 class = "btOrange")
                                            )
                                            
                                          )
@@ -129,11 +163,19 @@ observeEvent(input$btImport, {
   }
 })
 observeEvent(input$localInput$name, {
+  flog.debug("A new input file with name: '%s' was uploaded.", 
+             isolate(input$localInput$name))
+  
   if(!is.null(isolate(input$localInput$name))){
     if(is.null(isolate(rv$active.sname))){
       updateTextInput(session, "local_newScenName", value = gsub("\\.[^\\.]+$", "", 
                                                                  isolate(input$localInput$name)))
     }
-    shinyjs::enable("btLoadLocal")
+    shinyjs::enable("btCheckSnameLocal")
   }
+})
+observeEvent(input$btNewNameLocal, {
+  flog.debug("Button to choose a different scenario name clicked.")
+  shinyjs::hide("loadLocal_scenNameExists")
+  shinyjs::show("loadLocal_content")
 })
