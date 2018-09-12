@@ -15,6 +15,9 @@ observeEvent(input$btSplitView, {
     updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$tabView)
     isInSplitView <<- TRUE
   }
+  if(isInCompareMode){
+    rv$btCompareScen <- isolate(rv$btCompareScen + 1L)
+  }
 })
 observeEvent(input$btScenSplit1_open, {
   flog.debug("%s: Load Scenario button clicked (left box in split view).", uid)

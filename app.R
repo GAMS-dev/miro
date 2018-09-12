@@ -288,6 +288,7 @@ if(!is.null(errMsg)){
     # boolean that specifies whether input data does not match output data
     dirty.flag    <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
+    isInCompareMode    <- FALSE
     isInSolveMode      <- TRUE
     if(config$activateModules$scenario){
       scenMetaData     <- list()
@@ -678,9 +679,6 @@ if(!is.null(errMsg)){
         
         # export Scenario to Excel spreadsheet
         source("./modules/excel_scen_save.R", local = TRUE)
-        
-        # show tabular view of data
-        source("./modules/scen_table_view.R", local = TRUE)
         
         # compare scenarios
         obs.compare[[i]] <<- observe({
