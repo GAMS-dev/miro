@@ -409,7 +409,7 @@ if(!is.null(errMsg)){
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), 
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
-                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, active.sname = NULL)
+                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, active.sname = NULL)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -673,7 +673,9 @@ if(!is.null(errMsg)){
 
       lapply(seq_len(maxNumberScenarios + 3), function(i){
         scen.str <- "scen_" %+% i %+% "_"
-         
+        # table view
+        source("./modules/scen_table_view.R", local = TRUE)
+        
         # close scenario tab
         source("./modules/scen_close.R", local = TRUE)
         
