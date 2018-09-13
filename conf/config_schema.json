@@ -33,9 +33,9 @@
 		},
 		"UILogo":{
 		  "description"		: "String that specifies the name of the logo to use",
-			"type"				  : "string",
-			"minLength"     : 1,
-			"default"			  : "gams_logo.png", 
+			"type"				: "string",
+			"minLength"         : 1,
+			"default"			: "gams_logo.png", 
 			"required"			: false
 		},
 		"autoGenInputGraphs"  : {
@@ -46,9 +46,9 @@
 		},
 		"defCompMode": {
 		  "description"		: "Specifies the default scenario comparison mode (the one that is loaded on startup).",
-		  "type"				  : "string",
-			"enum"          : ["split", "tab"],
-			"default"			  : "split", 
+		  "type"			: "string",
+			"enum"              : ["split", "tab"],
+			"default"			: "split", 
 			"required"			: false
 		},
 		"activateModules"	: {
@@ -69,15 +69,15 @@
 					"required"				: false
 				},
 				"loadLocal" :{
-				  "description"			: "Boolean which specifies whether local data upload module should be activated or not",
-					"type"					  : "boolean",
-					"default"				  : true,
+				  "description"			    : "Boolean which specifies whether local data upload module should be activated or not",
+					"type"					: "boolean",
+					"default"				: true,
 					"required"				: false
 				},
 				"sharedScenarios":{
-				  "description"			: "Boolean which specifies whether scenarios can be shared between different users",
-					"type"					  : "boolean",
-					"default"				  : true,
+				  "description"			    : "Boolean which specifies whether scenarios can be shared between different users",
+					"type"					: "boolean",
+					"default"				: true,
 					"required"				: false
 				}
 			}
@@ -89,8 +89,8 @@
 			"properties"			: {
 				"title"				: {
 					"description"			: "Title of the tab",
-					"type"					  : "string",
-					"minLength"       : "1",
+					"type"				    : "string",
+					"minLength"             : "1",
 					"required"				: false
 				}
 			}
@@ -231,8 +231,8 @@
                                 "required"              : ["tool"]
                             }
                         },
-                        "additionalProperties": false,
-                        "required"          : ["outType", "graph"]
+                        "additionalProperties"      : false,
+                        "required"                  : ["outType", "graph"]
                     },
 					{
 						"properties"        : {
