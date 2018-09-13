@@ -27,9 +27,11 @@ getScenTabData <- function(sheetName){
     }
   }
   # get data index
-  tabData$scenTableId <- match(tolower(paste0(modelName, "_", sheetName)), tolower(scen.table.names))
+  tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),
+                                              "_", sheetName)), tolower(scen.table.names))
   if(is.na(tabData$scenTableId)){
-    stop(sprintf("Data for sheet: '%s' could not be found. If this problem persists, please contact the system administrator.", sheetName), call. = FALSE)
+    stop(sprintf("Data for sheet: '%s' could not be found. If this problem persists, please contact the system administrator.", 
+                 sheetName), call. = FALSE)
   }
   return(tabData)
 }
@@ -90,16 +92,13 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
   }
 }
 generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scen.table.names.to.display)), scenCounter = scenId){
-  errMsg <- NULL
   tryCatch({
     scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter)
   }, error = function(e){
     flog.error("Problems generating scenario tabset (multi comparison mode). Error message: %s.", e)
-    errMsg <<- as.character(e)
+    stop(conditionMessage(e))
   })
-  if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
-    return(NULL)
-  }
+
   tabPanel(textOutput("title_" %+% scenId, inline = TRUE), value = "scen_" %+% scenId %+% "_",
            tags$div(class="scen-header", 
                     tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
@@ -126,16 +125,12 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
   )
 }
 generateScenarioTabsetSplit <- function(scenId){
-  errMsg <- NULL
   tryCatch({
     scenTabset <- generateScenarioTabset(scenId)
   }, error = function(e){
     flog.error("Problems generating scenario tabset (split comparison mode). Error message: %s.", e)
-    errMsg <<- as.character(e)
+    stop(conditionMessage(e))
   })
-  if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
-    return(NULL)
-  }
   tagList(
     tags$div(class="scen-header", 
              tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),

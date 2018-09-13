@@ -71,13 +71,12 @@ body <- dashboardBody(
                                                          no.data.txt = lang$nav$outputScreen$boxResults$noData)
                                           }, error = function(e) {
                                             if(debug.mode){
-                                              errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i]), e, sep = "\n")
+                                              errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i]), 
+                                                              e, sep = "\n")
                                             }else{
                                               errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
                                             }
-                                            showModal(modalDialog(
-                                              title = lang$errMsg$renderGraph$title, HTML(addHtmlLineBreaks(errMsg))
-                                            ))
+                                            showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                           })
                                  )
                                ))
