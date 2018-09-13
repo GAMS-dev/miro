@@ -52,7 +52,6 @@ def getCSVHeader(sym):
             d_list.append(s)
       d_list += [ r.key(0) for r in sym.domains[-1] ]
       return ','.join(d_list)
-
 def writeCSVParam(sym, gdxname='none'):
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
@@ -401,6 +400,11 @@ if SOtrueLen>0:
 config['gamsOutputFiles'] = io_dict
 
 #json.dump(config, sys.stdout, indent=4, sort_keys=False)
+try:
+   if not os.path.exists('./conf/'):
+      os.makedirs('./conf/')
+except OSError:
+   print ('Error: Creating directory: conf')
 with open('conf/GMSIO_config.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 db.__del__()

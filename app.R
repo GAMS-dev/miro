@@ -26,10 +26,13 @@ configDir <- "./conf/"
 # files that require schema file
 jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
+filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
+                    "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", "plotly",
-                      "jsonlite", "jsonvalidate", "rpivotTable", "futile.logger", "dygraphs", "reshape2", "xts")
+requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
+                      "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
+                      "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
+                      "futile.logger", "dygraphs", "reshape2", "xts")
 source("./R/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
@@ -41,9 +44,11 @@ if(is.null(errMsg)){
       tryCatch({
         source(file)
       }, error = function(e){
-        errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", file, "'. Error message: ", e), sep = "\n")
+        errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
+                                        file, "'. Error message: ", e), sep = "\n")
       }, warning = function(w){
-        errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", file, "'. Error message: ", w), sep = "\n")
+        errMsg <<- paste(errMsg, paste0("Some error occurred while sourcing file '", 
+                                        file, "'. Error message: ", w), sep = "\n")
       })
     }
   })
@@ -59,8 +64,9 @@ if(is.null(errMsg)){
   if(file.exists(modelDir %+% tolower(modelName) %+% .Platform$file.sep %+% tolower(modelName) %+% ".gms")){
     currentModelDir  <- modelDir %+% tolower(modelName) %+% .Platform$file.sep
   }else{
-    errMsg <- "The GAMS model file could not be found. Please make sure you create a new directory for your model in : '"  %+%
-                     modelDir %+% "', so that it looks like this: '" %+% modelDir %+% tolower(modelName) %+% .Platform$file.sep %+% tolower(modelName) %+% ".gms'"
+    errMsg <- paste0("The GAMS model file could not be found. Please make sure you create a new directory for your model in : '",
+                     modelDir, "', so that it looks like this: '", modelDir, tolower(modelName), 
+                     .Platform$file.sep, tolower(modelName), ".gms'")
   }
   # name of the R save file
   rSaveFileName <- paste0(tolower(modelName), '_', webuiVersion, '.RData')
