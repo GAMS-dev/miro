@@ -277,7 +277,7 @@
     },
     "gamsTerm":{  
       "title":"Error terminating gams.exe",
-      "desc":"Some error occurred terminating gams.exe."
+      "desc":"Some error occurred terminating GAMS."
     },
     "readLog":{  
       "title":"Error reading log file",

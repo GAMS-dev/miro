@@ -275,7 +275,7 @@
     },
     "gamsTerm":{  
       "title":"Fehler beim Beenden von gams.exe",
-      "desc":"Bei dem Beenden von gams.exe ist ein Fehler aufgetreten."
+      "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."
     },
     "readLog":{  
       "title":"Fehler beim Lesen der log-Datei",

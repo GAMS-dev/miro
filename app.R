@@ -69,7 +69,7 @@ if(is.null(errMsg)){
                      .Platform$file.sep, tolower(modelName), ".gms'")
   }
   # name of the R save file
-  rSaveFileName <- paste0(tolower(modelName), '_', webuiVersion, '.RData')
+  rSaveFilePath <- paste0(currentModelDir, tolower(modelName), '_', webuiVersion, '.RData')
 }
 if(is.null(errMsg)){
   # set user ID (user name) and user groups
@@ -99,10 +99,10 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   
-  if(!file.exists(rSaveFileName) || debug.mode){
+  if(!file.exists(rSaveFilePath) || debug.mode){
     source("./modules/init.R", local = TRUE)
   }else{
-    load(rSaveFileName, envir = .GlobalEnv)
+    load(rSaveFilePath, envir = .GlobalEnv)
   }
 }
 if(is.null(errMsg)){ 
