@@ -5,7 +5,8 @@ body <- dashboardBody(
   extendShinyjs("./JS/shinyjs.js"),
   tags$head(
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
-    tags$script(src="shortcuts.js"),
+    tags$script(src = "shortcuts.js"),
+    tags$script(src = "gmswebui.js"),
     # css sheets that depend on data from config JSON file
     tags$style(HTML(paste0('
 .main-header .logo {
