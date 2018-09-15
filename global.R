@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "kport"
 # show extensive error messages/ obscoure error messages
 debug.mode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -9,7 +9,7 @@ keywords.no.import <- c("noimport")
 # keywords that define data MUST not be imported in order to run the model
 keywords.no.must.import <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywords.type <- list("hot" = "headers", "slider" = "slider", "dropdown" = "dropdown", 
+keywords.type <- list("dt" = "headers", "slider" = "slider", "dropdown" = "dropdown", 
                       "dropdowne" = "dropdowne", "daterange" = "daterange", 
                       "date" = "date", "checkbox" = "checkbox")
 list.of.operators <- list("count" = "card", "max" = "max", "min" = "min", 

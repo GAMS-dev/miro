@@ -9,10 +9,10 @@ j <- 1L
 scalar.id <- match(tolower(scalars.file.name), tolower(modelIn.tabular.data))[[1]]
 
 if(!is.na(scalar.id)){
-  i <- match(tolower(modelIn.tabular.data[scalar.id]), tolower(names(modelIn)))[[1]]
+  i <- match(tolower(modelIn.tabular.data[scalar.id]), names(modelIn))[[1]]
   if(!is.null(isolate(input[[paste0("in_", i)]])) && hot.init[[i]]){
     if(!is.empty.input[i]){
-      data.tmp[[length(modelIn.file.names)]] <- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])) 
+      data.tmp[[length(modelIn.file.names)]] <- hot_to_r(isolate(input[[paste0("in_",i)]])) 
     }
   }else if(!is.null(model.input.data[[i]])){
     # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
@@ -26,18 +26,48 @@ if(!is.na(scalar.id)){
 
 lapply(seq_along(modelIn), function(i){
   switch(modelIn[[i]]$type,
-         hot = {
-           if(tolower(names(modelIn)[[i]]) != scalars.file.name){
-             if(!is.null(isolate(input[[paste0("in_", i)]])) && hot.init[[i]]){
+         dt = {
+           if(names(modelIn)[[i]] != scalars.file.name){
+             if(nrow(tableContent[[i]])){
                if(length(cols.with.dep[[i]])){
                  if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- dplyr::bind_rows(rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])), model.input.data[[i]])
+                   data.tmp[[j]] <<- bind_rows(tableContent[[i]], 
+                                               model.input.data[[i]])
                  }else{
                    data.tmp[[j]] <<- model.input.data[[i]]
                  }
                }else{
                  if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]]))
+                   data.tmp[[j]] <<- tableContent[[i]]
+                 }else{
+                   data.tmp[[j]] <<- modelInTemplate[[i]]
+                 }
+               }
+             }else if(!is.null(model.input.data[[i]])){
+               # tab was never activated, so shiny does not update handsontable thus it is 
+               # empty although data was loaded
+               data.tmp[[j]] <<- model.input.data[[i]]
+             }else{
+               flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
+               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+               return(NULL)
+             }
+             j <<- j + 1
+           }
+         },
+         hot = {
+           if(names(modelIn)[[i]] != scalars.file.name){
+             if(!is.null(isolate(input[["in_" %+% i]])) && hot.init[[i]]){
+               if(length(cols.with.dep[[i]])){
+                 if(!is.empty.input[i]){
+                   data.tmp[[j]] <<- bind_rows(hot_to_r(isolate(input[["in_" %+% i]])), 
+                                               model.input.data[[i]])
+                 }else{
+                   data.tmp[[j]] <<- model.input.data[[i]]
+                 }
+               }else{
+                 if(!is.empty.input[i]){
+                   data.tmp[[j]] <<- hot_to_r(isolate(input[["in_" %+% i]]))
                  }else{
                    data.tmp[[j]] <<- modelInTemplate[[i]]
                  }

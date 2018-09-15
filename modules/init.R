@@ -469,7 +469,8 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                })
                return(NULL)
              },
-             hot = {
+             hot = ,
+             dt ={
                # check that in case dataset is scalar ds, it has correct headers
                if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name) && 
                   !identical(names(modelIn[[i]]$headers), scalars.file.headers)){

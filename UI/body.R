@@ -47,10 +47,15 @@ body <- dashboardBody(
                   lapply(inputTabs[[tabId]], function(i){
                     has.dependency <- !is.null(modelIn.with.dep[[names(modelIn)[[i]]]])
                     switch(modelIn[[i]]$type,
-                           hot = {
+                           hot = ,
+                           dt = {
                              list(
                                tags$div(id = paste0("data-in_", i), {
-                                 rhandsontable::rHandsontableOutput(paste0("in_", i))
+                                 if(modelIn[[i]]$type == "hot"){
+                                   rHandsontableOutput(paste0("in_", i))
+                                 }else{
+                                   DTOutput(paste0("in_", i))
+                                 }
                                }),
                                shinyjs::hidden(
                                  tags$div(id = paste0("graph-in_", i), class = "render-output", 

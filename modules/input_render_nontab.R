@@ -51,11 +51,17 @@ lapply(seq_along(modelIn), function(id){
                           return(NULL)
                         })
                }else{
-                 if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !is.empty.input[k]){
-                   hot.content <- rhandsontable::hot_to_r(isolate(input[[paste0("in_", k)]]))
+                 if(length(rv[[paste0("in_", k)]]) && (modelIn[[k]]$type == "hot" && 
+                                                       !is.null(input[[paste0("in_", k)]]) || 
+                                                       nrow(tableContent[[i]])) && !is.empty.input[k]){
+                   if(modelIn[[k]]$type == "hot"){
+                     hot.content <- hot_to_r(isolate(input[[paste0("in_", k)]]))
+                   }else{
+                     hot.content <- tableContent[[i]]
+                   }
                    # return choices from both visible as well as hidden part of input data
                    tryCatch({
-                     value <- dplyr::bind_rows(as_tibble(hot.content), model.input.data[[k]])
+                     value <- bind_rows(as_tibble(hot.content), model.input.data[[k]])
                    }, error = function(e){
                      flog.error("Some problem occurred concatenating rows of dataset: '%s' (forward dependency of checkbox: '%s'). 
                                 Error message: %s.", modelIn.alias[id], modelIn.alias[k], e)
@@ -173,11 +179,17 @@ lapply(seq_along(modelIn), function(id){
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddown.dep[[name]]$fw)))){
                    k <- match(dataSheet, names(modelIn))[[1]]
-                   if(length(rv[["in_" %+% k]]) && !is.null(input[["in_" %+% k]]) && !is.empty.input[k]){
-                     hotContent <- rhandsontable::hot_to_r(isolate(input[["in_" %+% k]]))
+                   if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
+                                                    !is.null(input[[paste0("in_", k)]]) || 
+                                                    nrow(tableContent[[i]])) && !is.empty.input[k]){
+                     if(modelIn[[k]]$type == "hot"){
+                       hot.content <- hot_to_r(isolate(input[[paste0("in_", k)]]))
+                     }else{
+                       hot.content <- tableContent[[i]]
+                     }
                      # return choices from both visible as well as hidden part of input data
                      tryCatch({
-                       dataTmp <- dplyr::bind_rows(as_tibble(hotContent), model.input.data[[k]])
+                       dataTmp <- bind_rows(as_tibble(hot.content), model.input.data[[k]])
                      }, error = function(e){
                        flog.error("Problems binding rows of input sheet: '%s'. Error message: %s.", dataSheet, e)
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
@@ -310,8 +322,14 @@ lapply(seq_along(modelIn), function(id){
                      )
                      return(NULL)
                    }
-                   if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !is.empty.input[k]){
-                     data <- unique(rhandsontable::hot_to_r(input[[paste0("in_", k)]])[[el[[1]]]])
+                   if(length(rv[[paste0("in_", k)]]) && (modelIn[[k]]$type == "hot" && 
+                                                         !is.null(input[[paste0("in_", k)]]) || 
+                                                         nrow(tableContent[[i]])) && !is.empty.input[k]){
+                     if(modelIn[[k]]$type == "hot"){
+                       data <- unique(hot_to_r(isolate(input[[paste0("in_", k)]]))[[el[[1]]]])
+                     }else{
+                       data <- unique(tableContent[[i]][[el[[1]]]])
+                     } 
                    }else if(length(model.input.data[[k]][[1]]) && is.empty.input[k]){
                      # no input is shown in UI, so get hidden data
                      data <- unique(model.input.data[[k]][[el[[1]]]])

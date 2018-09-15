@@ -427,13 +427,13 @@ if(!is.null(errMsg)){
     # initialize model input data
     model.input.data <- modelInTemplate
     # initialise list of reactive expressions returning data for model input
-    data.modelIn <- vector(mode = "list", length = length(modelIn))
+    modelInputData <- vector(mode = "list", length = length(modelIn))
     # auxiliary vector that specifies whether data frame has no data or data was overwritten
     is.empty.input <- vector(mode = "logical", length = length(modelIn))
     # input is empty in the beginning
     is.empty.input[] <- TRUE
-    # list of data frames which save changes made in handsontable
-    hot.input <- vector(mode = "list", length = length(modelIn))
+    # list of data frames which save changes made in table
+    tableContent <- vector(mode = "list", length = length(modelIn))
     # gams process object
     gams <- NULL
     # boolean that specifies whether input data should be overridden
@@ -550,6 +550,9 @@ if(!is.null(errMsg)){
         switch(modelIn[[i]]$type,
                hot = {
                  input[[paste0("in_", i)]]
+               },
+               dt ={
+                 input[[paste0("in_", i, "_cell_edit")]]
                }, 
                slider = {
                  input[[paste0("slider_", i)]]
