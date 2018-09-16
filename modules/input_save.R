@@ -10,75 +10,30 @@ scalar.id <- match(tolower(scalars.file.name), tolower(modelIn.tabular.data))[[1
 
 if(!is.na(scalar.id)){
   i <- match(tolower(modelIn.tabular.data[scalar.id]), names(modelIn))[[1]]
-  if(!is.null(isolate(input[[paste0("in_", i)]])) && hot.init[[i]]){
-    if(!is.empty.input[i]){
-      data.tmp[[length(modelIn.file.names)]] <- hot_to_r(isolate(input[[paste0("in_",i)]])) 
-    }
-  }else if(!is.null(model.input.data[[i]])){
-    # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-    data.tmp[[length(modelIn.file.names)]] <- model.input.data[[i]]
-  }else{
+  tryCatch({
+    data.tmp[[length(modelIn.file.names)]] <- getInputDataset(i)
+  }, error = function(e){
     flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-    errMsg <- sprintf(lang$errMsg$GAMSInput$noData, tolower(names(modelIn)[[i]]))
-    showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
-  }
+    errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, names(modelIn)[[i]])
+  })
+  showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 }
 
 lapply(seq_along(modelIn), function(i){
+  noErr <- TRUE
   switch(modelIn[[i]]$type,
-         dt = {
-           if(names(modelIn)[[i]] != scalars.file.name){
-             if(nrow(tableContent[[i]])){
-               if(length(cols.with.dep[[i]])){
-                 if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- bind_rows(tableContent[[i]], 
-                                               model.input.data[[i]])
-                 }else{
-                   data.tmp[[j]] <<- model.input.data[[i]]
-                 }
-               }else{
-                 if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- tableContent[[i]]
-                 }else{
-                   data.tmp[[j]] <<- modelInTemplate[[i]]
-                 }
-               }
-             }else if(!is.null(model.input.data[[i]])){
-               # tab was never activated, so shiny does not update handsontable thus it is 
-               # empty although data was loaded
-               data.tmp[[j]] <<- model.input.data[[i]]
-             }else{
-               flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
-               return(NULL)
-             }
-             j <<- j + 1
-           }
-         },
+         dt = ,
          hot = {
            if(names(modelIn)[[i]] != scalars.file.name){
-             if(!is.null(isolate(input[["in_" %+% i]])) && hot.init[[i]]){
-               if(length(cols.with.dep[[i]])){
-                 if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- bind_rows(hot_to_r(isolate(input[["in_" %+% i]])), 
-                                               model.input.data[[i]])
-                 }else{
-                   data.tmp[[j]] <<- model.input.data[[i]]
-                 }
-               }else{
-                 if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- hot_to_r(isolate(input[["in_" %+% i]]))
-                 }else{
-                   data.tmp[[j]] <<- modelInTemplate[[i]]
-                 }
-               }
-             }else if(!is.null(model.input.data[[i]])){
-               # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-               data.tmp[[j]] <<- model.input.data[[i]]
-             }else{
+             tryCatch({
+               data.tmp[[j]] <<- getInputDataset(i)
+             }, error = function(e){
                flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
                errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
-               return(NULL)
+               noErr <<- FALSE
+             })
+             if(!noErr){
+               return()
              }
              j <<- j + 1
            }

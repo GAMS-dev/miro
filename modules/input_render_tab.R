@@ -1,5 +1,38 @@
 # render tabular datasets
 proxy <- vector("list", length(modelIn))
+
+getInputDataset <- function(id){
+  if((!is.null(isolate(input[["in_" %+% id]])) && hot.init[[id]]) ||
+     (length(tableContent[[id]]))){
+    if(length(cols.with.dep[[id]])){
+      if(!is.empty.input[id]){
+        if(modelIn[[id]]$type == "hot"){
+          inputData <- bind_rows(hot_to_r(isolate(input[["in_" %+% id]])), 
+                                 model.input.data[[id]])
+        }else{
+          inputData <- bind_rows(tableContent[[id]], 
+                                 model.input.data[[id]])
+        }
+      }else{
+        inputData <- model.input.data[[id]]
+      }
+    }else{
+      if(!is.empty.input[id]){
+        inputData <- tableContent[[id]]
+      }else{
+        inputData <- modelInTemplate[[id]]
+      }
+    }
+  }else if(!is.null(model.input.data[[id]])){
+    # tab was never activated, so shiny does not update handsontable thus it is 
+    # empty although data was loaded
+    inputData <- model.input.data[[id]]
+  }else{
+    stop("No input data found.", call. = FALSE)
+  }
+  return(inputData)
+}
+
 lapply(modelIn.tabular.data, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
@@ -208,7 +241,8 @@ lapply(modelIn.tabular.data, function(sheet){
              row <- info$row
              col <- info$col
              val <- info$value
-             tableContent[[i]][row, col] <<- coerceValue(val, tableContent[[i]][[col]][row])
+             tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
+                                                                          tableContent[[i]][[col]][row]))
              replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE)
            })
          }

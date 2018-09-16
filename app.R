@@ -415,7 +415,9 @@ if(!is.null(errMsg)){
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), 
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
-                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, active.sname = NULL)
+                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, 
+                         active.sname = NULL)
+    
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -641,14 +643,14 @@ if(!is.null(errMsg)){
     # UI elements (modalDialogs)
     source("./UI/dialogs.R", local = TRUE)
     ####### Model input
-    # generate import dialogue
-    source("./modules/input_ui.R", local = TRUE)
-    # load input data from Excel sheet
-    source("./modules/excel_input_load.R", local = TRUE)
     # render tabular input datasets
     source("./modules/input_render_tab.R", local = TRUE)
     # render non tabular input datasets (e.g. slider, dropdown)
     source("./modules/input_render_nontab.R", local = TRUE)
+    # generate import dialogue
+    source("./modules/input_ui.R", local = TRUE)
+    # load input data from Excel sheet
+    source("./modules/excel_input_load.R", local = TRUE)
     
     ####### GAMS interaction
     # solve button clicked
@@ -717,7 +719,7 @@ if(!is.null(errMsg)){
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
     }else{
-      i <- 1
+      id <- 1
       # export output data to Excel spreadsheet
       source("./modules/excel_scen_save.R", local = TRUE)
     }
