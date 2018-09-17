@@ -66,7 +66,7 @@ getModelName <- function(modelName = NULL, isShinyProxy = FALSE, envVarName = NU
     }
   }
   
-  return(modelName)
+  return(tolower(modelName))
 }
 
 # DEPRECATED
