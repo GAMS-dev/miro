@@ -43,6 +43,30 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "batch":{  
+              "description":"batch mode specific configuration",
+              "type":"object",
+              "required":true,
+              "additionalProperties":false,
+              "properties":{  
+                  "configureRun":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "import":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "load":{  
+                    "description":"GAMS interaction menu item",
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  }
+              }
             }
           }
         },

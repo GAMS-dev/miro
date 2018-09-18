@@ -1,5 +1,6 @@
 {
 	"UILogo"             : "pickstock.jpg",
+
     "dataRendering"      : {
 		"stockdata"   	: {
 			"outType"               : "graph",

@@ -19,7 +19,7 @@ lapply(modelIn.tabular.data, function(sheet){
                    hot.input[[i]] <<- as_tibble(rhandsontable::hot_to_r(isolate(input[[paste0("in_", i)]])))
                  }
                  tryCatch({
-                   data <- dplyr::bind_rows(hot.input[[i]], model.input.data[[i]])
+                   data <- bind_rows(hot.input[[i]], model.input.data[[i]])
                  }, error = function(e){
                    if(debug.mode){
                      errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), sep = "\n")
@@ -42,7 +42,7 @@ lapply(modelIn.tabular.data, function(sheet){
                  # filter data frame
                  data <- data[data[[col]] %in% input[[paste0("dropdown_", id)]], ]
                }
-               model.input.data[[i]] <<- dplyr::anti_join(model.input.data[[i]], data, by = ids.in[[i]])
+               model.input.data[[i]] <<- anti_join(model.input.data[[i]], data, by = ids.in[[i]])
                if(!nrow(data)){
                  data[1, ] <- ""
                  # disable graph button as no data was loaded

@@ -297,3 +297,70 @@ animation: none !important;
   display: inline;
   border: 2px solid grey;
 }
+.grid-container {
+  grid-template-columns: 325px 150px 325px 75px;
+  grid-gap: 5px;
+  padding: 5px;
+}
+.grid-container > div {
+  text-align: center;
+  font-size: 16px;
+}
+.grid-SelectorsWrapper {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+.grid-ButtonsWrapper {
+  display: grid;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.itemLine {
+  grid-template-columns: 325px 150px 325px 75px;
+  grid-template-rows: 40px;
+  grid-gap: 5px;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  display: grid;
+}
+.itemName {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  align-self: start;
+  text-align: left;
+}
+.itemScenDrop {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  align-self: start;
+}
+.itemSearchCrit {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  align-self: start;
+}
+.itemDelete {
+  text-align: right;
+}
+.itemAndDrop{
+  display: grid;
+  grid-template-columns: 75px 250px 605px;
+  grid-template-rows: 50px;
+  align-self: center;
+}
+.itemAND{
+  grid-column-start: 1;
+  grid-column-end: 2;
+}
+.itemDropdown {
+  grid-column-start: 2;
+  grid-column-end: 3;
+}
+.itemORQuery{
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-top: 15px;
+  margin-bottom: 25px;
+}

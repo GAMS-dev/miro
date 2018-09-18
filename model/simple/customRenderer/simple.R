@@ -16,6 +16,7 @@ renderSimple1 <- function(input, output, server, data, options = NULL, path = NU
   }, error = function(e){
     stop(paste0("Problems reading GEOJSON file. Error message: ", e), call. = FALSE)
   })
+  
   labels <- map.data$NAME_1
   
   # generate a color palette
@@ -25,10 +26,16 @@ renderSimple1 <- function(input, output, server, data, options = NULL, path = NU
   #generate map
   map <- leaflet(map.data) %>%
          addTiles() %>%
-         addPolygons(smoothFactor = 0.5, fillOpacity = 0.85, highlightOptions = highlightOptions(color = "white", weight = 2), color = ~pal(ID_1), label = labels,
-                     labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto")) %>%
-         addMinicharts(lng = data$lng, lat = data$lat, time = data[['time steps']], type = "pie", chartdata = data[, c("Renewable", "Fossil")], 
-                       width = 100 * data$Total / max(data$Total), transitionTime = 0, layerId = labels, popup = popupArgs())
+         addPolygons(smoothFactor = 0.5, fillOpacity = 0.85, 
+                     highlightOptions = highlightOptions(color = "white", weight = 2), 
+                     color = ~pal(ID_1), label = labels,
+                     labelOptions = labelOptions(style = list("font-weight" = "normal", 
+                                                              padding = "3px 8px"), 
+                                                 textsize = "15px", direction = "auto")) %>%
+         addMinicharts(lng = data$lng, lat = data$lat, time = data[['time steps']], 
+                       type = "pie", chartdata = data[, c("Renewable", "Fossil")], 
+                       width = 100 * data$Total / max(data$Total), transitionTime = 0, 
+                       layerId = labels, popup = popupArgs())
   output$simple <- leaflet::renderLeaflet(map)
 }
 
@@ -62,10 +69,16 @@ renderSimple2 <- function(input, output, server, data, options = NULL, path = NU
 
   map <- leaflet(map.data) %>%
          addTiles() %>%
-         addPolygons(smoothFactor = 0.5, fillOpacity = 0.8, highlightOptions = highlightOptions(color = "white", weight = 2), color = ~pal(ID_1),
-                     labelOptions = labelOptions(style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "15px", direction = "auto")) %>%
-         addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, color = "indianred", flow = data$Flow, 
-                  time = data[['time steps']], opacity = 1, minThickness = 1, maxThickness = 12, 
+         addPolygons(smoothFactor = 0.5, fillOpacity = 0.8, 
+                     highlightOptions = highlightOptions(color = "white", weight = 2), 
+                     color = ~pal(ID_1),
+                     labelOptions = labelOptions(style = list("font-weight" = "normal", 
+                                                              padding = "3px 8px"), 
+                                                 textsize = "15px", direction = "auto")) %>%
+         addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, 
+                  color = "indianred", flow = data$Flow, 
+                  time = data[['time steps']], opacity = 1, minThickness = 1, 
+                  maxThickness = 12, 
                   #Popup for flows - label0 and label1 need to be filled before
                   layerId = paste0("From ", label0, " to ", label1), popup = popupArgs())
   

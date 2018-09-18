@@ -79,6 +79,12 @@
 					"type"					: "boolean",
 					"default"				: true,
 					"required"				: false
+				},
+				"batchMode":{
+				  "description"		: "Boolean which specifies whether scenarios should be solved in batch mode or not",
+					"type"					: "boolean",
+					"default"				: false,
+					"required"				: false
 				}
 			}
 		},

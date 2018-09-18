@@ -7,6 +7,7 @@ body <- dashboardBody(
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
     tags$script(src = "shortcuts.js"),
     tags$script(src = "gmswebui.js"),
+
     # css sheets that depend on data from config JSON file
     tags$style(HTML(paste0('
 .main-header .logo {
@@ -240,85 +241,134 @@ body <- dashboardBody(
               )
             )
     ),
-    tabItem(tabName="gamsinter",
-            fluidRow(
-              box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                  textOutput("modelStatus"))
-            ),
-            fluidRow(
-              box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
-                  width=12, collapsible = TRUE,
-                  tabsetPanel(
-                    tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                             verbatimTextOutput("logStatus")),
-                    tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
-                             verbatimTextOutput("listFile"))
-                  ),
-                  checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                value = T)
+    if(identical(config$activateModules$batchMode, TRUE)){
+        tabItem(tabName = "loadResults",
+                fluidRow(
+                  box(title = "Load scenarios", status="primary", 
+                      solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                      tags$div(id = "loadContent",
+                               tags$div(id = "selectorsWrapper"
+                                        #, class = "grid-SelectorsWrapper"
+                               ),
+                               tags$div(id = "buttonsWrapper", class = "itemORQuery",
+                                        actionButton("btNewBlock", label = "OR")),
+                               tags$div(class = "itemORQuery",
+                                        actionButton("btSendQuery", label = "Query database", class = "btOrange")
+                               )
+                      ),
+                      hidden(
+                        tags$div(id = "loadDiv", class = "loading-input", 
+                                 tags$img(src= "load.gif"))
+                      ),
+                      tags$div(DTOutput("batchLoadResults")),
+                      hidden(
+                        tags$div(id = "batchLoadButtons", style = "margin:15px",
+                                 actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
+                                 actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
+                                 actionButton("batchLoadAll", "Load all", class = "btOrange")
+                        )
+                      )
+                  )
+                )
+        )
+    }else{
+        tabItem(tabName="gamsinter",
+                fluidRow(
+                  box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+                      textOutput("modelStatus"))
+                ),
+                fluidRow(
+                  box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
+                      width=12, collapsible = TRUE,
+                      tabsetPanel(
+                        tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                                 verbatimTextOutput("logStatus")),
+                        tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                                 verbatimTextOutput("listFile"))
+                      ),
+                      checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                    value = T)
+                  )
+                )
+        )
+    },
+    if(identical(config$activateModules$batchMode, TRUE)){
+      tabItem(tabName = "importData",
+              fluidRow(
+                box(title = "Import data", status="primary", 
+                    solidHeader = TRUE, width = 12,
+                    tags$div(style="width:65vh",
+                             fileInput("batchImport", label = "Upload zip file with results here.")
+                    ),
+                    tags$div(style="width:65vh",
+                             disabled(textInput("batchTags", "Batch Tags (seperate with comma)")),
+                             actionButton("btUploadBatch", label = "Upload")
+                    )
+                )
               )
-            )
-    ),
-    tabItem(tabName = "outputData",
-            #tabsetPanel(id="scenTabset",
-            #tabPanel(title=lang$nav$outputScreen$tabCurrent, value = "results.current",
-            fluidRow(
-              box(title = list(
-                shinyjs::hidden(tags$div(id = "dirtyFlagIconO", style = "display:inline;", icon("exclamation-triangle"))),
-                textOutput("outputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                               class = "btClose", icon = icon("times"), label = ""))
-              ), status="primary", solidHeader = TRUE, width = 12,
-              tags$div(class="scen-header",
-                       tags$div(class = "out-buttons-wrapper",
-                                #shinyjs::disabled(
-                                actionButton("outputTableView", icon("table"), 
-                                             class="scen-button"),
-                                downloadButton(outputId = "export_1", label = "",
-                                               class="scen-button")
-                                #, actionButton("save_0", icon("save"), 
-                                #             class="scen-button"),
-                                #actionButton("remove_0", icon("times"), 
-                                #             class="scen-button")
-                                #)
-                       )
-              ),
-              do.call(tabsetPanel, c(id = "content.current", lapply(modelOut.to.display, function(sheet.name) {
-                i <- match(sheet.name, names(modelOut))[1]
-                tabPanel(
-                  title = modelOut.alias[i],
-                  value = paste0("content.current_", i),
-                  tags$div(class="space"),
-                  tags$div(id = paste0("graph-out_", i), class = "render-output", 
-                           style = if(!is.null(config.graphs.out[[i]]$height)) 
-                             sprintf("min-height: %s;", add.css.dim(config.graphs.out[[i]]$height, 5)),
-                           renderDataUI(paste0("tab_",i), type = config.graphs.out[[i]]$outType, 
-                                        graph.tool = config.graphs.out[[i]]$graph$tool, 
-                                        custom.options = config.graphs.out[[i]]$options,
-                                        height = config.graphs.out[[i]]$height, 
-                                        no.data.txt = lang$nav$outputScreen$boxResults$noData)
-                  ),
-                  shinyjs::hidden(
-                    tags$div(id = paste0("data-out_", i), class = "render-output",{
-                      tryCatch({
-                        renderDataUI(paste0("table-out_",i), type = "datatable", 
-                                     no.data.txt = lang$nav$outputScreen$boxResults$noData)
-                      }, error = function(e) {
-                        if(debug.mode){
-                          eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 
-                                         sep = "\n")
-                        }else{
-                          eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-                        }
+      )
+    }else{
+      tabItem(tabName = "outputData",
+              #tabsetPanel(id="scenTabset",
+              #tabPanel(title=lang$nav$outputScreen$tabCurrent, value = "results.current",
+              fluidRow(
+                box(title = list(
+                  shinyjs::hidden(tags$div(id = "dirtyFlagIconO", style = "display:inline;", icon("exclamation-triangle"))),
+                  textOutput("outputDataTitle", inline = T),
+                  tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
+                                                                 class = "btClose", icon = icon("times"), label = ""))
+                ), status="primary", solidHeader = TRUE, width = 12,
+                tags$div(class="scen-header",
+                         tags$div(class = "out-buttons-wrapper",
+                                  #shinyjs::disabled(
+                                  actionButton("outputTableView", icon("table"), 
+                                               class="scen-button"),
+                                  downloadButton(outputId = "export_1", label = "",
+                                                 class="scen-button")
+                                  #, actionButton("save_0", icon("save"), 
+                                  #             class="scen-button"),
+                                  #actionButton("remove_0", icon("times"), 
+                                  #             class="scen-button")
+                                  #)
+                         )
+                ),
+                do.call(tabsetPanel, c(id = "content.current", lapply(modelOut.to.display, function(sheet.name) {
+                  i <- match(sheet.name, names(modelOut))[1]
+                  tabPanel(
+                    title = modelOut.alias[i],
+                    value = paste0("content.current_", i),
+                    tags$div(class="space"),
+                    tags$div(id = paste0("graph-out_", i), class = "render-output", 
+                             style = if(!is.null(config.graphs.out[[i]]$height)) 
+                               sprintf("min-height: %s;", add.css.dim(config.graphs.out[[i]]$height, 5)),
+                             renderDataUI(paste0("tab_",i), type = config.graphs.out[[i]]$outType, 
+                                          graph.tool = config.graphs.out[[i]]$graph$tool, 
+                                          custom.options = config.graphs.out[[i]]$options,
+                                          height = config.graphs.out[[i]]$height, 
+                                          no.data.txt = lang$nav$outputScreen$boxResults$noData)
+                    ),
+                    shinyjs::hidden(
+                      tags$div(id = paste0("data-out_", i), class = "render-output",{
+                        tryCatch({
+                          renderDataUI(paste0("table-out_",i), type = "datatable", 
+                                       no.data.txt = lang$nav$outputScreen$boxResults$noData)
+                        }, error = function(e) {
+                          if(debug.mode){
+                            eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 
+                                           sep = "\n")
+                          }else{
+                            eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
+                          }
+                        })
                       })
-                    })
-                  ),
-                  tags$div(class="space"))
-              })))
-              #)
+                    ),
+                    tags$div(class="space"))
+                })))
+                #)
+                )
               )
-            )
-    ),
+      )
+    },
     tabItem(tabName = "scenarios",
             shinyjs::hidden(
               tags$div(id = "scenTabView",

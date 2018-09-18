@@ -19,11 +19,15 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){ 
   # fetch JSON schema files
-  jsonSchemaMap <- c(get.json.file.schema.pairs(configDir), get.json.file.schema.pairs(fileDir = paste0(currentModelDir, configDir), schemaDir = configDir))
+  jsonSchemaMap <- c(get.json.file.schema.pairs(configDir), 
+                     get.json.file.schema.pairs(fileDir = paste0(currentModelDir, configDir), 
+                                                schemaDir = configDir))
   
   lapply(jsonFilesWithSchema, function(file){
     if(is.null(jsonSchemaMap[[file]])){
-      errMsg <<- paste(errMsg, "Schema and/or JSON file: '" %+% file %+% "' is required but missing. Please make sure a valid schema file is available.", sep = "\n")
+      errMsg <<- paste(errMsg, "Schema and/or JSON file: '" %+% file %+% 
+                         "' is required but missing. Please make sure a valid schema file is available.", 
+                       sep = "\n")
     }
   })
 }
@@ -37,7 +41,8 @@ if(is.null(errMsg)){
     error <- tryCatch({
       eval <- validate.json(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
     }, error = function(e){
-      errMsg <<- paste(errMsg, "Some error occurred validating JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% "'. Error message: " %+% e, sep = "\n")
+      errMsg <<- paste(errMsg, "Some error occurred validating JSON file: '" %+% 
+                         names(jsonSchemaMap)[[i]] %+% "'. Error message: " %+% e, sep = "\n")
       e
     })
     if(inherits(error, "error")){
@@ -51,7 +56,8 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
       config$db <<- c(config, eval[[1]])
     }else if(!is.null(eval[[2]])){
-      errMsg.tmp <- "Some error occurred parsing JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% "'. See below for more detailed information."
+      errMsg.tmp <- "Some error occurred parsing JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% 
+        "'. See below for more detailed information."
       errMsg <<- paste(errMsg, errMsg.tmp, sep = "\n")
       jsonErrors <<- rbind(jsonErrors, cbind(file_name = paste0(names(jsonSchemaMap)[[i]], ".json"), eval[[2]]))
     }
@@ -304,6 +310,7 @@ if(is.null(errMsg)){
                    modelIn[[i]]$slider$double <<- TRUE
                  }
                },
+               hot = {},
                {
                  errMsg <<- paste(errMsg, 
                                   sprintf("Elements other than sliders, checkboxes and single " %+% 
@@ -658,7 +665,7 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     
   }
   if(is.null(errMsg)){
-    if(identical(config$activeModules$scenario, TRUE) && 
+    if(identical(config$activateModules$scenario, TRUE) && 
        !file.exists("./modules/db_scen_save.R")){
       errMsg <- "The GMSWebUI version you possess does not support the scenario mode. " %+%
 "Please contact GAMS support if you wish to receive a version that does." 
@@ -685,6 +692,7 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                            '9' = "GAMS could not be started",
                            '10' = "Out of memory",
                            '11' = "Out of disk",
+                           "15" = "Model execution was interrupted",
                            '109' = "Could not create process/scratch directory",
                            '110' = "Too many process/scratch directories",
                            '112' = "Could not delete the process/scratch directory",

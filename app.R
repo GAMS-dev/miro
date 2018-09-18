@@ -218,6 +218,11 @@ if(is.null(errMsg)){
       errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
     })
   }
+  if(config$activateModules$batchMode){
+    source("./R/batch.R")
+    source("./R/db_batchimport.R")
+    source("./R/db_batchload.R")
+  }
 }
 
 if(!is.null(errMsg)){

@@ -5,7 +5,12 @@
       "outputScreen":"Output",
       "gams":"GAMS interaction",
       "scen":"Compare Scenarios",
-      "advanced":"Advanced Options"
+      "advanced":"Advanced Options",
+      "batch":{
+        "configureRun": "Configure batch run",
+        "import": "Import results",
+        "load": "Load results"
+      }
     },
     "sidebarButtons":{  
       "importInput":"Load data",

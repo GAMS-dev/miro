@@ -1,9 +1,104 @@
 # run GAMS
 
-# synchronous solve 
+if(identical(config$activateModules$batchMode, TRUE)){
+  idsToSolve <- NULL
+  idxDiff <- NULL
+  scenGmsPar <- NULL
+  observeEvent(input$btBatchAll, {
+    # solve all scenarios in batch run
+    prog <- shiny::Progress$new()
+    on.exit(prog$close())
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    
+    # BEGIN EPIGRIDS specific
+    tryCatch({
+      writeLines(scenGmsPar, workDir %+% tolower(modelName) %+% ".gmsb")
+      updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
+    }, error = function(e) {
+      errMsg <<- lang$errMsg$gamsExec$desc
+      flog.error("GAMS batch file was not written successfully. Error message: %s.", e)
+    })
+    if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
+      return(NULL)
+    }
+    # END EPIGRIDS specific
+    
+    showModal(modalDialog(title = lang$nav$dialogBatch$successDialog$title, 
+                          lang$nav$dialogBatch$successDialog$desc))
+  })
+  observeEvent(input$btBatchNew, {
+    # solve only scenarios that do not yet exist
+    prog <- shiny::Progress$new()
+    on.exit(prog$close())
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    
+    # BEGIN EPIGRIDS specific
+    tryCatch({
+      writeLines(scenGmsPar[idxDiff], workDir %+% tolower(modelName) %+% ".gmsb")
+      updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
+    }, error = function(e) {
+      errMsg <<- lang$errMsg$gamsExec$desc
+      flog.error("GAMS batch file was not written successfully. Error message: %s.", e)
+    })
+    if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
+      return(NULL)
+    }
+    # END EPIGRIDS specific
+    
+    showModal(modalDialog(title = lang$nav$dialogBatch$successDialog$title, 
+                          lang$nav$dialogBatch$successDialog$desc))
+  })
+}
+
+
 observeEvent(input$btSolve, {
   flog.debug("Solve button clicked (model: '%s').", modelName)
   removeModal()
+  if(identical(config$activateModules$batchMode, TRUE)){
+    numberScenarios <- noScenToSolve()
+    if(numberScenarios > maxNoBatch){
+      showModal(modalDialog(title = lang$nav$dialogBatch$exceedMaxNoDialog$title, 
+                            sprintf(lang$nav$dialogBatch$exceedMaxNoDialog$desc, 
+                                    numberScenarios, maxNoBatch)))
+      return(NULL)
+    }else if(numberScenarios == -1){
+      showModal(modalDialog(title = lang$nav$dialogBatch$badStepSizeDialog$title, 
+                            lang$nav$dialogBatch$badStepSizeDialog$desc))
+      return(NULL)
+    }else if(numberScenarios == 0){
+      showModal(modalDialog(title = lang$nav$dialogBatch$noScenSelectedDialog$title, 
+                            lang$nav$dialogBatch$noScenSelectedDialog$desc))
+      return(NULL)
+    }
+    shinyjs::disable("btSolve")
+    
+    idsSolved <- unique(db$importDataset(scen.metadata.table, cols = sname.identifier))
+    scenToSolve <- scenToSolve()
+    idsToSolve <<- scenToSolve$ids
+    scenGmsPar <<- scenToSolve$gmspar
+    
+    sidsDiff <- setdiff(idsToSolve, idsSolved)
+    idxDiff  <<- match(sidsDiff, idsToSolve)
+    showModal(modalDialog(sprintf(lang$nav$dialogBatch$desc, length(idsToSolve), 
+                                  length(idsToSolve) - length(sidsDiff)), 
+                          title = lang$nav$dialogBatch$title,
+                          footer = tagList(
+                            modalButton(lang$nav$dialogBatch$cancelButton),
+                            actionButton("btBatchAll", label = lang$nav$dialogBatch$processAllButton),
+                            actionButton("btBatchNew", label = lang$nav$dialogBatch$processUnsolvedButton, 
+                                         class = "btOrange")),
+                          fade = TRUE, easyClose = FALSE))
+    shinyjs::enable("btSolve")
+    
+    return(NULL)
+  }
+  
   updateTabsetPanel(session, "sidebar.menu", selected = "gamsinter")
   
   # save input data 
