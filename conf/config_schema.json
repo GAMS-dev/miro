@@ -85,6 +85,18 @@
 					"type"					: "boolean",
 					"default"				: false,
 					"required"				: false
+				},
+				"logFile:": {
+				  "description"		: "Boolean which specifies whether log file should be visible in UI",
+					"type"					: "boolean",
+					"default"				: true,
+					"required"			: false
+				},
+				"lstFile:": {
+				  "description"		: "Boolean which specifies whether log file should be visible in UI",
+					"type"					: "boolean",
+					"default"				: true,
+					"required"			: false
 				}
 			}
 		},
