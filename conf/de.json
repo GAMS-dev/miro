@@ -9,7 +9,8 @@
       "batch":{
         "configureRun": "Batchlauf konfigurieren",
         "import": "Ergebnisse importieren",
-        "load": "Ergebnisse laden"
+        "load": "Ergebnisse laden",
+        "analyze": "Szenarienanalyse"
       }
     },
     "sidebarButtons":{  
@@ -69,6 +70,17 @@
       "titleDownloadTemp":"Download temporärer Dateien",
       "downloadTempDesc":"Download temporärer Dateien aus dem Arbeitsverzeichnis",
       "downloadTempButton": "Dateien laden"
+    },
+    "batch_import":{
+      "title":"Importiere Ergebnisse vom Server"
+    },
+    "batch_load":{
+      "title":"Lade Szenarien"
+    },
+    "batch_analyze":{
+      "title":"Szenarioanalyse",
+	  "btCancel": "Abbrechen",
+	  "btNew": "Neue Scenarien auswählen"
     },
     "gamsModelStatus":{  
       "exec":"Modell wird gelöst",
@@ -200,6 +212,37 @@
       "downloadZipButton":"Alle Dateien als zip laden",
       "downloadButton":"Datei laden",
       "cancelButton":"Abbrechen"
+    },
+    "dialogBatch":{
+      "title": "Batchkonfiguration",
+      "desc": "Sie haben %d Szenarios zum Lösen im Batchmodus ausgewählt. Von diesen sind bereits %d Szenarios gelöst worden. Möchten Sie, alle konfigurierten Szenarien lösen oder nur diejenigen, die zuvor noch nicht gelöst worden sind?",
+      "cancelButton":"Abbrechen",
+      "processAllButton": "Alle Verarbeiten",
+      "processUnsolvedButton": "Nur die ungelösten verarbeiten",
+      "waitDialog":{
+        "title": "Batchlauf wird konfiguriert",
+        "desc": "Bitte warten Sie, während der Batchlauf konfiguriert wird."
+      },
+      "exceedMaxNoDialog":{
+        "title": "Maximale Anzahl Szenarien überschritten",
+        "desc": "Sie haben %d Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %d Szenarien pro Batchlauf. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
+      },
+      "noScenSelectedDialog":{
+        "title": "Keine Szenarien ausgewählt",
+        "desc": "Sie müssen zunächst mindestens ein Szenario zum Lösen konfigurieren."
+      },
+      "badStepSizeDialog":{
+        "title": "Falsche Schrittweite",
+        "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
+      },
+      "successDialog":{
+        "title": "Batchlauf konfiguriert",
+        "desc": "Der Batchlauf wurde erfolgreich konfiguriert. Sobald die Ergebnisse zur Verfügung stehen, können Sie diese importieren."
+      }
+    },
+    "batchMode":{
+      "sliderAllCombinations": "Alle Kombinationen?",
+      "checkboxAliases":["Nein", "Ja"]
     }
   },
   "progressBar":{  
@@ -321,6 +364,14 @@
     "lockScen":{
       "title":"Fehler beim Setzen/Löschen der Szenariosperre",
       "desc":"Beim Setzen oder Löschen der Szenariosperre ist ein Fehler aufgetreten. Fehlermeldung: '%s'"
+    },
+    "paverExec":{  
+      "title":"Fehler beim Ausführen von Python",
+      "desc":"Bei der Ausführung von Python ist ein Fehler aufgetreten."
+    },
+    "paverTerm":{  
+      "title":"Fehler beim Beenden von Python",
+      "desc":"Bei dem Beenden von Python ist ein Fehler aufgetreten."
     }
   }
 }

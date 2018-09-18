@@ -45,6 +45,7 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                 menuItem(lang$nav$sidebarMenu$batch$load, tabName = "loadResults", icon = icon("folder-open", 
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
+                menuItem(lang$nav$sidebarMenu$batch$analyze, tabName="batchAnalyze", icon = icon("pie-chart")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solve, width = "85%", class = "btOrange"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",

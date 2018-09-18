@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "kport"
+modelName <- "pickstock"
 # show extensive error messages/ obscoure error messages
 debug.mode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -79,5 +79,10 @@ shared.table.prefix <- "_shared"
 defaultGroup <- "user"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph")
+# maximum number of scenarios that can be solved per batch run
+maxNoBatch <- 200000L
+# maximum number of scenarios that can be loaded to scenario
+# comparison mode at the same time
+maxConcurentLoad <- 10L
 
 

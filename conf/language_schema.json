@@ -65,6 +65,12 @@
                     "type":"string",
                     "minLength":1,
                     "required":true
+                  },
+                  "analyze":{  
+                    "description":"Batch analyze menu item",
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
                   }
               }
             }
@@ -315,6 +321,52 @@
               "required":true
             },
             "downloadTempButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "batch_import":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "batch_load":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "batch_analyze":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+			"btCancel":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+			"btNew":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -926,6 +978,146 @@
               "required":true
             }
          }
+        },
+        "dialogBatch":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "processAllButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "processUnsolvedButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "waitDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "exceedMaxNoDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "noScenSelectedDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "badStepSizeDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "successDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+         }
+        },
+        "batchMode":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "sliderAllCombinations":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "checkboxAliases":{  
+              "type":"array",
+              "uniqueItems": true,
+              "minItems":2,
+              "maxItems":2,
+              "items": {
+                  "type":"string",
+                  "minLength": 1
+              },
+              "required":true
+            }
+         }
         }
       }
     },
@@ -1428,6 +1620,40 @@
           }
         },
         "lockScen":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "paverExec":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "paverTerm":{  
           "type":"object",
           "additionalProperties":false,
           "required":true,

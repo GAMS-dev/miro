@@ -1,6 +1,5 @@
 # elements that must be saved in scalar table
 scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelIn.tabular.data]
-rv <- reactiveValues(clear = TRUE, btSave = 0L, noInvalidData = 0L)
 shinyjs::disable("btUploadBatch")
 
 # table names that must exist in order for scenario to be valid

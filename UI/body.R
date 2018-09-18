@@ -7,7 +7,7 @@ body <- dashboardBody(
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
     tags$script(src = "shortcuts.js"),
     tags$script(src = "gmswebui.js"),
-
+    
     # css sheets that depend on data from config JSON file
     tags$style(HTML(paste0('
 .main-header .logo {
@@ -241,58 +241,72 @@ body <- dashboardBody(
               )
             )
     ),
-    if(identical(config$activateModules$batchMode, TRUE)){
-        tabItem(tabName = "loadResults",
-                fluidRow(
-                  box(title = "Load scenarios", status="primary", 
-                      solidHeader = TRUE, width = 12, style="overflow-x: auto",
-                      tags$div(id = "loadContent",
-                               tags$div(id = "selectorsWrapper"
-                                        #, class = "grid-SelectorsWrapper"
-                               ),
-                               tags$div(id = "buttonsWrapper", class = "itemORQuery",
-                                        actionButton("btNewBlock", label = "OR")),
-                               tags$div(class = "itemORQuery",
-                                        actionButton("btSendQuery", label = "Query database", class = "btOrange")
-                               )
-                      ),
-                      hidden(
-                        tags$div(id = "loadDiv", class = "loading-input", 
-                                 tags$img(src= "load.gif"))
-                      ),
-                      tags$div(DTOutput("batchLoadResults")),
-                      hidden(
-                        tags$div(id = "batchLoadButtons", style = "margin:15px",
-                                 actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
-                                 actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
-                                 actionButton("batchLoadAll", "Load all", class = "btOrange")
-                        )
+    if(config$activateModules$batchMode){
+      tabItem(tabName = "loadResults",
+              fluidRow(
+                box(title = "Load scenarios", status="primary", 
+                    solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                    tags$div(id = "loadContent",
+                             tags$div(id = "selectorsWrapper"
+                             ),
+                             tags$div(id = "buttonsWrapper", class = "itemORQuery",
+                                      actionButton("btNewBlock", label = "OR")),
+                             tags$div(class = "itemORQuery",
+                                      actionButton("btSendQuery", label = "Query database", class = "btOrange")
+                             )
+                    ),
+                    hidden(
+                      tags$div(id = "loadDiv", class = "loading-input", 
+                               tags$img(src= "load.gif"))
+                    ),
+                    tags$div(DTOutput("batchLoadResults")),
+                    hidden(
+                      tags$div(id = "batchLoadButtons", style = "margin:15px",
+                               actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
+                               actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
+                               actionButton("batchLoadAll", "Load all", class = "btOrange")
                       )
-                  )
+                    )
                 )
-        )
+              )
+      )
     }else{
-        tabItem(tabName="gamsinter",
-                fluidRow(
-                  box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                      textOutput("modelStatus"))
-                ),
+      tabItem(tabName="gamsinter",
+              fluidRow(
+                box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+                    textOutput("modelStatus"))
+              ),
+              if(any(config$activateModules$logFile, config$activateModules$lstFile)){
+                if(config$activateModules$logFile && config$activateModules$lstFile){
+                  logTabset <- tabsetPanel(
+                    tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                               verbatimTextOutput("logStatus")),
+                      tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                               verbatimTextOutput("listFile"))
+                  )
+                }else if(config$activateModules$lstFile){
+                  logTabset <- tabsetPanel(
+                    tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                             verbatimTextOutput("listFile"))
+                  )
+                }else{
+                  logTabset <- tabsetPanel(
+                    tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                             verbatimTextOutput("logStatus"))
+                  )
+                }
                 fluidRow(
                   box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
                       width=12, collapsible = TRUE,
-                      tabsetPanel(
-                        tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                                 verbatimTextOutput("logStatus")),
-                        tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
-                                 verbatimTextOutput("listFile"))
-                      ),
+                      logTabset,
                       checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
                                     value = T)
                   )
                 )
-        )
+              }
+      )
     },
-    if(identical(config$activateModules$batchMode, TRUE)){
+    if(config$activateModules$batchMode){
       tabItem(tabName = "importData",
               fluidRow(
                 box(title = "Import data", status="primary", 
@@ -369,6 +383,15 @@ body <- dashboardBody(
               )
       )
     },
+    #if(config$activateModules$batchMode){
+    #   tabItem(tabName = "batchImport",
+    #           column(width = 12,
+    #                  box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$batch_import$title, 
+    #                      tags$hr()
+    #                  )
+    #           )
+    #   )
+    #},
     tabItem(tabName = "scenarios",
             shinyjs::hidden(
               tags$div(id = "scenTabView",
@@ -399,15 +422,38 @@ body <- dashboardBody(
               )
             )
     ),
-    tabItem(tabName = "advanced",
-            column(width = 4,
-                   box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
-                       tags$hr(),
-                       tags$span(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
-                       actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
-                       tags$hr()
-                   )
-            )
-    )
+    if(config$activateModules$batchMode){
+      tabItem(tabName = "batchAnalyze",
+              box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$batch_analyze$title, 
+                  tabsetPanel(id = "tabs_paver_results",
+                              tabPanel("Index", value = "index",
+                                       tags$div(style = "overflow: auto; height: 75vh;",
+                                                hidden(
+                                                  tags$div(id = "paver_load", class = "loadDiv",
+                                                           "Please wait while the results are calculated. This may take a while.",
+                                                           tags$img(src= "load.gif"),
+                                                           actionButton("btPaverInterrupt", lang$nav$batch_analyze$btCancel)
+                                                  )
+                                                ),
+                                                tags$div(class = "loadDiv",
+                                                         hidden(actionButton("btNewPaverRun", lang$nav$batch_analyze$btNew))
+                                                ),
+                                                htmlOutput("paverResults")
+                                       )
+                              ))
+              )
+      )
+    }else{
+       tabItem(tabName = "advanced",
+               column(width = 4,
+                      box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
+                          tags$hr(),
+                          tags$span(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
+                          actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
+                          tags$hr()
+                      )
+               )
+       )
+    }
   )
 )
