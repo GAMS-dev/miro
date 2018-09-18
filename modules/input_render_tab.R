@@ -48,13 +48,14 @@ lapply(modelIn.tabular.data, function(sheet){
     }
     tryCatch({
       callModule(renderData, "in_" %+% i, type = config.graphs.in[[i]]$outType, 
-                 data = data,
-                 dt.options = config$datatable, graph.options = config.graphs.in[[i]]$graph, 
+                 data = data, dt.options = config$datatable, 
+                 graph.options = config.graphs.in[[i]]$graph, 
                  pivot.options = config.graphs.in[[i]]$pivottable, 
                  custom.options = config.graphs.in[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir)
     }, error = function(e) {
-      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", modelIn.alias[i], e)
+      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
+                 modelIn.alias[i], e)
       errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
     })
     showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
@@ -62,7 +63,6 @@ lapply(modelIn.tabular.data, function(sheet){
   
   switch(modelIn[[i]]$type,
          hot = {
-           # l <- match(tolower(names(modelIn)[[i]]), names(modelIn.to.import))[[1]]
            if(length(cols.with.dep[[i]])){
              modelInputData[[i]] <- reactive({
                hot.init[[i]] <<- T
@@ -110,9 +110,9 @@ lapply(modelIn.tabular.data, function(sheet){
                }else{
                  enable("btGraphIn" %+% i)
                  is.empty.input[i] <<- FALSE
-                 #rv$datasets.imported[l] <<- TRUE
                }
-               # do not set unsaved flag when data was updated from other input element automatically
+               # do not set unsaved flag when data was updated from other 
+               # input element automatically
                no.check[i] <<- TRUE
                return(data)
              })
@@ -131,24 +131,33 @@ lapply(modelIn.tabular.data, function(sheet){
                  is.empty.input[i] <<- TRUE
                }else{
                  shinyjs::enable(paste0("btGraphIn", i))
-                 #rv$datasets.imported[l] <<- TRUE
                  is.empty.input[i] <<- FALSE
                }
                return(model.input.data[[i]])
              })
              
            }
-          
+           
            # rendering handsontables for input data 
            output[["in_" %+% i]] <- renderRHandsontable({
-             ht <- rhandsontable(modelInputData[[i]](), height = hot.options$height, width = hot.options$width, search = hot.options$search, readOnly = modelIn[[i]]$readonly)
-             ht <- hot_table(ht, contextMenu = hot.options$contextMenu$enabled, highlightCol = hot.options$highlightCol, highlightRow = hot.options$highlightRow,
-                             rowHeaderWidth = hot.options$rowHeaderWidth, enableComments = hot.options$enableComments, stretchH = hot.options$stretchH,
+             ht <- rhandsontable(modelInputData[[i]](), height = hot.options$height, 
+                                 width = hot.options$width, search = hot.options$search, 
+                                 readOnly = modelIn[[i]]$readonly)
+             ht <- hot_table(ht, contextMenu = hot.options$contextMenu$enabled, 
+                             highlightCol = hot.options$highlightCol, 
+                             highlightRow = hot.options$highlightRow,
+                             rowHeaderWidth = hot.options$rowHeaderWidth, 
+                             enableComments = hot.options$enableComments, stretchH = hot.options$stretchH,
                              overflow = hot.options$overflow)
-             ht <- hot_context_menu(ht, allowRowEdit = hot.options$contextMenu$allowRowEdit, allowColEdit = hot.options$contextMenu$allowColEdit, 
-                                    allowReadOnly = hot.options$contextMenu$allowReadOnly, allowComments = hot.options$contextMenu$allowComments)
-             ht <- hot_cols(ht, columnSorting = hot.options$columnSorting, manualColumnMove = hot.options$manualColumnMove, 
-                            manualColumnResize = hot.options$manualColumnResize, colWidths = hot.options$colWidths, fixedColumnsLeft = hot.options$fixedColumnsLeft)
+             ht <- hot_context_menu(ht, allowRowEdit = hot.options$contextMenu$allowRowEdit, 
+                                    allowColEdit = hot.options$contextMenu$allowColEdit, 
+                                    allowReadOnly = hot.options$contextMenu$allowReadOnly, 
+                                    allowComments = hot.options$contextMenu$allowComments)
+             ht <- hot_cols(ht, columnSorting = hot.options$columnSorting, 
+                            manualColumnMove = hot.options$manualColumnMove, 
+                            manualColumnResize = hot.options$manualColumnResize, 
+                            colWidths = hot.options$colWidths, 
+                            fixedColumnsLeft = hot.options$fixedColumnsLeft)
              
              # check for readonly columns
              cols.readonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
@@ -178,7 +187,8 @@ lapply(modelIn.tabular.data, function(sheet){
                    data <- bind_rows(tableContent[[i]], model.input.data[[i]])
                  }, error = function(e){
                    if(debug.mode){
-                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), sep = "\n")
+                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), 
+                                      sep = "\n")
                    }else{
                      errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                    }
@@ -202,14 +212,12 @@ lapply(modelIn.tabular.data, function(sheet){
                model.input.data[[i]] <<- anti_join(model.input.data[[i]], 
                                                    data, by = ids.in[[i]])
                if(!nrow(data)){
-                 #data[1, ] <- ""
                  # disable graph button as no data was loaded
                  disable("btGraphIn" %+% i)
                  is.empty.input[i] <<- TRUE
                }else{
                  enable("btGraphIn" %+% i)
                  is.empty.input[i] <<- FALSE
-                 #rv$datasets.imported[l] <<- TRUE
                }
                tableContent[[i]] <<- data
                return(data)
@@ -226,26 +234,48 @@ lapply(modelIn.tabular.data, function(sheet){
                  is.empty.input[i] <<- FALSE
                }
                tableContent[[i]] <<- model.input.data[[i]]
-               return(model.input.data[[i]])
+               return(tableContent[[i]])
              })
              
            }
            
-           output[["in_" %+% i]] <- renderDT(do.call(datatable, c(list(modelInputData[[i]](), 
-                                                                       editable = if(identical(modelIn[[i]]$readonly, 
-                                                                                               TRUE))
-                                                                           FALSE else TRUE),
-                                                                 config$datatable)))
+           output[["in_" %+% i]] <- renderDT({
+             errMsg <- NULL
+             tryCatch({
+               dt <- do.call(datatable, c(list(modelInputData[[i]](), 
+                                               editable = if(identical(modelIn[[i]]$readonly, 
+                                                                       TRUE))
+                                                 FALSE else TRUE),
+                                          config$datatable)) %>%
+                 formatRound(1:length(data), roundPrecision)
+             }, error = function(e){
+               flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                          modelIn.alias[i], e) 
+               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelIn.alias[i])
+             })
+             if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
+               return(modelInputData[[i]]())
+             }
+             return(dt)
+           })
            proxy[[i]] <<- dataTableProxy("in_" %+% i)
            
            observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
+             rownames <- config$datatable$rownames
              info <- input[[paste0("in_", i, "_cell_edit")]]
              row <- info$row
-             col <- info$col
+             if(rownames){
+               col <- info$col
+               if(col < 1){
+                 return()
+               }
+             }else{
+               col <- info$col + 1L
+             }
              val <- info$value
              tableContent[[i]][row, col] <<- suppressWarnings(coerceValue(val, 
                                                                           tableContent[[i]][[col]][row]))
-             replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE)
+             replaceData(proxy[[i]], tableContent[[i]], resetPaging = FALSE, rownames = rownames)
            })
          }
   )

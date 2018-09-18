@@ -9,6 +9,7 @@ closeScenario <- function(){
   
   # reset input data sheets
   model.input.data <<- modelInTemplate
+  tableContent     <<- vector(mode = "list", length = length(modelIn))
   input.initialized[] <<- FALSE
   no.data.changes[]   <<- FALSE
   lapply(seq_along(modelIn), function(i){

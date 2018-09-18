@@ -9,9 +9,9 @@ keywords.no.import <- c("noimport")
 # keywords that define data MUST not be imported in order to run the model
 keywords.no.must.import <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywords.type <- list("dt" = "headers", "slider" = "slider", "dropdown" = "dropdown", 
-                      "dropdowne" = "dropdowne", "daterange" = "daterange", 
-                      "date" = "date", "checkbox" = "checkbox")
+keywords.type <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
+                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", 
+                      "daterange" = "daterange", "date" = "date", "checkbox" = "checkbox")
 list.of.operators <- list("count" = "card", "max" = "max", "min" = "min", 
                           "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
 # define identifier names for user id and scenario id 

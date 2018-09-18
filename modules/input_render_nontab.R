@@ -168,7 +168,7 @@ lapply(seq_along(modelIn), function(id){
                  # reset counter
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddown.dep[[name]]$fw)))){
-                   k <- match(dataSheet, names(modelIn))[[1]]
+                   k <- match(dataSheet, names(modelIn))
                    
                    if(shared.data[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
@@ -194,6 +194,10 @@ lapply(seq_along(modelIn), function(id){
                        next
                      }
                      choices[[j]] <- dataTmp[[ddown.dep[[name]]$fw[[dataSheet]]]]
+                     
+                     if(!length(choices[[j]])){
+                       return(NULL)
+                     }
                      if(!is.null(ddown.dep[[name]]$aliases[[dataSheet]])){
                        aliases[[j]] <- dataTmp[[ddown.dep[[name]]$aliases[[dataSheet]]]]
                      }
@@ -204,7 +208,6 @@ lapply(seq_along(modelIn), function(id){
                }
                aliases <- unique(unlist(aliases, use.names = FALSE))
                choices <- unique(unlist(choices, use.names = FALSE))
-               
                if(length(aliases)){
                  if(length(aliases) == length(choices)){
                    names(choices) <- aliases

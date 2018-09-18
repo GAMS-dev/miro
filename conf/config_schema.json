@@ -435,7 +435,7 @@
 				"rownames"				: {
 					"description"			: "Boolean that specifies whether to show row names",
 					"type"					: "boolean",
-					"required"				: false,
+					"required"			: false,
 					"default"				: false
 				},
 				"extensions"			: {
