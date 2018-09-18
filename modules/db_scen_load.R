@@ -175,6 +175,9 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     return()
   }
   
+  idx.scalarOut <- match(gsub("_", "", modelName, fixed = TRUE) %+% 
+                           "_" %+% scalars.out.name, scen.table.names)[[1]]
+  
   if(isInSolveMode){
     # close currently opened scenario
     if(!closeScenario()){
@@ -216,8 +219,6 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     # generate data
     no.output <- TRUE
     # load scalar data if available
-    idx.scalarOut <- match(tolower(modelName %+% "_" %+% scalars.out.name), 
-                           scen.table.names)[[1]]
     lapply(seq_along(modelOut), function(i){
       if(!nrow(scenDataTmp[[1]][[i]])){
         scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
@@ -270,7 +271,6 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
   errMsg <- NULL
   lastImportedSid <- NULL
   lapply(seq_along(scenDataTmp), function(i){
-    noError <- TRUE
     tryCatch({
       if(!isInSplitView){
         scenId   <- isolate(rv$scenId)
@@ -287,7 +287,6 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
       # load scenario data
       scenData[[scen.str]]                    <<- scenDataTmp[[i]]
       # load scalar data if available
-      idx.scalarOut <- match(tolower(modelName %+% "_" %+% scalars.out.name), scen.table.names)[[1]]
       if(!is.na(idx.scalarOut) && nrow(scenData[[scen.str]][[idx.scalarOut]])){
         # scalar data exists
         remove.rows                           <- grepl(config$gamsMetaDelim, 
@@ -309,11 +308,8 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     }, error = function(e){
       flog.error(e)
       errMsg  <<- paste(errMsg, e, sep = "\n")
-      noError <<- NULL
     })
-    if(is.null(noError)){
-      return()
-    }
+
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
     if(!isInSplitView){
       lastImportedSid <<- scenId

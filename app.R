@@ -1,5 +1,5 @@
 #version number
-webuiVersion <- '0_2'
+webuiVersion <- '0_2_1'
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
