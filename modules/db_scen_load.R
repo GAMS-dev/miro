@@ -309,7 +309,11 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
       flog.error(e)
       errMsg  <<- paste(errMsg, e, sep = "\n")
     })
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> master
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
     if(!isInSplitView){
       lastImportedSid <<- scenId
