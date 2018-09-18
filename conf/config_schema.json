@@ -442,7 +442,6 @@
 					"description"			: "For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
 					"type"					: "array",
 					"uniqueItems"			: true,
-					"default"				: null,
 					"required"				: false,
 					"items"					: {
 						"type"					: "string",

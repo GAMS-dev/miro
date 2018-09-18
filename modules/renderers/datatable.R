@@ -10,12 +10,10 @@ renderDTable <- function(data, options, height = NULL, roundPrecision = 2){
   # Returns:
   #   DT object or renderDT object with data and options specified
   
-  if(is.null(options$extensions)){
-    options$extensions <- list()
-  }
-  data <- roundDf(data,roundPrecision)
-  dt <- DT::datatable(data, options = options$options, extensions = options$extensions, class = options$class, filter = options$filter, rownames = options$rownames, 
-                      height = height)
+  dt <- datatable(data, options = options$options, extensions = options$extensions, 
+                  class = options$class, filter = options$filter, rownames = options$rownames, 
+                  height = height) %>%
+    formatRound(1:length(data), roundPrecision)
   
-  return(DT::renderDataTable(dt))
+  return(renderDT(dt))
 }

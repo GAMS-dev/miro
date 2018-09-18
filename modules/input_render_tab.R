@@ -218,13 +218,11 @@ lapply(modelIn.tabular.data, function(sheet){
              modelInputData[[i]] <- reactive({
                rv[[paste0("in_", i)]]
                if(!nrow(model.input.data[[i]])){
-                 #model.input.data[[i]][1, ] <<- ""
                  # disable graph button as no data was loaded
                  shinyjs::disable(paste0("btGraphIn", i))
                  is.empty.input[i] <<- TRUE
                }else{
                  shinyjs::enable(paste0("btGraphIn", i))
-                 #rv$datasets.imported[l] <<- TRUE
                  is.empty.input[i] <<- FALSE
                }
                tableContent[[i]] <<- model.input.data[[i]]
@@ -232,8 +230,12 @@ lapply(modelIn.tabular.data, function(sheet){
              })
              
            }
-           output[["in_" %+% i]] <- renderDT(modelInputData[[i]](), 
-                                            selection = 'none', editable = TRUE)
+           
+           output[["in_" %+% i]] <- renderDT(do.call(datatable, c(list(modelInputData[[i]](), 
+                                                                       editable = if(identical(modelIn[[i]]$readonly, 
+                                                                                               TRUE))
+                                                                           FALSE else TRUE),
+                                                                 config$datatable)))
            proxy[[i]] <<- dataTableProxy("in_" %+% i)
            
            observeEvent(input[[paste0("in_", i, "_cell_edit")]], {
