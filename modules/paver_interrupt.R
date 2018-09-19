@@ -15,5 +15,5 @@ observeEvent(input$btPaverInterrupt,{
   shinyjs::show("btNewPaverRun")
 })
 observeEvent(input$btNewPaverRun,{
-  updateTabsetPanel(session, "sidebar.menu", selected = "loadResults")
+  updateTabsetPanel(session, "sidebarMenuId", selected = "loadResults")
 })

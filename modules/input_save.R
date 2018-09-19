@@ -1,24 +1,24 @@
 # save input data to data.tmp list
 
 # define temporary list to save input data to
-data.tmp <- vector(mode = "list", length = length(modelIn.file.names))
-names(data.tmp) <- modelIn.file.names
+data.tmp <- vector(mode = "list", length = length(modelInFileNames))
+names(data.tmp) <- modelInFileNames
 errMsg <- NULL
 j <- 1L
 # first add scalar data which is in a table
-scalar.id <- match(tolower(scalars.file.name), tolower(modelIn.tabular.data))[[1]]
+scalar.id <- match(tolower(scalarsFileName), tolower(modelInTabularData))[[1]]
 
 if(!is.na(scalar.id)){
-  i <- match(tolower(modelIn.tabular.data[scalar.id]), tolower(names(modelIn)))[[1]]
-  if(!is.null(isolate(input[[paste0("in_", i)]])) && hot.init[[i]]){
-    if(!is.empty.input[i]){
-      data.tmp[[length(modelIn.file.names)]] <- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])) 
+  i <- match(tolower(modelInTabularData[scalar.id]), tolower(names(modelIn)))[[1]]
+  if(!is.null(isolate(input[[paste0("in_", i)]])) && hotInit[[i]]){
+    if(!isEmptyInput[i]){
+      data.tmp[[length(modelInFileNames)]] <- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])) 
     }
-  }else if(!is.null(model.input.data[[i]])){
+  }else if(!is.null(modelInputData[[i]])){
     # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-    data.tmp[[length(modelIn.file.names)]] <- model.input.data[[i]]
+    data.tmp[[length(modelInFileNames)]] <- modelInputData[[i]]
   }else{
-    flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
+    flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
     errMsg <- sprintf(lang$errMsg$GAMSInput$noData, tolower(names(modelIn)[[i]]))
     showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
   }
@@ -27,27 +27,27 @@ if(!is.na(scalar.id)){
 lapply(seq_along(modelIn), function(i){
   switch(modelIn[[i]]$type,
          hot = {
-           if(tolower(names(modelIn)[[i]]) != scalars.file.name){
-             if(!is.null(isolate(input[[paste0("in_", i)]])) && hot.init[[i]]){
-               if(length(cols.with.dep[[i]])){
-                 if(!is.empty.input[i]){
-                   data.tmp[[j]] <<- dplyr::bind_rows(rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])), model.input.data[[i]])
+           if(tolower(names(modelIn)[[i]]) != scalarsFileName){
+             if(!is.null(isolate(input[[paste0("in_", i)]])) && hotInit[[i]]){
+               if(length(colsWithDep[[i]])){
+                 if(!isEmptyInput[i]){
+                   data.tmp[[j]] <<- dplyr::bind_rows(rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])), modelInputData[[i]])
                  }else{
-                   data.tmp[[j]] <<- model.input.data[[i]]
+                   data.tmp[[j]] <<- modelInputData[[i]]
                  }
                }else{
-                 if(!is.empty.input[i]){
+                 if(!isEmptyInput[i]){
                    data.tmp[[j]] <<- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]]))
                  }else{
                    data.tmp[[j]] <<- modelInTemplate[[i]]
                  }
                }
-             }else if(!is.null(model.input.data[[i]])){
+             }else if(!is.null(modelInputData[[i]])){
                # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-               data.tmp[[j]] <<- model.input.data[[i]]
+               data.tmp[[j]] <<- modelInputData[[i]]
              }else{
-               flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+               flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
                return(NULL)
              }
              j <<- j + 1
@@ -56,33 +56,33 @@ lapply(seq_along(modelIn), function(i){
          slider = {
            if(!is.null(isolate(input[[paste0("slider_", i)]]))){
              value <- isolate(input[[paste0("slider_", i)]])
-           }else if(is.numeric(slider.values[[tolower(names(modelIn)[[i]])]]$def)){
-             value <- slider.values[[tolower(names(modelIn)[[i]])]]$def
+           }else if(is.numeric(sliderValues[[tolower(names(modelIn)[[i]])]]$def)){
+             value <- sliderValues[[tolower(names(modelIn)[[i]])]]$def
            }else{
-             flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
            # add name and description fields
            if(length(value) > 1){
              # double slider (two values)
              scalar      <- paste0(tolower(names(modelIn))[[i]], c("_min", "_max"))
-             description <- paste0(modelIn.alias[i], c(" (min)", " (max)"))
+             description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
            }else{
              # standard slider (one value)
              scalar      <- tolower(names(modelIn))[[i]]
-             description <- modelIn.alias[i]
+             description <- modelInAlias[i]
            }
            # generate data frame
-           if(is.null(data.tmp[[length(modelIn.file.names)]])){
+           if(is.null(data.tmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelIn.file.names)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelIn.file.names)]]) <<- scalars.file.headers
+             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalars.file.headers
-             data.tmp[[length(modelIn.file.names)]] <<- rbind(data.tmp[[length(modelIn.file.names)]], new.data) 
+             names(new.data) <- scalarsFileHeaders
+             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
            }
          },
          date = {
@@ -91,24 +91,24 @@ lapply(seq_along(modelIn), function(i){
            }else if(!is.null(modelIn[[i]]$date$value)){
              value <- as.character(modelIn[[i]]$date$value)
            }else{
-             flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
            # add name and description fields
            scalar      <- names(modelIn)[[i]]
-           description <- modelIn.alias[i]
+           description <- modelInAlias[i]
            
            # generate data frame
-           if(is.null(data.tmp[[length(modelIn.file.names)]])){
+           if(is.null(data.tmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelIn.file.names)]]        <<- data.frame(scalar, description, value, stringsAsFactors = F)
-             names(data.tmp[[length(modelIn.file.names)]]) <<- scalars.file.headers
+             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = F)
+             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalars.file.headers
-             data.tmp[[length(modelIn.file.names)]] <<- rbind(data.tmp[[length(modelIn.file.names)]], new.data) 
+             names(new.data) <- scalarsFileHeaders
+             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
            }
          },
          daterange = {
@@ -117,24 +117,24 @@ lapply(seq_along(modelIn), function(i){
            }else if(!is.null(modelIn[[i]]$daterange$start) && !is.null(modelIn[[i]]$daterange$end)){
              value <- c(as.character(modelIn[[i]]$daterange$start), as.character(modelIn[[i]]$daterange$end))
            }else{
-             flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
            # add name and description fields
            scalar      <- paste0(names(modelIn)[[i]], c("_min", "_max"))
-           description <- paste0(modelIn.alias[i], c(" (min)", " (max)"))
+           description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
         
            # generate data frame
-           if(is.null(data.tmp[[length(modelIn.file.names)]])){
+           if(is.null(data.tmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelIn.file.names)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelIn.file.names)]]) <<- scalars.file.headers
+             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalars.file.headers
-             data.tmp[[length(modelIn.file.names)]] <<- rbind(data.tmp[[length(modelIn.file.names)]], new.data) 
+             names(new.data) <- scalarsFileHeaders
+             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
            }
          },
          dropdown = {
@@ -143,8 +143,8 @@ lapply(seq_along(modelIn), function(i){
            }else if(!is.null(modelIn[[i]]$dropdown$selected)){
              value <- modelIn[[i]]$dropdown$selected
            }else{
-             flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
            
@@ -156,36 +156,36 @@ lapply(seq_along(modelIn), function(i){
            }else{
              # standard dropdown menu (one value)
              scalar      <- names(modelIn)[[i]]
-             description <- modelIn.alias[i]
+             description <- modelInAlias[i]
              
-             if(is.null(data.tmp[[length(modelIn.file.names)]])){
+             if(is.null(data.tmp[[length(modelInFileNames)]])){
                # no scalar data was written yet, so add headers
-               data.tmp[[length(modelIn.file.names)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-               names(data.tmp[[length(modelIn.file.names)]]) <<- scalars.file.headers
+               data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+               names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
              }else{
                # no headers, just data
                new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-               names(new.data) <- scalars.file.headers
-               data.tmp[[length(modelIn.file.names)]] <<- rbind(data.tmp[[length(modelIn.file.names)]], new.data)
+               names(new.data) <- scalarsFileHeaders
+               data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data)
              }
            }
          },
         # dropdowne = {
-        #   if(length(model.input.data[[i]][[1]])){
+        #   if(length(modelInputData[[i]][[1]])){
         #     if(!is.null(isolate(input[[paste0("dropdowne_", i)]]))){
         #       # move row with selected item to top
-        #       idx.selected <- !is.na(match(model.input.data[[i]][[1]], isolate(input[[paste0("dropdowne_", i)]])))
+        #       idx.selected <- !is.na(match(modelInputData[[i]][[1]], isolate(input[[paste0("dropdowne_", i)]])))
         #       if(length(idx.selected)){
-        #         data.tmp[[j]] <<- rbind(model.input.data[[i]][idx.selected, ], model.input.data[[i]][!idx.selected, ])
+        #         data.tmp[[j]] <<- rbind(modelInputData[[i]][idx.selected, ], modelInputData[[i]][!idx.selected, ])
         #       }else{
-        #         data.tmp[[j]] <<- model.input.data[[i]]
+        #         data.tmp[[j]] <<- modelInputData[[i]]
         #       }
         #       rm(idx.selected)
         #     }else{
-        #       data.tmp[[j]] <<- model.input.data[[i]]
+        #       data.tmp[[j]] <<- modelInputData[[i]]
         #     }
         #   }else{
-        #     errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+        #     errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
         #     return(NULL)
         #   }
         #
@@ -204,24 +204,24 @@ lapply(seq_along(modelIn), function(i){
            }else if(!is.null(modelIn[[i]]$checkbox$value)){
              value <- if(identical(modelIn[[i]]$checkbox$value, TRUE)) 1L else 0L
            }else{
-             flog.error("Dataset: '%s' could not be loaded.", modelIn.alias[i])
-             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelIn.alias[i]), sep = "\n")
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
            # add name and description fields
            scalar      <- names(modelIn)[[i]]
-           description <- modelIn.alias[i]
+           description <- modelInAlias[i]
            
            # generate data frame
-           if(is.null(data.tmp[[length(modelIn.file.names)]])){
+           if(is.null(data.tmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelIn.file.names)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelIn.file.names)]]) <<- scalars.file.headers
+             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalars.file.headers
-             data.tmp[[length(modelIn.file.names)]] <<- rbind(data.tmp[[length(modelIn.file.names)]], new.data) 
+             names(new.data) <- scalarsFileHeaders
+             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
            }
          }
   )

@@ -9,7 +9,7 @@ lapply(datasets.to.fetch, function(dataset){
   # execute only if dataframe has not yet been imported or already imported data shall be overridden
   if(!length(isolate(rv[[paste0("in_", i)]])) || overrideInput){
     # handsontable, multi dropdown, or daterange
-    if(tolower(dataset) %in% modelIn.tabular.data){
+    if(tolower(dataset) %in% modelInTabularData){
       if(identical(load.mode, "xls")){
         # load from Excel workbook
         tryCatch({
@@ -29,19 +29,19 @@ lapply(datasets.to.fetch, function(dataset){
       # rather than setting them to NULL
       if(nrow(data.tmp)){
         if(verify.input(data.tmp, modelIn[[i]]$headers)){
-          if(identical(names(modelIn)[[i]], tolower(scalars.file.name))){
+          if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             # remove those rows from scalar dataset that are represented as a slider or dropdown menu
             scalarDataset <<- data.tmp 
-            model.input.data[[i]] <<- data.tmp[!(tolower(data.tmp[[1]]) %in% names(modelIn)), , drop = F]
+            modelInputData[[i]] <<- data.tmp[!(tolower(data.tmp[[1]]) %in% names(modelIn)), , drop = F]
           }else{
-            model.input.data[[i]] <<- data.tmp
+            modelInputData[[i]] <<- data.tmp
           }
           inputVerified <- TRUE
         }
       }else{
         # empty dataset
-        model.input.data[[i]] <<- modelInTemplate[[i]]
-        is.empty.input[[i]]   <<- TRUE
+        modelInputData[[i]] <<- modelInTemplate[[i]]
+        isEmptyInput[[i]]   <<- TRUE
         inputVerified         <- TRUE
       }
       
@@ -51,8 +51,8 @@ lapply(datasets.to.fetch, function(dataset){
       # get row names that need to be extracted from scalar table
       row.name <- tolower(names(modelIn)[[i]])
       # get column name of ID and value column
-      col.id    <- scalars.file.headers[1]
-      col.value <- scalars.file.headers[3]
+      col.id    <- scalarsFileHeaders[1]
+      col.value <- scalarsFileHeaders[3]
       
       # check whether scalar dataset has already been imported
       if(is.null(scalarDataset)){
@@ -60,10 +60,10 @@ lapply(datasets.to.fetch, function(dataset){
           # load from excel workbook
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
-            sheet.id <- match(tolower(scalars.file.name), tolower(readxl::excel_sheets(isolate(input$localInput$datapath))))[1]
+            sheet.id <- match(tolower(scalarsFileName), tolower(readxl::excel_sheets(isolate(input$localInput$datapath))))[1]
             data.tmp <- readxl::read_excel(input$localInput$datapath, sheet.id)
             #set names of scalar sheet to scalar headers
-            names(data.tmp) <- scalars.file.headers
+            names(data.tmp) <- scalarsFileHeaders
           }, error = function(e) {
             flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 
                       Error message: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
@@ -85,14 +85,14 @@ lapply(datasets.to.fetch, function(dataset){
           row.name <- paste0(row.name, c("_min", "_max"))
           data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
           if(!is.null(data.tmp) && length(data.tmp)){
-            model.input.data[[i]] <<- data.tmp
+            modelInputData[[i]] <<- data.tmp
             inputVerified <- TRUE
           }
         }else{
           data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) == row.name, 
                                             col.value, drop = FALSE], use.names = FALSE)
           if(!is.null(data.tmp) && length(data.tmp)){
-            model.input.data[[i]] <<- data.tmp
+            modelInputData[[i]] <<- data.tmp
             inputVerified <- TRUE
           }
         }
@@ -105,21 +105,21 @@ lapply(datasets.to.fetch, function(dataset){
       flog.debug("Dataset: %s loaded successfully (mode: %s, override: %s)", dataset, load.mode, overrideInput)
       newInputCount <<- newInputCount + 1
       # set identifier that data was overwritten 
-      is.empty.input[i] <<- TRUE
+      isEmptyInput[i] <<- TRUE
       if(!identical(load.mode, "scen")){
         # set unsaved flag
         rv$unsavedFlag <<- TRUE
         # if scenario includes output data set dirty flag
-        if(!no.output.data){
-          dirty.flag <<- TRUE
+        if(!noOutputData){
+          dirtyFlag <<- TRUE
           shinyjs::show("dirtyFlagIcon")
           shinyjs::show("dirtyFlagIconO")
         }
       }
       # reset dependent elements
-      input.initialized[dependent.datasets[[i]]] <<- FALSE
-      if(!is.null(modelIn.with.dep[[tolower(names(modelIn)[[i]])]])){
-        id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelIn.with.dep)))[1]
+      input.initialized[dependentDatasets[[i]]] <<- FALSE
+      if(!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])){
+        id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
         if(input.initialized[id]){
           # only update when initialized
           if(length(isolate(rv[[paste0("in_", i)]]))){
@@ -137,9 +137,9 @@ lapply(datasets.to.fetch, function(dataset){
         }
       }
     }else{
-      if(tolower(dataset) %in% names(modelIn.must.import)){
-        flog.info("The uploaded dataset: '%s' could not be verified.", modelIn.alias[i])
-        errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelIn.alias[i]), sep = "\n")
+      if(tolower(dataset) %in% names(modelInMustImport)){
+        flog.info("The uploaded dataset: '%s' could not be verified.", modelInAlias[i])
+        errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
       }
     }
   }
@@ -147,11 +147,11 @@ lapply(datasets.to.fetch, function(dataset){
 showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
 flog.trace("%d new input datasets loaded (load mode: %s, override: %s)", count.new.input, load.mode, overrideInput)
-if(!is.null(isolate(rv$active.sname))){
+if(!is.null(isolate(rv$activeSname))){
   shinyjs::enable("btSave")
 }
 shinyjs::enable("btSaveAs")
 # set initialisation flags for handsontables to FALSE
-if(any(hot.init)){
-  hot.init[]     <<- FALSE
+if(any(hotInit)){
+  hotInit[]     <<- FALSE
 }

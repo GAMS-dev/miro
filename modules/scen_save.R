@@ -3,7 +3,7 @@
 # scenario loaded into webUI always has internal ID = 1
 scen.str <<- "scen_1_"
 # clear output data in case it should not be saved
-if(!save.output){
+if(!saveOutput){
   lapply(seq_along(modelOut), function(i){
     scenData[[scen.str]][[i]] <<- scenDataTemplate[[i]]
   })
@@ -12,7 +12,7 @@ if(!save.output){
 if(is.null(scalarData[[scen.str]]) || !nrow(scalarData[[scen.str]])){
   scalarData[[scen.str]] <<- data.frame()
 }else{
-  idx.scalarOut <- match(tolower(scalars.out.name), names(modelOut))
+  idx.scalarOut <- match(tolower(scalarsOutName), names(modelOut))
   if(!is.na(idx.scalarOut)){
     # bind hidden and non hidden scalar data
     if(nrow(scenData[[scen.str]][[idx.scalarOut]])){
@@ -45,10 +45,10 @@ if(saveAsFlag){
     return(NULL)
   }
 }else{
-  if(!is.null(isolate(rv$active.sname))){
-    scen.name <- isolate(rv$active.sname)
-  }else if (!is.null(active.sname.tmp)){
-    scen.name <- active.sname.tmp
+  if(!is.null(isolate(rv$activeSname))){
+    scen.name <- isolate(rv$activeSname)
+  }else if (!is.null(activeSnameTmp)){
+    scen.name <- activeSnameTmp
   }else{
     flog.warn("Attempt to save new scenario failed due to no valid name being assigned (Save button was clicked).")
     return(NULL)

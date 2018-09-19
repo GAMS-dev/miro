@@ -14,11 +14,11 @@ observeEvent(input$btSave, {
 })
 
 observeEvent(virtualActionButton(rv$btRemoveOutputData), {
-  save.output <<- TRUE
-  if(dirty.flag){
+  saveOutput <<- TRUE
+  if(dirtyFlag){
     showRemoveExistingOutputDataDialog()
   }else{
-    if(saveAsFlag || is.null(isolate(rv$active.sname))){
+    if(saveAsFlag || is.null(isolate(rv$activeSname))){
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overrride current scenario data
@@ -28,8 +28,8 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
 })
 observeEvent(input$btRemoveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be removed.", uid)
-  save.output <<- FALSE
-  if(saveAsFlag || is.null(isolate(rv$active.sname))){
+  saveOutput <<- FALSE
+  if(saveAsFlag || is.null(isolate(rv$activeSname))){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overrride current scenario data
@@ -38,8 +38,8 @@ observeEvent(input$btRemoveOutput, {
 })
 observeEvent(input$btSaveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be saved regardless of possible corruption", uid)
-  save.output <<- TRUE
-  if(saveAsFlag || is.null(isolate(rv$active.sname))){
+  saveOutput <<- TRUE
+  if(saveAsFlag || is.null(isolate(rv$activeSname))){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overrride current scenario data
@@ -51,10 +51,10 @@ observeEvent(input$btSaveReadonly,
              )
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
-  if(!is.null(isolate(rv$active.sname))){
-    tmpScenName <- isolate(rv$active.sname)
-  }else if(!is.null(active.sname.tmp)){
-    tmpScenName <- active.sname.tmp
+  if(!is.null(isolate(rv$activeSname))){
+    tmpScenName <- isolate(rv$activeSname)
+  }else if(!is.null(activeSnameTmp)){
+    tmpScenName <- activeSnameTmp
   }else{
     tmpScenName <- lang$nav$dialogNewScen$newScenName
   }
@@ -78,7 +78,7 @@ observeEvent(input$btCheckName, {
   if(grepl("^\\s*$", scenName)){
     shinyjs::show("bad.scen.name")
     return(NULL)
-  #}else if(!is.null(isolate(rv$active.sname)) && scenName == isolate(rv$active.sname)){
+  #}else if(!is.null(isolate(rv$activeSname)) && scenName == isolate(rv$activeSname)){
   #  rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
   }else{
     errMsg <- NULL
@@ -102,7 +102,7 @@ observeEvent(input$btCheckName, {
       shinyjs::show("dialogSaveConfirm")
       return(NULL)
     }else{
-      rv$active.sname <<- scenName
+      rv$activeSname <<- scenName
       rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
     }
   }
@@ -137,9 +137,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   tryCatch({
     if(is.null(activeScen) || saveAsFlag){
       if(saveAsFlag){
-        rv$active.sname <<- isolate(input$scenName)
+        rv$activeSname <<- isolate(input$scenName)
       }
-      activeScen <<- Scenario$new(db = db, sname = isolate(rv$active.sname))
+      activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname))
     }
     activeScen$save(scenData[[scen.str]], msgProgress = lang$progressBar$saveScenDb)
     #showModal(modalDialog(
@@ -158,11 +158,11 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether output data was saved and in case it was set identifier accordingly
   if(any(vapply(scenData[[scen.str]][seq_along(modelOut)], 
                 hasContent, logical(1L), USE.NAMES = FALSE))){
-    no.output.data <<- FALSE
+    noOutputData <<- FALSE
   }else{
-    no.output.data <<- TRUE
+    noOutputData <<- TRUE
   }
-  if(!save.output){
+  if(!saveOutput){
     # remove output from UI
     renderOutputData()
   }

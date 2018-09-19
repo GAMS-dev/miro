@@ -1,15 +1,15 @@
 inputType <- list(text = c("_stag", "_uid"), date = c("_stime"))
 keysRaw   <- NULL
 scalarKeyTypeList <- list()
-scalarsTabNameIn  <- modelName %+% "_" %+% scalars.file.name
-scalarsTabNameOut <- modelName %+% "_" %+% scalars.out.name
+scalarsTabNameIn  <- modelName %+% "_" %+% scalarsFileName
+scalarsTabNameOut <- modelName %+% "_" %+% scalarsOutName
 scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
-  print(names(modelIn)[i] == scalars.file.name)
+  print(names(modelIn)[i] == scalarsFileName)
   if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
-    list(key = names(modelIn)[[i]], type = "number", alias = modelIn.alias[[i]])
+    list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
-    list(key = names(modelIn)[[i]], type = "string", alias = modelIn.alias[[i]])
-  }else if(names(modelIn)[i] %in% c(scalars.file.name, scalars.out.name)){
+    list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
+  }else if(names(modelIn)[i] %in% c(scalarsFileName, scalarsOutName)){
     aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
       return()
     })
@@ -24,14 +24,14 @@ scalarFields        <- scalarsTabNameIn %+% "-" %+% "_" %+%
   unlist(lapply(scalarKeyTypeList[[scalarsTabNameIn]], "[[", "key"))
 names(scalarFields) <- unlist(lapply(scalarKeyTypeList[[scalarsTabNameIn]],
                                      "[[", "alias"))
-batchLoad <- BatchLoad$new(db, scalars.file.headers[c(1, 3)],
+batchLoad <- BatchLoad$new(db, scalarsFileHeaders[c(1, 3)],
                            scalarsTabNameIn, scalarKeyTypeList)
 
 #tables <- strsplit(names(fieldValueList), "-", fixed = TRUE)
 #tables <- vapply(tables, "[[", character(1L), 2, USE.NAMES = FALSE)
 #fields <- names(fieldValueList)
 metaCols <- db$getScenMetaColnames()
-fields <- c("", scen.metadata.table %+% "-" %+% metaCols[c("uid", "stime", "stag")])
+fields <- c("", scenMetadataTable %+% "-" %+% metaCols[c("uid", "stime", "stag")])
 names(fields) <- c("", "Owner", "Date of creation", "Batch tags")
 fields <- c(fields, scalarFields)
 #names(fields) <- tables
@@ -236,16 +236,16 @@ observeEvent(input$btSendQuery, {
     if(length(field)){
       subsetCoditions[[a]] <<- tibble(field, val, op, table)
     }else{
-      subsetCoditions[[a]] <<- tibble(field = sid.identifier, val = 0L, op = ">", 
-                                      table = scen.metadata.table)
+      subsetCoditions[[a]] <<- tibble(field = sidIdentifier, val = 0L, op = ">", 
+                                      table = scenMetadataTable)
     }
     a <<- a + 1L
   })
   colsToFetch <- strsplit(fields[-1], "-", fixed = TRUE)
-  colN <- c(sid.identifier, vapply(colsToFetch, 
+  colN <- c(sidIdentifier, vapply(colsToFetch, 
                                    '[[', FUN.VALUE = "characer", 2, 
                                    USE.NAMES = FALSE))
-  names(colN) <- c(scen.metadata.table, vapply(colsToFetch, '[[', 
+  names(colN) <- c(scenMetadataTable, vapply(colsToFetch, '[[', 
                                                FUN.VALUE = "characer", 1,
                                                USE.NAMES = FALSE))
   

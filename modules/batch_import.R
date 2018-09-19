@@ -1,11 +1,11 @@
 # elements that must be saved in scalar table
-scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelIn.tabular.data]
+scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelInTabularData]
 shinyjs::disable("btUploadBatch")
 
 # table names that must exist in order for scenario to be valid
-tableNamesToVerify <- gsub(modelName %+% "_", "", scen.table.names, fixed = TRUE)
+tableNamesToVerify <- gsub(modelName %+% "_", "", scenTableNames, fixed = TRUE)
 # initialise batch import class
-batchImport <- BatchImport$new(db, scalars.file.name, scalars.out.name, 
+batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, 
                                tableNamesToVerify, config$csvDelim, workDir)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
@@ -85,7 +85,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
   prog$inc(amount = 1/6, message = "Checking for duplicated scenarios")
   tryCatch({
     duplicatedScen    <- batchImport$getScenDuplicates()
-    duplicatedScenIds <<- duplicatedScen[[sname.identifier]]
+    duplicatedScenIds <<- duplicatedScen[[snameIdentifier]]
     if(nrow(duplicatedScen)){
       dupScenTags <- paste(unique(duplicatedScen[[stagIdentifier]]), collapse = ", ")
       noDupScen   <- length(unique(duplicatedScenIds))

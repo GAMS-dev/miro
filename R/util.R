@@ -121,12 +121,12 @@ getModelName <- function(modelName = NULL, isShinyProxy = FALSE, envVarName = NU
 #  }
 #  
 #}
-get.input.to.import <- function(data, keywords.no.import){
+get.input.to.import <- function(data, keywordsNoImport){
   # Retrieves input data which has to be loaded from an external source
   #
   # Args:
   # data:                       raw list of input data
-  # keywords.no.import:         list of keywords to that define that the input data is NOT to be imported
+  # keywordsNoImport:           list of keywords to that define that the input data is NOT to be imported
   #                             (note that only keywords on the first level in the JSON file will be considered)
   #
   # Returns:
@@ -136,7 +136,7 @@ get.input.to.import <- function(data, keywords.no.import){
   # index variable as c() is slow
   j <- 1
   for(i in seq_along(data)){
-    if(!any(tolower(names(data[[i]])) %in% tolower(keywords.no.import))){
+    if(!any(tolower(names(data[[i]])) %in% tolower(keywordsNoImport))){
       data.to.import[[j]] <- data[[i]]
       names(data.to.import)[[j]] <- names(data)[[i]]
       j <- j + 1
@@ -145,41 +145,41 @@ get.input.to.import <- function(data, keywords.no.import){
   return(data.to.import)
 }
 
-get.input.type <- function(data, keywords.type){
+getInputType <- function(data, keywordsType){
   # Retrieves input type from JSOn file based on keyword list
   #
   # Args:
   # data:                       raw list of input data
-  # keywords.type:              list of return value/keyword pairs (example: "hot" = "columns")
+  # keywordsType:               list of return value/keyword pairs (example: "hot" = "columns")
   #
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
   
-  for(i in 1:length(keywords.type)){
-    if(keywords.type[[i]] %in% names(data)){
-      return(names(keywords.type)[[i]])
+  for(i in 1:length(keywordsType)){
+    if(keywordsType[[i]] %in% names(data)){
+      return(names(keywordsType)[[i]])
     }
   }
   stop("No valid input type found.", call. = F)
 }
 
-get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode = TRUE){
+getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = TRUE){
   # Retrieves list of input sheets that dropdown menu depends on (whose data has to be loaded)
   #
   # Args:
   # choices:                    raw list of choices from JSON file
   # modelIn:                    JSON element with model input data (used to verify dependencies)
   # name:                       name of the dropdown menu
-  # strict.mode:                throws an error instead of accepting possibly faulty user entries
+  # strictMode:                 throws an error instead of accepting possibly faulty user entries
   #
   # Returns:
   # list of sheet and column names that need to be loaded for dropdown menu to have all data required (all lower case).
   # list also contains singular elements without dependencies
   
-  ddown.dep         <- list()
-  ddown.dep$strings <- list()
-  ddown.dep$fw      <- list()
-  ddown.dep$bw      <- list()
+  ddownDep          <- list()
+  ddownDep$strings  <- list()
+  ddownDep$fw       <- list()
+  ddownDep$bw       <- list()
   # define indexing variable for strings as c() is slow
   k <- 1
   
@@ -211,21 +211,21 @@ get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode
           if(!is.na(idx2)){
             # add another forward dependency
             if(forward.dep){
-              j <- length(ddown.dep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddown.dep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
             # add another backward dependency
             if(backward.dep){
-              j <- length(ddown.dep$bw[[names(modelIn)[[idx1]]]]) + 1
-              ddown.dep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+              j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
+              ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
             # new element was added so increment counter
             if(!(forward.dep || backward.dep)){
               # neither forward nor backward dependency selected results in error or rendering as string
-              if(strict.mode){
+              if(strictMode){
                 stop(paste0("Neither a forward nor a backward dependency was defined in: '", choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
               }else{
-                ddown.dep$strings[[k]] <<- choices[[i]]
+                ddownDep$strings[[k]] <<- choices[[i]]
                 k <<- k + 1
               }
             }
@@ -234,20 +234,20 @@ get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode
             if(identical(el[[1]], name)){
               # first index is element itself, thus it is a reference to a shared database
               if(length(el) > 1){
-                ddown.dep$shared <<- el[[2]]
+                ddownDep$shared <<- el[[2]]
               }else{
-                ddown.dep$shared <<- el[[1]]
+                ddownDep$shared <<- el[[1]]
               }
-              return(ddown.dep)
+              return(ddownDep)
             }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forward.dep){
               # dependency on another dropdown menu, so dont check header info
-              j <- length(ddown.dep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddown.dep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][[2]]
+              j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][[2]]
             }else{
-              if(strict.mode){
+              if(strictMode){
                 stop(paste0("The header: '", el[[2]], "' for input sheet: '", el[[1]], "' could not be found. Make sure you define a valid reference."), call. = F)
               }else{
-                ddown.dep$strings[[k]] <<- choices[[i]]
+                ddownDep$strings[[k]] <<- choices[[i]]
                 k <<- k + 1
               }
             }
@@ -264,23 +264,23 @@ get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode
               if(!is.na(idx2)){
                 # add another forward dependency
                 if(forward.dep){
-                  j <- length(ddown.dep$fw[[names(modelIn)[[idx1]]]]) + 1
-                  ddown.dep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+                  j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
+                  ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # add another backward dependency
                 if(backward.dep){
-                  j <- length(ddown.dep$bw[[names(modelIn)[[idx1]]]]) + 1
-                  ddown.dep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
+                  j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
+                  ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # new element was added so increment counter
                 if(forward.dep || backward.dep){
                   col.found <- TRUE
                 }else{
                   # neither forward nor backward dependency selected results in error or rendering as string
-                  if(strict.mode){
+                  if(strictMode){
                     stop(paste0("Neither a forward nor a backward dependency was defined in: '", choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
                   }else{
-                    ddown.dep$strings[[k]] <<- choices[[i]]
+                    ddownDep$strings[[k]] <<- choices[[i]]
                     k <<- k + 1
                   }
                 }
@@ -288,10 +288,10 @@ get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode
             }
             # no column was found with matching name (invalid reference)
             if(!col.found){
-              if(strict.mode){
+              if(strictMode){
                 stop(paste0("A column named: '", el.raw, "' could not be found. Make sure you define a valid reference."), call. = F)
               }else{
-                ddown.dep$strings[[k]] <<- choices[[i]]
+                ddownDep$strings[[k]] <<- choices[[i]]
                 k <<- k + 1
               }
             }
@@ -300,20 +300,20 @@ get.dependencies.dropdown <- function(choices, modelIn, name = NULL, strict.mode
       }else{
         # element is a simple string or number (replace double dollars by single dollar)
         string <- gsub("\\$\\$", "\\$", choices[[i]])
-        ddown.dep$strings[[k]] <<- string
+        ddownDep$strings[[k]] <<- string
         k <<- k + 1
       }
     })
-    if(length(ddown.dep$strings)){
-      ddown.dep$strings <- unlist(ddown.dep$strings, use.names = FALSE)
+    if(length(ddownDep$strings)){
+      ddownDep$strings <- unlist(ddownDep$strings, use.names = FALSE)
     }
-    return(ddown.dep)
+    return(ddownDep)
   }else{
     stop("The dropdown menu does not have any choices defined. Please make sure you define atleast one option to choose from in the JSON file.", call. = F)
   }
 }
 
-get.dependencies.slider <- function(min, max, def, step, modelIn, list.of.operators){
+getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators){
   # Retrieves list of input sheets that dropdown menu depends on (whose data has to be loaded)
   # Note: currently only forward dependencies supported for slider
   #
@@ -323,7 +323,7 @@ get.dependencies.slider <- function(min, max, def, step, modelIn, list.of.operat
   # def:                        raw JSON data for default slider value
   # step:                       raw JSON data for step size
   # modelIn:                    JSON element with model input data (used to verify dependencies)
-  # list.of.operators:          list of valid operators for sliders
+  # listOfOperators:            list of valid operators for sliders
   #
   # Returns:
   # list of values with either a sheet name/column name pair in case of an external dependency or a numeric value in case of no dependency.
@@ -338,7 +338,7 @@ get.dependencies.slider <- function(min, max, def, step, modelIn, list.of.operat
         # split string in operator and operand part
         splitted <- strsplit(el, "\\(|\\)")[[1]]
         operator <- splitted[[1]]
-        if(!operator %in% list.of.operators){
+        if(!operator %in% listOfOperators){
           stop(paste0("'", operator, "' is not a valid operator for sliders."), call. = F)
         }
         dep      <- splitted[[2]]
@@ -350,20 +350,20 @@ get.dependencies.slider <- function(min, max, def, step, modelIn, list.of.operat
         if(!is.na(idx2)){
           slider.value <- list()
           slider.value[[tolower(dep[[1]])]] <- names(modelIn[[idx1]]$headers)[[idx2]]
-          slider.value[["$operator"]] <- names(list.of.operators)[[match(operator,list.of.operators)]]
+          slider.value[["$operator"]] <- names(listOfOperators)[[match(operator,listOfOperators)]]
           return(slider.value)
         }else{
           if(!is.na(idx1) && modelIn[[idx1]]$type == "daterange"){
             # dependency on daterange selector
             slider.value <- list()
             slider.value[[tolower(dep[[1]])]] <- "$daterange"
-            slider.value[["$operator"]] <- names(list.of.operators)[[match(operator, list.of.operators)]]
+            slider.value[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
             return(slider.value)
           }else if(!is.na(idx1) && modelIn[[idx1]]$type == "dropdown" && length(dep) > 1){
             # dependency on another dropdown menu
             slider.value <- list()
             slider.value[[tolower(dep[[1]])]] <- dep[2]
-            slider.value[["$operator"]] <- names(list.of.operators)[[match(operator, list.of.operators)]]
+            slider.value[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
             return(slider.value)
           }
           if(length(dep) > 1){

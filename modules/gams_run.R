@@ -78,7 +78,7 @@ observeEvent(input$btSolve, {
     }
     shinyjs::disable("btSolve")
     
-    idsSolved <- unique(db$importDataset(scen.metadata.table, cols = sname.identifier))
+    idsSolved <- unique(db$importDataset(scenMetadataTable, cols = snameIdentifier))
     scenToSolve <- scenToSolve()
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- scenToSolve$gmspar
@@ -92,21 +92,21 @@ observeEvent(input$btSolve, {
                             modalButton(lang$nav$dialogBatch$cancelButton),
                             actionButton("btBatchAll", label = lang$nav$dialogBatch$processAllButton),
                             actionButton("btBatchNew", label = lang$nav$dialogBatch$processUnsolvedButton, 
-                                         class = "btOrange")),
+                                         class = "btHighlight1")),
                           fade = TRUE, easyClose = FALSE))
     shinyjs::enable("btSolve")
     
     return(NULL)
   }
   
-  updateTabsetPanel(session, "sidebar.menu", selected = "gamsinter")
+  updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   
   # save input data 
   source("./modules/input_save.R", local = TRUE)
   pfFileContent <- NULL
   lapply(seq_along(data.tmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
-    if(identical(tolower(names(data.tmp)[[i]]), tolower(scalars.file.name))){
+    if(identical(tolower(names(data.tmp)[[i]]), tolower(scalarsFileName))){
       # scalars file exists, so remove compile time variables from it
       DDParIdx           <- grepl(paste("^", DDPar, "(_min|_max)?$", sep = "", collapse = "|"), data.tmp[[i]][[1]])
       GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_min|_max)?$", sep = "", collapse = "|"), data.tmp[[i]][[1]])
@@ -233,15 +233,15 @@ observeEvent(input$btSolve, {
         
         #select first tab in current run tabset
         statusText <- lang$nav$gamsModelStatus$success
-        updateTabsetPanel(session, "sidebar.menu",
+        updateTabsetPanel(session, "sidebarMenuId",
                           selected = "outputData")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
-        updateTabsetPanel(session, "content.current",
-                          selected = "content.current_1")
+        updateTabsetPanel(session, "contentCurrent",
+                          selected = "contentCurrent_1")
         errMsg <- NULL
         tryCatch({
-          GAMSResults <- loadGAMSResults(scalarsOutName = scalars.out.name, modelOut = modelOut, workDir = workDir, 
+          GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
                                          modelName = modelName, method = "csv", csvDelim = config$csvDelim, hiddenMarker = config$gamsMetaDelim) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)

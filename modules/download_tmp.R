@@ -14,7 +14,7 @@ observeEvent(input$btDownloadTmpFiles, {
       if(length(fileNames)){
         tagList(
           downloadButton("btDownloadTmpZip", label = lang$nav$dialogDownloadTmp$downloadZipButton),
-          downloadButton("btDownloadTmpConfirm", label = lang$nav$dialogDownloadTmp$downloadButton, class = "btOrange")
+          downloadButton("btDownloadTmpConfirm", label = lang$nav$dialogDownloadTmp$downloadButton, class = "btHighlight1")
         )
       }
     )
@@ -31,15 +31,15 @@ output$btDownloadTmpConfirm <- downloadHandler(
 )
 output$btDownloadTmpZip <- downloadHandler(
   filename = function(){
-    if(is.null(isolate(rv$active.sname))){
-      if(is.null(active.sname.tmp)){
+    if(is.null(isolate(rv$activeSname))){
+      if(is.null(activeSnameTmp)){
         # as no scenario name could be found set, scenario name to model name
         return(paste0(modelName, ".zip"))
       }else{
-        return(paste0(modelName, "_", active.sname.tmp, ".zip"))
+        return(paste0(modelName, "_", activeSnameTmp, ".zip"))
       }
     }else{
-      return(paste0(modelName, "_", isolate(rv$active.sname), ".zip"))
+      return(paste0(modelName, "_", isolate(rv$activeSname), ".zip"))
     }
   },
   content = function(file) {

@@ -1,4 +1,4 @@
-get.json.file.schema.pairs <- function(fileDir, schemaDir = fileDir, schema.pattern = "_schema"){
+getJsonFileSchemaPairs <- function(fileDir, schemaDir = fileDir, schema.pattern = "_schema"){
   # Get pairs of json and schema files from specified directory.
   #
   # Args:
@@ -23,7 +23,7 @@ get.json.file.schema.pairs <- function(fileDir, schemaDir = fileDir, schema.patt
   return(json.schema.map)
 }
 
-validate.json <- function(json.file.location, json.schema.location, verbose = TRUE, greedy = TRUE, add.defaults = TRUE){
+validateJson <- function(json.file.location, json.schema.location, verbose = TRUE, greedy = TRUE, add.defaults = TRUE){
   # Validates specified JSON file with JSON schema file and returns boolean as well as possible error messages in attributes.
   #
   # Args:

@@ -12,7 +12,7 @@ observeEvent(input$btImport, {
       scenMetadata <<- db$fetchScenList(noBatch = TRUE)
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
-      errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelIn.alias[i])
+      errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelInAlias[i])
     })
     if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){
       return(NULL)
@@ -29,7 +29,7 @@ observeEvent(input$btImport, {
                                                                accept = c("application/vnd.ms-excel", 
                                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                                                                           ".xlsx")),
-                                                     if(is.null(isolate(rv$active.sname))){
+                                                     if(is.null(isolate(rv$activeSname))){
                                                        tagList(
                                                          hidden(tags$div(id = "local_badScenName", class = "errMsg", 
                                                                          lang$nav$dialogImport$badScenName)
@@ -52,8 +52,8 @@ observeEvent(input$btImport, {
                                                          conditionalPanel(
                                                            condition = "input.cbSelectManuallyLoc == true",
                                                            selectInput("selInputDataLoc", lang$nav$dialogImport$selInputData, 
-                                                                       setNames(as.list(names(modelIn.to.import)), 
-                                                                                modelIn.to.import.alias), 
+                                                                       setNames(as.list(names(modelInToImport)), 
+                                                                                modelInToImportAlias), 
                                                                        multiple = TRUE, width = "100%")
                                                          )
                                                   )
@@ -64,7 +64,7 @@ observeEvent(input$btImport, {
                                                        shinyjs::disabled(
                                                          actionButton("btCheckSnameLocal", 
                                                                       lang$nav$dialogImport$okButton, 
-                                                                      class = "btOrange")
+                                                                      class = "btHighlight1")
                                                        )
                                               )
                                             )
@@ -83,7 +83,7 @@ observeEvent(input$btImport, {
                                                                         lang$nav$dialogImport$overrideButton),
                                                            actionButton("btNewNameLocal", 
                                                                         lang$nav$dialogImport$newNameButton, 
-                                                                        class = "btOrange")
+                                                                        class = "btHighlight1")
                                                   )
                                                 )
                                        )
@@ -101,7 +101,7 @@ observeEvent(input$btImport, {
                                          list(
                                            tags$div(class = "space"),
                                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
-                                                       db$formatScenList(scenMetadata, stime.identifier, desc = TRUE), 
+                                                       db$formatScenList(scenMetadata, stimeIdentifier, desc = TRUE), 
                                                        multiple = F, width = "100%"),
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
@@ -123,8 +123,8 @@ observeEvent(input$btImport, {
                                                         conditionalPanel(
                                                           condition = "input.cbSelectManually == true",
                                                           selectInput("selInputData", lang$nav$dialogImport$selInputData, 
-                                                                      setNames(as.list(names(modelIn.to.import)), 
-                                                                               modelIn.to.import.alias), 
+                                                                      setNames(as.list(names(modelInToImport)), 
+                                                                               modelInToImportAlias), 
                                                                       multiple = TRUE, width = "100%")
                                                         )
                                                  )
@@ -134,7 +134,7 @@ observeEvent(input$btImport, {
                                            tags$div(style = "text-align: center;",
                                                     actionButton("btLoadScenConfirm", 
                                                                  lang$nav$dialogLoadScen$okButton, 
-                                                                 class = "btOrange")
+                                                                 class = "btHighlight1")
                                            )
                                            
                                          )
@@ -167,7 +167,7 @@ observeEvent(input$localInput$name, {
              isolate(input$localInput$name))
   
   if(!is.null(isolate(input$localInput$name))){
-    if(is.null(isolate(rv$active.sname))){
+    if(is.null(isolate(rv$activeSname))){
       updateTextInput(session, "local_newScenName", value = gsub("\\.[^\\.]+$", "", 
                                                                  isolate(input$localInput$name)))
     }

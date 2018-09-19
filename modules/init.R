@@ -19,8 +19,8 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){ 
   # fetch JSON schema files
-  jsonSchemaMap <- c(get.json.file.schema.pairs(configDir), 
-                     get.json.file.schema.pairs(fileDir = paste0(currentModelDir, configDir), 
+  jsonSchemaMap <- c(getJsonFileSchemaPairs(configDir), 
+                     getJsonFileSchemaPairs(fileDir = paste0(currentModelDir, configDir), 
                                                 schemaDir = configDir))
   
   lapply(jsonFilesWithSchema, function(file){
@@ -39,7 +39,7 @@ if(is.null(errMsg)){
   config <- NULL
   lapply(seq_along(jsonSchemaMap), function(i){
     error <- tryCatch({
-      eval <- validate.json(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
+      eval <- validateJson(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
     }, error = function(e){
       errMsg <<- paste(errMsg, "Some error occurred validating JSON file: '" %+% 
                          names(jsonSchemaMap)[[i]] %+% "'. Error message: " %+% e, sep = "\n")
@@ -56,9 +56,9 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
       config$db <<- c(config, eval[[1]])
     }else if(!is.null(eval[[2]])){
-      errMsg.tmp <- "Some error occurred parsing JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% 
+      errMsgTmp <- "Some error occurred parsing JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% 
         "'. See below for more detailed information."
-      errMsg <<- paste(errMsg, errMsg.tmp, sep = "\n")
+      errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
       jsonErrors <<- rbind(jsonErrors, cbind(file_name = paste0(names(jsonSchemaMap)[[i]], ".json"), eval[[2]]))
     }
   })
@@ -94,7 +94,7 @@ if(is.null(errMsg)){
     flog.fatal(errMsg)
   }else{
     tryCatch({
-      eval <- validate.json(configDir %+% config$language %+% ".json", configDir %+% language.schema.name, add.defaults = F)
+      eval <- validateJson(configDir %+% config$language %+% ".json", configDir %+% languageSchemaName, add.defaults = F)
     }, error = function(e){
       errMsg <<- "Some error occurred validating language file: '" %+% config$language %+% ".json'. Error message: " %+% e
       flog.fatal(errMsg)
@@ -113,17 +113,17 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   flog.trace("Language files loaded.")
   # handsontable options
-  hot.options       <- config$handsontable
+  hotOptions        <- config$handsontable
   
   modelOut          <- config$gamsOutputFiles
   names(modelOut)   <- tolower(names(modelOut))
   # declare set of output sheets that should be displayed in webUI
-  modelOut.to.display <- lapply(seq_along(modelOut), function(i){
+  modelOutToDisplay <- lapply(seq_along(modelOut), function(i){
     if(identical(modelOut[[i]]$hidden, TRUE)) 
       NA 
     else 
       names(modelOut)[[i]]})
-  modelOut.to.display <- unlist(modelOut.to.display[!is.na(modelOut.to.display)], use.names = FALSE)
+  modelOutToDisplay   <- unlist(modelOutToDisplay[!is.na(modelOutToDisplay)], use.names = FALSE)
   
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
@@ -141,33 +141,33 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){
   # declare GAMS compile time variables and GAMS options
-  tmp.DDPar           <- getGMSPar(names(modelIn), prefixDDPar)
-  names(modelIn)      <- tmp.DDPar[[1]]
-  DDPar               <- tmp.DDPar[[2]]
-  rm(tmp.DDPar)
-  tmp.GMSOpt          <- getGMSPar(names(modelIn), prefixGMSOpt)
-  names(modelIn)      <- tmp.GMSOpt[[1]]
-  GMSOpt              <- tmp.GMSOpt[[2]]
-  rm(tmp.GMSOpt)
+  tmpDDPar            <- getGMSPar(names(modelIn), prefixDDPar)
+  names(modelIn)      <- tmpDDPar[[1]]
+  DDPar               <- tmpDDPar[[2]]
+  rm(tmpDDPar)
+  tmpGMSOpt           <- getGMSPar(names(modelIn), prefixGMSOpt)
+  names(modelIn)      <- tmpGMSOpt[[1]]
+  GMSOpt              <- tmpGMSOpt[[2]]
+  rm(tmpGMSOpt)
   
-  modelIn.to.import   <- get.input.to.import(modelIn, keywords.no.import)
-  modelIn.must.import <- get.input.to.import(modelIn, keywords.no.must.import)
+  modelInToImport     <- get.input.to.import(modelIn, keywordsNoImport)
+  modelInMustImport   <- get.input.to.import(modelIn, keywordsNoMustImport)
   # declare input and output aliases
-  modelIn.alias <- lapply(seq_along(modelIn), function(i){
+  modelInAlias        <- lapply(seq_along(modelIn), function(i){
     if(is.null(modelIn[[i]]$alias)){
       names(modelIn)[[i]]
     }else{
       modelIn[[i]]$alias
     }
   })
-  modelIn.to.import.alias <- lapply(seq_along(modelIn.to.import), function(i){
-    if(is.null(modelIn.to.import[[i]]$alias)){
-      names(modelIn.to.import)[[i]]
+  modelInToImportAlias <- lapply(seq_along(modelInToImport), function(i){
+    if(is.null(modelInToImport[[i]]$alias)){
+      names(modelInToImport)[[i]]
     }else{
-      modelIn.to.import[[i]]$alias
+      modelInToImport[[i]]$alias
     }
   })
-  modelOut.alias <- lapply(seq_along(modelOut), function(i){
+  modelOutAlias <- lapply(seq_along(modelOut), function(i){
     if(is.null(modelOut[[i]]$alias)){
       names(modelOut)[[i]]
     }else{
@@ -177,10 +177,10 @@ if(is.null(errMsg)){
   # add input type to list
   lapply(seq_along(modelIn), function(i){
     tryCatch({
-      modelIn[[i]]$type <<- get.input.type(modelIn[[i]], keywords.type = keywords.type)
+      modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
     }, error = function(e){
-      flog.fatal(errMsg.tmp)
-      errMsg <<- paste(errMsg, paste0(modelIn.alias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
+      flog.fatal(errMsgTmp)
+      errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
     })
   })
   
@@ -188,20 +188,19 @@ if(is.null(errMsg)){
   if(!length(config$aggregateWidgets$title)){
     # every input element on its own tab
     inputTabs  <- seq_along(modelIn)
-    inputTabTitles <- modelIn.alias
+    inputTabTitles <- modelInAlias
   }else{
     # aggregate input widgets on a single tab
-    widget.tab <- NULL
-    widget.ids <- lapply(seq_along(modelIn), function(i){
+    widgetIds <- lapply(seq_along(modelIn), function(i){
       if(identical(modelIn[[i]]$type, "hot")){
         return(NULL)
       }else{
         return(i)
       }
     })
-    widget.ids   <- unlist(widget.ids[!vapply(widget.ids, is.null, numeric(1L))])
+    widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null, numeric(1L))])
     # id of tab with aggregated widgets
-    widget.id    <- NULL
+    widgetId     <- NULL
     j            <- 1L
     inputTabs <- vector("list", length(modelIn))
     inputTabTitles<- vector("list", length(modelIn))
@@ -209,50 +208,50 @@ if(is.null(errMsg)){
     lapply(seq_along(modelIn), function(i){
       if(identical(modelIn[[i]]$type, "hot")){
         inputTabs[[i]] <<- i
-        inputTabTitles[[i]]<<- modelIn.alias[[i]]
+        inputTabTitles[[i]]<<- modelInAlias[[i]]
       }else{
-        if(is.null(widget.id)){
-          widget.id         <<- i
-          inputTabs[[i]] <<- widget.ids
+        if(is.null(widgetId)){
+          widgetId         <<- i
+          inputTabs[[i]] <<- widgetIds
           inputTabTitles[[i]]<<- config$aggregateWidgets$title
         }
       }
     })
     inputTabs   <- inputTabs[!vapply(inputTabs, is.null, numeric(1L))]
     inputTabTitles  <- inputTabTitles[!vapply(inputTabTitles, is.null, numeric(1L))]
-    if(identical(length(inputTabs[[widget.id]]), 1L)){
+    if(identical(length(inputTabs[[widgetId]]), 1L)){
       # if there is only a single widget in widget tab use alias of this widget
-      inputTabTitles[[widget.id]] <- modelIn.alias[[widget.id]]
+      inputTabTitles[[widgetId]] <- modelInAlias[[widgetId]]
     }
   }
   
   # read graph data for input and output sheets
-  strict.mode       <- config$activateModules$strictmode
-  config.graphs.in  <- vector(mode = "list", length = length(modelIn))
-  config.graphs.out <- vector(mode = "list", length = length(modelOut))
+  strictMode        <- config$activateModules$strictmode
+  configGraphsIn    <- vector(mode = "list", length = length(modelIn))
+  configGraphsOut   <- vector(mode = "list", length = length(modelOut))
   
   for(el in names(config$dataRendering)){
     i <- match(tolower(el), names(modelIn))[[1]]
     # data rendering object was found in list of model input sheets
     if(!is.na(i)){
-      config.graphs.in[[i]] <- config$dataRendering[[el]]
+      configGraphsIn[[i]] <- config$dataRendering[[el]]
     }else{
       i <- match(tolower(el), names(modelOut))[[1]]
       # data rendering object was found in list of model output sheets
       if(!is.na(i)){
-        config.graphs.out[[i]] <- config$dataRendering[[el]]
-      }else if(strict.mode){
-        errMsg.tmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
-        flog.fatal(errMsg.tmp)
-        errMsg <- paste(errMsg, errMsg.tmp, sep = "\n")
+        configGraphsOut[[i]] <- config$dataRendering[[el]]
+      }else if(strictMode){
+        errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
+        flog.fatal(errMsgTmp)
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }
   }
   
   # assign default output format to output data that was not set in config
   lapply(seq_along(modelOut), function(i){
-    if(is.null(config.graphs.out[[i]])){
-      config.graphs.out[[i]]$outType <<- def.out.type
+    if(is.null(configGraphsOut[[i]])){
+      configGraphsOut[[i]]$outType <<- defOutType
     }
   })
   # assign default output format for input sheets that were not set in config
@@ -260,8 +259,8 @@ if(is.null(errMsg)){
     lapply(seq_along(modelIn), function(i){
       # Create graphs only for tabular input sheets 
       if(!is.null(modelIn[[i]]$headers)){
-        if(is.null(config.graphs.in[[i]])){
-          config.graphs.in[[i]]$outType <<- def.in.type
+        if(is.null(configGraphsIn[[i]])){
+          configGraphsIn[[i]]$outType <<- defInType
         }
       }
     })
@@ -295,7 +294,7 @@ if(is.null(errMsg)){
                    errMsg <<- paste(errMsg, 
                                     sprintf("Multi dropdown menus are currently " %+% 
                                               "not supported in batch mode (Element: '%s').", 
-                                            modelIn.alias[i]), sep = "\n")
+                                            modelInAlias[i]), sep = "\n")
                  }else{
                    # specify that dropdown menu is originally a single select menu
                    modelIn[[i]]$dropdown$single   <<- TRUE
@@ -315,7 +314,7 @@ if(is.null(errMsg)){
                  errMsg <<- paste(errMsg, 
                                   sprintf("Elements other than sliders, checkboxes and single " %+% 
                                             "dropdown menus are currently not supported (Element: '%s').", 
-                                          modelIn.alias[i]), sep = "\n")
+                                          modelInAlias[i]), sep = "\n")
                })
       }
     })
@@ -334,38 +333,38 @@ if(is.null(errMsg)){
   }
   
   # get datasets whose data source is shared with other models
-  shared.data      <- vector("logical", length(modelIn))
+  sharedData       <- vector("logical", length(modelIn))
   # list of column names used to subset shared dataframe
   colSubset <- vector("list", length(modelIn))
   # get input sheets with dependencies on other sheets
   # get dropdown dependencies
   
-  ddown.dep        <- list()
-  choices.no.dep   <- list()
-  aliases.no.dep   <- list()
-  slider.values    <- list()
-  modelIn.with.dep <- list()
-  dependent.datasets <- vector("list", length = length(modelIn))
+  ddownDep         <- list()
+  choicesNoDep     <- list()
+  aliasesNoDep     <- list()
+  sliderValues     <- list()
+  modelInWithDep   <- list()
+  dependentDatasets <- vector("list", length = length(modelIn))
   
-  modelIn.tabular.data <- lapply(seq_along(modelIn), function(i){
+  modelInTabularData <- lapply(seq_along(modelIn), function(i){
     name <- names(modelIn)[[i]]
     switch(modelIn[[i]]$type,
            dropdown = {
              # a dropdown menu cannot use the reserved name for the scalar table
-             if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name)){
-               errMsg <<- paste(errMsg, paste0("The dropdown menu: '", modelIn.alias[i], 
+             if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+               errMsg <<- paste(errMsg, paste0("The dropdown menu: '", modelInAlias[i], 
                                                "' uses a reserved name as the identifier. Please choose a different name."), sep = "\n")
              }
              # get dependencies
              tryCatch({
-               choices <- get.dependencies.dropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name, strict.mode = strict.mode)
+               choices <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$choices, modelIn = modelIn, name = name, strictMode = strictMode)
                if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                 aliases <- get.dependencies.dropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name, strict.mode = strict.mode)
+                 aliases <- getDependenciesDropdown(choices = modelIn[[i]]$dropdown$aliases, modelIn = modelIn, name = name, strictMode = strictMode)
                }else{
                  aliases <- NULL
                }
              }, error = function(e){
-               errMsg <<- paste(errMsg, paste0("'", modelIn.alias[i], 
+               errMsg <<- paste(errMsg, paste0("'", modelInAlias[i], 
                                                "' has no valid input type defined. Error message: ", e), sep = "\n")
              })
              if(!is.null(errMsg)){
@@ -374,39 +373,39 @@ if(is.null(errMsg)){
              
              # check whether dropdown menu uses shared data
              if(length(choices$shared > 0) && length(choices$shared) != 1){
-               errMsg <<- paste(errMsg,paste0("The dropdown menu : '", modelIn.alias[i], 
+               errMsg <<- paste(errMsg,paste0("The dropdown menu : '", modelInAlias[i], 
                                               "' refers to a shared database. However, currently a maximum of 1 column from an external source is supported."), sep = "\n")
                return(NULL)
              }else if(length(choices$shared) == 1){
                if(length(aliases$shared) > 0 && length(aliases$shared) != 1){
-                 errMsg <<- paste(errMsg,paste0("The choices for dropdown menu '", modelIn.alias[i], 
+                 errMsg <<- paste(errMsg,paste0("The choices for dropdown menu '", modelInAlias[i], 
                                                 "' do not match the number of aliases."), sep = "\n")
                  return(NULL)
                }else if(length(aliases$shared) > 0){
-                 ddown.dep[[name]]$aliases <<- aliases$shared
+                 ddownDep[[name]]$aliases <<- aliases$shared
                }
                # remove identifier string that specifies where shared data comes from rom dropdown
-               ddown.dep[[name]]$shared <<- choices$shared
+               ddownDep[[name]]$shared <<- choices$shared
                
                if(!identical(name, choices$shared)){
                  # only subset of columns will be imported
-                 colSubset[[i]]   <<- c(tolower(ddown.dep[[name]]$shared), tolower(ddown.dep[[name]]$aliases))
+                 colSubset[[i]]   <<- c(tolower(ddownDep[[name]]$shared), tolower(ddownDep[[name]]$aliases))
                }
                
                # add to list of widgets with shared datasource
-               shared.data[i] <<- TRUE
+               sharedData[i] <<- TRUE
              }
              # in case dropdown menu has aliases, validate that they are of matching length as choices
              if(!is.null(aliases)){
                if(length(aliases$strings) != length(choices$strings)){
-                 errMsg <<- paste(errMsg,paste0("The number of fixed aliases for dropdown menu: ", modelIn.alias[i], 
+                 errMsg <<- paste(errMsg,paste0("The number of fixed aliases for dropdown menu: ", modelInAlias[i], 
 " does not match the number of choices without dependencies. 
                                                 Aliases: '", paste(aliases$strings, collapse = ","), 
 ". Choices: '", paste(choices$strings, collapse = ","), "'."), sep = "\n")
                  return(NULL)
                }else if(length(aliases$fw) != length(choices$fw)){
                  errMsg <<- paste(errMsg,paste0("The number of aliases with dependencies for dropdown menu: ", 
-modelIn.alias[i], " does not match the number of choices with dependencies. 
+modelInAlias[i], " does not match the number of choices with dependencies. 
                                                 Aliases: '", paste(aliases$fw, collapse = ","), 
 ". Choices: '", paste(choices$fw, collapse = ","), "'."), sep = "\n")
                  return(NULL)
@@ -414,20 +413,20 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                }else if(any(vapply(names(aliases$fw), function(sheet){
                  if(sheet %in% names(choices$fw)) return(F) else return(T)}, logical(1)))){
                  errMsg <<- paste(errMsg,paste0("When both the choices and their aliases have dependencies on external data sheets, please make sure they depend on the same dataset.
-                                                (dropdown menu: '", modelIn.alias[i], "', aliases: '", paste(aliases$fw, collapse = ","), "', choices: '", paste(choices$fw, collapse = ","), "'."), sep = "\n")
+                                                (dropdown menu: '", modelInAlias[i], "', aliases: '", paste(aliases$fw, collapse = ","), "', choices: '", paste(choices$fw, collapse = ","), "'."), sep = "\n")
                  return(NULL)
                }
              }
              # set vector of choices to static ones
              modelIn[[i]]$dropdown$choices   <<- choices$strings
              modelIn[[i]]$dropdown$aliases   <<- aliases$strings
-             ddown.dep[[name]]$fw            <<- choices$fw
-             ddown.dep[[name]]$bw            <<- choices$bw
-             ddown.dep[[name]]$aliases       <<- aliases$fw
-             choices.no.dep[[name]]          <<- choices$strings
-             aliases.no.dep[[name]]          <<- aliases$strings
+             ddownDep[[name]]$fw             <<- choices$fw
+             ddownDep[[name]]$bw             <<- choices$bw
+             ddownDep[[name]]$aliases        <<- aliases$fw
+             choicesNoDep[[name]]            <<- choices$strings
+             aliasesNoDep[[name]]            <<- aliases$strings
              if(length(choices$fw)){
-               modelIn.with.dep[[name]]      <<- modelIn[i]
+               modelInWithDep[[name]]        <<- modelIn[i]
              }
                  if(identical(modelIn[[i]]$dropdown$multiple, TRUE)
                     && !identical(modelIn[[i]]$dropdown$single, TRUE)
@@ -439,75 +438,75 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
              },
              slider = {
                # a slider cannot use the reserved name for the scalar table
-               if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name)){
+               if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
                  errMsg <<- paste(errMsg, 
-                                  paste0("The slider: '", modelIn.alias[i], 
+                                  paste0("The slider: '", modelInAlias[i], 
                                          "' uses a reserved name as its identifier. Please choose a different name."),
                                   sep = "\n")
                }
                tryCatch({
-                 slider.values[[name]] <<- get.dependencies.slider(min = modelIn[[i]]$slider$min, 
-                                                                   max = modelIn[[i]]$slider$max, 
-                                                                   def = modelIn[[i]]$slider$default, 
-                                                                   step = modelIn[[i]]$slider$step,
-                                                                   modelIn = modelIn, 
-                                                                   list.of.operators = list.of.operators)
+                 sliderValues[[name]] <<- getDependenciesSlider(min = modelIn[[i]]$slider$min, 
+                                                                max = modelIn[[i]]$slider$max, 
+                                                                def = modelIn[[i]]$slider$default, 
+                                                                step = modelIn[[i]]$slider$step,
+                                                                modelIn = modelIn, 
+                                                                listOfOperators = listOfOperators)
                  # no dependencies for slider
-                 if(is.null(slider.values[[name]])){
+                 if(is.null(sliderValues[[name]])){
                    
-                   slider.values[[name]] <<- list("min" = as.numeric(modelIn[[i]]$slider$min), 
+                   sliderValues[[name]] <<- list("min" = as.numeric(modelIn[[i]]$slider$min), 
                                                   "max" = as.numeric(modelIn[[i]]$slider$max), 
                                                   "def" = as.numeric(modelIn[[i]]$slider$default), 
                                                   "step" = as.numeric(modelIn[[i]]$slider$step))
-                   if(suppressWarnings(any(is.na(slider.values[[name]])))){
+                   if(suppressWarnings(any(is.na(sliderValues[[name]])))){
                      errMsg <<- paste(errMsg, 
-                                      paste0("The slider: '", modelIn.alias[i], 
+                                      paste0("The slider: '", modelInAlias[i], 
                                              " has non numeric values. Please make sure min, max etc. are numeric."),
                                       sep = "\n")
                    }
                  }else{
-                   modelIn.with.dep[[name]]   <<- modelIn[[i]]
+                   modelInWithDep[[name]]   <<- modelIn[[i]]
                  }
                  # used to access default value inside lapply (in input_render_nontab.R)
-                 attributes(slider.values[[name]]$def) <- list(ref = "def")
+                 attributes(sliderValues[[name]]$def) <- list(ref = "def")
                }, error = function(e){
-                 errMsg <<- paste(errMsg,paste0("'", modelIn.alias[i], 
+                 errMsg <<- paste(errMsg,paste0("'", modelInAlias[i], 
                                                 "' has no valid input type defined. Error message: ", e), sep = "\n")
                })
                return(NULL)
              },
              hot = {
                # check that in case dataset is scalar ds, it has correct headers
-               if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name) && 
-                  !identical(names(modelIn[[i]]$headers), scalars.file.headers)){
-                 warning(paste0(modelIn.alias[i], " is defined to be the scalar input dataset, " %+%
+               if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
+                  !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
+                 warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
 "but has incorrect headers. The headers were adjusted accordingly."))
-                 names(modelIn[[i]]$headers) <- scalars.file.headers
+                 names(modelIn[[i]]$headers) <- scalarsFileHeaders
                }
                if(identical(modelIn[[i]]$sharedData, TRUE)){
-                 shared.data[i] <<- TRUE
+                 sharedData[i] <<- TRUE
                }
                return(name)
              },
              date = {
-               if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name)){
-                 errMsg <<- paste(errMsg, paste0("The date selector: '", modelIn.alias[i], 
+               if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+                 errMsg <<- paste(errMsg, paste0("The date selector: '", modelInAlias[i], 
                                                  "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
                }
                # TODO : support dependency
                return(NULL)
              },
              daterange = {
-               if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name)){
-                 errMsg <<- paste(errMsg, paste0("The date range selector: '", modelIn.alias[i], 
+               if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+                 errMsg <<- paste(errMsg, paste0("The date range selector: '", modelInAlias[i], 
                                                  "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
                }
                # TODO : support dependency
                return(NULL)
              },
              checkbox = {
-               if(names(modelIn)[[i]] %in% c(scalars.file.name, scalars.out.name)){
-                 errMsg <<- paste(errMsg, paste0("The checkbox: '", modelIn.alias[i], 
+               if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+                 errMsg <<- paste(errMsg, paste0("The checkbox: '", modelInAlias[i], 
                                                  "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
                }
                if(is.character(modelIn[[i]]$checkbox$value)){
@@ -515,7 +514,7 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                  
                  # BEGIN error checks
                  if(grepl("\\$+$", modelIn[[i]]$checkbox$value)){
-                   errMsg <<- paste(errMsg,paste0("The checkbox: '", modelIn.alias[i], 
+                   errMsg <<- paste(errMsg,paste0("The checkbox: '", modelInAlias[i], 
                                                   "' has a backward dependency assigned. Currently only forward dependencies are supported for checkboxes."), sep = "\n")
                  }
                  # END error checks
@@ -528,20 +527,20 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                    # add forward dependency
                    modelIn[[i]]$checkbox$sheetId <<- idx1
                    modelIn[[i]]$checkbox$value   <<- cbValue[2]
-                   modelIn.with.dep[[name]]      <<- modelIn[[i]]
+                   modelInWithDep[[name]]      <<- modelIn[[i]]
                  }else{
                    errMsg <<- paste(errMsg,paste0("The dependent dataset for checkbox: '", 
-                                                  modelIn.alias[i], "' could not be found. Please make sure you define a valid reference."), sep = "\n")
+                                                  modelInAlias[i], "' could not be found. Please make sure you define a valid reference."), sep = "\n")
                  }
                }
                return(NULL)
              }
     )
              })
-  dependent.datasets <- lapply(seq_along(modelIn), function(i){
-    dependentDataIds <- vapply(seq_along(ddown.dep), function(j){
-      if(names(modelIn)[[i]] %in% names(ddown.dep[[j]]$fw)){
-        return(match(names(ddown.dep)[[j]], names(modelIn)))
+  dependentDatasets <- lapply(seq_along(modelIn), function(i){
+    dependentDataIds <- vapply(seq_along(ddownDep), function(j){
+      if(names(modelIn)[[i]] %in% names(ddownDep[[j]]$fw)){
+        return(match(names(ddownDep)[[j]], names(modelIn)))
       }else{
         return(NA_integer_)
       }
@@ -553,67 +552,67 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     return(dependentDataIds)
   })
   
-  modelIn.tabular.data <- unlist(modelIn.tabular.data, use.names = FALSE)
+  modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
-  if(tolower(scalars.file.name) %in% modelIn.tabular.data || length(modelIn) == length(modelIn.tabular.data)){
-    input.ds.names <- modelIn.tabular.data
+  if(tolower(scalarsFileName) %in% modelInTabularData || length(modelIn) == length(modelInTabularData)){
+    inputDsNames <- modelInTabularData
   }else{
-    input.ds.names <- c(modelIn.tabular.data, scalars.file.name)
+    inputDsNames <- c(modelInTabularData, scalarsFileName)
   }
   }
   
   if(is.null(errMsg)){
     # determine the filenames for the model input datasets
-    if(scalars.file.name %in% modelIn.tabular.data){
+    if(scalarsFileName %in% modelInTabularData){
       # scalars should always be the highest indexed dataset
-      modelIn.file.names <- c(modelIn.tabular.data[modelIn.tabular.data != scalars.file.name], scalars.file.name)
+      modelInFileNames <- c(modelInTabularData[modelInTabularData != scalarsFileName], scalarsFileName)
     }else{
-      if(length(modelIn) > length(modelIn.tabular.data)){
-        modelIn.file.names <- c(modelIn.tabular.data, scalars.file.name)
+      if(length(modelIn) > length(modelInTabularData)){
+        modelInFileNames <- c(modelInTabularData, scalarsFileName)
       }else{
-        modelIn.file.names <- modelIn.tabular.data
+        modelInFileNames <- modelInTabularData
       }
     }
     
     # create list of dependencies for each column of input data
     # first define data sheets without forward dependencies on other sheets (tabular data)
-    if(length(modelIn.with.dep)){
-      modelIn.no.dep <- names(modelIn[-match(names(modelIn.with.dep), names(modelIn))])
+    if(length(modelInWithDep)){
+      modelInNoDep <- names(modelIn[-match(names(modelInWithDep), names(modelIn))])
     }else{
-      modelIn.no.dep <- names(modelIn)
+      modelInNoDep <- names(modelIn)
     }
     
     # initialise list that contains dependency information about each input dataset
-    cols.with.dep <- vector(mode = "list", length = length(modelIn))
+    colsWithDep <- vector(mode = "list", length = length(modelIn))
     
     # find dependencies
-    lapply(modelIn.no.dep, function(sheet){
+    lapply(modelInNoDep, function(sheet){
       # get input element id of dataset without dependency
       i <- match(tolower(sheet), names(modelIn))[[1]]
       # find columns of dataset i with dependency
       
       lapply(names(modelIn[[i]]$headers), function(col){
-        lapply(names(modelIn), function(sheet.dep){
-          # test if sheet.dep has a forward dependency on considered sheet without forward dependencies
-          if(col %in% ddown.dep[[sheet.dep]]$bw[[sheet]]){
-            if(length(cols.with.dep[[i]][[col]])){
+        lapply(names(modelIn), function(sheetDep){
+          # test if sheetDep has a forward dependency on considered sheet without forward dependencies
+          if(col %in% ddownDep[[sheetDep]]$bw[[sheet]]){
+            if(length(colsWithDep[[i]][[col]])){
               errMsg <<- paste(errMsg,paste0(col, " of input sheet ", sheet, 
                                              "has more than one dependency. Only one backward dependency per column is allowed.", e), sep = "\n")
             }else{
-              id <- match(tolower(sheet.dep), names(modelIn))
-              cols.with.dep[[i]][[col]] <<- id
+              id <- match(tolower(sheetDep), names(modelIn))
+              colsWithDep[[i]][[col]] <<- id
             }
           }
         })
       })
     })
     # find ID columns (sets in GAMS) for each input data sheet
-    ids.in <- vector(mode = "list", length = length(modelIn))
-    for(input.name in modelIn.tabular.data){
-      i <- match(tolower(input.name), names(modelIn))[[1]]
+    idsIn <- vector(mode = "list", length = length(modelIn))
+    for(inputName in modelInTabularData){
+      i <- match(tolower(inputName), names(modelIn))[[1]]
       if(!is.null(modelIn[[i]]$headers) && length(modelIn[[i]]$headers)){
-        ids.in[[i]] <- unlist(lapply(1:length(modelIn[[i]]$headers), function(j){
+        idsIn[[i]] <- unlist(lapply(1:length(modelIn[[i]]$headers), function(j){
           if(modelIn[[i]]$headers[[j]]$type == "set"){
             return(names(modelIn[[i]]$headers)[[j]])
           }
@@ -623,7 +622,7 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     
     # initialize data frames for model input data
     modelInTemplate <- vector(mode = "list", length = length(modelIn))
-    lapply(modelIn.tabular.data, function(el){
+    lapply(modelInTabularData, function(el){
       i <- match(el, names(modelIn))
       if(!is.null(modelIn[[i]]$headers)){
         headers   <- vector(mode = "numeric", length = length(modelIn[[i]]$headers))
@@ -640,7 +639,7 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
       }
     })
     modelOutTemplate <- vector(mode = "list", length = length(modelOut))
-    lapply(modelOut.to.display, function(outputSheet){
+    lapply(modelOutToDisplay, function(outputSheet){
       outputSheetIdx <- match(outputSheet, names(modelOut))
       if(!is.null(modelOut[[outputSheetIdx]]$headers)){
         headers   <- vector(mode = "numeric", length = length(modelOut[[outputSheetIdx]]$headers))
@@ -658,11 +657,6 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     })
     scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
     scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
-    ## create directory used for asynchronous solves
-    #if(!dir.create(paste0(asyncDir.name, modelName, "/"), recursive = T, showWarnings = F)){
-    #  errMsg <<- paste(errMsg, lang$errMsg$fileWrite$desc, sep = "\n")
-    #}
-    
   }
   if(is.null(errMsg)){
     if(identical(config$activateModules$scenario, TRUE) && 
@@ -672,12 +666,12 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     }
     # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
     # scenario data is a concatenated list of outputData and inputData
-    scen.table.names    <- c(names(modelOut), input.ds.names)
-    scen.table.names    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scen.table.names
+    scenTableNames    <- c(names(modelOut), inputDsNames)
+    scenTableNames    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scenTableNames
     # define scenario tables to display in interface
-    scen.table.names.to.display <- c(modelOut.to.display, input.ds.names)
+    scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames)
     
-    #input.table.names  <- paste0(paste0(modelName,"_"), c(names(modelIn.to.import), scalars.file.name))
+    #inputTableNames  <- paste0(paste0(modelName,"_"), c(names(modelInToImport), scalarsFileName))
     # get the operating system that shiny is running on
     serverOS    <- getOS()
     # generate GAMS return code map
@@ -711,8 +705,8 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                            '405' = "Blank in current directory (UNIX only)",
                            '150' = "Blank in scratch extension (scrext)",
                            '406' = "Blank in scratch extension (scrext)",
-                           '151' = "Unexpected cmexRC",
-                           '407' = "Unexpected cmexRC",
+                           '151' = "Unexpected cmexRC",
+                           '407' = "Unexpected cmexRC",
                            '152' = "Could not find the process directory (procdir)",
                            '408' = "Could not find the process directory (procdir)",
                            '153' = "CMEX library could not be found (experimental)",
@@ -724,8 +718,8 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
                            '156' = "Blank in scratch directory (UNIX only)",
                            '412' = "Blank in scratch directory (UNIX only)",
                            '141' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-                           '232' = "Driver error: incorrect command line parameters for gams",
-                           '1000' = "Driver error: incorrect command line parameters for gams",
+                           '232' = "Driver error: incorrect command line parameters for gams",
+                           '1000' = "Driver error: incorrect command line parameters for gams",
                            '208' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
                            '2000' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
                            '184' = "Driver error: problems getting current directory",
@@ -737,13 +731,13 @@ modelIn.alias[i], " does not match the number of choices with dependencies.
     )
   }
 if(is.null(errMsg)){
-  save(modelIn, modelOut, config, lang, input.ds.names, modelOut.to.display,
-       modelInTemplate, scenDataTemplate, isShinyProxy, modelIn.tabular.data,
-       shared.data, colSubset, modelIn.file.names, ddown.dep, aliases.no.dep,
-       choices.no.dep, slider.values, config.graphs.out, config.graphs.in, 
-       inputTabs, inputTabTitles, modelIn.with.dep, modelOut.alias, 
-       modelIn.must.import, modelIn.alias, DDPar, GMSOpt, currentModelDir, 
-       modelIn.to.import.alias, modelIn.to.import, scen.table.names,
-       scen.table.names.to.display, serverOS, GAMSReturnCodeMap, 
+  save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
+       modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
+       sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
+       choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, 
+       inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
+       modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
+       modelInToImportAlias, modelInToImport, scenTableNames,
+       scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
        modelInGmsString, file = rSaveFilePath)
 }

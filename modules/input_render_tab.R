@@ -1,81 +1,81 @@
 # render tabular datasets
 
-lapply(modelIn.tabular.data, function(sheet){
+lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
   switch(modelIn[[i]]$type,
          hot = {
-           # l <- match(tolower(names(modelIn)[[i]]), names(modelIn.to.import))[[1]]
-           if(length(cols.with.dep[[i]])){
-             data.modelIn[[i]] <- reactive({
-               hot.init[[i]] <<- TRUE
+           # l <- match(tolower(names(modelIn)[[i]]), names(modelInToImport))[[1]]
+           if(length(colsWithDep[[i]])){
+             dataModelIn[[i]] <- reactive({
+               hotInit[[i]] <<- TRUE
                # make sure data will be updated when old data is overwritten
                rv[[paste0("in_", i)]]
-               if(is.empty.input[i]){
-                 data <- model.input.data[[i]]
+               if(isEmptyInput[i]){
+                 data <- modelInputData[[i]]
                }else{
                  # save changes made in handsontable
                  if(!is.null(isolate(input[[paste0("in_", i)]]))){
-                   hot.input[[i]] <<- as_tibble(hot_to_r(isolate(input[[paste0("in_", i)]])))
+                   hotInput[[i]] <<- as_tibble(hot_to_r(isolate(input[[paste0("in_", i)]])))
                  }
                  tryCatch({
-                   data <- bind_rows(hot.input[[i]], model.input.data[[i]])
+                   data <- bind_rows(hotInput[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debug.mode){
+                   if(debugMode){
                      errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), sep = "\n")
                    }else{
                      errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                    }
                  })
-                 model.input.data[[i]] <<- data
+                 modelInputData[[i]] <<- data
                }
                
-               for(i.dep in seq_along(cols.with.dep[[i]])){
+               for(i.dep in seq_along(colsWithDep[[i]])){
                  # get id of element (e.g. dropdown menu) that causes backward dependency
-                 id  <- cols.with.dep[[i]][[i.dep]]
+                 id  <- colsWithDep[[i]][[i.dep]]
                  # in case nothing was selected in dropdown menu, skip this iteration
                  if(is.null(input[["dropdown_" %+% id]]) || input[["dropdown_" %+% id]] %in% c("","_")){
                    next
                  }
                  # get column name with dependency
-                 col <- names(cols.with.dep[[1]])[[i.dep]]
+                 col <- names(colsWithDep[[1]])[[i.dep]]
                  # filter data frame
                  data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
                }
-               model.input.data[[i]] <<- anti_join(model.input.data[[i]], data, by = ids.in[[i]])
+               modelInputData[[i]] <<- anti_join(modelInputData[[i]], data, by = idsIn[[i]])
                if(!nrow(data)){
                  data[1, ] <- ""
                  # disable graph button as no data was loaded
                  shinyjs::disable(paste0("btGraphIn", i))
-                 is.empty.input[i] <<- TRUE
+                 isEmptyInput[i] <<- TRUE
                }else{
                  shinyjs::enable(paste0("btGraphIn", i))
-                 is.empty.input[i] <<- FALSE
-                 #rv$datasets.imported[l] <<- TRUE
+                 isEmptyInput[i] <<- FALSE
+                 #rv$datasetsImported[l] <<- TRUE
                }
                # do not set unsaved flag when data was updated from other input element automatically
-               #no.check[i] <<- TRUE
+               #noCheck[i] <<- TRUE
                return(data)
              })
            }else{
-             data.modelIn[[i]] <- reactive({
+             dataModelIn[[i]] <- reactive({
                rv[[paste0("in_", i)]]
-               if(!hot.init[[i]]){
+               if(!hotInit[[i]]){
                  # do not set unsaved flag when table has not yet been initialised
-                 #no.check[i] <<- TRUE
+                 #noCheck[i] <<- TRUE
                }
-               hot.init[[i]] <<- TRUE
-               if(!nrow(model.input.data[[i]])){
-                 model.input.data[[i]][1, ] <<- ""
+               hotInit[[i]] <<- TRUE
+               if(!nrow(modelInputData[[i]])){
+                 modelInputData[[i]][1, ] <<- ""
                  # disable graph button as no data was loaded
                  shinyjs::disable(paste0("btGraphIn", i))
-                 is.empty.input[i] <<- TRUE
+                 isEmptyInput[i] <<- TRUE
                }else{
                  shinyjs::enable(paste0("btGraphIn", i))
-                 #rv$datasets.imported[l] <<- TRUE
-                 is.empty.input[i] <<- FALSE
+                 #rv$datasetsImported[l] <<- TRUE
+                 isEmptyInput[i] <<- FALSE
                }
-               return(model.input.data[[i]])
+               return(modelInputData[[i]])
              })
              
            }
@@ -85,29 +85,29 @@ lapply(modelIn.tabular.data, function(sheet){
              shinyjs::toggle(paste0("data-in_", i))
              errMsg <- NULL
              tryCatch({
-               callModule(renderData, "in_" %+% i, type = config.graphs.in[[i]]$outType, data = rhandsontable::hot_to_r(input[["in_" %+% i]]),
-                          dt.options = config$datatable, graph.options = config.graphs.in[[i]]$graph, 
-                          pivot.options = config.graphs.in[[i]]$pivottable, custom.options = config.graphs.in[[i]]$options,
+               callModule(renderData, "in_" %+% i, type = configGraphsIn[[i]]$outType, data = rhandsontable::hot_to_r(input[["in_" %+% i]]),
+                          dt.options = config$datatable, graph.options = configGraphsIn[[i]]$graph, 
+                          pivot.options = configGraphsIn[[i]]$pivottable, custom.options = configGraphsIn[[i]]$options,
                           roundPrecision = roundPrecision, modelDir = modelDir)
              }, error = function(e) {
-               flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", modelIn.alias[i], e)
-               errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
+               flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", modelInAlias[i], e)
+               errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
              })
              showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
            })
            # rendering handsontables for input data 
            output[[paste0("in_", i)]] <- renderRHandsontable({
-             no.check[i] <<- TRUE
-             ht <- rhandsontable(data.modelIn[[i]](), height = hot.options$height, 
-                                 width = hot.options$width, search = hot.options$search, 
+             noCheck[i] <<- TRUE
+             ht <- rhandsontable(dataModelIn[[i]](), height = hotOptions$height, 
+                                 width = hotOptions$width, search = hotOptions$search, 
                                  readOnly = modelIn[[i]]$readonly, selectCallback = TRUE)
-             ht <- hot_table(ht, contextMenu = hot.options$contextMenu$enabled, highlightCol = hot.options$highlightCol, highlightRow = hot.options$highlightRow,
-                             rowHeaderWidth = hot.options$rowHeaderWidth, enableComments = hot.options$enableComments, stretchH = hot.options$stretchH,
-                             overflow = hot.options$overflow)
-             ht <- hot_context_menu(ht, allowRowEdit = hot.options$contextMenu$allowRowEdit, allowColEdit = hot.options$contextMenu$allowColEdit, 
-                                    allowReadOnly = hot.options$contextMenu$allowReadOnly, allowComments = hot.options$contextMenu$allowComments)
-             ht <- hot_cols(ht, columnSorting = hot.options$columnSorting, manualColumnMove = hot.options$manualColumnMove, 
-                            manualColumnResize = hot.options$manualColumnResize, colWidths = hot.options$colWidths, fixedColumnsLeft = hot.options$fixedColumnsLeft)
+             ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, highlightCol = hotOptions$highlightCol, highlightRow = hotOptions$highlightRow,
+                             rowHeaderWidth = hotOptions$rowHeaderWidth, enableComments = hotOptions$enableComments, stretchH = hotOptions$stretchH,
+                             overflow = hotOptions$overflow)
+             ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit, allowColEdit = hotOptions$contextMenu$allowColEdit, 
+                                    allowReadOnly = hotOptions$contextMenu$allowReadOnly, allowComments = hotOptions$contextMenu$allowComments)
+             ht <- hot_cols(ht, columnSorting = hotOptions$columnSorting, manualColumnMove = hotOptions$manualColumnMove, 
+                            manualColumnResize = hotOptions$manualColumnResize, colWidths = hotOptions$colWidths, fixedColumnsLeft = hotOptions$fixedColumnsLeft)
              
              # check for readonly columns
              cols.readonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){

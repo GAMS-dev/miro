@@ -4,7 +4,7 @@ showReadonlyDialog <- function(){
     lang$nav$dialogReadonly$desc,
     footer = tagList(
       modalButton(lang$nav$dialogReadonly$cancelButton),
-      actionButton("btSaveReadonly", label = lang$nav$dialogReadonly$okButton, class = "btOrange")),
+      actionButton("btSaveReadonly", label = lang$nav$dialogReadonly$okButton, class = "btHighlight1")),
     fade = TRUE, easyClose = FALSE
   ))
 }
@@ -21,12 +21,12 @@ showNewScenDialog <- function(tmpScenName){
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav$dialogNewScen$cancelButton),
-               actionButton("btCheckName", lang$nav$dialogNewScen$okButton, class = "btOrange")
+               actionButton("btCheckName", lang$nav$dialogNewScen$okButton, class = "btHighlight1")
       ),
       shinyjs::hidden(
         tags$div(id = "dialogSaveConfirm",
                  actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
-                 actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, class = "btOrange")
+                 actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, class = "btHighlight1")
         )
       )
     ),
@@ -39,7 +39,7 @@ showOverrideScenDialog <- function(){
     lang$nav$dialogLoadScen$descOverrideInput,
     footer = tagList(
       modalButton(lang$nav$dialogLoadScen$cancelButton),
-      actionButton("btOverrideScen", label = lang$nav$dialogLoadScen$okButton, class = "btOrange")),
+      actionButton("btOverrideScen", label = lang$nav$dialogLoadScen$okButton, class = "btHighlight1")),
     fade = FALSE, easyClose = FALSE))
 }
 
@@ -49,7 +49,7 @@ showCloseScenDialog <- function(scenId){
     lang$nav$dialogCloseScen$desc,
     footer = tagList(
       modalButton(lang$nav$dialogCloseScen$cancelButton),
-      actionButton("btCloseFinal_" %+% scenId, lang$nav$dialogCloseScen$okButton, class = "btOrange")),
+      actionButton("btCloseFinal_" %+% scenId, lang$nav$dialogCloseScen$okButton, class = "btHighlight1")),
     fade=FALSE, easyClose=FALSE))
 }
 
@@ -59,7 +59,7 @@ showRemoveDeletedScenFromUIDialog <- function(){
     lang$nav$dialogDeleteScen$removeFromUI$desc,
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$removeFromUI$cancelButton),
-      actionButton("btRemoveDeletedConfirm", label = lang$nav$dialogDeleteScen$removeFromUI$okButton, class = "btOrange")),
+      actionButton("btRemoveDeletedConfirm", label = lang$nav$dialogDeleteScen$removeFromUI$okButton, class = "btHighlight1")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -69,7 +69,7 @@ showRemoveActiveScenFromUIDialog <- function(){
     lang$nav$dialogRemoveScen$desc,
     footer = tagList(
       modalButton(lang$nav$dialogRemoveScen$cancelButton),
-      actionButton("btRemoveConfirm", label = lang$nav$dialogRemoveScen$okButton, class = "btOrange")),
+      actionButton("btRemoveConfirm", label = lang$nav$dialogRemoveScen$okButton, class = "btHighlight1")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -79,7 +79,7 @@ showDeleteScenDialog <- function(){
     lang$nav$dialogDeleteScen$desc,
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$cancelButton),
-      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btOrange")),
+      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btHighlight1")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -90,7 +90,7 @@ showRemoveExistingOutputDataDialog <- function(){
     footer = tagList(
       modalButton(lang$nav$dialogExistingOutput$cancelButton),
       actionButton("btSaveOutput", label = lang$nav$dialogExistingOutput$saveOutputButton),
-      actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btOrange")),
+      actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btHighlight1")),
     fade = TRUE, easyClose = FALSE))
 }
 showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE){
@@ -140,7 +140,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     footer = tagList(
       modalButton(lang$nav$dialogLoadScen$cancelButton),
       actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
-                   class = "btOrange")),
+                   class = "btHighlight1")),
     fade = TRUE, easyClose = FALSE
     ))
   shinyjs::addClass("btSortTime", class = "scen-sort-by-selected")

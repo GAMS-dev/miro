@@ -12,13 +12,13 @@ observeEvent(input[["btCloseFinal_" %+% i]],{
   scalarData[[scen.str]]      <<- list(NULL)
   scenMetaData[[scen.str]]    <<- list(NULL)
   sidsInComp[i]               <<- 0
-  number.scen.tabs            <<- number.scen.tabs - 1
-  occupied.sid.slots[i - 3]   <<- FALSE
+  numberScenTabs              <<- numberScenTabs - 1
+  occupiedSidSlots[i - 3]     <<- FALSE
   rv$scenId                   <<- i
-  sid.comp.order              <<- sid.comp.order[-which(sid.comp.order == i)]
-  if(!number.scen.tabs){
+  sidCompOrder                <<- sidCompOrder[-which(sidCompOrder == i)]
+  if(!numberScenTabs){
     shinyjs::show("noScen")
-  }else if(number.scen.tabs == 1){
+  }else if(numberScenTabs == 1){
     shinyjs::disable("btCompareScen")
   }
 })

@@ -1,6 +1,6 @@
 observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
   if(isInSplitView){
-    if(number.scen.tabs < 2){
+    if(numberScenTabs < 2){
       shinyjs::disable("btCompareScen")
     }
     shinyjs::show("scenTabView")
@@ -23,7 +23,7 @@ observeEvent(input$btScenSplit1_open, {
   flog.debug("%s: Load Scenario button clicked (left box in split view).", uid)
   loadInLeftBoxSplit <<- TRUE
   
-  updateTabsetPanel(session, "content.scen_2", "content.scen_2_1")
+  updateTabsetPanel(session, "contentScen_2", "contentScen_2_1")
   if(is.null(isolate(rv$btLoadScen))){
     rv$btLoadScen <<- 1
   }else{
@@ -34,7 +34,7 @@ observeEvent(input$btScenSplit2_open, {
   flog.debug("%s: Load Scenario button clicked (right box in split view).", uid)
   loadInLeftBoxSplit <<- FALSE
   
-  updateTabsetPanel(session, "content.scen_3", "content.scen_3_1")
+  updateTabsetPanel(session, "contentScen_3", "contentScen_3_1")
   if(is.null(isolate(rv$btLoadScen))){
     rv$btLoadScen <<- 1
   }else{

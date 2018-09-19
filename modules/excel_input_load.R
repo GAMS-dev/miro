@@ -3,17 +3,17 @@ observeEvent(input$btOverrideLocal, {
   scenName <- isolate(input$local_newScenName)
   flog.debug("Override existing scenario (name: '%s') button clicked.", scenName)
   activeScen <<- Scenario$new(db = db, sname = scenName)
-  rv$active.sname <- scenName
+  rv$activeSname <- scenName
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })
 observeEvent(input$btCheckSnameLocal, {
-  if(length(isolate(rv$active.sname))){
+  if(length(isolate(rv$activeSname))){
     rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
   }
   scenNameTmp <- isolate(input$local_newScenName)
   flog.debug("Button to upload local dataset clicked. Validating if scenario name: '%s' is valid and does not yet exist.", 
              scenNameTmp)
-  if(is.null(isolate(rv$active.sname))){
+  if(is.null(isolate(rv$activeSname))){
     scenNameTmp <- isolate(input$local_newScenName)
     if(grepl("^\\s*$", scenNameTmp)){
       flog.debug("Scenario name is not valid.")
@@ -30,7 +30,7 @@ observeEvent(input$btCheckSnameLocal, {
         }
         activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
       }
-      rv$active.sname <- scenNameTmp
+      rv$activeSname <- scenNameTmp
       rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
     }
   }
@@ -50,7 +50,7 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   }else{
     ids.to.fetch <- seq_along(modelIn)
   }
-  datasets.imported <- vapply(ids.to.fetch, function(i){
+  datasetsImported <- vapply(ids.to.fetch, function(i){
     if(length(isolate(rv[[paste0("in_", i)]]))){
       return(T)
     }else{
@@ -58,13 +58,13 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
     }
   }, logical(1))
 
-  if(any(datasets.imported)){
+  if(any(datasetsImported)){
     showModal(modalDialog(
       title = lang$nav$dialogLoadScen$titleOverrideInput,
       lang$nav$dialogLoadScen$descOverrideInput,
       footer = tagList(
         modalButton(lang$nav$dialogLoadScen$cancelButton),
-        actionButton("btOverrideInput", label = lang$nav$dialogLoadScen$okButton, class = "btOrange")),
+        actionButton("btOverrideInput", label = lang$nav$dialogLoadScen$okButton, class = "btHighlight1")),
       fade=FALSE, easyClose=FALSE))
   }else{
     overrideInput <<- FALSE
@@ -97,21 +97,21 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
     return(NULL)
   }
   # extract only sheets which are also in list of input parameters
-  datasets.to.fetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelIn.tabular.data, scalars.file.name)]
+  datasets.to.fetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
   
   # extract scalar sheets
-  if(length(modelIn) > length(modelIn.tabular.data)){
+  if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form
-    i <- match(tolower(scalars.file.name), tolower(datasets.to.fetch))[[1]]
+    i <- match(tolower(scalarsFileName), tolower(datasets.to.fetch))[[1]]
     if(!is.na(i)){
       # scalar table in workbook
       # add scalar datasets (e.g. slider/dropdown)
-      if(tolower(scalars.file.name) %in% tolower(modelIn.tabular.data)){
+      if(tolower(scalarsFileName) %in% tolower(modelInTabularData)){
         # scalars is also amongst tabular data
-        datasets.to.fetch <- c(datasets.to.fetch, names(modelIn)[!(names(modelIn) %in% modelIn.tabular.data)])
+        datasets.to.fetch <- c(datasets.to.fetch, names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
       }else{
         # all scalar values are dropdown/slider etc. so remove scalar table from datasets.to.fetch
-        datasets.to.fetch <- c(datasets.to.fetch[-i], names(modelIn)[!(names(modelIn) %in% modelIn.tabular.data)])
+        datasets.to.fetch <- c(datasets.to.fetch[-i], names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
       }
     }
   }
@@ -129,7 +129,7 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
   }
   
   # set no output identifier
-  no.output.data <<- T
+  noOutputData <<- T
   if(newInputCount){
     showNotification(paste0(newInputCount, lang$nav$notificationNewInput$new))
   }else{

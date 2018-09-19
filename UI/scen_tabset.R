@@ -1,50 +1,50 @@
 getScenTabData <- function(sheetName){
   # returns list with data relevant for rendering scenario tabsets
   tabData       <- NULL
-  tabData$tabId <- match(sheetName, scen.table.names.to.display)[1]
-  i <- match(tolower(sheetName), tolower(input.ds.names))
+  tabData$tabId <- match(sheetName, scenTableNamesToDisplay)[1]
+  i <- match(tolower(sheetName), tolower(inputDsNames))
   if(is.na(i)){
     i <- match(tolower(sheetName), names(modelOut))
     if(is.na(i)){
       stop(sprintf("Sheet: %s could not be rendered as it was not found in either list of input or output sheets.", sheetName), call. = FALSE)
     }else{
       # sheet is output sheet
-      tabData$sheetName     <- modelOut.alias[i]
+      tabData$sheetName     <- modelOutAlias[i]
       tabData$tooltip       <- lang$nav$scen$tooltips$outputSheet
-      tabData$graphConfig   <- config.graphs.out[[i]]
+      tabData$graphConfig   <- configGraphsOut[[i]]
     }
   }else{
     # sheet is input sheet
-    if(is.null(config.graphs.in[[i]]$outType)){
-      config.graphs.in[[i]]$outType <- "datatable"
+    if(is.null(configGraphsIn[[i]]$outType)){
+      configGraphsIn[[i]]$outType <- "datatable"
     }
-    tabData$graphConfig   <- config.graphs.in[[i]]
+    tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
-    if(input.ds.names[i] == scalars.file.name){
+    if(inputDsNames[i] == scalarsFileName){
       tabData$sheetName <- lang$nav$scen$scalarsAlias
     }else{
-      tabData$sheetName <- modelIn.alias[match(input.ds.names[i], names(modelIn))[1]]
+      tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
     }
   }
   # get data index
   tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),
-                                              "_", sheetName)), tolower(scen.table.names))
+                                              "_", sheetName)), tolower(scenTableNames))
   if(is.na(tabData$scenTableId)){
     stop(sprintf("Data for sheet: '%s' could not be found. If this problem persists, please contact the system administrator.", 
                  sheetName), call. = FALSE)
   }
   return(tabData)
 }
-generateScenarioTabset <- function(scenId, noData = vector("logical", length(scen.table.names.to.display)), 
+generateScenarioTabset <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
                                    noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId){
   errMsg <- NULL
-  scenTabset <- do.call(tabBox, c(id = paste0("content.scen_", scenId), width = 12, 
-                                  lapply(scen.table.names.to.display, function(sheetName) {
+  scenTabset <- do.call(tabBox, c(id = paste0("contentScen_", scenId), width = 12, 
+                                  lapply(scenTableNamesToDisplay, function(sheetName) {
                                     # get sheet configuration information
                                     tabData <- getScenTabData(sheetName)
                                     
                                     
-                                    tabPanel(value = "content.scen_" %+% scenId %+% "_" %+% tabData$tabId,
+                                    tabPanel(value = "contentScen_" %+% scenId %+% "_" %+% tabData$tabId,
                                              title = span(tabData$sheetName, title = tabData$tooltip), 
                                              tags$div(class="space"),
                                              if(noData[tabData$tabId]){
@@ -91,7 +91,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
     return(scenTabset)
   }
 }
-generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scen.table.names.to.display)), scenCounter = scenId){
+generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), scenCounter = scenId){
   tryCatch({
     scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter)
   }, error = function(e){
@@ -104,7 +104,7 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
                     tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
                     tags$div(class = "scen-buttons-wrapper",
                              tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
-                                      downloadButton(outputId = paste0("export_", scenId), label = "", 
+                                      downloadButton(outputId = paste0("export_", scenId), label = NULL, 
                                                      class="scen-button")
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
@@ -136,7 +136,7 @@ generateScenarioTabsetSplit <- function(scenId){
              tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
              tags$div(class = "scen-buttons-wrapper",
                       tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
-                               downloadButton(outputId = paste0("export_", scenId), label = "", 
+                               downloadButton(outputId = paste0("export_", scenId), label = NULL, 
                                               class="scen-button")
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",

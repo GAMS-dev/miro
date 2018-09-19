@@ -22,21 +22,21 @@ body <- dashboardBody(
               box(title = list(
                 shinyjs::hidden(tags$div(id = "dirtyFlagIcon", style = "display:inline;", icon("exclamation-triangle"))),
                 textOutput("inputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btClose", icon = icon("times"), label = ""))
+                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btClose", icon = icon("times"), label = NULL))
               ), status="primary", solidHeader = TRUE, width = 12,
-              do.call(tabsetPanel, c(id = "input.tabset", lapply(seq_along(inputTabs), function(tabId) {
+              do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
                 i <- inputTabs[[tabId]][1]
                 tabPanel(
                   title=inputTabTitles[tabId],
-                  value = paste0("input.tabset_", tabId),
+                  value = paste0("inputTabset_", tabId),
                   tags$div(class="small-space"),
                   tags$div(class = "in-data-header",
                            tags$div(class = "in-buttons-wrapper",
                                     if(length(inputTabs[[tabId]]) == 1){
-                                      if(!is.null(config.graphs.in[[i]])){
+                                      if(!is.null(configGraphsIn[[i]])){
                                         tags$div(title = lang$nav$scen$tooltips$btGraphView, class = "scen-button-tt",
                                                  shinyjs::disabled(
-                                                   actionButton(inputId = "btGraphIn" %+% i, icon = icon("bar-chart"), label = "",
+                                                   actionButton(inputId = "btGraphIn" %+% i, icon = icon("bar-chart"), label = NULL,
                                                                 class="scen-button")
                                                  )
                                         )
@@ -46,7 +46,7 @@ body <- dashboardBody(
                   ),
                   tags$div(class="small-space"),
                   lapply(inputTabs[[tabId]], function(i){
-                    has.dependency <- !is.null(modelIn.with.dep[[names(modelIn)[[i]]]])
+                    has.dependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
                     switch(modelIn[[i]]$type,
                            hot = {
                              list(
@@ -55,28 +55,28 @@ body <- dashboardBody(
                                }),
                                shinyjs::hidden(
                                  tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                          style = if(!is.null(config.graphs.in[[i]]$height)) 
-                                            sprintf("min-height: %s;", add.css.dim(config.graphs.in[[i]]$height, 5)),
+                                          style = if(!is.null(configGraphsIn[[i]]$height)) 
+                                            sprintf("min-height: %s;", add.css.dim(configGraphsIn[[i]]$height, 5)),
                                           # loading animation
-                                          if(config.graphs.in[[i]]$outType == "dtGraph" && 
-                                             config.graphs.in[[i]]$graph$tool == "plotly"){
+                                          if(configGraphsIn[[i]]$outType == "dtGraph" && 
+                                             configGraphsIn[[i]]$graph$tool == "plotly"){
                                             tags$img(src = "load.gif", class = "loading-input-r")
-                                          }else if (config.graphs.in[[i]]$outType == "graph" && 
-                                                    config.graphs.in[[i]]$graph$tool == "plotly"){
+                                          }else if (configGraphsIn[[i]]$outType == "graph" && 
+                                                    configGraphsIn[[i]]$graph$tool == "plotly"){
                                             tags$img(src = "load.gif", class = "loading-input")
                                           },
                                           tryCatch({
-                                            renderDataUI(paste0("in_", i), type = config.graphs.in[[i]]$outType, 
-                                                         graph.tool = config.graphs.in[[i]]$graph$tool, 
-                                                         custom.options = config.graphs.in[[i]]$options,
-                                                         height = config.graphs.in[[i]]$height, 
+                                            renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                                         graph.tool = configGraphsIn[[i]]$graph$tool, 
+                                                         custom.options = configGraphsIn[[i]]$options,
+                                                         height = configGraphsIn[[i]]$height, 
                                                          no.data.txt = lang$nav$outputScreen$boxResults$noData)
                                           }, error = function(e) {
-                                            if(debug.mode){
-                                              errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i]), 
+                                            if(debugMode){
+                                              errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), 
                                                               e, sep = "\n")
                                             }else{
-                                              errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
+                                              errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
                                             }
                                             showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                           })
@@ -98,10 +98,10 @@ body <- dashboardBody(
                                slider.name <- tolower(names(modelIn)[[i]])
                                slider      <- sliderInput(paste0("slider_", i), 
                                                           label = modelIn[[i]]$slider$label, 
-                                                          min = slider.values[[slider.name]]$min, 
-                                                          max = slider.values[[slider.name]]$max, 
-                                                          value = slider.values[[slider.name]]$def, 
-                                                          step = slider.values[[slider.name]]$step, 
+                                                          min = sliderValues[[slider.name]]$min, 
+                                                          max = sliderValues[[slider.name]]$max, 
+                                                          value = sliderValues[[slider.name]]$def, 
+                                                          step = sliderValues[[slider.name]]$step, 
                                                           width = modelIn[[i]]$slider$width, 
                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
                              }
@@ -117,7 +117,7 @@ body <- dashboardBody(
                                                        lang$nav$batchMode$sliderAllCombinations), 
                                             tags$div(
                                               tags$label(class = "checkbox-material", "for" = "batchMode_" %+% i, 
-                                                         shiny::checkboxInput("batchMode_" %+% i, label = "", 
+                                                         shiny::checkboxInput("batchMode_" %+% i, label = NULL, 
                                                                               value = modelIn[[i]]$checkbox$value, 
                                                                               width = modelIn[[i]]$checkbox$width))
                                             )
@@ -213,7 +213,7 @@ body <- dashboardBody(
                                               tags$label(class = modelIn[[i]]$checkbox$class, 
                                                          "for" = paste0("cb_", i), 
                                                          checkboxInput(paste0("cb_", i), 
-                                                                       label = "", value = NULL, 
+                                                                       label = NULL, value = NULL, 
                                                                        width = modelIn[[i]]$checkbox$width))
                                             )
                                    )
@@ -226,7 +226,7 @@ body <- dashboardBody(
                                  tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
                                  tags$div(
                                    tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
-                                              checkboxInput(paste0("cb_", i), label = "", 
+                                              checkboxInput(paste0("cb_", i), label = NULL, 
                                                             value = modelIn[[i]]$checkbox$value, 
                                                             width = modelIn[[i]]$checkbox$width))
                                  )
@@ -252,7 +252,7 @@ body <- dashboardBody(
                              tags$div(id = "buttonsWrapper", class = "itemORQuery",
                                       actionButton("btNewBlock", label = "OR")),
                              tags$div(class = "itemORQuery",
-                                      actionButton("btSendQuery", label = "Query database", class = "btOrange")
+                                      actionButton("btSendQuery", label = "Query database", class = "btHighlight1")
                              )
                     ),
                     hidden(
@@ -262,9 +262,9 @@ body <- dashboardBody(
                     tags$div(DTOutput("batchLoadResults")),
                     hidden(
                       tags$div(id = "batchLoadButtons", style = "margin:15px",
-                               actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
-                               actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
-                               actionButton("batchLoadAll", "Load all", class = "btOrange")
+                               actionButton("batchLoadSelected", "Load selected scenarios", class = "btHighlight1"),
+                               actionButton("batchLoadCurrent", "Load current page", class = "btHighlight1"),
+                               actionButton("batchLoadAll", "Load all", class = "btHighlight1")
                       )
                     )
                 )
@@ -328,29 +328,29 @@ body <- dashboardBody(
                   shinyjs::hidden(tags$div(id = "dirtyFlagIconO", style = "display:inline;", icon("exclamation-triangle"))),
                   textOutput("outputDataTitle", inline = T),
                   tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                                 class = "btClose", icon = icon("times"), label = ""))
+                                                                 class = "btClose", icon = icon("times"), label = NULL))
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
                          tags$div(class = "out-buttons-wrapper",
                                   actionButton("outputTableView", icon("table"), 
                                                class="scen-button"),
-                                  downloadButton(outputId = "export_1", label = "",
+                                  downloadButton(outputId = "export_1", label = NULL,
                                                  class="scen-button")
                          )
                 ),
-                do.call(tabsetPanel, c(id = "content.current", lapply(modelOut.to.display, function(sheet.name) {
+                do.call(tabsetPanel, c(id = "contentCurrent", lapply(modelOutToDisplay, function(sheet.name) {
                   i <- match(sheet.name, names(modelOut))[1]
                   tabPanel(
-                    title = modelOut.alias[i],
-                    value = paste0("content.current_", i),
+                    title = modelOutAlias[i],
+                    value = paste0("contentCurrent_", i),
                     tags$div(class="space"),
                     tags$div(id = paste0("graph-out_", i), class = "render-output", 
-                             style = if(!is.null(config.graphs.out[[i]]$height)) 
-                               sprintf("min-height: %s;", add.css.dim(config.graphs.out[[i]]$height, 5)),
-                             renderDataUI(paste0("tab_",i), type = config.graphs.out[[i]]$outType, 
-                                          graph.tool = config.graphs.out[[i]]$graph$tool, 
-                                          custom.options = config.graphs.out[[i]]$options,
-                                          height = config.graphs.out[[i]]$height, 
+                             style = if(!is.null(configGraphsOut[[i]]$height)) 
+                               sprintf("min-height: %s;", add.css.dim(configGraphsOut[[i]]$height, 5)),
+                             renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
+                                          graph.tool = configGraphsOut[[i]]$graph$tool, 
+                                          custom.options = configGraphsOut[[i]]$options,
+                                          height = configGraphsOut[[i]]$height, 
                                           no.data.txt = lang$nav$outputScreen$boxResults$noData)
                     ),
                     shinyjs::hidden(
@@ -359,7 +359,7 @@ body <- dashboardBody(
                           renderDataUI(paste0("table-out_",i), type = "datatable", 
                                        no.data.txt = lang$nav$outputScreen$boxResults$noData)
                         }, error = function(e) {
-                          if(debug.mode){
+                          if(debugMode){
                             eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 
                                            sep = "\n")
                           }else{
@@ -387,7 +387,7 @@ body <- dashboardBody(
                              tagList(textOutput("title_2", inline = T), 
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
-                                                           class = "btClose", icon = icon("times"), label = ""))), 
+                                                           class = "btClose", icon = icon("times"), label = NULL))), 
                            shinyjs::hidden(tags$div(id = "scenSplit1_content", generateScenarioTabsetSplit(2))), 
                            tags$div(id = "scenSplit1_open", 
                                     actionButton("btScenSplit1_open", lang$nav$scen$split$load, 
@@ -396,7 +396,7 @@ body <- dashboardBody(
                            title = tagList(textOutput("title_3", inline = T), 
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
-                                                                 class = "btClose", icon = icon("times"), label = ""))),
+                                                                 class = "btClose", icon = icon("times"), label = NULL))),
                            shinyjs::hidden(tags$div(id = "scenSplit2_content", generateScenarioTabsetSplit(3))), 
                            tags$div(id = "scenSplit2_open", 
                                     actionButton("btScenSplit2_open", lang$nav$scen$split$load, 

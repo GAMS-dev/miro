@@ -1,11 +1,11 @@
 # render input data for input sheets with forward dependency on other input sheets
-get.data     <- vector(mode = "list", length = length(modelIn.with.dep))
+get.data     <- vector(mode = "list", length = length(modelInWithDep))
 get.selected <- vector(mode = "list", length = length(modelIn))
-input.initialized <- vector(mode = "logical", length = length(modelIn.with.dep))
+input.initialized <- vector(mode = "logical", length = length(modelInWithDep))
 lapply(seq_along(modelIn), function(id){
-  i    <- match(names(modelIn)[[id]], names(modelIn.with.dep))[1]
+  i    <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
   if(!is.na(i)){
-    name <- names(modelIn.with.dep)[[i]]
+    name <- names(modelInWithDep)[[i]]
   }
   switch(modelIn[[id]]$type,
          checkbox = {
@@ -15,16 +15,16 @@ lapply(seq_along(modelIn), function(id){
                if(is.null(rv[[paste0("in_", id)]])){
                  return(NULL)
                }
-               if(!length(model.input.data[[id]][[1]])){
+               if(!length(modelInputData[[id]][[1]])){
                  return(isolate(input[[paste0("cb_", id)]]))
                }else{
-                 if(identical(model.input.data[[id]], TRUE) || identical(as.integer(model.input.data[[id]]), 1L)){
+                 if(identical(modelInputData[[id]], TRUE) || identical(as.integer(modelInputData[[id]]), 1L)){
                    value <- TRUE
                  }else{
                    value <- FALSE
                  }
-                 model.input.data[[id]] <<- list(NULL)
-                 no.check[id]           <<- TRUE
+                 modelInputData[[id]] <<- list(NULL)
+                 noCheck[id]            <<- TRUE
                  return(value)
                }
              })
@@ -38,11 +38,11 @@ lapply(seq_along(modelIn), function(id){
                k <- modelIn[[id]]$checkbox$sheetId
                value  <- NULL
                errMsg <- NULL
-               if(shared.data[k]){
+               if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
                           try(
-                            value <- shared.input.data[[k]][shared.input.data[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], 
+                            value <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], 
                                                             modelIn[[id]]$checkbox$value, drop = FALSE]
                           )
                         },
@@ -51,20 +51,20 @@ lapply(seq_along(modelIn), function(id){
                           return(NULL)
                         })
                }else{
-                 if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !is.empty.input[k]){
+                 if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !isEmptyInput[k]){
                    hot.content <- rhandsontable::hot_to_r(isolate(input[[paste0("in_", k)]]))
                    # return choices from both visible as well as hidden part of input data
                    tryCatch({
-                     value <- dplyr::bind_rows(as_tibble(hot.content), model.input.data[[k]])
+                     value <- dplyr::bind_rows(as_tibble(hot.content), modelInputData[[k]])
                    }, error = function(e){
                      flog.error("Some problem occurred concatenating rows of dataset: '%s' (forward dependency of checkbox: '%s'). 
-                                Error message: %s.", modelIn.alias[id], modelIn.alias[k], e)
+                                Error message: %s.", modelInAlias[id], modelInAlias[k], e)
                      errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                    })
                    value <- data.tmp[[modelIn[[id]]$checkbox$value]]
-                 }else if(length(model.input.data[[k]][[1]]) && is.empty.input[k]){
+                 }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                    # no input is shown in UI, so possible choices for dropdown menu can only be in hidden part of data
-                   value <- model.input.data[[k]][modelIn[[id]]$checkbox$value, , drop = FALSE]
+                   value <- modelInputData[[k]][modelIn[[id]]$checkbox$value, , drop = FALSE]
                  }
                }
                showErrorMsg(lang$errMsg$dataError$title, errMsg)
@@ -95,12 +95,12 @@ lapply(seq_along(modelIn), function(id){
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
-             if(!length(model.input.data[[id]][[1]])){
+             if(!length(modelInputData[[id]][[1]])){
                return(isolate(input[[paste0("date_", id)]]))
              }else{
-               value <- model.input.data[[id]]
-               model.input.data[[id]] <<- list(NULL)
-               no.check[id]           <<- TRUE
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -114,12 +114,12 @@ lapply(seq_along(modelIn), function(id){
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
-             if(!length(model.input.data[[id]])){
+             if(!length(modelInputData[[id]])){
                return(isolate(input[[paste0("daterange_", id)]]))
              }else{
-               value <- model.input.data[[id]]
-               model.input.data[[id]] <<- list(NULL)
-               no.check[id]           <<- TRUE
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -136,12 +136,12 @@ lapply(seq_along(modelIn), function(id){
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
-             if(!length(model.input.data[[id]][[1]])){
+             if(!length(modelInputData[[id]][[1]])){
                return(isolate(input[["dropdown_" %+% id]]))
              }else{
-               value <- model.input.data[[id]]
-               model.input.data[[id]] <<- list(NULL)
-               no.check[id]           <<- TRUE
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -157,27 +157,27 @@ lapply(seq_along(modelIn), function(id){
              
              # retrieve choices for dropdown menu
              get.data[[i]] <<- shiny::reactive({
-               choices <- vector(mode = "list", length = length(ddown.dep[[name]]$fw) + 1)
-               aliases <- vector(mode = "list", length = length(ddown.dep[[name]]$aliases) + 1)
+               choices <- vector(mode = "list", length = length(ddownDep[[name]]$fw) + 1)
+               aliases <- vector(mode = "list", length = length(ddownDep[[name]]$aliases) + 1)
                # retrieve single value data
-               if(!is.null(choices.no.dep[[name]])){
-                 choices[[1]] <- choices.no.dep[[name]]
+               if(!is.null(choicesNoDep[[name]])){
+                 choices[[1]] <- choicesNoDep[[name]]
                }
-               if(!is.null(aliases.no.dep[[name]])){
-                 aliases[[1]] <- aliases.no.dep[[name]]
+               if(!is.null(aliasesNoDep[[name]])){
+                 aliases[[1]] <- aliasesNoDep[[name]]
                }
                
-               if(length(ddown.dep[[name]]$fw)){
+               if(length(ddownDep[[name]]$fw)){
                  errMsg <- NULL
                  # reset counter
                  j <- 2
-                 for(dataSheet in unique(tolower(names(ddown.dep[[name]]$fw)))){
+                 for(dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))){
                    k <- match(dataSheet, names(modelIn))[[1]]
-                   if(length(rv[["in_" %+% k]]) && !is.null(input[["in_" %+% k]]) && !is.empty.input[k]){
+                   if(length(rv[["in_" %+% k]]) && !is.null(input[["in_" %+% k]]) && !isEmptyInput[k]){
                      hotContent <- rhandsontable::hot_to_r(isolate(input[["in_" %+% k]]))
                      # return choices from both visible as well as hidden part of input data
                      tryCatch({
-                       dataTmp <- dplyr::bind_rows(as_tibble(hotContent), model.input.data[[k]])
+                       dataTmp <- dplyr::bind_rows(as_tibble(hotContent), modelInputData[[k]])
                      }, error = function(e){
                        flog.error("Problems binding rows of input sheet: '%s'. Error message: %s.", dataSheet, e)
                        errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
@@ -185,24 +185,24 @@ lapply(seq_along(modelIn), function(id){
                      if(!is.null(errMsg)){
                        next
                      }
-                     choices[[j]] <- dataTmp[[ddown.dep[[name]]$fw[[dataSheet]]]]
-                     if(!is.null(ddown.dep[[name]]$aliases[[dataSheet]])){
-                       aliases[[j]] <- dataTmp[[ddown.dep[[name]]$aliases[[dataSheet]]]]
+                     choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
+                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
+                       aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
                      }
-                   }else if(length(model.input.data[[k]][[1]]) && is.empty.input[k]){
+                   }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so possible choices for dropdown menu can only be in hidden part of data
-                     choices[[j]] <- model.input.data[[k]][[ddown.dep[[name]]$fw[[dataSheet]]]]
-                     if(!is.null(ddown.dep[[name]]$aliases[[dataSheet]])){
-                       aliases[[j]] <- model.input.data[[k]][[ddown.dep[[name]]$aliases[[dataSheet]]]]
+                     choices[[j]] <- modelInputData[[k]][[ddownDep[[name]]$fw[[dataSheet]]]]
+                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
+                       aliases[[j]] <- modelInputData[[k]][[ddownDep[[name]]$aliases[[dataSheet]]]]
                      }
-                   }else if(shared.data[k] && modelIn[[k]]$type == "dropdown"){
+                   }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      try(
-                       choices[[j]] <- shared.input.data[[k]][shared.input.data[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddown.dep[[name]]$fw[[dataSheet]]]]
+                       choices[[j]] <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddownDep[[name]]$fw[[dataSheet]]]]
                      )
-                     if(!is.null(ddown.dep[[name]]$aliases[[dataSheet]])){
+                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
                        try(
-                         aliases[[j]] <- shared.input.data[[k]][shared.input.data[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddown.dep[[name]]$aliases[[dataSheet]]]]
+                         aliases[[j]] <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddownDep[[name]]$aliases[[dataSheet]]]]
                        )
                      }
                    }else{
@@ -221,8 +221,8 @@ lapply(seq_along(modelIn), function(id){
                    return(sort(choices))
                  }else{
                    # length of aliases and choices does not match
-                   flog.error(lang$errMsg$ddLenMismatch$desc, modelIn.alias[k])
-                   errMsg <- sprintf(lang$errMsg$ddLenMismatch$desc, modelIn.alias[k])
+                   flog.error(lang$errMsg$ddLenMismatch$desc, modelInAlias[k])
+                   errMsg <- sprintf(lang$errMsg$ddLenMismatch$desc, modelInAlias[k])
                    showErrorMsg(lang$errMsg$ddLenMismatch$title, errMsg)
                  }
                }else{
@@ -244,8 +244,8 @@ lapply(seq_along(modelIn), function(id){
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1
-                   }else if(length(model.input.data[[id]][[1]])){
-                     no.check[[id]] <<- TRUE
+                   }else if(length(modelInputData[[id]][[1]])){
+                     noCheck[[id]] <<- TRUE
                      rv[[paste0("in_", id)]] <<- 1
                    }
                  }
@@ -267,12 +267,12 @@ lapply(seq_along(modelIn), function(id){
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
-             if(!length(model.input.data[[id]][[1]])){
+             if(!length(modelInputData[[id]][[1]])){
                return(isolate(input[[paste0("slider_", id)]]))
              }else{
-               value <- model.input.data[[id]]
-               model.input.data[[id]] <<- list(NULL)
-               no.check[id]           <<- TRUE
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -290,7 +290,7 @@ lapply(seq_along(modelIn), function(id){
              # retrieve choices for slider
              get.data[[i]] <<- shiny::reactive({
                errMsg <- NULL
-               slider.data <- lapply(slider.values[[name]], function(el){
+               slider.data <- lapply(sliderValues[[name]], function(el){
                  # return numeric data (no external dependency)
                  if(is.numeric(el)){
                    return(el)
@@ -309,15 +309,15 @@ lapply(seq_along(modelIn), function(id){
                      )
                      return(NULL)
                    }
-                   if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !is.empty.input[k]){
+                   if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !isEmptyInput[k]){
                      data <- unique(rhandsontable::hot_to_r(input[[paste0("in_", k)]])[[el[[1]]]])
-                   }else if(length(model.input.data[[k]][[1]]) && is.empty.input[k]){
+                   }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
-                     data <- unique(model.input.data[[k]][[el[[1]]]])
-                   }else if(shared.data[k] && modelIn[[k]]$type == "dropdown"){
+                     data <- unique(modelInputData[[k]][[el[[1]]]])
+                   }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      try(
-                      data <- unique(shared.input.data[[k]][shared.input.data[[k]][[colSubset[[k]][1]]] == input[[paste0("dropdown_", k)]], 
+                      data <- unique(sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[[paste0("dropdown_", k)]], 
                                                             , drop = FALSE][[el[[1]]]])
                      )
                    }else{
@@ -333,7 +333,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           max = {
                             max.data <- max(data)
-                            if((!is.numeric(max.data) || is.na(max.data)) && strict.mode){
+                            if((!is.numeric(max.data) || is.na(max.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(max.data)
@@ -341,7 +341,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           min = {
                             min.data <- min(data)
-                            if((!is.numeric(min(data)) || is.na(min.data)) && strict.mode){
+                            if((!is.numeric(min(data)) || is.na(min.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(min.data)
@@ -349,7 +349,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           mean = {
                             mean.data = mean(data)
-                            if((!is.numeric(mean.data) || is.na(mean.data)) && strict.mode){
+                            if((!is.numeric(mean.data) || is.na(mean.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(mean.data)
@@ -357,7 +357,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           median = {
                             median.data = median(data)
-                            if((!is.numeric(median.data) || is.na(median.data)) && strict.mode){
+                            if((!is.numeric(median.data) || is.na(median.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(median.data)
@@ -365,7 +365,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           var = {
                             var.data = var(data)
-                            if((!is.numeric(var.data) || is.na(var.data)) && strict.mode){
+                            if((!is.numeric(var.data) || is.na(var.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(var.data)
@@ -373,7 +373,7 @@ lapply(seq_along(modelIn), function(id){
                           },
                           sd = {
                             sd.data = sd(data)
-                            if((!is.numeric(sd.data) || is.na(sd.data)) && strict.mode){
+                            if((!is.numeric(sd.data) || is.na(sd.data)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
                               return(sd.data)
@@ -410,11 +410,11 @@ lapply(seq_along(modelIn), function(id){
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1
-                   }else if(length(model.input.data[[id]][[1]])){
-                     #if(!no.data.changes[i]){
-                     #  no.check[[id]] <<- TRUE
+                   }else if(length(modelInputData[[id]][[1]])){
+                     #if(!noDataChanges[i]){
+                     #  noCheck[[id]] <<- TRUE
                      #}
-                     #no.check[[id]] <<- TRUE
+                     #noCheck[[id]] <<- TRUE
                      rv[[paste0("in_", id)]] <<- 1
                    }
                  }

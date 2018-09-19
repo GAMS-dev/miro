@@ -3,16 +3,16 @@ output[["export_" %+% i]] <- downloadHandler(
   filename = function() {
     if(i == 1){
       # active scenario (editable)
-      if(is.null(isolate(rv$active.sname))){
-        if(is.null(active.sname.tmp)){
+      if(is.null(isolate(rv$activeSname))){
+        if(is.null(activeSnameTmp)){
           # as no scenario name could be found set, scenario name to model name
-          active.sname.tmp <<- modelName
-          return(active.sname.tmp %+% ".xlsx")
+          activeSnameTmp <<- modelName
+          return(activeSnameTmp %+% ".xlsx")
         }else{
-          return(modelName %+% "_" %+% active.sname.tmp %+% ".xlsx")
+          return(modelName %+% "_" %+% activeSnameTmp %+% ".xlsx")
         }
       }else{
-        return(modelName %+% "_" %+% isolate(rv$active.sname) %+% ".xlsx")
+        return(modelName %+% "_" %+% isolate(rv$activeSname) %+% ".xlsx")
       }
     }
     fileName <- modelName %+% "_" %+% scenMetaData[["scen_" %+% i %+% "_"]][[2]][1] %+% ".xlsx"
@@ -26,7 +26,7 @@ output[["export_" %+% i]] <- downloadHandler(
       source("./modules/scen_save.R", local = TRUE)
     }else{
       # combine hidden and non hidden scalar data
-      scalarOutIdx <- match(tolower(scalars.out.name), names(modelOut))[1]
+      scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
       if(!is.na(scalarOutIdx) && !is.null(scenData[[scen.str]][[scalarOutIdx]])){
         # bind hidden and non hidden scalar data
         scenData[[scen.str]][[scalarOutIdx]] <<- rbind(scenData[[scen.str]][[scalarOutIdx]], scalarData[[scen.str]])
@@ -35,7 +35,7 @@ output[["export_" %+% i]] <- downloadHandler(
     }
     data                        <- scenData[[scen.str]]
     names(data)                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, names(modelOut), lang$nav$excelExport$outputSuffix), 
-                                     if(length(input.ds.names))paste0(lang$nav$excelExport$inputPrefix, input.ds.names, lang$nav$excelExport$inputSuffix))
+                                     if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, inputDsNames, lang$nav$excelExport$inputSuffix))
     # remove empty datasets
     if(!config$excelIncludeEmptySheets)
       data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL

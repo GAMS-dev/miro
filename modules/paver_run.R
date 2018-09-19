@@ -31,7 +31,7 @@ observeEvent(input$btPaver, {
   shinyjs::show("paver_load")
   hide("btNewPaverRun")
   shinyjs::enable("btPaverInterrupt")
-  updateTabsetPanel(session, "sidebar.menu", selected = "batchAnalyze")
+  updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
   
   errMsg <- NULL
   

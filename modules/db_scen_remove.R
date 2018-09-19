@@ -8,18 +8,18 @@ closeScenario <- function(){
   scalarData[["scen_1_"]] <<- data.frame()
   
   # reset input data sheets
-  model.input.data <<- modelInTemplate
+  modelInputData      <<- modelInTemplate
   input.initialized[] <<- FALSE
-  no.data.changes[]   <<- FALSE
+  noDataChanges[]     <<- FALSE
   lapply(seq_along(modelIn), function(i){
     switch(modelIn[[i]]$type,
            hot = {
              # set identifier that data was overwritten 
-             hot.init[i]       <<- FALSE
-             is.empty.input[i] <<- TRUE
+             hotInit[i]        <<- FALSE
+             isEmptyInput[i]   <<- TRUE
            },
            slider = {
-             if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                shiny::updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
              }else{
                shinyjs::show("no_data_dep_" %+% i)
@@ -29,7 +29,7 @@ closeScenario <- function(){
              }
            },
            dropdown = {
-             if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                shiny::updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
              }else{
                shinyjs::show("no_data_dep_" %+% i)
@@ -38,13 +38,13 @@ closeScenario <- function(){
              }
            },
            date = {
-             if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                shiny::updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
              }
-             previous.input.data[[i]] <<- isolate(input[["date_" %+% i]])
+             previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
            },
            daterange = {
-             if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                shiny::updateDateRangeInput(session, "daterange_" %+% i, 
                                            start = modelIn[[i]]$daterange$start, 
                                            end = modelIn[[i]]$daterange$end)
@@ -62,11 +62,11 @@ closeScenario <- function(){
   active.scenario   <<- NULL
   active.sid        <<- NULL
   activeScen        <<- NULL
-  active.sname.tmp  <<- NULL
-  rv$active.sname   <<- NULL
-  no.check[]        <<- FALSE
+  activeSnameTmp    <<- NULL
+  rv$activeSname    <<- NULL
+  noCheck[]         <<- FALSE
   markSaved()
-  no.output.data    <<- TRUE
+  noOutputData      <<- TRUE
   if(!is.null(errMsg)){
     invisible(FALSE)
   }else{

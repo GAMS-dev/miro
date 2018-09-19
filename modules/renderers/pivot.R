@@ -14,7 +14,7 @@ renderPivot <- function(data, options, height = NULL, roundPrecision = 2, static
   
   # set default height
   if(is.null(height)){
-    height <- pivot.default.height
+    height <- pivotDefaultHeight
   }
   
   p <- rpivotTable::rpivotTable(roundDf(data, roundPrecision), rows = options$rows, cols = options$cols, aggregatorName = options$aggregatorName,

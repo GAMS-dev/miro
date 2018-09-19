@@ -7,7 +7,7 @@ renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.optio
   if(type == "pivot"){
     # set default height
     if(is.null(height)){
-      height <- pivot.default.height
+      height <- pivotDefaultHeight
     }
     data <- rpivotTable::rpivotTableOutput(ns("pivottable"), height = height)
   }else if(type == "datatable"){
