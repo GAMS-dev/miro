@@ -155,7 +155,6 @@ BatchLoad <- R6Class("BatchLoad",
                                                  subsetRows, " LIMIT ?lim ;"))
                            flog.debug("Db: Data was imported (BatchLoad.fetchResults).")
                            query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
-                           print(query)
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                            # scalar tables are in a bad database format (values in rows instead of columns).
                            # this is due to the fact that it provides more flexibility when GAMS model changes

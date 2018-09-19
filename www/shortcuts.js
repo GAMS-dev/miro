@@ -97,23 +97,23 @@ $(document).keyup(function(event) {
   }
   // Select input menu shortcut: CTRL + ALT + 1
   if(event.ctrlKey && event.altKey && event.keyCode === 49) {
-    Shiny.onInputChange("sidebar.menu.shortcut", "inputData");
+    Shiny.onInputChange("sidebarMenuShortcut", "inputData");
   }
   // Select output menu shortcut: CTRL + ALT + 2
   if(event.ctrlKey && event.altKey && event.keyCode === 50) {
-    Shiny.onInputChange("sidebar.menu.shortcut", "outputData");
+    Shiny.onInputChange("sidebarMenuShortcut", "outputData");
   }
   // Select gams interaction menu shortcut: CTRL + ALT + 3
   if(event.ctrlKey && event.altKey && event.keyCode === 51) {
-    Shiny.onInputChange("sidebar.menu.shortcut", "gamsinter");
+    Shiny.onInputChange("sidebarMenuShortcut", "gamsinter");
   }
   // Select scenario compare menu shortcut: CTRL + ALT + 4
   if(event.ctrlKey && event.altKey && event.keyCode === 52) {
-    Shiny.onInputChange("sidebar.menu.shortcut", "scenarios");
+    Shiny.onInputChange("sidebarMenuShortcut", "scenarios");
   }
   // Select advanced options menu shortcut: CTRL + ALT + 4
   if(event.ctrlKey && event.altKey && event.keyCode === 53) {
-    Shiny.onInputChange("sidebar.menu.shortcut", "advanced");
+    Shiny.onInputChange("sidebarMenuShortcut", "advanced");
   }
   // Table view (scenario compare mode) shortcut: CTRL + ALT + T
   if(event.ctrlKey && event.altKey && event.keyCode === 84) {
@@ -143,22 +143,22 @@ $(document).keyup(function(event) {
   }
   // Select next tab shortcut: CTRL + ALT + arrow right
   if(event.ctrlKey && event.altKey && event.keyCode === 39) {
-    Shiny.onInputChange("tabset.shortcut.next", count);
+    Shiny.onInputChange("tabsetShortcutNext", count);
     count++;
   }
   // Select next tab shortcut: CTRL + ALT + arrow left
   if(event.ctrlKey && event.altKey && event.keyCode === 37) {
-    Shiny.onInputChange("tabset.shortcut.prev", count);
+    Shiny.onInputChange("tabsetShortcutPrev", count);
     count++;
   }
   // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
   if(event.ctrlKey && event.altKey && event.keyCode === 40) {
-    Shiny.onInputChange("tabset.shortcut.nest", count);
+    Shiny.onInputChange("tabsetShortcutNest", count);
     count++;
   }
   // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
   if(event.ctrlKey && event.altKey && event.keyCode === 38) {
-    Shiny.onInputChange("tabset.shortcut.unnest", count);
+    Shiny.onInputChange("tabsetShortcutUnnest", count);
     count++;
   }
   // Activate/deactivate scenario comparison mode: CTRL + ALT + space
