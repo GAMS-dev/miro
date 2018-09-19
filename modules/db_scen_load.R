@@ -5,7 +5,7 @@ datasets.to.fetch <- names(modelIn)
 
 observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
-  rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
+  rv$btLoadScen <<- isolate(rv$btLoadScen + 1L)
 })
 #load scenario button clicked
 observeEvent(virtualActionButton(rv$btLoadScen), {
@@ -109,7 +109,7 @@ observeEvent(input$btLoadScenConfirm, {
   rm(scenSelected)
   # if in comparison mode skip input data check
   if(!isInSolveMode){
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1)
+    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
     return()
   }
   
@@ -136,17 +136,25 @@ observeEvent(input$btLoadScenConfirm, {
     showOverrideScenDialog()
   }else{
     overrideInput <<- FALSE
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1)
+    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
   }
 })
 
 observeEvent(input$btOverrideScen, {
   flog.debug("Override scenario button clicked.")
   overrideInput <<- TRUE
-  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1)
+  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
 })
 
-# update input button pressed
+observeEvent(input$btBatchLoad, {
+  flog.debug("Load batch scenarios to compare mode button clicked.")
+  isInSolveMode <<- FALSE
+  if(isInSplitView){
+    rv$btSplitView <<- isolate(rv$btSplitView + 1L)
+  }
+  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+})
+
 observeEvent(virtualActionButton(rv$btOverrideScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))

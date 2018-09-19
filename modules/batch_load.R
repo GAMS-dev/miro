@@ -273,7 +273,6 @@ observeEvent(input$batchLoadSelected, {
     return(NULL)
   }
   sidsToLoad <<- rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected]
-  scen.comp.mode <<- 1L
   showBatchLoadMethodDialog()
 })
 observeEvent(input$batchLoadCurrent, {
@@ -281,7 +280,6 @@ observeEvent(input$batchLoadCurrent, {
     return(NULL)
   }
   sidsToLoad <<- rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current]
-  scen.comp.mode <<- 1L
   showBatchLoadMethodDialog()
 })
 observeEvent(input$batchLoadAll, {
@@ -289,7 +287,6 @@ observeEvent(input$batchLoadAll, {
     return(NULL)
   }
   sidsToLoad     <<- rv$fetchedScenarios[[1]]
-  scen.comp.mode <<- 1L
   showBatchLoadMethodDialog()
 })
 showBatchLoadMethodDialog <- function(){

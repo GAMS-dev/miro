@@ -1,4 +1,4 @@
-observeEvent(input$btSplitView, {
+observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
   if(isInSplitView){
     if(number.scen.tabs < 2){
       shinyjs::disable("btCompareScen")

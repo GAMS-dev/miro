@@ -421,7 +421,7 @@ if(!is.null(errMsg)){
     rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), 
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
                          btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, active.sname = NULL,
-                         clear = TRUE, btSave = 0L, noInvalidData = 0L)
+                         clear = TRUE, btSave = 0L, btSplitView = 0L, noInvalidData = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
