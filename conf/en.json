@@ -9,7 +9,8 @@
       "batch":{
         "configureRun": "Configure batch run",
         "import": "Import results",
-        "load": "Load results"
+        "load": "Load results",
+        "analyze" : "Analyze scenarios"
       }
     },
     "sidebarButtons":{  
@@ -69,6 +70,17 @@
       "titleDownloadTemp":"Download temporary files",
       "downloadTempDesc":"Download temporary files from the working directory",
       "downloadTempButton": "Download files"
+    },
+    "batch_import":{
+      "title":"Import results from server"
+    },
+    "batch_load":{
+      "title":"Load Scenarios"
+    },
+    "batch_analyze":{
+      "title":"Analyze Scenarios",
+	  "btCancel": "Cancel",
+	  "btNew": "Select new Scenarios"
     },
     "gamsModelStatus":{  
       "exec":"Model execution phase",
@@ -202,6 +214,37 @@
       "downloadZipButton":"Download all as zip",
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
+    },
+    "dialogBatch":{
+      "title": "Batch configuration",
+      "desc": "You selected %d scenarios to be solved in batch mode. Out of these, %d scenarios have already been soved either by yourself or someone else. Do you want to sole all scenarios again or only those that have not yet been solved?",
+      "cancelButton":"Cancel",
+      "processAllButton": "Process all",
+      "processUnsolvedButton": "Process unsolved only",
+      "waitDialog":{
+        "title": "Batch run is being configured",
+        "desc": "Please wait while the batch run is being configured."
+      },
+      "exceedMaxNoDialog":{
+        "title": "Maximum number scenarios exceeded",
+        "desc": "You have selected to solve %d scenarios for your batch run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
+      },
+      "noScenSelectedDialog":{
+        "title": "No scenarios selected",
+        "desc": "You first need to select atleast one scenario that you want to solve."
+      },
+      "badStepSizeDialog":{
+        "title": "Bad step size",
+        "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
+      },
+      "successDialog":{
+        "title": "Batch run configured",
+        "desc": "The batch run was configured successfully. You may fetch the results as soon as they are solved."
+      }
+    },
+    "batchMode":{
+      "sliderAllCombinations": "All combinations?",
+      "checkboxAliases":["No", "Yes"]
     }
   },
   "progressBar":{  
@@ -323,6 +366,14 @@
     "lockScen":{
       "title":"Error setting/removing scenario lock",
       "desc":"Some error occurred while locking or unlocking the currently active scenario. Error message: '%s'"
+    },
+    "paverExec":{  
+      "title":"Error executing Python",
+      "desc":"Some error occurred executing Python."
+    },
+    "paverTerm":{  
+      "title":"Error terminating python",
+      "desc":"Some error occurred terminating python."
     }
   }
 }

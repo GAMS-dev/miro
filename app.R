@@ -420,7 +420,8 @@ if(!is.null(errMsg)){
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, datasets.imported = vector(mode = "logical", length = length(modelIn.must.import)), 
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
-                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, active.sname = NULL)
+                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, active.sname = NULL,
+                         clear = TRUE, btSave = 0L, noInvalidData = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -676,6 +677,18 @@ if(!is.null(errMsg)){
     
     ####### Advanced options
     source("./modules/download_tmp.R", local = TRUE)
+    
+    ####### Paver interaction
+    if(config$activateModules$batchMode){
+      ####### Batch import module
+      source("./modules/batch_import.R", local = TRUE)
+      ####### Batch load module
+      source("./modules/batch_load.R", local = TRUE)
+      # analyze button clicked
+      source("./modules/paver_run.R", local = TRUE)
+      # Interrupt button clicked
+      source("./modules/paver_interrupt.R", local = TRUE)
+    }
     
     # delete scenario 
     source("./modules/db_scen_remove.R", local = TRUE)

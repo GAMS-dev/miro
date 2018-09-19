@@ -4,6 +4,7 @@ scalarKeyTypeList <- list()
 scalarsTabNameIn  <- modelName %+% "_" %+% scalars.file.name
 scalarsTabNameOut <- modelName %+% "_" %+% scalars.out.name
 scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
+  print(names(modelIn)[i] == scalars.file.name)
   if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     list(key = names(modelIn)[[i]], type = "number", alias = modelIn.alias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
@@ -83,7 +84,7 @@ generateLine <- function(i, j, type, label, values = NULL){
                     
            ),
            tags$div(class = "itemDelete",
-             actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-")
+             actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-", style = "background-color: #fff;")
            )
   )
 }
@@ -114,7 +115,7 @@ observeEvent(input$btNewBlock, {
                               ),
                      if(i > 1L){
                        tags$div(class = "itemDelete",
-                                actionButton("btRemoveBlock" %+% i, label = "-"))
+                                actionButton("btRemoveBlock" %+% i, label = "-", style = "background-color: #fff;"))
                      }
                   )
     )
