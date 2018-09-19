@@ -8,7 +8,7 @@ lapply(modelIn.tabular.data, function(sheet){
            # l <- match(tolower(names(modelIn)[[i]]), names(modelIn.to.import))[[1]]
            if(length(cols.with.dep[[i]])){
              data.modelIn[[i]] <- reactive({
-               hot.init[[i]] <<- T
+               hot.init[[i]] <<- TRUE
                # make sure data will be updated when old data is overwritten
                rv[[paste0("in_", i)]]
                if(is.empty.input[i]){
@@ -16,7 +16,7 @@ lapply(modelIn.tabular.data, function(sheet){
                }else{
                  # save changes made in handsontable
                  if(!is.null(isolate(input[[paste0("in_", i)]]))){
-                   hot.input[[i]] <<- as_tibble(rhandsontable::hot_to_r(isolate(input[[paste0("in_", i)]])))
+                   hot.input[[i]] <<- as_tibble(hot_to_r(isolate(input[[paste0("in_", i)]])))
                  }
                  tryCatch({
                    data <- bind_rows(hot.input[[i]], model.input.data[[i]])
@@ -34,13 +34,13 @@ lapply(modelIn.tabular.data, function(sheet){
                  # get id of element (e.g. dropdown menu) that causes backward dependency
                  id  <- cols.with.dep[[i]][[i.dep]]
                  # in case nothing was selected in dropdown menu, skip this iteration
-                 if(is.null(input[[paste0("dropdown_", id)]]) || input[[paste0("dropdown_", id)]] %in% c("","_")){
+                 if(is.null(input[["dropdown_" %+% id]]) || input[["dropdown_" %+% id]] %in% c("","_")){
                    next
                  }
                  # get column name with dependency
                  col <- names(cols.with.dep[[1]])[[i.dep]]
                  # filter data frame
-                 data <- data[data[[col]] %in% input[[paste0("dropdown_", id)]], ]
+                 data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
                }
                model.input.data[[i]] <<- anti_join(model.input.data[[i]], data, by = ids.in[[i]])
                if(!nrow(data)){
@@ -54,7 +54,7 @@ lapply(modelIn.tabular.data, function(sheet){
                  #rv$datasets.imported[l] <<- TRUE
                }
                # do not set unsaved flag when data was updated from other input element automatically
-               no.check[i] <<- TRUE
+               #no.check[i] <<- TRUE
                return(data)
              })
            }else{
@@ -62,7 +62,7 @@ lapply(modelIn.tabular.data, function(sheet){
                rv[[paste0("in_", i)]]
                if(!hot.init[[i]]){
                  # do not set unsaved flag when table has not yet been initialised
-                 no.check[i] <<- TRUE
+                 #no.check[i] <<- TRUE
                }
                hot.init[[i]] <<- TRUE
                if(!nrow(model.input.data[[i]])){
@@ -97,7 +97,10 @@ lapply(modelIn.tabular.data, function(sheet){
            })
            # rendering handsontables for input data 
            output[[paste0("in_", i)]] <- renderRHandsontable({
-             ht <- rhandsontable(data.modelIn[[i]](), height = hot.options$height, width = hot.options$width, search = hot.options$search, readOnly = modelIn[[i]]$readonly)
+             no.check[i] <<- TRUE
+             ht <- rhandsontable(data.modelIn[[i]](), height = hot.options$height, 
+                                 width = hot.options$width, search = hot.options$search, 
+                                 readOnly = modelIn[[i]]$readonly, selectCallback = TRUE)
              ht <- hot_table(ht, contextMenu = hot.options$contextMenu$enabled, highlightCol = hot.options$highlightCol, highlightRow = hot.options$highlightRow,
                              rowHeaderWidth = hot.options$rowHeaderWidth, enableComments = hot.options$enableComments, stretchH = hot.options$stretchH,
                              overflow = hot.options$overflow)

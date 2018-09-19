@@ -8,6 +8,11 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
     list(key = names(modelIn)[[i]], type = "number", alias = modelIn.alias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
     list(key = names(modelIn)[[i]], type = "string", alias = modelIn.alias[[i]])
+  }else if(names(modelIn)[i] %in% c(scalars.file.name, scalars.out.name)){
+    aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
+      return()
+    })
+    #list(key = names(modeln[[i]]$content), type = modeln[[i]]$content, alias = modelIn[[i]]$alias)
   }else{
     NA
   }

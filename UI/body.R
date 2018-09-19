@@ -7,7 +7,7 @@ body <- dashboardBody(
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
     tags$script(src = "shortcuts.js"),
     tags$script(src = "gmswebui.js"),
-
+    
     # css sheets that depend on data from config JSON file
     tags$style(HTML(paste0('
 .main-header .logo {
@@ -51,7 +51,7 @@ body <- dashboardBody(
                            hot = {
                              list(
                                tags$div(id = paste0("data-in_", i), {
-                                 rhandsontable::rHandsontableOutput(paste0("in_", i))
+                                 rHandsontableOutput(paste0("in_", i))
                                }),
                                shinyjs::hidden(
                                  tags$div(id = paste0("graph-in_", i), class = "render-output", 
@@ -85,25 +85,25 @@ body <- dashboardBody(
                            },
                            slider = {
                              if(has.dependency){
-                               slider <-    shiny::sliderInput(paste0("slider_", i), 
-                                                               label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
-                                                               value = if(length(modelIn[[i]]$slider$default) > 1) 
-                                                                 numeric(2L) else numeric(1L), step = 1, 
-                                                               width = modelIn[[i]]$slider$width, 
-                                                               ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
-                               slider <- tagList(shinyjs::hidden(slider), tags$div(
+                               slider <- sliderInput(paste0("slider_", i), 
+                                                     label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
+                                                     value = if(length(modelIn[[i]]$slider$default) > 1) 
+                                                       numeric(2L) else numeric(1L), step = 1, 
+                                                     width = modelIn[[i]]$slider$width, 
+                                                     ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                               slider <- tagList(hidden(slider), tags$div(
                                  id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
                                  lang$nav$inputScreen$noDataDep))
                              }else{
                                slider.name <- tolower(names(modelIn)[[i]])
-                               slider      <-shiny::sliderInput(paste0("slider_", i), 
-                                                                label = modelIn[[i]]$slider$label, 
-                                                                min = slider.values[[slider.name]]$min, 
-                                                                max = slider.values[[slider.name]]$max, 
-                                                                value = slider.values[[slider.name]]$def, 
-                                                                step = slider.values[[slider.name]]$step, 
-                                                                width = modelIn[[i]]$slider$width, 
-                                                                ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                               slider      <- sliderInput(paste0("slider_", i), 
+                                                          label = modelIn[[i]]$slider$label, 
+                                                          min = slider.values[[slider.name]]$min, 
+                                                          max = slider.values[[slider.name]]$max, 
+                                                          value = slider.values[[slider.name]]$def, 
+                                                          step = slider.values[[slider.name]]$step, 
+                                                          width = modelIn[[i]]$slider$width, 
+                                                          ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
                              }
                              if(identical(config$activateModules$batchMode, TRUE)){
                                if(identical(modelIn[[i]]$slider$double, TRUE)){
@@ -113,10 +113,10 @@ body <- dashboardBody(
                                    ),
                                    column(width = 2, style = "min-width: 130px; min-height:100px;",
                                           tagList(
-                                            tags$label(class = "cb-label", 'for'= "batchMode_" %+% i, 
+                                            tags$label(class = "cb-label", "for" = "batchMode_" %+% i, 
                                                        lang$nav$batchMode$sliderAllCombinations), 
                                             tags$div(
-                                              tags$label(class = "checkbox-material", 'for'= "batchMode_" %+% i, 
+                                              tags$label(class = "checkbox-material", "for" = "batchMode_" %+% i, 
                                                          shiny::checkboxInput("batchMode_" %+% i, label = "", 
                                                                               value = modelIn[[i]]$checkbox$value, 
                                                                               width = modelIn[[i]]$checkbox$width))
@@ -147,74 +147,74 @@ body <- dashboardBody(
                            dropdown = {
                              if(has.dependency){
                                tagList(
-                                 shinyjs::hidden(
-                                   shiny::selectInput(paste0("dropdown_", i), 
-                                                      label = modelIn[[i]]$dropdown$label, 
-                                                      choices = character(0), selected = character(0),
-                                                      multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                              TRUE)) TRUE else FALSE)
+                                 hidden(
+                                   selectInput(paste0("dropdown_", i), 
+                                               label = modelIn[[i]]$dropdown$label, 
+                                               choices = character(0), selected = character(0),
+                                               multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                       TRUE)) TRUE else FALSE)
                                  ),
                                  tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
                                           lang$nav$inputScreen$noDataDep)
                                )
                              }else{
                                choices <- modelIn[[i]]$dropdown$choices
-                               # set aliases in case they are defined
+                               
                                if(!is.null(modelIn[[i]]$dropdown$aliases)){
                                  names(choices) <- modelIn[[i]]$dropdown$aliases
                                }
-                               shiny::selectInput(paste0("dropdown_", i), 
-                                                  label = modelIn[[i]]$dropdown$label, 
-                                                  choices = choices, 
-                                                  selected = modelIn[[i]]$dropdown$selected, 
-                                                  multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                          TRUE)) TRUE else FALSE)
+                               selectInput(paste0("dropdown_", i), 
+                                           label = modelIn[[i]]$dropdown$label, 
+                                           choices = choices, 
+                                           selected = modelIn[[i]]$dropdown$selected, 
+                                           multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                   TRUE)) TRUE else FALSE)
                              }
                            },
                            dropdowne = {
-                             shiny::selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
-                                                choices = character(0), selected = character(0),
-                                                multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
-                                                                        TRUE)) TRUE else FALSE)
+                             selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
+                                         choices = character(0), selected = character(0),
+                                         multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
+                                                                 TRUE)) TRUE else FALSE)
                            },
                            daterange = {
-                             shiny::dateRangeInput(paste0("daterange_", i), 
-                                                   label = modelIn[[i]]$daterange$label, 
-                                                   start = modelIn[[i]]$daterange$start, 
-                                                   end = modelIn[[i]]$daterange$end, 
-                                                   min = modelIn[[i]]$daterange$min, 
-                                                   max = modelIn[[i]]$daterange$max, 
-                                                   format = modelIn[[i]]$daterange$format, 
-                                                   startview = modelIn[[i]]$daterange$startview, 
-                                                   weekstart = modelIn[[i]]$daterange$weekstart, 
-                                                   language = config$language, 
-                                                   separator = if(identical(modelIn[[i]]$daterange$separator, 
-                                                                            NULL)) " to " else modelIn[[i]]$daterange$separator, 
-                                                   width = modelIn[[i]]$daterange$width, 
-                                                   autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
-                                                                            FALSE)) FALSE else TRUE)
+                             dateRangeInput(paste0("daterange_", i), 
+                                            label = modelIn[[i]]$daterange$label, 
+                                            start = modelIn[[i]]$daterange$start, 
+                                            end = modelIn[[i]]$daterange$end, 
+                                            min = modelIn[[i]]$daterange$min, 
+                                            max = modelIn[[i]]$daterange$max, 
+                                            format = modelIn[[i]]$daterange$format, 
+                                            startview = modelIn[[i]]$daterange$startview, 
+                                            weekstart = modelIn[[i]]$daterange$weekstart, 
+                                            language = config$language, 
+                                            separator = if(identical(modelIn[[i]]$daterange$separator, 
+                                                                     NULL)) " to " else modelIn[[i]]$daterange$separator, 
+                                            width = modelIn[[i]]$daterange$width, 
+                                            autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
+                                                                     FALSE)) FALSE else TRUE)
                            },
                            date = {
-                             shiny::dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
-                                              value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
-                                              max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
-                                              startview = modelIn[[i]]$date$startview, 
-                                              weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
-                                              width = modelIn[[i]]$date$width)
+                             dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
+                                       value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
+                                       max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
+                                       startview = modelIn[[i]]$date$startview, 
+                                       weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                       width = modelIn[[i]]$date$width)
                            },
                            checkbox = {
                              if(has.dependency){
                                tagList(
                                  shinyjs::hidden(
                                    tags$div(id = paste0("cbDiv_", i),
-                                            tags$label(class = "cb-label", 'for'= paste0("cb_", i), 
+                                            tags$label(class = "cb-label", "for" = paste0("cb_", i), 
                                                        modelIn[[i]]$checkbox$label), 
                                             tags$div(
                                               tags$label(class = modelIn[[i]]$checkbox$class, 
-                                                         'for'= paste0("cb_", i), 
-                                                         shiny::checkboxInput(paste0("cb_", i), 
-                                                                              label = "", value = NULL, 
-                                                                              width = modelIn[[i]]$checkbox$width))
+                                                         "for" = paste0("cb_", i), 
+                                                         checkboxInput(paste0("cb_", i), 
+                                                                       label = "", value = NULL, 
+                                                                       width = modelIn[[i]]$checkbox$width))
                                             )
                                    )
                                  ),
@@ -223,12 +223,12 @@ body <- dashboardBody(
                                )
                              }else{
                                tagList(
-                                 tags$label(class = "cb-label", 'for'= paste0("cb_", i), modelIn[[i]]$checkbox$label), 
+                                 tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
                                  tags$div(
-                                   tags$label(class = modelIn[[i]]$checkbox$class, 'for'= paste0("cb_", i), 
-                                              shiny::checkboxInput(paste0("cb_", i), label = "", 
-                                                                   value = modelIn[[i]]$checkbox$value, 
-                                                                   width = modelIn[[i]]$checkbox$width))
+                                   tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
+                                              checkboxInput(paste0("cb_", i), label = "", 
+                                                            value = modelIn[[i]]$checkbox$value, 
+                                                            width = modelIn[[i]]$checkbox$width))
                                  )
                                )
                              }
@@ -242,55 +242,54 @@ body <- dashboardBody(
             )
     ),
     if(identical(config$activateModules$batchMode, TRUE)){
-        tabItem(tabName = "loadResults",
-                fluidRow(
-                  box(title = "Load scenarios", status="primary", 
-                      solidHeader = TRUE, width = 12, style="overflow-x: auto",
-                      tags$div(id = "loadContent",
-                               tags$div(id = "selectorsWrapper"
-                                        #, class = "grid-SelectorsWrapper"
-                               ),
-                               tags$div(id = "buttonsWrapper", class = "itemORQuery",
-                                        actionButton("btNewBlock", label = "OR")),
-                               tags$div(class = "itemORQuery",
-                                        actionButton("btSendQuery", label = "Query database", class = "btOrange")
-                               )
-                      ),
-                      hidden(
-                        tags$div(id = "loadDiv", class = "loading-input", 
-                                 tags$img(src= "load.gif"))
-                      ),
-                      tags$div(DTOutput("batchLoadResults")),
-                      hidden(
-                        tags$div(id = "batchLoadButtons", style = "margin:15px",
-                                 actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
-                                 actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
-                                 actionButton("batchLoadAll", "Load all", class = "btOrange")
-                        )
+      tabItem(tabName = "loadResults",
+              fluidRow(
+                box(title = "Load scenarios", status="primary", 
+                    solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                    tags$div(id = "loadContent",
+                             tags$div(id = "selectorsWrapper"
+                             ),
+                             tags$div(id = "buttonsWrapper", class = "itemORQuery",
+                                      actionButton("btNewBlock", label = "OR")),
+                             tags$div(class = "itemORQuery",
+                                      actionButton("btSendQuery", label = "Query database", class = "btOrange")
+                             )
+                    ),
+                    hidden(
+                      tags$div(id = "loadDiv", class = "loading-input", 
+                               tags$img(src= "load.gif"))
+                    ),
+                    tags$div(DTOutput("batchLoadResults")),
+                    hidden(
+                      tags$div(id = "batchLoadButtons", style = "margin:15px",
+                               actionButton("batchLoadSelected", "Load selected scenarios", class = "btOrange"),
+                               actionButton("batchLoadCurrent", "Load current page", class = "btOrange"),
+                               actionButton("batchLoadAll", "Load all", class = "btOrange")
                       )
-                  )
+                    )
                 )
-        )
+              )
+      )
     }else{
-        tabItem(tabName="gamsinter",
-                fluidRow(
-                  box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                      textOutput("modelStatus"))
-                ),
-                fluidRow(
-                  box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
-                      width=12, collapsible = TRUE,
-                      tabsetPanel(
-                        tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                                 verbatimTextOutput("logStatus")),
-                        tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
-                                 verbatimTextOutput("listFile"))
-                      ),
-                      checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                    value = T)
-                  )
+      tabItem(tabName="gamsinter",
+              fluidRow(
+                box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+                    textOutput("modelStatus"))
+              ),
+              fluidRow(
+                box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
+                    width=12, collapsible = TRUE,
+                    tabsetPanel(
+                      tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                               verbatimTextOutput("logStatus")),
+                      tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                               verbatimTextOutput("listFile"))
+                    ),
+                    checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                  value = T)
                 )
-        )
+              )
+      )
     },
     if(identical(config$activateModules$batchMode, TRUE)){
       tabItem(tabName = "importData",
@@ -309,8 +308,6 @@ body <- dashboardBody(
       )
     }else{
       tabItem(tabName = "outputData",
-              #tabsetPanel(id="scenTabset",
-              #tabPanel(title=lang$nav$outputScreen$tabCurrent, value = "results.current",
               fluidRow(
                 box(title = list(
                   shinyjs::hidden(tags$div(id = "dirtyFlagIconO", style = "display:inline;", icon("exclamation-triangle"))),
@@ -320,16 +317,10 @@ body <- dashboardBody(
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
                          tags$div(class = "out-buttons-wrapper",
-                                  #shinyjs::disabled(
                                   actionButton("outputTableView", icon("table"), 
                                                class="scen-button"),
                                   downloadButton(outputId = "export_1", label = "",
                                                  class="scen-button")
-                                  #, actionButton("save_0", icon("save"), 
-                                  #             class="scen-button"),
-                                  #actionButton("remove_0", icon("times"), 
-                                  #             class="scen-button")
-                                  #)
                          )
                 ),
                 do.call(tabsetPanel, c(id = "content.current", lapply(modelOut.to.display, function(sheet.name) {

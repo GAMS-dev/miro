@@ -415,7 +415,7 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 $if not errorfree $terminate
 $ifthene %GMSWEBUI%>2
-$  echo library('methods');shiny::runApp(launch.browser=TRUE) > runapp.R
+$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)}shiny::runApp(launch.browser=TRUE) > runapp.R
 $  call cd ..%system.dirsep%.. && Rscript model%system.dirsep%%fn%%system.dirsep%runapp.R -modelName=%fn%
 $endif
 $terminate

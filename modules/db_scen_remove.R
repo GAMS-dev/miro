@@ -17,11 +17,6 @@ closeScenario <- function(){
              # set identifier that data was overwritten 
              hot.init[i]       <<- FALSE
              is.empty.input[i] <<- TRUE
-             #if(!is.null(isolate(input[[paste0("in_", i)]]))){
-             #  previous.input.data[[i]] <<- rhandsontable::hot_to_r(isolate(input[[paste0("in_", i)]]))
-             #}else{
-             #  previous.input.data[[i]] <<- list(NULL)
-             #}
            },
            slider = {
              if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
@@ -32,7 +27,6 @@ closeScenario <- function(){
                shiny::updateSliderInput(session, "slider_" %+% i, min = NULL, max = NULL, 
                                   value = NULL, step = 1)
              }
-             #previous.input.data[[i]] <<- isolate(input[[paste0("slider_", i)]])
            },
            dropdown = {
              if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
@@ -42,7 +36,6 @@ closeScenario <- function(){
                shinyjs::hide("dropdown_" %+% i)
                shiny::updateSelectInput(session, "dropdown_" %+% i, choices = character(0), selected = character(0))
              }
-             #previous.input.data[[i]] <<- isolate(input[[paste0("dropdown_", i)]])
            },
            date = {
              if(is.null(modelIn.with.dep[[names(modelIn)[[i]]]])){
@@ -56,7 +49,6 @@ closeScenario <- function(){
                                            start = modelIn[[i]]$daterange$start, 
                                            end = modelIn[[i]]$daterange$end)
              }
-             #previous.input.data[[i]] <<- isolate(input[[paste0("daterange_", i)]])
            },
            checkbox = {
              shiny::updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)

@@ -32,7 +32,7 @@ filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R",
 requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "reshape2", "xts")
+                      "futile.logger", "dygraphs", "reshape2", "stringi", "xts")
 source("./R/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
@@ -551,6 +551,13 @@ if(!is.null(errMsg)){
     # activate solve button when all datasets that have to be 
     # imported are actually imported
     lapply(seq_along(modelIn), function(i){
+      if(modelIn[[i]]$type == "hot"){
+        observeEvent(input[["in_" %+% i %+% "_select"]], {
+          if(no.check[i]){
+            no.check[i] <<- FALSE
+          }
+        })
+      }
       observe({
         switch(modelIn[[i]]$type,
                hot = {
@@ -571,12 +578,13 @@ if(!is.null(errMsg)){
                checkbox = {
                  input[[paste0("cb_", i)]]
                })
-        if(isolate(rv$unsavedFlag)){
-          return(NULL)
-        }
+        
         if(no.check[i]){
           no.check[i] <<- FALSE
-          return(NULL)
+          return()
+        }
+        if(isolate(rv$unsavedFlag)){
+          return()
         }
         # set unsaved flag
         rv$unsavedFlag <<- TRUE

@@ -172,30 +172,32 @@ observeEvent(input$btSolve, {
   #activate Interrupt button as GAMS is running now
   shinyjs::enable("btInterrupt")
   # read log file
-  tryCatch({
-    logfile <- reactiveFileReader(500, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
-  }, error = function(e) {
-    flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
-    errMsg <<- lang$errMsg$readLog$desc
-  })
-  showErrorMsg(lang$errMsg$readLog$title, errMsg)
+  if(config$activateModules$logFile){
+    tryCatch({
+      logfile <- reactiveFileReader(500, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+    }, error = function(e) {
+      flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
+      errMsg <<- lang$errMsg$readLog$desc
+    })
+    showErrorMsg(lang$errMsg$readLog$title, errMsg)
+  }
   
-  # read status file
   modelStatus <- reactivePoll(1000, session, checkFunc = function(){
     gams$get_exit_status()
   }, valueFunc = function(){
     gams$get_exit_status()
   })
   
-  # print log status
-  output$logStatus <- renderText({
-    # read log file 
-    log.text <- paste(logfile(), collapse = "\n")
-    if(input$logUpdate){
-      js$scrollDown("logStatus")
-    }
-    return(log.text)
-  })
+  if(config$activateModules$logFile){
+    output$logStatus <- renderText({
+      # read log file 
+      log.text <- paste(logfile(), collapse = "\n")
+      if(input$logUpdate){
+        js$scrollDown("logStatus")
+      }
+      return(log.text)
+    })
+  }
   
   # print model status
   output$modelStatus <- renderText({
@@ -205,16 +207,19 @@ observeEvent(input$btSolve, {
     if(!is.null(modelStatus())){
       shinyjs::enable("btSolve")
       shinyjs::disable("btInterrupt")
-      # load listing file
-      errMsg <- NULL
-      tryCatch({
-        output$listFile <- renderText(paste(readLines(paste0(workDir, modelName, ".lst"), warn = FALSE), collapse = "\n"))
-      }, error = function(e) {
-        errMsg <<- lang$errMsg$readLst$desc
-        flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", modelName, e)
-        # do not interrupt here
-      })
-      showErrorMsg(lang$errMsg$readLst$title, errMsg)
+      
+      if(config$activateModules$lstFile){
+        errMsg <- NULL
+        tryCatch({
+          output$listFile <- renderText(paste(readLines(workDir %+% modelName %+% ".lst", 
+                                                        warn = FALSE), collapse = "\n"))
+        }, error = function(e) {
+          errMsg <<- lang$errMsg$readLst$desc
+          flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
+                    modelName, e)
+        })
+        showErrorMsg(lang$errMsg$readLst$title, errMsg)
+      }
       
       if(modelStatus() != 0){
         returnCodeText <- GAMSReturnCodeMap[as.character(modelStatus())]

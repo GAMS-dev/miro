@@ -11,7 +11,7 @@ lapply(seq_along(modelIn), function(id){
          checkbox = {
            if(is.na(i)){
              # no dependency
-             get.selected[[id]] <<- shiny::reactive({
+             get.selected[[id]] <<- reactive({
                if(is.null(rv[[paste0("in_", id)]])){
                  return(NULL)
                }
@@ -132,7 +132,7 @@ lapply(seq_along(modelIn), function(id){
          },
          dropdown = {
            # retrieve selected value for dropdown menu
-           get.selected[[id]] <<- shiny::reactive({
+           get.selected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -236,7 +236,8 @@ lapply(seq_along(modelIn), function(id){
                if(!input.initialized[i]){
                  choices <- get.data[[i]]()
                  if(!is.null(choices)){
-                   shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, selected = modelIn[[id]]$dropdown$selected)
+                   shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
+                                            selected = modelIn[[id]]$dropdown$selected)
                    input.initialized[i] <<- TRUE
                    shinyjs::show(paste0("dropdown_", id))
                    shinyjs::hide(paste0("no_data_dep_", id))
@@ -244,27 +245,25 @@ lapply(seq_along(modelIn), function(id){
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1
                    }else if(length(model.input.data[[id]][[1]])){
-                     #if(!no.data.changes[i]){
-                     #  no.check[[id]] <<- TRUE
-                     #}
                      no.check[[id]] <<- TRUE
                      rv[[paste0("in_", id)]] <<- 1
                    }
                  }
                }else{
-                 shiny::updateSelectInput(session, paste0("dropdown_", id), choices = get.data[[i]](), selected = isolate(input[[paste0("dropdown_", id)]]))
+                 updateSelectInput(session, paste0("dropdown_", id), choices = get.data[[i]](), 
+                                          selected = isolate(input[[paste0("dropdown_", id)]]))
                }
              })
              # observe changes of dropdown default value
              observe({
                # update default
-               shiny::updateSelectInput(session, paste0("dropdown_", id), selected = get.selected[[id]]())
+               updateSelectInput(session, paste0("dropdown_", id), selected = get.selected[[id]]())
              })
            }
          },
          slider = {
            # retrieve selected value for slider
-           get.selected[[id]] <<- shiny::reactive({
+           get.selected[[id]] <<- reactive({
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
@@ -398,7 +397,7 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               shiny::updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = get.data[[i]]()$min, 
+               updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = get.data[[i]]()$min, 
                                         max = get.data[[i]]()$max, step = get.data[[i]]()$step)
                
                if(!input.initialized[i]){
@@ -415,7 +414,7 @@ lapply(seq_along(modelIn), function(id){
                      #if(!no.data.changes[i]){
                      #  no.check[[id]] <<- TRUE
                      #}
-                     no.check[[id]] <<- TRUE
+                     #no.check[[id]] <<- TRUE
                      rv[[paste0("in_", id)]] <<- 1
                    }
                  }
