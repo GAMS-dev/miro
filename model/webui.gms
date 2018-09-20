@@ -415,7 +415,13 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 $if not errorfree $terminate
 $ifthene %GMSWEBUI%>2
-$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)}shiny::runApp(launch.browser=TRUE) > runapp.R
-$  call cd ..%system.dirsep%.. && Rscript model%system.dirsep%%fn%%system.dirsep%runapp.R -modelName=%fn%
+$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)};shiny::runApp(launch.browser=TRUE) > runapp.R
+$ifthen dExist %gams.sysdir%GMSWebUI
+$  set WEBUIDIR %gams.sysdir%GMSWebUI
+$else
+$  set WEBUIDIR ..%system.dirsep%..
+$endif
+$  call cd %WEBUIDIR% && Rscript %fp%runapp.R -modelPath=%fp%%fn%%fe% -gamsSysDir=%gams.sysdir%
+$  if errorlevel 1 $abort Problems executing GMS WebUI. Make sure you have a valid WebUI installation.
 $endif
 $terminate
