@@ -13,4 +13,5 @@ logs
 *.lxi
 *.~gm
 *.gpr
+*.png
 tmp

@@ -6,3 +6,10 @@ $(document).click(function(e) {
     $('.pvtFilterBox').hide();
   }
 });
+function changeTab(object, idActive, idRefer) {
+    tabPane = object.closest(".tabbable");
+    tabPane.find("li:nth-of-type(" + idActive + ")").removeClass();
+    tabPane.find("li:nth-of-type(" + idRefer + ")").addClass("active");
+    tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
+    tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
+}
