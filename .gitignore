@@ -13,4 +13,8 @@ logs
 *.lxi
 *.~gm
 *.gpr
+*.png
 tmp
+tools/paver/examples
+tools/paver/__pycache__
+tools/paver/results
