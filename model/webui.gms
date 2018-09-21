@@ -18,7 +18,14 @@ $gdxout
 
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
-
+$ifthene.a %GMSWEBUI%>2
+$ifthen.b dExist %gams.sysdir%GMSWebUI
+$  set WEBUIDIR %gams.sysdir%GMSWebUI
+$else.b
+$  set WEBUIDIR ..%system.dirsep%..
+$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)};shiny::runApp(launch.browser=TRUE) > runapp.R
+$endif.b
+$endif.a
 $onecho > writecsv.py
 def extractSymText(text, leavehash=0):
    input_tag = '%UIInput%'
@@ -411,17 +418,65 @@ db.__del__()
 import os
 for s in rmfiles:
    os.remove(s.lower())
+   
+if %GMSWEBUI%>2 and os.name == "nt":
+    import winreg
+    import re
+    
+    def get_r_path():
+        def major_minor_micro(version):
+            major, minor, micro = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
+            if(int(major) < 3 or (int(major) == 3 and int(minor) < 5)):
+                os.environ["PYEXCEPT"] = "RVERSIONERROR"
+                raise FileNotFoundError('Bad R version')
+            return int(major), int(minor), int(micro)
+        try:
+            aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+            aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
+        except FileNotFoundError:
+            return("")
+        paths = []
+        for i in range(20):
+            try:
+                asubkey_name = winreg.EnumKey(aKey,i)
+                asubkey = winreg.OpenKey(aKey,asubkey_name)
+                paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
+            except EnvironmentError:
+                break
+        if len(paths) == 0:
+           return("")
+        return max(paths, key=major_minor_micro) + os.sep + "bin" + os.sep
+    os.environ["RPATH"] = get_r_path()
+    if os.path.exists(r"%gams.sysdir%GMSWebUI"):
+        sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
+        with open("runapp.R", "w") as f: 
+           f.write("library('methods')\n")
+           f.write(".libPaths(c('" + sysdir + "library', .libPaths()))\n")
+           f.write("if(!'shiny'%in%installed.packages()){\n")
+           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
+           f.write("shiny::runApp(launch.browser=TRUE)")
+    else:
+        with open("runapp.R", "w") as f: 
+           f.write("library('methods')\n")
+           f.write("if(!'shiny'%in%installed.packages()){\n")
+           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
+           f.write("shiny::runApp(launch.browser=TRUE)")
+elif %GMSWEBUI%>2:
+    with open("runapp.R", "w") as f: 
+           f.write("library('methods')\n")
+           f.write("if(!'shiny'%in%installed.packages()){\n")
+           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
+           f.write("shiny::runApp(launch.browser=TRUE)")
+
 $offembeddedCode
 $hiddencall rm -rf __pycache__
-$if not errorfree $terminate
-$ifthene %GMSWEBUI%>2
-$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)};shiny::runApp(launch.browser=TRUE) > runapp.R
-$ifthen dExist %gams.sysdir%GMSWebUI
-$  set WEBUIDIR %gams.sysdir%GMSWebUI
-$else
-$  set WEBUIDIR ..%system.dirsep%..
+$ifthen not errorfree
+$if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort The R version you have installed is too old. Plase install R 3.5 or higher.
+$terminate
 $endif
-$  call cd %WEBUIDIR% && Rscript %fp%runapp.R -modelPath=%fp%%fn%%fe% -gamsSysDir=%gams.sysdir%
+$ifthene %GMSWEBUI%>2
+$log %gams.sysdir%
+$  call cd "%WEBUIDIR%" && "%sysenv.RPATH%Rscript" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing GMS WebUI. Make sure you have a valid WebUI installation.
 $endif
 $terminate
