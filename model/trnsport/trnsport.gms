@@ -19,21 +19,6 @@ Keywords: linear programming, transportation problem, scheduling
 $offText
 
 
-*Sets
-*   location_head            / lng, lat /
-*   rr     'Regions'         / seattle,san-diego,new-york,chicago,topeka /
-*;
-*Table rLocData(rr,*) 'Region location information'
-*              lng       lat    
-*seattle    -122.3321  47.6062
-*san-diego  -117.1573  32.7153
-*new-york   -73.9352   40.7306
-*chicago    -87.6232   41.8818
-*topeka     -95.6953   39.0562
-*;
-
-
-
 Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /
@@ -41,6 +26,16 @@ Set
    bHdr 'b header' / demand /
    dHdr 'd header' / distance /
 ;
+Table ilocData(i,*) 'Plant location information'
+           lat           lng     
+seattle   47.608013  -122.335167
+san-diego 32.715736  -117.161087;
+Table jlocData(j,*) 'Market location information'
+           lat           lng     
+new-york   40.730610  -73.935242
+chicago    41.881832  -87.623177
+topeka     39.056198  -95.695312;
+
 $onExternalInput
 Parameter
    aExt(i,aHdr) 'capacity of plant i in cases'
@@ -94,8 +89,8 @@ Model transport / all /;
 solve transport using lp minimizing z;
 
 Set
-scheduleHdr 'schedule header' / 'quantities' /;
-*scheduleHdr 'schedule header' / 'Lng0', 'Lat0', 'Lng1', 'Lat1', 'quantities' /;
+scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
+'latM', 'cap', 'demand', 'quantities' /;
 $onExternalOutput
 Parameter
 schedule(i,j,scheduleHdr) 'shipment quantities in cases';
@@ -105,18 +100,13 @@ total_cost 'total transportation costs in thousands of dollars';
 $offExternalOutput
 
 total_cost = z.l;
-schedule(i,j,'quantities') = x.l(i,j);
 
-*schedule(i,j, 'lng0') = x.l(i,j);
-*schedule(i,j, 'lat0') = x.l(i,j);
-*schedule(i,j, 'lng1') = x.l(i,j);
-*schedule(i,j, 'lat1') = x.l(i,j);
-*schedule(i,j, 'quantities') = x.l(i,j);
-*
-*rep_flow(tt,net(rr1,rr2),'lng0') = rLocData(rr1,'lng');
-*rep_flow(tt,net(rr1,rr2),'lat0') = rLocData(rr1,'lat');
-*rep_flow(tt,net(rr1,rr2),'lng1') = rLocData(rr2,'lng');
-*rep_flow(tt,net(rr1,rr2),'lat1') = rLocData(rr2,'lat');
-*rep_flow(tt,net(rr1,rr2),'flow') = FLOW.l(tt,rr1,rr2) + eps;
+schedule(i,j, 'lngP') = iLocData(i,'lng');
+schedule(i,j, 'latP') = iLocData(i,'lat');
+schedule(i,j, 'lngM') = jLocData(j,'lng');
+schedule(i,j, 'latM') = jLocData(j,'lat');
+schedule(i,j, 'cap') = a(i);
+schedule(i,j, 'demand') = b(j);
+schedule(i,j, 'quantities') = x.l(i,j);
 
 $batinclude webui

@@ -26,18 +26,43 @@ renderTrnsport1 <- function(input, output, server, data, options = NULL, path = 
   #generate map
   map <- leaflet(map.data) %>%
          addTiles() %>%
-         addPolygons(smoothFactor = 0.5, fillOpacity = 0.85, 
+         setView(lng = -98.5795, lat = 39.8283, zoom = 5) %>%
+         addPolygons(smoothFactor = 0.5, fillOpacity = 1, 
                      highlightOptions = highlightOptions(color = "white", weight = 2), 
                      color = ~pal(id), label = labels,
                      labelOptions = labelOptions(style = list("font-weight" = "normal", 
                                                               padding = "3px 8px"), 
-                                                                     textsize = "15px", direction = "auto")) #%>%
-         #addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, 
-         #         color = "indianred", flow = data$Flow, 
-         #         time = data[['time steps']], opacity = 1, minThickness = 1, 
-         #         maxThickness = 12, 
-         #         #Popup for flows - label0 and label1 need to be filled before
-         #         layerId = paste0("From ", label0, " to ", label1), popup = popupArgs())
+                                                                     textsize = "15px", direction = "auto")) %>%
+   #       addPopups(
+   #         data$lngP,data$latP,
+   #         paste(sep = "<br/>",
+   #               "<b style = 'font-size: 16px;color:#008f01'>" %+% 
+   #                 htmltools::htmlEscape(data[["canning plants"]]) %+% "</b>",
+   #               "Capacity: " %+% htmltools::htmlEscape(data$cap)
+   #         ), options = popupOptions(closeButton = FALSE)
+   #       ) %>%
+   # addPopups(
+   #   data$lngM,data$latM,
+   #   paste(sep = "<br/>",
+   #         "<b style = 'font-size: 16px;color:#c60000'>" %+% 
+   #           htmltools::htmlEscape(data$markets) %+% "</b>",
+   #         "Demand: " %+% htmltools::htmlEscape(data$demand)
+   #   ), options = popupOptions(closeButton = FALSE)
+   # ) %>%
+      addMarkers(
+        lng = data$lngP, lat = data$latP,
+        label = paste0(data[["canning plants"]], "(Capacity: ", data$cap, ")"),
+        labelOptions = labelOptions(noHide = T, textsize = "15px", style = list("color" = "#008f01"))) %>%
+      addMarkers(
+        lng = data$lngM, lat = data$latM,
+        label = paste(sep = "\n", data$markets, "(Demand: ", data$demand, ")"),
+        labelOptions = labelOptions(noHide = T, textsize = "15px", style= list("color" = "#2E86C1"))) %>%
+    
+         addFlows(lng0 = data$lngP, lat0 = data$latP, lng1 = data$lngM, lat1 = data$latM, 
+                  color = "indianred", flow = data$quantities, 
+                  time = data[['time steps']], opacity = 1, minThickness = 0, 
+                  maxThickness = 12, 
+                  layerId = paste0("From ", data[["canning plants"]], " to ", data$markets), popup = popupArgs())
   output$trnsport <- leaflet::renderLeaflet(map)
 }
 #

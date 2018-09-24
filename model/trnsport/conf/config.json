@@ -7,6 +7,10 @@
 		    "options"			: {
 		    	"geojsonloc"		: "us-states.geojson"
 		    }
-	    }
+	    },
+        "scalars_out"   : {
+            "outType"			: "datatable",
+		    "height"			: 700
+        }
     }
 }
