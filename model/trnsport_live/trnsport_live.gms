@@ -17,22 +17,10 @@ comments.
 Keywords: linear programming, transportation problem, scheduling
 $offText
 
-Set
-   i 'canning plants' / Seattle,  San-Diego /
-   j 'markets'        / New-York, Chicago, Topeka /
+set
    aHdr 'a header' / capacity /
    bHdr 'b header' / demand /
-   dHdr 'd header' / distance /
-;
-Table ilocData(i,*) 'Plant location information'
-           lat           lng     
-Seattle   47.608013  -122.335167
-San-Diego 32.715736  -117.161087;
-Table jlocData(j,*) 'Market location information'
-           lat           lng     
-New-York   40.730610  -73.935242
-Chicago    41.881832  -87.623177
-Topeka     39.056198  -95.695312;
+   locHdr 'location data header' /lat, lng/;
 
 *configuration of WebUI input
 $ifthen set gmswebui
@@ -42,20 +30,18 @@ $offecho
 $endif
 
 $onExternalInput
+Set
+   i 'canning plants' / seattle,  san-diego /
+   j 'markets'        / new-york, chicago, topeka /;
 Parameter
    aExt(i,aHdr) 'capacity of plant i in cases'
-        / Seattle.capacity   350
-          San-Diego.capacity   600 /
+        / seattle.capacity   350
+          san-diego.capacity   600 /
 
    bExt(j,bHdr) 'demand at market j in cases'
-        / New-york.demand   325
-          Chicago.demand   300
-          Topeka.demand   275 /;
-
-Table dExt(i,j,dHdr) 'distance in thousands of miles'
-              New-York.distance  Chicago.distance  Topeka.distance
-   Seattle           2.5               1.7              1.8
-   San-Diego         2.5               1.8              1.4;
+        / new-york.demand   325
+          chicago.demand   300
+          topeka.demand   275 /;
 
 Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /
@@ -63,15 +49,64 @@ Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1
 $offExternalInput
 
 Parameter
+ilocData(i,locHdr) 'Plant location information',
+jlocData(j,*) 'Market location information'
 a(i) 'capacity of plant i in cases'
 b(j) 'demand at market j in cases'
 d(i,j) 'distance in thousands of miles'
 c(i,j) 'transport cost in thousands of dollars per case';
 
 
+EmbeddedCode Python:
+import geocoder
+from math import sin, cos, sqrt, atan2, radians
+import itertools
+
+def calcDist(coords):
+    lat1 = radians(coords[0][0])
+    lon1 = radians(coords[0][1])
+    lat2 = radians(coords[1][0])
+    lon2 = radians(coords[1][1])
+    R = 6373.0
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c * 0.62137119 / 1000
+
+i = list(gams.get("i"))
+iCoords = []
+iLocData = []
+for plant in i:
+    g = geocoder.osm(plant)
+    coords = tuple(g.latlng)
+    iLocData.append((plant, 'lat', coords[0]))
+    iLocData.append((plant, 'lng', coords[1]))
+    iCoords.append(coords)
+gams.set("iLocData", iLocData)
+
+j = list(gams.get("j"))
+jCoords = []
+jLocData = []
+for market in j:
+    g = geocoder.osm(market)
+    coords = tuple(g.latlng)
+    jLocData.append((market, 'lat', coords[0]))
+    jLocData.append((market, 'lng', coords[1]))
+    jCoords.append(coords)
+    
+gams.set("jLocData", jLocData)
+    
+coords = list(itertools.product(iCoords,jCoords))
+d = []
+for idx in range(len(coords)):
+    d.append((i[idx//len(j)], j[idx%len(j)], calcDist(coords[idx])))
+
+gams.set("d", d)
+endEmbeddedCode iLocData, jLocData, d
+
 a(i) = aExt(i,'capacity');
 b(j) = bExt(j,'demand');
-d(i,j) = dExt(i,j,'distance');
 c(i,j) = f*d(i,j)/1000;
 
 Variable
@@ -132,8 +167,6 @@ Model transportMINLP / transportMIP - cost + costnlp /;
 Solve transportMINLP using MINLP minimizing z ;
 abort$(transportMINLP.modelstat > 2) "No feasible solution found"
 $endif.minlp
-
-
 
 
 

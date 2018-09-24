@@ -1,0 +1,126 @@
+{
+    "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
+    "gamsMetaDelim": "###",
+    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "aext": {
+            "alias": "capacity of plant i in cases",
+            "headers": {
+                "canning plants": {
+                    "type": "set"
+                },
+                "capacity": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "bext": {
+            "alias": "demand at market j in cases",
+            "headers": {
+                "markets": {
+                    "type": "set"
+                },
+                "demand": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "f": {
+            "alias": "freight in dollars per case per thousand miles",
+            "slider": {
+                "label": "freight in dollars per case per thousand miles",
+                "min": 1,
+                "max": 500,
+                "default": 90,
+                "step": 1
+            }
+        },
+        "mins": {
+            "alias": "minimum shipment (MIP- and MINLP-only)",
+            "slider": {
+                "label": "minimum shipment (MIP- and MINLP-only)",
+                "min": 0,
+                "max": 500,
+                "default": 100,
+                "step": 1
+            }
+        },
+        "beta": {
+            "alias": "beta (MINLP-only)",
+            "slider": {
+                "label": "beta (MINLP-only)",
+                "min": 0,
+                "max": 1,
+                "default": 0.95,
+                "step": 0.01
+            }
+        },
+        "GMSPAR_type": {
+            "alias": "Model Type",
+            "dropdown": {
+                "label": "Select model type",
+                "aliases": [
+                    "LP",
+                    "MIP",
+                    "MINLP"
+                ],
+                "choices": [
+                    "lp",
+                    "mip",
+                    "minlp"
+                ]
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "schedule": {
+            "alias": "shipment quantities in cases",
+            "headers": {
+                "canning plants": {
+                    "type": "set"
+                },
+                "markets": {
+                    "type": "set"
+                },
+                "demand": {
+                    "type": "parameter"
+                },
+                "lngp": {
+                    "type": "parameter"
+                },
+                "latp": {
+                    "type": "parameter"
+                },
+                "lngm": {
+                    "type": "parameter"
+                },
+                "latm": {
+                    "type": "parameter"
+                },
+                "cap": {
+                    "type": "parameter"
+                },
+                "quantities": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Scalars",
+            "count": 1,
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
+            }
+        }
+    }
+}
