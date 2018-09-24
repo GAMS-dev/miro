@@ -401,9 +401,9 @@ for s in output_sym:
 
 if SOtrueLen>0:
    if SOhidden:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
    else:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 config['gamsOutputFiles'] = io_dict
 
 #json.dump(config, sys.stdout, indent=4, sort_keys=False)
@@ -426,9 +426,6 @@ if %GMSWEBUI%>2 and os.name == "nt":
     def get_r_path():
         def major_minor_micro(version):
             major, minor, micro = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
-            if(int(major) < 3 or (int(major) == 3 and int(minor) < 5)):
-                os.environ["PYEXCEPT"] = "RVERSIONERROR"
-                raise FileNotFoundError('Bad R version')
             return int(major), int(minor), int(micro)
         try:
             aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
@@ -445,7 +442,14 @@ if %GMSWEBUI%>2 and os.name == "nt":
                 break
         if len(paths) == 0:
            return("")
-        return max(paths, key=major_minor_micro) + os.sep + "bin" + os.sep
+        latestRPath = max(paths, key=major_minor_micro)
+        latestR = major_minor_micro(latestRPath)
+       
+        if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
+          print('test')
+          os.environ["PYEXCEPT"] = "RVERSIONERROR"
+          raise FileNotFoundError('Bad R version')
+        return latestRPath + os.sep + "bin" + os.sep
     os.environ["RPATH"] = get_r_path()
     if os.path.exists(r"%gams.sysdir%GMSWebUI"):
         sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
@@ -467,7 +471,6 @@ elif %GMSWEBUI%>2:
            f.write("if(!'shiny'%in%installed.packages()){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
            f.write("shiny::runApp(launch.browser=TRUE)")
-
 $offembeddedCode
 $hiddencall rm -rf __pycache__
 $ifthen not errorfree
