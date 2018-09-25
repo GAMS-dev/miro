@@ -136,13 +136,13 @@ BatchLoad <- R6Class("BatchLoad",
                          stopifnot(is.character("attribs"), length(attribs) > 0L)
 
                          attribs <- gsub("^.+-", "", attribs)
-                         sids <- data[[1]]
+                         sids <- as.integer(data[[1]])
                          data <- data[, attribs]
                          attribs <- rlang::syms(attribs)
                          private$groupedData <- dplyr::group_by(data, !!!attribs)
                          groupedRowIds       <- attr(private$groupedData, "indices")
                          private$groupedSids <- lapply(groupedRowIds, function(rowIds){
-                           as.integer(sids[rowIds + 1L])
+                           sids[rowIds + 1L]
                          })
                          return(length(groupedRowIds))
                        },
@@ -209,12 +209,16 @@ BatchLoad <- R6Class("BatchLoad",
                        },
                        genPivotQuery          = function(tableName, keyCol, valCol, keyTypeList){
                          SQL(paste0("SELECT * FROM crosstab ('SELECT ", 
-                                    dbQuoteIdentifier(private$conn, private$sidCol),  ", ", dbQuoteIdentifier(private$conn, keyCol), 
-                                    ", max(", dbQuoteIdentifier(private$conn, valCol), ") FROM ", dbQuoteIdentifier(private$conn, tableName), 
-                                    " GROUP BY 1,2 ORDER BY 1,2','SELECT DISTINCT ", dbQuoteIdentifier(private$conn, keyCol), " FROM ", 
+                                    dbQuoteIdentifier(private$conn, private$sidCol),  ", ", 
+                                    dbQuoteIdentifier(private$conn, keyCol), 
+                                    ", max(", dbQuoteIdentifier(private$conn, valCol), ") FROM ", 
+                                    dbQuoteIdentifier(private$conn, tableName), 
+                                    " GROUP BY 1,2 ORDER BY 1,2','SELECT DISTINCT ", 
+                                    dbQuoteIdentifier(private$conn, keyCol), " FROM ", 
                                     dbQuoteIdentifier(private$conn, tableName), " ORDER BY 1') AS ", 
                                     dbQuoteIdentifier(private$conn, tableName %+% "_tmp"), " (", 
-                                    dbQuoteIdentifier(private$conn, private$sidCol), " bigint, ", private$genKeyTypeString(keyTypeList), ")"))
+                                    dbQuoteIdentifier(private$conn, private$sidCol), " bigint, ", 
+                                    private$genKeyTypeString(keyTypeList), ")"))
                        },
                        genKeyTypeString       = function(keyTypeList){
                          keyTypeList <- vapply(keyTypeList, function(keyTypeEl){
