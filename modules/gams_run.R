@@ -109,7 +109,6 @@ if(identical(config$activateModules$batchMode, TRUE)){
     scenIds <- as.character(sha256(gmsString))
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
     gmsString <- scenIds %+% ": " %+% gmsString
-    print(gmsString)
     return(list(ids = scenIds, gmspar = gmsString))
   })
   observeEvent(input$btBatchAll, {

@@ -3,7 +3,10 @@ keysRaw   <- NULL
 scalarKeyTypeList <- list()
 scalarsTabNameIn  <- modelName %+% "_" %+% scalarsFileName
 scalarsTabNameOut <- modelName %+% "_" %+% scalarsOutName
-scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
+modelInSorted <- sort(names(modelIn))
+
+scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
+  i <- match(modelInSorted[[j]], names(modelIn))
   if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
