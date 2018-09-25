@@ -161,14 +161,13 @@ BatchLoad <- R6Class("BatchLoad",
                          lapply(seq_along(private$groupedSids), function(i){
                            fileName <- workDir %+% i %+% ".trc"
                            paverFile <- file(fileName, open = 'wt')
-                           on.exit(close(paverFile))
                            
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
 "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,NumberOfEquations,NumberOfVariables,",
 "NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,OptionFile,ModelStatus,SolverStatus,",
 "ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
-"*\n* SOLVER,", groupLabels[i], "\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0\n"), con = paverFile)
-                           
+"*\n* SOLVER,", groupLabels[i], "\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
+                           close(paverFile)
                            paverData <- private$db$importDataset(private$tableNameTrace, 
                                                             tibble(private$sidCol, private$groupedSids[[i]]), 
                                                             innerSepAND = FALSE)[-1]
