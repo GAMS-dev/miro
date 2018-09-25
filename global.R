@@ -85,6 +85,6 @@ traceColNames <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianD
                    "NumberOfNonZeros","NumberOfNonlinearNonZeros","OptionFile",
                    "ModelStatus","SolverStatus","ObjectiveValue","ObjectiveValueEstimate",
                    "SolverTime","NumberOfIterations","NumberOfDomainViolations","NumberOfNodes","#User1")
-tableNameTracePrefix <- "_sys_trace"
+tableNameTracePrefix <- "_sys_trace_"
 
 

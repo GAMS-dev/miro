@@ -55,6 +55,11 @@
             "type":"string",
             "minLength":1
           },
+          "noBatch":{  
+            "description": "Boolean that specifies whether element should not be used in batch mode",
+            "type":"boolean",
+            "required": false
+          },
           "sharedData":{
             "description":"Boolean that specifies whether data for this widget is shared with other models (only valid for certain widgets such as table or dropdown ith data from external source)",
             "type":"boolean",
