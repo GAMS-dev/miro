@@ -3,7 +3,7 @@ modelName <- "pickstock"
 # show extensive error messages/ obscoure error messages
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
-spModelNameEnvVar <- "SHINYPROXY_MODELNAME"
+spModelPathEnvVar <- "SHINYPROXY_MODELNAME"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noimport")
 # keywords that define data MUST not be imported in order to run the model
@@ -27,7 +27,6 @@ stagIdentifier <- "_stag"
 slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
-tmpFileDir <- paste0("tmp", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- "INFO"
 # name of table with scenario metadata as well as scenario locks
@@ -53,7 +52,7 @@ scalarsFileHeaders <- c("Scalar", "Description", "Value")
 # supported operating systems for "Stop"-Button for gams.exe
 osSupportInterrupt <- c("windows", "linux", "osx")
 # name of the directory where GAMS models are saved
-modelDir <- "./model/"
+modelDir <- "model/"
 # prefix used for identifying compile time variables
 prefixDDPar  <- "GMSPAR_"
 prefixGMSOpt <- "GMSOPT_"
@@ -74,11 +73,18 @@ sharedTablePrefix <- "_shared"
 # default access group every user is in
 defaultGroup <- "user"
 # list all supported standard renderers
-standardRenderers <- c("datatable", "dtgraph", "pivot", "graph")
+standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # maximum number of scenarios that can be solved per batch run
 maxNoBatch <- 200000L
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L
+maxSolversPaver  <- 15L
+traceColNames <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianDate","Direction"
+                   ,"NumberOfEquations","NumberOfVariables","NumberOfDiscreteVariables",
+                   "NumberOfNonZeros","NumberOfNonlinearNonZeros","OptionFile",
+                   "ModelStatus","SolverStatus","ObjectiveValue","ObjectiveValueEstimate",
+                   "SolverTime","NumberOfIterations","NumberOfDomainViolations","NumberOfNodes","#User1")
+tableNameTracePrefix <- "_sys_trace"
 
 

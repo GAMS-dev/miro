@@ -4,7 +4,8 @@ Db <- R6Class("Db",
                 initialize        = function(uid, host, username, password, dbname, uidIdentifier, sidIdentifier, 
                                              snameIdentifier, stimeIdentifier, slocktimeIdentifier, stagIdentifier,
                                              accessIdentifier, tableNameMetadata, tableNameScenLocks, 
-                                             tableNamesScenario, slocktimeLimit, port = NULL, type = "postgres"){
+                                             tableNamesScenario, slocktimeLimit, port = NULL, type = "postgres",
+                                             tableNameTrace = NULL, traceColNames = NULL){
                   # Initialize database class
                   #
                   # Args:
@@ -27,6 +28,8 @@ Db <- R6Class("Db",
                   #                        (without being refreshed), before it will be deleted (optional)
                   #   port:                port to connect to (optional)
                   #   type:                type of database used (optional)
+                  #   tableNameTrace:      table name where trace data is saved
+                  #   traceColNames:       column names of trace data table
                   
                   #BEGIN error checks 
                   if(is.null(private$info$isInitialized)){
@@ -56,6 +59,10 @@ Db <- R6Class("Db",
                     stopifnot(is.numeric(port) && length(port) == 1)
                   }
                   stopifnot(is.character(type), length(type) == 1)
+                  if(!is.null(tableNameTrace)){
+                    stopifnot(is.character(tableNameTrace), length(tableNameTrace) == 1)
+                    stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
+                  }
                   #END error checks 
                   
                   private$uid                         <- uid
@@ -72,6 +79,8 @@ Db <- R6Class("Db",
                   private$tableNameScenLocks          <- tableNameScenLocks
                   private$tableNamesScenario          <- tableNamesScenario
                   private$slocktimeLimit              <- slocktimeLimit
+                  private$traceConfig[['tabName']]    <- tableNameTrace
+                  private$traceConfig[['colNames']]   <- traceColNames
                   
                   if(type == "postgres"){
                     tryCatch({
@@ -93,6 +102,7 @@ Db <- R6Class("Db",
                 getTableNameMetadata  = function() private$tableNameMetadata,
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
+                getTraceConfig        = function() private$traceConfig,
                 getMetadata           = function(uid, sname, stime, 
                                                  uidAlias = private$scenMetaColnames['uid'], 
                                                  snameAlias = private$scenMetaColnames['sname'], 
@@ -601,6 +611,7 @@ Db <- R6Class("Db",
                 tableNameScenLocks  = character(0L),
                 tableNamesScenario  = character(0L),
                 slocktimeLimit      = character(0L),
+                traceConfig         = vector("list", 2L),
                 info                = new.env(),
                 isValidSubsetGroup  = function(dataFrame){
                   if(inherits(dataFrame, "data.frame") 

@@ -477,7 +477,7 @@ $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort The R version you have installed
 $terminate
 $endif
 $ifthene %GMSWEBUI%>2
-$  call cd "%WEBUIDIR%" && "%sysenv.RPATH%Rscript" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
+$  call cd "%WEBUIDIR%" && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing GMS WebUI. Make sure you have a valid WebUI installation.
 $endif
 $terminate

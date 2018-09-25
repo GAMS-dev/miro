@@ -14,7 +14,6 @@ Parameter
 Scalar maxstock      'maximum number of stocks to select ### { "slider":{"min":1, "max":"card(stockdata$stocksymbol)", "default":5,  "step":1 }}'  / 2  /
        trainingdays  'number of days for training        ### { "slider":{"min":1, "max":"card(stockdata$date)",        "default":99, "step":1 }}'  / 99  /;
 $offExternalInput
-
 $if not set fileName $set fileName dowjones2016.csv
 $ifthen exist "%gams.wdir%%fileName%"
 $  call csv2gdx "%gams.wdir%%fileName%" output=stockdata.gdx ValueDim=1 id=stockdata Index=(1,2) Value=3 UseHeader=y

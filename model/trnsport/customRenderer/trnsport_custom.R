@@ -65,24 +65,3 @@ renderTrnsport1 <- function(input, output, server, data, options = NULL, path = 
                   layerId = paste0("From ", data[["canning plants"]], " to ", data$markets), popup = popupArgs())
   output$trnsport <- leaflet::renderLeaflet(map)
 }
-#
-#renderSimple2 <- function(input, output, server, data, options = NULL, path = NULL){
-#  
-#  
-#  #mapping of Ids (from GAMS) and labels (R)
-#  map.id.name <- as.list(labels)
-#  names(map.id.name) <- sapply(1:16, function(i){ paste0("ID_", i)})
-#  label0 <- sapply(data$Regions, function(el){map.id.name[[el]]})
-#  label1 <- sapply(data$Regions1, function(el){map.id.name[[el]]})
-#  
-#  
-#    addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, 
-#             color = "indianred", flow = data$Flow, 
-#             time = data[['time steps']], opacity = 1, minThickness = 1, 
-#             maxThickness = 12, 
-#             #Popup for flows - label0 and label1 need to be filled before
-#             layerId = paste0("From ", label0, " to ", label1), popup = popupArgs())
-#  
-#  
-#  output$simple <- leaflet::renderLeaflet(map)
-#}

@@ -6,7 +6,7 @@ closeScenario <- function(){
   })
   # clear scalar data
   scalarData[["scen_1_"]] <<- data.frame()
-  
+  traceData <<- data.frame()
   # reset input data sheets
   modelInputData      <<- modelInTemplate
   input.initialized[] <<- FALSE

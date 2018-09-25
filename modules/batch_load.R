@@ -4,7 +4,6 @@ scalarKeyTypeList <- list()
 scalarsTabNameIn  <- modelName %+% "_" %+% scalarsFileName
 scalarsTabNameOut <- modelName %+% "_" %+% scalarsOutName
 scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
-  print(names(modelIn)[i] == scalarsFileName)
   if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
@@ -13,7 +12,6 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(i){
     aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
       return()
     })
-    #list(key = names(modeln[[i]]$content), type = modeln[[i]]$content, alias = modelIn[[i]]$alias)
   }else{
     NA
   }
@@ -26,16 +24,10 @@ names(scalarFields) <- unlist(lapply(scalarKeyTypeList[[scalarsTabNameIn]],
                                      "[[", "alias"))
 batchLoad <- BatchLoad$new(db, scalarsFileHeaders[c(1, 3)],
                            scalarsTabNameIn, scalarKeyTypeList)
-
-#tables <- strsplit(names(fieldValueList), "-", fixed = TRUE)
-#tables <- vapply(tables, "[[", character(1L), 2, USE.NAMES = FALSE)
-#fields <- names(fieldValueList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "-" %+% metaCols[c("uid", "stime", "stag")])
 names(fields) <- c("", "Owner", "Date of creation", "Batch tags")
 fields <- c(fields, scalarFields)
-#names(fields) <- tables
-#rm(tables)
 
 maxNumBlocks   <- 5L
 activeBlocks   <- vector("logical", maxNumBlocks)
@@ -95,9 +87,6 @@ observeEvent(input$btNewBlock, {
   }
   i <- which.min(activeBlocks)
   activeBlocks[i] <<- TRUE
-  #j <- which.min(activeLines[((i - 1) * maxNumBlocks + 1):
-  #                             ((i - 1) * maxNumBlocks + maxNumBlocks)])
-  #activeLines[j + (i - 1) * maxNumBlocks]  <<- TRUE
   insertUI(
     selector = "#selectorsWrapper",
     where = "beforeEnd",
@@ -128,11 +117,6 @@ lapply(2:maxNumBlocks, function(i){
 })
 lapply(seq_len(maxNumBlocks), function(i){
   lapply(seq_len(maxNumBlocks), function(j){
-    #observeEvent(input[["field_" %+% i %+% "_" %+% j]], {
-    #  values <- batchLoad$fetchValues(input[["field_" %+% i %+% "_" %+% j]])
-    #  updateSelectInput(session, "val_" %+% i %+% "_" %+% j, 
-    #                    choices = values)
-    #})
     observeEvent(input[["btRemoveLine" %+% i %+% "_" %+% j]], {
       activeLines[j + (i - 1) * maxNumBlocks]  <<- FALSE
       removeUI(selector = "#line" %+% i %+% "_" %+% j)
@@ -272,41 +256,23 @@ observeEvent(input$batchLoadSelected, {
   if(is.null(input$batchLoadResults_rows_selected)){
     return(NULL)
   }
-  sidsToLoad <<- rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected]
-  showBatchLoadMethodDialog()
+  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected])
+  showBatchLoadMethodDialog(fields, maxSolversPaver)
 })
 observeEvent(input$batchLoadCurrent, {
   if(is.null(input$batchLoadResults_rows_current)){
     return(NULL)
   }
-  sidsToLoad <<- rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current]
-  showBatchLoadMethodDialog()
+  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current])
+  showBatchLoadMethodDialog(fields, maxSolversPaver)
 })
 observeEvent(input$batchLoadAll, {
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
-  sidsToLoad     <<- rv$fetchedScenarios[[1]]
-  showBatchLoadMethodDialog()
+  sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
+  showBatchLoadMethodDialog(fields, maxSolversPaver)
 })
-showBatchLoadMethodDialog <- function(){
-  showModal(modalDialog(
-    title = "Select scenario comparison method",
-    if(length(sidsToLoad) <= maxConcurentLoad){
-      "Which method would you like to use in order to compare your scenarios?"
-    }else{
-      "You may only select up to: %d scenarios to load into interactive mode at once." %+% 
-" Select less scenarios or use the Paver module to compare."
-    },
-    footer = tagList(
-      modalButton("Cancel"),
-      actionButton("btPaver", label = "Paver"),
-      if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btBatchLoad", label = "Interactive mode")
-    ),
-    fade = TRUE, easyClose = TRUE
-  ))
-}
 
 noLinesInBlock <- function(blockId){
   if(any(activeLines[((blockId - 1) * maxNumBlocks + 1):

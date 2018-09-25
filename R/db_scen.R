@@ -51,6 +51,7 @@ Scenario <- R6Class("Scenario",
                         private$tableNameMetadata   <- db$getTableNameMetadata()
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
+                        private$traceConfig         <- db$getTraceConfig()
                         
                         if(is.null(sid)){
                           tryCatch(private$fetchMetadata(sname = sname, uid = private$uid),
@@ -141,6 +142,24 @@ Scenario <- R6Class("Scenario",
                         private$lock()
                         
                         invisible(self)
+                      },
+                      saveTraceData = function(traceData){
+                        # Saves trace data 
+                        # 
+                        # Args:
+                        #   traceData:   data frame with trace data
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        stopifnot(!is.null(private$sid))
+                        
+                        sidCol <- private$scenMetaColnames['sid']
+                        if(!identical(names(data)[1], sidCol)){
+                          traceData <- dplyr::bind_cols(!!sidCol := rep.int(private$sid, nrow(traceData)), 
+                                                        traceData)
+                        }
+                        super$exportScenDataset(traceData, private$traceConfig[["tabName"]])
                       },
                       delete = function(){
                         # Wrapper to deleteRows function to easily remove scenario from database

@@ -30,97 +30,64 @@ hasContent <- function(x){
   return(TRUE)
 }
 
-getModelName <- function(modelName = NULL, isShinyProxy = FALSE, envVarName = NULL){
+getCommandArg <- function(argName, exception = TRUE){
+  # local mode
+  args <- commandArgs(trailingOnly = TRUE)
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+                   ignore.case = TRUE)
+  if(any(matches)){
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+           ignore.case = TRUE))
+  }else{
+    if(exception){
+      stop()
+    }else{
+      return("")
+    }
+  }
+}
+
+getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
-  # modelName:                  name of the GAMS model as defined externally (e.g. in development mode)
+  # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
   # isShinyProxy:               boolean that specifies whether shiny proxy is used
-  # envVarName:                 name of the environment variable that specifies model name in shiny proxy
+  # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
   
+  errMsg <- "Model path could not be retrieved."
   if(isShinyProxy){
     # shiny proxy mode
-    if(is.null(envVarName)){
-      if(is.null(modelName)){
-        stop("Model name could not be retrieved.", call. = FALSE)
+    if(is.null(envVarPath)){
+      if(is.null(modelPath)){
+        stop(errMsg, call. = FALSE)
       }
     }else{
-      envName <- Sys.getenv(envVarName)
+      envName <- Sys.getenv(envVarPath)
       if(length(envName)){
-        modelName <- envName
-      }else if(is.null(modelName)){
-        stop("Model name could not be retrieved.", call. = FALSE)
+        modelPath <- envName
+      }else if(is.null(modelPath)){
+        stop(errMsg, call. = FALSE)
       }
     }
   }else{
-    # local mode
-    args <- commandArgs(trailingOnly = TRUE)
-    matches <- grepl("^-+modelName\\s?=\\s?", args, ignore.case = TRUE)
-    if(any(matches)){
-      modelName <- gsub("^-+modelName\\s?=\\s?", "", args[matches][1], ignore.case = TRUE)
-    }else if(is.null(modelName)){
-      stop("Model name could not be retrieved.", call. = FALSE)
-    }
+    tryCatch({
+      modelPath <- getCommandArg("modelPath")
+    }, error = function(e){
+      if(is.null(modelPath)){
+        stop(errMsg, call. = FALSE)
+      }
+    })
   }
-  
-  return(tolower(modelName))
-}
+  gmsFileName <- basename(modelPath)
+  modelName   <- tolower(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
+  modelDir    <- dirname(modelPath) %+% .Platform$file.sep
 
-# DEPRECATED
-#get.config.dir <- function(modelName, modelDir){
-#  # attempts to copy model specific configuration files into Conf folder
-#  # 
-#  # Args:
-#  # modelName:                  name of the GAMS model
-#  # modelDir:                   location of the GAMS model
-#  #
-#  # Returns:
-#  # no return value
-#  
-#  if(missing(modelDir) || missing(modelName)){
-#    stop("Please specify a GAMS model directory and model name.", call. = F)
-#  }
-#
-#  # check whether modelname.txt is available
-#  if(file.access("conf/modelname.txt", mode = 4)){
-#    if(file.access(paste0(modelDir, "conf/config.json"), mode = 4)){
-#      stop("File: 'config.json' could not be found or user has no read permissions.", call. = F)
-#    }
-#    if(file.access(paste0(modelDir, "conf/GMSIO_config.json"), mode = 4)){
-#      stop("File: 'GMSIO_config.json' could not be found or user has no read permissions.", call. = F)
-#    }
-#  }else{
-#    tryCatch({
-#      suppressWarnings(
-#        curr.model <- readLines("./conf/modelname.txt")
-#      )
-#    }, error = function(e){
-#      stop(paste0("Could not read file: 'modelname.txt'. Error message: ", e), call. = F)
-#    })
-#    if(curr.model == modelName){
-#      # config files already up to date
-#      return(NULL)
-#    }
-#  }
-#  
-#  # current config files are not for correct model, so attempt to copy correct config files
-#  if(all(file.copy(paste0(modelDir, "conf/", c("config.json", "GMSIO_config.json")), 
-#                   paste0("./conf/", c("config.json", "GMSIO_config.json")), overwrite = T))){
-#    # success, so update modelname.txt file
-#    tryCatch({
-#      write(modelName, file = "./conf/modelname.txt")
-#    }, error = function(e){
-#      stop("Failed to write to file: './conf/modelname.txt'. Please make sure you have write permissions.", call. = F)
-#    })
-#    return(NULL)
-#  }else{
-#    stop("Failed to copy config files. Please make sure you have write permissions.", call. = F)
-#  }
-#  
-#}
+  return(list(modelDir, gmsFileName, modelName))
+}
 get.input.to.import <- function(data, keywordsNoImport){
   # Retrieves input data which has to be loaded from an external source
   #
@@ -386,20 +353,6 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   }
 }
 
-#save.data.to.excel <- function(data, file.name){
-#  # Saves list of dataframes to Excel
-#  #
-#  # Args:
-#  #   data:                     list of dataframes that is to be saved
-#  #   file.name:                name for the new Excel file
-#  #
-#  # Returns:
-#  #   TRUE in case of success, else error message
-#  
-#  writexl::write_xlsx(data, paste0(file.name, ".xlsx"))
-#  
-#}
-
 renderOutput <- function(data, type, dt.options = NULL, graph.options = NULL, map.options = NULL, pivot.options = NULL, custom.options = NULL,
                          height = NULL, roundPrecision = 2, static = FALSE){
   # Renders output sheets according to visualization options specified
@@ -590,4 +543,24 @@ showErrorMsg <- function(title, errMsg){
     return(invisible(NULL))
   }
   return(invisible(1))
+}
+readTraceData <- function(filePath, traceColNames){
+  traceData <- read_csv(filePath, col_names = FALSE,
+                       skip = 5, col_types = cols())
+  traceData <- traceData[nrow(traceData), ]
+  if(length(traceData) == length(traceColNames)){
+    names(traceData) <- traceColNames
+    return(traceData)
+  }else{
+    stop("Trace data has incorrect length.", call. = FALSE)
+  }
+}
+getIcon <- function(name, lib){
+  if(!identical(name, NULL)){
+    lib <- if(identical(lib, "glyphicon")) "glyphicon" else "font-awesome"
+    icon <- icon(name, lib)
+  }else{
+    icon <-  NULL
+  }
+  return(icon)
 }

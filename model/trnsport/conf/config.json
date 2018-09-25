@@ -12,8 +12,14 @@
 		    }
 	    },
         "scalars_out"   : {
-            "outType"			: "datatable",
-		    "height"			: 700
+            "outType"			: "valueBox",
+		    "height"			: 700,
+            "options"  :{
+            "icon":{
+            "name" : "list"
+            },
+            "color":"purple"
+            }
         }
     }
 }

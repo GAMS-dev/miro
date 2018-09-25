@@ -1,12 +1,3 @@
-# initialisation module (error checks etc.)
-#if(is.null(errMsg)){  
-#  # get model specific config files
-#  tryCatch({
-#    model.config.dir <- get.config.dir(modelName, modelDir)
-#  }, error = function(e){
-#    errMsg <<- paste0("Could not retrieve configuration files. Error message: ", e)
-#  })
-#}
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(!file.exists(currentModelDir %+% configDir %+% "config.json")){
@@ -93,6 +84,7 @@ if(is.null(errMsg)){
     errMsg <- "The JSON language file: '" %+% config$language %+% ".json' could not be located. Please make sure file is available and accessible."
     flog.fatal(errMsg)
   }else{
+    eval <- list(character(), character())
     tryCatch({
       eval <- validateJson(configDir %+% config$language %+% ".json", configDir %+% languageSchemaName, add.defaults = F)
     }, error = function(e){
@@ -250,24 +242,64 @@ if(is.null(errMsg)){
   
   # assign default output format to output data that was not set in config
   lapply(seq_along(modelOut), function(i){
+    if(identical(tolower(configGraphsOut[[i]]$outType), "valuebox")){
+      if(identical(names(modelOut)[[i]], scalarsOutName)){
+        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+      }else{
+        errMsg <<- paste(errMsg, 
+                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                 modelOutAlias[i]), sep = "\n")
+      }
+    }
     if(is.null(configGraphsOut[[i]])){
-      configGraphsOut[[i]]$outType <<- defOutType
+      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10){
+        configGraphsOut[[i]]$outType <<- "valuebox"
+        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+      }else{
+        configGraphsOut[[i]]$outType <<- defOutType
+      }
     }
   })
   # assign default output format for input sheets that were not set in config
-  if(config$autoGenInputGraphs){
-    lapply(seq_along(modelIn), function(i){
+  lapply(seq_along(modelIn), function(i){
+    if(identical(tolower(configGraphsIn[[i]]$outType), "valuebox")){
+      if(identical(names(modelIn)[[i]], scalarsFileName)){
+        configGraphsIn[[i]]$options$count <<- modelIn[[i]]$count
+      }else{
+        errMsg <<- paste(errMsg, 
+                         sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
+                                 modelInAlias[i]), sep = "\n")
+      }
+    }
+    if(config$autoGenInputGraphs){
       # Create graphs only for tabular input sheets 
       if(!is.null(modelIn[[i]]$headers)){
         if(is.null(configGraphsIn[[i]])){
-          configGraphsIn[[i]]$outType <<- defInType
+          if(identical(names(modelIn)[[i]], scalarsFileName) && modelIn[[i]]$count < 10){
+            configGraphsIn[[i]]$outType <<- "valuebox"
+            configGraphsIn[[i]]$options$count <<- modelIn[[i]]$count
+          }else{
+            configGraphsIn[[i]]$outType <<- defInType
+          }
         }
       }
-    })
-  }
+    }
+  })
   # batch mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$batchMode, TRUE)){
+    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
+      if((modelIn[[i]]$type == "slider" 
+          && length(modelIn[[i]]$slider$default) > 1) 
+         || (modelIn[[i]]$type == "daterange")){
+        ""
+      }else{
+        if(names(modelIn)[i] %in% DDPar){
+          return("--" %+% names(modelIn)[i] %+% "=")
+        }
+        names(modelIn)[i] %+% "="
+      }
+    }), use.names = FALSE)
     lapply(seq_along(modelIn), function(i){
       if(!identical(modelIn[[i]]$noBatch, TRUE)){
         switch(modelIn[[i]]$type,
@@ -318,18 +350,6 @@ if(is.null(errMsg)){
                })
       }
     })
-    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
-      if((modelIn[[i]]$type == "slider" 
-          && length(modelIn[[i]]$slider$default) > 1) 
-         || (modelIn[[i]]$type == "daterange")){
-        ""
-      }else{
-        if(names(modelIn)[i] %in% DDPar){
-          return("--" %+% names(modelIn)[i] %+% "=")
-        }
-        names(modelIn)[i] %+% "="
-      }
-    }), use.names = FALSE)
   }
   
   # get datasets whose data source is shared with other models
@@ -671,9 +691,10 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     # define scenario tables to display in interface
     scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames)
     
-    #inputTableNames  <- paste0(paste0(modelName,"_"), c(names(modelInToImport), scalarsFileName))
     # get the operating system that shiny is running on
     serverOS    <- getOS()
+    gamsSysDir   <- ""
+    try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
     # generate GAMS return code map
     GAMSReturnCodeMap <- c('1' = "Solver is to be called, the system should never return this number", 
                            '2' = "There was a compilation error", 
@@ -739,5 +760,5 @@ if(is.null(errMsg)){
        modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
        modelInToImportAlias, modelInToImport, scenTableNames,
        scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
-       modelInGmsString, file = rSaveFilePath)
+       modelInGmsString, gamsSysDir, file = rSaveFilePath)
 }

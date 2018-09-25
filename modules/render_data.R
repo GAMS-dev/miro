@@ -38,6 +38,11 @@ renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.optio
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
+  }else if(type == "valuebox"){
+    data <- lapply(seq_len(custom.options$count), function(i){
+      valueBoxOutput(ns("valBox" %+% i),
+                     width = if(identical(custom.options$width, NULL)) 4 else custom.options$width)
+    })
   }else{
     tryCatch({
       customOutput <- match.fun(tolower(type) %+% "Output")
@@ -80,6 +85,16 @@ renderData <- function(input, output, session, data, type, config.data = NULL, d
     if(!is.null(graph.options)){
       output$graph <- renderGraph(data, config.data = config.data, options = graph.options)
     }
+  }else if(type == "valuebox"){
+    lapply(seq_len(custom.options$count), function(i){
+      output[["valBox" %+% i]] <- renderValueBox({
+        valueBox(
+          round(data[[3]][[i]], roundPrecision), data[[2]][[i]], 
+          getIcon(custom.options$icon$name, custom.options$icon$lib),
+          if(identical(custom.options$color, NULL)) "purple" else custom.options$color
+        )
+      })
+    })
   }else{
     tryCatch({
       customRenderer <- match.fun("render" %+% toupper(substr(type, 1, 1)) %+% tolower(substr(type, 2, nchar(type))))

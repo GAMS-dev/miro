@@ -1,5 +1,5 @@
 #version number
-webuiVersion <- '0_2_1'
+webuiVersion <- '0_2_3'
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -21,6 +21,7 @@ webuiVersion <- '0_2_1'
 
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
+tmpFileDir <- tempdir(TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # files that require schema file
@@ -29,12 +30,20 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
                     "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
+requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "reshape2", "stringi", "xts")
-source("./R/install_packages.R", local = TRUE)
+                      "futile.logger", "dygraphs", "reshape2", "xts")
+if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
+                       min = 0, max = 1, initial = 0, width = 300)
+  setWinProgressBar(pb, 0.1)
+}
 
+source("./R/install_packages.R", local = TRUE)
+if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  setWinProgressBar(pb, 0.6, label= "Initialising app")
+}
 if(is.null(errMsg)){
   # include custom functions and modules
   lapply(filesToInclude, function(file){
@@ -54,24 +63,31 @@ if(is.null(errMsg)){
   })
   # check whether shiny proxy is used to access this file
   isShinyProxy <- isShinyProxy()
-  # get model Name
+  # get model path and name
   tryCatch({
-    modelName <- getModelName(modelName, isShinyProxy, spModelNameEnvVar)
+    modelPath <- paste0(getwd(), .Platform$file.sep, modelDir, modelName, 
+                        .Platform$file.sep, modelName, ".gms")
+    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar)
+    modelGmsName <- modelPath[[2]]
+    modelName <- modelPath[[3]]
+    modelPath <- modelPath[[1]]
   }, error = function(e){
     errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
   })
-  # check if GAMS model file exists
-  if(file.exists(modelDir %+% tolower(modelName) %+% .Platform$file.sep %+% tolower(modelName) %+% ".gms")){
-    currentModelDir  <- modelDir %+% tolower(modelName) %+% .Platform$file.sep
-  }else{
-    errMsg <- paste0("The GAMS model file could not be found. Please make sure you create a new directory for your model in : '",
-                     modelDir, "', so that it looks like this: '", modelDir, tolower(modelName), 
-                     .Platform$file.sep, tolower(modelName), ".gms'")
-  }
-  # name of the R save file
-  rSaveFilePath <- paste0(currentModelDir, tolower(modelName), '_', webuiVersion, '.RData')
 }
 if(is.null(errMsg)){
+  logFileDir <- tmpFileDir %+% .Platform$file.sep %+% logFileDir
+  # check if GAMS model file exists
+  if(file.exists(modelPath %+% modelGmsName)){
+    currentModelDir  <- modelPath
+  }else{
+    errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
+"Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
+  }
+}
+if(is.null(errMsg)){
+  # name of the R save file
+  rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, '.RData')
   # set user ID (user name) and user groups
   if(isShinyProxy){
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
@@ -95,7 +111,8 @@ if(is.null(errMsg)){
       errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
     })
   }
-  flog.appender(appender.file(logFileDir %+% modelName %+% "_" %+% uid %+% "_" %+% format(Sys.time(), "%y.%m.%d_%H.%M.%S") %+% ".log"))
+  flog.appender(appender.file(logFileDir %+% modelName %+% "_" %+% uid %+% "_" %+% 
+                                format(Sys.time(), "%y.%m.%d_%H.%M.%S") %+% ".log"))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   
@@ -105,7 +122,7 @@ if(is.null(errMsg)){
     load(rSaveFilePath, envir = .GlobalEnv)
   }
 }
-if(is.null(errMsg)){ 
+if(is.null(errMsg)){
   # load default and custom renderers (output data)
   customRendererDir <<- paste0(currentModelDir, customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
@@ -115,10 +132,12 @@ if(is.null(errMsg)){
         source("./modules/renderers/" %+% file)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", file, e), sep = "\n")
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", 
+                                 file, e), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", file, w), sep = "\n")
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", 
+                                 file, w), sep = "\n")
       })
     }else{
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
@@ -132,10 +151,12 @@ if(is.null(errMsg)){
         source(customRendererDir %+% file)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", file, e), sep = "\n")
+                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                 file, e), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", file, w), sep = "\n")
+                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                 file, w), sep = "\n")
       })
     }else{
       errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
@@ -154,7 +175,8 @@ if(is.null(errMsg)){
         match.fun(customRendererName)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
-                         sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", customRendererName), sep = "\n")
+                         sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
+                                 customRendererName), sep = "\n")
       })
       # find output function
       tryCatch({
@@ -193,7 +215,8 @@ if(is.null(errMsg)){
                      accessIdentifier = accessIdentifier, tableNameMetadata = scenMetadataTable, 
                      tableNameScenLocks = scenLockTablePrefix %+% modelName, 
                      tableNamesScenario = scenTableNames, 
-                     slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type)
+                     slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type,
+                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames)
       conn <- db$getConn()
       flog.debug("Database connection established.")
     }, error = function(e){
@@ -219,12 +242,18 @@ if(is.null(errMsg)){
     })
   }
   if(config$activateModules$batchMode){
+    requiredPackages <- c("openssl")
+    source("./R/install_packages.R", local = TRUE)
+    
     source("./R/batch.R")
     source("./R/db_batchimport.R")
     source("./R/db_batchload.R")
   }
 }
-
+if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  setWinProgressBar(pb, 1, label= "App initialised")
+  close(pb)
+}
 if(!is.null(errMsg)){
   ui_initError <- fluidPage(
     tags$head(
@@ -291,6 +320,7 @@ if(!is.null(errMsg)){
     scenData[["scen_1_"]] <- scenDataTemplate
     # parameter used for saving (hidden) scalar data
     scalarData         <- list()
+    traceData          <- data.frame()
     # boolean that specifies whether handsontable is initialised
     hotInit            <- vector("logical", length = length(modelIn))
     # boolean that specifies whether check if data is unsaved should be skipped
@@ -325,7 +355,7 @@ if(!is.null(errMsg)){
           shortcutNest <<- TRUE
         }
       })
-      observeEvent(input$tabset.shortcut.unnest, {
+      observeEvent(input$tabsetShortcutUnnest, {
         if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
           shortcutNest <<- FALSE
         }
@@ -408,7 +438,7 @@ if(!is.null(errMsg)){
     roundPrecision <- config$roundingDecimals
     
     # set local working directory
-    workDir <- paste0(getwd(), .Platform$file.sep, tmpFileDir, session$token, .Platform$file.sep)
+    workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
@@ -421,7 +451,7 @@ if(!is.null(errMsg)){
     rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", length = length(modelInMustImport)), 
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
                          btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL,
-                         clear = TRUE, btSave = 0L, btSplitView = 0L, noInvalidData = 0L)
+                         clear = TRUE, btSave = 0L, btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -745,17 +775,6 @@ if(!is.null(errMsg)){
       source("./modules/excel_scen_save.R", local = TRUE)
     }
     
-    # internal database module
-    #if(config$activateModules$scenario){
-      
-      # upload model input data from database 
-      #source("./modules/db_input_load.R", local = TRUE)
-      
-      # save model input data to database
-      #source("./modules/db_input_save.R", local = TRUE)
-      
-    #}
-    
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders
@@ -763,6 +782,10 @@ if(!is.null(errMsg)){
       suppressWarnings(rm(activeScen))
       try(flog.info("Session ended (model: '%s').", modelName))
       gc()
+      if(!interactive()){
+        stopApp()
+        q("no")
+      }
     })
   }
   
@@ -778,7 +801,7 @@ if(!is.null(errMsg)){
   source("./UI/sidebar.R", local = TRUE)
   source("./UI/body.R", local = TRUE)
   
-  ui <- shinydashboard::dashboardPage(header, sidebar, body, skin = config$pageSkin)
+  ui <- dashboardPage(header, sidebar, body, skin = config$pageSkin)
   
-  app <- shiny::shinyApp(ui = ui, server = server)
+  app <- shinyApp(ui = ui, server = server)
 }

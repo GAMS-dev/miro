@@ -130,7 +130,7 @@ costnlp.. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
 
 Model transportMINLP / transportMIP - cost + costnlp /;
 Solve transportMINLP using MINLP minimizing z ;
-abort$(transportMINLP.modelstat > 2) "No feasible solution found"
+abort$(transportMINLP.modelstat > 2 and transportMINLP.modelstat <> 8) "No feasible solution found"
 $endif.minlp
 
 

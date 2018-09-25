@@ -4,6 +4,114 @@ if(identical(config$activateModules$batchMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
+  noScenToSolve <- reactive({
+    numberScenPerElement <- vapply(seq_along(modelIn), function(i){
+      switch(modelIn[[i]]$type,
+             slider = {
+               value <- input[[paste0("slider_", i)]]
+               if(length(value) > 1){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)
+                    && !identical(input[["batchMode_" %+% i]], TRUE)){
+                   # double slider in non batch mode
+                   return(1L)
+                 }
+                 
+                 stepSize <- input[["batchStep_" %+% i]]
+                 range <- floor((value[2] - value[1])/stepSize) + 1
+                 if(!is.numeric(stepSize) || stepSize <= 0 
+                    || is.numeric(modelIn[[i]]$slider$step) 
+                    && stepSize < modelIn[[i]]$slider$step){
+                   # non valid step size selected
+                   return(-1L)
+                 }
+                 if(identical(modelIn[[i]]$slider$single, TRUE)){
+                   return(as.integer(range))
+                 }
+                 # double slider all combinations
+                 return(as.integer(range*(range + 1) / 2))
+               }
+               return(1L)
+             },
+             hot = {
+               return(1L)
+             },
+             dropdown = {
+               return(length(input[[paste0("dropdown_", i)]]))
+             },
+             date = {
+               return(length(input[[paste0("date_", i)]]))
+             },
+             daterange = {
+               return(length(input[[paste0("daterange_", i)]]))
+             },
+             checkbox = {
+               return(length(input[[paste0("cb_", i)]]))
+             })
+    }, integer(1L), USE.NAMES = FALSE)
+    return(prod(numberScenPerElement))
+  })
+  
+  getUniqueCombinations <- function(vector){
+    combinations <- expand.grid(vector, vector, stringsAsFactors = FALSE)
+    combinations[combinations[, 1] <= combinations[, 2], ] 
+  }
+  
+  scenToSolve <- reactive({
+    prog <- shiny::Progress$new()
+    on.exit(prog$close())
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    elementValues <- lapply(seq_along(modelIn), function(i){
+      updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+      switch(modelIn[[i]]$type,
+             slider = {
+               value <- input[[paste0("slider_", i)]]
+               if(length(value) > 1){
+                 if(identical(modelIn[[i]]$slider$double, TRUE)
+                    && !identical(input[["batchMode_" %+% i]], TRUE)){
+                   # double slider in non batch mode
+                   return(paste0("--", names(modelIn)[[i]], "_min=", value[1], 
+                                 " --", names(modelIn)[[i]], "_max=", value[2]))
+                 }
+                 
+                 stepSize <- input[["batchStep_" %+% i]]
+                 if(identical(modelIn[[i]]$slider$single, TRUE)){
+                   return(seq(value[1], value[2], stepSize))
+                 }
+                 # double slider all combinations
+                 value <- getCombinationsSlider(value[1], value[2], stepSize)
+                 return(paste0("--", names(modelIn)[[i]], "_min=", value$min, 
+                               " --", names(modelIn)[[i]], "_max=", value$max))
+               }
+             },
+             dropdown = {
+               value <- input[[paste0("dropdown_", i)]]
+             },
+             date = {
+               value <- input[[paste0("date_", i)]]
+             },
+             checkbox = {
+               value <- input[[paste0("cb_", i)]]
+             },
+             hot = {
+               value <- NA
+             },
+             {
+               stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
+             })
+    })
+    par <- modelInGmsString[!is.na(elementValues)]
+    elementValues <- elementValues[!is.na(elementValues)]
+    gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
+    updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+    scenIds <- as.character(sha256(gmsString))
+    updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+    gmsString <- scenIds %+% ": " %+% gmsString
+    print(gmsString)
+    return(list(ids = scenIds, gmspar = gmsString))
+  })
   observeEvent(input$btBatchAll, {
     # solve all scenarios in batch run
     prog <- shiny::Progress$new()
@@ -78,7 +186,7 @@ observeEvent(input$btSolve, {
     }
     shinyjs::disable("btSolve")
     
-    idsSolved <- unique(db$importDataset(scenMetadataTable, cols = snameIdentifier))
+    idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier))
     scenToSolve <- scenToSolve()
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- scenToSolve$gmspar
@@ -125,7 +233,7 @@ observeEvent(input$btSolve, {
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfFileContent, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        csvData <- data.tmp[[i]][!any(DDParIdx, GMSOptIdx), ]
+        csvData <- data.tmp[[i]][!(DDParIdx | GMSOptIdx), ]
       }else{
         csvData <- data.tmp[[i]]
       }
@@ -151,14 +259,21 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    homeDir <- ".." %+% .Platform$file.sep %+% ".." %+% .Platform$file.sep
-    gamsArgs <- c("idir1=" %+% homeDir %+% modelDir, "idir2=" %+% homeDir %+% currentModelDir, 
+    homeDir <- getwd()
+    gamsArgs <- c("idir1=" %+% homeDir %+% .Platform$file.sep %+% modelDir, "idir2=" %+% currentModelDir, 
                   "curdir=" %+% workDir, "logOption=3")
+    if(config$saveTraceFile){
+      gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% ".trc", "traceopt=3")
+    }
+    pfFilePath <- workDir %+% tolower(modelName) %+% ".pf"
     if(isWindows()){
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
+      pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
     writeLines(c(gamsArgs, pfFileContent), workDir %+% tolower(modelName) %+% ".pf")
-    gams <<- processx::process$new("gams", args = c(paste0(modelName, ".gms"), "pf=" %+% workDir %+% tolower(modelName) %+% ".pf", config$gamsWEBUISwitch), 
+    gams <<- processx::process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
+                                                    "pf=" %+% pfFilePath, 
+                                                    config$gamsWEBUISwitch), 
                                    stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
@@ -242,13 +357,14 @@ observeEvent(input$btSolve, {
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
-                                         modelName = modelName, method = "csv", csvDelim = config$csvDelim, hiddenMarker = config$gamsMetaDelim) 
+                                         modelName = modelName, method = "csv", csvDelim = config$csvDelim, 
+                                         hiddenMarker = config$gamsMetaDelim) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc
         })
         if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-          return(NULL)
+          return()
         }
         if(!is.null(GAMSResults$scalar)){
           scalarData[["scen_1_"]] <<- GAMSResults$scalar
@@ -256,6 +372,19 @@ observeEvent(input$btSolve, {
         if(!is.null(GAMSResults$tabular)){
           scenData[["scen_1_"]] <<- GAMSResults$tabular
         }
+        if(config$saveTraceFile){
+          tryCatch({
+            traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% ".trc", 
+                                        traceColNames)
+          }, error = function(e){
+            flog.error("Problems loading trace data. Error message: %s.", e)
+            errMsg <<- lang$errMsg$readOutput$desc
+          })
+          if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+            return()
+          }
+        }
+        
         GAMSResults <- NULL
         # rendering tables and graphs
         renderOutputData()

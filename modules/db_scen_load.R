@@ -102,8 +102,14 @@ observeEvent(input$btSortTime, {
 # load scenario confirmed
 observeEvent(input$btLoadScenConfirm, {
   flog.debug("Confirm load scenario button clicked.")
-  scenSelected <- regmatches(isolate(input$selLoadScen), 
-                             regexpr("_", isolate(input$selLoadScen)), 
+  if(identical(isolate(input$tabsetLoadScen), "loadScenUI")){
+    scenSelected <- isolate(input$selLoadScenUI)
+  }else{
+    scenSelected <- isolate(input$selLoadScen)
+  }
+  
+  scenSelected <- regmatches(scenSelected, 
+                             regexpr("_", scenSelected), 
                              invert = TRUE)
   sidsToLoad  <<- lapply(scenSelected, '[[', 1)
   rm(scenSelected)
@@ -269,7 +275,8 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
   
   # in batch mode, sids are vector not list
   if(!is.list(sidsToLoad)){
-    scenMetaTmp    <- rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ]
+    rowIds         <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
+    scenMetaTmp    <- rv$fetchedScenarios[rowIds, ]
     scenMetaTmp[[snameIdentifier]] <- as.character(seq_len(nrow(scenMetaTmp)))
     metadataFull   <- scenMetaTmp[, db$getScenMetaColnames()[c("sid", "uid", 
                                                                "stime", "sname")]]
@@ -290,7 +297,6 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
         }
       }
       scen.str <- "scen_" %+% scenId %+% "_"
-      
       metadata <- metadataFull[metadataFull[[1]] == sidsToLoad[[i]], ]
       # load scenario data
       scenData[[scen.str]]                    <<- scenDataTmp[[i]]
@@ -315,7 +321,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
       
     }, error = function(e){
       flog.error(e)
-      errMsg  <<- paste(errMsg, e, sep = "\n")
+      errMsg  <<- lang$errMsg$loadScen$desc
     })
 
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
@@ -329,7 +335,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     }else{
       local({
         id <- if(loadInLeftBoxSplit) 1L else 2L
-        sidsInSplitComp[id] <<- sidsToLoad[[i]]
+        sidsInSplitComp[id] <<- as.integer(sidsToLoad[[i]])
       })
     }
   })
@@ -340,7 +346,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
   if(!isInSplitView){
     updateTabsetPanel(session, "scenTabset", selected = "scen_" %+% lastImportedSid %+% "_")
   }
-  if(is.null(showErrorMsg(lang$errMsg$renderGraph$title, errMsg))){
+  if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
     return()
   }
   

@@ -1116,8 +1116,35 @@
                   "minLength": 1
               },
               "required":true
+            },
+            "configPaverDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "desc":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selAttribs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tooManySolvers":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "runButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             }
-         }
+           }
         }
       }
     },

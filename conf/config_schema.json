@@ -113,6 +113,12 @@
 				}
 			}
 		},
+		"saveTraceFile" : {
+		  "description"		: "Boolean which specifies whether trace file should be saved",
+					"type"					: "boolean",
+					"default"				: false,
+					"required"			: false
+		},
         "dataRendering"     : {
             "description"       : "Format in which input or output data is to be displayed in the WebUI.",
             "type"              : "object",
@@ -133,6 +139,49 @@
 								"minimum"               : 0,
 								"default"               : null
 							}
+                        },
+                        "additionalProperties": false,
+                        "required"          : ["outType"]
+                    },
+                    {
+                        "properties"        : {
+                            "outType"               : {
+                                "description"           : "Style of widget (table, pivottable, graph, graph+table).",
+                                "type"                  : "string",
+                                "enum"                  : ["valueBox"]
+                            },
+                            "options":{
+                              "width"               : {
+                								"description"           : "Width of the output element.",
+                								"type"                  : "integer",
+                								"minimum"               : 0,
+                								"default"               : 4
+                							},
+                							"color" :{
+                							  "type":"string",
+                							   "description": "Background color of value box",
+                							   "minLength":0,
+                							   "default": "aqua"
+                							},
+                							"icon":{
+                							  "description":"icon for value box",
+                							  "type": "object",
+                							  "properties":{
+                							    "name": {
+                							      "type":"string",
+                							      "description": "Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
+                							      "minLength":0,
+                							      "default": null
+                							      },
+                							    "lib":{
+                							      "type":"string",
+                							      "description": "Name of library where icon is from.",
+                							      "enum":["glyphicon", "font-awesome"],
+                							      "default": "font-awesome"
+                							    }
+                							  }
+                              }
+                            }
                         },
                         "additionalProperties": false,
                         "required"          : ["outType"]

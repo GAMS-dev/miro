@@ -244,7 +244,13 @@
     },
     "batchMode":{
       "sliderAllCombinations": "All combinations?",
-      "checkboxAliases":["No", "Yes"]
+      "checkboxAliases":["No", "Yes"],
+      "configPaverDialog":{
+        "desc":"Please select the attributes you want to compare.",
+        "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
+        "selAttribs":"Attributes to select:",
+        "runButton":"Start Paver"
+      }
     }
   },
   "progressBar":{  

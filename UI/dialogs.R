@@ -142,6 +142,39 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
                    class = "btHighlight1")),
     fade = TRUE, easyClose = FALSE
-    ))
+  ))
   shinyjs::addClass("btSortTime", class = "scen-sort-by-selected")
+}
+
+######## BATCH MODE
+
+showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = ""){
+  showModal(modalDialog(
+    title = "Select scenario comparison method",
+    tags$div(id="batchLoadMethod",
+             if(length(sidsToLoad) <= maxConcurentLoad){
+               "Which method would you like to use in order to compare your scenarios?"
+             }else{
+               "You may only select up to: %d scenarios to load into interactive mode at once." %+% 
+                 " Select less scenarios or use the Paver module to compare."
+             }
+    ),
+    hidden(tags$div(id="configPaver",
+                    lang$nav$batchMode$configPaverDialog$desc,
+                    hidden(tags$div(id = "configPaverMaxSolversErr", class = "errMsg",
+                                    sprintf(lang$nav$batchMode$configPaverDialog$tooManySolvers, 
+                                            maxSolversPaver))),
+                    selectInput("selPaverAttribs", lang$nav$batchMode$configPaverDialog$selAttribs, 
+                                attribs, multiple = TRUE, width = "100%")
+    )),
+    footer = tagList(
+      modalButton("Cancel"),
+      actionButton("btPaverConfig", label = "Paver"),
+      hidden(actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
+                          class = "btHighlight1")),
+      if(length(sidsToLoad) <= maxConcurentLoad)
+        actionButton("btBatchLoad", label = "Interactive mode")
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
 }

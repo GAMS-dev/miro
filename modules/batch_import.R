@@ -3,10 +3,11 @@ scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelInTabularData]
 shinyjs::disable("btUploadBatch")
 
 # table names that must exist in order for scenario to be valid
-tableNamesToVerify <- gsub(modelName %+% "_", "", scenTableNames, fixed = TRUE)
+tableNamesToVerify <- gsub(modelName %+% "_", "", c(scenTableNames, 
+                                                    tableNameTracePrefix %+% modelName), fixed = TRUE)
 # initialise batch import class
-batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, 
-                               tableNamesToVerify, config$csvDelim, workDir)
+batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesToVerify, 
+                               config$csvDelim, workDir)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
 
@@ -33,7 +34,7 @@ observeEvent(input$btUploadBatch, {
   errMsg            <- NULL
   
   tryCatch({
-    batchImport$unzipScenCsvData(zipFilePath, extractDir = workDir)
+    batchImport$unzipScenData(zipFilePath, extractDir = workDir)
   }, error = function(e){
     flog.error("Problems unzipping the file. Error message: %s.", e)
     errMsg <<- "Problems unzipping the file. Please make sure you upload a valid zip file."

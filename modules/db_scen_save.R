@@ -133,7 +133,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   removeModal()
   
   # save to database
-  scen.str <- "scen_1_"
+  scenStr <- "scen_1_"
   tryCatch({
     if(is.null(activeScen) || saveAsFlag){
       if(saveAsFlag){
@@ -141,11 +141,10 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       }
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname))
     }
-    activeScen$save(scenData[[scen.str]], msgProgress = lang$progressBar$saveScenDb)
-    #showModal(modalDialog(
-    #  title = lang$nav$dialogSaveSuccess$title, 
-    #  HTML(addHtmlLineBreaks(sprintf(lang$nav$dialogSaveSuccess$desc, count.datasets.saved)))
-    #))
+    activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
+    if(config$saveTraceFile){
+      activeScen$saveTraceData(traceData)
+    }
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
   }, error = function(e) {
     flog.error("Some error occurred saving scenario to database. Error message: %s.", e)
@@ -156,7 +155,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   
   # check whether output data was saved and in case it was set identifier accordingly
-  if(any(vapply(scenData[[scen.str]][seq_along(modelOut)], 
+  if(any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
                 hasContent, logical(1L), USE.NAMES = FALSE))){
     noOutputData <<- FALSE
   }else{

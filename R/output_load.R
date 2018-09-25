@@ -17,7 +17,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
            })
     
   }, error = function(e) {
-    stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
+    stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
+                 scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
   })
   
   # fetch results from csv files

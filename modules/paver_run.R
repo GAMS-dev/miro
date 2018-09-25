@@ -21,7 +21,35 @@ genPaverArgs <- function(traceFilenames){
     # paver options
     "--failtime", "3600", "--writehtml", paste0(workDir, "paver") , "--writeimg", paverFileDir)
 }
+observeEvent(input$btPaverConfig, {
+  shinyjs::show("configPaver")
+  shinyjs::show("btPaver")
+  hide("btPaverConfig")
+})
 observeEvent(input$btPaver, {
+  req(input$selPaverAttribs)
+  
+  if(batchLoad$getNoSolvers(rv$fetchedScenarios[sidsToLoad, ], 
+                            input$selPaverAttribs) > maxSolversPaver){
+    shinyjs::show("configPaverMaxSolversErr")
+    return()
+  }else{
+    traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
+    errMsg <- NULL
+    tryCatch({
+      if(!dir.exists(traceFileDir)){
+        dir.create(traceFileDir, showWarnings = FALSE)
+      }
+    }, error = function(e){
+      flog.error("Problems creating temporary folder where trace files will be stored. Error message: '%s'.", e)
+      errMsg <<- sprintf(lang$errMsg$fileWrite$desc, "./trace")
+    })
+    if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
+      return()
+    }
+      
+    batchLoad$genPaverTraceFiles(traceFileDir)
+  }
   removeModal()
   if(!is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")

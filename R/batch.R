@@ -2,13 +2,12 @@ genGmsString <- function(par, val, modelName){
   allParValCombinations <- do.call("expand.grid", 
                                    c(val, 
                                      stringsAsFactors = FALSE))
-  
   allParValCombinations <- vapply(
     seq_len(nrow(allParValCombinations)), function(row){
       paste(par, allParValCombinations[row, ], sep = "", collapse = " ")
   }, character(1L), USE.NAMES = FALSE)
   
-  return(paste0("gams ", modelName, ".gms ", allParValCombinations))
+  return(trimws(paste0("gams ", modelName, ".gms ", allParValCombinations)))
 }
 getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
   # BEGIN error checks
