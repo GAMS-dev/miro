@@ -336,7 +336,22 @@
               "type":"string",
               "minLength":1,
               "required":true
-            }
+            },   
+            "uploadZip":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },   
+            "batchTags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },   
+            "uploadButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }            
           }
         },
         "batch_load":{
@@ -348,7 +363,22 @@
               "type":"string",
               "minLength":1,
               "required":true
-            }
+            },   
+            "loadSelectedButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },   
+            "loadCurrentButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },   
+            "loadAllButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }            
           }
         },
         "batch_analyze":{
@@ -357,6 +387,11 @@
           "required":true,
           "properties":{  
             "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+			"loadMsg":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1122,12 +1157,42 @@
               "additionalProperties":false,
               "required":true,
               "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selectMethod":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxScenWarning1":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxScenWarning2":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "paverButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "desc":{
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "selAttribs":{
+                "delTrace":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1137,7 +1202,17 @@
                   "minLength":1,
                   "required":true
                 },
+                "selAttribs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "runButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "interactiveButton":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1145,6 +1220,28 @@
               }
             }
            }
+        },
+        "dialogPaverInUse":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "closeButton":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
         }
       }
     },

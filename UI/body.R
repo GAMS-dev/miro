@@ -262,7 +262,7 @@ body <- dashboardBody(
     if(config$activateModules$batchMode){
       tabItem(tabName = "loadResults",
               fluidRow(
-                box(title = "Load scenarios", status="primary", 
+                box(title = lang$nav$batch_load$title, status="primary", 
                     solidHeader = TRUE, width = 12, style="overflow-x: auto",
                     tags$div(id = "loadContent",
                              tags$div(id = "selectorsWrapper"
@@ -280,9 +280,9 @@ body <- dashboardBody(
                     tags$div(DTOutput("batchLoadResults")),
                     hidden(
                       tags$div(id = "batchLoadButtons", style = "margin:15px",
-                               actionButton("batchLoadSelected", "Load selected scenarios", class = "btHighlight1"),
-                               actionButton("batchLoadCurrent", "Load current page", class = "btHighlight1"),
-                               actionButton("batchLoadAll", "Load all", class = "btHighlight1")
+                               actionButton("batchLoadSelected", lang$nav$batch_load$loadSelectedButton , class = "btHighlight1"),
+                               actionButton("batchLoadCurrent", lang$nav$batch_load$loadCurrentButton , class = "btHighlight1"),
+                               actionButton("batchLoadAll", lang$nav$batch_load$loadAllButton, class = "btHighlight1")
                       )
                     )
                 )
@@ -327,14 +327,14 @@ body <- dashboardBody(
     if(config$activateModules$batchMode){
       tabItem(tabName = "importData",
               fluidRow(
-                box(title = "Import data", status="primary", 
+                box(title = lang$nav$batch_import$title, status="primary", style="width:70vh",
                     solidHeader = TRUE, width = 12,
                     tags$div(style="width:65vh",
-                             fileInput("batchImport", label = "Upload zip file with results here.")
+                             fileInput("batchImport", label = lang$nav$batch_import$uploadZip)
                     ),
                     tags$div(style="width:65vh",
-                             disabled(textInput("batchTags", "Batch Tags (seperate with comma)")),
-                             actionButton("btUploadBatch", label = "Upload")
+                             disabled(textInput("batchTags", lang$nav$batch_import$batchTags)),
+                             actionButton("btUploadBatch", label = lang$nav$batch_import$uploadButton)
                     )
                 )
               )
@@ -430,7 +430,7 @@ body <- dashboardBody(
                                        tags$div(style = "overflow: auto; height: 75vh;",
                                                 hidden(
                                                   tags$div(id = "paver_load", class = "loadDiv",
-                                                           "Please wait while the results are calculated. This may take a while.",
+                                                           lang$nav$batch_analyze$loadMsg,
                                                            tags$img(src= "load.gif"),
                                                            actionButton("btPaverInterrupt", lang$nav$batch_analyze$btCancel)
                                                   )

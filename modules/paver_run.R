@@ -1,31 +1,26 @@
 # run the paver module (python)
 
-# example trace files
-traceFiles <- c("thorin.trc", "balin.trc")
-paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
-
-#run paver
 paver <- processx::process$new("python")
+traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
+# paver solution files
+paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
 
 genPaverArgs <- function(traceFilenames){
   stopifnot(is.character(traceFilenames), length(traceFilenames) >= 1)
-  
-  #  tracePath <- paste0(workDir, "paver", .Platform$file.sep, "traceFiles", .Platform$file.sep)
-  tracePath <- paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, 
-                      "paver", .Platform$file.sep, "examples", 
-                      .Platform$file.sep, "miplib2010", .Platform$file.sep)
-  c(paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, "paver", .Platform$file.sep, "paver.py"), 
-    tracePath %+% traceFilenames,
-    # solution files
-    #paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, "paver_full", .Platform$file.sep, "solu", .Platform$file.sep, "miplib2010.solu"),
-    # paver options
-    "--failtime", "3600", "--writehtml", paste0(workDir, "paver") , "--writeimg", paverFileDir)
+  c(paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, "paver", .Platform$file.sep, "paver.py"), #, "--refsolver",  "Thorin"
+    traceFilenames, "--failtime", "3600", "--writehtml", paverFileDir , "--writeimg", paverFileDir)
 }
+
 observeEvent(input$btPaverConfig, {
   shinyjs::show("configPaver")
   shinyjs::show("btPaver")
   hide("btPaverConfig")
+  # if already tracefiles in tracefiledir show deletion warning
+  if(length(list.files(traceFileDir)) > 0){
+    shinyjs::show("deleteTrace")
+  }
 })
+
 observeEvent(input$btPaver, {
   req(input$selPaverAttribs)
   
@@ -34,7 +29,6 @@ observeEvent(input$btPaver, {
     shinyjs::show("configPaverMaxSolversErr")
     return()
   }else{
-    traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
     errMsg <- NULL
     tryCatch({
       if(!dir.exists(traceFileDir)){
@@ -47,8 +41,11 @@ observeEvent(input$btPaver, {
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
       return()
     }
-      
+    
     batchLoad$genPaverTraceFiles(traceFileDir)
+    traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = T)
+    #traceFiles <- c(paste0(traceFileDir,"test.trc"))
+    print(genPaverArgs(traceFiles))
   }
   removeModal()
   if(!is.null(paver$get_exit_status())){
@@ -70,16 +67,15 @@ observeEvent(input$btPaver, {
       tryCatch({
         dir.create(paverFileDir, recursive = TRUE, showWarnings = FALSE)
       }, warning = function(w){
-        errMsg <<- "Image file directory could not be created. Check that you have sufficient read/write permissions in www folder."
+        errMsg <<- "Paver file directory for solution files could not be created. Check that you have sufficient read/write permissions."
       })
     }
     addResourcePath("paver", paverFileDir)
-  
+
     errMsg <- NULL
-    # run Python/Paver
+    # run paver
     tryCatch({
       paver <<- processx::process$new("python", args = genPaverArgs(traceFiles), windows_hide_window = TRUE)
-      #, "--refsolver",  "Thorin"
     }, error = function(e) {
       errMsg <<- lang$errMsg$paverExec$desc
       flog.error("Python/Paver did not execute successfully. Error message: %s.", e)
@@ -92,7 +88,7 @@ observeEvent(input$btPaver, {
     }, valueFunc = function(){
       paver$get_exit_status()
     })
-    # include the html files into seperate tabs
+    # include html files (seperate tabs)
     output$paverResults <- renderUI(
       if(!is.null(paverStatus()) && paverStatus() == 0){
         hide("paver_load")
@@ -111,10 +107,10 @@ observeEvent(input$btPaver, {
     )
   }else{
     showModal(modalDialog(
-      title = "Paver is already in use",
-      sprintf("Please wait until the process is finished."),
+      title = lang$nav$dialogPaverInUse$title,
+      sprintf(lang$nav$dialogPaverInUse$desc),
       footer = tagList(
-        modalButton("Close")
+        modalButton(lang$nav$dialogPaverInUse$closeButton)
       ),
       fade = TRUE, easyClose = FALSE
     ))

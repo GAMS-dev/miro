@@ -72,15 +72,22 @@
       "downloadTempButton": "Dateien laden"
     },
     "batch_import":{
-      "title":"Importiere Ergebnisse vom Server"
+      "title":"Importiere Daten",
+      "uploadZip":"Lade Zip-Datei mit Ergebnissen hoch.",
+      "batchTags":"Batch-Bezeichnungen (Kommasepariert)",
+      "uploadButton":"Hochladen"
     },
     "batch_load":{
-      "title":"Lade Szenarien"
+      "title":"Lade Szenarien",
+      "loadSelectedButton":"Lade ausgewählte",
+      "loadCurrentButton":"Lade aktuelle Seite",
+      "loadAllButton":"Lade alle"
     },
     "batch_analyze":{
       "title":"Szenarioanalyse",
+      "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
 	  "btCancel": "Abbrechen",
-	  "btNew": "Neue Scenarien auswählen"
+	  "btNew": "Szenarien auswählen"
     },
     "gamsModelStatus":{  
       "exec":"Modell wird gelöst",
@@ -215,7 +222,7 @@
     },
     "dialogBatch":{
       "title": "Batchkonfiguration",
-      "desc": "Sie haben %d Szenarios zum Lösen im Batchmodus ausgewählt. Von diesen sind bereits %d Szenarios gelöst worden. Möchten Sie, alle konfigurierten Szenarien lösen oder nur diejenigen, die zuvor noch nicht gelöst worden sind?",
+      "desc": "Sie haben %d Szenarien zum Lösen im Batchmodus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden. Möchten Sie alle konfigurierten Szenarien lösen oder nur diejenigen, welche zuvor noch nicht gelöst worden sind?",
       "cancelButton":"Abbrechen",
       "processAllButton": "Alle Verarbeiten",
       "processUnsolvedButton": "Nur die ungelösten verarbeiten",
@@ -244,11 +251,23 @@
       "sliderAllCombinations": "Alle Kombinationen?",
       "checkboxAliases":["Nein", "Ja"],
       "configPaverDialog":{
+        "title": "Methode für den Szenarienvergleich auswählen",
+        "selectMethod": "Welche Methode möchten Sie anwenden, um Ihre Szenarien zu vergleichen?",
+        "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
+        "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
+        "cancelButton": "Abbruch",
+        "paverButton": "Paver",
         "desc":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten.",
+        "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
         "selAttribs":"Attribute:",
         "runButton": "Paver starten"
       }
+    },
+    "dialogPaverInUse":{
+      "title": "Paver wird bereits verwendet",
+      "desc": "Bitte warten Sie, bis der Prozess beendet ist.",
+      "closeButton": "Schließen"
     }
   },
   "progressBar":{  
@@ -340,16 +359,16 @@
       "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten."
     },
     "saveScen":{  
-      "title":"Fehler beim Speichern des Szenarios",
-      "desc":"Beim Speichern des Szenarios ist ein Fehler aufgetreten."
+      "title":"Fehler beim Speichern des Szenarien",
+      "desc":"Beim Speichern des Szenarien ist ein Fehler aufgetreten."
     },
     "loadScen":{  
       "title":"Fehler beim Laden der Szenarien",
       "desc":"Beim Laden der ausgewählten Szenarien ist ein Fehler aufgetreten."
     },
     "deleteScen":{  
-      "title":"Fehler beim Löschen des Szenarios",
-      "desc":"Beim Löschen des Szenarios ist ein Fehler aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie bitte den Administrator."
+      "title":"Fehler beim Löschen des Szenarien",
+      "desc":"Beim Löschen des Szenarien ist ein Fehler aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie bitte den Administrator."
     },
     "renderTable":{  
       "title":"Fehler beim Darstellen der Tabelle",
@@ -368,8 +387,8 @@
       "desc":"Sie haben die maximale Anzahl von Szenarien erreicht, die Sie gleichzeitig laden können. Bitte entfernen Sie zuerst einige Szenarien, bevor Sie neue importieren."
     },
     "lockScen":{
-      "title":"Fehler beim Setzen/Löschen der Szenariosperre",
-      "desc":"Beim Setzen oder Löschen der Szenariosperre ist ein Fehler aufgetreten. Fehlermeldung: '%s'"
+      "title":"Fehler beim Setzen/Löschen der Szenarienperre",
+      "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten. Fehlermeldung: '%s'"
     },
     "paverExec":{  
       "title":"Fehler beim Ausführen von Python",

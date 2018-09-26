@@ -10,7 +10,8 @@
             "dropdown": {
                 "label": "Select input case [case]",
                 "choices": "casename$filename"
-            }
+            },
+            "noBatch": true
         },
         "GMSPAR_timeperiod": {
             "alias": "Timeperiod",
@@ -290,6 +291,7 @@
         },
         "scalars_out": {
             "alias": "Scalars",
+            "count": 29,
             "headers": {
                 "Scalar": {
                     "type": "set"

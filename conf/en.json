@@ -72,15 +72,22 @@
       "downloadTempButton": "Download files"
     },
     "batch_import":{
-      "title":"Import results from server"
+      "title":"Import data",
+      "uploadZip":"Upload zip file with results here.",
+      "batchTags":"Batch Tags (seperate with comma)",
+      "uploadButton":"Upload"
     },
     "batch_load":{
-      "title":"Load Scenarios"
+      "title":"Load Scenarios",
+      "loadSelectedButton":"Load selected scenarios",
+      "loadCurrentButton":"Load current page",
+      "loadAllButton":"Load all"
     },
     "batch_analyze":{
       "title":"Analyze Scenarios",
+      "loadMsg":"Please wait while the results are calculated. This may take a while.",
 	  "btCancel": "Cancel",
-	  "btNew": "Select new Scenarios"
+	  "btNew": "Select scenarios"
     },
     "gamsModelStatus":{  
       "exec":"Model execution phase",
@@ -217,7 +224,7 @@
     },
     "dialogBatch":{
       "title": "Batch configuration",
-      "desc": "You selected %d scenarios to be solved in batch mode. Out of these, %d scenarios have already been soved either by yourself or someone else. Do you want to sole all scenarios again or only those that have not yet been solved?",
+      "desc": "You selected %d scenarios to be solved in batch mode. Out of these, %d scenarios have already been solved either by yourself or someone else. Do you want to solve all scenarios again or only those that have not yet been solved?",
       "cancelButton":"Cancel",
       "processAllButton": "Process all",
       "processUnsolvedButton": "Process unsolved only",
@@ -246,11 +253,24 @@
       "sliderAllCombinations": "All combinations?",
       "checkboxAliases":["No", "Yes"],
       "configPaverDialog":{
+        "title": "Select scenario comparison method",
+        "selectMethod": "Which method would you like to use in order to compare your scenarios?",
+        "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
+        "maxScenWarning2": " Select less scenarios or use the Paver module to compare.",
+        "cancelButton": "Cancel",
+        "paverButton": "Paver",
         "desc":"Please select the attributes you want to compare.",
+        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
         "selAttribs":"Attributes to select:",
-        "runButton":"Start Paver"
+        "runButton":"Start Paver",
+        "interactiveButton":"Interactive mode"
       }
+    },
+    "dialogPaverInUse":{
+      "title": "Paver is already in use",
+      "desc": "Please wait until the process is finished.",
+      "closeButton": "Close"
     }
   },
   "progressBar":{  
