@@ -17,6 +17,7 @@ webuiVersion <- '0_2_3'
 # RPostgres       #GPL-2
 # rpivotTable     #MIT
 # futile.logger   #LGPL-3
+# zip             #CC0
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 
 CRANMirror <- "http://cran.us.r-project.org"
@@ -33,7 +34,7 @@ filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R",
 requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "reshape2", "xts")
+                      "futile.logger", "dygraphs", "reshape2", "xts", "zip")
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -42,7 +43,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
 
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.6, label= "Initialising app")
+  setWinProgressBar(pb, 0.6, label= "Initialising GAMS WebUI")
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -251,7 +252,7 @@ if(is.null(errMsg)){
   }
 }
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 1, label= "App initialised")
+  setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
   close(pb)
 }
 if(!is.null(errMsg)){
