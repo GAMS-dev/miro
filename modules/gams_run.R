@@ -259,7 +259,7 @@ observeEvent(input$btSolve, {
   # run GAMS
   tryCatch({
     homeDir <- getwd()
-    gamsArgs <- c("idir1=" %+% homeDir %+% .Platform$file.sep %+% modelDir, "idir2=" %+% currentModelDir, 
+    gamsArgs <- c(paste0("idir1=", homeDir, .Platform$file.sep, modelDir), "idir2=" %+% currentModelDir, 
                   "curdir=" %+% workDir, "logOption=3")
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% ".trc", "traceopt=3")

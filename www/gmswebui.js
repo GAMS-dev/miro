@@ -6,6 +6,11 @@ $(document).click(function(e) {
     $('.pvtFilterBox').hide();
   }
 });
+$(window).on('beforeunload', function() {
+  if($("#shiny-disconnected-overlay").length === 0){
+    return "Are you sure you want to leave? Unsaved changes will be lost!";
+  }
+});
 function changeTab(object, idActive, idRefer) {
     tabPane = object.closest(".tabbable");
     tabPane.find("li:nth-of-type(" + idActive + ")").removeClass();

@@ -38,6 +38,8 @@ lapply(seq_along(modelIn), function(id){
                k <- modelIn[[id]]$checkbox$sheetId
                value  <- NULL
                errMsg <- NULL
+               rv[["in_" %+% k]]
+               
                if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
@@ -48,26 +50,21 @@ lapply(seq_along(modelIn), function(id){
                         },
                         {
                           flog.debug("Widgets other than dropdown menus are currently not supported for shared datasets.")
-                          return(NULL)
+                          return()
                         })
                }else{
-                 if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !isEmptyInput[k]){
-                   hot.content <- rhandsontable::hot_to_r(isolate(input[[paste0("in_", k)]]))
-                   # return choices from both visible as well as hidden part of input data
-                   tryCatch({
-                     value <- dplyr::bind_rows(as_tibble(hot.content), modelInputData[[k]])
-                   }, error = function(e){
-                     flog.error("Some problem occurred concatenating rows of dataset: '%s' (forward dependency of checkbox: '%s'). 
-                                Error message: %s.", modelInAlias[id], modelInAlias[k], e)
-                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                   })
-                   value <- data.tmp[[modelIn[[id]]$checkbox$value]]
-                 }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
-                   # no input is shown in UI, so possible choices for dropdown menu can only be in hidden part of data
-                   value <- modelInputData[[k]][modelIn[[id]]$checkbox$value, , drop = FALSE]
+                 tryCatch({
+                   value <- getInputDataset(k)[[modelIn[[id]]$checkbox$value]]
+                 }, error = function(e){
+                   flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
+                                "(forward dependency on dataset: '%s'). Error message: %s.", 
+                              modelInAlias[id], modelInAlias[k], e)
+                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                 })
+                 if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
+                   return()
                  }
                }
-               showErrorMsg(lang$errMsg$dataError$title, errMsg)
                
                value <- suppressWarnings(max(unlist(value, use.names = FALSE)))
                
@@ -172,30 +169,9 @@ lapply(seq_along(modelIn), function(id){
                  # reset counter
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))){
-                   k <- match(dataSheet, names(modelIn))[[1]]
-                   if(length(rv[["in_" %+% k]]) && !is.null(input[["in_" %+% k]]) && !isEmptyInput[k]){
-                     hotContent <- rhandsontable::hot_to_r(isolate(input[["in_" %+% k]]))
-                     # return choices from both visible as well as hidden part of input data
-                     tryCatch({
-                       dataTmp <- dplyr::bind_rows(as_tibble(hotContent), modelInputData[[k]])
-                     }, error = function(e){
-                       flog.error("Problems binding rows of input sheet: '%s'. Error message: %s.", dataSheet, e)
-                       errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                     })
-                     if(!is.null(errMsg)){
-                       next
-                     }
-                     choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
-                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                       aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
-                     }
-                   }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
-                     # no input is shown in UI, so possible choices for dropdown menu can only be in hidden part of data
-                     choices[[j]] <- modelInputData[[k]][[ddownDep[[name]]$fw[[dataSheet]]]]
-                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                       aliases[[j]] <- modelInputData[[k]][[ddownDep[[name]]$aliases[[dataSheet]]]]
-                     }
-                   }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
+                   k <- match(dataSheet, names(modelIn))
+                   
+                   if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      try(
                        choices[[j]] <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddownDep[[name]]$fw[[dataSheet]]]]
@@ -206,7 +182,26 @@ lapply(seq_along(modelIn), function(id){
                        )
                      }
                    }else{
-                     return(NULL)
+                     rv[["in_" %+% i]]
+                     tryCatch({
+                       dataTmp <- getInputDataset(k)
+                     }, error = function(e){
+                       flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
+                                    "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                  modelInAlias[id], modelInAlias[k], e)
+                       errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                     })
+                     if(!is.null(errMsg)){
+                       next
+                     }
+                     choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
+                     
+                     if(!length(choices[[j]])){
+                       return(NULL)
+                     }
+                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
+                       aliases[[j]] <- dataTmp[[ddownDep[[name]]$aliases[[dataSheet]]]]
+                     }
                    }
                    j <- j + 1
                  }
@@ -214,7 +209,6 @@ lapply(seq_along(modelIn), function(id){
                }
                aliases <- unique(unlist(aliases, use.names = FALSE))
                choices <- unique(unlist(choices, use.names = FALSE))
-               
                if(length(aliases)){
                  if(length(aliases) == length(choices)){
                    names(choices) <- aliases
@@ -309,8 +303,14 @@ lapply(seq_along(modelIn), function(id){
                      )
                      return(NULL)
                    }
-                   if(length(rv[[paste0("in_", k)]]) && !is.null(input[[paste0("in_", k)]]) && !isEmptyInput[k]){
-                     data <- unique(rhandsontable::hot_to_r(input[[paste0("in_", k)]])[[el[[1]]]])
+                   if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
+                                                         !is.null(input[["in_" %+% k]]) || 
+                                                         nrow(tableContent[[i]])) && !isEmptyInput[k]){
+                     if(modelIn[[k]]$type == "hot"){
+                       data <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]]]])
+                     }else{
+                       data <- unique(tableContent[[i]][[el[[1]]]])
+                     } 
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      data <- unique(modelInputData[[k]][[el[[1]]]])
@@ -401,8 +401,6 @@ lapply(seq_along(modelIn), function(id){
                                         max = get.data[[i]]()$max, step = get.data[[i]]()$step)
                
                if(!input.initialized[i]){
-                # if(!is.null(isolate(get.data[[i]]()$min)) && !is.null(isolate(get.data[[i]]()$max)) 
-                #    && (isolate(get.data[[i]]()$min) < isolate(get.data[[i]]()$max))){
                  if(!is.null(isolate(get.data[[i]]()$min)) && !is.null(isolate(get.data[[i]]()$max))){
                    input.initialized[i] <<- TRUE
                    shinyjs::show(paste0("slider_", id))
@@ -411,10 +409,6 @@ lapply(seq_along(modelIn), function(id){
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1
                    }else if(length(modelInputData[[id]][[1]])){
-                     #if(!noDataChanges[i]){
-                     #  noCheck[[id]] <<- TRUE
-                     #}
-                     #noCheck[[id]] <<- TRUE
                      rv[[paste0("in_", id)]] <<- 1
                    }
                  }

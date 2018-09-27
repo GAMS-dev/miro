@@ -146,13 +146,22 @@ observeEvent(input$btImport, {
   }
   showModal(modalDialog(
     title = lang$nav$dialogImport$title,
-    fluidRow(
+    tags$div(id = "importDataTabset",
       if(config$activateModules$scenario){
         tabBox(width = 12, id = "tb_importData", tabLoadFromDb, tabLoadFromLocalFile)
       }else{
         tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
       }
-    )
+    ),
+    hidden(tags$div(id = "importDataOverride",
+                    lang$nav$dialogImport$descOverrideInput
+    )), footer = {
+      tagList(
+        modalButton(lang$nav$dialogImport$cancelButton),
+        hidden(actionButton("btOverrideScen", label = lang$nav$dialogImport$okButton, 
+                     class = "btHighlight1"))
+      )
+    }
   ))
   if(config$activateModules$scenario){
     if(identical(nrow(scenMetadata), 0L)){

@@ -78,7 +78,6 @@ def getCSVHeader(sym):
             d_list.append(s)
       d_list += [ r.key(0) for r in sym.domains[-1] ]
       return ','.join(d_list)
-
 def writeCSVParam(sym, gdxname='none'):
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:

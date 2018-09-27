@@ -131,7 +131,7 @@ observeEvent(input$btLoadScenConfirm, {
   datasets.to.fetch <<- names(modelIn[inputDatasetIdxToImport])
   
   inputDatasetsExist <- vapply(inputDatasetIdxToImport, function(i){
-    if(length(isolate(rv[[paste0("in_", i)]]))){
+    if(length(isolate(rv[["in_" %+% i]]))){
       return(TRUE)
     }else{
       return(FALSE)
@@ -139,7 +139,9 @@ observeEvent(input$btLoadScenConfirm, {
   }, logical(1))
   
   if(any(inputDatasetsExist)){
-    showOverrideScenDialog()
+    hide("importDataTabset")
+    shinyjs::show("btOverrideScen")
+    shinyjs::show("importDataOverride")
   }else{
     overrideInput <<- FALSE
     rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)

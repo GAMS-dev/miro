@@ -275,12 +275,7 @@ if(is.null(errMsg)){
       # Create graphs only for tabular input sheets 
       if(!is.null(modelIn[[i]]$headers)){
         if(is.null(configGraphsIn[[i]])){
-          if(identical(names(modelIn)[[i]], scalarsFileName) && modelIn[[i]]$count < 10){
-            configGraphsIn[[i]]$outType <<- "valuebox"
-            configGraphsIn[[i]]$options$count <<- modelIn[[i]]$count
-          }else{
-            configGraphsIn[[i]]$outType <<- defInType
-          }
+          configGraphsIn[[i]]$outType <<- defInType
         }
       }
     }
@@ -495,7 +490,8 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                })
                return(NULL)
              },
-             hot = {
+             hot = ,
+             dt ={
                # check that in case dataset is scalar ds, it has correct headers
                if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
                   !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){

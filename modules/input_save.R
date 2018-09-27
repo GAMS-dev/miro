@@ -6,49 +6,36 @@ names(data.tmp) <- modelInFileNames
 errMsg <- NULL
 j <- 1L
 # first add scalar data which is in a table
-scalar.id <- match(tolower(scalarsFileName), tolower(modelInTabularData))[[1]]
+scalarId <- match(scalarsFileName, modelInTabularData)[[1]]
 
-if(!is.na(scalar.id)){
-  i <- match(tolower(modelInTabularData[scalar.id]), tolower(names(modelIn)))[[1]]
-  if(!is.null(isolate(input[[paste0("in_", i)]])) && hotInit[[i]]){
-    if(!isEmptyInput[i]){
-      data.tmp[[length(modelInFileNames)]] <- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])) 
-    }
-  }else if(!is.null(modelInputData[[i]])){
-    # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-    data.tmp[[length(modelInFileNames)]] <- modelInputData[[i]]
-  }else{
+if(!is.na(scalarId)){
+  i <- match(tolower(modelInTabularData[scalarId]), names(modelIn))[[1]]
+  tryCatch({
+    data.tmp[[length(modelInFileNames)]] <- getInputDataset(i)
+  }, error = function(e){
     flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-    errMsg <- sprintf(lang$errMsg$GAMSInput$noData, tolower(names(modelIn)[[i]]))
-    showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
+    errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, names(modelIn)[[i]])
+  })
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return()
   }
 }
 
 lapply(seq_along(modelIn), function(i){
+  noErr <- TRUE
   switch(modelIn[[i]]$type,
+         dt = ,
          hot = {
-           if(tolower(names(modelIn)[[i]]) != scalarsFileName){
-             if(!is.null(isolate(input[[paste0("in_", i)]])) && hotInit[[i]]){
-               if(length(colsWithDep[[i]])){
-                 if(!isEmptyInput[i]){
-                   data.tmp[[j]] <<- dplyr::bind_rows(rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]])), modelInputData[[i]])
-                 }else{
-                   data.tmp[[j]] <<- modelInputData[[i]]
-                 }
-               }else{
-                 if(!isEmptyInput[i]){
-                   data.tmp[[j]] <<- rhandsontable::hot_to_r(isolate(input[[paste0("in_",i)]]))
-                 }else{
-                   data.tmp[[j]] <<- modelInTemplate[[i]]
-                 }
-               }
-             }else if(!is.null(modelInputData[[i]])){
-               # tab was never activated, so shiny does not update handsontable thus it is empty although data was loaded
-               data.tmp[[j]] <<- modelInputData[[i]]
-             }else{
+           if(names(modelIn)[[i]] != scalarsFileName){
+             tryCatch({
+               data.tmp[[j]] <<- getInputDataset(i)
+             }, error = function(e){
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
                errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
-               return(NULL)
+               noErr <<- FALSE
+             })
+             if(!noErr){
+               return()
              }
              j <<- j + 1
            }
@@ -157,10 +144,10 @@ lapply(seq_along(modelIn), function(i){
              # standard dropdown menu (one value)
              scalar      <- names(modelIn)[[i]]
              description <- modelInAlias[i]
-             
              if(is.null(data.tmp[[length(modelInFileNames)]])){
                # no scalar data was written yet, so add headers
-               data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+               data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, 
+                                                                          stringsAsFactors = FALSE, check.names = FALSE)
                names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
              }else{
                # no headers, just data
@@ -170,34 +157,6 @@ lapply(seq_along(modelIn), function(i){
              }
            }
          },
-        # dropdowne = {
-        #   if(length(modelInputData[[i]][[1]])){
-        #     if(!is.null(isolate(input[[paste0("dropdowne_", i)]]))){
-        #       # move row with selected item to top
-        #       idx.selected <- !is.na(match(modelInputData[[i]][[1]], isolate(input[[paste0("dropdowne_", i)]])))
-        #       if(length(idx.selected)){
-        #         data.tmp[[j]] <<- rbind(modelInputData[[i]][idx.selected, ], modelInputData[[i]][!idx.selected, ])
-        #       }else{
-        #         data.tmp[[j]] <<- modelInputData[[i]]
-        #       }
-        #       rm(idx.selected)
-        #     }else{
-        #       data.tmp[[j]] <<- modelInputData[[i]]
-        #     }
-        #   }else{
-        #     errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
-        #     return(NULL)
-        #   }
-        #
-        #   if(length(data.tmp[[j]]) > 1){
-        #     # dropdown has aliases and thus 2 columns
-        #     names(data.tmp[[j]]) <<- c(names(modelIn)[[i]], "alias")
-        #   }else{
-        #     # dropdown has no aliases and thus 1 column
-        #     names(data.tmp[[j]]) <<- names(modelIn)[[i]]
-        #   }
-        #   j <<- j + 1L
-        # },
          checkbox = {
            if(!is.null(isolate(input[[paste0("cb_", i)]]))){
              value <- if(identical(isolate(input[[paste0("cb_", i)]]), TRUE)) 1L else 0L

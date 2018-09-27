@@ -9,8 +9,7 @@
             "alias": "Reactor data",
             "headers": {
                 "Reactor": {
-                    "type": "set",
-					"readonly": true
+                    "type": "set"
                 },
                 "Scenario": {
                     "type": "set"
@@ -47,8 +46,7 @@
                 "choices": [
                     "$scenario$",
                     "_"
-                ],
-				"selected": "_"
+                ]
             }
         },
         "scalars": {

@@ -33,16 +33,6 @@ showNewScenDialog <- function(tmpScenName){
     fade = TRUE, easyClose = FALSE))
 }
 
-showOverrideScenDialog <- function(){
-  showModal(modalDialog(
-    title = lang$nav$dialogLoadScen$titleOverrideInput,
-    lang$nav$dialogLoadScen$descOverrideInput,
-    footer = tagList(
-      modalButton(lang$nav$dialogLoadScen$cancelButton),
-      actionButton("btOverrideScen", label = lang$nav$dialogLoadScen$okButton, class = "btHighlight1")),
-    fade = FALSE, easyClose = FALSE))
-}
-
 showCloseScenDialog <- function(scenId){
   showModal(modalDialog(
     title = lang$nav$dialogCloseScen$title,
@@ -140,12 +130,12 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     footer = tagList(
       modalButton(lang$nav$dialogLoadScen$cancelButton),
       actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
-                   class = "btHighlight1")),
+                   class = "btHighlight1")
+      ),
     fade = TRUE, easyClose = FALSE
   ))
   shinyjs::addClass("btSortTime", class = "scen-sort-by-selected")
 }
-
 ######## BATCH MODE
 
 showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = ""){

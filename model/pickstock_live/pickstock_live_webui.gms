@@ -71,7 +71,6 @@ def getCSVHeader(sym):
             d_list.append(s)
       d_list += [ r.key(0) for r in sym.domains[-1] ]
       return ','.join(d_list)
-
 def writeCSVParam(sym, gdxname='none'):
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
@@ -111,7 +110,8 @@ writeCSVParam(db["abserror"],"gmswebui.gdx")
 writeCSVParam(db["stockDataRep"],"gmswebui.gdx")
 with open('scalars_out.csv', 'w') as f:
    f.write('Scalar,Description,Value\n')
-   f.write('lastDayTraining,"last date of training period ### vertical marker in chart",' + str(db['lastDayTraining'].first_record().key(0)) + '\n')
+   if(len(db['lastDayTraining'])):
+      f.write('lastDayTraining,"last date of training period ### vertical marker in chart",' + str(db['lastDayTraining'].first_record().key(0)) + '\n')
    f.closed
 db.__del__()
 endEmbeddedCode

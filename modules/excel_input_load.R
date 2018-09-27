@@ -59,13 +59,9 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   }, logical(1))
 
   if(any(datasetsImported)){
-    showModal(modalDialog(
-      title = lang$nav$dialogLoadScen$titleOverrideInput,
-      lang$nav$dialogLoadScen$descOverrideInput,
-      footer = tagList(
-        modalButton(lang$nav$dialogLoadScen$cancelButton),
-        actionButton("btOverrideInput", label = lang$nav$dialogLoadScen$okButton, class = "btHighlight1")),
-      fade=FALSE, easyClose=FALSE))
+    hide("importDataTabset")
+    shinyjs::show("btOverrideScen")
+    shinyjs::show("importDataOverride")
   }else{
     overrideInput <<- FALSE
     rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)

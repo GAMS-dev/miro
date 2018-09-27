@@ -1,7 +1,3 @@
-$(window).on('beforeunload', function() {
-    return "Are you sure you want to leave? Unsaved changes will be lost!";
-});
-
 // counter
 count = 1;
 // maximum number of scenarios that can be loaded in compare view

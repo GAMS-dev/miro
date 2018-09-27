@@ -743,7 +743,17 @@
               "minLength":1,
               "required":true
             },
+            "descOverrideInput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -791,16 +801,6 @@
               "required":true
             },
             "selLoadScen":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "titleOverrideInput":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "descOverrideInput":{  
               "type":"string",
               "minLength":1,
               "required":true

@@ -91,6 +91,7 @@
         "scalars_out": {
             "alias": "Scalars",
             "hidden": true,
+            "count": 5,
             "headers": {
                 "Scalar": {
                     "type": "set"

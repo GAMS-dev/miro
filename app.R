@@ -39,6 +39,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
+  on.exit(close(pb))
 }
 
 source("./R/install_packages.R", local = TRUE)
@@ -112,8 +113,8 @@ if(is.null(errMsg)){
       errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
     })
   }
-  flog.appender(appender.file(logFileDir %+% modelName %+% "_" %+% uid %+% "_" %+% 
-                                format(Sys.time(), "%y.%m.%d_%H.%M.%S") %+% ".log"))
+  flog.appender(appender.file(paste0(logFileDir, modelName, "_", uid, "_", 
+                                     format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   
@@ -184,7 +185,8 @@ if(is.null(errMsg)){
         match.fun(customRendererOutput)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
-                         sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", customRendererName), sep = "\n")
+                         sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
+                                 customRendererName), sep = "\n")
       })
       # find packages to install and install them
       if(!is.null(customRendererConfig$packages) && length(customRendererConfig$packages)){
@@ -310,7 +312,8 @@ if(!is.null(errMsg)){
     numberScenTabs     <- 0L
     # boolean that specifies whether input data shall be overridden
     overrideInput      <- FALSE
-    # boolean that specifies whether data shall be saved under a new name or existing scenario shall be overridden
+    # boolean that specifies whether data shall be saved under a new name 
+    # or existing scenario shall be overridden
     saveAsFlag         <- TRUE
     # boolean that specifies whether output data is included in currently loaded dataset
     noOutputData       <- TRUE
@@ -378,8 +381,10 @@ if(!is.null(errMsg)){
           if(shortcutNest){
             flog.debug("Navigated to next data tab in scenario comparison view (using shortcut).")
             # go to next data sheet
-            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("contentScen_", currentScen)]])))
-            updateTabsetPanel(session, paste0("contentScen_", currentScen), paste0("contentScen_", currentScen, "_", currentSheet + 1))
+            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
+                                            isolate(input[[paste0("contentScen_", currentScen)]])))
+            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                              paste0("contentScen_", currentScen, "_", currentSheet + 1))
           }else{
             flog.debug("Navigated to next scenario tab in scenario comparison view (using shortcut).")
             # go to next scenario tab
@@ -392,9 +397,12 @@ if(!is.null(errMsg)){
         }else if(isInSplitView){
           flog.debug("Navigated to next data tab in split view scenario comparison view (using shortcut).")
           currentScen <- 2
-          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("contentScen_", currentScen)]])))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen), paste0("contentScen_", currentScen, "_", currentSheet + 1))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), paste0("contentScen_", currentScen + 1, "_", currentSheet + 1))
+          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
+                                          isolate(input[[paste0("contentScen_", currentScen)]])))
+          updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                            paste0("contentScen_", currentScen, "_", currentSheet + 1))
+          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), 
+                            paste0("contentScen_", currentScen + 1, "_", currentSheet + 1))
         }
       }
     })
@@ -413,8 +421,10 @@ if(!is.null(errMsg)){
           if(shortcutNest){
             flog.debug("Navigated to previous data tab in single scenario comparison view (using shortcut).")
             # go to previous data sheet
-            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("contentScen_", currentScen)]])))
-            updateTabsetPanel(session, paste0("contentScen_", currentScen), paste0("contentScen_", currentScen, "_", currentSheet - 1))
+            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
+                                            isolate(input[[paste0("contentScen_", currentScen)]])))
+            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                              paste0("contentScen_", currentScen, "_", currentSheet - 1))
           }else{
             flog.debug("Navigated to previous scenario tab in scenario comparison view (using shortcut).")
             # go to previous scenario tab
@@ -427,9 +437,12 @@ if(!is.null(errMsg)){
         }else if(isInSplitView){
           flog.debug("Navigated to previous data tab in split view scenario comparison view (using shortcut).")
           currentScen <- 2
-          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", isolate(input[[paste0("contentScen_", currentScen)]])))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen), paste0("contentScen_", currentScen, "_", currentSheet - 1))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), paste0("contentScen_", currentScen + 1, "_", currentSheet - 1))
+          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
+                                          isolate(input[[paste0("contentScen_", currentScen)]])))
+          updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                            paste0("contentScen_", currentScen, "_", currentSheet - 1))
+          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), 
+                            paste0("contentScen_", currentScen + 1, "_", currentSheet - 1))
         }
         
       }
@@ -449,10 +462,12 @@ if(!is.null(errMsg)){
     }
     
     # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", length = length(modelInMustImport)), 
-                         unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, btSaveAs = 0L, 
-                         btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL,
-                         clear = TRUE, btSave = 0L, btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
+    rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", 
+                                                                length = length(modelInMustImport)), 
+                         unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, 
+                         btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
+                         btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
+                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -471,6 +486,7 @@ if(!is.null(errMsg)){
     isEmptyInput[] <- TRUE
     # list of data frames which save changes made in handsontable
     hotInput <- vector(mode = "list", length = length(modelIn))
+    tableContent <- vector(mode = "list", length = length(modelIn))
     # gams process object
     gams <- NULL
     # boolean that specifies whether input data should be overridden
@@ -594,6 +610,9 @@ if(!is.null(errMsg)){
         switch(modelIn[[i]]$type,
                hot = {
                  input[[paste0("in_", i)]]
+               },
+               dt ={
+                 input[[paste0("in_", i, "_cell_edit")]]
                }, 
                slider = {
                  input[[paste0("slider_", i)]]
@@ -683,14 +702,14 @@ if(!is.null(errMsg)){
     # UI elements (modalDialogs)
     source("./UI/dialogs.R", local = TRUE)
     ####### Model input
-    # generate import dialogue
-    source("./modules/input_ui.R", local = TRUE)
-    # load input data from Excel sheet
-    source("./modules/excel_input_load.R", local = TRUE)
     # render tabular input datasets
     source("./modules/input_render_tab.R", local = TRUE)
     # render non tabular input datasets (e.g. slider, dropdown)
     source("./modules/input_render_nontab.R", local = TRUE)
+    # generate import dialogue
+    source("./modules/input_ui.R", local = TRUE)
+    # load input data from Excel sheet
+    source("./modules/excel_input_load.R", local = TRUE)
     
     ####### GAMS interaction
     # solve button clicked
@@ -735,7 +754,7 @@ if(!is.null(errMsg)){
       source("./modules/scen_split.R", local = TRUE)
 
       lapply(seq_len(maxNumberScenarios + 3), function(i){
-        scen.str <- "scen_" %+% i %+% "_"
+        scen.str <- paste0("scen_", i, "_")
         # table view
         source("./modules/scen_table_view.R", local = TRUE)
         
@@ -771,7 +790,7 @@ if(!is.null(errMsg)){
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
     }else{
-      i <- 1
+      id <- 1
       # export output data to Excel spreadsheet
       source("./modules/excel_scen_save.R", local = TRUE)
     }

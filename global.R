@@ -9,8 +9,8 @@ keywordsNoImport <- c("noimport")
 # keywords that define data MUST not be imported in order to run the model
 keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywordsType <- list("hot" = "headers", "slider" = "slider", "dropdown" = "dropdown", 
-                     "dropdowne" = "dropdowne", "daterange" = "daterange", 
+keywordsType <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
+                     "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
                      "date" = "date", "checkbox" = "checkbox")
 listOfOperators <- list("count" = "card", "max" = "max", "min" = "min", 
                         "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
