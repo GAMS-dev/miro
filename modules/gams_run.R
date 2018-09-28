@@ -269,7 +269,7 @@ observeEvent(input$btSolve, {
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
-    writeLines(c(gamsArgs, pfFileContent), workDir %+% tolower(modelName) %+% ".pf")
+    writeLines(c(gamsArgs, pfFileContent), paste0(workDir, tolower(modelName), ".pf"))
     gams <<- processx::process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
                                                     "pf=" %+% pfFilePath, 
                                                     config$gamsWEBUISwitch), 

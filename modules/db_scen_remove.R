@@ -81,7 +81,6 @@ observeEvent(input$btDelete, {
 })
 observeEvent(input$btDeleteConfirm, {
   flog.debug("Button to confirm deleting scenario from database clicked.")
-  removeModal()
   if(is.null(activeScen)){
     flog.error("No active scenario ID found to delete.")
     return(NULL)
@@ -89,7 +88,11 @@ observeEvent(input$btDeleteConfirm, {
   errMsg <- NULL
   tryCatch({
     activeScen$delete()
-    showRemoveDeletedScenFromUIDialog()
+    print('hi')
+    hide("deleteScen_db")
+    hide("btDeleteConfirm")
+    shinyjs::show("deleteScen_ui")
+    shinyjs::show("btRemoveDeletedConfirm")
   }, error = function(e){
     flog.error("Problems deleting scenario: '%s'. Error message: '%s'.", activeScen$getScenName(), e)
     errMsg <<- lang$errMsg$deleteScen$desc

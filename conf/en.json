@@ -86,8 +86,9 @@
     "batch_analyze":{
       "title":"Analyze Scenarios",
       "loadMsg":"Please wait while the results are calculated. This may take a while.",
-	  "btCancel": "Cancel",
-	  "btNew": "Select scenarios"
+      "failMsg":"Something went wrong while trying to run paver. If this problem persists, please contact a system administrator.",
+	    "btCancel": "Cancel",
+	    "btNew": "Select scenarios"
     },
     "gamsModelStatus":{  
       "exec":"Model execution phase",
@@ -116,13 +117,11 @@
     "dialogDeleteScen":{  
       "title":"Delete scenario",
       "desc":"Are you sure you want to delete the selected scenario from the database?",
-      "cancelButton":"No",
+      "cancelButton":"Cancel",
       "okButton":"Yes",
-      "removeFromUI":{  
-        "title":"Remove scenario from editor",
+      "removeFromUI":{
         "desc":"Do you want to remove the scenario from the editor? Unsaved data will be lost!",
-        "cancelButton":"Cancel",
-        "okButton":"Remove"
+        "okButton":"Remove from editor"
       }
     },
     "dialogRemoveScen":{  

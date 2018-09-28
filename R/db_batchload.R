@@ -151,12 +151,12 @@ BatchLoad <- R6Class("BatchLoad",
                          stopifnot(length(private$groupedData) > 0L)
                          stopifnot(length(private$tableNameTrace) > 0L)
                          stopifnot(is.character(workDir), length(workDir) == 1L)
-                         
                          groupLabels   <- attr(private$groupedData, "labels")
                          groupLabels   <- as.data.frame(lapply(seq_along(groupLabels), function(i) 
-                           paste0(names(groupLabels)[i], ": ", groupLabels[[i]])))
+                           paste0(names(groupLabels)[i], ":", as.character(groupLabels[[i]]))),
+                           stringsAsFactors = FALSE)
                          groupLabels   <- vapply(seq_len(nrow(groupLabels)), function(i){
-                           paste0(groupLabels[i, ], collapse = ", ")
+                           paste0(as.vector(groupLabels[i, ], "character"), collapse = "-")
                          }, character(1L), USE.NAMES = FALSE)
                          lapply(seq_along(private$groupedSids), function(i){
                            fileName <- workDir %+% i %+% ".trc"
@@ -166,11 +166,16 @@ BatchLoad <- R6Class("BatchLoad",
 "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,NumberOfEquations,NumberOfVariables,",
 "NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,OptionFile,ModelStatus,SolverStatus,",
 "ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
-"*\n* SOLVER,", groupLabels[i], "\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
+"*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
                            paverData <- private$db$importDataset(private$tableNameTrace, 
                                                             tibble(private$sidCol, private$groupedSids[[i]]), 
                                                             innerSepAND = FALSE)[-1]
+                           paverData[[1]] <- private$db$importDataset(private$tabNameMeta, 
+                                                              tibble(private$sidCol, private$groupedSids[[i]]), 
+                                                              colNames = private$db$getScenMetaColnames()[["sname"]], 
+                                                              innerSepAND = FALSE)[[1]]
+                           paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
                            write_csv(paverData, fileName, append = TRUE)
                            
                          })

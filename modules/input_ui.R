@@ -2,7 +2,7 @@
 observeEvent(input$btImport, {
   flog.debug("%s: Import input data button clicked.", uid)
   #disable button animation
-  shinyjs::addClass("btImport", "no-animations")
+  shinyjs::removeClass("btImport", "glow-animation")
   isInSolveMode <<- TRUE
   if(config$activateModules$scenario){
     # fetch list of saved scenarios

@@ -18,3 +18,6 @@ function changeTab(object, idActive, idRefer) {
     tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
     tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
 }
+function renderMathJax() {
+  MathJax.Hub.Queue(["Typeset", MathJax.Hub, "wrapper-documentation"]);
+}

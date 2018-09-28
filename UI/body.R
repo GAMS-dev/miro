@@ -4,9 +4,21 @@ body <- dashboardBody(
   useShinyjs(),
   extendShinyjs("./JS/shinyjs.js"),
   tags$head(
+    if(config$activateModules$batchMode){
+      tagList(
+        tags$script(src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML", 
+                    type = "text/javascript"),
+        tags$script(type = "text/x-mathjax-config", {
+          "MathJax.Hub.Config({
+            skipStartupTypeset: true,
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+          });"
+        })
+      )
+    },
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
-    tags$script(src = "shortcuts.js"),
-    tags$script(src = "gmswebui.js"),
+    tags$script(src = "shortcuts.js", type = "text/javascript"),
+    tags$script(src = "gmswebui.js", type = "text/javascript"),
     
     # css sheets that depend on data from config JSON file
     tags$style(HTML(paste0('
@@ -438,6 +450,9 @@ body <- dashboardBody(
                                                            lang$nav$batch_analyze$loadMsg,
                                                            tags$img(src= "load.gif"),
                                                            actionButton("btPaverInterrupt", lang$nav$batch_analyze$btCancel)
+                                                  ),
+                                                  tags$div(id = "paver_fail", class = "errMsg",
+                                                           lang$nav$batch_analyze$failMsg
                                                   )
                                                 ),
                                                 hidden(tags$div(id = "newPaverRunButton", class = "loadDiv",

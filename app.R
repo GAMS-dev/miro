@@ -694,8 +694,10 @@ if(!is.null(errMsg)){
         }
       }, logical(1), USE.NAMES = FALSE)
       if(all(datasetsImported)){
+        addClass("btSolve", "glow-animation")
         shinyjs::enable("btSolve")
       }else{
+        removeClass("btSolve", "glow-animation")
         shinyjs::disable("btSolve")
       }
     })

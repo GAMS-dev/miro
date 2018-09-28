@@ -84,7 +84,7 @@ animation: none !important;
     background-color: rgba(244, 244, 244, 0.85);
   }
 }
-#btImport {
+.glow-animation {
   -webkit-animation-name: glow; 
   -webkit-animation-duration: 800ms;  
   -webkit-animation-timing-function: ease-out;  
@@ -379,4 +379,16 @@ animation: none !important;
   grid-column-end: 3;
   margin-top: 15px;
   margin-bottom: 25px;
+}
+/* PAVER */
+.dataframe { 
+  text-align: right; 
+  font-size: 12px; 
+  border: 1px; 
+  border-collapse: collapse;
+}
+.block {
+  background:#f0f0f0; 
+  padding:10px;
+  border: 1px solid #c2c2c2;
 }

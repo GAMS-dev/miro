@@ -43,16 +43,6 @@ showCloseScenDialog <- function(scenId){
     fade=FALSE, easyClose=FALSE))
 }
 
-showRemoveDeletedScenFromUIDialog <- function(){
-  showModal(modalDialog(
-    title = lang$nav$dialogDeleteScen$removeFromUI$title,
-    lang$nav$dialogDeleteScen$removeFromUI$desc,
-    footer = tagList(
-      modalButton(lang$nav$dialogDeleteScen$removeFromUI$cancelButton),
-      actionButton("btRemoveDeletedConfirm", label = lang$nav$dialogDeleteScen$removeFromUI$okButton, class = "btHighlight1")),
-    fade=TRUE, easyClose=FALSE))
-}
-
 showRemoveActiveScenFromUIDialog <- function(){
   showModal(modalDialog(
     title = lang$nav$dialogRemoveScen$title,
@@ -63,13 +53,31 @@ showRemoveActiveScenFromUIDialog <- function(){
     fade=TRUE, easyClose=FALSE))
 }
 
+showRemoveDeletedScenFromUIDialog <- function(){
+  showModal(modalDialog(
+    title = lang$nav$dialogDeleteScen$removeFromUI$title,
+    lang$nav$dialogDeleteScen$removeFromUI$desc,
+    footer = tagList(
+      modalButton(lang$nav$dialogDeleteScen$removeFromUI$cancelButton),
+      actionButton("btRemoveDeletedConfirm", label = lang$nav$dialogDeleteScen$removeFromUI$okButton, class = "btHighlight1")),
+    fade=TRUE, easyClose=FALSE))
+}
+
 showDeleteScenDialog <- function(){
   showModal(modalDialog(
     title = lang$nav$dialogDeleteScen$title,
-    lang$nav$dialogDeleteScen$desc,
+    tags$div(id = "deleteScen_db",
+             lang$nav$dialogDeleteScen$desc
+             ),
+    hidden(tags$div(id = "deleteScen_ui",
+             lang$nav$dialogDeleteScen$removeFromUI$desc
+             )),
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$cancelButton),
-      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btHighlight1")),
+      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btHighlight1"),
+      hidden(actionButton("btRemoveDeletedConfirm", 
+                          label = lang$nav$dialogDeleteScen$removeFromUI$okButton, 
+                          class = "btHighlight1"))),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -162,7 +170,8 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = ""){
     )),
     footer = tagList(
       modalButton(lang$nav$batchMode$configPaverDialog$cancelButton),
-      actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton),
+      actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton,
+                   class = "btHighlight1"),
       hidden(actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
                           class = "btHighlight1")),
       if(length(sidsToLoad) <= maxConcurentLoad)

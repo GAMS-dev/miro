@@ -391,17 +391,22 @@
               "minLength":1,
               "required":true
             },
-			"loadMsg":{  
+			      "loadMsg":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-			"btCancel":{  
+            "failMsg":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-			"btNew":{  
+			      "btCancel":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+			      "btNew":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -595,18 +600,8 @@
               "minLength":1,
               "required":true
             },
-            "removeFromUI":{  
-              "title":{  
-                "type":"string",
-                "minLength":1,
-                "required":true
-              },
+            "removeFromUI":{ 
               "desc":{  
-                "type":"string",
-                "minLength":1,
-                "required":true
-              },
-              "cancelButton":{  
                 "type":"string",
                 "minLength":1,
                 "required":true

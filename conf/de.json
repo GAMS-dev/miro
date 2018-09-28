@@ -86,8 +86,9 @@
     "batch_analyze":{
       "title":"Szenarioanalyse",
       "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
-	  "btCancel": "Abbrechen",
-	  "btNew": "Szenarien auswählen"
+      "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+	    "btCancel": "Abbrechen",
+	    "btNew": "Szenarien auswählen"
     },
     "gamsModelStatus":{  
       "exec":"Modell wird gelöst",
@@ -116,13 +117,11 @@
     "dialogDeleteScen":{  
       "title":"Szenario löschen",
       "desc":"Sind Sie sicher, dass Sie das ausgewählte Szenario löschen möchten?",
-      "cancelButton":"Nein",
+      "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
-        "title":"Szenario aus Editor entfernen",
         "desc":"Möchten Sie das Szenario aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
-        "cancelButton":"Abbrechen",
-        "okButton":"Schließen"
+        "okButton":"Szenario schließen"
       }
     },
     "dialogRemoveScen":{  

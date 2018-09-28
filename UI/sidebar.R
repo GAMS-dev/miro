@@ -9,7 +9,7 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                   menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy"))
                 },
                 menuItem(lang$nav$sidebarMenu$advanced, tabName="advanced", icon = icon("ellipsis-h")),
-                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%"),
+                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "glow-animation"),
                 shinyjs::disabled(
                 actionButton("btSolve", lang$nav$sidebarButtons$solve, width = "85%", class = "btHighlight1"),
                 actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt, width = "85%", class = "btHighlight1")  
@@ -46,7 +46,7 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 menuItem(lang$nav$sidebarMenu$batch$analyze, tabName="batchAnalyze", icon = icon("pie-chart")),
-                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%"),
+                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "glow-animation"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solve, width = "85%", class = "btHighlight1"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
                                  actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight1")),
