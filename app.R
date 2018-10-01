@@ -554,7 +554,7 @@ if(!is.null(errMsg)){
                 }
         )
       }else{
-        switch (input$sidebarMenuId,
+        switch(input$sidebarMenuId,
                 inputData = {
                   shinyjs::show("btImport")
                   shinyjs::show("btSolve")
@@ -638,25 +638,25 @@ if(!is.null(errMsg)){
       observe({
         switch(modelIn[[i]]$type,
                hot = {
-                 input[[paste0("in_", i)]]
+                 input[["in_" %+% i]]
                },
                dt ={
                  input[[paste0("in_", i, "_cell_edit")]]
                }, 
                slider = {
-                 input[[paste0("slider_", i)]]
+                 input[["slider_" %+% i]]
                },
                dropdown = {
-                 input[[paste0("dropdown_", i)]]
+                 input[["dropdown_" %+% i]]
                },
                date = {
-                 input[[paste0("date_", i)]]
+                 input[["date_" %+% i]]
                },
                daterange = {
-                 input[[paste0("daterange_", i)]]
+                 input[["daterange_" %+% i]]
                },
                checkbox = {
-                 input[[paste0("cb_", i)]]
+                 input[["cb_" %+% i]]
                })
         
         if(noCheck[i]){

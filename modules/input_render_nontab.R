@@ -1,7 +1,7 @@
 # render input data for input sheets with forward dependency on other input sheets
 get.data     <- vector(mode = "list", length = length(modelInWithDep))
 get.selected <- vector(mode = "list", length = length(modelIn))
-input.initialized <- vector(mode = "logical", length = length(modelInWithDep))
+inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 lapply(seq_along(modelIn), function(id){
   i    <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
   if(!is.na(i)){
@@ -68,9 +68,9 @@ lapply(seq_along(modelIn), function(id){
                
                value <- suppressWarnings(max(unlist(value, use.names = FALSE)))
                
-               if(!input.initialized[i]){
+               if(!inputInitialized[i]){
                  if(is.numeric(value) && !identical(value, -Inf)){
-                   input.initialized[i] <<- TRUE
+                   inputInitialized[i] <<- TRUE
                    shinyjs::show(paste0("cbDiv_", id))
                    shinyjs::hide(paste0("no_data_dep_", id))
                  }
@@ -227,12 +227,12 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of dropdown menu data
              observe({
                # update choices
-               if(!input.initialized[i]){
+               if(!inputInitialized[i]){
                  choices <- get.data[[i]]()
                  if(!is.null(choices)){
                    shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                             selected = modelIn[[id]]$dropdown$selected)
-                   input.initialized[i] <<- TRUE
+                   inputInitialized[i] <<- TRUE
                    shinyjs::show(paste0("dropdown_", id))
                    shinyjs::hide(paste0("no_data_dep_", id))
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)
@@ -393,16 +393,16 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of slider data
              observe({
                value <- get.data[[i]]()$def
-               if(input.initialized[i] && is.numeric(modelIn[[id]]$slider$default)){
+               if(inputInitialized[i] && is.numeric(modelIn[[id]]$slider$default)){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = get.data[[i]]()$min, 
                                         max = get.data[[i]]()$max, step = get.data[[i]]()$step)
                
-               if(!input.initialized[i]){
+               if(!inputInitialized[i]){
                  if(!is.null(isolate(get.data[[i]]()$min)) && !is.null(isolate(get.data[[i]]()$max))){
-                   input.initialized[i] <<- TRUE
+                   inputInitialized[i] <<- TRUE
                    shinyjs::show(paste0("slider_", id))
                    shinyjs::hide(paste0("no_data_dep_", id))
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)

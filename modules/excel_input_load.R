@@ -52,15 +52,15 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   }
   datasetsImported <- vapply(ids.to.fetch, function(i){
     if(length(isolate(rv[[paste0("in_", i)]]))){
-      return(T)
+      return(TRUE)
     }else{
-      return(F)
+      return(FALSE)
     }
-  }, logical(1))
+  }, logical(1L))
   
   if(any(datasetsImported)){
     hide("importDataTabset")
-    shinyjs::show("btOverrideScen")
+    shinyjs::show("btOverrideInput")
     shinyjs::show("importDataOverride")
   }else{
     overrideInput <<- FALSE
@@ -79,12 +79,12 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
     return(NULL)
   }
   # initialize new imported sheets counter
-  newInputCount <- 0
+  newInputCount <- 0L
   errMsg <- NULL
   scalarDataset <- NULL
   # read Excel file
   tryCatch({
-    xlsWbNames <- readxl::excel_sheets(input$localInput$datapath)
+    xlsWbNames <- excel_sheets(input$localInput$datapath)
   }, error = function(e) {
     flog.error("Some error occurred reading the file: '%s'. Error message: %s.", as.character(isolate(input$localInput$name)), e)
     errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, as.character(isolate(input$localInput$name)))
@@ -94,7 +94,6 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
   }
   # extract only sheets which are also in list of input parameters
   datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
-  
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form
@@ -118,7 +117,7 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
   }
   removeModal()
   # load input data 
-  load.mode <- "xls"
+  loadMode <- "xls"
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
     return(NULL)

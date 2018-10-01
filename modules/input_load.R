@@ -1,31 +1,30 @@
 # load model input data
 lapply(datasetsToFetch, function(dataset){
   i <- match(tolower(dataset), names(modelIn))[[1]]
-  
   dataTmp <- NULL
   if(is.na(i)){
     return()
   }
   inputVerified <- FALSE
   # execute only if dataframe has not yet been imported or already imported data shall be overridden
-  if(!length(isolate(rv[[paste0("in_", i)]])) || overrideInput){
+  if(!length(isolate(rv[["in_" %+% i]])) || overrideInput){
     # handsontable, multi dropdown, or daterange
     if(tolower(dataset) %in% modelInTabularData){
-      if(identical(load.mode, "xls")){
+      if(identical(loadMode, "xls")){
         # load from Excel workbook
         tryCatch({
-          dataTmp <- readxl::read_excel(input$localInput$datapath, dataset)
+          dataTmp <- read_excel(input$localInput$datapath, dataset)
         }, error = function(e) {
-          flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
+          flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", 
+                    isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
         })
-      }else if(identical(load.mode, "scen")){
+      }else if(identical(loadMode, "scen")){
         dataTmp <- scenInputData[[dataset]]
       }
       if(!is.null(errMsg)){
         return(NULL)
       }
-      
       # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
       # rather than setting them to NULL
       if(nrow(dataTmp)){
@@ -57,7 +56,7 @@ lapply(datasetsToFetch, function(dataset){
       
       # check whether scalar dataset has already been imported
       if(is.null(scalarDataset)){
-        if(load.mode == "xls"){
+        if(loadMode == "xls"){
           # load from excel workbook
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
@@ -103,11 +102,11 @@ lapply(datasetsToFetch, function(dataset){
     
     # check if input data is valid
     if(inputVerified){
-      flog.debug("Dataset: %s loaded successfully (mode: %s, override: %s)", dataset, load.mode, overrideInput)
+      flog.debug("Dataset: %s loaded successfully (mode: %s, override: %s)", dataset, loadMode, overrideInput)
       newInputCount <<- newInputCount + 1
       # set identifier that data was overwritten 
       isEmptyInput[i] <<- TRUE
-      if(!identical(load.mode, "scen")){
+      if(!identical(loadMode, "scen")){
         # set unsaved flag
         rv$unsavedFlag <<- TRUE
         # if scenario includes output data set dirty flag
@@ -118,10 +117,11 @@ lapply(datasetsToFetch, function(dataset){
         }
       }
       # reset dependent elements
-      input.initialized[dependentDatasets[[i]]] <<- FALSE
+      inputInitialized[dependentDatasets[[i]]] <<- FALSE
+      
       if(!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])){
         id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
-        if(input.initialized[id]){
+        if(inputInitialized[id]){
           # only update when initialized
           if(length(isolate(rv[[paste0("in_", i)]]))){
             rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
@@ -147,7 +147,7 @@ lapply(datasetsToFetch, function(dataset){
 })
 showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
-flog.trace("%d new input datasets loaded (load mode: %s, override: %s)", count.new.input, load.mode, overrideInput)
+flog.trace("%d new input datasets loaded (load mode: %s, override: %s)", count.new.input, loadMode, overrideInput)
 if(!is.null(isolate(rv$activeSname))){
   shinyjs::enable("btSave")
 }

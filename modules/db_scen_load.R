@@ -225,7 +225,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     }
     
     errMsg    <-  NULL
-    load.mode <-  "scen"
+    loadMode  <-  "scen"
     source("./modules/input_load.R", local = TRUE)
     if(!is.null(errMsg)){
       return()
