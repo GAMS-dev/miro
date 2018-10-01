@@ -558,53 +558,53 @@ if(!is.null(errMsg)){
                 inputData = {
                   shinyjs::show("btImport")
                   shinyjs::show("btSolve")
-                  shinyjs::hide("btInterrupt")
+                  hide("btInterrupt")
                   if(config$activateModules$scenario){
-                    shinyjs::hide("btSplitView")
-                    shinyjs::hide("btCompareScen")
+                    hide("btSplitView")
+                    hide("btCompareScen")
                     shinyjs::show("btSave")
                     shinyjs::show("btSaveAs")
-                    shinyjs::hide("btLoadScen")
+                    hide("btLoadScen")
                     shinyjs::show("btDelete")
                   }
                 },
                 outputData = {
                   shinyjs::show("btImport")
-                  shinyjs::hide("btSolve")
-                  shinyjs::hide("btInterrupt")
+                  hide("btSolve")
+                  hide("btInterrupt")
                   if(config$activateModules$scenario){
-                    shinyjs::hide("btSplitView")
-                    shinyjs::hide("btCompareScen")
+                    hide("btSplitView")
+                    hide("btCompareScen")
                     shinyjs::show("btSave")
                     shinyjs::show("btSaveAs")
-                    shinyjs::hide("btLoadScen")
+                    hide("btLoadScen")
                     shinyjs::show("btDelete")
                   }
                 },
                 gamsinter = {
-                  shinyjs::hide("btImport")
-                  shinyjs::hide("btSolve")
+                  hide("btImport")
+                  hide("btSolve")
                   shinyjs::show("btInterrupt")
                   if(config$activateModules$scenario){
-                    shinyjs::hide("btSplitView")
-                    shinyjs::hide("btCompareScen")
-                    shinyjs::hide("btSave")
-                    shinyjs::hide("btSaveAs")
-                    shinyjs::hide("btLoadScen")
-                    shinyjs::hide("btDelete")
+                    hide("btSplitView")
+                    hide("btCompareScen")
+                    hide("btSave")
+                    hide("btSaveAs")
+                    hide("btLoadScen")
+                    hide("btDelete")
                   }
                 },
                 advanced = {
-                  shinyjs::hide("btImport")
-                  shinyjs::hide("btSolve")
-                  shinyjs::hide("btInterrupt")
+                  hide("btImport")
+                  hide("btSolve")
+                  hide("btInterrupt")
                   if(config$activateModules$scenario){
-                    shinyjs::hide("btSplitView")
-                    shinyjs::hide("btCompareScen")
-                    shinyjs::hide("btSave")
-                    shinyjs::hide("btSaveAs")
-                    shinyjs::hide("btLoadScen")
-                    shinyjs::hide("btDelete")
+                    hide("btSplitView")
+                    hide("btCompareScen")
+                    hide("btSave")
+                    hide("btSaveAs")
+                    hide("btLoadScen")
+                    hide("btDelete")
                   }
                 }
         )
@@ -612,15 +612,15 @@ if(!is.null(errMsg)){
           # reset nest level
           shortcutNest <<- FALSE
           isInSolveMode <<- FALSE
-          shinyjs::hide("btImport")
-          shinyjs::hide("btSolve")
-          shinyjs::hide("btInterrupt")
+          hide("btImport")
+          hide("btSolve")
+          hide("btInterrupt")
           shinyjs::show("btSplitView")
           shinyjs::show("btCompareScen")
-          shinyjs::hide("btSave")
-          shinyjs::hide("btSaveAs")
+          hide("btSave")
+          hide("btSaveAs")
           shinyjs::show("btLoadScen")
-          shinyjs::hide("btDelete")
+          hide("btDelete")
         }
       }
     })
@@ -678,16 +678,16 @@ if(!is.null(errMsg)){
     })
     
     markUnsaved <- function(){
-      shinyjs::hide("dirtyFlagIcon")
-      shinyjs::hide("dirtyFlagIconO")
+      hide("dirtyFlagIcon")
+      hide("dirtyFlagIconO")
       dirtyFlag     <<- FALSE
       rv$unsavedFlag <<- TRUE
       return(invisible())
     }
     
     markSaved <- function(){
-      shinyjs::hide("dirtyFlagIcon")
-      shinyjs::hide("dirtyFlagIconO")
+      hide("dirtyFlagIcon")
+      hide("dirtyFlagIconO")
       dirtyFlag     <<- FALSE
       rv$unsavedFlag <<- FALSE
       return(invisible())
@@ -696,12 +696,12 @@ if(!is.null(errMsg)){
     # print scenario title in input and output sheets
     getScenTitle <- reactive(
       if(is.null(rv$activeSname)){
-        shinyjs::disable("btDelete")
-        shinyjs::disable("btSave")
+        disable("btDelete")
+        disable("btSave")
         return("")
       }else{
-        shinyjs::enable("btDelete")
-        shinyjs::enable("btSave")
+        enable("btDelete")
+        enable("btSave")
         name.suffix <- ""
         if(rv$unsavedFlag){
           name.suffix <- "*"
@@ -716,7 +716,7 @@ if(!is.null(errMsg)){
     observe({
       datasetsImported <- vapply(names(modelInMustImport), function(el){
         i <- match(el, names(modelIn))[[1]]
-        if(length(rv[[paste0("in_", i)]])){
+        if(length(rv[["in_" %+% i]])){
           return(TRUE)
         }else{
           return(FALSE)
