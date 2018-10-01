@@ -1,7 +1,7 @@
 # scenario comparison
 observeEvent(input$btCompareScen,
              rv$btCompareScen <- isolate(rv$btCompareScen + 1L))
-observeEvent(rv$btCompareScen,{
+observeEvent(virtualActionButton(rv$btCompareScen),{
   if(isInCompareMode){
     flog.debug("%s: Compare scenario button clicked (comparison mode stopped).", uid)
     isInCompareMode <<- FALSE

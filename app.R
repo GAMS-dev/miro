@@ -333,6 +333,9 @@ if(!is.null(errMsg)){
     # boolean that specifies whether input data does not match output data
     dirtyFlag          <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
+    if(isInSplitView){
+      enable("btCompareScen")
+    }
     isInCompareMode    <- FALSE
     isInSolveMode      <- TRUE
     if(config$activateModules$scenario){
@@ -526,73 +529,99 @@ if(!is.null(errMsg)){
     # show/hide buttons in sidebar depending on menu item selected
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
-      switch (input$sidebarMenuId,
-              inputData = {
-                shinyjs::show("btImport")
-                shinyjs::show("btSolve")
-                shinyjs::hide("btInterrupt")
-                if(config$activateModules$scenario){
-                  shinyjs::hide("btSplitView")
-                  shinyjs::hide("btCompareScen")
-                  shinyjs::show("btSave")
-                  shinyjs::show("btSaveAs")
-                  shinyjs::hide("btLoadScen")
-                  shinyjs::show("btDelete")
+      if(config$activateModules$batchMode){
+        switch (input$sidebarMenuId,
+                inputData = {
+                  shinyjs::show("btImport")
+                  shinyjs::show("btSolve")
+                  hide("btSplitView")
+                  hide("btCompareScen")
+                },
+                scenarios = {
+                  # reset nest level
+                  shortcutNest <<- FALSE
+                  isInSolveMode <<- FALSE
+                  hide("btImport")
+                  hide("btSolve")
+                  shinyjs::show("btSplitView")
+                  shinyjs::show("btCompareScen")
+                },
+                {
+                  hide("btCompareScen")
+                  hide("btSplitView")
+                  hide("btImport")
+                  hide("btSolve")
                 }
-              },
-              outputData = {
-                shinyjs::show("btImport")
-                shinyjs::hide("btSolve")
-                shinyjs::hide("btInterrupt")
-                if(config$activateModules$scenario){
-                  shinyjs::hide("btSplitView")
-                  shinyjs::hide("btCompareScen")
-                  shinyjs::show("btSave")
-                  shinyjs::show("btSaveAs")
-                  shinyjs::hide("btLoadScen")
-                  shinyjs::show("btDelete")
+        )
+      }else{
+        switch (input$sidebarMenuId,
+                inputData = {
+                  shinyjs::show("btImport")
+                  shinyjs::show("btSolve")
+                  shinyjs::hide("btInterrupt")
+                  if(config$activateModules$scenario){
+                    shinyjs::hide("btSplitView")
+                    shinyjs::hide("btCompareScen")
+                    shinyjs::show("btSave")
+                    shinyjs::show("btSaveAs")
+                    shinyjs::hide("btLoadScen")
+                    shinyjs::show("btDelete")
+                  }
+                },
+                outputData = {
+                  shinyjs::show("btImport")
+                  shinyjs::hide("btSolve")
+                  shinyjs::hide("btInterrupt")
+                  if(config$activateModules$scenario){
+                    shinyjs::hide("btSplitView")
+                    shinyjs::hide("btCompareScen")
+                    shinyjs::show("btSave")
+                    shinyjs::show("btSaveAs")
+                    shinyjs::hide("btLoadScen")
+                    shinyjs::show("btDelete")
+                  }
+                },
+                gamsinter = {
+                  shinyjs::hide("btImport")
+                  shinyjs::hide("btSolve")
+                  shinyjs::show("btInterrupt")
+                  if(config$activateModules$scenario){
+                    shinyjs::hide("btSplitView")
+                    shinyjs::hide("btCompareScen")
+                    shinyjs::hide("btSave")
+                    shinyjs::hide("btSaveAs")
+                    shinyjs::hide("btLoadScen")
+                    shinyjs::hide("btDelete")
+                  }
+                },
+                advanced = {
+                  shinyjs::hide("btImport")
+                  shinyjs::hide("btSolve")
+                  shinyjs::hide("btInterrupt")
+                  if(config$activateModules$scenario){
+                    shinyjs::hide("btSplitView")
+                    shinyjs::hide("btCompareScen")
+                    shinyjs::hide("btSave")
+                    shinyjs::hide("btSaveAs")
+                    shinyjs::hide("btLoadScen")
+                    shinyjs::hide("btDelete")
+                  }
                 }
-              },
-              gamsinter = {
-                shinyjs::hide("btImport")
-                shinyjs::hide("btSolve")
-                shinyjs::show("btInterrupt")
-                if(config$activateModules$scenario){
-                  shinyjs::hide("btSplitView")
-                  shinyjs::hide("btCompareScen")
-                  shinyjs::hide("btSave")
-                  shinyjs::hide("btSaveAs")
-                  shinyjs::hide("btLoadScen")
-                  shinyjs::hide("btDelete")
-                }
-              },
-              advanced = {
-                shinyjs::hide("btImport")
-                shinyjs::hide("btSolve")
-                shinyjs::hide("btInterrupt")
-                if(config$activateModules$scenario){
-                  shinyjs::hide("btSplitView")
-                  shinyjs::hide("btCompareScen")
-                  shinyjs::hide("btSave")
-                  shinyjs::hide("btSaveAs")
-                  shinyjs::hide("btLoadScen")
-                  shinyjs::hide("btDelete")
-                }
-              }
-      )
-      if(config$activateModules$scenario && input$sidebarMenuId == "scenarios"){
-        # reset nest level
-        shortcutNest <<- FALSE
-        isInSolveMode <<- FALSE
-        shinyjs::hide("btImport")
-        shinyjs::hide("btSolve")
-        shinyjs::hide("btInterrupt")
-        shinyjs::show("btSplitView")
-        shinyjs::show("btCompareScen")
-        shinyjs::hide("btSave")
-        shinyjs::hide("btSaveAs")
-        shinyjs::show("btLoadScen")
-        shinyjs::hide("btDelete")
+        )
+        if(config$activateModules$scenario && input$sidebarMenuId == "scenarios"){
+          # reset nest level
+          shortcutNest <<- FALSE
+          isInSolveMode <<- FALSE
+          shinyjs::hide("btImport")
+          shinyjs::hide("btSolve")
+          shinyjs::hide("btInterrupt")
+          shinyjs::show("btSplitView")
+          shinyjs::show("btCompareScen")
+          shinyjs::hide("btSave")
+          shinyjs::hide("btSaveAs")
+          shinyjs::show("btLoadScen")
+          shinyjs::hide("btDelete")
+        }
       }
     })
     

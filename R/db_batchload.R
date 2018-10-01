@@ -131,50 +131,69 @@ BatchLoad <- R6Class("BatchLoad",
                          
                          return(dataset)
                        },
-                       getNoSolvers = function(data, attribs, maxNoGroups){
+                       exceedsMaxNoSolvers = function(data, attribs, maxNoGroups, exclAttrib = NULL){
                          stopifnot(inherits(data, "data.frame"))
                          stopifnot(is.character("attribs"), length(attribs) > 0L)
-
+                         
                          attribs <- gsub("^.+-", "", attribs)
                          sids <- as.integer(data[[1]])
-                         data <- data[, attribs]
+                         colIdsAttrib <- match(attribs, names(data))
+                         colIdsExclAttrib <- match(exclAttrib, names(data))
+                         if(any(is.na(colIdsExclAttrib))){
+                           stop(sprintf("Attribute: '%s' was not found.", colIdsExclAttrib), 
+                                call. = FALSE)
+                         }
+                           
                          attribs <- rlang::syms(attribs)
-                         private$groupedData <- dplyr::group_by(data, !!!attribs)
-                         groupedRowIds       <- attr(private$groupedData, "indices")
+                         groupedData <- dplyr::group_by(data, !!!attribs)
+                         
+                         groupedRowIds       <- attr(groupedData, "indices")
                          private$groupedSids <- lapply(groupedRowIds, function(rowIds){
                            sids[rowIds + 1L]
                          })
-                         return(length(groupedRowIds))
+                         if(length(groupedRowIds) > maxNoGroups){
+                           return(TRUE)
+                         }
+                         
+                         private$groupedNames <- lapply(private$groupedSids, function(sidGroup) {
+                           vapply(sidGroup, function(sid){
+                             paste(as.vector(groupedData[groupedData[[1]] == sid, -c(1, colIdsAttrib, 
+                                                                                     colIdsExclAttrib), 
+                                                         drop = FALSE]),
+                                   collapse = "\\")
+                           }, character(1L), USE.NAMES = FALSE)
+                         })
+                         
+                         private$groupLabels <- attr(groupedData, "labels")
+                         return(FALSE)
                        },
                        genPaverTraceFiles = function(workDir){
                          stopifnot(length(private$groupedSids) > 0L)
-                         stopifnot(length(private$groupedData) > 0L)
+                         stopifnot(length(private$groupLabels) > 0L)
                          stopifnot(length(private$tableNameTrace) > 0L)
                          stopifnot(is.character(workDir), length(workDir) == 1L)
-                         groupLabels   <- attr(private$groupedData, "labels")
-                         groupLabels   <- as.data.frame(lapply(seq_along(groupLabels), function(i) 
-                           paste0(names(groupLabels)[i], ":", as.character(groupLabels[[i]]))),
+                         
+                         groupLabels   <- as.data.frame(lapply(seq_along(private$groupLabels), function(i) 
+                           #paste0(names(groupLabels)[i], ":", as.character(groupLabels[[i]]))),
+                           as.character(private$groupLabels[[i]])),
                            stringsAsFactors = FALSE)
                          groupLabels   <- vapply(seq_len(nrow(groupLabels)), function(i){
-                           paste0(as.vector(groupLabels[i, ], "character"), collapse = "-")
+                           paste0(as.vector(groupLabels[i, ], "character"), collapse = "\\")
                          }, character(1L), USE.NAMES = FALSE)
                          lapply(seq_along(private$groupedSids), function(i){
                            fileName <- workDir %+% i %+% ".trc"
                            paverFile <- file(fileName, open = 'wt')
                            
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
-"* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,NumberOfEquations,NumberOfVariables,",
-"NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,OptionFile,ModelStatus,SolverStatus,",
-"ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
-"*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
+                                             "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,NumberOfEquations,NumberOfVariables,",
+                                             "NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,OptionFile,ModelStatus,SolverStatus,",
+                                             "ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
+                                             "*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
-                           paverData <- private$db$importDataset(private$tableNameTrace, 
-                                                            tibble(private$sidCol, private$groupedSids[[i]]), 
-                                                            innerSepAND = FALSE)[-1]
-                           paverData[[1]] <- private$db$importDataset(private$tabNameMeta, 
-                                                              tibble(private$sidCol, private$groupedSids[[i]]), 
-                                                              colNames = private$db$getScenMetaColnames()[["sname"]], 
-                                                              innerSepAND = FALSE)[[1]]
+                           paverData      <- private$db$importDataset(private$tableNameTrace, 
+                                                                      tibble(private$sidCol, private$groupedSids[[i]]), 
+                                                                      innerSepAND = FALSE)[-1]
+                           paverData[[1]] <- private$groupedNames[[i]]
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
                            write_csv(paverData, fileName, append = TRUE)
                            
@@ -197,6 +216,8 @@ BatchLoad <- R6Class("BatchLoad",
                        keyTypeList             = NULL,
                        values                  = list(),
                        groupedData             = list(),
+                       groupLabels             = list(),
+                       groupedNames            = list(),
                        groupedSids             = list(),
                        filterScalars           = function(scalarTable, subsetScalars){
                          filterCondition <- private$db$buildRowSubsetSubquery(subsetScalars, " & ", 
