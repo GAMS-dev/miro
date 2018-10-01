@@ -39,7 +39,7 @@ lapply(seq_along(modelIn), function(id){
                value  <- NULL
                errMsg <- NULL
                rv[["in_" %+% k]]
-               
+               input[["in_" %+% k]]
                if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
@@ -182,7 +182,8 @@ lapply(seq_along(modelIn), function(id){
                        )
                      }
                    }else{
-                     rv[["in_" %+% i]]
+                     rv[["in_" %+% k]]
+                     input[["in_" %+% k]]
                      tryCatch({
                        dataTmp <- getInputDataset(k)
                      }, error = function(e){
@@ -195,8 +196,7 @@ lapply(seq_along(modelIn), function(id){
                        next
                      }
                      choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
-                     
-                     if(!length(choices[[j]])){
+                     if(!length(choices[[j]]) || choices[[j]][[1]] == ""){
                        return(NULL)
                      }
                      if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){

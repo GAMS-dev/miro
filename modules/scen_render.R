@@ -12,7 +12,7 @@ if(isInSplitView){
   scenCounter <- scenCounterMultiComp
   noData <- vapply(scenTableNamesToDisplay, function(sheetName){
     tabData <- getScenTabData(sheetName)
-    if(identical(nrow(scenData[[scen.str]][[tabData$scenTableId]]), 0L)){
+    if(identical(nrow(scenData[[scenIdLong]][[tabData$scenTableId]]), 0L)){
       return(TRUE)
     }else{
       return(FALSE)
@@ -29,8 +29,8 @@ if(isInSplitView){
   }
 }
 # generate title and date
-output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scen.str]][[2]][1])
-output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scen.str]][[3]][1]))
+output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scenIdLong]][[2]][1])
+output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[3]][1]))
 
 eMsg <- NULL
 lapply(scenTableNamesToDisplay, function(sheetName) {
@@ -39,13 +39,13 @@ lapply(scenTableNamesToDisplay, function(sheetName) {
   # call render functions
   tryCatch({
     callModule(renderData, "tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = tabData$graphConfig$outType, 
-               data = scenData[[scen.str]][[tabData$scenTableId]], config.data = scalarData[[scen.str]], 
+               data = scenData[[scenIdLong]][[tabData$scenTableId]], config.data = scalarData[[scenIdLong]], 
                dt.options = config$datatable, graph.options = tabData$graphConfig$graph, 
                pivot.options = tabData$graphConfig$pivottable, 
                custom.options = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir)
     callModule(renderData, "table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable", 
-               data = scenData[[scen.str]][[tabData$scenTableId]], 
+               data = scenData[[scenIdLong]][[tabData$scenTableId]], 
                dt.options = config$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
     flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", tabData$name, e)
@@ -58,5 +58,5 @@ lapply(scenTableNamesToDisplay, function(sheetName) {
 if(!is.null(eMsg)){
   stop(eMsg, call. = F)
 }
-flog.trace("New scenario tab added in scenario comparison mode: %s.", scenMetaData[[scen.str]][[2]][1])
+flog.trace("New scenario tab added in scenario comparison mode: %s.", scenMetaData[[scenIdLong]][[2]][1])
 

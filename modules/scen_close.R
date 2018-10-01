@@ -7,10 +7,10 @@ observeEvent(input[["btClose_" %+% i]],{
 observeEvent(input[["btCloseFinal_" %+% i]],{
   flog.debug("Close scenario '%d' confirmed.", i)
   removeModal()
-  removeTab("scenTabset", scen.str)
-  scenData[[scen.str]]        <<- list(NULL)
-  scalarData[[scen.str]]      <<- list(NULL)
-  scenMetaData[[scen.str]]    <<- list(NULL)
+  removeTab("scenTabset", scenIdLong)
+  scenData[[scenIdLong]]      <<- list(NULL)
+  scalarData[[scenIdLong]]    <<- list(NULL)
+  scenMetaData[[scenIdLong]]  <<- list(NULL)
   sidsInComp[i]               <<- 0
   numberScenTabs              <<- numberScenTabs - 1
   occupiedSidSlots[i - 3]     <<- FALSE

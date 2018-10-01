@@ -7,18 +7,18 @@ observeEvent(virtualActionButton(rv$btCompareScen),{
     isInCompareMode <<- FALSE
     updateActionButton(session, "btCompareScen", label = lang$nav$sidebarButtons$compareStart)
     if(isInSplitView){
-      lapply(2:3, function(i) obs.compare[[i]]$suspend())
+      lapply(2:3, function(i) obsCompare[[i]]$suspend())
     }else{
-      lapply(seq_len(maxNumberScenarios + 3), function(i) obs.compare[[i]]$suspend())
+      lapply(seq_len(maxNumberScenarios + 3), function(i) obsCompare[[i]]$suspend())
     }
   }else{
     flog.debug("%s: Compare scenario button clicked (comparison mode started).", uid)
     isInCompareMode <<- TRUE
     updateActionButton(session, "btCompareScen", label = lang$nav$sidebarButtons$compareStop)
     if(isInSplitView){
-      lapply(2:3, function(i) obs.compare[[i]]$resume())
+      lapply(2:3, function(i) obsCompare[[i]]$resume())
     }else{
-      lapply(4:(maxNumberScenarios + 3), function(i) obs.compare[[i]]$resume())
+      lapply(4:(maxNumberScenarios + 3), function(i) obsCompare[[i]]$resume())
     }
   }
 })

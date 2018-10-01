@@ -49,10 +49,10 @@ observeEvent(input$btScenSplit1_close, {
   }
   
   output$title_2                                     <- renderText(character(0))
-  scen.str                                           <- "scen_2_"
-  scenData[[scen.str]]                               <<- list(NULL)
-  scalarData[[scen.str]]                             <<- list(NULL)
-  scenMetaData[[scen.str]]                           <<- list(NULL)
+  scenIdLong                                         <- "scen_2_"
+  scenData[[scenIdLong]]                             <<- list(NULL)
+  scalarData[[scenIdLong]]                           <<- list(NULL)
+  scenMetaData[[scenIdLong]]                         <<- list(NULL)
   sidsInSplitComp[1]                                 <<- 0L
   
   # show button and hide content
@@ -67,10 +67,10 @@ observeEvent(input$btScenSplit2_close, {
   }
   
   output$title_3                                     <- renderText(character(0))
-  scen.str                                           <- "scen_3_"
-  scenData[[scen.str]]                               <<- list(NULL)
-  scalarData[[scen.str]]                             <<- list(NULL)
-  scenMetaData[[scen.str]]                           <<- list(NULL)
+  scenIdLong                                         <- "scen_3_"
+  scenData[[scenIdLong]]                             <<- list(NULL)
+  scalarData[[scenIdLong]]                           <<- list(NULL)
+  scenMetaData[[scenIdLong]]                         <<- list(NULL)
   sidsInSplitComp[2]                                 <<- 0L
   
   # show button and hide content

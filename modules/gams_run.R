@@ -8,7 +8,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
     numberScenPerElement <- vapply(seq_along(modelIn), function(i){
       switch(modelIn[[i]]$type,
              slider = {
-               value <- input[[paste0("slider_", i)]]
+               value <- input[["slider_" %+% i]]
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["batchMode_" %+% i]], TRUE)){
@@ -36,16 +36,16 @@ if(identical(config$activateModules$batchMode, TRUE)){
                return(1L)
              },
              dropdown = {
-               return(length(input[[paste0("dropdown_", i)]]))
+               return(length(input[["dropdown_" %+% i]]))
              },
              date = {
-               return(length(input[[paste0("date_", i)]]))
+               return(length(input[["date_" %+% i]]))
              },
              daterange = {
-               return(length(input[[paste0("daterange_", i)]]))
+               return(length(input[["daterange_" %+% i]]))
              },
              checkbox = {
-               return(length(input[[paste0("cb_", i)]]))
+               return(length(input[["cb_" %+% i]]))
              })
     }, integer(1L), USE.NAMES = FALSE)
     return(prod(numberScenPerElement))
@@ -67,7 +67,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
       switch(modelIn[[i]]$type,
              slider = {
-               value <- input[[paste0("slider_", i)]]
+               value <- input[["slider_" %+% i]]
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["batchMode_" %+% i]], TRUE)){
@@ -87,13 +87,13 @@ if(identical(config$activateModules$batchMode, TRUE)){
                }
              },
              dropdown = {
-               value <- input[[paste0("dropdown_", i)]]
+               value <- input[["dropdown_" %+% i]]
              },
              date = {
-               value <- input[[paste0("date_", i)]]
+               value <- input[["date_" %+% i]]
              },
              checkbox = {
-               value <- input[[paste0("cb_", i)]]
+               value <- input[["cb_" %+% i]]
              },
              hot = {
                value <- NA
@@ -183,7 +183,7 @@ observeEvent(input$btSolve, {
                             lang$nav$dialogBatch$noScenSelectedDialog$desc))
       return(NULL)
     }
-    shinyjs::disable("btSolve")
+    disable("btSolve")
     
     idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier))
     scenToSolve <- scenToSolve()
@@ -201,7 +201,7 @@ observeEvent(input$btSolve, {
                             actionButton("btBatchNew", label = lang$nav$dialogBatch$processUnsolvedButton, 
                                          class = "btHighlight1")),
                           fade = TRUE, easyClose = FALSE))
-    shinyjs::enable("btSolve")
+    enable("btSolve")
     
     return(NULL)
   }
@@ -211,14 +211,14 @@ observeEvent(input$btSolve, {
   # save input data 
   source("./modules/input_save.R", local = TRUE)
   pfFileContent <- NULL
-  lapply(seq_along(data.tmp), function(i){
+  lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
-    if(identical(tolower(names(data.tmp)[[i]]), tolower(scalarsFileName))){
+    if(identical(tolower(names(dataTmp)[[i]]), tolower(scalarsFileName))){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_min|_max)?$", sep = "", collapse = "|"), data.tmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_min|_max)?$", sep = "", collapse = "|"), data.tmp[[i]][[1]])
-      DDParValues        <- data.tmp[[i]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- data.tmp[[i]][GMSOptIdx, , drop = FALSE]
+      DDParIdx           <- grepl(paste("^", DDPar, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
+      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfFileContent <<- '--' %+% DDParValues[[1]] %+% '="' %+% DDParValues[[3]] %+% '"'
         # do not write '_' in pf file (no selection)
@@ -232,22 +232,22 @@ observeEvent(input$btSolve, {
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
         pfFileContent <<- c(pfFileContent, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
-        csvData <- data.tmp[[i]][!(DDParIdx | GMSOptIdx), ]
+        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
       }else{
-        csvData <- data.tmp[[i]]
+        csvData <- dataTmp[[i]]
       }
       rm(GMSOptValues)
       rm(DDParValues)
     }else{
-      csvData <- data.tmp[[i]]
+      csvData <- dataTmp[[i]]
     }
     
     # write csv files used to communicate with GAMS
     tryCatch({
-      write_delim(csvData, workDir %+% names(data.tmp)[[i]] %+% ".csv", 
+      write_delim(csvData, workDir %+% names(dataTmp)[[i]] %+% ".csv", 
                   delim = config$csvDelim, na = "")
     }, error = function(e) {
-      fileName <- paste0(names(data.tmp)[[i]], ".csv")
+      fileName <- paste0(names(dataTmp)[[i]], ".csv")
       flog.error("Error writing csv file: '%s' (model: '%s').", fileName, modelName)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$writeCsv, fileName), sep = "\n")
     })
@@ -284,7 +284,7 @@ observeEvent(input$btSolve, {
   
   
   #activate Interrupt button as GAMS is running now
-  shinyjs::enable("btInterrupt")
+  enable("btInterrupt")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
@@ -319,8 +319,8 @@ observeEvent(input$btSolve, {
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
     if(!is.null(modelStatus())){
-      shinyjs::enable("btSolve")
-      shinyjs::disable("btInterrupt")
+      enable("btSolve")
+      disable("btInterrupt")
       
       if(config$activateModules$lstFile){
         errMsg <- NULL
@@ -389,8 +389,8 @@ observeEvent(input$btSolve, {
         renderOutputData()
         
         # enable download button for saving scenario to Excel file
-        shinyjs::enable("export_1")
-        
+        enable("export_1")
+
         # mark scenario as unsaved
         markUnsaved()
       }

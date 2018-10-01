@@ -27,13 +27,13 @@ output[["export_" %+% i]] <- downloadHandler(
     }else{
       # combine hidden and non hidden scalar data
       scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
-      if(!is.na(scalarOutIdx) && !is.null(scenData[[scen.str]][[scalarOutIdx]])){
+      if(!is.na(scalarOutIdx) && !is.null(scenData[[scenIdLong]][[scalarOutIdx]])){
         # bind hidden and non hidden scalar data
-        scenData[[scen.str]][[scalarOutIdx]] <<- rbind(scenData[[scen.str]][[scalarOutIdx]], scalarData[[scen.str]])
-        scalarData[[scen.str]]                <<- list(NULL)
+        scenData[[scenIdLong]][[scalarOutIdx]] <<- rbind(scenData[[scenIdLong]][[scalarOutIdx]], scalarData[[scenIdLong]])
+        scalarData[[scenIdLong]]                <<- list(NULL)
       }
     }
-    data                        <- scenData[[scen.str]]
+    data                        <- scenData[[scenIdLong]]
     names(data)                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, names(modelOut), lang$nav$excelExport$outputSuffix), 
                                      if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, inputDsNames, lang$nav$excelExport$inputSuffix))
     # remove empty datasets
@@ -41,8 +41,8 @@ output[["export_" %+% i]] <- downloadHandler(
       data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL
     
     # include metadata sheet in Excel file
-    if(config$activateModules$scenario && config$excelIncludeMeta && !is.null(scenMetaData[[scen.str]])){
-      metadata <- list(scenMetaData[[scen.str]])
+    if(config$activateModules$scenario && config$excelIncludeMeta && !is.null(scenMetaData[[scenIdLong]])){
+      metadata <- list(scenMetaData[[scenIdLong]])
       names(metadata) <- lang$nav$excelExport$metadataSheet$title
       data <- c(metadata, data)
     }

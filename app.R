@@ -752,7 +752,7 @@ if(!is.null(errMsg)){
     ####### Model output
     # render output graphs
     source("./modules/output_render.R", local = TRUE)
-    obs.compare <- vector("list", maxNumberScenarios)
+    obsCompare <- vector("list", maxNumberScenarios)
     # switch between tabular view and output graphs
     source("./modules/output_table_view.R", local = TRUE)
     
@@ -785,7 +785,7 @@ if(!is.null(errMsg)){
       source("./modules/scen_split.R", local = TRUE)
 
       lapply(seq_len(maxNumberScenarios + 3), function(i){
-        scen.str <- paste0("scen_", i, "_")
+        scenIdLong <- paste0("scen_", i, "_")
         # table view
         source("./modules/scen_table_view.R", local = TRUE)
         
@@ -796,7 +796,7 @@ if(!is.null(errMsg)){
         source("./modules/excel_scen_save.R", local = TRUE)
         
         # compare scenarios
-        obs.compare[[i]] <<- observe({
+        obsCompare[[i]] <<- observe({
           if(is.null(input[[paste0("contentScen_", i)]])){
             return(NULL)
           }

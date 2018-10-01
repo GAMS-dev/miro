@@ -1,9 +1,9 @@
 # import datasets that should be loaded automatically on startup
-datasets.to.fetch <- names(modelIn)[vapply(seq_along(modelIn), function(i){return(identical(sharedData[i], TRUE))}, logical(1), USE.NAMES = FALSE)]
+datasetsToFetch <- names(modelIn)[vapply(seq_along(modelIn), function(i){return(identical(sharedData[i], TRUE))}, logical(1), USE.NAMES = FALSE)]
 
-if(!is.null(datasets.to.fetch)){
+if(!is.null(datasetsToFetch)){
   errMsg <- NULL
-  lapply(datasets.to.fetch, function(dataset){
+  lapply(datasetsToFetch, function(dataset){
     i <- match(dataset, names(modelIn))
     table.name <- paste0(sharedTablePrefix, "_", dataset)
     # load from database

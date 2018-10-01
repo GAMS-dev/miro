@@ -1,8 +1,8 @@
-# save input data to data.tmp list
+# save input data to dataTmp list
 
 # define temporary list to save input data to
-data.tmp <- vector(mode = "list", length = length(modelInFileNames))
-names(data.tmp) <- modelInFileNames
+dataTmp <- vector(mode = "list", length = length(modelInFileNames))
+names(dataTmp) <- modelInFileNames
 errMsg <- NULL
 j <- 1L
 # first add scalar data which is in a table
@@ -11,7 +11,7 @@ scalarId <- match(scalarsFileName, modelInTabularData)[[1]]
 if(!is.na(scalarId)){
   i <- match(tolower(modelInTabularData[scalarId]), names(modelIn))[[1]]
   tryCatch({
-    data.tmp[[length(modelInFileNames)]] <- getInputDataset(i)
+    dataTmp[[length(modelInFileNames)]] <- getInputDataset(i)
   }, error = function(e){
     flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
     errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, names(modelIn)[[i]])
@@ -28,7 +28,7 @@ lapply(seq_along(modelIn), function(i){
          hot = {
            if(names(modelIn)[[i]] != scalarsFileName){
              tryCatch({
-               data.tmp[[j]] <<- getInputDataset(i)
+               dataTmp[[j]] <<- getInputDataset(i)
              }, error = function(e){
                flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
                errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
@@ -61,15 +61,15 @@ lapply(seq_along(modelIn), function(i){
              description <- modelInAlias[i]
            }
            # generate data frame
-           if(is.null(data.tmp[[length(modelInFileNames)]])){
+           if(is.null(dataTmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
              names(new.data) <- scalarsFileHeaders
-             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
            }
          },
          date = {
@@ -87,15 +87,15 @@ lapply(seq_along(modelIn), function(i){
            description <- modelInAlias[i]
            
            # generate data frame
-           if(is.null(data.tmp[[length(modelInFileNames)]])){
+           if(is.null(dataTmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = F)
-             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = F)
+             names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
              names(new.data) <- scalarsFileHeaders
-             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
            }
          },
          daterange = {
@@ -113,15 +113,15 @@ lapply(seq_along(modelIn), function(i){
            description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
         
            # generate data frame
-           if(is.null(data.tmp[[length(modelInFileNames)]])){
+           if(is.null(dataTmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
              names(new.data) <- scalarsFileHeaders
-             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
            }
          },
          dropdown = {
@@ -137,23 +137,23 @@ lapply(seq_along(modelIn), function(i){
            
            if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
              # generate data frame (multi dropdown menu)
-             data.tmp[[j]]        <<- data.frame(value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[j]]) <<- tolower(names(modelIn))[[i]]
+             dataTmp[[j]]        <<- data.frame(value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(dataTmp[[j]]) <<- tolower(names(modelIn))[[i]]
              j <<- j + 1L
            }else{
              # standard dropdown menu (one value)
              scalar      <- names(modelIn)[[i]]
              description <- modelInAlias[i]
-             if(is.null(data.tmp[[length(modelInFileNames)]])){
+             if(is.null(dataTmp[[length(modelInFileNames)]])){
                # no scalar data was written yet, so add headers
-               data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, 
+               dataTmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, 
                                                                           stringsAsFactors = FALSE, check.names = FALSE)
-               names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
+               names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
              }else{
                # no headers, just data
                new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
                names(new.data) <- scalarsFileHeaders
-               data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data)
+               dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data)
              }
            }
          },
@@ -172,18 +172,18 @@ lapply(seq_along(modelIn), function(i){
            description <- modelInAlias[i]
            
            # generate data frame
-           if(is.null(data.tmp[[length(modelInFileNames)]])){
+           if(is.null(dataTmp[[length(modelInFileNames)]])){
              # no scalar data was written yet, so add headers
-             data.tmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(data.tmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]]        <<- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
              new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
              names(new.data) <- scalarsFileHeaders
-             data.tmp[[length(modelInFileNames)]] <<- rbind(data.tmp[[length(modelInFileNames)]], new.data) 
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
            }
          }
   )
-  flog.trace("Dataset: %s saved in data.tmp.", modelIn[[i]])
+  flog.trace("Dataset: %s saved in dataTmp.", modelIn[[i]])
 })
 showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)

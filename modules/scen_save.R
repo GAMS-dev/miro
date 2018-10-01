@@ -1,39 +1,39 @@
 # save scenario data in memory
 
 # scenario loaded into webUI always has internal ID = 1
-scen.str <<- "scen_1_"
+scenIdLong <<- "scen_1_"
 # clear output data in case it should not be saved
 if(!saveOutput){
   lapply(seq_along(modelOut), function(i){
-    scenData[[scen.str]][[i]] <<- scenDataTemplate[[i]]
+    scenData[[scenIdLong]][[i]] <<- scenDataTemplate[[i]]
   })
-  scalarData[[scen.str]] <<- data.frame()
+  scalarData[[scenIdLong]] <<- data.frame()
 }
-if(is.null(scalarData[[scen.str]]) || !nrow(scalarData[[scen.str]])){
-  scalarData[[scen.str]] <<- data.frame()
+if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
+  scalarData[[scenIdLong]] <<- data.frame()
 }else{
-  idx.scalarOut <- match(tolower(scalarsOutName), names(modelOut))
-  if(!is.na(idx.scalarOut)){
+  idxScalarOut <- match(tolower(scalarsOutName), names(modelOut))
+  if(!is.na(idxScalarOut)){
     # bind hidden and non hidden scalar data
-    if(nrow(scenData[[scen.str]][[idx.scalarOut]])){
-      if(nrow(scalarData[[scen.str]])){
-        scenData[[scen.str]][[idx.scalarOut]] <<- rbind(scenData[[scen.str]][[idx.scalarOut]], scalarData[[scen.str]])
+    if(nrow(scenData[[scenIdLong]][[idxScalarOut]])){
+      if(nrow(scalarData[[scenIdLong]])){
+        scenData[[scenIdLong]][[idxScalarOut]] <<- rbind(scenData[[scenIdLong]][[idxScalarOut]], scalarData[[scenIdLong]])
       }else{
-        scenData[[scen.str]][[idx.scalarOut]] <<- scenData[[scen.str]][[idx.scalarOut]]
+        scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]]
       }
-    }else if(nrow(scalarData[[scen.str]])){
-      scenData[[scen.str]][[idx.scalarOut]] <<- scalarData[[scen.str]]
+    }else if(nrow(scalarData[[scenIdLong]])){
+      scenData[[scenIdLong]][[idxScalarOut]] <<- scalarData[[scenIdLong]]
     }else{
-      scenData[[scen.str]][[idx.scalarOut]] <<- scenDataTemplate[[idx.scalarOut]]
+      scenData[[scenIdLong]][[idxScalarOut]] <<- scenDataTemplate[[idxScalarOut]]
     }
-    scalarData[[scen.str]] <<- data.frame()
+    scalarData[[scenIdLong]] <<- data.frame()
   }
 }
 
 # save input data 
 source("./modules/input_save.R", local = TRUE)
-lapply(seq_along(data.tmp), function(i){
-  scenData[[scen.str]][[i + length(modelOut)]] <<- data.tmp[[i]]
+lapply(seq_along(dataTmp), function(i){
+  scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]
 })
 scen.name <- NULL
 # check whether name is valid

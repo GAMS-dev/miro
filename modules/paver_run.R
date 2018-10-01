@@ -26,7 +26,7 @@ observeEvent(input$btPaver, {
   req(input$selPaverAttribs)
   
   if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[sidsToLoad, ], 
-                            input$selPaverAttribs, maxSolversPaver, stime.identifier)){
+                            input$selPaverAttribs, maxSolversPaver, stimeIdentifier)){
     shinyjs::show("configPaverMaxSolversErr")
     return()
   }else{

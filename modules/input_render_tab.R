@@ -40,7 +40,7 @@ getInputDataset <- function(id){
 lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
-  
+
   observeEvent(input[[paste0("btGraphIn", i)]], {
     shinyjs::toggle(paste0("graph-in_", i))
     shinyjs::toggle(paste0("data-in_", i))
@@ -61,6 +61,32 @@ lapply(modelInTabularData, function(sheet){
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
                  modelIn.alias[i], e)
       errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
+    })
+    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+  })
+  
+  observeEvent(input[[paste0("btGraphIn", i)]], {
+    if(identical(modelIn[[i]]$type, "hot")){
+      data <- hot_to_r(input[["in_", i]])
+    }else{
+      data <- tableContent[[i]]
+    }
+    shinyjs::toggle(paste0("graph-in_", i))
+    shinyjs::toggle(paste0("data-in_", i))
+    errMsg <- NULL
+    tryCatch({
+      callModule(renderData, "in_" %+% i, 
+                 type = configGraphsIn[[i]]$outType, 
+                 data = data,
+                 dt.options = config$datatable, 
+                 graph.options = configGraphsIn[[i]]$graph, 
+                 pivot.options = configGraphsIn[[i]]$pivottable, 
+                 custom.options = configGraphsIn[[i]]$options,
+                 roundPrecision = roundPrecision, modelDir = modelDir)
+    }, error = function(e) {
+      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
+                 modelInAlias[i], e)
+      errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
     })
     showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
   })
@@ -91,7 +117,6 @@ lapply(modelInTabularData, function(sheet){
                  })
                  modelInputData[[i]] <<- data
                }
-               
                for(iDep in seq_along(colsWithDep[[i]])){
                  # get id of element (e.g. dropdown menu) that causes backward dependency
                  id  <- colsWithDep[[i]][[iDep]]
@@ -100,7 +125,7 @@ lapply(modelInTabularData, function(sheet){
                    next
                  }
                  # get column name with dependency
-                 col <- names(colsWithDep[[1]])[[iDep]]
+                 col <- names(colsWithDep[[i]])[[iDep]]
                  # filter data frame
                  data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
                }
@@ -117,7 +142,7 @@ lapply(modelInTabularData, function(sheet){
              })
            }else{
              dataModelIn[[i]] <- reactive({
-               rv[[paste0("in_", i)]]
+               rv[["in_" %+% i]]
                hotInit[[i]] <<- TRUE
                if(!nrow(modelInputData[[i]])){
                  modelInputData[[i]][1, ] <<- ""
@@ -131,28 +156,6 @@ lapply(modelInTabularData, function(sheet){
              })
              
            }
-           
-           observeEvent(input[[paste0("btGraphIn", i)]], {
-             shinyjs::toggle(paste0("graph-in_", i))
-             shinyjs::toggle(paste0("data-in_", i))
-             errMsg <- NULL
-             tryCatch({
-               callModule(renderData, "in_" %+% i, 
-                          type = configGraphsIn[[i]]$outType, 
-                          data = hot_to_r(input[["in_" %+% i]]),
-                          dt.options = config$datatable, 
-                          graph.options = configGraphsIn[[i]]$graph, 
-                          pivot.options = configGraphsIn[[i]]$pivottable, 
-                          custom.options = configGraphsIn[[i]]$options,
-                          roundPrecision = roundPrecision, modelDir = modelDir)
-             }, error = function(e) {
-               flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                          modelInAlias[i], e)
-               errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-             })
-             showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-           })
-           
            # rendering handsontables for input data 
            output[[paste0("in_", i)]] <- renderRHandsontable({
              noCheck[i] <<- TRUE
@@ -193,8 +196,8 @@ lapply(modelInTabularData, function(sheet){
            })
          },
          dt = {
-           if(length(cols.with.dep[[i]])){
-             modelInputData[[i]] <- reactive({
+           if(length(colsWithDep[[i]])){
+             dataModelIn[[i]] <- reactive({
                # make sure data will be updated when old data is overwritten
                rv[["in_" %+% i]]
                if(is.empty.input[i]){
@@ -227,7 +230,7 @@ lapply(modelInTabularData, function(sheet){
                  data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
                }
                modelInputData[[i]] <<- anti_join(modelInputData[[i]], 
-                                                   data, by = ids.in[[i]])
+                                                 data, by = idsIn[[i]])
                if(!nrow(data)){
                  # disable graph button as no data was loaded
                  disable("btGraphIn" %+% i)
@@ -255,11 +258,10 @@ lapply(modelInTabularData, function(sheet){
              })
              
            }
-           
            output[["in_" %+% i]] <- renderDT({
              errMsg <- NULL
              tryCatch({
-               dt <- do.call(datatable, c(list(modelInputData[[i]](), 
+               dt <- do.call(datatable, c(list(dataModelIn[[i]](), 
                                                editable = if(identical(modelIn[[i]]$readonly, 
                                                                        TRUE))
                                                  FALSE else TRUE),

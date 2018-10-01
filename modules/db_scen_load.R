@@ -1,7 +1,7 @@
 # load scenario from database
 
 # define which input datasheets to load to interface (default: load all datasets)
-datasets.to.fetch <- names(modelIn)
+datasetsToFetch <- names(modelIn)
 
 observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
@@ -128,7 +128,7 @@ observeEvent(input$btLoadScenConfirm, {
   }else{
     inputDatasetIdxToImport <- seq_along(modelIn)
   }
-  datasets.to.fetch <<- names(modelIn[inputDatasetIdxToImport])
+  datasetsToFetch <<- names(modelIn[inputDatasetIdxToImport])
   
   inputDatasetsExist <- vapply(inputDatasetIdxToImport, function(i){
     if(length(isolate(rv[["in_" %+% i]]))){
@@ -191,8 +191,8 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     return()
   }
   
-  idx.scalarOut <- match(gsub("_", "", modelName, fixed = TRUE) %+% 
-                           "_" %+% scalarsOutName, scenTableNames)[[1]]
+  idxScalarOut <- match(gsub("_", "", modelName, fixed = TRUE) %+% 
+                          "_" %+% scalarsOutName, scenTableNames)[[1]]
   
   if(isInSolveMode){
     # close currently opened scenario
@@ -241,7 +241,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
       }else{
         no.output <<- FALSE
         scenData[["scen_1_"]][[i]] <<- scenDataTmp[[1]][[i]]
-        if(identical(i, idx.scalarOut)){
+        if(identical(i, idxScalarOut)){
           # scalar data exists
           removeRows                 <- grepl(config$gamsMetaDelim, 
                                               scenData[["scen_1_"]][[i]][[2]])
@@ -283,7 +283,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     metadataFull   <- scenMetaTmp[, db$getScenMetaColnames()[c("sid", "uid", 
                                                                "stime", "sname")]]
   }else{
-    metadataFull    <- scenMetaDb
+    metadataFull   <- scenMetaDb
   }
   errMsg <- NULL
   lastImportedSid <- NULL
@@ -298,34 +298,34 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
           scenId   <- 3L
         }
       }
-      scen.str <- "scen_" %+% scenId %+% "_"
+      scenIdLong <- "scen_" %+% scenId %+% "_"
       metadata <- metadataFull[metadataFull[[1]] == sidsToLoad[[i]], ]
       # load scenario data
-      scenData[[scen.str]]                    <<- scenDataTmp[[i]]
+      scenData[[scenIdLong]]                   <<- scenDataTmp[[i]]
       # load scalar data if available
-      if(!is.na(idx.scalarOut) && nrow(scenData[[scen.str]][[idx.scalarOut]])){
+      if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
         # scalar data exists
-        remove.rows                           <- grepl(config$gamsMetaDelim, 
-                                                       scenData[[scen.str]][[idx.scalarOut]][[2]])
-        scalarData[[scen.str]]                <<- scenData[[scen.str]][[idx.scalarOut]][remove.rows, ]
-        scenData[[scen.str]][[idx.scalarOut]] <<- scenData[[scen.str]][[idx.scalarOut]][!remove.rows, ]
+        rowIdsToRemove                            <- grepl(config$gamsMetaDelim, 
+                                                        scenData[[scenIdLong]][[idxScalarOut]][[2]])
+        scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]][rowIdsToRemove, ]
+        scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
       }else{
-        scalarData[[scen.str]]                <<- data.frame()
+        scalarData[[scenIdLong]]               <<- data.frame()
       }
       # add scenario metadata
-      scenMetaData[[scen.str]]                <<- db$getMetadata(uid = metadata[[uidIdentifier]], 
-                                                                 sname = metadata[[snameIdentifier]], 
-                                                                 stime = metadata[[stimeIdentifier]],
-                                                                 uidAlias = lang$nav$excelExport$metadataSheet$uid, 
-                                                                 snameAlias = lang$nav$excelExport$metadataSheet$sname, 
-                                                                 stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+      scenMetaData[[scenIdLong]]               <<- db$getMetadata(uid = metadata[[uidIdentifier]], 
+                                                                  sname = metadata[[snameIdentifier]], 
+                                                                  stime = metadata[[stimeIdentifier]],
+                                                                  uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                                  snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                                  stimeAlias = lang$nav$excelExport$metadataSheet$stime)
       source("./modules/scen_render.R", local = TRUE)
       
     }, error = function(e){
       flog.error(e)
       errMsg  <<- lang$errMsg$loadScen$desc
     })
-
+    
     flog.debug("Scenario: '%s' loaded into UI (compare mode).", sidsToLoad[[i]])
     if(!isInSplitView){
       lastImportedSid <<- scenId

@@ -57,7 +57,7 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
       return(F)
     }
   }, logical(1))
-
+  
   if(any(datasetsImported)){
     hide("importDataTabset")
     shinyjs::show("btOverrideScen")
@@ -93,28 +93,28 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
     return(NULL)
   }
   # extract only sheets which are also in list of input parameters
-  datasets.to.fetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
+  datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
   
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form
-    i <- match(tolower(scalarsFileName), tolower(datasets.to.fetch))[[1]]
+    i <- match(tolower(scalarsFileName), tolower(datasetsToFetch))[[1]]
     if(!is.na(i)){
       # scalar table in workbook
       # add scalar datasets (e.g. slider/dropdown)
       if(tolower(scalarsFileName) %in% tolower(modelInTabularData)){
         # scalars is also amongst tabular data
-        datasets.to.fetch <- c(datasets.to.fetch, names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
+        datasetsToFetch <- c(datasetsToFetch, names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
       }else{
-        # all scalar values are dropdown/slider etc. so remove scalar table from datasets.to.fetch
-        datasets.to.fetch <- c(datasets.to.fetch[-i], names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
+        # all scalar values are dropdown/slider etc. so remove scalar table from datasetsToFetch
+        datasetsToFetch <- c(datasetsToFetch[-i], names(modelIn)[!(names(modelIn) %in% modelInTabularData)])
       }
     }
   }
   
   # find out which datasets to import from Excel sheet
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
-    datasets.to.fetch <- datasets.to.fetch[tolower(datasets.to.fetch) %in% tolower(isolate(input$selInputDataLoc))]
+    datasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% tolower(isolate(input$selInputDataLoc))]
   }
   removeModal()
   # load input data 

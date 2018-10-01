@@ -1,9 +1,10 @@
 # load model input data
-lapply(datasets.to.fetch, function(dataset){
+lapply(datasetsToFetch, function(dataset){
   i <- match(tolower(dataset), names(modelIn))[[1]]
-  data.tmp <- NULL
+  
+  dataTmp <- NULL
   if(is.na(i)){
-    return(NULL)
+    return()
   }
   inputVerified <- FALSE
   # execute only if dataframe has not yet been imported or already imported data shall be overridden
@@ -13,13 +14,13 @@ lapply(datasets.to.fetch, function(dataset){
       if(identical(load.mode, "xls")){
         # load from Excel workbook
         tryCatch({
-          data.tmp <- readxl::read_excel(input$localInput$datapath, dataset)
+          dataTmp <- readxl::read_excel(input$localInput$datapath, dataset)
         }, error = function(e) {
           flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
         })
       }else if(identical(load.mode, "scen")){
-        data.tmp <- scenInputData[[dataset]]
+        dataTmp <- scenInputData[[dataset]]
       }
       if(!is.null(errMsg)){
         return(NULL)
@@ -27,14 +28,14 @@ lapply(datasets.to.fetch, function(dataset){
       
       # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
       # rather than setting them to NULL
-      if(nrow(data.tmp)){
-        if(verify.input(data.tmp, modelIn[[i]]$headers)){
+      if(nrow(dataTmp)){
+        if(verify.input(dataTmp, modelIn[[i]]$headers)){
           if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             # remove those rows from scalar dataset that are represented as a slider or dropdown menu
-            scalarDataset <<- data.tmp 
-            modelInputData[[i]] <<- data.tmp[!(tolower(data.tmp[[1]]) %in% names(modelIn)), , drop = F]
+            scalarDataset <<- dataTmp 
+            modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = F]
           }else{
-            modelInputData[[i]] <<- data.tmp
+            modelInputData[[i]] <<- dataTmp
           }
           inputVerified <- TRUE
         }
@@ -61,9 +62,9 @@ lapply(datasets.to.fetch, function(dataset){
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
             sheet.id <- match(tolower(scalarsFileName), tolower(readxl::excel_sheets(isolate(input$localInput$datapath))))[1]
-            data.tmp <- readxl::read_excel(input$localInput$datapath, sheet.id)
+            dataTmp <- readxl::read_excel(input$localInput$datapath, sheet.id)
             #set names of scalar sheet to scalar headers
-            names(data.tmp) <- scalarsFileHeaders
+            names(dataTmp) <- scalarsFileHeaders
           }, error = function(e) {
             flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 
                       Error message: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
@@ -75,24 +76,24 @@ lapply(datasets.to.fetch, function(dataset){
         }
         # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
         # rather than setting them to NULL
-        if(!is.null(data.tmp)){
-          scalarDataset <<- data.tmp
+        if(!is.null(dataTmp)){
+          scalarDataset <<- dataTmp
         }
       }
       if(!is.null(scalarDataset) && nrow(scalarDataset)){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
           row.name <- paste0(row.name, c("_min", "_max"))
-          data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
-          if(!is.null(data.tmp) && length(data.tmp)){
-            modelInputData[[i]] <<- data.tmp
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
+          if(!is.null(dataTmp) && length(dataTmp)){
+            modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE
           }
         }else{
-          data.tmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) == row.name, 
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) == row.name, 
                                             col.value, drop = FALSE], use.names = FALSE)
-          if(!is.null(data.tmp) && length(data.tmp)){
-            modelInputData[[i]] <<- data.tmp
+          if(!is.null(dataTmp) && length(dataTmp)){
+            modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE
           }
         }
