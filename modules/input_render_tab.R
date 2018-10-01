@@ -59,8 +59,8 @@ lapply(modelInTabularData, function(sheet){
                  roundPrecision = roundPrecision, modelDir = modelDir)
     }, error = function(e) {
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelIn.alias[i], e)
-      errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelIn.alias[i])
+                 modelInAlias[i], e)
+      errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
     })
     showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
   })
@@ -71,8 +71,8 @@ lapply(modelInTabularData, function(sheet){
     }else{
       data <- tableContent[[i]]
     }
-    shinyjs::toggle(paste0("graph-in_", i))
-    shinyjs::toggle(paste0("data-in_", i))
+    toggle(paste0("graph-in_", i))
+    toggle(paste0("data-in_", i))
     errMsg <- NULL
     tryCatch({
       callModule(renderData, "in_" %+% i, 
@@ -146,10 +146,10 @@ lapply(modelInTabularData, function(sheet){
                hotInit[[i]] <<- TRUE
                if(!nrow(modelInputData[[i]])){
                  modelInputData[[i]][1, ] <<- ""
-                 shinyjs::disable(paste0("btGraphIn", i))
+                 disable(paste0("btGraphIn", i))
                  isEmptyInput[i] <<- TRUE
                }else{
-                 shinyjs::enable(paste0("btGraphIn", i))
+                 enable(paste0("btGraphIn", i))
                  isEmptyInput[i] <<- FALSE
                }
                return(modelInputData[[i]])
@@ -180,16 +180,16 @@ lapply(modelInTabularData, function(sheet){
                             fixedColumnsLeft = hotOptions$fixedColumnsLeft)
              
              # check for readonly columns
-             cols.readonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
+             colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
                if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
                  names(modelIn[[i]]$headers)[[j]]
                }else{
                  NA_character_
                }
              }, character(1L), USE.NAMES = FALSE)
-             cols.readonly <- cols.readonly[!is.na(cols.readonly)]
-             if(length(cols.readonly)){
-               return(hot_col(ht, cols.readonly, readOnly = TRUE))
+             colsReadonly <- colsReadonly[!is.na(colsReadonly)]
+             if(length(colsReadonly)){
+               return(hot_col(ht, colsReadonly, readOnly = TRUE))
              }else{
                return(ht)
              }
@@ -200,7 +200,7 @@ lapply(modelInTabularData, function(sheet){
              dataModelIn[[i]] <- reactive({
                # make sure data will be updated when old data is overwritten
                rv[["in_" %+% i]]
-               if(is.empty.input[i]){
+               if(isEmptyInput[i]){
                  data <- modelInputData[[i]]
                }else{
                  tryCatch({
@@ -216,9 +216,9 @@ lapply(modelInTabularData, function(sheet){
                  modelInputData[[i]] <<- data
                }
                
-               for(idDep in seq_along(cols.with.dep[[i]])){
+               for(idDep in seq_along(colsWithDep[[i]])){
                  # get id of element (e.g. dropdown menu) that causes backward dependency
-                 id  <- cols.with.dep[[i]][[idDep]]
+                 id  <- colsWithDep[[i]][[idDep]]
                  # in case nothing was selected in dropdown menu, skip this iteration
                  if(is.null(input[["dropdown_" %+% id]]) || 
                     input[["dropdown_" %+% id]] %in% c("","_")){
@@ -234,24 +234,24 @@ lapply(modelInTabularData, function(sheet){
                if(!nrow(data)){
                  # disable graph button as no data was loaded
                  disable("btGraphIn" %+% i)
-                 is.empty.input[i] <<- TRUE
+                 isEmptyInput[i] <<- TRUE
                }else{
                  enable("btGraphIn" %+% i)
-                 is.empty.input[i] <<- FALSE
+                 isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- data
                return(data)
              })
            }else{
              modelInputData[[i]] <- reactive({
-               rv[[paste0("in_", i)]]
+               rv[["in_" %+% i]]
                if(!nrow(modelInputData[[i]])){
                  # disable graph button as no data was loaded
-                 shinyjs::disable(paste0("btGraphIn", i))
-                 is.empty.input[i] <<- TRUE
+                 disable("btGraphIn" %+% i)
+                 isEmptyInput[i] <<- TRUE
                }else{
-                 shinyjs::enable(paste0("btGraphIn", i))
-                 is.empty.input[i] <<- FALSE
+                 enable("btGraphIn" %+% i)
+                 isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- modelInputData[[i]]
                return(tableContent[[i]])
@@ -266,11 +266,11 @@ lapply(modelInTabularData, function(sheet){
                                                                        TRUE))
                                                  FALSE else TRUE),
                                           config$datatable)) %>%
-                 formatRound(1:length(data), roundPrecision)
+                 formatRound(seq_along(data), roundPrecision)
              }, error = function(e){
                flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                          modelIn.alias[i], e) 
-               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelIn.alias[i])
+                          modelInAlias[[i]], e) 
+               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
              })
              if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
                return(modelInputData[[i]]())

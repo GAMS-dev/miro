@@ -12,13 +12,14 @@ lapply(seq_along(modelIn), function(id){
            if(is.na(i)){
              # no dependency
              get.selected[[id]] <<- reactive({
-               if(is.null(rv[[paste0("in_", id)]])){
+               if(is.null(rv[["in_" %+% id]])){
                  return(NULL)
                }
                if(!length(modelInputData[[id]][[1]])){
-                 return(isolate(input[[paste0("cb_", id)]]))
+                 return(isolate(input[["cb_" %+% id]]))
                }else{
-                 if(identical(modelInputData[[id]], TRUE) || identical(as.integer(modelInputData[[id]]), 1L)){
+                 if(identical(modelInputData[[id]], TRUE) || 
+                    identical(as.integer(modelInputData[[id]]), 1L)){
                    value <- TRUE
                  }else{
                    value <- FALSE
@@ -71,17 +72,17 @@ lapply(seq_along(modelIn), function(id){
                if(!inputInitialized[i]){
                  if(is.numeric(value) && !identical(value, -Inf)){
                    inputInitialized[i] <<- TRUE
-                   shinyjs::show(paste0("cbDiv_", id))
-                   shinyjs::hide(paste0("no_data_dep_", id))
+                   shinyjs::show("cbDiv_" %+% id)
+                   hide("no_data_dep_" %+% id)
                  }
                }
               
-               shiny::updateCheckboxInput(session, paste0("cb_", id), value = value)
+               shiny::updateCheckboxInput(session, "cb_" %+% id, value = value)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
                  if(value <= 0){
-                   shinyjs::disable(paste0("cb_", id))
+                   disable("cb_" %+% id)
                  }else{
-                   shinyjs::enable(paste0("cb_", id))
+                   enable("cb_" %+% id)
                  }
                }
              })
@@ -89,30 +90,30 @@ lapply(seq_along(modelIn), function(id){
          },
          date = {
            get.selected[[id]] <<- shiny::reactive({
-             if(is.null(rv[[paste0("in_", id)]])){
+             if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
              if(!length(modelInputData[[id]][[1]])){
-               return(isolate(input[[paste0("date_", id)]]))
+               return(isolate(input[["date_" %+% id]]))
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
-               noCheck[id]           <<- TRUE
+               noCheck[id]          <<- TRUE
                return(value)
              }
            })
            # TODO: support dependency
            observe({
-             shiny::updateDateInput(session, paste0("date_", id), value = get.selected[[id]]())
+             shiny::updateDateInput(session, "date_" %+% id, value = get.selected[[id]]())
            })
          },
          daterange = {
            get.selected[[id]] <<- shiny::reactive({
-             if(is.null(rv[[paste0("in_", id)]])){
+             if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
              if(!length(modelInputData[[id]])){
-               return(isolate(input[[paste0("daterange_", id)]]))
+               return(isolate(input[["daterange_" %+% id]]))
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
@@ -123,7 +124,7 @@ lapply(seq_along(modelIn), function(id){
            # TODO: support dependency
            
            observe({
-             shiny::updateDateRangeInput(session, paste0("daterange_", id), 
+             shiny::updateDateRangeInput(session, "daterange_" %+% id, 
                                          start = get.selected[[id]]()[[1]], end = get.selected[[id]]()[[2]])
            })
          },
