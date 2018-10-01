@@ -1,5 +1,5 @@
-renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.options = NULL, 
-                          modelDir = NULL, no.data.txt = "no data"){
+renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
+                          modelDir = NULL, noDataTxt = "no data"){
   ns <- NS(id)
   # make output type case insensitive
   type <- tolower(type)
@@ -13,14 +13,14 @@ renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.optio
   }else if(type == "datatable"){
     data <- DT::dataTableOutput(ns("datatable"))
   }else if(type == "dtgraph"){
-    if(graph.tool == "plotly"){
+    if(graphTool == "plotly"){
       data <- tagList(
         fluidRow(
           column(6, DT::dataTableOutput(ns("datatable"), height = height)),
           column(6, plotly::plotlyOutput(ns("graph"), height = height))
         )
       )
-    }else if(graph.tool == "dygraph"){
+    }else if(graphTool == "dygraph"){
       data <- tagList(
         fluidRow(
           column(6, DT::dataTableOutput(ns("datatable"), height = height)),
@@ -31,17 +31,17 @@ renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.optio
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
   }else if(type == "graph"){
-    if(graph.tool == "plotly"){
+    if(graphTool == "plotly"){
       data <- plotly::plotlyOutput(ns("graph"), height = height)
-    }else if(graph.tool == "dygraph"){
+    }else if(graphTool == "dygraph"){
       data <- dygraphs::dygraphOutput(ns("graph"), height = height)
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
   }else if(type == "valuebox"){
-    data <- lapply(seq_len(custom.options$count), function(i){
+    data <- lapply(seq_len(customOptions$count), function(i){
       valueBoxOutput(ns("valBox" %+% i),
-                     width = if(identical(custom.options$width, NULL)) 4 else custom.options$width)
+                     width = if(identical(customOptions$width, NULL)) 4 else customOptions$width)
     })
   }else{
     tryCatch({
@@ -50,20 +50,20 @@ renderDataUI <- function(id, type, graph.tool = NULL, height= NULL, custom.optio
       stop(sprintf("An output function for the custom renderer: '%s' was not found. 
                    Please make sure you first define such a function.", type), call. = FALSE)
     })
-    data <- customOutput(ns("custom"), height = height, options = custom.options,
+    data <- customOutput(ns("custom"), height = height, options = customOptions,
                          path = customRendererDir)
   }
   return(tagList(
-    tags$div(id = ns("noData"), class = "out-no-data", no.data.txt),
+    tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
     tags$div(id = ns("data"), data)
   ))
 }
 
-renderData <- function(input, output, session, data, type, config.data = NULL, dt.options = NULL, 
-                        graph.options = NULL, pivot.options = NULL, custom.options = NULL, 
+renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
+                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
                         roundPrecision = 2, modelDir = NULL){
-  if(!is.null(graph.options)){
-    graph.tool <- graph.options$tool
+  if(!is.null(graphOptions)){
+    graphTool <- graphOptions$tool
   }
   if(identical(nrow(data), 0L)){
     shinyjs::show("noData")
@@ -77,21 +77,21 @@ renderData <- function(input, output, session, data, type, config.data = NULL, d
   type <- tolower(type)
   
   if(type == "pivot"){
-    output$pivottable <- renderPivot(data, options = pivot.options, roundPrecision = roundPrecision)
+    output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
   }else if(type == "graph"){
-    output$graph <- renderGraph(data, config.data = config.data, options = graph.options)
+    output$graph <- renderGraph(data, configData = configData, options = graphOptions)
   }else if(type == "datatable" || type == "dtgraph"){
-    output$datatable <- renderDTable(data, options = dt.options, roundPrecision = roundPrecision)
-    if(!is.null(graph.options)){
-      output$graph <- renderGraph(data, config.data = config.data, options = graph.options)
+    output$datatable <- renderDTable(data, options = dtOptions, roundPrecision = roundPrecision)
+    if(!is.null(graphOptions)){
+      output$graph <- renderGraph(data, configData = configData, options = graphOptions)
     }
   }else if(type == "valuebox"){
-    lapply(seq_len(custom.options$count), function(i){
+    lapply(seq_len(customOptions$count), function(i){
       output[["valBox" %+% i]] <- renderValueBox({
         valueBox(
           round(data[[3]][[i]], roundPrecision), data[[2]][[i]], 
-          getIcon(custom.options$icon$name, custom.options$icon$lib),
-          if(identical(custom.options$color, NULL)) "purple" else custom.options$color
+          getIcon(customOptions$icon$name, customOptions$icon$lib),
+          if(identical(customOptions$color, NULL)) "purple" else customOptions$color
         )
       })
     })
@@ -103,7 +103,7 @@ renderData <- function(input, output, session, data, type, config.data = NULL, d
                    Please make sure you first define such a function.", type), call. = FALSE)
     })
     tryCatch({
-      callModule(customRenderer, "custom", as_tibble(data), options = custom.options, 
+      callModule(customRenderer, "custom", as_tibble(data), options = customOptions, 
                  path = customRendererDir)
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", type, e), call. = FALSE)

@@ -60,8 +60,8 @@ closeScenario <- function(){
   flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset model output data
   renderOutputData()
-  active.scenario   <<- NULL
-  active.sid        <<- NULL
+  activeScenario   <<- NULL
+  activeSid        <<- NULL
   activeScen        <<- NULL
   activeSnameTmp    <<- NULL
   rv$activeSname    <<- NULL

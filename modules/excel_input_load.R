@@ -44,13 +44,13 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   
   # check whether current input datasets are empty
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
-    ids.to.fetch <- match(tolower(isolate(input$selInputDataLoc)), tolower(names(modelIn)))
+    idsToFetch <- match(tolower(isolate(input$selInputDataLoc)), tolower(names(modelIn)))
     # remove NAs
-    ids.to.fetch <- ids.to.fetch[!is.na(ids.to.fetch)]
+    idsToFetch <- idsToFetch[!is.na(idsToFetch)]
   }else{
-    ids.to.fetch <- seq_along(modelIn)
+    idsToFetch <- seq_along(modelIn)
   }
-  datasetsImported <- vapply(ids.to.fetch, function(i){
+  datasetsImported <- vapply(idsToFetch, function(i){
     if(length(isolate(rv[[paste0("in_", i)]]))){
       return(TRUE)
     }else{

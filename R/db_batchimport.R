@@ -202,7 +202,7 @@ BatchImport <- R6Class("BatchImport",
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
                            tableNamesRaw    <- gsub("^[^_]+_", "", tableNames)
-                           tables.tmp       <- vector("list", length(tableNames) + saveTraceFile)
+                           tablesTmp       <- vector("list", length(tableNames) + saveTraceFile)
                            tables           <- vector("list", length(tableNames) + saveTraceFile)
                            
                            # export metadata to reserve scenario ids
@@ -227,7 +227,7 @@ BatchImport <- R6Class("BatchImport",
                                  scenData[[scenId]][[scenTableId]] <- cbind(sid = firstScenId + scenId - 1,
                                                                             scenData[[scenId]][[scenTableId]])
                                  colnames(scenData[[scenId]][[scenTableId]])[1] <- scenMetaColnames[1]
-                                 tables.tmp[[tableId]][[scenId]] <- scenData[[scenId]][[scenTableId]]
+                                 tablesTmp[[tableId]][[scenId]] <- scenData[[scenId]][[scenTableId]]
                                }
                              }
                              if(!is.null(progressBar) && scenId %% 10 == 0){
@@ -236,7 +236,7 @@ BatchImport <- R6Class("BatchImport",
                              }
                            }
                            tables <- lapply(seq_along(tableNamesRaw), function(tableId){
-                             do.call(bind_rows, tables.tmp[[tableId]])
+                             do.call(bind_rows, tablesTmp[[tableId]])
                            })
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))

@@ -58,12 +58,12 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                  #  tags$img(src = "load.gif", class = "loading-input")
                                                  #},
                                                  tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 
-                                                          style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", add.css.dim(tabData$graphConfig$height, 5)),{
+                                                          style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", addCssDim(tabData$graphConfig$height, 5)),{
                                                             tryCatch({
                                                               renderDataUI("tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = tabData$graphConfig$outType, 
-                                                                            graph.tool = tabData$graphConfig$graph$tool, custom.options = tabData$graphConfig$options,
+                                                                            graphTool = tabData$graphConfig$graph$tool, customOptions = tabData$graphConfig$options,
                                                                             height = tabData$graphConfig$height, modelDir = modelDir, 
-                                                                            no.data.txt = noDataTxt)
+                                                                            noDataTxt = noDataTxt)
                                                             }, error = function(e) {
                                                               flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", tabData$sheetName, e)
                                                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
@@ -73,7 +73,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                    tags$div(id= paste0("scenTable_", scenId, "_", tabData$tabId), class = "render-output",{
                                                      tryCatch({
                                                        renderDataUI("table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable",
-                                                                     no.data.txt = noDataTxt)
+                                                                     noDataTxt = noDataTxt)
                                                      }, error = function(e) {
                                                        flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", tabData$sheetName, e)
                                                        errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")

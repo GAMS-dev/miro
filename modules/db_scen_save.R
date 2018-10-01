@@ -62,7 +62,7 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
 })
 
 observeEvent(input$btNewName, {
-  shinyjs::hide("scen.exits")
+  shinyjs::hide("scenarioExits")
   shinyjs::show("scenName")
   shinyjs::show("dialogSaveInit")
   shinyjs::hide("dialogSaveConfirm")
@@ -76,7 +76,7 @@ observeEvent(input$btCheckName, {
   flog.debug("Name for new scenario entered: %s.", scenName)
   
   if(grepl("^\\s*$", scenName)){
-    shinyjs::show("bad.scen.name")
+    shinyjs::show("badScenarioName")
     return(NULL)
   #}else if(!is.null(isolate(rv$activeSname)) && scenName == isolate(rv$activeSname)){
   #  rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
@@ -96,7 +96,7 @@ observeEvent(input$btCheckName, {
       return(NULL)
     }
     if(scenExists){
-      shinyjs::show("scen.exits")
+      shinyjs::show("scenarioExits")
       shinyjs::hide("scenName")
       shinyjs::hide("dialogSaveInit")
       shinyjs::show("dialogSaveConfirm")

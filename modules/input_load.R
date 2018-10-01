@@ -28,7 +28,7 @@ lapply(datasetsToFetch, function(dataset){
       # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
       # rather than setting them to NULL
       if(nrow(dataTmp)){
-        if(verify.input(dataTmp, modelIn[[i]]$headers)){
+        if(verifyInput(dataTmp, modelIn[[i]]$headers)){
           if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             # remove those rows from scalar dataset that are represented as a slider or dropdown menu
             scalarDataset <<- dataTmp 
@@ -51,8 +51,8 @@ lapply(datasetsToFetch, function(dataset){
       # get row names that need to be extracted from scalar table
       row.name <- tolower(names(modelIn)[[i]])
       # get column name of ID and value column
-      col.id    <- scalarsFileHeaders[1]
-      col.value <- scalarsFileHeaders[3]
+      colId    <- scalarsFileHeaders[1]
+      colValue <- scalarsFileHeaders[3]
       
       # check whether scalar dataset has already been imported
       if(is.null(scalarDataset)){
@@ -83,14 +83,14 @@ lapply(datasetsToFetch, function(dataset){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
           row.name <- paste0(row.name, c("_min", "_max"))
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) %in% row.name, col.value, drop = F], use.names = F)
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% row.name, colValue, drop = F], use.names = F)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE
           }
         }else{
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[col.id]]) == row.name, 
-                                            col.value, drop = FALSE], use.names = FALSE)
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == row.name, 
+                                            colValue, drop = FALSE], use.names = FALSE)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE

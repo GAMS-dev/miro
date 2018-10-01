@@ -1,9 +1,9 @@
-renderGraph <- function(data, config.data, options, height = NULL){
+renderGraph <- function(data, configData, options, height = NULL){
   # Renders the graph for a dataframe using the provided configuration.
   #
   # Args:
   #   data:                     dataframe that is to be plotted
-  #   config.data:              data used for configuration of graphs
+  #   configData:              data used for configuration of graphs
   #   options:                  options for customizing graph
   #   height:                   height of graph object (default: automatic sizing)
   #
@@ -93,8 +93,8 @@ renderGraph <- function(data, config.data, options, height = NULL){
           xts_data <- reshape2::acast(data, as.formula(paste(x, y, sep = "~")), value.var = names(options$ydata)[[j]]) 
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
         }else{
-          idx.vector <- match(tolower(names(options$ydata)), tolower(colnames(data)))
-          xts_data <- as.matrix(data[, idx.vector])
+          idxVector <- match(tolower(names(options$ydata)), tolower(colnames(data)))
+          xts_data <- as.matrix(data[, idxVector])
           row.names(xts_data) <- as.character(data[[1]])
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
           p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
@@ -133,7 +133,7 @@ renderGraph <- function(data, config.data, options, height = NULL){
     # Event lines to note points within a time series. 
     if(!is.null (options$dyEvent)){
       lapply(seq_along(names(options$dyEvent)), function(j){
-        event <- getEvent(config.data, names(options$dyEvent)[[j]])
+        event <- getEvent(configData, names(options$dyEvent)[[j]])
         p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
       })
     }
@@ -149,14 +149,14 @@ renderGraph <- function(data, config.data, options, height = NULL){
   }
 }
 getEvent <- function(configData, eventId){
-  # extracts event from config.data
+  # extracts event from configData
   #
   # args:
   # configData :     configuration dataframe
   # eventId    :     id of the event
   #
   # returns:
-  # string with event information extracted from config.data
+  # string with event information extracted from configData
   
   if(!is.null(configData)){
     idx <- match(tolower(eventId), tolower(configData[[1]][[1]]))

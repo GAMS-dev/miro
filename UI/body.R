@@ -76,11 +76,11 @@ body <- dashboardBody(
                   ),
                   tags$div(class="small-space"),
                   lapply(inputTabs[[tabId]], function(i){
-                    has.dependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
+                    hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
                     switch(modelIn[[i]]$type,
                            hot = ,
                            dt = {
-                             list(
+                             tagList(
                                tags$div(id = paste0("data-in_", i), {
                                  if(modelIn[[i]]$type == "hot"){
                                    rHandsontableOutput(paste0("in_", i))
@@ -88,10 +88,10 @@ body <- dashboardBody(
                                    DTOutput(paste0("in_", i))
                                  }
                                }),
-                               shinyjs::hidden(
+                               hidden(
                                  tags$div(id = paste0("graph-in_", i), class = "render-output", 
                                           style = if(!is.null(configGraphsIn[[i]]$height)) 
-                                            sprintf("min-height: %s;", add.css.dim(configGraphsIn[[i]]$height, 5)),
+                                            sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5)),
                                           # loading animation
                                           if(configGraphsIn[[i]]$outType == "dtGraph" && 
                                              configGraphsIn[[i]]$graph$tool == "plotly"){
@@ -102,10 +102,10 @@ body <- dashboardBody(
                                           },
                                           tryCatch({
                                             renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                         graph.tool = configGraphsIn[[i]]$graph$tool, 
-                                                         custom.options = configGraphsIn[[i]]$options,
+                                                         graphTool = configGraphsIn[[i]]$graph$tool, 
+                                                         customOptions = configGraphsIn[[i]]$options,
                                                          height = configGraphsIn[[i]]$height, 
-                                                         no.data.txt = lang$nav$outputScreen$boxResults$noData)
+                                                         noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                           }, error = function(e) {
                                             if(debugMode){
                                               errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), 
@@ -119,7 +119,7 @@ body <- dashboardBody(
                                ))
                            },
                            slider = {
-                             if(has.dependency){
+                             if(hasDependency){
                                slider <- sliderInput(paste0("slider_", i), 
                                                      label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
                                                      value = if(length(modelIn[[i]]$slider$default) > 1) 
@@ -130,13 +130,13 @@ body <- dashboardBody(
                                  id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
                                  lang$nav$inputScreen$noDataDep))
                              }else{
-                               slider.name <- tolower(names(modelIn)[[i]])
+                               sliderName <- tolower(names(modelIn)[[i]])
                                slider      <- sliderInput(paste0("slider_", i), 
                                                           label = modelIn[[i]]$slider$label, 
-                                                          min = sliderValues[[slider.name]]$min, 
-                                                          max = sliderValues[[slider.name]]$max, 
-                                                          value = sliderValues[[slider.name]]$def, 
-                                                          step = sliderValues[[slider.name]]$step, 
+                                                          min = sliderValues[[sliderName]]$min, 
+                                                          max = sliderValues[[sliderName]]$max, 
+                                                          value = sliderValues[[sliderName]]$def, 
+                                                          step = sliderValues[[sliderName]]$step, 
                                                           width = modelIn[[i]]$slider$width, 
                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
                              }
@@ -180,7 +180,7 @@ body <- dashboardBody(
                              }
                            },
                            dropdown = {
-                             if(has.dependency){
+                             if(hasDependency){
                                tagList(
                                  hidden(
                                    selectInput(paste0("dropdown_", i), 
@@ -238,7 +238,7 @@ body <- dashboardBody(
                                        width = modelIn[[i]]$date$width)
                            },
                            checkbox = {
-                             if(has.dependency){
+                             if(hasDependency){
                                tagList(
                                  shinyjs::hidden(
                                    tags$div(id = paste0("cbDiv_", i),
@@ -373,26 +373,26 @@ body <- dashboardBody(
                                                  class="scen-button")
                          )
                 ),
-                do.call(tabsetPanel, c(id = "contentCurrent", lapply(modelOutToDisplay, function(sheet.name) {
-                  i <- match(sheet.name, names(modelOut))[1]
+                do.call(tabsetPanel, c(id = "contentCurrent", lapply(modelOutToDisplay, function(sheetName) {
+                  i <- match(sheetName, names(modelOut))[1]
                   tabPanel(
                     title = modelOutAlias[i],
                     value = paste0("contentCurrent_", i),
                     tags$div(class="space"),
                     tags$div(id = paste0("graph-out_", i), class = "render-output", 
                              style = if(!is.null(configGraphsOut[[i]]$height)) 
-                               sprintf("min-height: %s;", add.css.dim(configGraphsOut[[i]]$height, 5)),
+                               sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
                              renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                          graph.tool = configGraphsOut[[i]]$graph$tool, 
-                                          custom.options = configGraphsOut[[i]]$options,
+                                          graphTool = configGraphsOut[[i]]$graph$tool, 
+                                          customOptions = configGraphsOut[[i]]$options,
                                           height = configGraphsOut[[i]]$height, 
-                                          no.data.txt = lang$nav$outputScreen$boxResults$noData)
+                                          noDataTxt = lang$nav$outputScreen$boxResults$noData)
                     ),
                     shinyjs::hidden(
                       tags$div(id = paste0("data-out_", i), class = "render-output",{
                         tryCatch({
                           renderDataUI(paste0("table-out_",i), type = "datatable", 
-                                       no.data.txt = lang$nav$outputScreen$boxResults$noData)
+                                       noDataTxt = lang$nav$outputScreen$boxResults$noData)
                         }, error = function(e) {
                           if(debugMode){
                             eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 

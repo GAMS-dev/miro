@@ -67,9 +67,9 @@ lapply(seq_along(modelIn), function(i){
              names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
-             new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalarsFileHeaders
-             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
+             newData        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(newData) <- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData) 
            }
          },
          date = {
@@ -93,9 +93,9 @@ lapply(seq_along(modelIn), function(i){
              names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
-             new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalarsFileHeaders
-             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
+             newData        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(newData) <- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData) 
            }
          },
          daterange = {
@@ -119,9 +119,9 @@ lapply(seq_along(modelIn), function(i){
              names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
-             new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalarsFileHeaders
-             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
+             newData        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(newData) <- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData) 
            }
          },
          dropdown = {
@@ -151,9 +151,9 @@ lapply(seq_along(modelIn), function(i){
                names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
              }else{
                # no headers, just data
-               new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-               names(new.data) <- scalarsFileHeaders
-               dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data)
+               newData        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+               names(newData) <- scalarsFileHeaders
+               dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData)
              }
            }
          },
@@ -178,9 +178,9 @@ lapply(seq_along(modelIn), function(i){
              names(dataTmp[[length(modelInFileNames)]]) <<- scalarsFileHeaders
            }else{
              # no headers, just data
-             new.data        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
-             names(new.data) <- scalarsFileHeaders
-             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], new.data) 
+             newData        <- data.frame(scalar, description, value, stringsAsFactors = FALSE, check.names = FALSE)
+             names(newData) <- scalarsFileHeaders
+             dataTmp[[length(modelInFileNames)]] <<- rbind(dataTmp[[length(modelInFileNames)]], newData) 
            }
          }
   )

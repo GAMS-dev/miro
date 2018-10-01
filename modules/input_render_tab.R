@@ -40,48 +40,24 @@ getInputDataset <- function(id){
 lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
-
-  observeEvent(input[[paste0("btGraphIn", i)]], {
-    shinyjs::toggle(paste0("graph-in_", i))
-    shinyjs::toggle(paste0("data-in_", i))
-    errMsg <- NULL
-    if(modelIn[[i]]$type == "hot"){
+  
+  observeEvent(input[["btGraphIn" %+% i]], {
+    if(identical(modelIn[[i]]$type, "hot")){
       data <- hot_to_r(input[["in_" %+% i]])
     }else{
       data <- tableContent[[i]]
     }
-    tryCatch({
-      callModule(renderData, "in_" %+% i, type = config.graphs.in[[i]]$outType, 
-                 data = data, dt.options = config$datatable, 
-                 graph.options = config.graphs.in[[i]]$graph, 
-                 pivot.options = config.graphs.in[[i]]$pivottable, 
-                 custom.options = config.graphs.in[[i]]$options,
-                 roundPrecision = roundPrecision, modelDir = modelDir)
-    }, error = function(e) {
-      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelInAlias[i], e)
-      errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-    })
-    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-  })
-  
-  observeEvent(input[[paste0("btGraphIn", i)]], {
-    if(identical(modelIn[[i]]$type, "hot")){
-      data <- hot_to_r(input[["in_", i]])
-    }else{
-      data <- tableContent[[i]]
-    }
-    toggle(paste0("graph-in_", i))
-    toggle(paste0("data-in_", i))
+    toggle("graph-in_" %+% i)
+    toggle("data-in_" %+% i)
     errMsg <- NULL
     tryCatch({
       callModule(renderData, "in_" %+% i, 
                  type = configGraphsIn[[i]]$outType, 
                  data = data,
-                 dt.options = config$datatable, 
-                 graph.options = configGraphsIn[[i]]$graph, 
-                 pivot.options = configGraphsIn[[i]]$pivottable, 
-                 custom.options = configGraphsIn[[i]]$options,
+                 dtOptions = config$datatable, 
+                 graphOptions = configGraphsIn[[i]]$graph, 
+                 pivotOptions = configGraphsIn[[i]]$pivottable, 
+                 customOptions = configGraphsIn[[i]]$options,
                  roundPrecision = roundPrecision, modelDir = modelDir)
     }, error = function(e) {
       flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
@@ -206,7 +182,7 @@ lapply(modelInTabularData, function(sheet){
                  tryCatch({
                    data <- bind_rows(tableContent[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debug.mode){
+                   if(debugMode){
                      errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), 
                                       sep = "\n")
                    }else{
@@ -225,7 +201,7 @@ lapply(modelInTabularData, function(sheet){
                    next
                  }
                  # get column name with dependency
-                 col <- names(cols.with.dep[[1]])[[idDep]]
+                 col <- names(colsWithDep[[1]])[[idDep]]
                  # filter data frame
                  data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
                }

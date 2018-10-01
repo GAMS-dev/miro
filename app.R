@@ -702,11 +702,11 @@ if(!is.null(errMsg)){
       }else{
         enable("btDelete")
         enable("btSave")
-        name.suffix <- ""
+        nameSuffix <- ""
         if(rv$unsavedFlag){
-          name.suffix <- "*"
+          nameSuffix <- "*"
         }
-        return(paste0(rv$activeSname, name.suffix))
+        return(paste0(rv$activeSname, nameSuffix))
       }
     )
     output$inputDataTitle <- renderText(getScenTitle())

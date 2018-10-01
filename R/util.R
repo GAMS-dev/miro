@@ -88,7 +88,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
 
   return(list(modelDir, gmsFileName, modelName))
 }
-get.input.to.import <- function(data, keywordsNoImport){
+getInputToImport <- function(data, keywordsNoImport){
   # Retrieves input data which has to be loaded from an external source
   #
   # Args:
@@ -99,17 +99,17 @@ get.input.to.import <- function(data, keywordsNoImport){
   # Returns:
   # list of sheets that have to be imported from an external source
   
-  data.to.import <- list()
+  dataToImport <- list()
   # index variable as c() is slow
   j <- 1
   for(i in seq_along(data)){
     if(!any(tolower(names(data[[i]])) %in% tolower(keywordsNoImport))){
-      data.to.import[[j]] <- data[[i]]
-      names(data.to.import)[[j]] <- names(data)[[i]]
+      dataToImport[[j]] <- data[[i]]
+      names(dataToImport)[[j]] <- names(data)[[i]]
       j <- j + 1
     }
   }
-  return(data.to.import)
+  return(dataToImport)
 }
 
 getInputType <- function(data, keywordsType){
@@ -166,28 +166,28 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
       
       if(grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", choices[[i]])){
         # find out if column has dependency defined and replace leading and ending signs
-        forward.dep  <- grepl("^\\$", choices[[i]])
-        backward.dep <- grepl("\\$$", choices[[i]])
-        el.raw <- tolower(gsub("^\\$|\\$$", "", choices[[i]]))
-        if(grepl("\\$", el.raw)){
+        forwardDep  <- grepl("^\\$", choices[[i]])
+        backwardDep <- grepl("\\$$", choices[[i]])
+        elRaw <- tolower(gsub("^\\$|\\$$", "", choices[[i]]))
+        if(grepl("\\$", elRaw)){
           # split string into the layers/elements ("dataset_1$column_3" -> "dataset_1", "column_3")
-          el <- strsplit(el.raw, "\\$")[[1]]
+          el <- strsplit(elRaw, "\\$")[[1]]
           # check if elements in el match with the structure of the considered input data.
           idx1 <- match(el[[1]], names(modelIn))[1]
           idx2 <- match(el[[2]], tolower(names(modelIn[[idx1]]$headers)))[1]
           if(!is.na(idx2)){
             # add another forward dependency
-            if(forward.dep){
+            if(forwardDep){
               j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
               ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
             # add another backward dependency
-            if(backward.dep){
+            if(backwardDep){
               j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
               ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
             # new element was added so increment counter
-            if(!(forward.dep || backward.dep)){
+            if(!(forwardDep || backwardDep)){
               # neither forward nor backward dependency selected results in error or rendering as string
               if(strictMode){
                 stop(paste0("Neither a forward nor a backward dependency was defined in: '", choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
@@ -206,7 +206,7 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
                 ddownDep$shared <<- el[[1]]
               }
               return(ddownDep)
-            }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forward.dep){
+            }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forwardDep){
               # dependency on another dropdown menu, so dont check header info
               j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
               ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][[2]]
@@ -221,27 +221,27 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
           }
         }else{
           # define identifier variable to check whether column exists
-          col.found <- FALSE
+          colFound <- FALSE
           # only column was entered (no sheet name)
           # find all sheets with column names
           if(length(modelIn)){
             for(idx1 in seq_along(modelIn)){
               # return index if available
-              idx2 <- match(el.raw, tolower(names(modelIn[[idx1]]$headers)))[1]
+              idx2 <- match(elRaw, tolower(names(modelIn[[idx1]]$headers)))[1]
               if(!is.na(idx2)){
                 # add another forward dependency
-                if(forward.dep){
+                if(forwardDep){
                   j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
                   ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # add another backward dependency
-                if(backward.dep){
+                if(backwardDep){
                   j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
                   ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
                 }
                 # new element was added so increment counter
-                if(forward.dep || backward.dep){
-                  col.found <- TRUE
+                if(forwardDep || backwardDep){
+                  colFound <- TRUE
                 }else{
                   # neither forward nor backward dependency selected results in error or rendering as string
                   if(strictMode){
@@ -254,9 +254,9 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
               }
             }
             # no column was found with matching name (invalid reference)
-            if(!col.found){
+            if(!colFound){
               if(strictMode){
-                stop(paste0("A column named: '", el.raw, "' could not be found. Make sure you define a valid reference."), call. = F)
+                stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."), call. = F)
               }else{
                 ddownDep$strings[[k]] <<- choices[[i]]
                 k <<- k + 1
@@ -296,11 +296,11 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
   # list of values with either a sheet name/column name pair in case of an external dependency or a numeric value in case of no dependency.
   # returns NULL, if no value of slider has dependency on external data
   
-  list.of.values <- c("min" = min, "max" = max, "def" = def, "step" = step)
+  listOfValues <- c("min" = min, "max" = max, "def" = def, "step" = step)
   # check if any value of slider has dependency on external data
-  if(any(grepl("\\(", list.of.values))){
+  if(any(grepl("\\(", listOfValues))){
     # evaluate slider values
-    slider.dep <- lapply(list.of.values, function(el){
+    sliderDep <- lapply(listOfValues, function(el){
       if(grepl("\\(", el)){
         # split string in operator and operand part
         splitted <- strsplit(el, "\\(|\\)")[[1]]
@@ -315,23 +315,23 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
         idx1 <- match(tolower(dep[1]), names(modelIn))[1]
         idx2 <- match(tolower(dep[2]), tolower(names(modelIn[[idx1]]$headers)))[1]
         if(!is.na(idx2)){
-          slider.value <- list()
-          slider.value[[tolower(dep[[1]])]] <- names(modelIn[[idx1]]$headers)[[idx2]]
-          slider.value[["$operator"]] <- names(listOfOperators)[[match(operator,listOfOperators)]]
-          return(slider.value)
+          sliderValue <- list()
+          sliderValue[[tolower(dep[[1]])]] <- names(modelIn[[idx1]]$headers)[[idx2]]
+          sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator,listOfOperators)]]
+          return(sliderValue)
         }else{
           if(!is.na(idx1) && modelIn[[idx1]]$type == "daterange"){
             # dependency on daterange selector
-            slider.value <- list()
-            slider.value[[tolower(dep[[1]])]] <- "$daterange"
-            slider.value[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
-            return(slider.value)
+            sliderValue <- list()
+            sliderValue[[tolower(dep[[1]])]] <- "$daterange"
+            sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
+            return(sliderValue)
           }else if(!is.na(idx1) && modelIn[[idx1]]$type == "dropdown" && length(dep) > 1){
             # dependency on another dropdown menu
-            slider.value <- list()
-            slider.value[[tolower(dep[[1]])]] <- dep[2]
-            slider.value[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
-            return(slider.value)
+            sliderValue <- list()
+            sliderValue[[tolower(dep[[1]])]] <- dep[2]
+            sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
+            return(sliderValue)
           }
           if(length(dep) > 1){
             stop(paste0("Invalid reference. The header: '", dep[[2]], "' specified for input sheet: '", dep[[1]], "' could not be found."), call. = F)
@@ -347,24 +347,24 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
         }
       }
     })
-    return(slider.dep)
+    return(sliderDep)
   }else{
     return(NULL)
   }
 }
 
-renderOutput <- function(data, type, dt.options = NULL, graph.options = NULL, map.options = NULL, pivot.options = NULL, custom.options = NULL,
+renderOutput <- function(data, type, dtOptions = NULL, graphOptions = NULL, mapOptions = NULL, pivotOptions = NULL, customOptions = NULL,
                          height = NULL, roundPrecision = 2, static = FALSE){
   # Renders output sheets according to visualization options specified
   #
   # Args:
   #   data:                     dataframe containing output data to be visualized
   #   type:                     type of visualization chosen
-  #   dt.options:               options specifed to customize datatable
-  #   graph.options:            options specified to cusutomize graphs
-  #   map.options:              options specified to cusutomize interactive maps
-  #   pivot.options:            options specified to customize pivot table
-  #   custom.options:           options specified for custom renderer
+  #   dtOptions:               options specifed to customize datatable
+  #   graphOptions:            options specified to cusutomize graphs
+  #   mapOptions:              options specified to cusutomize interactive maps
+  #   pivotOptions:            options specified to customize pivot table
+  #   customOptions:           options specified for custom renderer
   #   height:                   height of output object  
   #   roundPrecision:           number of decimal places data should be rounded to
   #   static:                   boolean which specifies whether return value is static DT object or renderDT object used 
@@ -375,35 +375,35 @@ renderOutput <- function(data, type, dt.options = NULL, graph.options = NULL, ma
   
   switch(type,
          pivot = {
-           return(renderPivot(data, options = pivot.options, height = height, roundPrecision = roundPrecision, static = static))
+           return(renderPivot(data, options = pivotOptions, height = height, roundPrecision = roundPrecision, static = static))
          },
          datatable = {
-           return(renderDTable(data, options = dt.options, height = height, roundPrecision = roundPrecision))
+           return(renderDTable(data, options = dtOptions, height = height, roundPrecision = roundPrecision))
          },
          dtGraph = {
            return(tagList(
-             column(6, renderDTable(data, options = dt.options, height = height, roundPrecision = roundPrecision)),
-             column(6, renderGraph(data,graph.options, height = height))
+             column(6, renderDTable(data, options = dtOptions, height = height, roundPrecision = roundPrecision)),
+             column(6, renderGraph(data,graphOptions, height = height))
            ))
          },
          graph = {
-           return(renderGraph(data, graph.options, height = height))
+           return(renderGraph(data, graphOptions, height = height))
          }
   )
   tryCatch({
-    custom.renderer <- match.fun(paste0("render", toupper(substr(type, 1, 1)), tolower(substr(type, 2, nchar(type)))))
+    customRenderer <- match.fun(paste0("render", toupper(substr(type, 1, 1)), tolower(substr(type, 2, nchar(type)))))
     }, error = function(e){
       stop(paste0("A custom renderer function: '", type, "' was not found. Please make sure you first define such a function."), call. = F)
     })
   tryCatch({
-    return(custom.renderer(data, options = custom.options))
+    return(customRenderer(data, options = customOptions))
   }, error = function(e){
     stop(paste0("An error occurred while using the custom renderer: '", type, "'. Error message: ", conditionMessage(e)), call. = F)
   })
     
 }
 
-verify.input <- function(data, headers){
+verifyInput <- function(data, headers){
   # Checks whether a dataframe is valid with regard to a specific schema
   #
   # Args:
@@ -460,11 +460,11 @@ addHtmlLineBreaks <- function(string){
   #   string with <br> tags where \n used to be
   
   # escape string
-  escaped.string <- htmltools::htmlEscape(string)
+  escapedString <- htmltools::htmlEscape(string)
   # replace \n with <br> tag
-  escaped.string <- gsub("\\n", "<br>", escaped.string)
+  escapedString <- gsub("\\n", "<br>", escapedString)
   
-  return(escaped.string)
+  return(escapedString)
 }
 
 getOS <- function(){
@@ -485,7 +485,7 @@ getOS <- function(){
   }
   tolower(os)
 }
-add.css.dim <- function(x, y){
+addCssDim <- function(x, y){
   # Adds two css dimensions together
   #
   # Args:

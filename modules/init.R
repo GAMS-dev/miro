@@ -86,7 +86,7 @@ if(is.null(errMsg)){
   }else{
     eval <- list(character(), character())
     tryCatch({
-      eval <- validateJson(configDir %+% config$language %+% ".json", configDir %+% languageSchemaName, add.defaults = F)
+      eval <- validateJson(configDir %+% config$language %+% ".json", configDir %+% languageSchemaName, addDefaults = F)
     }, error = function(e){
       errMsg <<- "Some error occurred validating language file: '" %+% config$language %+% ".json'. Error message: " %+% e
       flog.fatal(errMsg)
@@ -142,8 +142,8 @@ if(is.null(errMsg)){
   GMSOpt              <- tmpGMSOpt[[2]]
   rm(tmpGMSOpt)
   
-  modelInToImport     <- get.input.to.import(modelIn, keywordsNoImport)
-  modelInMustImport   <- get.input.to.import(modelIn, keywordsNoMustImport)
+  modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
+  modelInMustImport   <- getInputToImport(modelIn, keywordsNoMustImport)
   # declare input and output aliases
   modelInAlias        <- lapply(seq_along(modelIn), function(i){
     if(is.null(modelIn[[i]]$alias)){

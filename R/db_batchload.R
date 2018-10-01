@@ -49,17 +49,17 @@ BatchLoad <- R6Class("BatchLoad",
                          if(is.null(private$values[[table]][[field]])){
                            if(table %in% private$scalarTables){
                              field <- substring(field, 2)
-                             table.tmp <- private$importScalarValues(table, field)
+                             tableTmp <- private$importScalarValues(table, field)
                            }else{
-                             table.tmp <- private$db$importDataset(table, 
+                             tableTmp <- private$db$importDataset(table, 
                                                                    colNames = field, 
                                                                    distinct = TRUE)
                            }
-                           if(length(table.tmp)){
+                           if(length(tableTmp)){
                              if(is.null(private$values[[table]])){
                                private$values[[table]] <- list()
                              }
-                             private$values[[table]][[field]] <- table.tmp[[1]]
+                             private$values[[table]][[field]] <- tableTmp[[1]]
                            }
                            
                          }

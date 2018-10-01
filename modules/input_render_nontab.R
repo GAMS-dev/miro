@@ -1,6 +1,6 @@
 # render input data for input sheets with forward dependency on other input sheets
-get.data     <- vector(mode = "list", length = length(modelInWithDep))
-get.selected <- vector(mode = "list", length = length(modelIn))
+getData     <- vector(mode = "list", length = length(modelInWithDep))
+getSelected <- vector(mode = "list", length = length(modelIn))
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 lapply(seq_along(modelIn), function(id){
   i    <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
@@ -11,7 +11,7 @@ lapply(seq_along(modelIn), function(id){
          checkbox = {
            if(is.na(i)){
              # no dependency
-             get.selected[[id]] <<- reactive({
+             getSelected[[id]] <<- reactive({
                if(is.null(rv[["in_" %+% id]])){
                  return(NULL)
                }
@@ -31,7 +31,7 @@ lapply(seq_along(modelIn), function(id){
              })
              
              observe({
-               shiny::updateCheckboxInput(session, "cb_" %+% id, value = get.selected[[id]]())
+               shiny::updateCheckboxInput(session, "cb_" %+% id, value = getSelected[[id]]())
              })
            }else{
              # has dependency
@@ -89,7 +89,7 @@ lapply(seq_along(modelIn), function(id){
            }
          },
          date = {
-           get.selected[[id]] <<- shiny::reactive({
+           getSelected[[id]] <<- shiny::reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -104,11 +104,11 @@ lapply(seq_along(modelIn), function(id){
            })
            # TODO: support dependency
            observe({
-             shiny::updateDateInput(session, "date_" %+% id, value = get.selected[[id]]())
+             shiny::updateDateInput(session, "date_" %+% id, value = getSelected[[id]]())
            })
          },
          daterange = {
-           get.selected[[id]] <<- shiny::reactive({
+           getSelected[[id]] <<- shiny::reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -125,12 +125,12 @@ lapply(seq_along(modelIn), function(id){
            
            observe({
              shiny::updateDateRangeInput(session, "daterange_" %+% id, 
-                                         start = get.selected[[id]]()[[1]], end = get.selected[[id]]()[[2]])
+                                         start = getSelected[[id]]()[[1]], end = getSelected[[id]]()[[2]])
            })
          },
          dropdown = {
            # retrieve selected value for dropdown menu
-           get.selected[[id]] <<- reactive({
+           getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -148,13 +148,13 @@ lapply(seq_along(modelIn), function(id){
              
              # observe changes of dropdown menu data
              observe({
-               shiny::updateSelectInput(session, "dropdown_" %+% id, selected = get.selected[[id]]())
+               shiny::updateSelectInput(session, "dropdown_" %+% id, selected = getSelected[[id]]())
              })
            }else{
              # has dependencies on other datasets
              
              # retrieve choices for dropdown menu
-             get.data[[i]] <<- shiny::reactive({
+             getData[[i]] <<- shiny::reactive({
                choices <- vector(mode = "list", length = length(ddownDep[[name]]$fw) + 1)
                aliases <- vector(mode = "list", length = length(ddownDep[[name]]$aliases) + 1)
                # retrieve single value data
@@ -229,7 +229,7 @@ lapply(seq_along(modelIn), function(id){
              observe({
                # update choices
                if(!inputInitialized[i]){
-                 choices <- get.data[[i]]()
+                 choices <- getData[[i]]()
                  if(!is.null(choices)){
                    shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                             selected = modelIn[[id]]$dropdown$selected)
@@ -245,20 +245,20 @@ lapply(seq_along(modelIn), function(id){
                    }
                  }
                }else{
-                 updateSelectInput(session, paste0("dropdown_", id), choices = get.data[[i]](), 
+                 updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
                                           selected = isolate(input[[paste0("dropdown_", id)]]))
                }
              })
              # observe changes of dropdown default value
              observe({
                # update default
-               updateSelectInput(session, paste0("dropdown_", id), selected = get.selected[[id]]())
+               updateSelectInput(session, paste0("dropdown_", id), selected = getSelected[[id]]())
              })
            }
          },
          slider = {
            # retrieve selected value for slider
-           get.selected[[id]] <<- reactive({
+           getSelected[[id]] <<- reactive({
              if(is.null(rv[[paste0("in_", id)]])){
                return(NULL)
              }
@@ -276,16 +276,16 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of slider data
              observe({
                # update slider with default value
-               shiny::updateSliderInput(session, paste0("slider_", id), value = get.selected[[id]]())
+               shiny::updateSliderInput(session, paste0("slider_", id), value = getSelected[[id]]())
                
              })
            }else{
              # has dependencies on other datasets
              
              # retrieve choices for slider
-             get.data[[i]] <<- shiny::reactive({
+             getData[[i]] <<- shiny::reactive({
                errMsg <- NULL
-               slider.data <- lapply(sliderValues[[name]], function(el){
+               sliderData <- lapply(sliderValues[[name]], function(el){
                  # return numeric data (no external dependency)
                  if(is.numeric(el)){
                    return(el)
@@ -295,8 +295,8 @@ lapply(seq_along(modelIn), function(id){
                    if(modelIn[[k]]$type == "daterange"){
                      switch(el[["$operator"]],
                             count = {
-                              date.range <- input[[paste0("daterange_", k)]]
-                              return(as.numeric(difftime(date.range[[2]], date.range[[1]])))
+                              dateRange <- input[[paste0("daterange_", k)]]
+                              return(as.numeric(difftime(dateRange[[2]], dateRange[[1]])))
                             },
                             {
                               errMsg <<- paste(errMsg, "Bad operator for input type: daterange", sep = "\n")     # todo: language file!
@@ -333,51 +333,51 @@ lapply(seq_along(modelIn), function(id){
                             return(length(data))
                           },
                           max = {
-                            max.data <- max(data)
-                            if((!is.numeric(max.data) || is.na(max.data)) && strictMode){
+                            maxData <- max(data)
+                            if((!is.numeric(maxData) || is.na(maxData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(max.data)
+                              return(maxData)
                             }
                           },
                           min = {
-                            min.data <- min(data)
-                            if((!is.numeric(min(data)) || is.na(min.data)) && strictMode){
+                            minData <- min(data)
+                            if((!is.numeric(min(data)) || is.na(minData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(min.data)
+                              return(minData)
                             }
                           },
                           mean = {
-                            mean.data = mean(data)
-                            if((!is.numeric(mean.data) || is.na(mean.data)) && strictMode){
+                            meanData = mean(data)
+                            if((!is.numeric(meanData) || is.na(meanData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(mean.data)
+                              return(meanData)
                             }
                           },
                           median = {
-                            median.data = median(data)
-                            if((!is.numeric(median.data) || is.na(median.data)) && strictMode){
+                            medianData = median(data)
+                            if((!is.numeric(medianData) || is.na(medianData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(median.data)
+                              return(medianData)
                             }
                           },
                           var = {
-                            var.data = var(data)
-                            if((!is.numeric(var.data) || is.na(var.data)) && strictMode){
+                            varData = var(data)
+                            if((!is.numeric(varData) || is.na(varData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(var.data)
+                              return(varData)
                             }
                           },
                           sd = {
-                            sd.data = sd(data)
-                            if((!is.numeric(sd.data) || is.na(sd.data)) && strictMode){
+                            sdData = sd(data)
+                            if((!is.numeric(sdData) || is.na(sdData)) && strictMode){
                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
                             }else{
-                              return(sd.data)
+                              return(sdData)
                             }
                           }
                    )
@@ -385,24 +385,24 @@ lapply(seq_along(modelIn), function(id){
                })
                showErrorMsg(lang$errMsg$renderSlider$title, errMsg)
                
-               if(is.numeric(slider.data$def1) && is.numeric(slider.data$def2)){
-                 slider.data$def <- c(slider.data$def1, slider.data$def2)
+               if(is.numeric(sliderData$def1) && is.numeric(sliderData$def2)){
+                 sliderData$def <- c(sliderData$def1, sliderData$def2)
                }
-               return(slider.data)
+               return(sliderData)
              })
              
              # observe changes of slider data
              observe({
-               value <- get.data[[i]]()$def
+               value <- getData[[i]]()$def
                if(inputInitialized[i] && is.numeric(modelIn[[id]]$slider$default)){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = get.data[[i]]()$min, 
-                                        max = get.data[[i]]()$max, step = get.data[[i]]()$step)
+               updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
+                                        max = getData[[i]]()$max, step = getData[[i]]()$step)
                
                if(!inputInitialized[i]){
-                 if(!is.null(isolate(get.data[[i]]()$min)) && !is.null(isolate(get.data[[i]]()$max))){
+                 if(!is.null(isolate(getData[[i]]()$min)) && !is.null(isolate(getData[[i]]()$max))){
                    inputInitialized[i] <<- TRUE
                    shinyjs::show(paste0("slider_", id))
                    shinyjs::hide(paste0("no_data_dep_", id))
@@ -417,7 +417,7 @@ lapply(seq_along(modelIn), function(id){
              })
              # update slider default value
              observe({
-               shiny::updateSliderInput(session, inputId = paste0("slider_", id), value = get.selected[[id]]())
+               shiny::updateSliderInput(session, inputId = paste0("slider_", id), value = getSelected[[id]]())
              })
            }
          }

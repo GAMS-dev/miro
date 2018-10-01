@@ -15,8 +15,8 @@ showNewScenDialog <- function(tmpScenName){
     textInput("scenName", lang$nav$dialogNewScen$desc,
               value = tmpScenName),
     shinyjs::hidden(
-      tags$div(id = "bad.scen.name", class = "errMsg", lang$nav$dialogNewScen$badName),
-      tags$div(id = "scen.exits", class = "errMsg", lang$nav$dialogNewScen$scenExits)
+      tags$div(id = "badScenarioName", class = "errMsg", lang$nav$dialogNewScen$badName),
+      tags$div(id = "scenarioExits", class = "errMsg", lang$nav$dialogNewScen$scenExits)
     ),
     footer = tagList(
       tags$div(id = "dialogSaveInit",

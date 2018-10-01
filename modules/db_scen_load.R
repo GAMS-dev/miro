@@ -233,13 +233,13 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
     removeModal()
     # render output data (not compare mode)
     # generate data
-    no.output <- TRUE
+    noOutput <- TRUE
     # load scalar data if available
     lapply(seq_along(modelOut), function(i){
       if(!nrow(scenDataTmp[[1]][[i]])){
         scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
       }else{
-        no.output <<- FALSE
+        noOutput <<- FALSE
         scenData[["scen_1_"]][[i]] <<- scenDataTmp[[1]][[i]]
         if(identical(i, idxScalarOut)){
           # scalar data exists
@@ -256,7 +256,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
       uidAlias = lang$nav$excelExport$metadataSheet$uid, 
       snameAlias = lang$nav$excelExport$metadataSheet$sname, 
       stimeAlias = lang$nav$excelExport$metadataSheet$stime)
-    if(no.output){
+    if(noOutput){
       noOutputData <<- TRUE
     }else{
       noOutputData <<- FALSE

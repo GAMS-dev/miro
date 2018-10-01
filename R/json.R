@@ -1,101 +1,101 @@
-getJsonFileSchemaPairs <- function(fileDir, schemaDir = fileDir, schema.pattern = "_schema"){
+getJsonFileSchemaPairs <- function(fileDir, schemaDir = fileDir, schemaPattern = "_schema"){
   # Get pairs of json and schema files from specified directory.
   #
   # Args:
   #   fileDir:                  location of JSON files
   #   schemaDir:                location of JSON schema files
-  #   schema.pattern:           Pattern used to identify schema files (e.g. 'xxx_schema.json'). 
+  #   schemaPattern:           Pattern used to identify schema files (e.g. 'xxx_schema.json'). 
   #                             Only patterns of the form ('xxxPATTERN.json') are supported
   #
   # Returns:
   #   List of json-schema pairs
   
-  json.files <- grep(list.files(fileDir), pattern = paste0(schema.pattern,"\\.json$"), inv=TRUE, value=TRUE)
-  json.schema.files <- list.files(schemaDir, pattern = paste0(schema.pattern,"\\.json$"))
+  jsonFiles <- grep(list.files(fileDir), pattern = paste0(schemaPattern,"\\.json$"), inv=TRUE, value=TRUE)
+  jsonSchemaFiles <- list.files(schemaDir, pattern = paste0(schemaPattern,"\\.json$"))
   
-  json.schema.map <- list()
-  for(json.file in json.files){
-    name <- sub("\\.json$", "", json.file)
-    if(paste0(name, schema.pattern, ".json") %in% json.schema.files){
-      json.schema.map[[name]] <-c(paste0(fileDir,name,".json"), paste0(schemaDir,name,schema.pattern,".json"))
+  jsonSchemaMap <- list()
+  for(jsonFile in jsonFiles){
+    name <- sub("\\.json$", "", jsonFile)
+    if(paste0(name, schemaPattern, ".json") %in% jsonSchemaFiles){
+      jsonSchemaMap[[name]] <-c(paste0(fileDir,name,".json"), paste0(schemaDir,name,schemaPattern,".json"))
     }
   }
-  return(json.schema.map)
+  return(jsonSchemaMap)
 }
 
-validateJson <- function(json.file.location, json.schema.location, verbose = TRUE, greedy = TRUE, add.defaults = TRUE){
+validateJson <- function(jsonFileLocation, jsonSchemaLocation, verbose = TRUE, greedy = TRUE, addDefaults = TRUE){
   # Validates specified JSON file with JSON schema file and returns boolean as well as possible error messages in attributes.
   #
   # Args:
-  #   json.file.location:       location of JSON file to be validated
-  #   json.schema.location:     location of JSON schema file used for validation
+  #   jsonFileLocation:       location of JSON file to be validated
+  #   jsonSchemaLocation:     location of JSON schema file used for validation
   #   verbose:                  Be verbose? If TRUE, then an attribute "errors" will list validation failures as a data.frame 
   #   greedy:                   Continue after the first error?
-  #   add.defaults:             boolean that specifies whether default values defined in the schema file should be automatically added 
+  #   addDefaults:             boolean that specifies whether default values defined in the schema file should be automatically added 
   #
   # Returns:
   #   boolean specifying whether JSON file is valid or not. If boolean is FALSE, an additional attribute "errors" is returned.
   
-  if(!file.exists(json.file.location)){
+  if(!file.exists(jsonFileLocation)){
     stop("JSON file could not be found. Check if the path you specified is valid.", call. = F)
   }
-  if(!file.exists(json.schema.location)){
+  if(!file.exists(jsonSchemaLocation)){
     stop("JSON Schema file could not be found. Check if the path you specified is valid.")
   }
   
   
   tryCatch({
-    json.validator <- suppressWarnings(jsonvalidate::json_validator(json.schema.location))
+    jsonValidator <- suppressWarnings(jsonvalidate::json_validator(jsonSchemaLocation))
   }, error = function(e) {
-    stop(paste0("Error reading'",json.schema.location,"'. Check for valid JSON syntax and make sure file is accessible."), 
+    stop(paste0("Error reading'",jsonSchemaLocation,"'. Check for valid JSON syntax and make sure file is accessible."), 
          call. = F)
   })
   
   tryCatch({
-    validated.json <- suppressWarnings(json.validator(json.file.location, verbose = verbose, greedy = greedy, error = FALSE))
+    validatedJson <- suppressWarnings(jsonValidator(jsonFileLocation, verbose = verbose, greedy = greedy, error = FALSE))
   }, error = function(e) {
-    stop(paste0("Error reading'",json.file.location,"'. Check for valid JSON syntax and make sure file is accessible."), 
+    stop(paste0("Error reading'",jsonFileLocation,"'. Check for valid JSON syntax and make sure file is accessible."), 
          call. = FALSE)
   })
   json   <- NULL
   errors <- NULL
-  if(validated.json){
-    if(add.defaults){
-      return(list(json.add.defaults(json.file.location = json.file.location, json.schema.location = json.schema.location), NULL))
+  if(validatedJson){
+    if(addDefaults){
+      return(list(jsonAddDefaults(jsonFileLocation = jsonFileLocation, jsonSchemaLocation = jsonSchemaLocation), NULL))
     }else{
-      json <- suppressWarnings(jsonlite::fromJSON(json.file.location, simplifyDataFrame = F, simplifyMatrix = F))
+      json <- suppressWarnings(jsonlite::fromJSON(jsonFileLocation, simplifyDataFrame = F, simplifyMatrix = F))
     }
   }else{
-    errors <- attr(validated.json, 'errors')
+    errors <- attr(validatedJson, 'errors')
   }
   return(list(json, errors))
   
 }
 
-json.add.defaults <- function(json.file.location, json.schema.location){
+jsonAddDefaults <- function(jsonFileLocation, jsonSchemaLocation){
   #  Adds default values to a JSON file. 
   #
   # Args:
-  #   json.file.location:       location of JSON file used for validation
-  #   json.schema.location:     location of JSON schema file used for validation
+  #   jsonFileLocation:       location of JSON file used for validation
+  #   jsonSchemaLocation:     location of JSON schema file used for validation
   #
   # Returns:
   #   list with default values added where missing
   
   
   ## error checks
-  if(file.exists(json.file.location)){
+  if(file.exists(jsonFileLocation)){
     tryCatch({
-      list.without.defaults <- suppressWarnings(jsonlite::fromJSON(json.file.location, simplifyDataFrame = F, simplifyMatrix = F))
+      listWithoutDefaults <- suppressWarnings(jsonlite::fromJSON(jsonFileLocation, simplifyDataFrame = F, simplifyMatrix = F))
     }, error = function(e){
       stop(paste0("There seems to be a syntax error in your JSON file. Error message: ", e), call. = F)
     })
   }else{
     stop("The JSON file you selected could not be located.", call. = F)
   }
-  if(file.exists(json.schema.location)){
+  if(file.exists(jsonSchemaLocation)){
     tryCatch({
-      suppressWarnings(jsonlite::fromJSON(json.schema.location, simplifyDataFrame = F, simplifyMatrix = F))
+      suppressWarnings(jsonlite::fromJSON(jsonSchemaLocation, simplifyDataFrame = F, simplifyMatrix = F))
     }, error = function(e){
       stop(paste0("There seems to be a syntax error in your JSON schema file. Error message: ", e), call. = F)
     })
@@ -104,7 +104,7 @@ json.add.defaults <- function(json.file.location, json.schema.location){
   }
   # import JSON schema file as string
   tryCatch({
-    json <- paste(readLines(json.schema.location), collapse = "")
+    json <- paste(readLines(jsonSchemaLocation), collapse = "")
   }, error = function(e){
     stop(paste0("Error loading JSON schema file. Error message ", e), call. = F)
   })
@@ -122,7 +122,7 @@ json.add.defaults <- function(json.file.location, json.schema.location){
   defaults <- ct$get("defaults", simplifyDataFrame = F, simplifyMatrix = F)
   
   # add default values
-  list.with.defaults <- modifyList(defaults, list.without.defaults)
+  listWithDefaults <- modifyList(defaults, listWithoutDefaults)
   
-  return(list.with.defaults)
+  return(listWithDefaults)
 }

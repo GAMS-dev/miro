@@ -39,14 +39,14 @@ lapply(scenTableNamesToDisplay, function(sheetName) {
   # call render functions
   tryCatch({
     callModule(renderData, "tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = tabData$graphConfig$outType, 
-               data = scenData[[scenIdLong]][[tabData$scenTableId]], config.data = scalarData[[scenIdLong]], 
-               dt.options = config$datatable, graph.options = tabData$graphConfig$graph, 
-               pivot.options = tabData$graphConfig$pivottable, 
-               custom.options = tabData$graphConfig$options,
+               data = scenData[[scenIdLong]][[tabData$scenTableId]], configData = scalarData[[scenIdLong]], 
+               dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
+               pivotOptions = tabData$graphConfig$pivottable, 
+               customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir)
     callModule(renderData, "table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable", 
                data = scenData[[scenIdLong]][[tabData$scenTableId]], 
-               dt.options = config$datatable, roundPrecision = roundPrecision)
+               dtOptions = config$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
     flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", tabData$name, e)
     eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, tabData$name), sep = "\n")
