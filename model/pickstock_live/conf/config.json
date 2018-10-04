@@ -1,7 +1,7 @@
 {
 	"UILogo":"pickstock.jpg",
     "dataRendering"      : {
-		"stockdatarep"   	: {
+		"price"   	: {
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
@@ -37,7 +37,7 @@
 				},						
 				"xdata"     			:"date",
 				"ydata" 				: {
-					"price"    				: {
+					"stock price"    : {
 						"label"					: "stockSymbol"
 					}
 				},
@@ -58,7 +58,7 @@
                 "type"                  : "pie",
                 "title"                 : "Part of the portfolio",
                 "labels"                : "stockSymbol",
-                "values"                : "weight",
+                "values"                : "what part of the portfolio",
                 "xaxis"                 : {
                     "showgrid"              : false,
                     "zeroline"              : false,

@@ -20,14 +20,12 @@ $offText
 Set
    i 'canning plants' / Seattle,  San-Diego /
    j 'markets'        / New-York, Chicago, Topeka /
-   aHdr 'a header' / capacity /
-   bHdr 'b header' / demand /
-   dHdr 'd header' / distance /
 ;
 Table ilocData(i,*) 'Plant location information'
            lat           lng     
 Seattle   47.608013  -122.335167
 San-Diego 32.715736  -117.161087;
+
 Table jlocData(j,*) 'Market location information'
            lat           lng     
 New-York   40.730610  -73.935242
@@ -43,19 +41,19 @@ $endif
 
 $onExternalInput
 Parameter
-   aExt(i,aHdr) 'capacity of plant i in cases'
-        / Seattle.capacity   350
-          San-Diego.capacity   600 /
+   a(i) 'capacity of plant i in cases'
+        / Seattle   350
+          San-Diego   600 /
 
-   bExt(j,bHdr) 'demand at market j in cases'
-        / New-york.demand   325
-          Chicago.demand   300
-          Topeka.demand   275 /;
+   b(j) 'demand at market j in cases'
+        / New-york   325
+          Chicago   300
+          Topeka   275 /;
 
-Table dExt(i,j,dHdr) 'distance in thousands of miles'
-              New-York.distance  Chicago.distance  Topeka.distance
-   Seattle           2.5               1.7              1.8
-   San-Diego         2.5               1.8              1.4;
+Table d(i,j) 'distance in thousands of miles'
+              New-York  Chicago  Topeka
+   Seattle      2.5       1.7     1.8
+   San-Diego    2.5       1.8     1.4;
 
 Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /
@@ -63,15 +61,8 @@ Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1
 $offExternalInput
 
 Parameter
-a(i) 'capacity of plant i in cases'
-b(j) 'demand at market j in cases'
-d(i,j) 'distance in thousands of miles'
 c(i,j) 'transport cost in thousands of dollars per case';
 
-
-a(i) = aExt(i,'capacity');
-b(j) = bExt(j,'demand');
-d(i,j) = dExt(i,j,'distance');
 c(i,j) = f*d(i,j)/1000;
 
 Variable
@@ -97,8 +88,6 @@ $ifthen.lp not %type% == "mip"
 solve transportLP using lp minimizing z;
 abort$(transportLP.modelstat <> 1) "No feasible solution found"
 $endif.lp
-
-
 
 * MIP
 $ifthen.noLP not %type% == "lp"
@@ -134,9 +123,6 @@ abort$(transportMINLP.modelstat > 2 and transportMINLP.modelstat <> 8) "No feasi
 $endif.minlp
 
 
-
-
-
 Set
 scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
 'latM', 'cap', 'demand', 'quantities' /;
@@ -148,7 +134,7 @@ Scalar
 total_cost 'total transportation costs in thousands of dollars';
 $offExternalOutput
 
-$ifthen.type set type
+$ifthen set type
 total_cost = z.l;
 
 schedule(i,j, 'lngP') = iLocData(i,'lng');
@@ -158,6 +144,8 @@ schedule(i,j, 'latM') = jLocData(j,'lat');
 schedule(i,j, 'cap') = a(i);
 schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
-$endif.type
+$endif
 
+$if not exist webui.gms
+$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
 $if set gmswebui $batinclude webui

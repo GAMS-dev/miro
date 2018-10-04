@@ -29,19 +29,33 @@
             "alias": "time window",
             "daterange": {
                 "label": "time window",
-                "start": "2016-04-01",
+                "start": "2018-01-01",
                 "startview": "year"
             }
         }
     },
     "gamsOutputFiles": {
-        "partofportfolio": {
-            "alias": "what part of the portfolio",
+        "price": {
+            "alias": "stock price",
             "headers": {
+                "date": {
+                    "type": "set"
+                },
                 "stockSymbol": {
                     "type": "set"
                 },
-                "weight": {
+                "stock price": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "partofportfolio": {
+            "alias": "what part of the portfolio",
+            "headers": {
+                "what part of the portfolio": {
+                    "type": "set"
+                },
+                "partOfPortfolio": {
                     "type": "parameter"
                 }
             }
@@ -74,24 +88,10 @@
                 }
             }
         },
-        "stockdatarep": {
-            "alias": "stock data",
-            "headers": {
-                "date": {
-                    "type": "set"
-                },
-                "stockSymbol": {
-                    "type": "set"
-                },
-                "price": {
-                    "type": "parameter"
-                }
-            }
-        },
         "scalars_out": {
             "alias": "Scalars",
             "hidden": true,
-            "count": 5,
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

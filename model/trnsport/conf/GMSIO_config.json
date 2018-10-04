@@ -5,29 +5,29 @@
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "aext": {
+        "a": {
             "alias": "capacity of plant i in cases",
             "headers": {
                 "canning plants": {
                     "type": "set"
                 },
-                "capacity": {
+                "capacity of plant i in cases": {
                     "type": "parameter"
                 }
             }
         },
-        "bext": {
+        "b": {
             "alias": "demand at market j in cases",
             "headers": {
                 "markets": {
                     "type": "set"
                 },
-                "demand": {
+                "demand at market j in cases": {
                     "type": "parameter"
                 }
             }
         },
-        "dext": {
+        "d": {
             "alias": "distance in thousands of miles",
             "headers": {
                 "canning plants": {
@@ -36,7 +36,7 @@
                 "markets": {
                     "type": "set"
                 },
-                "distance": {
+                "distance in thousands of miles": {
                     "type": "parameter"
                 }
             }
@@ -98,9 +98,6 @@
                 "markets": {
                     "type": "set"
                 },
-                "demand": {
-                    "type": "parameter"
-                },
                 "lngp": {
                     "type": "parameter"
                 },
@@ -114,6 +111,9 @@
                     "type": "parameter"
                 },
                 "cap": {
+                    "type": "parameter"
+                },
+                "demand": {
                     "type": "parameter"
                 },
                 "quantities": {

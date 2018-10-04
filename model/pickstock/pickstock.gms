@@ -4,31 +4,30 @@ $title Stock Selection Optimization
 * overall Dow Jones index.
 
 $onExternalInput
-set hrd /price/;
 Set date   'date'
     symbol 'stockSymbol';
 
 Parameter
-    stockData(date,symbol,hrd)  'data of stock on date   ### { "headers":{"date":{"readonly":true}} }';
+    price(date,symbol) 'Price   ### { "headers":{"date":{"readonly":true}} }';
 
-Scalar maxstock      'maximum number of stocks to select ### { "slider":{"min":1, "max":"card(stockdata$stocksymbol)", "default":5,  "step":1 }}'  / 2  /
-       trainingdays  'number of days for training        ### { "slider":{"min":1, "max":"card(stockdata$date)",        "default":99, "step":1 }}'  / 99  /;
+Scalar maxstock        'maximum number of stocks to select ### { "slider":{"min":1, "max":"card(price$stocksymbol)", "default":5,  "step":1 }}'  / 2  /
+       trainingdays    'number of days for training        ### { "slider":{"min":1, "max":"card(price$date)",        "default":99, "step":1 }}'  / 99  /;
 $offExternalInput
+
 $if not set fileName $set fileName dowjones2016.csv
 $ifthen exist "%gams.wdir%%fileName%"
-$  call csv2gdx "%gams.wdir%%fileName%" output=stockdata.gdx ValueDim=1 id=stockdata Index=(1,2) Value=3 UseHeader=y
+$  call csv2gdx "%gams.wdir%%fileName%" output=stockdata.gdx ValueDim=0 id=price Index=(1,2) Value=3 UseHeader=y
 $  if errorlevel 1 $abort problems reading CSV data
 $  gdxin stockdata
-$  load date<stockData.dim1 symbol<stockData.dim2 stockData
+$  load date<price.dim1 symbol<price.dim2 price
 $  gdxin
 $  hiddencall rm -f stockdata.gdx
 $else
 Set date / system.empty /, symbol /system.empty /;
-Parameter stockData(date,symbol,hrd)  / system.empty.system.empty.'price' 0 /;
+Parameter price(date,symbol)  / system.empty.system.empty 0 /;
 $endif
 Alias (d,date), (s,symbol);
 Parameter
-    price(date,symbol)        'price of stock on date'
     avgprice(symbol)          'average price of stock'
     weight(symbol)            'weight of stock'
     contribution(date,symbol) 'contribution of stock on date'
@@ -41,7 +40,6 @@ Parameter
 Set td(date)    'training days'
     ntd(date)   'none-training days';
     
-price(d,s)        = stockData(d,s,'price');
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
 contribution(d,s) = weight(s)*price(d,s);
@@ -84,17 +82,16 @@ fund(d)  = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
 
 $onExternalOutput
-Set wHdr      'w header'               / 'weight'   /
-    fHdr      'fund header'            / 'dow jones','index fund'  /
+Set fHdr      'fund header'            / 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
 Parameter
-    partOfPortfolio(symbol,wHdr)       'what part of the portfolio'   
+    partOfPortfolio(symbol)            'what part of the portfolio'   
     dowVSindex(date,fHdr)              'dow jones vs. index fund'     
     abserror(date,errHdr)              'absolute error'               
 Singleton Set lastDayTraining(date)    'last date of training period ### vertical marker in chart' ;
 $offExternalOutput
 
-partOfPortfolio(s,'weight')          = w.l(s);
+partOfPortfolio(s)                   = w.l(s);
 dowVSindex(d,'dow jones')            = index(d);
 dowVSindex(d,'index fund')           = fund(d);
 abserror(td, 'absolute error train') = error(td);

@@ -44,7 +44,7 @@ animation: none !important;
 }
 .datepicker{
   /* bring datepicker menu to the front */
-  z-index: 9999;
+  z-index: 9999 !important;
 }
 /* header */
 .main-header .logo {

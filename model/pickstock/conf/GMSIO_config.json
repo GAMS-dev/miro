@@ -5,8 +5,8 @@
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "stockdata": {
-            "alias": "data of stock on date",
+        "price": {
+            "alias": "Price",
             "headers": {
                 "date": {
                     "type": "set",
@@ -15,7 +15,7 @@
                 "stockSymbol": {
                     "type": "set"
                 },
-                "price": {
+                "Price": {
                     "type": "parameter"
                 }
             }
@@ -25,7 +25,7 @@
             "slider": {
                 "label": "maximum number of stocks to select",
                 "min": 1,
-                "max": "card(stockdata$stocksymbol)",
+                "max": "card(price$stocksymbol)",
                 "default": 5,
                 "step": 1
             }
@@ -35,7 +35,7 @@
             "slider": {
                 "label": "number of days for training",
                 "min": 1,
-                "max": "card(stockdata$date)",
+                "max": "card(price$date)",
                 "default": 99,
                 "step": 1
             }
@@ -45,10 +45,10 @@
         "partofportfolio": {
             "alias": "what part of the portfolio",
             "headers": {
-                "stockSymbol": {
+                "what part of the portfolio": {
                     "type": "set"
                 },
-                "weight": {
+                "partOfPortfolio": {
                     "type": "parameter"
                 }
             }
@@ -84,7 +84,7 @@
         "scalars_out": {
             "alias": "Scalars",
             "hidden": true,
-            "count": 4,
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

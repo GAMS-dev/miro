@@ -1,8 +1,10 @@
 {
 	"UILogo"             : "pickstock.jpg",
-
+    "aggregateWidgets"    : {
+       "title"    : "Parameters"
+    },
     "dataRendering"      : {
-		"stockdata"   	: {
+		"price"   	: {
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
@@ -38,7 +40,7 @@
 				},						
 				"xdata"     			:"date",
 				"ydata" 				: {
-					"price"    				: {
+					"Price":{
 						"label"					: "stockSymbol"
 					}
 				},
@@ -60,7 +62,7 @@
 				"showlegend"			: true,
                 "title"                 : "Part of the portfolio",
                 "labels"                : "stockSymbol",
-                "values"                : "weight",
+                "values"                : "what part of the portfolio",
                 "xaxis"                 : {
                     "showgrid"              : false,
                     "zeroline"              : false,

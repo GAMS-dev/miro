@@ -18,8 +18,6 @@ Keywords: linear programming, transportation problem, scheduling
 $offText
 
 set
-   aHdr 'a header' / capacity /
-   bHdr 'b header' / demand /
    locHdr 'location data header' /lat, lng/;
 
 *configuration of WebUI input
@@ -34,14 +32,14 @@ Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
 Parameter
-   aExt(i,aHdr) 'capacity of plant i in cases'
-        / seattle.capacity   350
-          san-diego.capacity   600 /
+   a(i) 'capacity of plant i in cases'
+        / seattle   350
+          san-diego   600 /
 
-   bExt(j,bHdr) 'demand at market j in cases'
-        / new-york.demand   325
-          chicago.demand   300
-          topeka.demand   275 /;
+   b(j) 'demand at market j in cases'
+        / new-york   325
+          chicago   300
+          topeka   275 /;
 
 Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /
@@ -50,9 +48,7 @@ $offExternalInput
 
 Parameter
 ilocData(i,locHdr) 'Plant location information',
-jlocData(j,*) 'Market location information'
-a(i) 'capacity of plant i in cases'
-b(j) 'demand at market j in cases'
+jlocData(j,locHdr) 'Market location information'
 d(i,j) 'distance in thousands of miles'
 c(i,j) 'transport cost in thousands of dollars per case';
 
@@ -105,8 +101,6 @@ for idx in range(len(coords)):
 gams.set("d", d)
 endEmbeddedCode iLocData, jLocData, d
 
-a(i) = aExt(i,'capacity');
-b(j) = bExt(j,'demand');
 c(i,j) = f*d(i,j)/1000;
 
 Variable
@@ -193,4 +187,6 @@ schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif.type
 
+$if not exist webui.gms
+$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
 $if set gmswebui $batinclude webui

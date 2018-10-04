@@ -1,5 +1,5 @@
 * webui.gms
-$if not set MAX_VAL_COL $set MAX_VAL_COL 0
+$if not set MAX_VAL_COL $set MAX_VAL_COL -1
 $if not set GMSWEBUI $exit
 $setNames "%gams.input%" fp fn fe
 
@@ -61,9 +61,9 @@ def getCSVHeader(sym, max_val_col):
    
    if sym.dimension==1:
       if sym.domains_as_strings[0] == '*':
-         return 'key,'+sym.name
+         return 'key,'+extractSymText(sym)
       else:
-         return extractSymText(sym.domains[0]) + ',' + sym.name
+         return extractSymText(sym.domains[0]) + ',' + extractSymText(sym)
    else:
       domdict = {}
       d_list = []
@@ -92,7 +92,7 @@ def writeCSVParam(sym, gdxname='none', max_val_col = 5):
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
          if sym.dimension==1:
-            f.write(getCSVHeader(sym)+'\n')
+            f.write(getCSVHeader(sym, max_val_col)+'\n')
             for r in sym:
                f.write(r.key(0) + ',' + str(r.value) + '\n')
          else:
@@ -190,7 +190,6 @@ for sym in db:
          scalar_output_sym.append(sym.name) 
       else:
          raise Exception('Unhandled external output symbol ' + sym.name)
-
 SOhidden = True
 SOtrueLen = 0
 for s in scalar_output_sym:
@@ -295,8 +294,9 @@ for k, v in os.environ.items():
    if k.startswith('%fn%'.upper()+'_'):
       s = k[len('%fn%')+1:]
       s_env.append((s,str(v)))
-      
+  
 if len(scalar_input_sym)+len(s_env)>0:
+   rmfiles.append('scalars.csv')
    with open('scalars.csv', 'w') as f:
       f.write('Scalar,Description,Value\n')
       for s in scalar_input_sym:
@@ -308,6 +308,7 @@ if len(scalar_input_sym)+len(s_env)>0:
       for s in s_env:
          f.write(s[0] + ',' + s[0] + ',' + s[1] + '\n')
       f.closed
+
 if SOtrueLen>0:
    rmfiles.append('scalars_out.csv')
    with open('scalars_out.csv', 'w') as f:
@@ -316,10 +317,14 @@ if SOtrueLen>0:
          if type(db[s])==GamsParameter:
             f.write(s + ',' + extractSymText(db[s]) + ',255+\n')
          if (type(db[s])==GamsSet) and (s not in domsets):
-            f.write(s + ',' + extractSymText(db[s]) + ',' + db[db[s].domains_as_strings[0]].first_record().key(0)+'\n')
+            try:
+               f.write(s + ',' + extractSymText(db[s]) + ',' + db[db[s].domains_as_strings[0]].first_record().key(0)+'\n')
+            except:
+               f.write(s + ',' + extractSymText(db[s]) + ',0\n')
       f.closed
 
 for s in input_sym:
+   rmfiles.append(s.lower()+'.csv')
    writeCSVParam(db[s], max_val_col = %MAX_VAL_COL%)
 
 for s in output_sym:
@@ -327,13 +332,18 @@ for s in output_sym:
    with open(s.lower() + '.csv', 'w') as f:
       f.write(getCSVHeader(db[s], %MAX_VAL_COL%)+'\n')
       if(expandLastCol(db[s], %MAX_VAL_COL%)):
-         d_list  = [ d.first_record().key(0) for d in db[s].domains[:-1] ]
+         try:
+           d_list  = [ d.first_record().key(0) for d in db[s].domains[:-1] ]
+         except:
+           d_list  = [ '0' for d in db[s].domains[:-1] ]
          d_list += [ '0' for r in db[s].domains[-1] ]
       else:
-         d_list  = [ d.first_record().key(0) for d in db[s].domains ]
+         try:
+            d_list  = [ d.first_record().key(0) for d in db[s].domains ]
+         except:
+            d_list  = [ '0' for d in db[s].domains]
       f.write(','.join(d_list)+'\n')
       f.closed
-
 # Create example XLSX file
 def is_number(s):
   try:

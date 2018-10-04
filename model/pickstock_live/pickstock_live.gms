@@ -3,17 +3,17 @@ $title Stock Selection Optimization with live data from the web
 * some weights, such that this portfolio has a similar behavior to our
 * overall Dow Jones index.
 
+$onExternalInput
+Scalar maxstock      'maximum number of stocks to select ### { "slider":{"min":1, "max":29, "default":5, "step":1 }}'  / 2  /
+       trainingdays  'number of days for training        ### { "slider":{"min":1, "max":"card(tw)", "default":99, "step":1 }}'  / 99  /;
+$set WEBUICONF '{ "GMSPAR_TW":{"alias": "time window","daterange":{"label":"time window","start": "2018-01-01","startview": "year"}} }'
+$offExternalInput
+
 Set date   'date'
     symbol 'stockSymbol';
 
 Parameter
-    price(date,symbol)        'price of stock on date'
-    
-$onExternalInput
-Scalar maxstock      'maximum number of stocks to select ### { "slider":{"min":1, "max":29, "default":5, "step":1 }}'  / 2  /
-       trainingdays  'number of days for training        ### { "slider":{"min":1, "max":"card(tw)", "default":99, "step":1 }}'  / 99  /
-$set WEBUICONF '{ "GMSPAR_TW":{"alias": "time window","daterange":{"label":"time window","start": "2016-04-01","startview": "year"}} }'
-$offExternalInput
+    price(date,symbol)        'UIOutput: stock price';
 
 $ifthen %GMSWEBUI%==1
 $  batInclude loadCSV scalars
@@ -24,42 +24,31 @@ $endif
 $if not set TW_MIN $set TW_MIN "2016-02-01"
 $if not set TW_MAX $set TW_MAX "2016-03-31"
 
+$ifthen %GMSWEBUI% == 1
 $onEmbeddedCode Python:
-try:
-   import pandas as pd
-   from datetime import datetime
-   # This is a work-around for a pandas_datareader bug
-   pd.core.common.is_list_like = pd.api.types.is_list_like
-   import pandas_datareader.data as web
-   
-   # stockSymbols in DowJones index
-   # DWDP seems bugged (not responding), thus we leave it out
-   djSymbols  = ["MMM", "AXP", "AAPL", "BA", "CAT", "CVX","CSCO","KO","DIS","XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
-   
-   start = datetime.strptime("%TW_MIN%", '%Y-%m-%d')
-   end   = datetime.strptime("%TW_MAX%", '%Y-%m-%d')
-   
-   price = pd.concat([web.DataReader(sym, 'morningstar', start, end) for sym in djSymbols])
-   gams.set("price", [(str(r[0][1].date()), r[0][0], r[1]) for r in price.itertuples()])
-except:
-   from datetime import datetime
-   import csv
-   import os
-   start = datetime.strptime("%TW_MIN%", '%Y-%m-%d')
-   end   = datetime.strptime("%TW_MAX%", '%Y-%m-%d')
-   fn = 'dowjones2016.csv'
-   if not os.path.isfile(fn):
-      fn = '../../model/pickstock/dowjones2016.csv'
-   with open(fn, 'r') as csvfile:
-      dj = csv.reader(csvfile)
-      next(dj) # skip header row
-      price = []
-      for row in dj:
-        d = datetime.strptime(row[0], '%Y-%m-%d')
-        if (d>=start) and (d<=end):
-           price.append((row[0],row[1],float(row[2])))
-      gams.set('price', price) 
+import pandas as pd
+from datetime import datetime
+# This is a work-around for a pandas_datareader bug
+pd.core.common.is_list_like = pd.api.types.is_list_like
+import pandas_datareader.data as web
+
+# stockSymbols in DowJones index
+djSymbols  = ["MMM", "AXP", "AAPL", "BA", "CAT", "CVX", "CSCO", "KO", "DIS", "DWDP", "XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
+
+start = datetime.strptime("%TW_MIN%", '%Y-%m-%d')
+end   = datetime.strptime("%TW_MAX%", '%Y-%m-%d')
+price = []
+for sym in djSymbols:
+   price_sym = web.DataReader(sym, 'iex', start, end)[['close']]
+   price_sym['symbol'] = sym
+   price.append(price_sym)
+price = pd.concat(price)
+gams.set("price", [(r[0], r[2], r[1]) for r in price.itertuples()])
 $offEmbeddedCode date<price.dim1 symbol<price.dim2 price
+$else
+Set date / system.empty /, symbol /system.empty /;
+Parameter price(date,symbol)  / system.empty.system.empty 0 /;
+$endif
 
 Alias (d,date), (s,symbol);
 Parameter
@@ -117,24 +106,21 @@ fund(d) = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
 
 $onExternalOutput
-Set wHdr      'w header'               / 'weight' /
+Set 
     fHdr      'fund header'            / 'dow jones','index fund' /
-    errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /
-    sdHdr     'header for stock data'  / 'price' /;
+    errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
 Parameter
-    partOfPortfolio(symbol,wHdr)       'what part of the portfolio'
+    partOfPortfolio(symbol)            'what part of the portfolio'
     dowVSindex(date,fHdr)              'dow jones vs. index fund'
-    abserror(date,errHdr)              'absolute error'
-    stockDataRep(date, symbol, sdHdr)  'stock data';
+    abserror(date,errHdr)              'absolute error';
 Singleton Set lastDayTraining(date)    'last date of training period ### vertical marker in chart' ;
 $offExternalOutput
 
-partOfPortfolio(s,'weight')          = w.l(s);
+partOfPortfolio(s)                   = w.l(s);
 dowVSindex(d,'dow jones')            = index(d);
 dowVSindex(d,'index fund')           = fund(d);
 abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
-stockDataRep(d,s,'price')            = price(d,s);
 lastDayTraining(td)                  = td.pos=card(td);
 
 $if not exist webui.gms
