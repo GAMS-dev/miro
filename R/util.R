@@ -1,23 +1,22 @@
-#renderGraphOutput<-function(tool,id){
-#  # Renders the placeholder for a graph that will be inserted at a later stage.
-#  #
-#  # Args:
-#  #   tool: tool that shall be used for rendering the graph 
-#  #   id:   id of the placeholder (div) created
-#  #
-#  # Returns:
-#  #   placeholder for graph with type according to tool
-#  
-#  if(tool=='plotly'){
-#    plotly::plotlyOutput(id)
-#  }else{
-#    stop(paste0("The tool you selected for: '",id,"' is not supported by the current version of GAMS WebUI."))
-#  }
-#}
 '%+%' <- function(x, y){
   paste(x, y, sep = '')
 }
-
+getCommandArg <- function(argName, exception = TRUE){
+  # local mode
+  args <- commandArgs(trailingOnly = TRUE)
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+                   ignore.case = TRUE)
+  if(any(matches)){
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+                ignore.case = TRUE))
+  }else{
+    if(exception){
+      stop()
+    }else{
+      return("")
+    }
+  }
+}
 isWindows <- function() .Platform$OS.type == 'windows'
 
 hasContent <- function(x){
@@ -28,23 +27,6 @@ hasContent <- function(x){
   }
   
   return(TRUE)
-}
-
-getCommandArg <- function(argName, exception = TRUE){
-  # local mode
-  args <- commandArgs(trailingOnly = TRUE)
-  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
-                   ignore.case = TRUE)
-  if(any(matches)){
-    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
-           ignore.case = TRUE))
-  }else{
-    if(exception){
-      stop()
-    }else{
-      return("")
-    }
-  }
 }
 
 getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL){

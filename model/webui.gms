@@ -218,16 +218,16 @@ with open(inc, 'w') as f:
       f.write('\n*$killUel\n$offExternalInput\n$offdigit\n')
    
    if len(scalar_input_sym)>0:
-      f.write('$batInclude loadCSV scalars\n')
+      f.write('$libInclude loadCSV scalars\n')
    for s in input_sym:
       if(expandLastCol(db[s], %MAX_VAL_COL%)):
-         f.write('$batInclude loadCSV '+s.lower())
+         f.write('$libInclude loadCSV '+s.lower())
          for d in db[s].domains_as_strings[:-1]:
             if (d!='*') and db[d].text.startswith(input_tag):
                f.write(' '+d)
          f.write('\n')
       else:
-         f.write('$setEnv GMSWEBUI_EXPAND_HEADER 1\n$batInclude loadCSV '+s.lower())
+         f.write('$setEnv GMSWEBUI_EXPAND_HEADER 1\n$libInclude loadCSV '+s.lower())
          for d in db[s].domains_as_strings:
             if (d!='*') and db[d].text.startswith(input_tag):
                f.write(' '+d)

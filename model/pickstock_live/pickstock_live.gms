@@ -123,7 +123,4 @@ abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
 
-$if not exist webui.gms
-$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
-$batinclude webui
-
+$libInclude webui

@@ -146,6 +146,4 @@ schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif
 
-$if not exist webui.gms
-$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
-$if set gmswebui $batinclude webui
+$if set gmswebui $libInclude webui

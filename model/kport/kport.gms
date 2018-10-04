@@ -285,7 +285,4 @@ RPreport(r,p,'Number of batches') = nb.l(r,p);
 
 display Cost, Surplus, ProductionTime, RPreport;
 
-$if not exist webui.gms
-$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
-$batinclude webui
-
+$libInclude webui

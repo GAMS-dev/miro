@@ -10,8 +10,8 @@ Set date   'date'
 Parameter
     price(date,symbol) 'Price   ### { "headers":{"date":{"readonly":true}} }';
 
-Scalar maxstock        'maximum number of stocks to select ### { "slider":{"min":1, "max":"card(price$stocksymbol)", "default":5,  "step":1 }}'  / 2  /
-       trainingdays    'number of days for training        ### { "slider":{"min":1, "max":"card(price$date)",        "default":99, "step":1 }}'  / 99  /;
+Scalar maxstock        'maximum number of stocks to select '  / 2  /
+       trainingdays    'number of days for training'  / 99  /;
 $offExternalInput
 
 $if not set fileName $set fileName dowjones2016.csv
@@ -98,7 +98,4 @@ abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
 
-$if not exist webui.gms
-$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
-$batinclude webui
-
+$libInclude webui

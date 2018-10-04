@@ -211,7 +211,7 @@ if(is.null(errMsg)){
     })
     inputTabs   <- inputTabs[!vapply(inputTabs, is.null, numeric(1L))]
     inputTabTitles  <- inputTabTitles[!vapply(inputTabTitles, is.null, numeric(1L))]
-    if(identical(length(inputTabs[[widgetId]]), 1L)){
+    if(!is.null(widgetId) && identical(length(inputTabs[[widgetId]]), 1L)){
       # if there is only a single widget in widget tab use alias of this widget
       inputTabTitles[[widgetId]] <- modelInAlias[[widgetId]]
     }
@@ -692,8 +692,6 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     
     # get the operating system that shiny is running on
     serverOS    <- getOS()
-    gamsSysDir   <- ""
-    try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
     # generate GAMS return code map
     GAMSReturnCodeMap <- c('1' = "Solver is to be called, the system should never return this number", 
                            '2' = "There was a compilation error", 
@@ -759,5 +757,5 @@ if(is.null(errMsg)){
        modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
        modelInToImportAlias, modelInToImport, scenTableNames,
        scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
-       modelInGmsString, gamsSysDir, file = rSaveFilePath)
+       modelInGmsString, file = rSaveFilePath)
 }

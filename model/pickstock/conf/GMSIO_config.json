@@ -20,24 +20,18 @@
                 }
             }
         },
-        "maxstock": {
-            "alias": "maximum number of stocks to select",
-            "slider": {
-                "label": "maximum number of stocks to select",
-                "min": 1,
-                "max": "card(price$stocksymbol)",
-                "default": 5,
-                "step": 1
-            }
-        },
-        "trainingdays": {
-            "alias": "number of days for training",
-            "slider": {
-                "label": "number of days for training",
-                "min": 1,
-                "max": "card(price$date)",
-                "default": 99,
-                "step": 1
+        "scalars": {
+            "alias": "Scalars",
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
             }
         }
     },

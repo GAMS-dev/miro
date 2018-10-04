@@ -20,7 +20,6 @@ webuiVersion <- '0_2_3'
 # zip             #CC0
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 
-CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 tmpFileDir <- tempdir(TRUE)
 # directory of configuration files
@@ -41,7 +40,31 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.1)
   on.exit(close(pb))
 }
-
+gamsSysDir   <- ""
+getCommandArg <- function(argName, exception = TRUE){
+  # local mode
+  args <- commandArgs(trailingOnly = TRUE)
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+                   ignore.case = TRUE)
+  if(any(matches)){
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+                ignore.case = TRUE))
+  }else{
+    if(exception){
+      stop()
+    }else{
+      return("")
+    }
+  }
+}
+try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
+if(identical(gamsSysDir, "")){
+  CRANMirror <- "http://cran.us.r-project.org"
+  RLibPath = .libPaths()[[1]]
+}else{
+  CRANMirror <- NULL
+  RLibPath = paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, "library") 
+}
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.6, label= "Initialising GAMS WebUI")
@@ -290,7 +313,6 @@ if(!is.null(errMsg)){
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
     session$onSessionEnded(function() {
-      try(flog.info("Session ended (model: '%s').", modelName))
       if(!interactive()){
         stopApp()
         q("no")

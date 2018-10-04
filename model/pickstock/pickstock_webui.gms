@@ -3,9 +3,9 @@ $kill price symbol date
 *$killUel
 $offExternalInput
 $offdigit
-$batInclude loadCSV scalars
+$libInclude loadCSV scalars
 $setEnv GMSWEBUI_EXPAND_HEADER 1
-$batInclude loadCSV price date symbol
+$libInclude loadCSV price date symbol
 $dropEnv GMSWEBUI_EXPAND_HEADER
 $onmulti
 $if setenv PICKSTOCK_MAXSTOCK Scalar maxstock / %sysEnv.PICKSTOCK_MAXSTOCK% /
