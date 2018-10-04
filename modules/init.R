@@ -577,7 +577,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     inputDsNames <- c(modelInTabularData, scalarsFileName)
   }
   }
-  
+
   if(is.null(errMsg)){
     # determine the filenames for the model input datasets
     if(scalarsFileName %in% modelInTabularData){
@@ -605,16 +605,17 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     # find dependencies
     lapply(modelInNoDep, function(sheet){
       # get input element id of dataset without dependency
-      i <- match(tolower(sheet), names(modelIn))[[1]]
+      i <- match(tolower(sheet), names(modelIn))
       # find columns of dataset i with dependency
       
       lapply(names(modelIn[[i]]$headers), function(col){
         lapply(names(modelIn), function(sheetDep){
           # test if sheetDep has a forward dependency on considered sheet without forward dependencies
           if(col %in% ddownDep[[sheetDep]]$bw[[sheet]]){
-            if(length(colsWithDep[[i]][[col]])){
+            if(col %in% names(colsWithDep[[i]])){
               errMsg <<- paste(errMsg,paste0(col, " of input sheet ", sheet, 
-                                             "has more than one dependency. Only one backward dependency per column is allowed.", e), sep = "\n")
+                                             "has more than one dependency. Only one backward dependency per column is allowed.", e), 
+                               sep = "\n")
             }else{
               id <- match(tolower(sheetDep), names(modelIn))
               colsWithDep[[i]][[col]] <<- id
@@ -654,6 +655,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
         modelInTemplate[[i]] <<- tibble::tibble(!!!headers)
       }
     })
+    
     modelOutTemplate <- vector(mode = "list", length = length(modelOut))
     lapply(modelOutToDisplay, function(outputSheet){
       outputSheetIdx <- match(outputSheet, names(modelOut))
@@ -680,6 +682,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
       errMsg <- "The GMSWebUI version you possess does not support the scenario mode. " %+%
 "Please contact GAMS support if you wish to receive a version that does." 
     }
+    
     # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
     # scenario data is a concatenated list of outputData and inputData
     scenTableNames    <- c(names(modelOut), inputDsNames)

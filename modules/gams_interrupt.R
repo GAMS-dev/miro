@@ -6,6 +6,8 @@ observeEvent(input$btInterrupt,{
     flog.error("Problems interrupting the gams call. Error message: %s.", e)
     errMsg <<- lang$errMsg$gamsTerm$desc
   })
-  showErrorMsg(lang$errMsg$gamsTerm$title, errMsg)
-  shinyjs::disable("btInterrupt")
+  if(is.null(showErrorMsg(lang$errMsg$gamsTerm$title, errMsg))){
+    return()
+  }
+  disable("btInterrupt")
 })

@@ -289,6 +289,13 @@ if(!is.null(errMsg)){
     output$JSONErrorMessages <- renderTable(
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
+    session$onSessionEnded(function() {
+      try(flog.info("Session ended (model: '%s').", modelName))
+      if(!interactive()){
+        stopApp()
+        q("no")
+      }
+    })
   }
   
   shinyApp(ui = ui_initError, server = server_initError)

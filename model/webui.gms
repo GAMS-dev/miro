@@ -1,4 +1,5 @@
 * webui.gms
+$if not set MAX_VAL_COL $set MAX_VAL_COL 0
 $if not set GMSWEBUI $exit
 $setNames "%gams.input%" fp fn fe
 
@@ -27,7 +28,11 @@ $  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages
 $endif.b
 $endif.a
 $onecho > writecsv.py
-def extractSymText(text, leavehash=0):
+from subprocess import run
+from shlex import quote
+
+def extractSymText(sym, leavehash=0):
+   text = sym.text
    input_tag = '%UIInput%'
    uii = len(input_tag)
    output_tag = '%UIOutput%'
@@ -38,28 +43,52 @@ def extractSymText(text, leavehash=0):
       text = text[uio:]
    if (leavehash==0) and (text.find(' ###')>=0):
       text = text[:text.find(' ###')]
-   return text.strip()   
+   text = text.strip()
+   if(len(text) == 0):
+      text = sym.name
+   return text
 
-def getCSVHeader(sym):
+def expandLastCol(sym, max_val_col):
+   if (sym.domains[-1].name.lower().endswith('hdr') or
+        sym.domains[-1].text.lower().endswith('hdr')):
+      expand_last_col = True
+   else:
+      expand_last_col = len(sym.domains[-1]) <= max_val_col
+   return expand_last_col
+
+def getCSVHeader(sym, max_val_col):
+   expand_last_col = expandLastCol(sym, max_val_col)
+   
    if sym.dimension==1:
       if sym.domains_as_strings[0] == '*':
          return 'key,'+sym.name
       else:
-         return extractSymText(sym.domains[0].text) + ',' + sym.name
+         return extractSymText(sym.domains[0]) + ',' + sym.name
    else:
       domdict = {}
       d_list = []
-      for d in sym.domains[:-1]:
-         s = extractSymText(d.text)
+      if expand_last_col:
+         domains = sym.domains[:-1]
+      else:
+         domains = sym.domains
+      for d in domains:
+         s = extractSymText(d)
          if s in domdict:
             d_list.append(s + str(domdict[s]))
             domdict[s] = domdict[s]+1
          else:
             domdict[s] = 1
             d_list.append(s)
-      d_list += [ r.key(0) for r in sym.domains[-1] ]
+      if expand_last_col:
+         d_list += [ r.key(0) for r in sym.domains[-1] ]
+      else:
+         s = extractSymText(sym)
+         d_list.append(s)
       return ','.join(d_list)
-def writeCSVParam(sym, gdxname='none'):
+
+      
+def writeCSVParam(sym, gdxname='none', max_val_col = 5):
+   expand_last_col = expandLastCol(sym, max_val_col)
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
          if sym.dimension==1:
@@ -68,27 +97,45 @@ def writeCSVParam(sym, gdxname='none'):
                f.write(r.key(0) + ',' + str(r.value) + '\n')
          else:
             dbX = sym.database.workspace.add_database(source_database=sym.database)
-            p = dbX.add_set('project',sym.dimension-1)
+            if expand_last_col:
+               dim = sym.dimension-1
+            else:
+               dim = sym.dimension
+            p = dbX.add_set('project',dim)
             for r in sym:
                try:
-                 p.add_record(r.keys[:-1])
+                 if expand_last_col:
+                    p.add_record(r.keys[:-1])
+                 else:
+                    p.add_record(r.keys)
                except:
                  pass
-                 
-            r_list = [ r.key(0) for r in sym.domains[-1] ]
-            f.write(getCSVHeader(sym)+'\n')
+            if expand_last_col:
+               r_list = [ r.key(0) for r in sym.domains[-1] ]
+            else:
+               r_list = [ extractSymText(sym) ]
+            f.write(getCSVHeader(sym, max_val_col)+'\n')
+            #rows (no values)
             for r in p:
                p_list = r.keys
+               #Values
                for t in r_list:
                   try:
-                    p_list.append(str(sym.find_record(r.keys + [t]).value))
+                     if expand_last_col:
+                        p_list.append(str(sym.find_record(r.keys + [t]).value))
+                     else:
+                        p_list.append(str(sym.find_record(r.keys).value))
                   except:
                     p_list.append('0')
                f.write(','.join(p_list)+'\n')
          f.closed
    else:
-      import subprocess
-      subprocess.call('gdxdump ' + gdxname + ' epsout=0 symb='+sym.name+' cdim=y format=csv header="' + getCSVHeader(sym) + '" > ' + sym.name.lower()+'.csv', shell=True)
+      if expand_last_col:
+         cdim = 'y'
+      else:
+         cdim = 'n'
+
+      run('gdxdump ' + quote(gdxname) + ' epsout=0 symb='+quote(sym.name)+' cdim='+quote(cdim)+' format=csv header="' + getCSVHeader(sym, %MAX_VAL_COL%) + '" > ' + quote(sym.name.lower())+'.csv', shell=True)
 $offecho
 $if not set WEBUICONF $set WEBUICONF
 $onEmbeddedCode Python:
@@ -149,7 +196,7 @@ SOtrueLen = 0
 for s in scalar_output_sym:
    if s not in domsets:
       SOtrueLen = SOtrueLen+1
-      text = extractSymText(db[s].text,1)
+      text = extractSymText(db[s],1)
       if text.find(' ###')==-1:
          SOhidden = False
 
@@ -160,7 +207,11 @@ with open(inc, 'w') as f:
       doms = set()
       for s in input_sym:
          f.write(' '+s)
-         for d in db[s].domains_as_strings[:-1]:
+         if(expandLastCol(db[s], %MAX_VAL_COL%)):
+            domains = db[s].domains_as_strings[:-1]
+         else:
+            domains = db[s].domains_as_strings
+         for d in domains:
             if (d!='*') and db[d].text.startswith(input_tag):
                doms.add(d)
       for s in doms:
@@ -170,11 +221,18 @@ with open(inc, 'w') as f:
    if len(scalar_input_sym)>0:
       f.write('$batInclude loadCSV scalars\n')
    for s in input_sym:
-      f.write('$batInclude loadCSV '+s.lower())
-      for d in db[s].domains_as_strings[:-1]:
-         if (d!='*') and db[d].text.startswith(input_tag):
-            f.write(' '+d)
-      f.write('\n')
+      if(expandLastCol(db[s], %MAX_VAL_COL%)):
+         f.write('$batInclude loadCSV '+s.lower())
+         for d in db[s].domains_as_strings[:-1]:
+            if (d!='*') and db[d].text.startswith(input_tag):
+               f.write(' '+d)
+         f.write('\n')
+      else:
+         f.write('$setEnv GMSWEBUI_EXPAND_HEADER 1\n$batInclude loadCSV '+s.lower())
+         for d in db[s].domains_as_strings:
+            if (d!='*') and db[d].text.startswith(input_tag):
+               f.write(' '+d)
+         f.write('\n$dropEnv GMSWEBUI_EXPAND_HEADER\n')
    f.write('$onmulti\n')
    for s in scalar_input_sym:
       if type(db[s])==GamsParameter:
@@ -212,17 +270,17 @@ with open(inc, 'w') as f:
    f.write('\ngams.wsWorkingDir = "."\n')
    f.write('db = gams.ws.add_database_from_gdx("gmswebui.gdx")\n')
    for s in output_sym:
-      f.write('writeCSVParam(db["' + s + '"],"gmswebui.gdx")\n')
+      f.write('writeCSVParam(db["' + s + '"],"gmswebui.gdx", %MAX_VAL_COL%)\n')
    if SOtrueLen>0:
       f.write("with open('scalars_out.csv', 'w') as f:\n");
       f.write("   f.write('Scalar,Description,Value\\n')\n")
       for s in scalar_output_sym:
          if type(db[s])==GamsParameter:
-            f.write("   f.write('" + s + ",\"" + extractSymText(db[s].text,1) + "\",'")
+            f.write("   f.write('" + s + ",\"" + extractSymText(db[s],1) + "\",'")
             f.write(" + str(db['" + s + "'].first_record().value) + '\\n')\n")
          if (type(db[s])==GamsSet) and (s not in domsets):
             f.write("   if(len(db['" + s + "'])):\n")
-            f.write("      f.write('" + s + ",\"" + extractSymText(db[s].text,1) + "\",'")
+            f.write("      f.write('" + s + ",\"" + extractSymText(db[s],1) + "\",'")
             f.write(" + str(db['" + s + "'].first_record().key(0)) + '\\n')\n")
       f.write("   f.closed\n")
    f.write("db.__del__()\n")
@@ -242,7 +300,7 @@ if len(scalar_input_sym)+len(s_env)>0:
    with open('scalars.csv', 'w') as f:
       f.write('Scalar,Description,Value\n')
       for s in scalar_input_sym:
-         f.write(s + ',' + extractSymText(db[s].text) + ',')
+         f.write(s + ',' + extractSymText(db[s]) + ',')
          if type(db[s])==GamsParameter:
             f.write(str(db[s].first_record().value)+'\n')
          if type(db[s])==GamsSet:
@@ -256,20 +314,23 @@ if SOtrueLen>0:
       f.write('Scalar,Description,Value\n')
       for s in scalar_output_sym:
          if type(db[s])==GamsParameter:
-            f.write(s + ',' + extractSymText(db[s].text) + ',255+\n')
+            f.write(s + ',' + extractSymText(db[s]) + ',255+\n')
          if (type(db[s])==GamsSet) and (s not in domsets):
-            f.write(s + ',' + extractSymText(db[s].text) + ',' + db[db[s].domains_as_strings[0]].first_record().key(0)+'\n')
+            f.write(s + ',' + extractSymText(db[s]) + ',' + db[db[s].domains_as_strings[0]].first_record().key(0)+'\n')
       f.closed
 
 for s in input_sym:
-   writeCSVParam(db[s])
+   writeCSVParam(db[s], max_val_col = %MAX_VAL_COL%)
 
 for s in output_sym:
    rmfiles.append(s.lower()+'.csv')
    with open(s.lower() + '.csv', 'w') as f:
-      f.write(getCSVHeader(db[s])+'\n')
-      d_list  = [ d.first_record().key(0) for d in db[s].domains[:-1] ]
-      d_list += [ '0' for r in db[s].domains[-1] ]
+      f.write(getCSVHeader(db[s], %MAX_VAL_COL%)+'\n')
+      if(expandLastCol(db[s], %MAX_VAL_COL%)):
+         d_list  = [ d.first_record().key(0) for d in db[s].domains[:-1] ]
+         d_list += [ '0' for r in db[s].domains[-1] ]
+      else:
+         d_list  = [ d.first_record().key(0) for d in db[s].domains ]
       f.write(','.join(d_list)+'\n')
       f.closed
 
@@ -311,7 +372,7 @@ except:
 import copy
 def dict_merge(a, b):
     '''recursively merges dict's. not just simple a['key'] = b['key'], if
-    both a and bhave a key who's value is a dict then dict_merge is called
+    both a and b have a key who's value is a dict then dict_merge is called
     on both values and the result stored in the returned dictionary.'''
     if not isinstance(b, dict):
         return b
@@ -332,34 +393,42 @@ config = { "pageTitle" : "%system.title%",
 
 io_dict = {}           
 for s in input_sym:
-   text = extractSymText(db[s].text,1)
+   text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
       e_dict = json.loads(text[text.find(' ###')+4:])
    else:   
       e_dict = {}
    headers = {}
-   for d in db[s].domains[:-1]:
-      headers[extractSymText(d.text)] = { 'type':'set' }
-   for r in db[s].domains[-1]:
-      headers[r.key(0).lower()] = { 'type':'parameter' }
-   auto = { 'alias':extractSymText(db[s].text), 'headers':headers }
+   if expandLastCol(db[s], %MAX_VAL_COL%):
+      for d in db[s].domains[:-1]:
+         headers[extractSymText(d)] = { 'type':'set' }
+   
+      for r in db[s].domains[-1]:
+         headers[r.key(0).lower()] = { 'type':'parameter' }
+   else:
+      for d in db[s].domains:
+         headers[extractSymText(d)] = { 'type':'set' }
+
+      headers[extractSymText(db[s])] = { 'type':'parameter' }
+   
+   auto = { 'alias':extractSymText(db[s]), 'headers':headers }
    io_dict[s.lower()] = dict_merge(auto,e_dict)
 
 needScalar = False
 for s in scalar_input_sym:
-   text = extractSymText(db[s].text,1)
+   text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
       e_dict = json.loads(text[text.find(' ###')+4:])
    else:   
       e_dict = {}
-   auto = { 'alias':extractSymText(db[s].text) }
+   auto = { 'alias':extractSymText(db[s]) }
    add2Dict = True
    if 'slider' in e_dict:
-      auto['slider'] = {'label':extractSymText(db[s].text)}
+      auto['slider'] = {'label':extractSymText(db[s])}
    elif 'daterange' in e_dict:
-      auto['daterange'] = {'label':extractSymText(db[s].text)}
+      auto['daterange'] = {'label':extractSymText(db[s])}
    elif 'dropdown' in e_dict:
-      auto['dropdown'] = {'label':extractSymText(db[s].text)}
+      auto['dropdown'] = {'label':extractSymText(db[s])}
    else:
       add2Dict = False
    if add2Dict:
@@ -379,7 +448,7 @@ else:
    
 io_dict = {}           
 for s in output_sym:
-   text = extractSymText(db[s].text,1)
+   text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
       e_dict = json.loads(text[text.find(' ###')+4:])
    else:   
@@ -387,16 +456,23 @@ for s in output_sym:
    headers = {}
    if db[s].dimension==1:
       if db[s].domains_as_strings[0] == '*':
-         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s].text), 'headers':{'key':{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
+         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{'key':{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
       else:
-         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s].text), 'headers':{extractSymText(db[s].text):{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
+         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{extractSymText(db[s]):{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
    else:         
       headers = {}
-      for d in db[s].domains[:-1]:
-         headers[extractSymText(d.text)] = { 'type':'set' }
-      for r in db[s].domains[-1]:
-         headers[r.key(0).lower()] = { 'type':'parameter' }
-      auto = { 'alias':extractSymText(db[s].text), 'headers':headers }
+      if expandLastCol(db[s], %MAX_VAL_COL%):
+         for d in db[s].domains[:-1]:
+            headers[extractSymText(d)] = { 'type':'set' }
+      
+         for r in db[s].domains[-1]:
+            headers[r.key(0).lower()] = { 'type':'parameter' }
+      else:
+         for d in db[s].domains:
+            headers[extractSymText(d)] = { 'type':'set' }
+         headers[extractSymText(db[s])] = { 'type':'parameter' }
+      
+      auto = { 'alias':extractSymText(db[s]), 'headers':headers }
       io_dict[s.lower()] = dict_merge(auto,e_dict)
 
 if SOtrueLen>0:

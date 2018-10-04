@@ -270,10 +270,10 @@ observeEvent(input$btSolve, {
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
     writeLines(c(gamsArgs, pfFileContent), paste0(workDir, tolower(modelName), ".pf"))
-    gams <<- processx::process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                    "pf=" %+% pfFilePath, 
-                                                    config$gamsWEBUISwitch), 
-                                   stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
+    gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
+                                                         "pf=" %+% pfFilePath, 
+                                                         config$gamsWEBUISwitch), 
+                         stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
     flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
@@ -390,7 +390,7 @@ observeEvent(input$btSolve, {
         
         # enable download button for saving scenario to Excel file
         enable("export_1")
-
+        
         # mark scenario as unsaved
         markUnsaved()
       }

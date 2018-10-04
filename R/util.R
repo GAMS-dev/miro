@@ -245,7 +245,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
                 }else{
                   # neither forward nor backward dependency selected results in error or rendering as string
                   if(strictMode){
-                    stop(paste0("Neither a forward nor a backward dependency was defined in: '", choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
+                    stop(paste0("Neither a forward nor a backward dependency was defined in: '", 
+                                choices[[i]], "'. Make sure you define some type of dependency."), call. = F)
                   }else{
                     ddownDep$strings[[k]] <<- choices[[i]]
                     k <<- k + 1
@@ -256,7 +257,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
             # no column was found with matching name (invalid reference)
             if(!colFound){
               if(strictMode){
-                stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."), call. = F)
+                stop(paste0("A column named: '", elRaw, "' could not be found. Make sure you define a valid reference."),
+                     call. = F)
               }else{
                 ddownDep$strings[[k]] <<- choices[[i]]
                 k <<- k + 1
@@ -304,7 +306,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
       if(grepl("\\(", el)){
         # split string in operator and operand part
         splitted <- strsplit(el, "\\(|\\)")[[1]]
-        operator <- splitted[[1]]
+        operator <- tolower(splitted[[1]])
         if(!operator %in% listOfOperators){
           stop(paste0("'", operator, "' is not a valid operator for sliders."), call. = F)
         }

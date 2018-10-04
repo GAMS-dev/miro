@@ -163,7 +163,6 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                      )},
                                    icon = icon("file"))
   
-  # upload data from db tab
   if(config$activateModules$scenario){
     tabLoadFromDb <- tabPanel(lang$nav$dialogImport$tabDatabase, value = "tb_importData_remote",
                               fluidRow(
@@ -175,7 +174,7 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                            tags$div(class = "space"),
                                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
                                                        db$formatScenList(scenMetadata, stimeIdentifier, desc = TRUE), 
-                                                       multiple = F, width = "100%"),
+                                                       multiple = FALSE, width = "100%"),
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
                                              actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, 
@@ -184,24 +183,6 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                              actionButton("btSortTime", label = lang$nav$dialogLoadScen$btSortTimeASC, 
                                                           icon = icon("sort-by-order", lib = "glyphicon"), 
                                                           class = "scen-sort-by")
-                                           ),
-                                           fluidRow(
-                                             div(class= "choose-input", 
-                                                 column(6,
-                                                        tags$label(class = "checkbox-material", 'for'= "cbSelectManually", 
-                                                                   checkboxInput("cbSelectManually", "", F), 
-                                                                   lang$nav$dialogImport$cbSelectManually)
-                                                 ),
-                                                 column(6,
-                                                        conditionalPanel(
-                                                          condition = "input.cbSelectManually == true",
-                                                          selectInput("selInputData", lang$nav$dialogImport$selInputData, 
-                                                                      setNames(as.list(names(modelInToImport)), 
-                                                                               modelInToImportAlias), 
-                                                                      multiple = TRUE, width = "100%")
-                                                        )
-                                                 )
-                                             )
                                            ),
                                            tags$div(class = "small-space"),
                                            tags$div(style = "text-align: center;",
