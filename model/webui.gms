@@ -351,10 +351,17 @@ def is_number(s):
     return True
   except ValueError:
     return False
-
+try:
+   from xlsxwriter.workbook import Workbook
+except:
+   import pip
+   if(hasattr(pip, 'main')):
+      pip.main(['install', 'xlsxwriter'])
+   else:
+      pip._internal.main(['install', 'xlsxwriter'])
+   from xlsxwriter.workbook import Workbook
 try:
    import csv
-   from xlsxwriter.workbook import Workbook
        
    workbook = Workbook('%fn%.xlsx')
    
@@ -511,7 +518,11 @@ if %GMSWEBUI%>2 and os.name == "nt":
     
     def get_r_path():
         def major_minor_micro(version):
-            major, minor, micro = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
+            RverTmp = re.search('(\d+)\.(\d+)\.(\d+)', version)
+            if RverTmp is None:
+               major, minor, micro = (0,0,0)
+            else:
+               major, minor, micro = RverTmp.groups()
             return int(major), int(minor), int(micro)
         try:
             aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
@@ -540,20 +551,25 @@ if %GMSWEBUI%>2 and os.name == "nt":
         sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
         with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
-           f.write(".libPaths(c('" + sysdir + "library', .libPaths()))\n")
-           f.write("if(!'shiny'%in%installed.packages()){\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
-           f.write("shiny::runApp(launch.browser=TRUE)")
+           f.write("RLibPath <- '"+sysdir+"GMSWebUI\\\\library'\n")
+           f.write("pkg_path <- list.files(RLibPath,'^shiny_.*\\\\.zip$', full.names = TRUE, recursive = TRUE)\n")
+           f.write("if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){\n")
+           f.write("if(length(pkg_path)){\n")
+           f.write("install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, type='binary', dependencies = TRUE)\n")
+           f.write("}else{\n")
+           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}}\n")
+           f.write("library('shiny', lib.loc= RLibPath, character.only = TRUE)\n")
+           f.write("runApp(launch.browser=TRUE)")
     else:
         with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()){\n")
+           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
            f.write("shiny::runApp(launch.browser=TRUE)")
 elif %GMSWEBUI%>2:
     with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()){\n")
+           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
            f.write("shiny::runApp(launch.browser=TRUE)")
 $offembeddedCode

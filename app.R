@@ -1,5 +1,5 @@
 #version number
-webuiVersion <- '0_2_3'
+webuiVersion <- '0_2_3_1'
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -19,7 +19,7 @@ webuiVersion <- '0_2_3'
 # futile.logger   #LGPL-3
 # zip             #CC0
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
-
+CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 tmpFileDir <- tempdir(TRUE)
 # directory of configuration files
@@ -30,10 +30,16 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
                     "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "shinyjs", "DT", "processx", 
-                      "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
-                      "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "reshape2", "xts", "zip")
+requiredPackages <- c("plyr", "withr", "R6", "stringi", "shiny", "shinydashboard", 
+                      "shinyjs", "htmlwidgets", "assertthat", "ps", "V8", "curl", 
+                      "pkgconfig", "tibble", "pillar", "tidyselect", "purrr", "bindrcpp", 
+                      "bindr", "glue", "DT", "processx", "V8", "dplyr", "readr", "readxl", 
+                      "writexl", "rhandsontable", "hms", "cellranger", "ggplot2", "gtable", 
+                      "scales", "munsell", "colorspace", "lazyeval", "plotly", "jsonlite", 
+                      "jsonvalidate", "rpivotTable", "data.table", "httr", "tidyr", "viridisLite", 
+                      "futile.options", "futile.logger", "e1071", "units", "yaml", "crosstalk", 
+                      "lambda.r", "DBI", "spData", "classInt", "formatR", "zoo", "stringr", "dygraphs",
+                      "reshape2", "xts", "zip")
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -58,11 +64,10 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
-if(identical(gamsSysDir, "")){
-  CRANMirror <- "http://cran.us.r-project.org"
-  RLibPath = .libPaths()[[1]]
+if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "GMSWebUI", 
+                                                   .Platform$file.sep, "library"))){
+  RLibPath = NULL
 }else{
-  CRANMirror <- NULL
   RLibPath = paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, "library") 
 }
 source("./R/install_packages.R", local = TRUE)

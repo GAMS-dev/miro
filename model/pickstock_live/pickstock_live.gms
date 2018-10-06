@@ -16,7 +16,7 @@ Parameter
     price(date,symbol)        'UIOutput: stock price';
 
 $ifthen %GMSWEBUI%==1
-$  batInclude loadCSV scalars
+$  libInclude loadCSV scalars
 $  if setenv PICKSTOCK_LIVE_TW_min $set TW_MIN %sysenv.PICKSTOCK_LIVE_TW_MIN%
 $  if setenv PICKSTOCK_LIVE_TW_max $set TW_MAX %sysenv.PICKSTOCK_LIVE_TW_MAX%
 $endif

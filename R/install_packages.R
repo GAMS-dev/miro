@@ -6,13 +6,13 @@ if(length(newPackages)){
   
   for(pkg_name in newPackages){
     tryCatch({
-      if(is.null(CRANMirror)){
-        pkg_path <- list.files(RLibPath, paste0(pkg_name, "_.*\\.zip$"), 
-                               full.names = TRUE, recursive = TRUE)[[1]]
-        install.packages(pkg_path, lib = RLibPath, repos = NULL, 
-                         type="binary", dependencies = TRUE)
-      }else{
+      pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\.zip$"), 
+                             full.names = TRUE, recursive = TRUE)
+      if(is.null(RLibPath) || !length(pkg_path)){
         install.packages(pkg_name, lib = RLibPath, repos = CRANMirror, dependencies = TRUE)
+      }else{
+        install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
+                         type="binary", dependencies = TRUE)
       }
     }, error = function(e){
       if(exists("flog.fatal")){
