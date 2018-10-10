@@ -91,7 +91,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         valueBox(
           round(data[[3]][[i]], roundPrecision), data[[2]][[i]], 
           getIcon(customOptions$icon$name, customOptions$icon$lib),
-          if(identical(customOptions$color, NULL)) "purple" else customOptions$color
+          if(identical(customOptions$color, NULL)) "aqua" else customOptions$color
         )
       })
     })
