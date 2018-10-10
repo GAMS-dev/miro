@@ -17,8 +17,8 @@ observeEvent(input[["btCloseFinal_" %+% i]],{
   rv$scenId                   <<- i
   sidCompOrder                <<- sidCompOrder[-which(sidCompOrder == i)]
   if(!numberScenTabs){
-    shinyjs::show("noScen")
+    showEl(session, "#noScen")
   }else if(numberScenTabs == 1){
-    shinyjs::disable("btCompareScen")
+    disableEl(session, "#btCompareScen")
   }
 })

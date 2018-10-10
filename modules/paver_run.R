@@ -12,13 +12,13 @@ genPaverArgs <- function(traceFilenames){
 }
 
 observeEvent(input$btPaverConfig, {
-  shinyjs::show("configPaver")
-  shinyjs::show("btPaver")
-  hide("btBatchLoad")
-  hide("btPaverConfig")
+  showEl(session, "#configPaver")
+  showEl(session, "#btPaver")
+  hideEl(session, "#btBatchLoad")
+  hideEl(session, "#btPaverConfig")
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
-    shinyjs::show("deleteTrace")
+    showEl(session, "#deleteTrace")
   }
 })
 
@@ -27,7 +27,7 @@ observeEvent(input$btPaver, {
   
   if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[sidsToLoad, ], 
                             input$selPaverAttribs, maxSolversPaver, stimeIdentifier)){
-    shinyjs::show("configPaverMaxSolversErr")
+    showEl(session, "#configPaverMaxSolversErr")
     return()
   }else{
     errMsg <- NULL
@@ -63,13 +63,13 @@ observeEvent(input$btPaver, {
     removeTab("tabs_paver_results", "stat_SolutionQuality")
     removeTab("tabs_paver_results", "solvedata")
     removeTab("tabs_paver_results", "documentation")
-    hide("btLoadBatch")
-    hide("paver_fail")
+    hideEl(session, "#btLoadBatch")
+    hideEl(session, "#paver_fail")
     updateTabsetPanel(session, "tabs_paver_results", selected = "index")
     output$paverResults <- renderUI(character())
-    shinyjs::show("paver_load")
-    hide("newPaverRunButton")
-    shinyjs::enable("btPaverInterrupt")
+    showEl(session, "#paver_load")
+    hideEl(session, "#newPaverRunButton")
+    enableEl(session, "#btPaverInterrupt")
     updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
     
     if(!dir.exists(paverFileDir)){
@@ -102,7 +102,7 @@ observeEvent(input$btPaver, {
     output$paverResults <- renderUI(
       if(!is.null(paverStatus())){
         if(paverStatus() == 0){
-          hide("paver_load")
+          hideEl(session, "#paver_load")
           paverResultTabs <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
           lapply(2:length(paverResultTabs), function(i){
             insertTab("tabs_paver_results", target = paverResultTabs[i-1], position = "after",
@@ -122,8 +122,8 @@ observeEvent(input$btPaver, {
           return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultTabs[1], ".html")))
         }else{
           flog.error("Problems while running paver. Error message: '%s'.", paver$read_all_error())
-          hide("paver_load")
-          shinyjs::show("paver_fail")
+          hideEl(session, "#paver_load")
+          showEl(session, "#paver_fail")
         }
       }
     )

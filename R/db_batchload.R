@@ -242,7 +242,7 @@ BatchLoad <- R6Class("BatchLoad",
                                     dbQuoteIdentifier(private$conn, keyCol), " FROM ", 
                                     dbQuoteIdentifier(private$conn, tableName), " ORDER BY 1') AS ", 
                                     dbQuoteIdentifier(private$conn, tableName %+% "_tmp"), " (", 
-                                    dbQuoteIdentifier(private$conn, private$sidCol), " bigint, ", 
+                                    dbQuoteIdentifier(private$conn, private$sidCol), " int, ", 
                                     private$genKeyTypeString(keyTypeList), ")"))
                        },
                        genKeyTypeString       = function(keyTypeList){

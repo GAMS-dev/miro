@@ -16,18 +16,13 @@ renderPivot <- function(data, options, height = NULL, roundPrecision = 2, static
   if(is.null(height)){
     height <- pivotDefaultHeight
   }
-  
-  p <- rpivotTable::rpivotTable(roundDf(data, roundPrecision), rows = options$rows, cols = options$cols, aggregatorName = options$aggregatorName,
-                                vals = options$vals, rendererName = options$rendererName, inclusions = options$inclusions,
-                                exclusions = options$exclusions, sorter = options$sorter, subtotals = options$subtotals, 
-                                locale = if(is.null(options$locale)){
-                                  "en"
-                                }else{
-                                  options$locale
-                                }, height = height)
+  if(is.null(options$locale)){
+    "en"
+  }
+  p <- do.call(rpivotTable, c(list(roundDf(data, roundPrecision)), options))
   if(static){
     return(p)
   }else{
-    return(rpivotTable::renderRpivotTable(p))
+    return(renderRpivotTable(p))
   }
 }

@@ -183,7 +183,7 @@ observeEvent(input$btSolve, {
                             lang$nav$dialogBatch$noScenSelectedDialog$desc))
       return(NULL)
     }
-    disable("btSolve")
+    disableEl(session, "#btSolve")
     
     idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier))
     scenToSolve <- scenToSolve()
@@ -201,7 +201,7 @@ observeEvent(input$btSolve, {
                             actionButton("btBatchNew", label = lang$nav$dialogBatch$processUnsolvedButton, 
                                          class = "btHighlight1")),
                           fade = TRUE, easyClose = FALSE))
-    enable("btSolve")
+    enableEl(session, "#btSolve")
     
     return(NULL)
   }
@@ -284,7 +284,7 @@ observeEvent(input$btSolve, {
   
   
   #activate Interrupt button as GAMS is running now
-  enable("btInterrupt")
+  enableEl(session, "#btInterrupt")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
@@ -305,11 +305,14 @@ observeEvent(input$btSolve, {
   if(config$activateModules$logFile){
     output$logStatus <- renderText({
       # read log file 
-      log.text <- paste(logfile(), collapse = "\n")
-      if(input$logUpdate){
-        js$scrollDown("logStatus")
+      logText <- paste(logfile(), collapse = "\n")
+      if(!is.null(modelStatus())){
+        return(logText)
       }
-      return(log.text)
+      if(input$logUpdate){
+        scrollDown(session, "#logStatus")
+      }
+      return(logText)
     })
   }
   
@@ -319,8 +322,8 @@ observeEvent(input$btSolve, {
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
     if(!is.null(modelStatus())){
-      enable("btSolve")
-      disable("btInterrupt")
+      enableEl(session, "#btSolve")
+      disableEl(session, "#btInterrupt")
       
       if(config$activateModules$lstFile){
         errMsg <- NULL
@@ -389,7 +392,7 @@ observeEvent(input$btSolve, {
         renderOutputData()
         
         # enable download button for saving scenario to Excel file
-        enable("export_1")
+        enableEl(session, "#export_1")
         
         # mark scenario as unsaved
         markUnsaved()

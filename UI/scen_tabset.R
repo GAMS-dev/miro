@@ -52,11 +52,6 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                              }else{
                                                tagList(
                                                  # loading animation
-                                                 #if(config.graphs$outType %in% c("dtGraph") && config.graphs$graph$tool == "plotly"){
-                                                 #  tags$img(src = "load.gif", class = "loading-input-r")
-                                                 #}else if (config.graphs$outType == "graph" && config.graphs$graph$tool == "plotly"){
-                                                 #  tags$img(src = "load.gif", class = "loading-input")
-                                                 #},
                                                  tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 
                                                           style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", addCssDim(tabData$graphConfig$height, 5)),{
                                                             tryCatch({
@@ -69,17 +64,16 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                               errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
                                                             })
                                                           }),
-                                                 shinyjs::hidden(
-                                                   tags$div(id= paste0("scenTable_", scenId, "_", tabData$tabId), class = "render-output",{
-                                                     tryCatch({
-                                                       renderDataUI("table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable",
-                                                                     noDataTxt = noDataTxt)
-                                                     }, error = function(e) {
-                                                       flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", tabData$sheetName, e)
-                                                       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
-                                                     })
-                                                   })
-                                                 )
+                                               tags$div(id= paste0("scenTable_", scenId, "_", tabData$tabId), style = "display:none;",
+                                                        class = "render-output",{
+                                                 tryCatch({
+                                                   renderDataUI("table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable",
+                                                                 noDataTxt = noDataTxt)
+                                                 }, error = function(e) {
+                                                   flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", tabData$sheetName, e)
+                                                   errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
+                                                 })
+                                               })
                                                )
                                              },
                                              tags$div(class="space")

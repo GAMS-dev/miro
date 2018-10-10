@@ -76,7 +76,7 @@
             }
           }
         },
-        "sidebarButtons":{  
+        "sidebarButtons":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -87,16 +87,6 @@
               "required":true
             },
             "solve":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "save":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "saveAs":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -126,11 +116,6 @@
               "minLength":1,
               "required":true
             },
-            "delete":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "download":{  
               "type":"string",
               "minLength":1,
@@ -143,6 +128,72 @@
             }
           }
         },
+        "header":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+             "scenario":{
+               "type":"object",
+               "additionalProperties":false,
+               "required":true,
+               "properties":{  
+                 "title":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "edit":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                 "save":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "saveAs":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "export":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "delete":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  }
+               }
+             },
+             "help":{
+               "type":"object",
+               "additionalProperties":false,
+               "required":true,
+               "properties":{  
+                 "title":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                 "doc":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "about":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  }
+               }
+             }
+          }
+      },
         "inputScreen":{  
           "type":"object",
           "additionalProperties":false,
@@ -484,6 +535,11 @@
               "minLength":1,
               "required":true
             },
+            "tags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newScenName":{  
               "type":"string",
               "minLength":1,
@@ -505,6 +561,48 @@
               "required":true
             },
             "btOverride":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "dialogEditMeta":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "newName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "newTags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "success":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "errMsg":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -800,6 +898,11 @@
               "minLength":1,
               "required":true
             },
+            "selTags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "titleDataError":{  
               "type":"string",
               "minLength":1,
@@ -900,6 +1003,21 @@
                   "required":true
                 },
                 "stime":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "stag":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "readPerm":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "writePerm":{  
                   "type":"string",
                   "minLength":1,
                   "required":true

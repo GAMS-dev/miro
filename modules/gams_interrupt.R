@@ -24,5 +24,5 @@ observeEvent(input$btInterrupt,{
   if(is.null(showErrorMsg(lang$errMsg$gamsTerm$title, errMsg))){
     return()
   }
-  disable("btInterrupt")
+  disableEl(session, "#btInterrupt")
 })

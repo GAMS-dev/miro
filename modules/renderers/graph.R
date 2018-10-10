@@ -14,8 +14,8 @@ renderGraph <- function(data, configData, options, height = NULL){
     if(options$type == 'pie'){
       # set defaults (no axes in pie chart)
       # pie chart
-      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', height = height)
-      p <- layout(p, title = options$title, showlegend = options$showlegend,
+      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', height = height) %>%
+           layout(p, title = options$title, showlegend = options$showlegend,
                   xaxis = options$xaxis,
                   yaxis = options$yaxis)
     }else if(options$type == 'bar'){
@@ -76,7 +76,7 @@ renderGraph <- function(data, configData, options, height = NULL){
       stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
     }
     
-    return(plotly::renderPlotly(p))
+    return(renderPlotly(p))
     
   }else if(options$tool == 'dygraph'){
     # set defaults
@@ -87,20 +87,29 @@ renderGraph <- function(data, configData, options, height = NULL){
       if(j==1){
         #check whether data is already correctly formatted and if y variables are labeled in config.json
         if(!is.null(options$color)){
-          x <- as.symbol(options$xdata)
-          y <- as.symbol(c(options$color))
+          key   <- match(tolower(options$color), tolower(colnames(data)))
+          value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
-          xts_data <- reshape2::acast(data, as.formula(paste(x, y, sep = "~")), value.var = names(options$ydata)[[j]]) 
-          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
+          xts_data <- spread(data, key, value)
+          row.names(xts_data) <- as.character(xts_data[[1]])
+          xts_data <- xts_data[, -c(1), drop = FALSE]
+          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
+                        ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
+                        elementId = NULL)
         }else{
           idxVector <- match(tolower(names(options$ydata)), tolower(colnames(data)))
           xts_data <- as.matrix(data[, idxVector])
           row.names(xts_data) <- as.character(data[[1]])
-          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
-                         stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                         pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, strokePattern = options$ydata[[j]]$strokePattern,
-                         strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
+          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
+                        ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
+          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, 
+                         color = options$ydata[[j]]$color, axis = "y",
+                         stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, 
+                         fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
+                         pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, 
+                         strokePattern = options$ydata[[j]]$strokePattern,
+                         strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, 
+                         strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
           }
         
       }else{

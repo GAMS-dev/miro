@@ -1,17 +1,17 @@
 observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
   if(isInSplitView){
     if(numberScenTabs < 2){
-      shinyjs::disable("btCompareScen")
+      disableEl(session, "#btCompareScen")
     }
-    shinyjs::show("scenTabView")
-    shinyjs::hide("scenSplitView")
+    showEl(session, "#scenTabView")
+    hideEl(session, "#scenSplitView")
     updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitView)
     isInSplitView <<- FALSE
   }else{
     # enable scenario comparison button
-    shinyjs::enable("btCompareScen")
-    shinyjs::show("scenSplitView")
-    shinyjs::hide("scenTabView")
+    enableEl(session, "#btCompareScen")
+    showEl(session, "#scenSplitView")
+    hideEl(session, "#scenTabView")
     updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$tabView)
     isInSplitView <<- TRUE
   }
@@ -56,8 +56,8 @@ observeEvent(input$btScenSplit1_close, {
   sidsInSplitComp[1]                                 <<- 0L
   
   # show button and hide content
-  shinyjs::hide("scenSplit1_content")
-  shinyjs::show("scenSplit1_open")
+  hideEl(session, "#scenSplit1_content")
+  showEl(session, "#scenSplit1_open")
 })
 observeEvent(input$btScenSplit2_close, {
   flog.debug("%s: Close Scenario button clicked (right box in split view).", uid)
@@ -74,6 +74,6 @@ observeEvent(input$btScenSplit2_close, {
   sidsInSplitComp[2]                                 <<- 0L
   
   # show button and hide content
-  shinyjs::hide("scenSplit2_content")
-  shinyjs::show("scenSplit2_open")
+  hideEl(session, "#scenSplit2_content")
+  showEl(session, "#scenSplit2_open")
 })

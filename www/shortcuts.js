@@ -6,6 +6,9 @@ $(document).keyup(function(event) {
   
   // ENTER will confirm modal dialogues
   if(event.keyCode == 13 && !event.ctrlKey){
+    if($("#shiny-modal").find(".selectize-input.input-active").length > 0){
+      return;
+    }
     if ($("#btLoadLocal").is(":visible") && $("#btLoadLocal").is(":enabled")) {
         $("#btLoadLocal").click();
     }
@@ -32,6 +35,9 @@ $(document).keyup(function(event) {
     }
     if ($("#btDeleteConfirm").is(":visible")) {
         $("#btDeleteConfirm").click();
+    }
+    if ($("#btUpdateMeta").is(":visible") && $("#btUpdateMeta").is(":enabled")) {
+        $("#btUpdateMeta").click();
     }
     for (i = 2; i <= maxNumScen; i++){ 
       id = '#close_final_' + i;

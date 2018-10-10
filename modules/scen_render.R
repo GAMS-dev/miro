@@ -5,8 +5,8 @@ if(isInSplitView){
   # hide button and show content
   local({
     id <- if(loadInLeftBoxSplit) 1L else 2L
-    shinyjs::show(paste0("scenSplit", id, "_content"))
-    shinyjs::hide(paste0("scenSplit", id, "_open"))
+    showEl(session, paste0("#scenSplit", id, "_content"))
+    hideEl(session, paste0("#scenSplit", id, "_open"))
   })
 }else{
   scenCounter <- scenCounterMultiComp
@@ -23,9 +23,9 @@ if(isInSplitView){
   appendTab("scenTabset", newScenTabPanel)
   numberScenTabs <<- numberScenTabs + 1
   if(numberScenTabs == 1){
-    shinyjs::hide("noScen")
+    hideEl(session, "#noScen")
   }else{
-    shinyjs::enable("btCompareScen")
+    enableEl(session, "#btCompareScen")
   }
 }
 # generate title and date
@@ -52,8 +52,8 @@ lapply(scenTableNamesToDisplay, function(sheetName) {
     eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, tabData$name), sep = "\n")
   })
   # show graph view per default
-  shinyjs::show("scenGraph_" %+% scenId %+% "_" %+% tabData$tabId)
-  shinyjs::hide("scenTable_" %+% scenId %+% "_" %+% tabData$tabId)
+  showEl(session, "#scenGraph_" %+% scenId %+% "_" %+% tabData$tabId)
+  hideEl(session, "#scenTable_" %+% scenId %+% "_" %+% tabData$tabId)
 })
 if(!is.null(eMsg)){
   stop(eMsg, call. = F)

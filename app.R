@@ -1,5 +1,6 @@
 #version number
-webuiVersion <- '0_2_3_1'
+webuiVersion <- "0.2.3.1"
+webuiRDate   <- "Oct 08 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -7,8 +8,7 @@ webuiVersion <- '0_2_3_1'
 # writexl         #BSD2-clause
 # rhandsontable   #MIT
 # shiny           #GPL-3
-# shinydashboard  #GPL v2
-# shinyjs         #AGPL
+# shinydashboard  #GPL >=2
 # plotly          #MIT
 # DT              #GPL-3
 # V8              #MIT
@@ -30,16 +30,10 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
                     "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("plyr", "withr", "R6", "stringi", "shiny", "shinydashboard", 
-                      "shinyjs", "htmlwidgets", "assertthat", "ps", "V8", "curl", 
-                      "pkgconfig", "tibble", "pillar", "tidyselect", "purrr", "bindrcpp", 
-                      "bindr", "glue", "DT", "processx", "V8", "dplyr", "readr", "readxl", 
-                      "writexl", "rhandsontable", "hms", "cellranger", "ggplot2", "gtable", 
-                      "scales", "munsell", "colorspace", "lazyeval", "plotly", "jsonlite", 
-                      "jsonvalidate", "rpivotTable", "data.table", "httr", "tidyr", "viridisLite", 
-                      "futile.options", "futile.logger", "e1071", "units", "yaml", "crosstalk", 
-                      "lambda.r", "DBI", "spData", "classInt", "formatR", "zoo", "stringr", "dygraphs",
-                      "reshape2", "xts", "zip")
+requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "processx", 
+                      "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
+                      "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
+                      "futile.logger", "dygraphs", "xts", "zip", "tidyr")
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -334,12 +328,14 @@ if(!is.null(errMsg)){
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #______________________________________________________
   server <- function(input, output, session){
+    if(dir.exists(paste0(currentModelDir, "static"))){
+      addResourcePath("custom", paste0(currentModelDir, "static"))
+    }
     newTab <- vector("list", maxNumberScenarios + 3)
-    #modelSolved <- 0
-    #noError <- 1
     flog.info("Session started (model: '%s').", modelName)
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
+    btSortTime         <- TRUE
     # boolean that specifies whether output data should be saved
     saveOutput         <- TRUE
     # count number of open scenario tabs
@@ -368,18 +364,21 @@ if(!is.null(errMsg)){
     dirtyFlag          <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
     if(isInSplitView){
-      enable("btCompareScen")
+      enableEl(session, "#btCompareScen")
     }
     isInCompareMode    <- FALSE
     isInSolveMode      <- TRUE
+    
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
-      scenMetadata     <- NULL
+      scenMetaDb       <- NULL
       # currently active scenario (R6 object)
       activeScen       <- NULL
       # temporary name and sid of the scenario currently active in the UI
       activeSnameTmp   <- NULL
+      scenTags         <- NULL
+      scenMetaDbSubset <- NULL
       # save the scenario ids loaded in UI
       scenCounterMultiComp <- 4L
       sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
@@ -485,6 +484,28 @@ if(!is.null(errMsg)){
       }
     })
     
+    observeEvent(input$aboutDialog, {
+      showModal(modalDialog(HTML(paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
+                                   "Release Date: ", webuiRDate, "<br/>", 
+                                   "Copyright (c) 2017-2018 GAMS Software GmbH <support@gams.com><br/>
+                                   Copyright (c) 2017-2018 GAMS Development Corp. <support@gams.com><br/><br/>
+                                   This program is free software: you can redistribute it and/or modify 
+                                   it under the terms of the GNU General Public License as published by
+                                   the Free Software Foundation, either version 3 of the License, or 
+                                   (at your option) any later version.<br/><br/>
+                                   This program is distributed in the hope that it will be useful, 
+                                   but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+                                   GNU General Public License for more details.<br/><br/>
+                                   You should have received a copy of the GNU General Public License 
+                                   along with this program. If not, see 
+                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.<br/><br/>
+                                   The source code of the program can be accessed at 
+                                   <a href=\"https://github.com/GAMS-dev/webui\" target=\"_blank\">
+                                   https://github.com/GAMS-dev/webui/</a>.")),
+                            title = "About GAMS WebUI"))
+    })
+    
     # initially set rounding precision to default
     roundPrecision <- config$roundingDecimals
     
@@ -563,99 +584,11 @@ if(!is.null(errMsg)){
     # show/hide buttons in sidebar depending on menu item selected
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
-      if(config$activateModules$batchMode){
-        switch (input$sidebarMenuId,
-                inputData = {
-                  shinyjs::show("btImport")
-                  shinyjs::show("btSolve")
-                  hide("btSplitView")
-                  hide("btCompareScen")
-                },
-                scenarios = {
-                  # reset nest level
-                  shortcutNest <<- FALSE
-                  isInSolveMode <<- FALSE
-                  hide("btImport")
-                  hide("btSolve")
-                  shinyjs::show("btSplitView")
-                  shinyjs::show("btCompareScen")
-                },
-                {
-                  hide("btCompareScen")
-                  hide("btSplitView")
-                  hide("btImport")
-                  hide("btSolve")
-                }
-        )
-      }else{
-        switch(input$sidebarMenuId,
-                inputData = {
-                  shinyjs::show("btImport")
-                  shinyjs::show("btSolve")
-                  hide("btInterrupt")
-                  if(config$activateModules$scenario){
-                    hide("btSplitView")
-                    hide("btCompareScen")
-                    shinyjs::show("btSave")
-                    shinyjs::show("btSaveAs")
-                    hide("btLoadScen")
-                    shinyjs::show("btDelete")
-                  }
-                },
-                outputData = {
-                  shinyjs::show("btImport")
-                  hide("btSolve")
-                  hide("btInterrupt")
-                  if(config$activateModules$scenario){
-                    hide("btSplitView")
-                    hide("btCompareScen")
-                    shinyjs::show("btSave")
-                    shinyjs::show("btSaveAs")
-                    hide("btLoadScen")
-                    shinyjs::show("btDelete")
-                  }
-                },
-                gamsinter = {
-                  hide("btImport")
-                  hide("btSolve")
-                  shinyjs::show("btInterrupt")
-                  if(config$activateModules$scenario){
-                    hide("btSplitView")
-                    hide("btCompareScen")
-                    hide("btSave")
-                    hide("btSaveAs")
-                    hide("btLoadScen")
-                    hide("btDelete")
-                  }
-                },
-                advanced = {
-                  hide("btImport")
-                  hide("btSolve")
-                  hide("btInterrupt")
-                  if(config$activateModules$scenario){
-                    hide("btSplitView")
-                    hide("btCompareScen")
-                    hide("btSave")
-                    hide("btSaveAs")
-                    hide("btLoadScen")
-                    hide("btDelete")
-                  }
-                }
-        )
-        if(config$activateModules$scenario && input$sidebarMenuId == "scenarios"){
-          # reset nest level
-          shortcutNest <<- FALSE
-          isInSolveMode <<- FALSE
-          hide("btImport")
-          hide("btSolve")
-          hide("btInterrupt")
-          shinyjs::show("btSplitView")
-          shinyjs::show("btCompareScen")
-          hide("btSave")
-          hide("btSaveAs")
-          shinyjs::show("btLoadScen")
-          hide("btDelete")
-        }
+      if((config$activateModules$scenario || config$activateModules$batchMode)
+          && input$sidebarMenuId == "scenarios"){
+        # reset nest level
+        shortcutNest <<- FALSE
+        isInSolveMode <<- FALSE
       }
     })
     
@@ -705,23 +638,23 @@ if(!is.null(errMsg)){
         # if scenario includes output data set dirty flag
         if(!noOutputData){
           dirtyFlag <<- TRUE
-          shinyjs::show("dirtyFlagIcon")
-          shinyjs::show("dirtyFlagIconO")
+          showEl(session, "#dirtyFlagIcon")
+          showEl(session, "#dirtyFlagIconO")
         }
       })
     })
     
     markUnsaved <- function(){
-      hide("dirtyFlagIcon")
-      hide("dirtyFlagIconO")
+      hideEl(session, "#dirtyFlagIcon")
+      hideEl(session, "#dirtyFlagIconO")
       dirtyFlag     <<- FALSE
       rv$unsavedFlag <<- TRUE
       return(invisible())
     }
     
     markSaved <- function(){
-      hide("dirtyFlagIcon")
-      hide("dirtyFlagIconO")
+      hideEl(session, "#dirtyFlagIcon")
+      hideEl(session, "#dirtyFlagIconO")
       dirtyFlag     <<- FALSE
       rv$unsavedFlag <<- FALSE
       return(invisible())
@@ -730,15 +663,11 @@ if(!is.null(errMsg)){
     # print scenario title in input and output sheets
     getScenTitle <- reactive(
       if(is.null(rv$activeSname)){
-        disable("btDelete")
-        disable("btSave")
         return("")
       }else{
-        enable("btDelete")
-        enable("btSave")
         nameSuffix <- ""
         if(rv$unsavedFlag){
-          nameSuffix <- "*"
+          nameSuffix <- "(*)"
         }
         return(paste0(rv$activeSname, nameSuffix))
       }
@@ -757,11 +686,11 @@ if(!is.null(errMsg)){
         }
       }, logical(1), USE.NAMES = FALSE)
       if(all(datasetsImported)){
-        addClass("btSolve", "glow-animation")
-        shinyjs::enable("btSolve")
+        addClassEl(session, "#btSolve", "glow-animation")
+        enableEl(session, "#btSolve")
       }else{
-        removeClass("btSolve", "glow-animation")
-        shinyjs::disable("btSolve")
+        removeClassEl(session, "#btSolve", "glow-animation")
+        disableEl(session, "#btSolve")
       }
     })
     # UI elements (modalDialogs)
@@ -859,7 +788,7 @@ if(!is.null(errMsg)){
       # export output data to Excel spreadsheet
       source("./modules/excel_scen_save.R", local = TRUE)
     }
-    
+    hideEl(session, "#loading-screen")
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders

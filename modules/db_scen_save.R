@@ -62,10 +62,10 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
 })
 
 observeEvent(input$btNewName, {
-  shinyjs::hide("scenarioExits")
-  shinyjs::show("scenName")
-  shinyjs::show("dialogSaveInit")
-  shinyjs::hide("dialogSaveConfirm")
+  hideEl(session, "#scenarioExits")
+  showEl(session, "#scenNameWrapper")
+  showEl(session, "#dialogSaveInit")
+  hideEl(session, "#dialogSaveConfirm")
   return(NULL)
 })
 
@@ -73,13 +73,12 @@ observeEvent(input$btNewName, {
 # check scenario name
 observeEvent(input$btCheckName, {
   scenName <- input$scenName
+  scenTags <<- isolate(input$newScenTags)
   flog.debug("Name for new scenario entered: %s.", scenName)
   
-  if(grepl("^\\s*$", scenName)){
-    shinyjs::show("badScenarioName")
-    return(NULL)
-  #}else if(!is.null(isolate(rv$activeSname)) && scenName == isolate(rv$activeSname)){
-  #  rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+  if(isBadScenName(scenName)){
+    showEl(session, "#badScenarioName")
+    return()
   }else{
     errMsg <- NULL
     tryCatch({
@@ -93,16 +92,17 @@ observeEvent(input$btCheckName, {
       errMsg <<- lang$errMsg$fetchScenData$desc
     })
     if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){
-      return(NULL)
+      return()
     }
     if(scenExists){
-      shinyjs::show("scenarioExits")
-      shinyjs::hide("scenName")
-      shinyjs::hide("dialogSaveInit")
-      shinyjs::show("dialogSaveConfirm")
+      showEl(session, "#scenarioExits")
+      hideEl(session, "#scenNameWrapper")
+      hideEl(session, "#dialogSaveInit")
+      showEl(session, "#dialogSaveConfirm")
       return(NULL)
     }else{
-      rv$activeSname <<- scenName
+      rv$activeSname   <<- scenName
+      scenTags         <<- scenTags
       rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
     }
   }
@@ -118,6 +118,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       if(activeScen$isReadonlyOrLocked){
         activeScen <<- NULL
         showReadonlyDialog()
+        flog.info("Scenario is readonly or locked.")
         return(NULL)
       }
     }, error = function(e){
@@ -139,7 +140,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       if(saveAsFlag){
         rv$activeSname <<- isolate(input$scenName)
       }
-      activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname))
+      activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), tags = scenTags)
+      scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
     if(config$saveTraceFile){
@@ -168,4 +170,63 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   
   # reset dirty flag and unsaved status
   markSaved()
+})
+observeEvent(input$btEditMeta, {
+  req(activeScen)
+  showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
+                                              readPerm = "readPerm", writePerm = "writePerm"), noPermFields = FALSE), 
+                     config$activateModules$sharedScenarios)
+})
+observeEvent(input$btUpdateMeta, {
+  req(activeScen)
+  scenName <- isolate(input$editMetaName)
+  hideEl(session, "#editMetaBadName")
+  hideEl(session, "#editMetaError")
+  hideEl(session, "#editMetaNameExists")
+  
+  if(isBadScenName(scenName)){
+    showEl(session, "#editMetaBadName")
+    return()
+  }else{
+    disableEl(session, "#btUpdateMeta")
+    errMsg <- NULL
+    tryCatch({
+      if(db$checkSnameExists(scenName)){
+        scenExists <- TRUE
+      }else{
+        scenExists <- FALSE
+      }
+    }, error = function(e){
+      flog.error("Some error occurred while checking whether scenario: '%s' exists. Error message: '%s'.", 
+                 scenName, e)
+      errMsg <<- lang$errMsg$fetchScenData$desc
+    })
+    if(!is.null(errMsg)){
+      showEl(session, "#editMetaError")
+      return()
+    }
+    if((!identical(activeScen$getScenName(), scenName)) && scenExists){
+      enableEl(session, "#btUpdateMeta")
+      showEl(session, "#editMetaNameExists")
+      return()
+    }
+    newReadPerm  <- character(0L)
+    newWritePerm <- character(0L)
+    tryCatch({
+      activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
+                                newReadPerm, newWritePerm)
+      rv$activeSname <- scenName
+      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+      hideEl(session, "#editMetaUI")
+      showEl(session, "#editMetaSuccess")
+      hideModal(session, 1L)
+    }, error = function(e){
+      flog.error("Problems updating scenario metadata. Error message: %s.", e)
+      errMsg <<- character(1L)
+    })
+    if(!is.null(errMsg)){
+      showEl(session, "#editMetaError")
+      return()
+    }
+  }
 })

@@ -10,9 +10,9 @@ observeEvent(input$btPaverInterrupt,{
     errMsg <<- lang$errMsg$paverTerm$desc
   })
   showErrorMsg(lang$errMsg$paverTerm$title, errMsg)
-  shinyjs::disable("btPaverInterrupt")
-  shinyjs::hide("paver_load")
-  shinyjs::show("newPaverRunButton")
+  disableEl(session, "#btPaverInterrupt")
+  hideEl(session, "#paver_load")
+  showEl(session, "#newPaverRunButton")
 })
 observeEvent(input$btNewPaverRun,{
   updateTabsetPanel(session, "sidebarMenuId", selected = "loadResults")
