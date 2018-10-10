@@ -47,8 +47,8 @@ lapply(modelInTabularData, function(sheet){
     }else{
       data <- tableContent[[i]]
     }
-    toggle("graph-in_" %+% i)
-    toggle("data-in_" %+% i)
+    toggleEl(session, "#graph-in_" %+% i)
+    toggleEl(session, "#data-in_" %+% i)
     errMsg <- NULL
     tryCatch({
       callModule(renderData, "in_" %+% i, 
@@ -108,10 +108,10 @@ lapply(modelInTabularData, function(sheet){
                modelInputData[[i]] <<- anti_join(modelInputData[[i]], data, by = idsIn[[i]])
                if(!nrow(data)){
                  data[1, ] <- ""
-                 shinyjs::disable(paste0("btGraphIn", i))
+                 disableEl(session, paste0("#btGraphIn", i))
                  isEmptyInput[i] <<- TRUE
                }else{
-                 shinyjs::enable(paste0("btGraphIn", i))
+                 enableEl(session, paste0("#btGraphIn", i))
                  isEmptyInput[i] <<- FALSE
                }
                return(data)
@@ -122,10 +122,10 @@ lapply(modelInTabularData, function(sheet){
                hotInit[[i]] <<- TRUE
                if(!nrow(modelInputData[[i]])){
                  modelInputData[[i]][1, ] <<- ""
-                 disable(paste0("btGraphIn", i))
+                 disableEl(session, paste0("#btGraphIn", i))
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enable(paste0("btGraphIn", i))
+                 enableEl(session, paste0("#btGraphIn", i))
                  isEmptyInput[i] <<- FALSE
                }
                return(modelInputData[[i]])
@@ -209,10 +209,10 @@ lapply(modelInTabularData, function(sheet){
                                                  data, by = idsIn[[i]])
                if(!nrow(data)){
                  # disable graph button as no data was loaded
-                 disable("btGraphIn" %+% i)
+                 disableEl(session, "#btGraphIn" %+% i)
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enable("btGraphIn" %+% i)
+                 enableEl(session, "#btGraphIn" %+% i)
                  isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- data
@@ -223,10 +223,10 @@ lapply(modelInTabularData, function(sheet){
                rv[["in_" %+% i]]
                if(!nrow(modelInputData[[i]])){
                  # disable graph button as no data was loaded
-                 disable("btGraphIn" %+% i)
+                 disableEl(session, "#btGraphIn" %+% i)
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enable("btGraphIn" %+% i)
+                 enableEl(session, "#btGraphIn" %+% i)
                  isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- modelInputData[[i]]

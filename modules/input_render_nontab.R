@@ -72,17 +72,17 @@ lapply(seq_along(modelIn), function(id){
                if(!inputInitialized[i]){
                  if(is.numeric(value) && !identical(value, -Inf)){
                    inputInitialized[i] <<- TRUE
-                   shinyjs::show("cbDiv_" %+% id)
-                   hide("no_data_dep_" %+% id)
+                   showEl(session, "#cbDiv_" %+% id)
+                   hideEl(session, "#no_data_dep_" %+% id)
                  }
                }
               
                shiny::updateCheckboxInput(session, "cb_" %+% id, value = value)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
                  if(value <= 0){
-                   disable("cb_" %+% id)
+                   disableEl(session, "#cb_" %+% id)
                  }else{
-                   enable("cb_" %+% id)
+                   enableEl(session, "#cb_" %+% id)
                  }
                }
              })
@@ -234,8 +234,8 @@ lapply(seq_along(modelIn), function(id){
                    shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                             selected = modelIn[[id]]$dropdown$selected)
                    inputInitialized[i] <<- TRUE
-                   shinyjs::show(paste0("dropdown_", id))
-                   shinyjs::hide(paste0("no_data_dep_", id))
+                   showEl(session, paste0("#dropdown_", id))
+                   hideEl(session, paste0("#no_data_dep_", id))
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1
@@ -404,8 +404,8 @@ lapply(seq_along(modelIn), function(id){
                if(!inputInitialized[i]){
                  if(!is.null(isolate(getData[[i]]()$min)) && !is.null(isolate(getData[[i]]()$max))){
                    inputInitialized[i] <<- TRUE
-                   shinyjs::show(paste0("slider_", id))
-                   shinyjs::hide(paste0("no_data_dep_", id))
+                   showEl(session, paste0("#slider_", id))
+                   hideEl(session, paste0("#no_data_dep_", id))
                    # refresh selected item in case it was uploaded (e.g. via Excel or database)
                    if(length(isolate(rv[[paste0("in_", id)]]))){
                      rv[[paste0("in_", id)]] <<- isolate(rv[[paste0("in_", id)]]) + 1

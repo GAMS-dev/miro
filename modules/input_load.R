@@ -112,8 +112,8 @@ lapply(datasetsToFetch, function(dataset){
         # if scenario includes output data set dirty flag
         if(!noOutputData){
           dirtyFlag <<- TRUE
-          shinyjs::show("dirtyFlagIcon")
-          shinyjs::show("dirtyFlagIconO")
+          showEl(session, "#dirtyFlagIcon")
+          showEl(session, "#dirtyFlagIconO")
         }
       }
       # reset dependent elements
@@ -149,9 +149,9 @@ showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
 flog.trace("%d new input datasets loaded (load mode: %s, override: %s)", count.new.input, loadMode, overrideInput)
 if(!is.null(isolate(rv$activeSname))){
-  shinyjs::enable("btSave")
+  enableEl(session, "#btSave")
 }
-shinyjs::enable("btSaveAs")
+enableEl(session, "#btSaveAs")
 # set initialisation flags for handsontables to FALSE
 if(any(hotInit)){
   hotInit[]     <<- FALSE

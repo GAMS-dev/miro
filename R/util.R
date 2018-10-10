@@ -548,3 +548,47 @@ getIcon <- function(name, lib){
   }
   return(icon)
 }
+csv2Vector <- function(csv){
+  if(!length(csv)){
+    return(character(0L))
+  }
+  csv <- unlist(strsplit(csv, ",", fixed = TRUE), use.names = FALSE)
+  gsub("/comma/", ",", csv, fixed = TRUE)
+}
+vector2Csv <- function(vector){
+  if(!length(vector)){
+    return("")
+  }
+  vector <- gsub(",", "/comma/", vector, fixed = TRUE)
+  paste0(vector, collapse = ",")
+}
+showEl <- function(session, id){
+  session$sendCustomMessage("gms-showEl", id)
+}
+hideEl <- function(session, id){
+  session$sendCustomMessage("gms-hideEl", id)
+}
+enableEl <- function(session, id){
+  session$sendCustomMessage("gms-enableEl", id)
+}
+scrollDown <- function(session, id){
+  session$sendCustomMessage("gms-scrollDown", id)
+}
+disableEl <- function(session, id){
+  session$sendCustomMessage("gms-disableEl", id)
+}
+toggleEl <- function(session, id){
+  session$sendCustomMessage("gms-toggleEl", id)
+}
+addClassEl <- function(session, id, class){
+  session$sendCustomMessage("gms-addClassEl", list(id = id, newclass = class))
+}
+removeClassEl <- function(session, id, class){
+  session$sendCustomMessage("gms-removeClassEl", list(id = id, oldclass = class))
+}
+hideModal <- function(session, delay = 1L){
+  session$sendCustomMessage("gms-hideModal", delay)
+}
+isBadScenName <- function(scenName){
+  grepl("^\\s*$", scenName)
+}

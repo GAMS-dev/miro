@@ -16,16 +16,28 @@
     "sidebarButtons":{  
       "importInput":"Daten laden",
       "solve":"Modell lösen",
-      "save":"Speichern",
-      "saveAs":"Speichern als",
       "load":"Szenario laden",
       "splitView":"Split Screen Ansicht",
       "tabView":"Tabansicht",
-      "remove":"Löschen",
       "compareStart":"Vergleichsmodus",
       "compareStop":"Stoppe Vergleich",
       "download":"Download Ergebnisse",
       "interrupt":"Stop"
+    },
+    "header":{
+      "scenario":{
+        "title":"Szenario",
+        "edit":"Metadaten bearbeiten",
+        "save":"Speichern",
+        "saveAs":"Speichern unter",
+        "export": "Exportieren",
+        "delete":"Löschen"
+      },
+      "help":{
+        "title": "Hilfe",
+        "doc": "Dokumentation",
+        "about": "Über"
+      }
     },
     "inputScreen":{  
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
@@ -106,6 +118,7 @@
     "dialogNewScen":{  
       "title":"Neues Szenario",
       "desc":"Bitte wählen Sie einen Namen für das Szenario:",
+      "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
       "newScenName":"Neues Szenario",
       "scenExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
@@ -113,6 +126,15 @@
       "btOverride":"Überschreiben",
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
+    },
+    "dialogEditMeta":{
+      "title":"Metadaten bearbeiten",
+      "newName": "New name",
+      "newTags":"New tags",
+      "success": "Metadaten wurden erfolgreich aktualisiert.",
+      "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "cancelButton":"Schließen",
+      "okButton":"Metadaten aktualisieren"
     },
     "dialogDeleteScen":{  
       "title":"Szenario löschen",
@@ -173,6 +195,7 @@
       "titleNoScen":"Keine Szenarien gefunden",
       "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
       "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
+      "selTags": "Zeige nur Szenarios mit den Tag(s):",
       "titleOverrideInput":"Warnung",
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
@@ -195,7 +218,10 @@
         "title":"Metadaten",
         "uid":"Benutzer",
         "sname":"Szenarioname",
-        "stime":"Erstellungsdatum"
+        "stime":"Erstellungsdatum",
+        "stag": "Szenario Tags",
+        "readPerm": "Leseberechtigung",
+        "writePerm": "Schreibberechtigung"
       },
       "inputPrefix":"",
       "inputSuffix":" (Eingabe)",

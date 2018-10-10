@@ -1,21 +1,25 @@
 {
-	"UILogo"			 : "kport.jpg",
+	"aggregateWidgets"    : {
+		"title"				: "Input Options"
+    },
     "dataRendering"      : {
-		"rdata"				: {
-		   "outType"               : "test"
-        },
-        "cost"              : {
-            "outType"               : "dtGraph",
-            "graph"                 : {
-                "tool"                  : "plotly",
-                "type"                  : "pie",
-                "title"                 : "Overall costs",
-                "labels"                : "Cost Header",
-                "values"                : "Cost"
+        "schedule"			: {
+		    "outType"			: "trnsport1",
+		    "height"			: 700,
+		    "packages"			: ["leaflet", "leaflet.minicharts", "sf", "RColorBrewer"],
+		    "options"			: {
+		    	"geojsonloc"		: "us-states.geojson"
+		    }
+	    },
+        "scalars_out"   : {
+            "outType"			: "valueBox",
+		    "height"			: 700,
+            "options"  :{
+            "icon":{
+            "name" : "list"
+            },
+            "color":"purple"
             }
-        },
-        "surplus"           : {
-            "outType"               : "test"
         }
-    }		
+    }
 }

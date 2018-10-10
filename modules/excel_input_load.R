@@ -15,17 +15,17 @@ observeEvent(input$btCheckSnameLocal, {
              scenNameTmp)
   if(is.null(isolate(rv$activeSname))){
     scenNameTmp <- isolate(input$local_newScenName)
-    if(grepl("^\\s*$", scenNameTmp)){
+    if(isBadScenName(scenNameTmp)){
       flog.debug("Scenario name is not valid.")
-      shinyjs::show("local_badScenName")
+      showEl(session, "#local_badScenName")
       return()
     }else{
       if(identical(config$activateModules$scenario, TRUE)){
         flog.debug("Scenario name is valid, but already exists.")
         if(db$checkSnameExists(scenNameTmp)){
-          shinyjs::show("loadLocal_scenNameExists")
-          hide("loadLocal_content")
-          hide("local_badScenName")
+          showEl(session, "#loadLocal_scenNameExists")
+          hideEl(session, "#loadLocal_content")
+          hideEl(session, "#local_badScenName")
           return()
         }
         activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
@@ -59,9 +59,9 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   }, logical(1L))
   
   if(any(datasetsImported)){
-    hide("importDataTabset")
-    shinyjs::show("btOverrideInput")
-    shinyjs::show("importDataOverride")
+    hideEl(session, "#importDataTabset")
+    showEl(session, "#btOverrideInput")
+    showEl(session, "#importDataOverride")
   }else{
     overrideInput <<- FALSE
     rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)

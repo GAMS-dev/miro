@@ -6,6 +6,6 @@ observeEvent(input$outputTableView, {
   }
   i <- as.integer(strsplit(isolate(input[["contentCurrent"]]), "_")[[1]][2])
   flog.debug("%s: Table view for model output in sheet: %d activated.", uid, i)
-  shinyjs::toggle(paste0("graph-out_", i))
-  shinyjs::toggle(paste0("data-out_", i))
+  toggleEl(session, paste0("#graph-out_", i))
+  toggleEl(session, paste0("#data-out_", i))
 })

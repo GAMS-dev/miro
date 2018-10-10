@@ -23,19 +23,19 @@ closeScenario <- function(){
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                shiny::updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
              }else{
-               shinyjs::show("no_data_dep_" %+% i)
-               shinyjs::hide("slider_" %+% i)
-               shiny::updateSliderInput(session, "slider_" %+% i, min = NULL, max = NULL, 
+               showEl(session, "#no_data_dep_" %+% i)
+               hideEl(session, "#slider_" %+% i)
+               updateSliderInput(session, "slider_" %+% i, min = NULL, max = NULL, 
                                   value = NULL, step = 1)
              }
            },
            dropdown = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               shiny::updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
+               updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
              }else{
-               shinyjs::show("no_data_dep_" %+% i)
-               shinyjs::hide("dropdown_" %+% i)
-               shiny::updateSelectInput(session, "dropdown_" %+% i, choices = character(0), selected = character(0))
+               showEl(session, "#no_data_dep_" %+% i)
+               hideEl(session, "#dropdown_" %+% i)
+               updateSelectInput(session, "dropdown_" %+% i, choices = character(0), selected = character(0))
              }
            },
            date = {
@@ -60,11 +60,12 @@ closeScenario <- function(){
   flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset model output data
   renderOutputData()
-  activeScenario   <<- NULL
-  activeSid        <<- NULL
+  activeScenario    <<- NULL
+  activeSid         <<- NULL
   activeScen        <<- NULL
   activeSnameTmp    <<- NULL
   rv$activeSname    <<- NULL
+  scenTags          <<- NULL
   noCheck[]         <<- FALSE
   markSaved()
   noOutputData      <<- TRUE
@@ -83,16 +84,15 @@ observeEvent(input$btDeleteConfirm, {
   flog.debug("Button to confirm deleting scenario from database clicked.")
   if(is.null(activeScen)){
     flog.error("No active scenario ID found to delete.")
-    return(NULL)
+    return()
   }
   errMsg <- NULL
   tryCatch({
     activeScen$delete()
-    print('hi')
-    hide("deleteScen_db")
-    hide("btDeleteConfirm")
-    shinyjs::show("deleteScen_ui")
-    shinyjs::show("btRemoveDeletedConfirm")
+    hideEl(session, "#deleteScen_db")
+    hideEl(session, "#btDeleteConfirm")
+    showEl(session, "#deleteScen_ui")
+    showEl(session, "#btRemoveDeletedConfirm")
   }, error = function(e){
     flog.error("Problems deleting scenario: '%s'. Error message: '%s'.", activeScen$getScenName(), e)
     errMsg <<- lang$errMsg$deleteScen$desc

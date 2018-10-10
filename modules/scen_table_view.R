@@ -5,17 +5,17 @@ observeEvent(input[["table_" %+% i]], {
   if(isInCompareMode){
     if(isInSplitView){
       lapply(2:3, function(k){
-        shinyjs::toggle(paste0("scenTable_", k, "_", j))
-        shinyjs::toggle(paste0("scenGraph_", k, "_", j))
+        toggleEl(session, paste0("#scenTable_", k, "_", j))
+        toggleEl(session, paste0("#scenGraph_", k, "_", j))
       })
     }else{
       lapply(4:(maxNumberScenarios + 3), function(k){
-        shinyjs::toggle(paste0("scenTable_", k, "_", j))
-        shinyjs::toggle(paste0("scenGraph_", k, "_", j))
+        toggleEl(session, paste0("#scenTable_", k, "_", j))
+        toggleEl(session, paste0("#scenGraph_", k, "_", j))
       })
     }
   }else{
-    shinyjs::toggle(paste0("scenTable_", i, "_", j))
-    shinyjs::toggle(paste0("scenGraph_", i, "_", j))
+    toggleEl(session, paste0("#scenTable_", i, "_", j))
+    toggleEl(session, paste0("#scenGraph_", i, "_", j))
   }
 })

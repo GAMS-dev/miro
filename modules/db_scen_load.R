@@ -1,5 +1,4 @@
 # load scenario from database
-
 # define which input datasheets to load to interface (default: load all datasets)
 datasetsToFetch <- names(modelIn)
 
@@ -7,6 +6,22 @@ observeEvent(input$btLoadScen, {
   flog.debug("Load Scenario button clicked (multiple scenarios view).")
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1L)
 })
+observeEvent(input$selLoadScenTags, {
+  oderByIdentifier <- if(btSortTime) stimeIdentifier else snameIdentifier
+  desc <- if(btSortNameDesc || btSortTimeDesc) TRUE else FALSE
+  if(!length(input$selLoadScenTags)){
+    scenMetaDbSubset <<- scenMetaDb
+    updateSelectInput(session, "selLoadScen", 
+                      choices = db$formatScenList(scenMetaDbSubset, oderByIdentifier, 
+                                                  desc = desc))
+    return()
+  }
+  scenMetaDbSubset <<- scenMetaDb[vapply(scenMetaDb[[stagIdentifier]], function(tags){
+    any(csv2Vector(tags) %in% input$selLoadScenTags)}, logical(1L), USE.NAMES = FALSE), ]
+  updateSelectInput(session, "selLoadScen", 
+                    choices = db$formatScenList(scenMetaDbSubset, 
+                                                oderByIdentifier, desc = desc))
+}, ignoreNULL = FALSE)
 #load scenario button clicked
 observeEvent(virtualActionButton(rv$btLoadScen), {
   # fetch list of saved scenarios
@@ -29,19 +44,21 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
     }else{
       scenMetaDb <<- scenMetaDb[!as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
     }
-    
   }
   
   if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
+    scenMetaDbSubset <<- scenMetaDb
+    dbTagList <- scenMetaDb[[stagIdentifier]]
+    dbTagList <- csv2Vector(dbTagList[dbTagList != ""])
     # by default, put most recently saved scenario first
-    dbSidList <- db$formatScenList(scenMetaDb, stimeIdentifier, desc = TRUE)
+    dbSidList <- db$formatScenList(scenMetaDbSubset, stimeIdentifier, desc = TRUE)
     if(isInSplitView){
       uiSidList <- scenMetaDb[as.character(scenMetaDb[[1]]) %in% sidsInComp, ]
       uiSidList <- db$formatScenList(uiSidList, stimeIdentifier, desc = TRUE)
     }else{
       uiSidList <- NULL
     }
-    showLoadScenDialog(dbSidList, uiSidList, isInSplitView)
+    showLoadScenDialog(dbSidList, uiSidList, isInSplitView, dbTagList = dbTagList)
   }else{
     if(is.null(showErrorMsg(lang$nav$dialogLoadScen$titleNoScen, 
                             lang$nav$dialogLoadScen$descNoScen))){
@@ -54,11 +71,12 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
 observeEvent(input$btSortName, {
   flog.debug("Button to sort scenarios by name clicked (%s).", 
              if(btSortNameDesc) "ascending order" else "descending order")
-  shinyjs::removeClass("btSortTime", class = "scen-sort-by-selected")
-  shinyjs::addClass("btSortName", class = "scen-sort-by-selected")
+  removeClassEl(session, "#btSortTime", "scen-sort-by-selected")
+  addClassEl(session, "#btSortName", "scen-sort-by-selected")
+  btSortTime <<- FALSE
   if(btSortNameDesc){
     updateSelectInput(session, "selLoadScen", 
-                      choices = db$formatScenList(scenMetaDb, 
+                      choices = db$formatScenList(scenMetaDbSubset, 
                                                   snameIdentifier, 
                                                   desc = FALSE))
     updateActionButton(session, "btSortName", 
@@ -67,7 +85,7 @@ observeEvent(input$btSortName, {
     btSortNameDesc <<- FALSE
   }else{
     updateSelectInput(session, "selLoadScen", 
-                      choices = db$formatScenList(scenMetaDb, snameIdentifier, desc = TRUE))
+                      choices = db$formatScenList(scenMetaDbSubset, snameIdentifier, desc = TRUE))
     updateActionButton(session, "btSortName", 
                        label = lang$nav$dialogLoadScen$btSortNameASC, 
                        icon = icon("sort-by-alphabet", lib = "glyphicon"))
@@ -79,11 +97,12 @@ observeEvent(input$btSortName, {
 observeEvent(input$btSortTime, {
   flog.debug("Button to sort scenarios by time clicked (%s).", 
              if(btSortTimeDesc) "ascending order" else "descending order")
-  shinyjs::removeClass("btSortName", class = "scen-sort-by-selected")
-  shinyjs::addClass("btSortTime", class = "scen-sort-by-selected")
+  removeClassEl(session, "#btSortName", "scen-sort-by-selected")
+  addClassEl(session, "#btSortTime", "scen-sort-by-selected")
+  btSortTime <<- TRUE
   if(btSortTimeDesc){
     updateSelectInput(session, "selLoadScen", 
-                      choices = db$formatScenList(scenMetaDb, 
+                      choices = db$formatScenList(scenMetaDbSubset, 
                                                   stimeIdentifier, desc = FALSE))
     updateActionButton(session, "btSortTime", 
                        label = lang$nav$dialogLoadScen$btSortTimeDESC, 
@@ -121,7 +140,8 @@ observeEvent(input$btLoadScenConfirm, {
   
   # update input sheets
   # check whether current input datasets are empty
-  if(isolate(input$cbSelectManually) && length(isolate(input$selInputData))){
+  if(identical(isolate(input$cbSelectManually), TRUE) && 
+     length(isolate(input$selInputData))){
     inputDatasetIdxToImport <- match(tolower(isolate(input$selInputData)), names(modelIn))
     # remove NAs
     inputDatasetIdxToImport <- inputDatasetIdxToImport[!is.na(inputDatasetIdxToImport)]
@@ -139,9 +159,9 @@ observeEvent(input$btLoadScenConfirm, {
   }, logical(1))
   
   if(any(inputDatasetsExist)){
-    hide("importDataTabset")
-    shinyjs::show("btOverrideScen")
-    shinyjs::show("importDataOverride")
+    hideEl(session, "#importDataTabset")
+    showEl(session, "#btOverrideScen")
+    showEl(session, "#importDataOverride")
   }else{
     overrideInput <<- FALSE
     rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
@@ -252,10 +272,7 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
         }
       }
     })
-    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(
-      uidAlias = lang$nav$excelExport$metadataSheet$uid, 
-      snameAlias = lang$nav$excelExport$metadataSheet$sname, 
-      stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
     if(noOutput){
       noOutputData <<- TRUE
     }else{

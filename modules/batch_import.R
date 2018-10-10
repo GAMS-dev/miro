@@ -1,6 +1,6 @@
 # elements that must be saved in scalar table
 scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelInTabularData]
-shinyjs::disable("btUploadBatch")
+disableEl(session, "#btUploadBatch")
 
 # table names that must exist in order for scenario to be valid
 tableNamesToVerify <- gsub(modelName %+% "_", "", c(scenTableNames, 
@@ -25,7 +25,7 @@ observeEvent(input$btUploadBatch, {
     batchTags <<- input[["batchTags"]]
   }
   
-  disable("btUploadBatch")
+  disableEl(session, "#btUploadBatch")
   prog <- shiny::Progress$new()
   prog$set(message = "Extracting zip file", value = 1/8)
   on.exit(prog$close())
@@ -120,7 +120,6 @@ observeEvent(virtualActionButton(rv$btSave), {
   on.exit(prog$close())
   errMsg <- NULL
   removeModal()
-  print('hi')
   tryCatch({
     batchImport$saveScenarios(batchTags, readPerm = uid, 
                               writePerm = uid, progressBar = prog)
@@ -140,8 +139,8 @@ observeEvent(virtualActionButton(rv$btSave), {
 })
 
 observeEvent(input$batchImport, {
-  enable("btUploadBatch")
-  enable("batchTags")
+  enableEl(session, "#btUploadBatch")
+  enableEl(session, "#batchTags")
   updateTextInput(session, "batchTags", value = gsub("\\..+$", "", input$batchImport$name))
   rv$clear <- TRUE
 }, priority = 1000)

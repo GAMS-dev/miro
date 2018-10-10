@@ -103,35 +103,69 @@ Db <- R6Class("Db",
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getTraceConfig        = function() private$traceConfig,
-                getMetadata           = function(uid, sname, stime, 
-                                                 uidAlias = private$scenMetaColnames['uid'], 
-                                                 snameAlias = private$scenMetaColnames['sname'], 
-                                                 stimeAlias = private$scenMetaColnames['stime']){
+                getMetadata           = function(uid, sname, stime, stag = character(0L), 
+                                                 readPerm = character(0L), writePerm = character(0L), 
+                                                 uidAlias = private$scenMetaColnames[['uid']], 
+                                                 snameAlias = private$scenMetaColnames[['sname']], 
+                                                 stimeAlias = private$scenMetaColnames[['stime']],
+                                                 stagAlias = private$scenMetaColnames[['stag']],
+                                                 readPermAlias = private$scenMetaColnames[['accessR']],
+                                                 writePermAlias = private$scenMetaColnames[['accessW']]){
                   # Generate dataframe containing scenario metadata
                   #
                   # Args:
                   #   uid:                      user ID
                   #   sname:                    name of the scenario
                   #   stime:                    time the scenario was generated
-                  #   uidAlias:                 User ID Description
-                  #   snameAlias:               Scenario name Description
-                  #   stimeAlias:               Scenario time description
+                  #   stag:                     tags of the scenario (optional)
+                  #   readPerm:                 read permissions of scenario (optional)
+                  #   writePerm:                write permissions of scenario (optional)
+                  #   uidAlias:                 User ID Description (optional)
+                  #   snameAlias:               Scenario name Description (optional)
+                  #   stimeAlias:               Scenario time description (optional)
+                  #   stagAlias:                Scenario tag description (optional)
+                  #   readPermAlias:            Scenario read permissions description (optional)
+                  #   writePermAlias:           Scenario write permissions description (optional)
                   #
                   # Returns:
                   #   dataframe with metadata
                   
                   #BEGIN error checks
-                  stopifnot(is.character(uid), length(uid) == 1)
-                  stopifnot(is.character(sname), length(sname) == 1)
+                  stopifnot(is.character(uid), length(uid) == 1L)
+                  stopifnot(is.character(sname), length(sname) == 1L)
                   stime <- as.POSIXct(stime)
-                  stopifnot(inherits(stime, "POSIXct"), length(stime) == 1)
-                  stopifnot(is.character(uidAlias), length(uidAlias) == 1)
-                  stopifnot(is.character(snameAlias), length(snameAlias) == 1)
-                  stopifnot(is.character(stimeAlias), length(stimeAlias) == 1)
+                  stopifnot(inherits(stime, "POSIXct"), length(stime) == 1L)
+                  stopifnot(is.character(stag))
+                  stopifnot(is.character(readPerm))
+                  stopifnot(is.character(writePerm))
+                  stopifnot(is.character(uidAlias), length(uidAlias) == 1L)
+                  stopifnot(is.character(snameAlias), length(snameAlias) == 1L)
+                  stopifnot(is.character(stimeAlias), length(stimeAlias) == 1L)
+                  stopifnot(is.character(stagAlias))
+                  stopifnot(is.character(readPermAlias))
+                  stopifnot(is.character(writePermAlias))
                   #END error checks
                   
-                  metadata <- data.frame(uid, sname, stime, stringsAsFactors = F)
+                  metadata <- tibble(uid, sname, stime)
                   names(metadata) <- c(uidAlias, snameAlias, stimeAlias)
+                  if(length(stag)){
+                    if(length(stag) > 1L){
+                      stag <- vector2Csv(stag)
+                    }
+                    metadata[[stagAlias]] <- stag
+                  }
+                  if(length(readPerm)){
+                    if(length(readPerm) > 1L){
+                      readPerm <- vector2Csv(readPerm)
+                    }
+                    metadata[[readPermAlias]] <- readPerm
+                  }
+                  if(length(writePerm)){
+                    if(length(writePerm) > 1L){
+                      writePerm <- vector2Csv(writePerm)
+                    }
+                    metadata[[writePermAlias]] <- writePerm
+                  }
                   
                   return(metadata)
                 },
@@ -449,12 +483,13 @@ Db <- R6Class("Db",
                   }
                   invisible(self)
                 },
-                writeMetadata = function(metadata){
+                writeMetadata = function(metadata, update = FALSE){
                   # Write scenario metadata to database
                   #
                   # Args:
                   #   metadata:     dataframe containing metadata for one up 
                   #                 to many scenarios
+                  #   update:       whether existing scenario metadata shall be updated
                   #
                   # Returns:
                   #   reference to itself (Db R6 object)
@@ -469,7 +504,7 @@ Db <- R6Class("Db",
                                       DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
                                       " (", 
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                      " bigserial PRIMARY KEY,",
+                                      " serial PRIMARY KEY,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
                                       " varchar(50) NOT NULL,", 
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sname']), 
@@ -490,17 +525,47 @@ Db <- R6Class("Db",
                     flog.debug("Db: A table named: '%s' did not yet exist (Scenario.writeMetadata). " %+%
                                  "Therefore it was created.", private$tableNameMetadata)
                   }
-                  # write new metadata
-                  tryCatch({
-                    DBI::dbWriteTable(private$conn, private$tableNameMetadata, 
-                                      metadata, row.names = FALSE, append = TRUE)
-                    flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
-                               private$tableNameMetadata)
-                  }, error = function(e){
-                    stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
+                  if(update){
+                    sql     <- DBI::SQL(paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, 
+                                                                                 private$tableNameMetadata), 
+                                               " SET (", 
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), ", ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sname']), ", ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stime']), ", ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stag']), ", ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessR']), ", ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessW']), ") = (",
+                                               "?uid, ?sname, ?stime, ?stag, ?accessR, ?accessW) WHERE ",
+                                               DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), " = ?sid;"))
+                    query   <- DBI::sqlInterpolate(private$conn, sql, uid = metadata[[private$scenMetaColnames['uid']]],
+                                                   sname = metadata[[private$scenMetaColnames['sname']]][[1]], 
+                                                   stime = as.character(metadata[[private$scenMetaColnames['stime']]][[1]]), 
+                                                   stag = metadata[[private$scenMetaColnames['stag']]][[1]], 
+                                                   accessR = metadata[[private$scenMetaColnames['accessR']]][[1]], 
+                                                   accessW = metadata[[private$scenMetaColnames['accessW']]][[1]], 
+                                                   sid = metadata[[private$scenMetaColnames['sid']]][[1]])
+                    tryCatch({
+                      DBI::dbExecute(private$conn, query)
+                      flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
+                                 private$tableNameMetadata)
+                    }, error = function(e){
+                      stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
         be written to database (Db.writeMetadata). Error message: %s.", 
-                                 private$tableNameMetadata, e), call. = FALSE)
-                  })
+                                   private$tableNameMetadata, e), call. = FALSE)
+                    })
+                  }else{
+                    # write new metadata
+                    tryCatch({
+                      DBI::dbWriteTable(private$conn, private$tableNameMetadata, 
+                                        metadata, row.names = FALSE, append = TRUE)
+                      flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
+                                 private$tableNameMetadata)
+                    }, error = function(e){
+                      stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
+        be written to database (Db.writeMetadata). Error message: %s.", 
+                                   private$tableNameMetadata, e), call. = FALSE)
+                    })
+                  }
                   
                   invisible(self)
                 },
@@ -528,7 +593,7 @@ Db <- R6Class("Db",
                   return(scenList)
                   
                 },
-                formatScenList = function(scenList, orderBy = NULL, desc = FALSE){
+                formatScenList = function(scenList, orderBy = NULL, desc = FALSE, limit = 100L){
                   # returns list of scenarios (formatted for dropdown menu)
                   #
                   # Args:
@@ -536,6 +601,7 @@ Db <- R6Class("Db",
                   #   orderBy:           column to use for ordering data frame (optional)
                   #   desc:              boolean that specifies whether ordering should be 
                   #                      descending(FALSE) or ascending (TRUE) (optional)
+                  #   limit:             maximum number of scenarios to format
                   #
                   # Returns:
                   #   character vector: named vector formatted to be used in dropdown menus, 
@@ -550,13 +616,17 @@ Db <- R6Class("Db",
                     stopifnot(is.character(orderBy) && length(orderBy) == 1)
                   }
                   stopifnot(is.logical(desc), length(desc) == 1)
+                  limit <- as.integer(limit)
+                  stopifnot(!is.na(limit))
                   # END error checks
                   
+                  limit <- min(nrow(scenList), limit)
+                  scenList <- scenList[1:limit, , drop = FALSE]
                   if(!is.null(orderBy)){
                     if(desc){
-                      scenList <- dplyr::arrange(scenList, desc(!!as.name(orderBy)))
+                      scenList <- arrange(scenList, desc(!!as.name(orderBy)))
                     }else{
-                      scenList <- dplyr::arrange(scenList, !!as.name(orderBy))
+                      scenList <- arrange(scenList, !!as.name(orderBy))
                     }
                   }
                   
@@ -657,7 +727,7 @@ Db <- R6Class("Db",
                   # returns vector with field types of data frame and changes integer type to numeric
                   fieldTypes <- vapply(seq_along(data), function(i){
                     if(identical(names(data)[[i]], private$scenMetaColnames[['sid']])){
-                      return("bigint")
+                      return("int")
                     }else if(typeof(data[[i]]) == "integer" && !is.factor(data[[i]])){
                       data[[i]] <- as.numeric(data[[i]])
                     }

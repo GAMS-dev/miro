@@ -16,16 +16,28 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
-      "save":"Save",
-      "saveAs":"Save As",
       "load":"Load",
       "splitView":"Switch to split view",
       "tabView":"Switch to tab view",
-      "delete":"Remove",
       "compareStart":"Compare mode",
       "compareStop":"Stop compare",
       "download":"Download output",
       "interrupt":"Stop"
+    },
+    "header":{
+      "scenario":{
+        "title":"Scenario",
+        "edit":"Edit metadata",
+        "save":"Save",
+        "saveAs":"Save As",
+        "export": "Export",
+        "delete":"Delete"
+      },
+      "help":{
+        "title": "Help",
+        "doc": "Documentation",
+        "about": "About"
+      }
     },
     "inputScreen":{  
       "noDataDep":"Please first import all data this element depends on.",
@@ -106,6 +118,7 @@
     "dialogNewScen":{  
       "title":"New scenario",
       "desc":"Please enter a name for the scenario:",
+      "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",
       "scenExits":"The scenario name you chose does already exist. Do you want to override the existing data?",
@@ -113,6 +126,15 @@
       "btOverride":"Override",
       "cancelButton":"Cancel",
       "okButton":"Ok"
+    },
+    "dialogEditMeta":{
+      "title":"Edit metadata",
+      "success": "Metadata updated successfully.",
+      "newName": "New name",
+      "newTags":"New tags",
+      "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
+      "cancelButton":"Close",
+      "okButton":"Update metadata"
     },
     "dialogDeleteScen":{  
       "title":"Delete scenario",
@@ -138,7 +160,7 @@
     },
     "dialogExistingOutput":{  
       "title":"Output data exists",
-      "desc":"The scenario you want to save contains output data that may not match the input data. Do you want to discard the output data?",
+      "desc":"The scenario you want to save contains output data that may not correspond to the current input data. Do you want to discard the output data?",
       "cancelButton"    : "Cancel",
       "saveOutputButton":"Save output data",
       "discardOutputButton":"Discard output data"
@@ -175,6 +197,7 @@
       "titleNoScen":"No scenarios found",
       "descNoScen":"No saved scenarios could be found.",
       "selLoadScen":"Select the scenario(s) that you want to load",
+      "selTags": "Show only scenarios with tag(s):",
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "sortBy":"Sort by:",
@@ -196,7 +219,10 @@
         "title":"Info",
         "uid":"User",
         "sname":"Scenario name",
-        "stime":"Time created"
+        "stime":"Time created",
+        "stag": "Scenario tags",
+        "readPerm": "Read permissions",
+        "writePerm": "Write permissions"
       },
       "inputPrefix":"",
       "inputSuffix":" (Input)",

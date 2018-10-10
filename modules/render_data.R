@@ -9,7 +9,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     if(is.null(height)){
       height <- pivotDefaultHeight
     }
-    data <- rpivotTable::rpivotTableOutput(ns("pivottable"), height = height)
+    data <- rpivotTableOutput(ns("pivottable"), height = height)
   }else if(type == "datatable"){
     data <- DT::dataTableOutput(ns("datatable"))
   }else if(type == "dtgraph"){
@@ -17,14 +17,14 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       data <- tagList(
         fluidRow(
           column(6, DT::dataTableOutput(ns("datatable"), height = height)),
-          column(6, plotly::plotlyOutput(ns("graph"), height = height))
+          column(6, plotlyOutput(ns("graph"), height = height))
         )
       )
     }else if(graphTool == "dygraph"){
       data <- tagList(
         fluidRow(
           column(6, DT::dataTableOutput(ns("datatable"), height = height)),
-          column(6, dygraphs::dygraphOutput(ns("graph"), height = height))
+          column(6, dygraphOutput(ns("graph"), height = height))
         )
       )
     }else{
@@ -32,9 +32,9 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }
   }else if(type == "graph"){
     if(graphTool == "plotly"){
-      data <- plotly::plotlyOutput(ns("graph"), height = height)
+      data <- plotlyOutput(ns("graph"), height = height)
     }else if(graphTool == "dygraph"){
-      data <- dygraphs::dygraphOutput(ns("graph"), height = height)
+      data <- dygraphOutput(ns("graph"), height = height)
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
@@ -66,12 +66,12 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     graphTool <- graphOptions$tool
   }
   if(identical(nrow(data), 0L)){
-    shinyjs::show("noData")
-    shinyjs::hide("data")
-    return(NULL)
+    showEl(session, "#" %+% session$ns("noData"))
+    hideEl(session, "#" %+% session$ns("data"))
+    return()
   }else{
-    shinyjs::show("data")
-    shinyjs::hide("noData")
+    showEl(session, "#" %+% session$ns("data"))
+    hideEl(session, "#" %+% session$ns("noData"))
   }
   # make output type case insensitive
   type <- tolower(type)

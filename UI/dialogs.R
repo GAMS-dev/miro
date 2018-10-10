@@ -12,22 +12,28 @@ showReadonlyDialog <- function(){
 showNewScenDialog <- function(tmpScenName){
   showModal(modalDialog(
     title = lang$nav$dialogNewScen$title,
-    textInput("scenName", lang$nav$dialogNewScen$desc,
-              value = tmpScenName),
-    shinyjs::hidden(
-      tags$div(id = "badScenarioName", class = "errMsg", lang$nav$dialogNewScen$badName),
-      tags$div(id = "scenarioExits", class = "errMsg", lang$nav$dialogNewScen$scenExits)
-    ),
+    tags$div(id = "scenNameWrapper", 
+             textInput("scenName", lang$nav$dialogNewScen$desc,
+                       value = tmpScenName),
+             selectizeInput("newScenTags", lang$nav$dialogNewScen$tags, c(),
+                            multiple = TRUE, options = list(
+                              'create' = TRUE,
+                              'persist' = FALSE)
+             )),
+    tags$div(id = "badScenarioName", class = "errMsg", style = "display:none;", 
+             lang$nav$dialogNewScen$badName),
+    tags$div(id = "scenarioExits", class = "errMsg", style = "display:none;", 
+             lang$nav$dialogNewScen$scenExits),
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav$dialogNewScen$cancelButton),
-               actionButton("btCheckName", lang$nav$dialogNewScen$okButton, class = "btHighlight1")
+               actionButton("btCheckName", lang$nav$dialogNewScen$okButton, 
+                            class = "btHighlight1")
       ),
-      shinyjs::hidden(
-        tags$div(id = "dialogSaveConfirm",
-                 actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
-                 actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, class = "btHighlight1")
-        )
+      tags$div(id = "dialogSaveConfirm", style = "display:none;",
+               actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
+               actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, 
+                            class = "btHighlight1")
       )
     ),
     fade = TRUE, easyClose = FALSE))
@@ -69,15 +75,14 @@ showDeleteScenDialog <- function(){
     tags$div(id = "deleteScen_db",
              lang$nav$dialogDeleteScen$desc
              ),
-    hidden(tags$div(id = "deleteScen_ui",
-             lang$nav$dialogDeleteScen$removeFromUI$desc
-             )),
+    tags$div(id = "deleteScen_ui", style = "display:none;",
+             lang$nav$dialogDeleteScen$removeFromUI$desc),
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$cancelButton),
       actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btHighlight1"),
-      hidden(actionButton("btRemoveDeletedConfirm", 
-                          label = lang$nav$dialogDeleteScen$removeFromUI$okButton, 
-                          class = "btHighlight1"))),
+      actionButton("btRemoveDeletedConfirm", 
+                  label = lang$nav$dialogDeleteScen$removeFromUI$okButton, 
+                  class = "btHighlight1", style = "display:none;")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -91,7 +96,7 @@ showRemoveExistingOutputDataDialog <- function(){
       actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btHighlight1")),
     fade = TRUE, easyClose = FALSE))
 }
-showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
+showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NULL){
   tabLoadFromLocalFile <- tabPanel(lang$nav$dialogImport$tabLocal, value = "tb_importData_local",
                                    tags$div(class = "space"),
                                    tags$div(id = "loadLocal_content",
@@ -104,9 +109,9 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                                                           ".xlsx")),
                                                      if(noDataInUI){
                                                        tagList(
-                                                         hidden(tags$div(id = "local_badScenName", class = "errMsg", 
-                                                                         lang$nav$dialogImport$badScenName)
-                                                         ),
+                                                         tags$div(id = "local_badScenName", style = "display:none;", 
+                                                                         class = "errMsg", 
+                                                                         lang$nav$dialogImport$badScenName),
                                                          textInput("local_newScenName", 
                                                                    lang$nav$dialogImport$newScenName)
                                                        )
@@ -134,33 +139,32 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                             ),
                                             fluidRow(
                                               tags$div(style = "text-align: center;",
-                                                       shinyjs::disabled(
+                                                       tagAppendAttributes(
                                                          actionButton("btCheckSnameLocal", 
                                                                       lang$nav$dialogImport$okButton, 
-                                                                      class = "btHighlight1")
+                                                                      class = "btHighlight1"), disabled = ""
                                                        )
                                               )
                                             )
                                    ),
                                    if(config$activateModules$scenario){
-                                     hidden(
-                                       tags$div(id = "loadLocal_scenNameExists",
-                                                fluidRow(
-                                                  tags$div(class = "errMsg",
-                                                           lang$nav$dialogImport$scenNameExists
-                                                  )
-                                                ),
-                                                fluidRow(
-                                                  tags$div(style = "text-align: center;",
-                                                           actionButton("btOverrideLocal", 
-                                                                        lang$nav$dialogImport$overrideButton),
-                                                           actionButton("btNewNameLocal", 
-                                                                        lang$nav$dialogImport$newNameButton, 
-                                                                        class = "btHighlight1")
-                                                  )
+                                     tags$div(id = "loadLocal_scenNameExists", style = "display:none;",
+                                              fluidRow(
+                                                tags$div(class = "errMsg",
+                                                         lang$nav$dialogImport$scenNameExists
                                                 )
-                                       )
-                                     )},
+                                              ),
+                                              fluidRow(
+                                                tags$div(style = "text-align: center;",
+                                                         actionButton("btOverrideLocal", 
+                                                                      lang$nav$dialogImport$overrideButton),
+                                                         actionButton("btNewNameLocal", 
+                                                                      lang$nav$dialogImport$newNameButton, 
+                                                                      class = "btHighlight1")
+                                                )
+                                              )
+                                     )
+                                     },
                                    icon = icon("file"))
   
   if(config$activateModules$scenario){
@@ -175,6 +179,11 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
                                                        db$formatScenList(scenMetadata, stimeIdentifier, desc = TRUE), 
                                                        multiple = FALSE, width = "100%"),
+                                           if(length(dbTagList)){
+                                             selectInput("selLoadScenTags", lang$nav$dialogLoadScen$selTags, 
+                                                         dbTagList, 
+                                                         multiple = TRUE, width = "100%")
+                                           },
                                            tags$div(
                                              lang$nav$dialogLoadScen$sortBy,
                                              actionButton("btSortName", label = lang$nav$dialogLoadScen$btSortNameASC, 
@@ -207,20 +216,20 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE){
                tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
              }
     ),
-    hidden(tags$div(id = "importDataOverride",
-                    lang$nav$dialogImport$descOverrideInput
-    )), footer = {
+    tags$div(id = "importDataOverride", style = "display:none;",
+             lang$nav$dialogImport$descOverrideInput
+    ), footer = {
       tagList(
         modalButton(lang$nav$dialogImport$cancelButton),
-        hidden(actionButton("btOverrideInput", label = lang$nav$dialogImport$okButton, 
-                            class = "btHighlight1"),
-               actionButton("btOverrideScen", label = lang$nav$dialogImport$okButton, 
-                            class = "btHighlight1"))
+        actionButton("btOverrideInput", label = lang$nav$dialogImport$okButton, 
+                     class = "btHighlight1", style = "display:none;"),
+        actionButton("btOverrideScen", label = lang$nav$dialogImport$okButton, 
+                     class = "btHighlight1", style = "display:none;")
       )
     }
   ))
 }
-showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE){
+showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE, dbTagList = NULL){
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if(isInSplitView && length(uiScenList)){
@@ -239,6 +248,11 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
                            selectInput("selLoadScen", lang$nav$dialogLoadScen$selLoadScen, 
                                        dbScenList, 
                                        multiple = if(isInSplitView) FALSE else TRUE, width = "100%"),
+                           if(length(dbTagList)){
+                             selectInput("selLoadScenTags", lang$nav$dialogLoadScen$selTags, 
+                                         dbTagList, 
+                                         multiple = TRUE, width = "100%")
+                           },
                            tags$div(class = "space"),
                            tags$div(
                              lang$nav$dialogLoadScen$sortBy,
@@ -271,7 +285,55 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
       ),
     fade = TRUE, easyClose = FALSE
   ))
-  addClass("btSortTime", class = "scen-sort-by-selected")
+  addClassEl(session, "#btSortTime", "scen-sort-by-selected")
+}
+showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character(0L)){
+  scenTags <- csv2Vector(metadata[["stag"]][[1]])
+  showModal(modalDialog(
+    title = lang$nav$dialogEditMeta$title,
+    tags$div(class = "space"),
+    tags$div(class = "errMsg", id = "editMetaBadName", style = "display:none;",
+             lang$nav$dialogNewScen$badName),
+    tags$div(class = "errMsg", id = "editMetaNameExists", style = "display:none;",
+             lang$nav$dialogNewScen$scenExits),
+    tags$div(class = "errMsg", id = "editMetaError", style = "display:none;", 
+             lang$nav$dialogEditMeta$errMsg),
+    tags$div(id = "editMetaSuccess", style = "display:none;", 
+             lang$nav$dialogEditMeta$success),
+    tags$div(id = "editMetaUI",
+      textInput("editMetaName", lang$nav$dialogEditMeta$newName, 
+                value = metadata[["sname"]][[1]]),
+      selectizeInput("editMetaTags", lang$nav$dialogEditMeta$newTags, 
+                     scenTags, selected = scenTags,
+                     multiple = TRUE, options = list(
+                       'create' = TRUE,
+                       'persist' = FALSE)
+      ),
+      if(sharedScen && length(ugroups)){
+        readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
+        writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
+        ugroups   <- csv2Vector(ugroups)
+        tagList(
+          selectInput("editMetaReadPerm", lang$nav$dialogEditMeta$readPerm, 
+                      ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
+                      multiple = TRUE, options = list(
+                        'create' = TRUE,
+                        'persist' = FALSE)),
+          selectInput("editMetaWritePerm", lang$nav$dialogEditMeta$writePerm, 
+                      ugroups, selected = writePerm,
+                      multiple = TRUE, options = list(
+                        'create' = TRUE,
+                        'persist' = FALSE))
+        )
+      }
+    ),
+    footer = tagList(
+      modalButton(lang$nav$dialogEditMeta$cancelButton),
+      actionButton("btUpdateMeta", lang$nav$dialogEditMeta$okButton, 
+                   class = "btHighlight1")
+    ),
+    fade = TRUE, easyClose = FALSE
+  ))
 }
 ######## BATCH MODE
 
@@ -286,23 +348,23 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = ""){
                lang$nav$batchMode$configPaverDialog$maxScenWarning2
              }
     ),
-    hidden(tags$div(id="configPaver",
-                    lang$nav$batchMode$configPaverDialog$desc,
-                    hidden(tags$div(id = "configPaverMaxSolversErr", class = "errMsg",
-                                    sprintf(lang$nav$batchMode$configPaverDialog$tooManySolvers, 
-                                            maxSolversPaver))),
-                    selectInput("selPaverAttribs", lang$nav$batchMode$configPaverDialog$selAttribs, 
-                                attribs, multiple = TRUE, width = "100%")
-    )),
-    hidden(tags$div(id="deleteTrace",
+    tags$div(id="configPaver", style = "display:none;",
+            lang$nav$batchMode$configPaverDialog$desc,
+            tags$div(id = "configPaverMaxSolversErr", style = "display:none;", class = "errMsg",
+                     sprintf(lang$nav$batchMode$configPaverDialog$tooManySolvers, 
+                             maxSolversPaver)),
+            selectInput("selPaverAttribs", lang$nav$batchMode$configPaverDialog$selAttribs, 
+                         attribs, multiple = TRUE, width = "100%")
+    ),
+    tags$div(id="deleteTrace", style = "display:none;",
                     lang$nav$batchMode$configPaverDialog$delTrace
-    )),
+    ),
     footer = tagList(
       modalButton(lang$nav$batchMode$configPaverDialog$cancelButton),
       actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton,
                    class = "btHighlight1"),
-      hidden(actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
-                          class = "btHighlight1")),
+      actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
+                   class = "btHighlight1", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)
         actionButton("btBatchLoad", lang$nav$batchMode$configPaverDialog$interactiveButton)
     ),

@@ -136,7 +136,7 @@
 			}
 		},
 		"abserror"       : {
-            "outType"               : "graph",
+            "outType"               : "dtGraph",
 			"height"				: 700,
             "graph"                 : {
                 "tool"                  : "plotly",

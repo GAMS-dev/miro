@@ -2,14 +2,17 @@
 observeEvent(input$btImport, {
   flog.debug("%s: Import input data button clicked.", uid)
   #disable button animation
-  shinyjs::removeClass("btImport", "glow-animation")
+  removeClassEl(session, "#btImport", "glow-animation")
   isInSolveMode <<- TRUE
+  dbTagList     <- NULL
   if(config$activateModules$scenario){
     # fetch list of saved scenarios
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetadata <<- db$fetchScenList(noBatch = TRUE)
+      scenMetaDb       <<- db$fetchScenList(noBatch = TRUE)
+      dbTagList        <- csv2Vector(scenMetaDb[[stagIdentifier]])
+      scenMetaDbSubset <<- scenMetaDb
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
       errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelInAlias[i])
@@ -18,15 +21,15 @@ observeEvent(input$btImport, {
       return(NULL)
     }
   }
-  showLoadDataDialog(scenMetadata = scenMetadata, 
-                     noDataInUI = is.null(isolate(rv$activeSname)))
+  showLoadDataDialog(scenMetadata = scenMetaDb, 
+                     noDataInUI = is.null(isolate(rv$activeSname)), dbTagList = dbTagList)
   
   if(config$activateModules$scenario){
-    if(identical(nrow(scenMetadata), 0L)){
+    if(identical(nrow(scenMetaDb), 0L)){
       # no scenarios in database, so select local tab
       updateTabsetPanel(session, "tb_importData", selected = "tb_importData_local")
     }
-    addClass("btSortTime", class = "scen-sort-by-selected")
+    addClassEl(session, "#btSortTime", "scen-sort-by-selected")
   }
 })
 observeEvent(input$localInput$name, {
@@ -38,11 +41,11 @@ observeEvent(input$localInput$name, {
       updateTextInput(session, "local_newScenName", value = gsub("\\.[^\\.]+$", "", 
                                                                  isolate(input$localInput$name)))
     }
-    enable("btCheckSnameLocal")
+    enableEl(session, "#btCheckSnameLocal")
   }
 })
 observeEvent(input$btNewNameLocal, {
   flog.debug("Button to choose a different scenario name clicked.")
-  hide("loadLocal_scenNameExists")
-  shinyjs::show("loadLocal_content")
+  hideEl(session, "#loadLocal_scenNameExists")
+  showEl(session, "#loadLocal_content")
 })

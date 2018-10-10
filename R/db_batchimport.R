@@ -202,7 +202,7 @@ BatchImport <- R6Class("BatchImport",
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
                            tableNamesRaw    <- gsub("^[^_]+_", "", tableNames)
-                           tablesTmp       <- vector("list", length(tableNames) + saveTraceFile)
+                           tablesTmp        <- vector("list", length(tableNames) + saveTraceFile)
                            tables           <- vector("list", length(tableNames) + saveTraceFile)
                            
                            # export metadata to reserve scenario ids

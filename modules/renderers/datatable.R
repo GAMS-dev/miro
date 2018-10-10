@@ -10,7 +10,7 @@ renderDTable <- function(data, options, roundPrecision = 2){
   #   DT object or renderDT object with data and options specified
   
   dt <- do.call(datatable, c(list(data), options)) %>%
-    formatRound(1:length(data), roundPrecision)
+    formatRound(seq_along(data), roundPrecision)
   
   return(renderDT(dt))
 }

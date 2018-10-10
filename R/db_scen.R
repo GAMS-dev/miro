@@ -11,9 +11,9 @@ Scenario <- R6Class("Scenario",
                         #   db:                R6 Database object
                         #   sid:               scenario Id (optional)
                         #   sname:             scenario name (optional)
-                        #   readPerm:          users/groups that have read permissions
-                        #   writePerm:         users/groups that have write permissions
-                        #   tags:              vector of tags that can be specified
+                        #   readPerm:          users/groups that have read permissions (optional)
+                        #   writePerm:         users/groups that have write permissions (optional)
+                        #   tags:              vector of tags that can be specified (optional)
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db))
@@ -21,9 +21,9 @@ Scenario <- R6Class("Scenario",
                         private$uid  <- db$getUid()
                         if(is.null(sid)){
                           stopifnot(is.character(sname), length(sname) == 1)
-                          if(!is.null(tags)){
+                          if(length(tags)){
                             stopifnot(is.character(tags), length(tags) >= 1)
-                            private$tags <- tags
+                            private$tags  <- vector2Csv(unique(tags))
                           }
                           # if permissions not explicitly set, restrict read/write access to active user
                           if(!is.null(readPerm)){
@@ -73,25 +73,37 @@ Scenario <- R6Class("Scenario",
                       getScenUid  = function() private$suid,
                       getScenName = function() private$sname,
                       getScenTime = function() private$stime,
-                      getMetadata = function(uidAlias = private$scenMetaColnames['uid'], 
-                                             snameAlias = private$scenMetaColnames['sname'],
-                                             stimeAlias = private$scenMetaColnames['stime']){
+                      getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata
                         #
                         # Args:
-                        #   uidAlias:                 User ID Description
-                        #   snameAlias:               Scenario name Description
-                        #   stimeAlias:               Scenario time description
+                        #   aliases:        list or named vector of metadata field aliases (optional)
+                        #   noPermFields:   do not include scenario permission fields (optional)
                         #
                         # Returns:
                         #   dataframe with metadata
                         
                         #BEGIN error checks 
                         stopifnot(!is.null(private$sid))
+                        stopifnot(is.logical(noPermFields), length(noPermFields) == 1L)
                         #END error checks
                         
-                        super$getMetadata(uid = private$suid, sname = private$sname, stime = private$stime, 
-                                          uidAlias = uidAlias, snameAlias = snameAlias, stimeAlias = stimeAlias)
+                        stag <- character(0L)
+                        readPerm <- character(0L)
+                        writePerm <- character(0L)
+                        
+                        if(!noPermFields){
+                          readPerm <- private$readPerm
+                        }
+                        if(!noPermFields){
+                          writePerm <- private$writePerm
+                        }
+                        super$getMetadata(uid = private$suid, sname = private$sname, stime = private$stime,
+                                          stag = private$tags, readPerm = readPerm, writePerm = writePerm,
+                                          uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
+                                          stimeAlias = aliases[["stime"]],
+                                          stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
+                                          writePermAlias = aliases[["writePerm"]])
                       },
                       save = function(datasets, msgProgress){
                         # Saves multiple dataframes to database
@@ -174,7 +186,6 @@ Scenario <- R6Class("Scenario",
                         stopifnot(!is.null(private$sid))
                         #END error checks 
                         noErr <- TRUE
-                        
                         self$deleteRows(private$tableNameMetadata, 
                                         private$scenMetaColnames['sid'], 
                                         private$sid)
@@ -185,6 +196,56 @@ Scenario <- R6Class("Scenario",
                         private$sid   <- integer(0)
                         
                         invisible(self)
+                      },
+                      updateMetadata = function(newName = character(0L), newTags = character(0L), 
+                                                newReadPerm = character(0L), newWritePerm = character(0L)){
+                        # Edit scenario metadata (wrapper around db.writeMetadata method)
+                        #
+                        # Args:
+                        #   newName:      updated scenario name (optional)
+                        #   newTags:      updated scenario tags (optional)
+                        #   newReadPerm:  updated scenario read permissions (optional)
+                        #   newWritePerm: updated scenario write permissions (optional)
+                        
+                        # Returns:
+                        #   R6 object: reference to itself,
+                        #   throws exception in case of error
+                        
+                        #BEGIN error checks 
+                        stopifnot(is.character(newName), length(newName) <= 1L)
+                        stopifnot(is.character(newTags))
+                        stopifnot(is.character(newReadPerm))
+                        stopifnot(is.character(newWritePerm))
+                        #END error checks 
+                        
+                        if(length(newName)){
+                          private$sname <- newName
+                        }
+                        if(length(newTags)){
+                          if(length(newTags) > 1L){
+                            newTags <- vector2Csv(newTags)
+                          }
+                          private$tags <- newTags
+                        }
+                        if(length(newReadPerm)){
+                          if(length(newTags) > 1L){
+                            newReadPerm <- vector2Csv(newReadPerm)
+                          }
+                          private$readPerm <- newReadPerm
+                        }
+                        if(length(newWritePerm)){
+                          if(length(newTags) > 1L){
+                            newWritePerm <- vector2Csv(newWritePerm)
+                          }
+                          private$writePerm <- newWritePerm
+                        }
+                        
+                        private$stime = Sys.time()
+                        metadata <- tibble(private$sid, private$suid, private$sname, 
+                                           private$stime, private$tags, private$readPerm,
+                                           private$writePerm)
+                        names(metadata) <- private$scenMetaColnames
+                        super$writeMetadata(metadata, update = TRUE)
                       },
                       finalize = function(){
                         if(length(private$sid)){
@@ -205,6 +266,7 @@ Scenario <- R6Class("Scenario",
                         #BEGIN error checks
                         stopifnot(missing(x))
                         stopifnot(!is.null(private$sid))
+                        stopifnot(length(metadata) == length())
                         #END error checks
                         
                         if(private$isLocked() || private$isReadonly())
@@ -247,6 +309,12 @@ Scenario <- R6Class("Scenario",
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with ID: '%s' could not be found.", sid), call. = FALSE)
                           }
+                          private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
+                          private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                          private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
+                          private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                          private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
+                          private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
                         }else{
                           metadata <- self$importDataset(private$tableNameMetadata, 
                                                          tibble(c(private$scenMetaColnames['uid'],
@@ -256,14 +324,11 @@ Scenario <- R6Class("Scenario",
                             stop(sprintf("A scenario with name: '%s' could not be found for user: '%s'.", 
                                          sname, uid), call. = FALSE)
                           }
+                          private$suid      <- uid
+                          private$sname     <- sname
+                          private$stime     <- Sys.time()
                         }
                         private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][1])
-                        private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
-                        private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
-                        private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
-                        private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                        private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
-                        private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
                         
                         invisible(self)
                       },
@@ -327,11 +392,9 @@ Scenario <- R6Class("Scenario",
                                                            stringsAsFactors = FALSE)
                           colnames(metadata) <- private$scenMetaColnames[-1]
                         }else{
-                          # remove existing metadata
                           self$deleteRows(private$tableNameMetadata, 
                                           private$scenMetaColnames['sid'], 
                                           private$sid)
-                          
                           metadata           <- data.frame(private$sid, private$suid, private$sname,
                                                            private$stime, private$tags, 
                                                            private$readPerm, private$writePerm,
@@ -363,7 +426,7 @@ Scenario <- R6Class("Scenario",
                                             DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
                                             " text,",
                                             DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                            " bigint UNIQUE,", 
+                                            " int UNIQUE,", 
                                             DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), 
                                             " timestamp with time zone);")
                             DBI::dbExecute(private$conn, query)

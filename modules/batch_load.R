@@ -37,7 +37,7 @@ activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
 
-shinyjs::hide("batchLoadButtons")
+hideEl(session, "#batchLoadButtons")
 
 generateLine <- function(i, j, type, label, values = NULL){
   tags$div(id = "line" %+% i %+% "_" %+% j, class = "itemLine",
@@ -160,8 +160,8 @@ lapply(seq_len(maxNumBlocks), function(i){
   })
 })
 observeEvent(input$btSendQuery, {
-  disable("btSendQuery")
-  shinyjs::show("loadDiv")
+  disableEl(session, "#btSendQuery")
+  showEl(session, "#loadDiv")
   a <- 1L
   c <- 1L
   subsetCoditions <- NULL
@@ -245,9 +245,9 @@ observeEvent(input$btSendQuery, {
     flog.warn("Problems executing batchLoad query. Error message: %s.", e)
   })
   
-  hide("loadDiv")
-  shinyjs::show("batchLoadButtons")
-  enable("btSendQuery")
+  hideEl(session, "#loadDiv")
+  showEl(session, "#batchLoadButtons")
+  enableEl(session, "#btSendQuery")
 })
 output$batchLoadResults <- renderDataTable({
   if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
