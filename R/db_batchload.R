@@ -185,8 +185,8 @@ BatchLoad <- R6Class("BatchLoad",
                            paverFile <- file(fileName, open = 'wt')
                            
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
-                                             "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,NumberOfEquations,NumberOfVariables,",
-                                             "NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,OptionFile,ModelStatus,SolverStatus,",
+                                             "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,",
+                                             "OptionFile,ModelStatus,SolverStatus,",
                                              "ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
                                              "*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
@@ -195,6 +195,8 @@ BatchLoad <- R6Class("BatchLoad",
                                                                       innerSepAND = FALSE)[-1]
                            paverData[[1]] <- private$groupedNames[[i]]
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
+                           paverData[, c("NumberOfVariables", "NumberOfVariables", "NumberOfDiscreteVariables",
+                                         "NumberOfNonZeros", "NumberOfNonlinearNonZeros"), drop = FALSE] <- NULL
                            write_csv(paverData, fileName, append = TRUE)
                            
                          })

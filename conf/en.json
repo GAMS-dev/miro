@@ -339,7 +339,7 @@
     },
     "renderSlider":{  
       "title":"Incorrect input data for slider",
-      "desc":"The value '%d' for the slider: '%s' is not of numeric type."
+      "desc":"The value '%s' for the slider: '%s' is not of numeric type."
     },
     "saveInput":{  
       "title":"Error saving input data",
@@ -416,7 +416,7 @@
     },
     "lockScen":{
       "title":"Error setting/removing scenario lock",
-      "desc":"Some error occurred while locking or unlocking the currently active scenario. Error message: '%s'"
+      "desc":"Some error occurred while locking or unlocking the currently active scenario."
     },
     "paverExec":{  
       "title":"Error executing Python",

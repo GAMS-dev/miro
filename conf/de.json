@@ -414,7 +414,7 @@
     },
     "lockScen":{
       "title":"Fehler beim Setzen/Löschen der Szenarienperre",
-      "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten. Fehlermeldung: '%s'"
+      "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten."
     },
     "paverExec":{  
       "title":"Fehler beim Ausführen von Python",

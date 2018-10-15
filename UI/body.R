@@ -1,6 +1,10 @@
 ## UI body
 
-body <- dashboardBody(
+body <- dashboardBody({
+  if(dir.exists(paste0(currentModelDir, "static"))){
+    addResourcePath("custom", paste0(currentModelDir, "static"))
+  }
+  tagList(
   tags$head(
     if(config$activateModules$batchMode){
       tagList(
@@ -465,4 +469,4 @@ body <- dashboardBody(
        )
     }
   )
-)
+)})

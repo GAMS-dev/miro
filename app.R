@@ -192,8 +192,8 @@ if(is.null(errMsg)){
     # check whether non standard renderers were defined in graph config
     if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
       customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
-        tolower(substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType)))
-      customRendererOutput <- tolower(customRendererConfig$outType) %+% "Output"
+        substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
+      customRendererOutput <- customRendererConfig$outType %+% "Output"
       # find render function
       tryCatch({
         match.fun(customRendererName)
@@ -328,9 +328,6 @@ if(!is.null(errMsg)){
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #______________________________________________________
   server <- function(input, output, session){
-    if(dir.exists(paste0(currentModelDir, "static"))){
-      addResourcePath("custom", paste0(currentModelDir, "static"))
-    }
     newTab <- vector("list", maxNumberScenarios + 3)
     flog.info("Session started (model: '%s').", modelName)
     btSortNameDesc     <- FALSE

@@ -6,7 +6,7 @@ $(document).keyup(function(event) {
   
   // ENTER will confirm modal dialogues
   if(event.keyCode == 13 && !event.ctrlKey){
-    if($("#shiny-modal").find(".selectize-input.input-active").length > 0){
+    if($("#shiny-modal").find(".selectize-input.input-active").length > 0 || $("#shiny-modal").find("*[data-dismiss='modal']").is(":focus")){
       return;
     }
     if ($("#btLoadLocal").is(":visible") && $("#btLoadLocal").is(":enabled")) {

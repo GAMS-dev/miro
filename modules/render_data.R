@@ -2,6 +2,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                           modelDir = NULL, noDataTxt = "no data"){
   ns <- NS(id)
   # make output type case insensitive
+  typeCustom <- type
   type <- tolower(type)
   
   if(type == "pivot"){
@@ -45,10 +46,10 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     })
   }else{
     tryCatch({
-      customOutput <- match.fun(tolower(type) %+% "Output")
+      customOutput <- match.fun(typeCustom %+% "Output")
     }, error = function(e){
       stop(sprintf("An output function for the custom renderer: '%s' was not found. 
-                   Please make sure you first define such a function.", type), call. = FALSE)
+                   Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
                          path = customRendererDir)
@@ -74,6 +75,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     hideEl(session, "#" %+% session$ns("noData"))
   }
   # make output type case insensitive
+  typeCustom <- type
   type <- tolower(type)
   
   if(type == "pivot"){
@@ -97,16 +99,16 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
   }else{
     tryCatch({
-      customRenderer <- match.fun("render" %+% toupper(substr(type, 1, 1)) %+% tolower(substr(type, 2, nchar(type))))
+      customRenderer <- match.fun("render" %+% toupper(substr(typeCustom, 1, 1)) %+% substr(typeCustom, 2, nchar(typeCustom)))
     }, error = function(e){
       stop(sprintf("A custom renderer function: '%s' was not found. 
-                   Please make sure you first define such a function.", type), call. = FALSE)
+                   Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     tryCatch({
       callModule(customRenderer, "custom", as_tibble(data), options = customOptions, 
                  path = customRendererDir)
     }, error = function(e){
-      stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", type, e), call. = FALSE)
+      stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })
   }
   

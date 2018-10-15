@@ -94,7 +94,36 @@
             ]
           },
           "headers":{  
-            "description":"headers of the input sheets containing names of sets/parameters",
+            "description":"headers of the input sheets containing names of sets/parameters (handsontable)",
+            "type":"object",
+            "minProperties":1,
+            "additionalProperties":{  
+              "type":"object",
+              "properties":{  
+                "readonly":{  
+                  "description":"headers can be set as readonly to prevent the user from making changes",
+                  "type":[  
+                    "boolean",
+                    "null"
+                  ],
+                  "required":false
+                },
+                "type":{  
+                  "description":"GAMS input type",
+                  "type":"string",
+                  "enum":[  
+                    "set",
+                    "parameter",
+                    "acronym",
+                    "scalar"
+                  ],
+                  "required":true
+                }
+              }
+            }
+          },
+          "dtHeaders":{  
+            "description":"headers of the input sheets containing names of sets/parameters (datatable)",
             "type":"object",
             "minProperties":1,
             "additionalProperties":{  
@@ -549,7 +578,53 @@
         ]
       }
     },
-    "gamsOutputFiles": {}
+    "gamsOutputFiles": {
+       "description":"Name of GAMS input data sheets. Identifiers are case insensitive.",
+      "type":"object",
+      "minProperties":1,
+      "additionalProperties":{  
+        "type":"object",
+        "additionalProperties":false,
+        "properties":{
+          "alias":{  
+            "type":"string",
+            "minLength":1
+          },
+          "hidden":{  
+            "description": "Boolean that specifies whether element should not be displayed in UI (e.g. configuration data)",
+            "type":"boolean",
+            "required": false
+          },
+          "count":{  
+            "description": "Only relevant for output scalars. Number of scalars in dataframe.",
+            "type":"integer",
+            "minimum" : 1,
+            "required": false
+          },
+          "headers":{  
+            "description":"headers of the output sheets containing names of sets/parameters",
+            "type":"object",
+            "minProperties":1,
+            "additionalProperties":{  
+              "type":"object",
+              "properties":{  
+                "type":{  
+                  "description":"GAMS type",
+                  "type":"string",
+                  "enum":[  
+                    "set",
+                    "parameter",
+                    "acronym",
+                    "scalar"
+                  ],
+                  "required":true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
 
   }
 }
