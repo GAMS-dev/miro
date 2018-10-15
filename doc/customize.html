@@ -22,7 +22,7 @@
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
-    <link type="text/css" href="assets/css/alpaca.css" rel="stylesheet"/>
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
 
 </head>
 
@@ -54,7 +54,25 @@
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
+                            <section id="intro" class="doc-section">
+                                  <h2 class="section-title">Introduction</h2>
+                                  <div class="section-block">
+                                      <p>This section deals with the configuration of the GAMS WebUI. With the help of a suitable, customized configuration the WebUI can be adjusted to the individual needs of the user. </br>
+                                      The GAMS Web Interface is configured using JSON files. For a GAMS model used in the WebUI, these files are located in <span class="code">&lt;modeldirectory&gt;/conf</span>. Two JSON files are used: </p>
+                                      <p>1) GMSIO_config.json:</br>
+                                      This file is generated automatically each time a GAMS model is run with the compile-time variable <span class="code">--gmswebui=2</span> or <span class="code"><nobr>--gmswebui=3</nobr></span>. It lists those GAMS symbols which were previously marked in the GAMS code with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags and should be used consequently in the WebUI. In addition, the type of representation of those GAMS symbols (table, slider, dropdown menu), which is also defined in GAMS, is determined here. For more information on the display format of input data, see ################.</p>
+                                      <p>1) config.json:</br>
+                                      In config.json the remaining, mainly GAMS unspecific configuration of the WebUI takes place such as the setting of the language, the general appearance, the functionality of the WebUI and much more. In addition, all visualizaion options like graphics that go beyond the scope of simple widgets for GAMS input data (such as tables, sliders, dropdown menus) are defined here.</br>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom_options.png" alt="Custom visualization options"/>
+                                      </div>
+                                      The WebUI offers comprehensive visualization possibilities. Some basic visualization forms are already pre-implemented and only need to be configured by the user, i.e. adapted to his model-specific data. The selection of these pre-implemented graphics currently includes chart technical representations (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</br>
+                                      In case the user would like to use his own, not pre-implemented graphics, a corresponding interface is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                      </p>
+                                      <p>Before the Web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, a warning appears in the browser.</p>
 
+                                      </div><!--//section-block-->
+                            </section>
                             <section id="config-gen" class="doc-section">
                                   <h2 class="section-title">Configuration Generator</h2>
                                   <div class="section-block">
