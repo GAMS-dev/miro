@@ -17,13 +17,13 @@
       "minLength":5,
       "required":true
     },
-	  "gamsMetaDelim":{
-	    "description":"GAMS delimitor used to identify meta information (e.g. slider, dropdown, ...)",
-	    "type":"string",
-	    "minLength":1,
-	    "required":false,
-	    "default":"###"
-	  },
+    "gamsMetaDelim":{  
+      "description":"GAMS delimitor used to identify meta information (e.g. slider, dropdown, ...)",
+      "type":"string",
+      "minLength":1,
+      "required":false,
+      "default":"###"
+    },
     "fileExchange":{  
       "description":"Method used to exchange files",
       "type":"string",
@@ -50,35 +50,38 @@
       "additionalProperties":{  
         "type":"object",
         "additionalProperties":false,
-        "properties":{
+        "properties":{  
           "alias":{  
             "type":"string",
             "minLength":1
           },
           "noBatch":{  
-            "description": "Boolean that specifies whether element should not be used in batch mode",
+            "description":"Boolean that specifies whether element should not be used in batch mode",
             "type":"boolean",
-            "required": false
+            "required":false
           },
-          "sharedData":{
+          "sharedData":{  
             "description":"Boolean that specifies whether data for this widget is shared with other models (only valid for certain widgets such as table or dropdown ith data from external source)",
             "type":"boolean",
             "required":false
           },
-          "loadOnStartup":{
+          "loadOnStartup":{  
             "description":"Boolean that specifies whether data should be loaded on startup",
             "type":"boolean",
             "required":false
           },
-          "colSubset":{
+          "colSubset":{  
             "description":"Array that specifies subset of columns to import to UI (names of columns)",
-            "type":["array", "string"],
-            "minLength": 1,
+            "type":[  
+              "array",
+              "string"
+            ],
+            "minLength":1,
             "uniqueItems":true,
             "minItems":1,
             "items":{  
               "type":"string"
-             },
+            },
             "required":false
           },
           "noimport":{  
@@ -94,36 +97,7 @@
             ]
           },
           "headers":{  
-            "description":"headers of the input sheets containing names of sets/parameters (handsontable)",
-            "type":"object",
-            "minProperties":1,
-            "additionalProperties":{  
-              "type":"object",
-              "properties":{  
-                "readonly":{  
-                  "description":"headers can be set as readonly to prevent the user from making changes",
-                  "type":[  
-                    "boolean",
-                    "null"
-                  ],
-                  "required":false
-                },
-                "type":{  
-                  "description":"GAMS input type",
-                  "type":"string",
-                  "enum":[  
-                    "set",
-                    "parameter",
-                    "acronym",
-                    "scalar"
-                  ],
-                  "required":true
-                }
-              }
-            }
-          },
-          "dtHeaders":{  
-            "description":"headers of the input sheets containing names of sets/parameters (datatable)",
+            "description":"headers of the input sheets containing names of sets/parameters",
             "type":"object",
             "minProperties":1,
             "additionalProperties":{  
@@ -218,7 +192,10 @@
               },
               "choices":{  
                 "description":"List of values to select from.",
-                "type":["array","string"],
+                "type":[  
+                  "array",
+                  "string"
+                ],
                 "minLength":1,
                 "uniqueItems":true,
                 "minItems":1,
@@ -236,7 +213,10 @@
                 "required":false
               },
               "aliases":{  
-                "type":["array","string"],
+                "type":[  
+                  "array",
+                  "string"
+                ],
                 "minLength":1,
                 "uniqueItems":true,
                 "minItems":1,
@@ -255,7 +235,7 @@
               }
             }
           },
-		  "dropdowne":{  
+          "dropdowne":{  
             "type":"object",
             "additionalProperties":false,
             "properties":{  
@@ -422,7 +402,7 @@
               }
             }
           },
-          "checkbox":{
+          "checkbox":{  
             "type":"object",
             "additionalProperties":false,
             "properties":{  
@@ -434,9 +414,13 @@
               },
               "value":{  
                 "description":"initial value",
-                "type":["boolean", "integer", "string"],
-                "minimum" : 0,
-                "maximum" : 1,
+                "type":[  
+                  "boolean",
+                  "integer",
+                  "string"
+                ],
+                "minimum":0,
+                "maximum":1,
                 "minLength":1,
                 "required":false
               },
@@ -472,7 +456,7 @@
               "required":[  
                 "slider",
                 "dropdown",
-				"dropdowne",
+                "dropdowne",
                 "daterange",
                 "date",
                 "checkbox"
@@ -487,7 +471,7 @@
               "required":[  
                 "readonly",
                 "dropdown",
-				"dropdowne",
+                "dropdowne",
                 "headers",
                 "daterange",
                 "date",
@@ -502,7 +486,7 @@
             "not":{  
               "required":[  
                 "readonly",
-				"dropdowne",
+                "dropdowne",
                 "slider",
                 "headers",
                 "daterange",
@@ -511,14 +495,14 @@
               ]
             }
           },
-		  {  
+          {  
             "required":[  
               "dropdowne"
             ],
             "not":{  
               "required":[  
                 "readonly",
-				"dropdown",
+                "dropdown",
                 "slider",
                 "headers",
                 "daterange",
@@ -535,7 +519,7 @@
               "required":[  
                 "readonly",
                 "dropdown",
-				"dropdowne",
+                "dropdowne",
                 "slider",
                 "headers",
                 "daterange",
@@ -551,7 +535,7 @@
               "required":[  
                 "readonly",
                 "dropdown",
-				"dropdowne",
+                "dropdowne",
                 "slider",
                 "headers",
                 "date",
@@ -567,7 +551,7 @@
               "required":[  
                 "readonly",
                 "dropdown",
-				"dropdowne",
+                "dropdowne",
                 "slider",
                 "headers",
                 "date",
@@ -578,28 +562,28 @@
         ]
       }
     },
-    "gamsOutputFiles": {
-       "description":"Name of GAMS input data sheets. Identifiers are case insensitive.",
+    "gamsOutputFiles":{  
+      "description":"Name of GAMS input data sheets. Identifiers are case insensitive.",
       "type":"object",
       "minProperties":1,
       "additionalProperties":{  
         "type":"object",
         "additionalProperties":false,
-        "properties":{
+        "properties":{  
           "alias":{  
             "type":"string",
             "minLength":1
           },
           "hidden":{  
-            "description": "Boolean that specifies whether element should not be displayed in UI (e.g. configuration data)",
+            "description":"Boolean that specifies whether element should not be displayed in UI (e.g. configuration data)",
             "type":"boolean",
-            "required": false
+            "required":false
           },
           "count":{  
-            "description": "Only relevant for output scalars. Number of scalars in dataframe.",
+            "description":"Only relevant for output scalars. Number of scalars in dataframe.",
             "type":"integer",
-            "minimum" : 1,
-            "required": false
+            "minimum":1,
+            "required":false
           },
           "headers":{  
             "description":"headers of the output sheets containing names of sets/parameters",
@@ -625,6 +609,5 @@
         }
       }
     }
-
   }
 }

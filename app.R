@@ -4,20 +4,30 @@ webuiRDate   <- "Oct 08 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
-# readxl          #GPL-3
-# writexl         #BSD2-clause
 # rhandsontable   #MIT
-# shiny           #GPL-3
-# shinydashboard  #GPL >=2
 # plotly          #MIT
-# DT              #GPL-3
 # V8              #MIT
 # jsonlite        #MIT
 # jsonvalidate    #MIT
-# RPostgres       #GPL-2
 # rpivotTable     #MIT
-# futile.logger   #LGPL-3
+# R6              #MIT
+# dygraphs        #MIT
+# tidyr           #MIT
 # zip             #CC0
+# futile.logger   #LGPL-3
+# readxl          #GPL-3
+# DT              #GPL-3
+# shiny           #GPL-3
+# xts             #GPL >=v2
+# shinydashboard  #GPL >= v2
+# writexl         #BSD-2-clause
+# stringi         #BSD-3-clause
+
+# RPostgres       #GPL-2
+# DBI (database)  #LGPL >=2
+# openssl (batch) #MIT
+
+
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
@@ -34,6 +44,7 @@ requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "process
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "dygraphs", "xts", "zip", "tidyr")
+
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -60,7 +71,9 @@ getCommandArg <- function(argName, exception = TRUE){
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
 if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "GMSWebUI", 
                                                    .Platform$file.sep, "library"))){
+
   RLibPath = NULL
+
 }else{
   RLibPath = paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, "library") 
 }
