@@ -18,11 +18,12 @@
     <link rel="stylesheet" href="assets/plugins/prism/prism.css">
     <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
-
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/js/spectrum/spectrum.css"></script>
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
-    <link type="text/css" href="assets/css/alpaca.css" rel="stylesheet"/>
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
 
 </head>
 
@@ -118,6 +119,7 @@
                                     fr.readAsText(files.item(0));
                                   };
                                   function launchAlpaca(gmsIn, gmsOut, gmsInHdr, gmsOutHdr, scalars){
+                                    Alpaca.defaultToolbarSticky = true;
                                       $("#form1").alpaca({
                                           "schema": {
                                              "$schema":"http://json-schema.org/draft-07/schema#",
@@ -233,18 +235,17 @@
                                                       }
                                                    }
                                                 },
-                                                "aggregateWidgets":{
-                                                   "title":"Aggregate all input widgets on a single tab? Leave empty if no aggregation desired.",
-                                                   "type":"object",
-                                                   "additionalProperties":false,
-                                                   "properties":{
-                                                      "tabtitle":{
-                                                         "title":"Title of the tab",
-                                                         "type":"string",
-                                                         "minLength":"1",
-                                                         "required":false
-                                                      }
-                                                   }
+                                                "aggregateWidgetsTmp":{
+                                                   "title":"Aggregate all input widgets on a single tab?",
+                                                   "type":"boolean",
+                                                   "required":false,
+                                                   "default":false
+                                                },
+                                                "aggregateWidgetsTitle":{
+                                                  "title":"Title of the tab where input widgets are aggregated",
+                                                  "type":"string",
+                                                  "minLength":"1",
+                                                  "required":true
                                                 },
                                                 "saveTraceFile":{
                                                    "title":"Save trace files?",
@@ -558,7 +559,7 @@
                                                                               "required": true
                                                                            },
                                                                            "plotly":{
-                                                                              "title":"Use Plotly. Note: Only basic configuration is pre-implemented here. For more sophisticated graphic options please refer to https://plot.ly/r/ and configure the config.json file manually.",
+                                                                              "title":"Use Plotly. Note: Only basic configuration is pre-implemented here. For more sophisticated graphic options please refer to <a href='https://plot.ly/r/' target='_blank'>the plotly documentation</a> and configure the config.json file manually.",
                                                                               "type":"object",
                                                                               "properties":{
                                                                                  "graphtype":{
@@ -1206,13 +1207,13 @@
                                                                   "type":"string",
                                                                   "enum":gmsIn.concat(gmsOut),
                                                                   "default":gmsIn.concat(gmsOut)[0],
-                                                                  "default":null,
-                                                                  "required":false
+                                                                  "required":true
                                                                },
                                                                "outType":{
                                                                   "title":"Name of custom renderer",
                                                                   "type":"string",
                                                                   "minLength":2,
+                                                                  "required":true,
                                                                   "not":{
                                                                      "enum":[
                                                                         "valueBox",
@@ -1239,7 +1240,7 @@
                                                                      "minLength":2
                                                                   }
                                                                },
-                                                               "options":{
+                                                               "optionsTmp":{
                                                                   "title":"Additional options",
                                                                   "type":"array",
                                                                   "items":{
@@ -1292,7 +1293,7 @@
                                                          "required":false
                                                       },
                                                       "readonly":{
-                                                         "title":"Possibility to modify handsontables?",
+                                                         "title":"Should handsontables be read-only?",
                                                          "type":"boolean",
                                                          "default":false,
                                                          "required":false
@@ -1426,10 +1427,24 @@
                                                    "additionalProperties":false,
                                                    "properties":{
                                                       "class":{
-                                                         "title":"css classes used for styling datatable",
+                                                         "title":"css classes used for styling datatable (see <a href='https://datatables.net/manual/styling/classes' target='_blank'>here</a>)",
                                                          "type":"array",
                                                          "minLength":1,
-                                                         "default":"display",
+                                                         "items":{
+                                                            "type":"string",
+                                                            "enum":[
+                                                               "display",
+                                                               "cell-border",
+                                                               "compact",
+                                                               "hover",
+                                                               "nowrap",
+                                                               "order-column",
+                                                               "row-border",
+                                                               "stripe",
+                                                            ],
+                                                            "default":"display",
+                                                            "required":true,
+                                                         },
                                                          "required":false
                                                       },
                                                       "filter":{
@@ -1450,7 +1465,7 @@
                                                          "default":false
                                                       },
                                                       "extensions":{
-                                                         "title":"Extensions: For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
+                                                         "title":"Extensions: For a list of supported extensions see <a href='https://rstudio.github.io/DT/extensions.html' target='_blank'>here</a>",
                                                          "type":"array",
                                                          "uniqueItems":true,
                                                          "required":false,
@@ -1543,10 +1558,20 @@
                                                       }
                                                    }
                                                 }
+                                             },
+                                             "dependencies": {
+                                               "aggregateWidgetsTitle": "aggregateWidgetsTmp"
                                              }
                                           },
                                           "options":{
                                              "fields":{
+                                               "pivottable":{
+                                                 "fields":{
+                                                   "bgColor":{
+                                                     "type":"color"
+                                                   }
+                                                 }
+                                               },
                                                 "dataRendering":{
                                                    "fields":{
                                                       "Format: graph":{
@@ -1630,7 +1655,8 @@
                                                       "autoGenInputGraphs":1,
                                                       "defCompMode": 1,
                                                       "activateModules": 1,
-                                                      "aggregateWidgets": 1,
+                                                      "aggregateWidgetsTmp": 1,
+                                                      "aggregateWidgetsTitle": 1,
                                                       "saveTraceFile": 1,
                                                       "roundingDecimals":1,
                                                       "dataRendering": 2,
@@ -1655,45 +1681,40 @@
                                                       "title":"Download JSON",
                                                       "click":function(){
                                                          co = this.getValue();
+                                                         function makeKey(oldKey, newKey, outType = null){
+                                                           for (var i = 0; i < co.dataRendering[oldKey].length; i++) {
+                                                              var keyName = co.dataRendering[oldKey][i][newKey];
+                                                              co.dataRendering[keyName] = co.dataRendering[oldKey][i];
+                                                              if(outType !== null){
+                                                                co.dataRendering[keyName].outType = outType;
+                                                              }
+                                                              delete co.dataRendering[keyName][newKey];
+                                                           }
+                                                           delete co.dataRendering[oldKey];
+                                                         }
                                                          // change object "tabtitle" to "title" (to match schema)
-                                                         if(co.aggregateWidgets.tabtitle){
-                                                            co.aggregateWidgets.title = co.aggregateWidgets.tabtitle;
-                                                            delete co.aggregateWidgets.tabtitle;
+                                                         if(co.aggregateWidgetsTmp){
+                                                            co.aggregateWidgets = new Object();
+                                                            co.aggregateWidgets.title = co.aggregateWidgetsTitle;
+                                                            delete co.aggregateWidgetsTitle;
                                                          }
+                                                         delete co.aggregateWidgetsTmp
                                                          //restructuring of "dataRendering" for all output elements
-                                                         if(co.dataRendering["Format: datatable"].length){
-                                                            for (var i = 0; i < co.dataRendering["Format: datatable"].length; i++) {
-                                                               var dtname = co.dataRendering["Format: datatable"][i].Parameter;
-                                                               co.dataRendering[dtname] = co.dataRendering["Format: datatable"][i];
-                                                               co.dataRendering[dtname].outType = "table"
-                                                               delete co.dataRendering[dtname].Parameter;
+                                                         makeKey("Format: datatable", "Parameter", "table");
+                                                         makeKey("Format: valuebox", "scalar_type", "valueBox");
+                                                         makeKey("Format: pivottable", "Parameter", "pivot");
+
+                                                         for (let i = 0; i < co.dataRendering["Format: custom"].length; i++) {
+                                                            let cuname = co.dataRendering["Format: custom"][i].Parameter;
+                                                            let cuTmp = co.dataRendering["Format: custom"][i];
+                                                            var cuOpt = new Object();
+                                                            for(let j = 0; j < cuTmp.optionsTmp.length; j++) {
+                                                              cuOpt[cuTmp.optionsTmp[j].key] = cuTmp.optionsTmp[j].value;
                                                             }
-                                                         }
-                                                         delete co.dataRendering["Format: datatable"];
-                                                         if(co.dataRendering["Format: valuebox"].length){
-                                                            for (var i = 0; i < co.dataRendering["Format: valuebox"].length; i++) {
-                                                               var vbname = co.dataRendering["Format: valuebox"][i].scalar_type;
-                                                               co.dataRendering[vbname] = co.dataRendering["Format: valuebox"][i];
-                                                               co.dataRendering[vbname].outType = "valueBox";
-                                                               delete co.dataRendering[vbname].scalar_type;
-                                                            }
-                                                         }
-                                                         delete co.dataRendering["Format: valuebox"];
-                                                         if(co.dataRendering["Format: pivottable"].length){
-                                                            for (var i = 0; i < co.dataRendering["Format: pivottable"].length; i++) {
-                                                               var pvname = co.dataRendering["Format: pivottable"][i].Parameter;
-                                                               co.dataRendering[pvname] = co.dataRendering["Format: pivottable"][i];
-                                                               co.dataRendering[pvname].outType = "pivot";
-                                                               delete co.dataRendering[pvname].Parameter;
-                                                            }
-                                                         }
-                                                         delete co.dataRendering["Format: pivottable"];
-                                                         if(co.dataRendering["Format: custom"].length){
-                                                            for (var i = 0; i < co.dataRendering["Format: custom"].length; i++) {
-                                                               var cuname = co.dataRendering["Format: custom"][i].Parameter;
-                                                               co.dataRendering[cuname] = co.dataRendering["Format: custom"][i];
-                                                               delete co.dataRendering[cuname].Parameter;
-                                                            }
+                                                            cuTmp.options = cuOpt;
+                                                            delete cuTmp.optionsTmp;
+                                                            co.dataRendering[cuname] = cuTmp;
+                                                            delete co.dataRendering[cuname].Parameter;
                                                          }
                                                          delete co.dataRendering["Format: custom"];
                                                          if(co.dataRendering["Format: graph"].length){
@@ -1804,7 +1825,7 @@
                                     <div class="code-block">
                                         <pre><code class="language-r">
 &#x3C;rendererName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
-ns &#x3C;- NS(id)
+  ns &#x3C;- NS(id)
 }
 
 render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
@@ -1814,10 +1835,10 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, opt
                                     <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>". Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">transport</a> example from George Dantzig: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated. We decide to visualize the optimal shipping schedule on a map. As there is currently no out-of-the-box rendering function for visualizing data on a map for the GAMS WebUI, we need to write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
                                     <div class="code-block">
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
-    ns &#x3C;- NS(id)
-  }
-  renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
-  }</code></pre>
+  ns &#x3C;- NS(id)
+}
+renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+}</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -1832,12 +1853,12 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, opt
                                     <p>Let's get back to our example. As we would like to visualize our optimized schedule on an interactive map, we choose the popular <a href="https://leafletjs.com" target="_blank">Leaflet</a> library. Fortunately, there is already an R/Shiny interface for this library: <a href="https://rstudio.github.io/leaflet/" target="_blank">Leaflet for R</a>. This R package comes with the two functions: <kbd>leafletOutput()</kbd> that generates the placeholder and <kbd>renderLeaflet()</kbd> that renders a Leaflet map object created by the <kbd>leaflet()</kbd> function which takes our dataframe as its first argument. So let's put the pieces together and extend our code:
                                       <div class="code-block">
                                           <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
-    ns &#x3C;- NS(id)
-    leafletOutput(ns(&#x22;map&#x22;), height = height)
-  }
-  renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
-    output$map &#x3C;- renderLeaflet(leaflet(data))
-  }</code></pre>
+  ns &#x3C;- NS(id)
+  leafletOutput(ns(&#x22;map&#x22;), height = height)
+}
+renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+  output$map &#x3C;- renderLeaflet(leaflet(data))
+}</code></pre>
                                       </div><!--//code-block-->
                                       Note that we used the aforementioned <kbd>ns()</kbd> function to prefix the ID (<span class="code">"map"</span>) that we chose for our Leaflet element. Just like any other placeholder element, the function <kbd>leafletOutput()</kbd> generates an element that can be accessed via the list-like <kbd>output</kbd> object.
                                       Inside our rendering function we assign this object the Leaflet map that is created by the <kbd>renderLeaflet()</kbd> function. In case you find the whole concept of having an output function, a rendering function, an output object etc. is still very confusing, you should take a look at the <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/" target="_blank">offical tutorial series</a> for the Shiny framework. To summarize: elements that generate data can be accessed by the <kbd>input</kbd> object; elements that transform data to some form of visualization via the <kbd>output</kbd> object and any user-specific information via the <kbd>session</kbd> object.
@@ -1937,6 +1958,9 @@ renderTransportMap &#x3C;- function(input, output, server, data, options = NULL,
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/js/spectrum/spectrum.js"></script>
+
     <script type="text/javascript" src="assets/js/main.js"></script>
     <!-- dependencies (jquery, handlebars and bootstrap) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
