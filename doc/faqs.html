@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GAMS WebUI documentations</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+
+<body class="body-orange">
+    <div class="page-wrapper">
+        <!-- ******Header****** -->
+        <header id="header" class="header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">FAQs</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_lifesaver"></span> FAQs</h1>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 12th, 2018</div>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="general" class="doc-section">
+                                <h2 class="section-title">General</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What GAMS version is required to run the WebUI?</h3>
+                                    <div class="answer">In order to automatically generate the required configuration files via the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> as well as <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags, GAMS version 25.1.2 or later is required.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Which operating systems are supported?</h3>
+                                    <div class="answer">The local version of the WebUI runs on Windows, MacOS as well as Linux.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Does all the data for my model need to come from the WebUI?</h3>
+                                    <div class="answer">No. You can read external data from any data sourcesupported by GAMS just as you did before. For example, you can place an Excel file in your model folder and import the data from this file into GAMS using the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/><b>Note</b> however, that the WebUI is running your GAMS model from a temporary working directory. This means that any <span class="code">$call</span> or <span class="code">execute</span> commands need to be executed with absolute paths instead of relative ones. The GAMS WebUI is providing you the path to your model via <span class="code">idir2</span>. This means, in order to import e.g. an Excel file called <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir2%test.xlsx</kbd>.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What languages are supported?</h3>
+                                    <div class="answer">Currently the GAMS WebUI ships with language files for English and German. If you would like to add another language, you are more than happy to add more languages to this list. For more information about how to generate language files see the section on <a href="./customize.html#language-files">Language Files</a> </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I contribute to improve the GAMS WebUI?</h3>
+                                    <div class="answer">Yes, absolutely! If you find bugs or have ideas about how to improve the WebUI, you are more than welcome to share those with us! Additionally, you can contribute by supplying new <a href="./customize.html#language-files" target="_blank">language files</a> or <a href="./customize.html#custom-renderers" target="_blank">custom renderers</a>! We also welcome any prototypes/PoCs which you think that can help others to get started, to improve and/or to come up with new ideas of what can be done with the GAMS WebUI and optimization in general. In any case, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>!</div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="features" class="doc-section">
+                                <h2 class="section-title">Features</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my WebUI?</h3>
+                                    <div class="answer">
+                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">config.json<span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/config.json</span>. In order to generate the <span class="code">config.json</span> file you can use our <a href="./config-gen.html" target="_blank">Configuration Generator</a>.</p>
+                                    </div><!--//anwser-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Do I have visualization options other than those shipping with the GAMS WebUI?</h3>
+                                        <div class="answer">
+                                            Yes. You can write your own <a href="./customize.html#custom-renderers">Custom Renderers</a> in R.
+                                            </div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I also write my own custom functions to generate input data?</h3>
+                                        <div class="answer">No. This is currently not supported, but might be added in later development stages depending on the demand for this feature.</div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What languages are supported?</h3>
+                                        <div class="answer">Aliquam a dui turpis. In vel tellus eget erat ullamcorper egestas at et lectus. Fusce a consectetur nisi, malesuada volutpat tellus. Nam ut urna nec urna dictum dictum sagittis id lacus. Aliquam auctor dapibus est, sit amet vehicula purus sollicitudin a. Morbi pulvinar euismod quam et aliquam. In hac habitasse platea dictumst. Quisque vel euismod sem, sit amet viverra justo.</div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Why does vehicula manage congue tortor?</h3>
+                                        <div class="answer">Quisque dignissim, lectus ac pretium dapibus, nunc arcu ornare nunc, et aliquam odio augue vitae eros. Cras vel risus quam. Aenean ultricies molestie purus bibendum lobortis. Curabitur vehicula, nisi ut tincidunt consequat, augue mi volutpat nisl, id posuere felis lectus quis quam. Donec at eros consequat, cursus eros eget, ornare mauris. Proin semper tincidunt dapibus. Etiam ornare, nibh eu dapibus pellentesque, magna metus dapibus neque, euismod fringilla nulla orci eu dolor. Mauris convallis rutrum efficitur. Integer sagittis nisi in ante convallis tempor. In placerat, velit quis laoreet sollicitudin, massa est sagittis massa, quis viverra diam nibh vitae sapien. Nunc facilisis nisl non condimentum pretium. Duis nec metus venenatis, hendrerit nisi maximus, consequat erat. Morbi odio mauris, aliquam eu bibendum vel, pulvinar at sem. Nunc sit amet elementum nisl, ac malesuada nibh. Vestibulum imperdiet dui non venenatis bibendum.</div>
+                                    </div><!--//section-block-->
+
+
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="pricing" class="doc-section">
+                                <h2 class="section-title">Pricing</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> How much is magna at posuere? <span class="label label-success">New</span></h3>
+                                    <div class="answer">Curabitur nec ipsum placerat, accumsan justo eu, imperdiet augue. Praesent eget mattis erat. Donec dolor odio, maximus quis est ut, bibendum pharetra ante. Sed faucibus nec dui sed elementum. Nullam aliquet, dui at bibendum egestas, lorem metus euismod libero, ut porta risus felis eget odio. Aenean tincidunt magna at posuere semper. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I risus felis eget odio?</h3>
+                                    <div class="answer">Curabitur nec ipsum placerat, accumsan justo eu, imperdiet augue. Praesent eget mattis erat. Donec dolor odio, maximus quis est ut, bibendum pharetra ante. Sed faucibus nec dui sed elementum. Nullam aliquet, dui at bibendum egestas, lorem metus euismod libero, ut porta risus felis eget odio. Aenean tincidunt magna at posuere semper. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I purus lobortis nibh?</h3>
+                                    <div class="answer">Ut cursus, felis vel vulputate dictum, nisi mauris aliquam mi, sed venenatis leo sem eu diam. Etiam pulvinar aliquet eros, vitae consequat ex consectetur eu. Nulla non purus a orci volutpat scelerisque. Aliquam consequat lacus eu ante ornare mattis. Praesent vitae est ut nibh maximus auctor. Donec eget sem eget lectus eleifend ullamcorper sit amet vel quam.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Why consequat lacus eu ante?</h3>
+                                    <div class="answer">Nulla a convallis augue, eget scelerisque sapien. Nulla ut purus lobortis nibh viverra auctor eget vitae sem. Quisque mi odio, eleifend ac mollis vel, laoreet a risus. Morbi ullamcorper luctus est, in mollis lorem ullamcorper vel. Phasellus et dolor purus. Mauris auctor ullamcorper mauris sollicitudin aliquet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="support" class="doc-section">
+                                <h2 class="section-title">Support</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Quisque consectetur iaculis odio</h3>
+                                    <div class="answer">Nulla a convallis augue, eget scelerisque sapien. Nulla ut purus lobortis nibh viverra auctor eget vitae sem. Quisque mi odio, eleifend ac mollis vel, laoreet a risus. Morbi ullamcorper luctus est, in mollis lorem ullamcorper vel. Phasellus et dolor purus. Mauris auctor ullamcorper mauris sollicitudin aliquet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Duis maximus mollis sit amet pharetra?</h3>
+                                    <div class="answer">Nulla a convallis augue, eget scelerisque sapien. Nulla ut purus lobortis nibh viverra auctor eget vitae sem. Quisque mi odio, eleifend ac mollis vel, laoreet a risus. Morbi ullamcorper luctus est, in mollis lorem ullamcorper vel. Phasellus et dolor purus. Mauris auctor ullamcorper mauris sollicitudin aliquet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Pellentesque habitant morbi tristique senectus?</h3>
+                                    <div class="answer">
+                                        <p>Nulla a convallis augue, eget scelerisque sapien. Nulla ut purus lobortis nibh viverra auctor eget vitae sem. Quisque mi odio, eleifend ac mollis vel, laoreet a risus. Morbi ullamcorper luctus est, in mollis lorem ullamcorper vel. Phasellus et dolor purus. Mauris auctor ullamcorper mauris sollicitudin aliquet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                                        <p>Integer ornare tristique massa, et efficitur diam. Quisque consectetur iaculis odio, in aliquet magna suscipit eget. Sed sollicitudin facilisis risus vitae mattis. Vivamus facilisis, lacus eu rutrum gravida, ante sapien semper lectus, eget venenatis lorem massa porta sapien. Curabitur facilisis egestas erat, vel facilisis ipsum laoreet sit amet. Sed fermentum metus eget semper semper. Pellentesque imperdiet accumsan dolor eu convallis. Donec dictum justo a leo pellentesque placerat. Maecenas non diam ac elit tincidunt convallis ut nec eros.</p>
+
+                                    </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#general">General</a>
+                                <a class="nav-link scrollto" href="#features">Features</a>
+                                <a class="nav-link scrollto" href="#pricing">Pricing</a>
+                                <a class="nav-link scrollto" href="#support">Support</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    </div><!--//page-wrapper-->
+
+    <footer id="footer" class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+
+        </div><!--//container-->
+    </footer><!--//footer-->
+
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/prism.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GAMS WebUI Documentation</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- alpaca -->
+    <link type="text/css" href="assets/css/alpaca.css" rel="stylesheet"/>
+
+</head>
+
+<body class="body-blue">
+    <div class="page-wrapper">
+        <!-- ******Header****** -->
+        <header id="header" class="header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Customize</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Customize</h1>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 12th, 2018</div>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+
+                            <section id="config-gen" class="doc-section">
+                                  <h2 class="section-title">Configuration Generator</h2>
+                                  <div class="section-block">
+                                  <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Manager. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>.</p>
+                                  <div class="upload-btn-wrapper" id="gmsioUpload">
+                                    <span id = "errMsg" style="color:red;font-weight:bold;"></span>
+                                    <button class="upload-btn">Upload the GMSIO_config.json file</button>
+                                    <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
+                                  </div>
+                                  <div id="form1"></div>
+                                  <script type="text/javascript">
+                                  function parseGMSIO() {
+                                  /*
+                                  credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-file-and-using-it)
+                                  */
+                                    $("#errMsg").innerHTML = "";
+                                  	var files = $('#selectFile')[0].files;
+                                      if (files.length <= 0) {
+                                        return false;
+                                      }
+                                      var fr = new FileReader();
+
+                                      fr.onload = function(e) {
+                                        try {
+                                          var gmsData = JSON.parse(e.target.result);
+                                          var gmsIn = Object.keys(gmsData.gamsInputFiles);
+                                          var gmsOut = Object.keys(gmsData.gamsOutputFiles);
+                                          var gmsInHdrMap = new Object();
+                                          var gmsOutHdrMap = new Object();
+                                          var gmsInHdr = [];
+                                          var gmsOutHdr = [];
+                                          var scalars = [];
+                                          for (let i in gmsIn){
+                                            if(gmsIn[i] === "scalars"){
+                                              scalars.push("scalars");
+                                              continue;
+                                            }
+                                            gmsInHdr.push(Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers));
+                                            //var hdrsTmp = Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers);
+                                            //gmsInHdrMap[gmsIn[i]] = hdrsTmp;
+                                          }
+                                          for (let i in gmsOut){
+                                            if(gmsOut[i] === "scalars_out"){
+                                              scalars.push("scalars_out");
+                                              continue;
+                                            }
+                                            gmsOutHdr.push(Object.keys(gmsData.gamsOutputFiles[gmsOut[i]].headers));
+                                            //var hdrsTmp = Object.keys(gmsData.gamsOutputFiles[gmsOut[i]].headers);
+                                            //gmsOutHdrMap[gmsOut[i]] = gmsOutHdr;
+                                          }
+                                          $("#gmsioUpload").hide();
+                                          launchAlpaca(gmsIn, gmsOut, gmsInHdr, gmsOutHdr, scalars);
+                                        }
+
+                                        catch(err) {
+                                            console.log(err)
+                                            $("#errMsg").html("Problems parsing the JSON file. Please upload a valid GMSIO configutation file!");
+                                            return;
+                                        }
+                                      }
+                                    fr.readAsText(files.item(0));
+                                  };
+                                  function launchAlpaca(gmsIn, gmsOut, gmsInHdr, gmsOutHdr, scalars){
+                                      $("#form1").alpaca({
+                                          "schema": {
+                                             "$schema":"http://json-schema.org/draft-07/schema#",
+                                             "title":"",
+                                             "type":"object",
+                                             "additionalProperties":false,
+                                             "properties":{
+                                                "language":{
+                                                   "title":"Language for WebUI",
+                                                   "type":"string",
+                                                   "default":"en",
+                                                   "enum":[
+                                                      "de",
+                                                      "en"
+                                                   ],
+                                                   "required":true
+                                                },
+                                                "pageSkin":{
+                                                   "title":"Skin to use for shiny dashboard",
+                                                   "type":"string",
+                                                   "enum":[
+                                                      "black",
+                                                      "blue",
+                                                      "purple",
+                                                      "green",
+                                                      "red",
+                                                      "yellow"
+                                                   ],
+                                                   "default":"black",
+                                                   "required":true
+                                                },
+                                                "excelIncludeMeta":{
+                                                   "title":"Include a metadata sheet in the Excel file (export a scenario)?",
+                                                   "type":"boolean",
+                                                   "default":true,
+                                                   "required":false
+                                                },
+                                                "excelIncludeEmptySheets":{
+                                                   "title":"Include empty sheets in the Excel file?",
+                                                   "type":"boolean",
+                                                   "default":true,
+                                                   "required":false
+                                                },
+                                                "UILogo":{
+                                                   "title":"Name of the logo to use. Must be located in the static folder of current model directory.",
+                                                   "type":"string",
+                                                   "minLength":1,
+                                                   "default":"gams_logo.png",
+                                                   "required":false
+                                                },
+                                                "autoGenInputGraphs":{
+                                                   "title":"Generate graphs for each input sheet automatically?",
+                                                   "type":"boolean",
+                                                   "default":true,
+                                                   "required":false
+                                                },
+                                                "defCompMode":{
+                                                   "title":"Default scenario comparison mode (the one that is loaded on startup).",
+                                                   "type":"string",
+                                                   "enum":[
+                                                      "split",
+                                                      "tab"
+                                                   ],
+                                                   "default":"split",
+                                                   "required":true
+                                                },
+                                                "activateModules":{
+                                                   "title":"Activate/deactivate certain modules",
+                                                   "type":"object",
+                                                   "additionalProperties":false,
+                                                   "properties":{
+                                                      "scenario":{
+                                                         "title":"Activate scenario functionality?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "strictmode":{
+                                                         "title":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "loadLocal":{
+                                                         "title":"Activate local data upload module?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "sharedScenarios":{
+                                                         "title":"Enable scenario sharing between different users?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "batchMode":{
+                                                         "title":"Solve scenarios in batch mode?",
+                                                         "type":"boolean",
+                                                         "default":false,
+                                                         "required":false
+                                                      },
+                                                      "logFile:":{
+                                                         "title":"Show log file in UI?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "lstFile:":{
+                                                         "title":"Show lst file in UI?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      }
+                                                   }
+                                                },
+                                                "aggregateWidgets":{
+                                                   "title":"Aggregate all input widgets on a single tab? Leave empty if no aggregation desired.",
+                                                   "type":"object",
+                                                   "additionalProperties":false,
+                                                   "properties":{
+                                                      "tabtitle":{
+                                                         "title":"Title of the tab",
+                                                         "type":"string",
+                                                         "minLength":"1",
+                                                         "required":false
+                                                      }
+                                                   }
+                                                },
+                                                "saveTraceFile":{
+                                                   "title":"Save trace files?",
+                                                   "type":"boolean",
+                                                   "default":false,
+                                                   "required":false
+                                                },
+                                                "dataRendering":{
+                                                   "title":"Format in which input or output data is to be displayed in the WebUI.",
+                                                   "type":"object",
+                                                   "additionalProperties":false,
+                                                   "properties":{
+                                                      "Format: datatable":{
+                                                         "title":"datatable",
+                                                         "type":"array",
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"object",
+                                                            "properties":{
+                                                               "Parameter":{
+                                                                  "title":"Name of the Parameter to display:",
+                                                                  "type":"string",
+                                                                  "enum":gmsIn.concat(gmsOut),
+                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "required":true
+                                                               },
+                                                               "height":{
+                                                                  "title":"Height of the output element. (optional)",
+                                                                  "type":"integer",
+                                                                  "minimum":0,
+                                                                  "default":null
+                                                               }
+                                                            }
+                                                         }
+                                                      },
+                                                      "Format: valuebox":{
+                                                         "title":"valuebox (only for scalar values)",
+                                                         "type":"array",
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"object",
+                                                            "properties":{
+                                                               "scalar_type":{
+                                                                  "title":"Which scalar type shall be displayed as valuebox?",
+                                                                  "type":"string",
+                                                                  "enum":scalars,
+                                                                  "default":"scalars_out",
+                                                                  "required":true
+                                                               },
+                                                               "options":{
+                                                                  "type":"object",
+                                                                  "properties":{
+                                                                     "width":{
+                                                                        "title":"Width of the output element.",
+                                                                        "type":"integer",
+                                                                        "minimum":0,
+                                                                        "maximum":12,
+                                                                        "default":4
+                                                                     },
+                                                                     "color":{
+                                                                        "type":"string",
+                                                                        "title":"Background color of value box (optional)",
+                                                                        "enum":[
+                                                                           "red",
+                                                                           "yellow",
+                                                                           "aqua",
+                                                                           "blue",
+                                                                           "light-blue",
+                                                                           "green",
+                                                                           "navy",
+                                                                           "teal",
+                                                                           "olive",
+                                                                           "lime",
+                                                                           "orange",
+                                                                           "fuchsia",
+                                                                           "purple",
+                                                                           "maroon",
+                                                                           "black"
+                                                                        ],
+                                                                        "default":"aqua",
+                                                                        "required":"true"
+                                                                     },
+                                                                     "icon":{
+                                                                        "title":"icon for value box (optional)",
+                                                                        "type":"object",
+                                                                        "properties":{
+                                                                           "name":{
+                                                                              "type":"string",
+                                                                              "title":"Name of icon. Icons are drawn from the Font Awesome and Glyphicons libraries.",
+                                                                              "minLength":0,
+                                                                              "default":null
+                                                                           },
+                                                                           "lib":{
+                                                                              "type":"string",
+                                                                              "title":"Name of library where icon is from.",
+                                                                              "enum":[
+                                                                                 "glyphicon",
+                                                                                 "font-awesome"
+                                                                              ],
+                                                                              "default":"font-awesome",
+                                                                              "required":true
+                                                                           }
+                                                                        }
+                                                                     }
+                                                                  }
+                                                               }
+                                                            },
+                                                            "additionalProperties":false,
+                                                            "required":[
+                                                               "outType"
+                                                            ]
+                                                         }
+                                                      },
+                                                      "Format: pivottable":{
+                                                         "title":"pivottable",
+                                                         "type":"array",
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"object",
+                                                            "properties":{
+                                                               "Parameter":{
+                                                                  "title":"Name of the Parameter to display:",
+                                                                  "type":"string",
+                                                                  "enum":gmsIn.concat(gmsOut),
+                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "required":true
+                                                               },
+                                                               "height":{
+                                                                  "title":"Height of the output element. (optional)",
+                                                                  "type":"integer",
+                                                                  "minimum":0,
+                                                                  "default":null
+                                                               },
+                                                               "pivottable":{
+                                                                  "type":"object",
+                                                                  "properties":{
+                                                                     "rows":{
+                                                                        "title":"Prepopulate rows of the pivot table with columns of the data.frame (optional). Names of the columns:",
+                                                                        "type":"array",
+                                                                        "uniqueItems":true,
+                                                                        "items":{
+                                                                           "type":"string",
+                                                                           "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                           "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                           "minLength":1
+                                                                        },
+                                                                        "default":null
+                                                                     },
+                                                                     "cols":{
+                                                                        "title":"Prepopulate columns of the pivot table with columns of the data.frame (optional). Names of the columns:",
+                                                                        "type":"array",
+                                                                        "uniqueItems":true,
+                                                                        "items":{
+                                                                           "type":"string",
+                                                                           "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                           "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                           "minLength":1
+                                                                        },
+                                                                        "default":null
+                                                                     },
+                                                                     "aggregatorName":{
+                                                                        "title":"Aggregator to use",
+                                                                        "type":"string",
+                                                                        "enum":[
+                                                                           "Count",
+                                                                           "Count Unique Values",
+                                                                           "List Unique Values",
+                                                                           "Sum",
+                                                                           "Integer Sum",
+                                                                           "Average",
+                                                                           "Median",
+                                                                           "Sample Variance",
+                                                                           "Sample Standard Deviation",
+                                                                           "Minimum",
+                                                                           "Maximum",
+                                                                           "First",
+                                                                           "Last",
+                                                                           "Sum over Sum",
+                                                                           "80% Upper Bound",
+                                                                           "80% Lower Bound",
+                                                                           "Sum as Fraction of Total",
+                                                                           "Sum as Fraction of Total",
+                                                                           "Sum as Fraction of Rows",
+                                                                           "Sum as Fraction of Columns",
+                                                                           "Count as Fraction of Total",
+                                                                           "Count as Fraction of Rows",
+                                                                           "Count as Fraction of Columns"
+                                                                        ],
+                                                                        "default":"Count",
+                                                                        "required":true
+                                                                     },
+                                                                     "vals":{
+                                                                        "title":"String name of the column in the data.frame to use with aggregatorName. Must be additive (i.e a number).",
+                                                                        "type":"string",
+                                                                        "minLength":1,
+                                                                        "default":null
+                                                                     },
+                                                                     "rendererName":{
+                                                                        "title":"Name of the renderer selected, e.g. Table, Heatmap, Treemap etc",
+                                                                        "type":"string",
+                                                                        "enum":[
+                                                                           "Table",
+                                                                           "Table Barchart",
+                                                                           "Heatmap",
+                                                                           "Row Heatmap",
+                                                                           "Col Heatmap",
+                                                                           "Treemap",
+                                                                           "Horizontal Bar Chart",
+                                                                           "Horizontal Stacked Bar Chart",
+                                                                           "Bar Chart",
+                                                                           "Stacked Bar Chart",
+                                                                           "Line Chart",
+                                                                           "Area Chart",
+                                                                           "Scatter Chart"
+                                                                        ],
+                                                                        "default":"Table",
+                                                                        "required":true
+                                                                     },
+                                                                     "locale":{
+                                                                        "title":"Localization options",
+                                                                        "type":"string",
+                                                                        "enum":[
+                                                                           "cs",
+                                                                           "da",
+                                                                           "de",
+                                                                           "en",
+                                                                           "es",
+                                                                           "fr",
+                                                                           "it",
+                                                                           "nl",
+                                                                           "pl",
+                                                                           "pt",
+                                                                           "ru",
+                                                                           "sq",
+                                                                           "tr",
+                                                                           "zh"
+                                                                        ],
+                                                                        "default":"en",
+                                                                        "required":true
+                                                                     },
+                                                                     "readonly":{
+                                                                        "title":"This optional parameter allows use of the pivottable subtotal plugin. Using this parameter will set all renderer names to the english locale.",
+                                                                        "type":"boolean",
+                                                                        "default":false
+                                                                     },
+                                                                     "width":{
+                                                                        "title":"width of pivottable (optional)",
+                                                                        "type":"integer",
+                                                                        "minimum":1,
+                                                                        "default":null
+                                                                     },
+                                                                     "height":{
+                                                                        "title":"height of pivottable (optional)",
+                                                                        "type":"integer",
+                                                                        "minimum":1,
+                                                                        "default":null
+                                                                     }
+                                                                  }
+                                                               }
+                                                            },
+                                                            "additionalProperties":false,
+                                                            "required":[
+                                                               "outType"
+                                                            ]
+                                                         }
+                                                      },
+                                                      "Format: graph":{
+                                                         "title":"graph",
+                                                         "type":"array",
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"object",
+                                                            "properties":{
+                                                               "Parameter":{
+                                                                  "title":"Name of the Parameter to display:",
+                                                                  "type":"string",
+                                                                  "enum":gmsIn.concat(gmsOut),
+                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "required":true
+                                                               },
+                                                               "graphtitle":{
+                                                                  "title":"Title of the graphic",
+                                                                  "type":"string",
+                                                                  "minLength":1,
+                                                                  "default":null
+                                                               },
+                                                               "height":{
+                                                                  "title":"Height of the output element. (optional)",
+                                                                  "type":"integer",
+                                                                  "minimum":0,
+                                                                  "default":null
+                                                               },
+                                                               "outType":{
+                                                                  "title":"Show graph in seperate view or in split view with underlying data table?",
+                                                                  "type":"string",
+                                                                  "enum":[
+                                                                     "single view",
+                                                                     "split view"
+                                                                  ],
+                                                                  "default":"single view",
+                                                                  "required":true
+                                                               },
+                                                               "graph":{
+                                                                  "type":"object",
+                                                                  "title":"Graph display options",
+                                                                        "properties": {
+                                                                            "choice":{
+                                                                              "title": "Choose tool for graph rendering",
+                                                                              "type": "string",
+                                                                              "enum": ["UsePlotly", "UseDygraph"],
+                                                                              "required": true
+                                                                           },
+                                                                           "plotly":{
+                                                                              "title":"Use Plotly. Note: Only basic configuration is pre-implemented here. For more sophisticated graphic options please refer to https://plot.ly/r/ and configure the config.json file manually.",
+                                                                              "type":"object",
+                                                                              "properties":{
+                                                                                 "graphtype":{
+                                                                                    "title":"graph type:",
+                                                                                    "type":"object",
+                                                                                    "properties":{
+                                                                                       "choice":{
+                                                                                          "title": "Choose tool for graph rendering",
+                                                                                          "type": "string",
+                                                                                          "enum": ["Pie", "Chart", "Histogram"],
+                                                                                          "required": true
+                                                                                       },
+                                                                                       "pie":{
+                                                                                          "title":"Use Pie",
+                                                                                          "type":"object",
+                                                                                          "properties":{
+                                                                                             "labels":{
+                                                                                                "title":"symbol labels",
+                                                                                                "type":"string",
+                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                "default":null
+                                                                                             },
+                                                                                             "values":{
+                                                                                                "title":"symbol values",
+                                                                                                "type":"string",
+                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                "default":null
+                                                                                             },
+                                                                                             "xaxis":{
+                                                                                                "title":"Options: x axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "showgrid":{
+                                                                                                      "title":"Show grid?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "zeroline":{
+                                                                                                      "title":"Show zeroline?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "showticklabels":{
+                                                                                                      "title":"Show ticklabels?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "yaxis":{
+                                                                                                "title":"Options: y axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "showgrid":{
+                                                                                                      "title":"Show grid?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "zeroline":{
+                                                                                                      "title":"Show zeroline?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "showticklabels":{
+                                                                                                      "title":"Show ticklabels?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   }
+                                                                                                }
+                                                                                             }
+                                                                                          }
+                                                                                       },
+                                                                                       "chart":{
+                                                                                          "title":"Use Chart",
+                                                                                          "type":"object",
+                                                                                          "properties":{
+                                                                                             "type":{
+                                                                                                "title":"chart type",
+                                                                                                "type":"string",
+                                                                                                "enum":[
+                                                                                                   "scatter",
+                                                                                                   "line",
+                                                                                                   "bar"
+                                                                                                ],
+                                                                                                "default":"scatter",
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "color":{
+                                                                                                "title":"Symbol that is used to select different colors.",
+                                                                                                "type":"string",
+                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                "default":null
+                                                                                             },
+                                                                                             "margins":{
+                                                                                                "title":"Margins to use",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "b":{
+                                                                                                      "title":"bottom",
+                                                                                                      "type":"integer",
+                                                                                                      "minimum":0,
+                                                                                                      "maximum":1000,
+                                                                                                      "default":0,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "t":{
+                                                                                                      "title":"top",
+                                                                                                      "type":"integer",
+                                                                                                      "minimum":0,
+                                                                                                      "maximum":1000,
+                                                                                                      "default":0,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "l":{
+                                                                                                      "title":"left",
+                                                                                                      "type":"integer",
+                                                                                                      "minimum":0,
+                                                                                                      "maximum":1000,
+                                                                                                      "default":0,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "r":{
+                                                                                                      "title":"right",
+                                                                                                      "type":"integer",
+                                                                                                      "minimum":0,
+                                                                                                      "maximum":1000,
+                                                                                                      "default":0,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "pad":{
+                                                                                                      "title":"padding",
+                                                                                                      "type":"integer",
+                                                                                                      "minimum":0,
+                                                                                                      "maximum":250,
+                                                                                                      "default":0,
+                                                                                                      "required":false
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "xdata":{
+                                                                                                "title":"Data to use for x axis",
+                                                                                                "type":"string",
+                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "ydata":{
+                                                                                                "title":"Data to use for y axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "dataname":{
+                                                                                                      "title":"data column (use the explanatory text of GAMS symbol).",
+                                                                                                      "type":"string",
+                                                                                                      "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                      "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                      "required":true
+                                                                                                   },
+                                                                                                   "label":{
+                                                                                                      "title":"labels to use.",
+                                                                                                      "type":"string",
+                                                                                                      "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                      "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                      "default":null
+                                                                                                   },
+                                                                                                   "mode":{
+                                                                                                      "title":"Mode of plot data",
+                                                                                                      "type":"string",
+                                                                                                      "enum":[
+                                                                                                         "lines",
+                                                                                                         "markers"
+                                                                                                      ],
+                                                                                                      "default":"lines",
+                                                                                                      "required":true
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "xaxis":{
+                                                                                                "title":"Options: x axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "dataname":{
+                                                                                                      "title":"title",
+                                                                                                      "type":"string",
+                                                                                                      "default":""
+                                                                                                   },
+                                                                                                   "showgrid":{
+                                                                                                      "title":"Show grid?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "zeroline":{
+                                                                                                      "title":"Show zeroline?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "showticklabels":{
+                                                                                                      "title":"Show ticklabels?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "yaxis":{
+                                                                                                "title":"Options: y axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "dataname":{
+                                                                                                      "title":"title",
+                                                                                                      "type":"string",
+                                                                                                      "default":""
+                                                                                                   },
+                                                                                                   "showgrid":{
+                                                                                                      "title":"Show grid?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "zeroline":{
+                                                                                                      "title":"Show zeroline?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   },
+                                                                                                   "showticklabels":{
+                                                                                                      "title":"Show ticklabels?",
+                                                                                                      "type":"boolean",
+                                                                                                      "default":false,
+                                                                                                      "required":false
+                                                                                                   }
+                                                                                                }
+                                                                                             }
+                                                                                          }
+                                                                                       },
+                                                                                       "histogram":{
+                                                                                          "title":"Use Histogram",
+                                                                                          "type":"object",
+                                                                                          "properties":{
+                                                                                             "histnorm":{
+                                                                                                "title":"histnorm",
+                                                                                                "type":"string",
+                                                                                                "enum":[
+                                                                                                   "percent",
+                                                                                                   "probability",
+                                                                                                   "density",
+                                                                                                   "probability density"
+                                                                                                ],
+                                                                                                "default":"percent",
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "nbins":{
+                                                                                                "title":"number of bins",
+                                                                                                "type":"integer",
+                                                                                                "minimum":0,
+                                                                                                "default":20,
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "barmode":{
+                                                                                                "title":"barmode",
+                                                                                                "type":"string",
+                                                                                                "enum":[
+                                                                                                   "overlay",
+                                                                                                   "stack",
+                                                                                                   "group",
+                                                                                                   "relative"
+                                                                                                ],
+                                                                                                "default":"overlay",
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "alpha":{
+                                                                                                "title":"transparency",
+                                                                                                "type":"number",
+                                                                                                "minimum":0,
+                                                                                                "maximum":1,
+                                                                                                "default":0.6,
+                                                                                                "required":true
+                                                                                             },
+                                                                                             "xdata":{
+                                                                                                "title":"Data to use for x axis",
+                                                                                                "type":"array",
+                                                                                                "required":true,
+                                                                                                "items":{
+                                                                                                   "type":"object",
+                                                                                                   "properties":{
+                                                                                                      "dataname":{
+                                                                                                         "title":"data column (use the explanatory text of GAMS symbol).",
+                                                                                                         "type":"string",
+                                                                                                         "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                                         "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                         "required":true
+                                                                                                      },
+                                                                                                      "label":{
+                                                                                                         "title":"label for x axis.",
+                                                                                                         "type":"string",
+                                                                                                         "minLength":1,
+                                                                                                         "default":null
+                                                                                                      },
+                                                                                                      "color":{
+                                                                                                         "title":"color of histogram data",
+                                                                                                         "type":"string",
+                                                                                                         "minLength":1,
+                                                                                                         "default":"darkgreen"
+                                                                                                      },
+                                                                                                      "alpha":{
+                                                                                                         "title":"transparency",
+                                                                                                         "type":"number",
+                                                                                                         "minimum":0,
+                                                                                                         "maximum":1,
+                                                                                                         "default":0.6,
+                                                                                                         "required":true
+                                                                                                      }
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "xaxis":{
+                                                                                                "title":"Options: x axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "dataname":{
+                                                                                                      "title":"title",
+                                                                                                      "type":"string",
+                                                                                                      "default":""
+                                                                                                   }
+                                                                                                }
+                                                                                             },
+                                                                                             "yaxis":{
+                                                                                                "title":"Options: y axis",
+                                                                                                "type":"object",
+                                                                                                "properties":{
+                                                                                                   "dataname":{
+                                                                                                      "title":"title",
+                                                                                                      "type":"string",
+                                                                                                      "default":""
+                                                                                                   }
+                                                                                                }
+                                                                                             }
+                                                                                          }
+                                                                                       }
+                                                                                    },
+                                                                                    "dependencies": {
+                                                                                        "pie": ["choice"],
+                                                                                        "chart": ["choice"],
+                                                                                        "histogram": ["choice"]
+                                                                                    }
+                                                                                 }
+                                                                              }
+                                                                           },
+                                                                           "dygraph":{
+                                                                              "title":"Use Dygraph. Note: Only basic configuration is pre-implemented. For more sophisticated graphic options please refer to https://rstudio.github.io/dygraphs/ and configure the config.json file manually.",
+                                                                              "type": "object",
+                                                                              "required":false,
+                                                                              "properties":{
+                                                                                 "dyOptions":{
+                                                                                    "title":"dygraph options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                       "includeZero":{
+                                                                                           "title":"include zero value of axes in graphic?",
+                                                                                           "type":"boolean",
+                                                                                           "default":false,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "logscale":{
+                                                                                           "title":"use a logarythmic scale for axes?",
+                                                                                           "type":"boolean",
+                                                                                           "default":false,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "drawGrid":{
+                                                                                           "title":"draw grid?",
+                                                                                           "type":"boolean",
+                                                                                           "default":true,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "drawPoints":{
+                                                                                           "title":"draw data points?",
+                                                                                           "type":"boolean",
+                                                                                           "default":false,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "pointSize":{
+                                                                                           "title":"point size (refers to previous option)",
+                                                                                           "type":"integer",
+                                                                                           "minimum":0,
+                                                                                           "default":2,
+                                                                                           "required":false
+                                                                                        } ,
+                                                                                        "fillGraph":{
+                                                                                           "title":"fill graph?",
+                                                                                           "type":"boolean",
+                                                                                           "default":false,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "fillAlpha":{
+                                                                                           "title":"transperancy",
+                                                                                           "type":"number",
+                                                                                           "minimum":0,
+                                                                                           "maximum":1,
+                                                                                           "default":0.15,
+                                                                                           "required":true
+                                                                                        }
+                                                                                    }
+                                                                                 },
+                                                                                 "color":{
+                                                                                    "title":"Symbol that is used to select different colors (use the explanatory text of GAMS symbol).",
+                                                                                    "type":"string",
+                                                                                    "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                    "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                 },
+                                                                                 "dyHighlight":{
+                                                                                    "title":"highlight options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                       "highlightSeriesOpts":{
+                                                                                           "type":"object",
+                                                                                           "properties":{
+                                                                                              "strokeWidth":{
+                                                                                                  "title":"stroke width (px)",
+                                                                                                  "type":"integer",
+                                                                                                  "minimum":0,
+                                                                                                  "default":3,
+                                                                                                  "required":false
+                                                                                               },
+                                                                                               "strokeBorderWidth":{
+                                                                                                  "title":"stroke border width (px)",
+                                                                                                  "type":"integer",
+                                                                                                  "minimum":0,
+                                                                                                  "default":1,
+                                                                                                  "required":false
+                                                                                               },
+                                                                                               "highlightCircleSize":{
+                                                                                                  "title":"highlight circle size (px)",
+                                                                                                  "type":"integer",
+                                                                                                  "minimum":0,
+                                                                                                  "default":5,
+                                                                                                  "required":false
+                                                                                               }
+                                                                                           }
+                                                                                        },
+                                                                                        "hideOnMouseOut":{
+                                                                                           "title":"only highlight data when hovering with cursor?",
+                                                                                           "type":"boolean",
+                                                                                           "default":true,
+                                                                                           "required":false
+                                                                                        }
+                                                                                    }
+                                                                                 },
+                                                                                 "dylegend":{
+                                                                                    "title":"legend options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                        "width":{
+                                                                                           "title":"legend width (px)",
+                                                                                           "type":"integer",
+                                                                                           "minimum":0,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "show":{
+                                                                                           "title":"show legend",
+                                                                                           "type":"string",
+                                                                                           "enum":[
+                                                                                              "always",
+                                                                                              "follow cursor"
+                                                                                           ],
+                                                                                           "default":"always",
+                                                                                           "required":true
+                                                                                        },
+                                                                                        "hideOnMouseOut":{
+                                                                                           "title":"only show legend when hovering graphic with cursor?",
+                                                                                           "type":"boolean",
+                                                                                           "default":true,
+                                                                                           "required":false
+                                                                                        }
+                                                                                    }
+                                                                                 },
+                                                                                 "dyRangeSelector":{
+                                                                                    "title":"Range selector options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                        "height":{
+                                                                                           "title":"height of range selector (in px)",
+                                                                                           "type":"integer",
+                                                                                           "minimum":0,
+                                                                                           "default":20,
+                                                                                           "required":false
+                                                                                        },
+                                                                                        "strokeColor":{
+                                                                                           "title":"stroke color",
+                                                                                           "type":"string",
+                                                                                           "default":"",
+                                                                                           "required":false
+                                                                                        }
+                                                                                    }
+                                                                                 },
+                                                                                 "dyEvent":{
+                                                                                    "title":"event options. Event data is highlighted in a graphic, for example, a key date marked as such.",
+                                                                                    "type": "array",
+                                                                                    "required":false,
+                                                                                    "items":{
+                                                                                       "type":"object",
+                                                                                       "properties":{
+                                                                                          "eventdata":{
+                                                                                             "title":"GAMS data symbol for event",
+                                                                                             "type":"string",
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "label":{
+                                                                                             "title":"event label",
+                                                                                             "type":"string",
+                                                                                             "default":"",
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "labelLoc":{
+                                                                                             "title":"event label location in graphic",
+                                                                                             "type":"string",
+                                                                                             "enum":[
+                                                                                                "bottom",
+                                                                                                "top"
+                                                                                             ],
+                                                                                             "default":"bottom",
+                                                                                             "required":true
+                                                                                          },
+                                                                                          "color":{
+                                                                                             "title":"color",
+                                                                                             "type":"string",
+                                                                                             "default":"red",
+                                                                                             "required":false
+                                                                                          }
+                                                                                       }
+                                                                                    }
+                                                                                 },
+                                                                                 "xdata":{
+                                                                                    "title":"data for x axis (explanatory text of GAMS symbol)",
+                                                                                    "type": "string",
+                                                                                    "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                    "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                 },
+                                                                                 "ydata":{
+                                                                                    "title":"y data options (at least one data set required)",
+                                                                                    "type": "array",
+                                                                                    "required":true,
+                                                                                    "items":{
+                                                                                       "type":"object",
+                                                                                       "properties":{
+                                                                                          "dataname":{
+                                                                                             "title":"data set  (use the explanatory text of GAMS symbol)",
+                                                                                             "enum":gmsInHdr.concat(gmsOutHdr),
+                                                                                             "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                             "required":true
+                                                                                          },
+                                                                                          "label":{
+                                                                                             "title":"label",
+                                                                                             "type":"string",
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "stepPlot":{
+                                                                                             "title":"stepPlot",
+                                                                                             "type":"boolean",
+                                                                                             "default":false,
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "stemPlot":{
+                                                                                             "title":"stemPlot",
+                                                                                             "type":"boolean",
+                                                                                             "default":false,
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "fillGraph":{
+                                                                                             "title":"fill graph?",
+                                                                                             "type":"boolean",
+                                                                                             "default":false,
+                                                                                             "required":false
+                                                                                          },
+                                                                                          "drawpoints":{
+                                                                                             "title":"draw data points?",
+                                                                                             "type":"boolean",
+                                                                                             "default":true,
+                                                                                             "required":false
+                                                                                          }
+                                                                                       }
+                                                                                    }
+                                                                                 },
+                                                                                 "xaxis":{
+                                                                                    "title":"xaxis options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                        "xtitle":{
+                                                                                           "title":"title",
+                                                                                           "type":"string",
+                                                                                           "default":"",
+                                                                                           "required":false
+                                                                                        }
+                                                                                    }
+                                                                                 },
+                                                                                 "yaxis":{
+                                                                                    "title":"yaxis options",
+                                                                                    "type": "object",
+                                                                                    "required":false,
+                                                                                    "properties":{
+                                                                                        "ytitle":{
+                                                                                           "title":"title",
+                                                                                           "type":"string",
+                                                                                           "default":"",
+                                                                                           "required":false
+                                                                                        }
+                                                                                    }
+                                                                                 }
+                                                                              }
+                                                                           }
+                                                                        },
+                                                                        "dependencies": {
+                                                                            "plotly": ["choice"],
+                                                                            "dygraph": ["choice"]
+
+                                                                  }
+                                                               }
+                                                            }
+                                                         }
+                                                      },
+                                                      "Format: custom":{
+                                                         "title":"custom graphic",
+                                                         "type":"array",
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"object",
+                                                            "properties":{
+                                                               "Parameter":{
+                                                                  "title":"GAMS Symbol name",
+                                                                  "type":"string",
+                                                                  "enum":gmsIn.concat(gmsOut),
+                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "default":null,
+                                                                  "required":false
+                                                               },
+                                                               "outType":{
+                                                                  "title":"Name of custom renderer",
+                                                                  "type":"string",
+                                                                  "minLength":2,
+                                                                  "not":{
+                                                                     "enum":[
+                                                                        "valueBox",
+                                                                        "graph",
+                                                                        "dtGraph",
+                                                                        "datatable",
+                                                                        "pivot"
+                                                                     ]
+                                                                  }
+                                                               },
+                                                               "height":{
+                                                                  "title":"Height of the output element (px)",
+                                                                  "type":"integer",
+                                                                  "minimum":0,
+                                                                  "default":null,
+                                                                  "required":false
+                                                               },
+                                                               "packages":{
+                                                                  "title":"Packages that need to be installed",
+                                                                  "type":"array",
+                                                                  "uniqueItems":true,
+                                                                  "items":{
+                                                                     "type":"string",
+                                                                     "minLength":2
+                                                                  }
+                                                               },
+                                                               "options":{
+                                                                  "title":"Additional options",
+                                                                  "type":"array",
+                                                                  "items":{
+                                                                     "type":"object",
+                                                                     "properties":{
+                                                                        "key":{
+                                                                           "title":"option key",
+                                                                           "type":"string",
+                                                                           "minLength":1
+                                                                        },
+                                                                        "value":{
+                                                                           "title":"option value",
+                                                                           "type":"string",
+                                                                           "minLength":1
+                                                                        }
+                                                                     }
+                                                                  }
+                                                               }
+                                                            },
+                                                            "additionalProperties":false
+                                                         }
+                                                      }
+                                                   }
+                                                },
+                                                "roundingDecimals":{
+                                                   "title":"Number of decimal places used for rounding output values (max. 6).",
+                                                   "type":"integer",
+                                                   "minimum":0,
+                                                   "maximum":6,
+                                                   "default":2,
+                                                   "required":false
+                                                },
+                                                "handsontable":{
+                                                   "title":"Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
+                                                   "type":"object",
+                                                   "required":false,
+                                                   "properties":{
+                                                      "height":{
+                                                         "title":"Height of handsontable (in px).",
+                                                         "type":"integer",
+                                                         "exclusiveMinimum":0,
+                                                         "default":700,
+                                                         "required":false
+                                                      },
+                                                      "width":{
+                                                         "title":"Width of handsontable (in px). If not set, optimum value is determined",
+                                                         "type":"integer",
+                                                         "exclusiveMinimum":0,
+                                                         "default":null,
+                                                         "required":false
+                                                      },
+                                                      "readonly":{
+                                                         "title":"Possibility to modify handsontables?",
+                                                         "type":"boolean",
+                                                         "default":false,
+                                                         "required":false
+                                                      },
+                                                      "search":{
+                                                         "title":"Enable browser search for handsontables?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "highlightCol":{
+                                                         "title":"Hoghlight column of current active cell?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "highlightRow":{
+                                                         "title":"Highlight row of current active cell?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "rowHeaderWidth":{
+                                                         "title":"Width of the row number/row header column (in px).",
+                                                         "type":"integer",
+                                                         "exclusiveMinimum":0,
+                                                         "default":null,
+                                                         "required":false
+                                                      },
+                                                      "enableComments":{
+                                                         "title":"Enable comments in table? Comments will be ignored when solving the model.",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "stretchH":{
+                                                         "title":"Strech table to full box width?",
+                                                         "type":"string",
+                                                         "enum":[
+                                                            "none",
+                                                            "last",
+                                                            "all"
+                                                         ],
+                                                         "default":"all",
+                                                         "required":true
+                                                      },
+                                                      "columnSorting":{
+                                                         "title":"Enable column sorting option (in ascending/descending order)?",
+                                                         "type":"boolean",
+                                                         "default":true,
+                                                         "required":false
+                                                      },
+                                                      "manualColumnMove":{
+                                                         "title":"Enable manual column moving (change position)?",
+                                                         "type":"boolean",
+                                                         "default":false,
+                                                         "required":false
+                                                      },
+                                                      "manualColumnResize":{
+                                                         "title":"Enable manuall column resizing?",
+                                                         "type":"boolean",
+                                                         "default":false,
+                                                         "required":false
+                                                      },
+                                                      "colWidths":{
+                                                         "title":"Width of columns (not required).",
+                                                         "type":"integer",
+                                                         "exclusiveMinimum":0,
+                                                         "default":null,
+                                                         "required":false
+                                                      },
+                                                      "fixedColumnsLeft":{
+                                                         "title":"Number of columns fixed on the left (not required).",
+                                                         "type":"integer",
+                                                         "exclusiveMinimum":0,
+                                                         "default":null,
+                                                         "required":false
+                                                      },
+                                                      "contextMenu":{
+                                                         "title":"Options for customizing the handsontable context menu (accessible via right mouse click)",
+                                                         "type":"object",
+                                                         "additionalProperties":false,
+                                                         "required":"false",
+                                                         "properties":{
+                                                            "enabled":{
+                                                               "title":"Enable context menu (using right mouse click)?",
+                                                               "type":"boolean",
+                                                               "default":true,
+                                                               "required":false
+                                                            },
+                                                            "allowRowEdit":{
+                                                               "title":"logical enabling row editing",
+                                                               "type":"boolean",
+                                                               "default":true
+                                                            },
+                                                            "allowColEdit":{
+                                                               "title":"logical enabling column editing. Note that Handsontable does not support column add/remove when column types are defined (i.e. useTypes == TRUE in rhandsontable).",
+                                                               "type":"boolean",
+                                                               "default":true
+                                                            },
+                                                            "allowReadOnly":{
+                                                               "title":"logical enabling read-only toggle",
+                                                               "type":"boolean",
+                                                               "default":false
+                                                            },
+                                                            "allowComments":{
+                                                               "title":"Enable comments in table. Will be ignored when solving the model.",
+                                                               "type":"boolean",
+                                                               "default":true
+                                                            }
+                                                         }
+                                                      }
+                                                   }
+                                                },
+                                                "pivottable":{
+                                                   "title":"Parameters used to customize pivottable (used to render output data).",
+                                                   "type":"object",
+                                                   "additionalProperties":false,
+                                                   "properties":{
+                                                      "bgColor":{
+                                                         "title":"Background color (of row and column headers)",
+                                                         "type":"string",
+                                                         "required":false,
+                                                         "default":"#ffffff"
+                                                      }
+                                                   }
+                                                },
+                                                "datatable":{
+                                                   "title":"Parameters used to customize datatable (used to render output data).",
+                                                   "type":"object",
+                                                   "additionalProperties":false,
+                                                   "properties":{
+                                                      "class":{
+                                                         "title":"css classes used for styling datatable",
+                                                         "type":"array",
+                                                         "minLength":1,
+                                                         "default":"display",
+                                                         "required":false
+                                                      },
+                                                      "filter":{
+                                                         "title":"Include column filters?",
+                                                         "type":"string",
+                                                         "enum":[
+                                                            "none",
+                                                            "bottom",
+                                                            "top"
+                                                         ],
+                                                         "default":"bottom",
+                                                         "required":true
+                                                      },
+                                                      "rownames":{
+                                                         "title":"Show row names",
+                                                         "type":"boolean",
+                                                         "required":false,
+                                                         "default":false
+                                                      },
+                                                      "extensions":{
+                                                         "title":"Extensions: For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
+                                                         "type":"array",
+                                                         "uniqueItems":true,
+                                                         "required":false,
+                                                         "items":{
+                                                            "type":"string",
+                                                            "enum":[
+                                                               "AutoFill",
+                                                               "Buttons",
+                                                               "ColReorder",
+                                                               "ColVis",
+                                                               "FixedColumns",
+                                                               "FixedHeader",
+                                                               "KeyTable",
+                                                               "Responsive",
+                                                               "RowReorder",
+                                                               "Scroller",
+                                                               "Select"
+                                                            ],
+                                                            "required":true,
+                                                         }
+                                                      },
+                                                      "options":{
+                                                         "title":"Additional options (e.g. column specific).",
+                                                         "type":"object",
+                                                         "required":false,
+                                                         "properties":{
+                                                            "dom":{
+                                                               "title":"Appearing (position) and order of table control elements",
+                                                               "type":"string",
+                                                               "minLength":1,
+                                                               "required":false
+                                                            },
+                                                            "buttons":{
+                                                               "title":"Buttons or groups of buttons to insert",
+                                                               "type":"object",
+                                                               "required":false,
+                                                               "default":null
+                                                            },
+                                                            "pageLength":{
+                                                               "title":"Number of items to display per page",
+                                                               "type":"integer",
+                                                               "minimum":1,
+                                                               "default":15,
+                                                               "required":true
+                                                            },
+                                                            "columnDefs":{
+                                                               "title":"Column specific options.",
+                                                               "type":"array",
+                                                               "items":{
+                                                                  "type":"object",
+                                                                  "properties":{
+                                                                     "choice":{
+                                                                        "title": "Column numbers to refer to:",
+                                                                        "type": "string",
+                                                                        "enum": ["select manually", "select all"],
+                                                                        "required": true
+                                                                     },
+                                                                     "manually":{
+                                                                        "title":"Column numbers to refer to.",
+                                                                           "type":"array",
+                                                                           "minItems":1,
+                                                                           "items":{
+                                                                              "type":"integer",
+                                                                              "minimum":1
+                                                                           }
+                                                                     },
+                                                                     "className":{
+                                                                        "title":"column(s) class name",
+                                                                        "required":false,
+                                                                        "type":"string",
+                                                                        "minLength":1
+                                                                     },
+                                                                     "visible":{
+                                                                        "title":"visible",
+                                                                        "required":false,
+                                                                        "type":"boolean"
+                                                                     },
+                                                                     "searchable":{
+                                                                        "title":"searchable",
+                                                                        "required":false,
+                                                                        "type":"boolean"
+                                                                     }
+                                                                  },
+                                                                  "dependencies": {
+                                                                      "manually": ["choice"]
+                                                                  }
+                                                               }
+                                                            }
+                                                         }
+                                                      }
+                                                   }
+                                                }
+                                             }
+                                          },
+                                          "options":{
+                                             "fields":{
+                                                "dataRendering":{
+                                                   "fields":{
+                                                      "Format: graph":{
+                                                         "fields":{
+                                                            "item":{
+                                                               "fields":{
+                                                                  "graph":{
+                                                                     "fields":{
+
+                                                                              "plotly":{
+                                                                                 "fields":{
+                                                                                    "graphtype":{
+                                                                                       "fields":{
+                                                                                          "pie":{
+                                                                                             "dependencies":{
+                                                                                                "choice": "Pie"
+                                                                                             }
+                                                                                          },
+                                                                                          "chart":{
+                                                                                             "dependencies":{
+                                                                                                "choice": "Chart"
+                                                                                             }
+                                                                                          },
+                                                                                          "histogram":{
+                                                                                             "dependencies":{
+                                                                                                "choice": "Histogram"
+                                                                                             }
+                                                                                          }
+                                                                                       }
+                                                                                    }
+                                                                                 },
+                                                                                 "dependencies":{
+                                                                                    "choice": "UsePlotly"
+                                                                                 }
+                                                                              },
+                                                                              "dygraph":{
+                                                                                  "dependencies":{
+                                                                                      "choice": "UseDygraph"
+                                                                                  }
+                                                                              }
+
+                                                                      }
+                                                                  }
+                                                               }
+                                                            }
+                                                         }
+                                                      }
+                                                   }
+                                                },
+                                                "datatable":{
+                                                   "fields":{
+                                                      "options":{
+                                                         "fields":{
+                                                            "columnDefs":{
+                                                               "fields":{
+                                                                  "item":{
+                                                                     "fields":{
+                                                                        "manually":{
+                                                                           "dependencies":{
+                                                                              "choice": "select manually"
+                                                                           }
+                                                                        }
+                                                                     }
+                                                                  }
+                                                               }
+                                                            }
+                                                         }
+                                                      }
+                                                   }
+                                                }
+                                             }
+                                          },
+                                          "view": {
+                                              "wizard": {
+                                                  "bindings": {
+                                                      "language": 1,
+                                                      "pageSkin": 1,
+                                                      "excelIncludeMeta": 1,
+                                                      "excelIncludeEmptySheets": 1,
+                                                      "UILogo": 1,
+                                                      "autoGenInputGraphs":1,
+                                                      "defCompMode": 1,
+                                                      "activateModules": 1,
+                                                      "aggregateWidgets": 1,
+                                                      "saveTraceFile": 1,
+                                                      "roundingDecimals":1,
+                                                      "dataRendering": 2,
+                                                      "handsontable": 3,
+                                                      "pivottable": 3,
+                                                      "datatable": 3
+                                                  },
+                                                  "steps": [{
+                                                      "title": "General settings",
+                                                      "description": "Basic Information"
+                                                  }, {
+                                                      "title": "Graphs",
+                                                      "description": "Configure graphs"
+                                                  }, {
+                                                      "title": "Tables",
+                                                      "description": "Customize the table layout"
+                                                  }],
+                                                  "showProgressBar": false,
+                                                  "markAllStepsVisited":true,
+                                                  "buttons":{
+                                                   "submit":{
+                                                      "title":"Download JSON",
+                                                      "click":function(){
+                                                         co = this.getValue();
+                                                         // change object "tabtitle" to "title" (to match schema)
+                                                         if(co.aggregateWidgets.tabtitle){
+                                                            co.aggregateWidgets.title = co.aggregateWidgets.tabtitle;
+                                                            delete co.aggregateWidgets.tabtitle;
+                                                         }
+                                                         //restructuring of "dataRendering" for all output elements
+                                                         if(co.dataRendering["Format: datatable"].length){
+                                                            for (var i = 0; i < co.dataRendering["Format: datatable"].length; i++) {
+                                                               var dtname = co.dataRendering["Format: datatable"][i].Parameter;
+                                                               co.dataRendering[dtname] = co.dataRendering["Format: datatable"][i];
+                                                               co.dataRendering[dtname].outType = "table"
+                                                               delete co.dataRendering[dtname].Parameter;
+                                                            }
+                                                         }
+                                                         delete co.dataRendering["Format: datatable"];
+                                                         if(co.dataRendering["Format: valuebox"].length){
+                                                            for (var i = 0; i < co.dataRendering["Format: valuebox"].length; i++) {
+                                                               var vbname = co.dataRendering["Format: valuebox"][i].scalar_type;
+                                                               co.dataRendering[vbname] = co.dataRendering["Format: valuebox"][i];
+                                                               co.dataRendering[vbname].outType = "valueBox";
+                                                               delete co.dataRendering[vbname].scalar_type;
+                                                            }
+                                                         }
+                                                         delete co.dataRendering["Format: valuebox"];
+                                                         if(co.dataRendering["Format: pivottable"].length){
+                                                            for (var i = 0; i < co.dataRendering["Format: pivottable"].length; i++) {
+                                                               var pvname = co.dataRendering["Format: pivottable"][i].Parameter;
+                                                               co.dataRendering[pvname] = co.dataRendering["Format: pivottable"][i];
+                                                               co.dataRendering[pvname].outType = "pivot";
+                                                               delete co.dataRendering[pvname].Parameter;
+                                                            }
+                                                         }
+                                                         delete co.dataRendering["Format: pivottable"];
+                                                         if(co.dataRendering["Format: custom"].length){
+                                                            for (var i = 0; i < co.dataRendering["Format: custom"].length; i++) {
+                                                               var cuname = co.dataRendering["Format: custom"][i].Parameter;
+                                                               co.dataRendering[cuname] = co.dataRendering["Format: custom"][i];
+                                                               delete co.dataRendering[cuname].Parameter;
+                                                            }
+                                                         }
+                                                         delete co.dataRendering["Format: custom"];
+                                                         if(co.dataRendering["Format: graph"].length){
+                                                            for (var i = 0; i < co.dataRendering["Format: graph"].length; i++) {
+
+                                                               var grname = co.dataRendering["Format: graph"][i].Parameter;
+                                                               co.dataRendering[grname] = co.dataRendering["Format: graph"][i];
+                                                               delete co.dataRendering[grname].Parameter;
+                                                               //definition of graph / dtgraph
+                                                               if(co.dataRendering[grname].outType === "single view"){
+                                                                     co.dataRendering[grname].outType = "graph";
+                                                               }
+                                                               if(co.dataRendering[grname].outType === "split view"){
+                                                                  co.dataRendering[grname].outType = "dtgraph";
+                                                               }
+                                                               //move object graph title to match the json schema
+                                                               if(co.dataRendering[grname].hasOwnProperty("graphtitle")){
+                                                                  co.dataRendering[grname].graph.title = co.dataRendering[grname].graphtitle;
+                                                                  delete co.dataRendering[grname].graphtitle;
+                                                               }
+                                                               //dyGraph
+                                                               if(co.dataRendering[grname].graph.choice === "UseDygraph"){
+                                                                  co.dataRendering[grname].graph.tool = "dyGraph";
+                                                                  $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraph);
+                                                                  delete co.dataRendering[grname].graph.dygraph;
+                                                                  //dyEvent object needs a name of GAMS Symbol ("eventdata")
+                                                                  for (var k = 0; k < co.dataRendering[grname].graph.dyEvent.length; k++) {
+                                                                     var eventname = co.dataRendering[grname].graph.dyEvent[k].eventdata;
+                                                                     delete co.dataRendering[grname].graph.dyEvent[k].eventdata;
+                                                                     co.dataRendering[grname].graph.dyEvent[eventname] = co.dataRendering[grname].graph.dyEvent[k];
+                                                                     delete co.dataRendering[grname].graph.dyEvent[k];
+                                                                  }
+                                                                  //ydata object needs name of GAMS Symbol ("dataname")
+                                                                  for (var k = 0; k < co.dataRendering[grname].graph.ydata.length; k++) {
+                                                                     var yname = co.dataRendering[grname].graph.ydata[k].dataname;
+                                                                     delete co.dataRendering[grname].graph.ydata[k].dataname;
+                                                                     co.dataRendering[grname].graph.ydata[yname] = co.dataRendering[grname].graph.ydata[k];
+                                                                     delete co.dataRendering[grname].graph.ydata[k];
+                                                                  }
+
+                                                               }
+                                                               else if(co.dataRendering[grname].graph.choice === "UsePlotly"){
+                                                                  co.dataRendering[grname].graph.tool = "plotly";
+                                                                  // set plotly graph type to chosen element
+                                                                  if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Histogram"){
+                                                                     co.dataRendering[grname].graph.type = "hist";
+                                                                  }
+                                                                  else if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Chart"){
+                                                                     co.dataRendering[grname].graph.type = co.dataRendering[grname].graph.plotly.graphtype.chart.type;
+                                                                  }
+                                                                  else if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Pie"){
+                                                                     co.dataRendering[grname].graph.type = "pie";
+                                                                  }
+                                                                  //restructuring (alpaca-object "choice" and the underlying structure has to be adapted in order to be compatible with schema)
+                                                                  $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.plotly);
+                                                                  var chosen = co.dataRendering[grname].graph.plotly.graphtype.choice;
+                                                                  $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.plotly.graphtype[chosen.toLowerCase()]);
+                                                                  delete co.dataRendering[grname].graph.plotly;
+                                                                  delete co.dataRendering[grname].graph.graphtype;
+
+                                                                  //in a histogram the data is defined for the x axis, not for the y axis
+                                                                  if(co.dataRendering[grname].graph.type === "hist"){
+                                                                       for (var k = 0; k < co.dataRendering[grname].graph.xdata.length; k++) {
+                                                                          var xname = co.dataRendering[grname].graph.xdata[k].dataname;
+                                                                          delete co.dataRendering[grname].graph.xdata[k].dataname;
+                                                                          co.dataRendering[grname].graph.xdata[xname] = co.dataRendering[grname].graph.xdata[k];
+                                                                          delete co.dataRendering[grname].graph.xdata[k];
+                                                                       }
+                                                                  }
+
+                                                               }
+                                                               delete co.dataRendering[grname].graph.choice;
+
+                                                               //ydata manipulation for plotly and dygraph: change the name of ydata objects to the "dataname" value
+                                                               if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraph") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
+                                                                  for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
+                                                                        var yname = co.dataRendering[grname].graph.ydata[j].dataname;
+                                                                        delete co.dataRendering[grname].graph.ydata[j].dataname;
+                                                                        co.dataRendering[grname].graph.ydatatmp[yname] = co.dataRendering[grname].graph.ydata[j];
+                                                                     }
+                                                                     //delete co.dataRendering[grname].graph.ydata;
+                                                                     co.dataRendering[grname].graph.ydata = co.dataRendering[grname].graph.ydatatmp;
+                                                                     delete co.dataRendering[grname].graph.ydatatmp;
+                                                               }
+                                                            }
+                                                         }
+                                                         delete co.dataRendering["Format: graph"];
+                                                         let data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(co,null,"  "));
+                                                         $('<a href="data:' + data + '" download="config.json" id="jsonDlLink">Download</a>').appendTo('body');
+                                                         $('#jsonDlLink')[0].click();
+                                                         $('#jsonDlLink').remove();
+                                                      }
+                                                   }
+                                                }
+                                              }
+                                          }
+                                      });
+                                  }
+                                  </script>
+                                  </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="custom-renderers" class="doc-section">
+                                <h2 class="section-title">Custom Renderers</h2>
+                                <div class="section-block">
+                                    <p>The GAMS WebUI allows you to use your own custom renderers for your datasets. Currently we only support the visualization of data, not the generation. We may add this feature at a later stage depending on the demand.</p>
+                                    <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that the GAMS WebUI is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html">Shiny Modules</a> to realize the interface between the GAMS WebUI and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
+                                    <div class="code-block">
+                                        <pre><code class="language-r">
+&#x3C;rendererName&#x3E;Output &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+ns &#x3C;- NS(id)
+}
+
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+}
+                                        </code></pre>
+                                    </div><!--//code-block-->
+                                    <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</a> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>". Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">transport</a> example from George Dantzig: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated. We decide to visualize the optimal shipping schedule on a map. As there is currently no out-of-the-box rendering function for visualizing data on a map for the GAMS WebUI, we need to write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
+                                    <div class="code-block">
+                                        <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+    ns &#x3C;- NS(id)
+  }
+  renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+  }</code></pre>
+                                    </div><!--//code-block-->
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Note:</h4>
+                                            <p>R is case sensitive and the first letter after the <span class="code">render</span> keyword needs to be uppercase! Thus, if the name of your renderer starts with a lowercase letter, you need to convert it to uppercase in the <kbd>render*</kbd> function.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    Both functions take a number of parameters. Let's start with the placeholder function: Each custom renderer has its own ID. In order to avoid <a href="https://en.wikipedia.org/wiki/Name_collision" target="_blank">name collisions</a> with other custom renderers or functions of the GAMS WebUI, we need to prefix our input and output elements with this ID. How should we prefix our custom input and output functions, though? Fortunately, Shiny provides us with the function: <kbd><a href="https://shiny.rstudio.com/reference/shiny/0.13.1/NS.html" target="_blank">NS()</a></kbd>. This function takes the ID of our custom renderer as its input and returns a function (functions that return functions are often called <i>closures</i> in R) that does the prefixing for us. Thus, whenever we want to specify a new input or output element, we simply hand the ID we would like to use for this element over to this prefixing function (which in our case is bound to the <kbd>ns</kbd> variable). We can also specify a height for our renderer as well as the path where the renderer files are located and additional options we can pass to our renderer functions.</p>
+                                    <p>Let's get back to our example. As we would like to visualize our optimized schedule on an interactive map, we choose the popular <a href="https://leafletjs.com" target="_blank">Leaflet</a> library. Fortunately, there is already an R/Shiny interface for this library: <a href="https://rstudio.github.io/leaflet/" target="_blank">Leaflet for R</a>. This R package comes with the two functions: <kbd>leafletOutput()</kbd> that generates the placeholder and <kbd>renderLeaflet()</kbd> that renders a Leaflet map object created by the <kbd>leaflet()</kbd> function which takes our dataframe as its first argument. So let's put the pieces together and extend our code:
+                                      <div class="code-block">
+                                          <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+    ns &#x3C;- NS(id)
+    leafletOutput(ns(&#x22;map&#x22;), height = height)
+  }
+  renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+    output$map &#x3C;- renderLeaflet(leaflet(data))
+  }</code></pre>
+                                      </div><!--//code-block-->
+                                      Note that we used the aforementioned <kbd>ns()</kbd> function to prefix the ID (<span class="code">"map"</span>) that we chose for our Leaflet element. Just like any other placeholder element, the function <kbd>leafletOutput()</kbd> generates an element that can be accessed via the list-like <kbd>output</kbd> object.
+                                      Inside our rendering function we assign this object the Leaflet map that is created by the <kbd>renderLeaflet()</kbd> function. In case you find the whole concept of having an output function, a rendering function, an output object etc. is still very confusing, you should take a look at the <a href="https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/" target="_blank">offical tutorial series</a> for the Shiny framework. To summarize: elements that generate data can be accessed by the <kbd>input</kbd> object; elements that transform data to some form of visualization via the <kbd>output</kbd> object and any user-specific information via the <kbd>session</kbd> object.
+                                    </p><p>
+                                      The data that you want to visualize is supplied via the <kbd>data</kbd> argument - an R dataframe. The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">customRenderer</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
+                                      <p>Now that we are familiar with the template that every custom renderer builds upon, we are still missing one fundamental concept so that we can use our custom renderer: binding the renderer to dataset(s) we wish to visualize.</p>
+                                      <p>This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <span class="code">config.json</span> file; more precisely the <span class="code">dataRendering</span> section. Let's assume that in our transportation example the GAMS parameter that specifies the optimal schedule is defined as <span class="code">optSched(lngP, latP, lngM, latM, plant, market)</span> where <span class="code">(lngP,latP)</span> and <span class="code">(lngM, latM)</span> are the coordinates of the plants and markets respectively. Our <span class="code">config.json</span> file should then look like this:
+                                        <div class="code-block">
+                                            <pre><code class="language-json">{
+   &#x22;dataRendering&#x22;:{
+      &#x22;optSched&#x22;:{
+         &#x22;outType&#x22;:&#x22;transportMap&#x22;,
+         &#x22;height&#x22;:&#x22;700&#x22;,
+         &#x22;options&#x22;:{
+            &#x22;title&#x22;:&#x22;Optimal transportation schedule&#x22;
+         }
+      }
+   }
+}</code></pre>
+                                        </div><!--//code-block-->
+                                        You can also use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to generate the configuration file.
+                                      </p><p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
+                                      <p>If we decided to run our WebUI now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
+                                        <div class="code-block">
+                                            <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
+  ns &#x3C;- NS(id)
+  tagList(
+    textOutput(ns(&#x22;title&#x22;)),
+    leafletOutput(ns(&#x22;map&#x22;))
+  )
+}
+renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+  output$title &#x3C;- renderText(options$title)
+  output$map   &#x3C;- renderLeaflet(leaflet(data) %&#x3E;%
+                                  addTiles() %&#x3E;%
+                                  addMarkers(~lngP, ~latP, label = ~plant)
+  )
+}</code></pre>
+                                        </div><!--//code-block-->
+                                       We have added a new placeholder for the title. Note the use of the <kbd>tagList()</kbd> function. Since every R function has a single return value which is either the last evaluated expression of the function or the argument to the first <kbd>return()</kbd> function that is encountered in the function body, we need to return a list object. A <kbd>tagList()</kbd> is simply a list with an additional attribute to identify that the elements are html tags.</p><p>Within our rendering function, we set the title, add the default <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a> tiles as well as some markers for our plants.
+                                      <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <h4 class="callout-title">Note:</h4>
+                                              <p>The syntax <kbd>~lngP</kbd> that you see here is simply a shorthand for <kbd>data$lngP</kbd> - the pipe operator <kbd>a(x) %&#x3E;% b(y)</kbd> a shorthand for <kbd>tmp &#x3C;- a(x); b(tmp, y)</kbd></p>
+                                          </div><!--//content-->
+                                      </div>
+                                      If you run your WebUI now, you will be able to see a map with markers at the coordinates of the plants as you specified them in your GAMS sets: <kbd>lngP</kbd> and <kbd>latP</kbd>. When you hover over the markers, you will be able to see the names of the plants as defined by the set: <kbd>plants</kbd>. You can see a screenshot of the result below:
+                                      <div class="section-block">
+                                          <img class="img-fluid" src="assets/images/custom-renderer-map.png" alt="Result of custom renderer - Map with markers" />
+                                      </div>
+                                      You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <span class="code">trnsport</span> model that comes with your GAMS WebUI installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
+                                      </p>
+                                </div><!--//section-block-->
+                              </section>
+                              <section id="language-files" class="doc-section">
+                                  <h2 class="section-title">Language Files</h2>
+                                  <div class="section-block">
+                                      <p>The GAMS WebUI comes with the ability to change the preferred language from within the <a href="#config-gen" class="scrollto">configuration file</a>. Setting your preferred language in the configuration results in the WebUI embedding the corresponding language file where all the language specific components are specified via JSON syntax. The WebUI currently ships with two of those language files: English and German. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/en.json</span> and are validated against the <a href="https://json-schema.org/">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by the WebUI.</p>
+                                      <p>If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                      </div><!--//section-block-->
+                                </section>
+
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#intro">Introduction</a>
+                                <a class="nav-link scrollto" href="#config-gen">Configuration Generator</a>
+                                <a class="nav-link scrollto" href="#custom-renderers">Custom Renderers</a>
+                                <a class="nav-link scrollto" href="#language-files">Language Files</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    </div><!--//page-wrapper-->
+
+    <footer id="footer" class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+
+        </div><!--//container-->
+    </footer><!--//footer-->
+
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+    <!-- alpaca -->
+    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+
+</body>
+</html>

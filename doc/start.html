@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GAMS WebUI documentation</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+
+<body class="body-orange">
+    <div class="page-wrapper">
+        <!-- ******Header****** -->
+        <header id="header" class="header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Getting started</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Getting started</h1>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 12th, 2018</div>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="installation-section" class="doc-section">
+                                <h2 class="section-title">Installation</h2>
+                                <div id="step1"  class="section-block">
+                                    <h3 class="block-title">GAMS Installation</h3>
+                                    <p>To generate a GAMS WebUI from your GAMS model the following steps are necessary:
+                                    To be able to use the WebUI, a current GAMS version (25.1.2 or later) is required.  You can download it from <a href="https://www.gams.com/download/" target="_blank">https://www.gams.com/download/</a>.
+                                    To use the WebUI, the Python package <span class="code">xlsxwriter</span> must be installed. Python 3.6 comes with the 25.1.2 GAMS installation. You can install the required package by navigating to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> in the command line (e.g.: <kbd>cd C:\GAMS\win64\25.1\GMSPython\Scripts</kbd>). To install the package, enter: <kbd>pip install xlsxwriter</kbd>.
+
+                                    Some of the demo applications included in this GAMS WebUI installation require additional Python packages. If you use the following demos, you must install these packages:
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Demo Application</th>
+                                                    <th>Python packages</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Pickstock_live</td>
+                                                    <td>pandas, pandas_datareader</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trnsport_live</td>
+                                                    <td>geocoder</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div><!--//table-responsive-->
+                                    </p>
+                                </div><!--//section-block-->
+                                <div id="step2"  class="section-block">
+                                    <h3 class="block-title">GAMS WebUI Installation</h3>
+                                    <p>To install the GAMS WebUI and its components, run the GAMS WebUI setup. Since a current R installation is required, the installer checks for an existing R version (3.5.1 or later) and installs it, if necessary.
+                                    </p>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="firststep-section" class="doc-section">
+                                <h2 class="section-title">First steps</h2>
+                                <div class="section-block">
+                                    <p>
+                                      To get a feeling for the use of the WebUI, it is recommended to have a look at the demo applications first. After a correct installation, these demo applications are located in <span class="code">C:/Users/&lt;User_Name&gt;/Documents/GMSWebUI_Examples/</span>.
+To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">GMSWebUI_Examples/trnsport/trnsport.gms</span>) with the compile-time parameter <span class="code">--gmswebui=3</span>. This can be done from within the new GAMS Studio, the GAMSIDE or using the command prompt (Note: To use the command prompt, GAMS must be in the PATH of the operating system):
+</p><p><kbd>cd path/to/gms_file && gams trnsport.gms --gmswebui=3</kbd></p><p>
+  <div class="callout-block callout-warning">
+      <div class="icon-holder">
+          <i class="fas fa-info-circle"></i>
+      </div><!--//icon-holder-->
+      <div class="content">
+          <h4 class="callout-title">Note:</h4>
+          <p>If you run a model with <span class="code">--gmswebui=3</span> all required R packages will be loaded. If you use the WebUI for the first time, the (automatically started) installation of these packages may take a while.</p>
+      </div><!--//content-->
+  </div><!--//callout-block-->
+</p><div class="section-block">
+    <h7>This is the initial screen you see after the start of the Transport WebUI</h7>
+    <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" /></div>
+
+<p>The screen is essentially divided in two:
+<h6>Navigation bar:</h6>
+On the left side you can find the navigation bar. Here you can navigate between the categories <i>"Input"</i>, <i>"Output"</i>, <i>"GAMS interaction"</i> and <i>"Advanced Options"</i>. In addition, the buttons for loading input data and for starting a GAMS run are located here.
+</p>
+<h6>Main window:</h6>
+<p>In the main window the data visualization takes place like the display of the uploaded data, its manipulation and graphical representation.</p>
+    <ol class="list">
+<li><b>Import data</b><br/>
+To import model input data, click on the <i>"Load data"</i> button and navigate to the folder of the model currently used (e.g. <span class="code">Documents/GMSWebUI_Examples/trnsport/</span>). You should find a <span class="code">trnsport.xlsx</span> file there. After the import, you can adjust the input data.
+  <div class="section-block">
+      <img class="img-fluid" src="assets/images/input-data.png" alt="Input data screen" />
+  </div>
+</li>
+<li><b>Model run</b><br/>
+A click on the <i>"Solve model"</i> button starts the model run. During the calculations, the WebUI switches to the section <i>"GAMS interaction"</i>. There you can see the current GAMS log and lst files. After the run, the view changes to the <i>"Output"</i> section.
+  <div class="section-block">
+      <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
+  </div>
+  <b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>"GAMS interaction"</i> can also be viewed at any time after a model run.
+</li>
+<li><b>Results</b><br/>
+  In the <i>"Output"</i> section the result parameters are visualized in tabular form. With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" alt="Switch to tabular view button" /> button in the upper right corner you can switch between tabular and graphical data visualization. All scalar results are summarized in the tab <i>"Scalars"</i>.
+  The <img class="img-fluid" src="assets/images/export-btn.png" alt="Download data button" /> button enables the user to download the model input and output data.
+
+  <div class="section-block">
+      <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
+  </div>
+<li><b>Advanced Options</b><br/>
+Besides the model input and output data all temporarily created files of the model run like the <span class="code">lst</span> and <span class="code">log</span> files can be downloaded separately or as ZIP file in the <span class="code">"Advanced Options"</span> menu.</li>
+</li>
+</ol>
+
+                                    </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="creating-section" class="doc-section">
+                                <h2 class="section-title">Turn your GAMS model into a WebUI</h2>
+                                <div class="section-block">
+                                    <p>After testing the demo applications, it's time to get started yourself. For a better understanding it is recommended to have a look at the GAMS code of the sample applications for the next steps.
+</p>
+<div class="callout-block callout-success">
+    <div class="icon-holder">
+        <i class="fas fa-thumbs-up"></i>
+    </div><!--//icon-holder-->
+    <div class="content">
+        <h4 class="callout-title">Note:</h4>
+        <p>A GAMS model still can be used in the normal way (via <i>GAMS Studio</i>, <i>GAMSIDE</i> or the console) after the following adjustments</p>
+    </div><!--//content-->
+</div>
+<div  id="create-2"  class="section-block">
+    <h3 class="block-title">Model adjustments</h3>
+    <p>To be able to use a GAMS model in the WebUI, a few steps in the model file are necessary. First, mark those symbols that you want to be visible in the interface. This is done by framing the corresponding symbols with the tags <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> for input data and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> for output data. These tags can be used multiple times within a model. Alternatively one can write <span class="code">UIInput:</span> or <span class="code">UIOutput:</span> at the beginning of the explanatory text of a GAMS symbol to include this symbol in the WebUI. Symbols which are not tagged with one of these markers won’t be visible in the Web Interface, but they are used within the model run in the background.
+    </p><p><b>Note:</b> Those Symbols which shall be displayed in the Web Interface, must also get an explanatory text in GAMS.
+    </p>
+</div><!--//section-block-->
+<div  id="create-3"  class="section-block">
+    <h3 class="block-title">Visualization of Parameters as tables</h3>
+    <p>In the default visualization configuration of a GAMS Parameter, each <b>Index</b> of a Parameter is shown in a separate column. The last column contains the parameter values. With this configuration, each <b>set element</b> of an index will be visible in a separate row. In the example below the Parameter <span class="code">price</span> has two indices <span class="code">date</span> and <span class="code">symbol</span>. Each index is shown in an own column named after the explanatory text of the corresponding set.
+    </p>
+    <div class="section-block">
+        <img class="img-fluid" src="assets/images/table-form.png" alt="Visualization of described table" />
+    </div>
+    <p>Sometimes it can be useful to show each set element of a parameters index in a separate column of the table. For the Parameter of the example above this would mean to have a column not for the set <span class="code">symbol</span> itself but for all its elements <span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc. instead. To achieve this, a minor change in the declaration of the corresponding set has to be done.</p>
+    <p>One can either:
+      <ul>
+        <li>Change the name of the set so that it ends with the header-keyword <span class="code">hdr</span> (to avoid renaming the set for the entire GAMS model, you can declare an alias for the set afterwards).
+        <li>Change the explanatory text of the set so that it ends with the keyword <span class="code">hdr</span>. This is done in the picture below.</li>
+      </ul>
+      <div class="section-block">
+          <img class="img-fluid" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
+      </div>
+      <p>Note that a table width in this way quickly increases when the number of set elements of the last index gets higher. A number of for example 30 Stocks to be represented in a table would lead to 30 stock columns. In this case the default configuration for a table as shown first might be better.</p>
+      <p>If a Parameters with <b>multiple value columns</b> has to be displayed within the WebUI, a manual definition of the header is required. In the picture below this is done for the Parameter <span class="code">PData</span>. By defining the Index <span class="code">phdr</span>, the set elements <span class="code">Demand</span> and <span class="code">Production Time</span> are shown as value columns in the WebUI table.
+        <div class="callout-block callout-success">
+            <div class="icon-holder">
+                <i class="fas fa-thumbs-up"></i>
+            </div><!--//icon-holder-->
+            <div class="content">
+                <h4 class="callout-title">Note:</h4>
+                <p>Scalars and Singleton Sets are collected in a separate <i>"Scalars"</i> table in the interface in the basic configuration.</p>
+            </div><!--//content-->
+        </div><!--//callout-block-->
+        <p>If all input and output symbols for the WebUI have been flagged, in a last step a file <span class="code">webui.gms</span> has to be included by a <img class="img-fluid" style="height:14px;" src="assets/images/incl-webui.png" alt="$libInclude webui" /> <b>at the very end of the GAMS model</b>. With the help of this file all model specific configuration files are created automatically later.
+          <div class="section-block">
+              <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
+          </div>
+</div><!--//section-block-->
+<div id="create-4" class="section-block">
+    <h3 class="block-title">Generating model-specific configuration files</h3>
+    <p>In the next step the model-specific configuration files for the Web Interface are created.</p>
+    <ul>
+      <li>Run the model with the compile time parameter <span class="code">--gmswebui=2</span>.
+        <div class="section-block">
+            <img class="img-fluid" src="assets/images/gmswebui-2.png" alt="--gmswebui=2" />
+        </div>
+        <div class="callout-block callout-warning">
+            <div class="icon-holder">
+                <i class="fas fa-info-circle"></i>
+            </div><!--//icon-holder-->
+            <div class="content">
+                <h4 class="callout-title">Note:</h4>
+                <p>If you use a GAMS <span class="code">$call</span> inside a model, the corresponding files have to be called using an <b>absolute path</b>. This is due to the different underlying working directories, which differ depending on whether a GAMS model is started from the WebUI or not.The GAMS WebUI is providing you the path to your model <span class="code">.gms</span> file via <span class="code">idir2</span>. This means, in order to e.g. import an Excel file called <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir2%test.xlsx</kbd>.</p>
+            </div><!--//content-->
+        </div><!--//callout-block-->
+      </li>
+      <li>After the run, a new directory named <i>conf</i> was automatically created. This directory contains the file <span class="code">GMSIO_config.json</span>. In this file you can find the configuration of the input and output symbols in JSON Synax, which were previously defined in the GAMS model with the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> tags.
+        The model folder also contains an <i>.xlsx</i> file with the relevant input data for the Web Interface that was extracted from your model.
+        <div class="callout-block callout-warning">
+            <div class="icon-holder">
+                <i class="fas fa-info-circle"></i>
+            </div><!--//icon-holder-->
+            <div class="content">
+                <h4 class="callout-title">Note:</h4>
+                <p>In case you don't find an Excel file with the data, please make sure the <span class="code">xlsxwriter</span> Python module was successfully installed (c.f. <a href="#step1" class="scrollto">here</a>).</p>
+            </div><!--//content-->
+        </div><!--//callout-block-->
+      </li>
+      <li>The very basic configuration is now done. You can start the WebUI by running the Model again, this time with <span class="code">--gmswebui=3</span>.
+        <div class="section-block">
+            <img class="img-fluid" src="assets/images/gmswebui-3.png" alt="--gmswebui=3" />
+        </div>
+        The first time this is done, all R packages needed for the WebUI will be automatically installed. This may take a while. When the installation is complete, the WebUI opens with the default browser of the operating system.
+  With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> file of GAMS. When the model run has finished successfully, the results can be examined in the web interface. In the standard configuration, tables and pivot tables are available to the user as a form of visualization.
+</li>
+    </ul>
+</div><!--//section-block-->
+<div  id="create-custom"  class="section-block">
+    <h3 class="block-title">Custom configuration</h3>
+    <p>If required, the web interface of the GAMS model can now be further configured. The use of the pre-implemented visualization options (at the moment these are pie charts, bar charts, line charts, scatter plots, histograms) of the GAMS WebUI is done in the directory <span class="code">&lt;modeldirectory&gt;/conf</span>. For this a file <span class="code">config.json</span> must be created, in which the desired configuration is written in JSON syntax. All available options can be taken from the different JSON schemata <span class="code">config_schema.json</span> / <span class="code">GMSIO_config_schema.json</span> in <span class+"code">&lt;GAMSroot&gt;/GMSWebUI/conf/</span>.</p>
+    <div class="section-block">
+        <img class="img-fluid" src="assets/images/custom-json.png" alt="Generate customized graphics via JSON file" />
+    </div>
+    <div class="callout-block callout-success">
+        <div class="icon-holder">
+            <i class="fas fa-thumbs-up"></i>
+        </div><!--//icon-holder-->
+        <div class="content">
+            <h4 class="callout-title">Note:</h4>
+            <p>You can generate this JSON file using our <a href="./customize.html#config-gen">Configuration Generator</a></p>
+        </div><!--//content-->
+    </div><!--//callout-block-->
+</div><!--//section-block-->
+<div  id="create-advanced"  class="section-block">
+    <h3 class="block-title">Advanced configuration</h3>
+    <p>If there is a desire for a visualization which is not yet pre-implemented, there is the possibility to implement it oneself. However, this requires a bit of programming effort. Custom developed graphics must be stored in the directory: <span class="code">&lt;modeldirecory&gt;/customRenderer/</span> in form of R code to be included as a WebUI module. Moreover, the custom graphic incl. the required R packages and supporting data has to be specified in the <span class="code">conf/config.json</span> file. Below you see an example of how such a configuration should look like.
+
+</p>
+    <div class="section-block">
+      <h7>R file in <span class="code">&lt;modeldirecory&gt;/customRenderer</span></h7>
+        <img class="img-fluid" src="assets/images/advanced-R.png" alt="R code for custom module" />
+    </div>
+    <div class="section-block">
+      <h7>Relevant part of the <span class="code">config.json</span> file in <span class="code">&lt;modeldirecory&gt;/conf</span></h7>
+        <img class="img-fluid" src="assets/images/advanced-JSON.png" alt="JSON code for custom module" />
+    </div>
+</div><!--//section-block-->
+                                </div>
+                            </section><!--//doc-section-->
+                            <section id="additional-features" class="doc-section">
+                                <h2 class="section-title">Additional Features </h2>
+                                <div id="additional-db" class="section-block">
+                                  <p>The Web Interface can be connected to a database. With the help of this data or scenarios can be loaded, changed, stored and compared. This feature is not part of the local version of this installation. If you have any questions, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                </div>
+                                <div id="additional-server" class="section-block">
+                                  <p>For the use of the WebUI on a server the operating system Linux is supported. With this, you can profit by e.g. user authentication, app management and load balancing based on Docker technology.
+For more information on this, please contact us
+</p><div class="section-block">
+    <img class="img-fluid" src="assets/images/webui-server.png" alt="GAMS WebUI on a server with multi-user and multi-application support" />
+</div>
+                                </div>
+                              </section>
+                              <section id="learn-more" class="doc-section">
+                                  <h2 class="section-title">Learn more</h2>
+                                  <div id="additional-db" class="section-block">
+                                    <p>To learn more about the GAMS WebUI, you have several options. This list will grow over time as the software evolves.</p>
+                                    <ul>
+                                      <li>Attend one of our webinars taking place on December, 13th 2018: 8 am CET and 10 am EST. More information including how to sign up will follow shortly.
+                                        <li>Watch the video of our talk at the EURO 2018 in Valencia
+                                        <!-- 16:9 aspect ratio -->
+                                        <div class="embed-responsive embed-responsive-16by9">
+                                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/OqkODv1p8tA?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
+                                        </div></li>
+                                    </ul>
+                                  </div>
+                                </section>
+
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+
+	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+	                                <a class="nav-link scrollto" href="#installation-section">Installation</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#step1">GAMS Installation</a>
+                                        <a class="nav-link scrollto" href="#step2">GAMS WebUI Installation</a>
+                                    </nav><!--//nav-->
+	                                <a class="scrollto" href="#firststep-section">First steps</a>
+	                                <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a WebUI</a>
+                                  <nav class="doc-sub-menu nav flex-column">
+                                      <a class="nav-link scrollto" href="#create-2">Model adjustments</a>
+                                      <a class="nav-link scrollto" href="#create-3">Visualization of Parameters as tables</a>
+                                      <a class="nav-link scrollto" href="#create-4">Generating model-specific configuration files</a>
+                                      <a class="nav-link scrollto" href="#create-custom">Custom configuration</a>
+                                      <a class="nav-link scrollto" href="#create-advanced">Advanced configuration</a>
+                                  </nav><!--//nav-->
+	                                <a class="nav-link scrollto" href="#additional-features">Additional features</a>
+                                  <nav class="doc-sub-menu nav flex-column">
+                                      <a class="nav-link scrollto" href="#additional-db">Database connection</a>
+                                      <a class="nav-link scrollto" href="#additional-server">GAMS WebUI on a server</a>
+                                  </nav><!--//nav-->
+                                  <a class="nav-link scrollto" href="#learn-more">Learn more</a>
+	                            </nav><!--//doc-menu-->
+
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    </div><!--//page-wrapper-->
+
+    <footer id="footer" class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+
+        </div><!--//container-->
+    </footer><!--//footer-->
+
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>
