@@ -21,14 +21,10 @@
   top: 0;
   opacity: 0;
 }
-#test img {
+.alpaca-popup-image img {
   display: none;
 }
-#test{
-   text-decoration:underline;
-   cursor:pointer;
-}
-#test span:hover + img {
+.alpaca-popup-image .fa-info-circle:hover + img {
   position:absolute;
   z-index:1000;
   display: block;
