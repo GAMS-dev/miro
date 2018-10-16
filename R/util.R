@@ -592,3 +592,6 @@ hideModal <- function(session, delay = 1L){
 isBadScenName <- function(scenName){
   grepl("^\\s*$", scenName)
 }
+switchTab <- function(session, id){
+  session$sendCustomMessage("gms-switchTab", id)
+}

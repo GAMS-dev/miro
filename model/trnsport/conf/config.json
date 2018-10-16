@@ -13,12 +13,11 @@
 	    },
         "scalars_out"   : {
             "outType"			: "valueBox",
-		    "height"			: 700,
             "options"  :{
             "icon":{
             "name" : "list"
             },
-            "color":"purple"
+            "color":"aqua"
             }
         }
     }

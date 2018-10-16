@@ -425,6 +425,11 @@
                            "type":"string",
                            "minLength":2
                         }
+                     },
+                     "options":{
+                        "description":"Additional options",
+                        "type":"object",
+                        "required":false
                      }
                   },
                   "additionalProperties":false,
