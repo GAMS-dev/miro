@@ -387,6 +387,7 @@ except:
    pass
    
 import collections
+import copy
 
 def dict_merge(dct, merge_dct):
     """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
@@ -397,8 +398,8 @@ def dict_merge(dct, merge_dct):
     :param merge_dct: dct merged into dct
     :return: None
     """
-    result = copy.deepcopy(a)
-    for k, v in merge_dct.iteritems():
+    result = copy.deepcopy(dct)
+    for k, v in merge_dct.items():
         if (k in dct and isinstance(dct[k], dict)
                 and isinstance(merge_dct[k], collections.Mapping)):
             dict_merge(dct[k], merge_dct[k])
@@ -514,10 +515,11 @@ with open('conf/GMSIO_config.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 db.__del__()
 import os
+import platform
 for s in rmfiles:
    os.remove(s.lower())
    
-if %GMSWEBUI%>2 and os.name == "nt":
+if %GMSWEBUI%>2 and platform.system() == "Windows":
     import winreg
     import re
     
@@ -567,6 +569,13 @@ if %GMSWEBUI%>2 and os.name == "nt":
            f.write("runApp(launch.browser=TRUE)")
     else:
         with open("runapp.R", "w") as f: 
+           f.write("library('methods')\n")
+           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
+           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
+           f.write("shiny::runApp(launch.browser=TRUE)")
+elif %GMSWEBUI%>2 and platform.system() == "Darwin":
+    os.environ["RPATH"] = "/Library/Frameworks/R.framework/Versions/"
+    with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
            f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")

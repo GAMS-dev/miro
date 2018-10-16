@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     <!-- Spectrum ColorPicker plugin -->
-    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.css"></script>
+    <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
@@ -81,33 +81,38 @@
                                       fr.onload = function(e) {
                                         try {
                                           var gmsData = JSON.parse(e.target.result);
-                                          var gmsIn = Object.keys(gmsData.gamsInputFiles);
-                                          var gmsOut = Object.keys(gmsData.gamsOutputFiles);
-                                          var gmsInHdrMap = new Object();
-                                          var gmsOutHdrMap = new Object();
-                                          var gmsInHdr = [];
-                                          var gmsOutHdr = [];
+                                          var gmsSym  = Object.keys(gmsData.gamsInputFiles);
+                                          gmsSym = gmsSym.concat(Object.keys(gmsData.gamsOutputFiles));
+
+                                          var gmsSymHdr = new Object();
                                           var scalars = [];
-                                          for (let i in gmsIn){
-                                            if(gmsIn[i] === "scalars"){
+                                          for (let i in gmsSym){
+                                            if(gmsSym[i] === "scalars"){
                                               scalars.push("scalars");
                                               continue;
                                             }
-                                            gmsInHdr.push(Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers));
-                                            //var hdrsTmp = Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers);
-                                            //gmsInHdrMap[gmsIn[i]] = hdrsTmp;
-                                          }
-                                          for (let i in gmsOut){
-                                            if(gmsOut[i] === "scalars_out"){
+                                            if(gmsSym[i] === "scalars_out"){
                                               scalars.push("scalars_out");
                                               continue;
                                             }
-                                            gmsOutHdr.push(Object.keys(gmsData.gamsOutputFiles[gmsOut[i]].headers));
-                                            //var hdrsTmp = Object.keys(gmsData.gamsOutputFiles[gmsOut[i]].headers);
-                                            //gmsOutHdrMap[gmsOut[i]] = gmsOutHdr;
+                                            if(jQuery.inArray(gmsSym[i], Object.keys(gmsData.gamsOutputFiles)) !== -1) {
+                                              gmsSymHdr[gmsSym[i]] = Object.keys(gmsData.gamsOutputFiles[gmsSym[i]].headers);
+                                            }else{
+                                              gmsSymHdr[gmsSym[i]] = Object.keys(gmsData.gamsInputFiles[gmsSym[i]].headers);
+                                            }
+                                            //var hdrsTmp = Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers);
+                                            //gmsInHdrMap[gmsIn[i]] = hdrsTmp;
+                                          }
+                                          let iScalar = gmsSym.indexOf("scalars");
+                                          if(iScalar > -1){
+                                            gmsSym.splice(iScalar, 1);
+                                          }
+                                          let iScalarOut = gmsSym.indexOf("scalars_out");
+                                          if(iScalarOut > -1){
+                                            gmsSym.splice(iScalarOut, 1);
                                           }
                                           $("#gmsioUpload").hide();
-                                          launchAlpaca(gmsIn, gmsOut, gmsInHdr, gmsOutHdr, scalars);
+                                          launchAlpaca(gmsSym, gmsSymHdr, scalars);
                                         }
 
                                         catch(err) {
@@ -118,7 +123,7 @@
                                       }
                                     fr.readAsText(files.item(0));
                                   };
-                                  function launchAlpaca(gmsIn, gmsOut, gmsInHdr, gmsOutHdr, scalars){
+                                  function launchAlpaca(gmsSym, gmsSymHdr, scalars){
                                     Alpaca.defaultToolbarSticky = true;
                                       $("#form1").alpaca({
                                           "schema": {
@@ -268,8 +273,8 @@
                                                                "Parameter":{
                                                                   "title":"Name of the Parameter to display:",
                                                                   "type":"string",
-                                                                  "enum":gmsIn.concat(gmsOut),
-                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "enum":gmsSym,
+                                                                  "default":gmsSym[0],
                                                                   "required":true
                                                                },
                                                                "height":{
@@ -285,13 +290,14 @@
                                                          "title":"valuebox (only for scalar values)",
                                                          "type":"array",
                                                          "required":false,
+                                                         "maxItems":1,
                                                          "items":{
                                                             "type":"object",
                                                             "properties":{
                                                                "scalar_type":{
                                                                   "title":"Which scalar type shall be displayed as valuebox?",
                                                                   "type":"string",
-                                                                  "enum":scalars,
+                                                                  "enum":["scalars_out"],
                                                                   "default":"scalars_out",
                                                                   "required":true
                                                                },
@@ -369,8 +375,8 @@
                                                                "Parameter":{
                                                                   "title":"Name of the Parameter to display:",
                                                                   "type":"string",
-                                                                  "enum":gmsIn.concat(gmsOut),
-                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "enum":gmsSym,
+                                                                  "default":gmsSym[0],
                                                                   "required":true
                                                                },
                                                                "height":{
@@ -388,8 +394,9 @@
                                                                         "uniqueItems":true,
                                                                         "items":{
                                                                            "type":"string",
-                                                                           "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                           "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                           "enum":gmsSymHdr[gmsSym[0]],
+                                                                           "default":gmsSymHdr[gmsSym[0]][0],
+                                                                           "required": true,
                                                                            "minLength":1
                                                                         },
                                                                         "default":null
@@ -400,8 +407,8 @@
                                                                         "uniqueItems":true,
                                                                         "items":{
                                                                            "type":"string",
-                                                                           "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                           "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                           "enum":gmsSymHdr[gmsSym[0]],
+                                                                           "default":gmsSymHdr[gmsSym[0]][0],
                                                                            "minLength":1
                                                                         },
                                                                         "default":null
@@ -522,8 +529,8 @@
                                                                "Parameter":{
                                                                   "title":"Name of the Parameter to display:",
                                                                   "type":"string",
-                                                                  "enum":gmsIn.concat(gmsOut),
-                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "enum":gmsSym,
+                                                                  "default":gmsSym[0],
                                                                   "required":true
                                                                },
                                                                "graphtitle":{
@@ -579,16 +586,16 @@
                                                                                              "labels":{
                                                                                                 "title":"symbol labels",
                                                                                                 "type":"string",
-                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
-                                                                                                "default":null
+                                                                                                "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                "default":gmsSymHdr[gmsSym[0]][0],
+                                                                                                "required": true
                                                                                              },
                                                                                              "values":{
                                                                                                 "title":"symbol values",
                                                                                                 "type":"string",
-                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
-                                                                                                "default":null
+                                                                                                "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                "default":gmsSymHdr[gmsSym[0]][0],
+                                                                                                "required": true
                                                                                              },
                                                                                              "xaxis":{
                                                                                                 "title":"Options: x axis",
@@ -658,9 +665,9 @@
                                                                                              "color":{
                                                                                                 "title":"Symbol that is used to select different colors.",
                                                                                                 "type":"string",
-                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
-                                                                                                "default":null
+                                                                                                "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                "default":gmsSymHdr[gmsSym[0]][0],
+                                                                                                "required": true
                                                                                              },
                                                                                              "margins":{
                                                                                                 "title":"Margins to use",
@@ -711,8 +718,8 @@
                                                                                              "xdata":{
                                                                                                 "title":"Data to use for x axis",
                                                                                                 "type":"string",
-                                                                                                "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                "default":gmsSymHdr[gmsSym[0]][0],
                                                                                                 "required":true
                                                                                              },
                                                                                              "ydata":{
@@ -720,18 +727,18 @@
                                                                                                 "type":"object",
                                                                                                 "properties":{
                                                                                                    "dataname":{
-                                                                                                      "title":"data column (use the explanatory text of GAMS symbol).",
+                                                                                                      "title":"data column.",
                                                                                                       "type":"string",
-                                                                                                      "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                      "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                      "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                      "default":gmsSymHdr[gmsSym[0]][0],
                                                                                                       "required":true
                                                                                                    },
                                                                                                    "label":{
                                                                                                       "title":"labels to use.",
                                                                                                       "type":"string",
-                                                                                                      "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                      "default":gmsInHdr.concat(gmsOutHdr)[0],
-                                                                                                      "default":null
+                                                                                                      "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                      "default":gmsSymHdr[gmsSym[0]][0],
+                                                                                                      "required": true
                                                                                                    },
                                                                                                    "mode":{
                                                                                                       "title":"Mode of plot data",
@@ -858,8 +865,8 @@
                                                                                                       "dataname":{
                                                                                                          "title":"data column (use the explanatory text of GAMS symbol).",
                                                                                                          "type":"string",
-                                                                                                         "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                                         "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                                         "enum":gmsSymHdr[gmsSym[0]],
+                                                                                                         "default":gmsSymHdr[gmsSym[0]][0],
                                                                                                          "required":true
                                                                                                       },
                                                                                                       "label":{
@@ -976,10 +983,10 @@
                                                                                     }
                                                                                  },
                                                                                  "color":{
-                                                                                    "title":"Symbol that is used to select different colors (use the explanatory text of GAMS symbol).",
+                                                                                    "title":"Symbol that is used to select different colors.",
                                                                                     "type":"string",
-                                                                                    "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                    "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                    "enum":gmsSymHdr[gmsSym[0]],
+                                                                                    "default":gmsSymHdr[gmsSym[0]][0]
                                                                                  },
                                                                                  "dyHighlight":{
                                                                                     "title":"highlight options",
@@ -1109,8 +1116,8 @@
                                                                                  "xdata":{
                                                                                     "title":"data for x axis (explanatory text of GAMS symbol)",
                                                                                     "type": "string",
-                                                                                    "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                    "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                    "enum":gmsSymHdr[gmsSym[0]],
+                                                                                    "default":gmsSymHdr[gmsSym[0]][0],
                                                                                  },
                                                                                  "ydata":{
                                                                                     "title":"y data options (at least one data set required)",
@@ -1121,8 +1128,8 @@
                                                                                        "properties":{
                                                                                           "dataname":{
                                                                                              "title":"data set  (use the explanatory text of GAMS symbol)",
-                                                                                             "enum":gmsInHdr.concat(gmsOutHdr),
-                                                                                             "default":gmsInHdr.concat(gmsOutHdr)[0],
+                                                                                             "enum":gmsSymHdr[gmsSym[0]],
+                                                                                             "default":gmsSymHdr[gmsSym[0]][0],
                                                                                              "required":true
                                                                                           },
                                                                                           "label":{
@@ -1205,8 +1212,8 @@
                                                                "Parameter":{
                                                                   "title":"GAMS Symbol name",
                                                                   "type":"string",
-                                                                  "enum":gmsIn.concat(gmsOut),
-                                                                  "default":gmsIn.concat(gmsOut)[0],
+                                                                  "enum":gmsSym,
+                                                                  "default":gmsSym[0],
                                                                   "required":true
                                                                },
                                                                "outType":{
@@ -1598,6 +1605,19 @@
                                                                                           "histogram":{
                                                                                              "dependencies":{
                                                                                                 "choice": "Histogram"
+                                                                                             },
+                                                                                             "fields":{
+                                                                                               "xdata":{
+                                                                                                 "fields":{
+                                                                                                   "item":{
+                                                                                                     "fields":{
+                                                                                                       "color":{
+                                                                                                         "type":"color"
+                                                                                                       }
+                                                                                                     }
+                                                                                                   }
+                                                                                                 }
+                                                                                               }
                                                                                              }
                                                                                           }
                                                                                        }
@@ -1700,8 +1720,8 @@
                                                          }
                                                          delete co.aggregateWidgetsTmp
                                                          //restructuring of "dataRendering" for all output elements
-                                                         makeKey("Format: datatable", "Parameter", "table");
-                                                         makeKey("Format: valuebox", "scalar_type", "valueBox");
+                                                         makeKey("Format: datatable", "Parameter", "datatable");
+                                                         makeKey("Format: valuebox", "scalars", "valueBox");
                                                          makeKey("Format: pivottable", "Parameter", "pivot");
 
                                                          for (let i = 0; i < co.dataRendering["Format: custom"].length; i++) {
@@ -1812,6 +1832,67 @@
                                               }
                                           },
                                           "postRender": function(control) {
+                                              var pivot = control.getControlByPath("dataRendering/Format: pivottable");
+                                              pivot.on("change", function() {
+                                                  for(var i = 0; i < pivot.children.length; i++) {
+                                                    var gmsSymName = pivot.children[i].childrenByPropertyId['Parameter'].data[0].text;
+                                                    var pivottable = pivot.children[i].childrenByPropertyId["pivottable"]
+                                                    var rows = pivottable.childrenByPropertyId['rows'];
+                                                    for(var j = 0; j < rows.children.length; j++) {
+                                                      rows.children[j].schema.enum = rows.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
+                                                      rows.children[j].refresh();
+                                                    }
+                                                    var cols = pivottable.childrenByPropertyId['cols'];
+                                                    for(var j = 0; j < cols.children.length; j++) {
+                                                      cols.children[j].schema.enum = cols.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
+                                                      cols.children[j].refresh();
+                                                    }
+                                                  }
+                                              });
+                                              var graph = control.getControlByPath("dataRendering/Format: graph");
+                                              graph.on("change", function() {
+                                                  for(var i = 0; i < graph.children.length; i++) {
+                                                    var gmsSymName = graph.children[i].childrenByPropertyId['Parameter'].data[0].text;
+                                                    var plotly = graph.children[i].childrenByPropertyId["graph"].childrenByPropertyId["plotly"].childrenByPropertyId["graphtype"];
+                                                    var dataReqSym = plotly.childrenByPropertyId["pie"].childrenByPropertyId["labels"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = plotly.childrenByPropertyId["pie"].childrenByPropertyId["values"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = plotly.childrenByPropertyId["chart"].childrenByPropertyId["color"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = plotly.childrenByPropertyId["chart"].childrenByPropertyId["xdata"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    var ydata = plotly.childrenByPropertyId["chart"].childrenByPropertyId["ydata"];
+                                                    dataReqSym = ydata.childrenByPropertyId["dataname"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = ydata.childrenByPropertyId["label"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = plotly.childrenByPropertyId["histogram"].childrenByPropertyId["xdata"];
+                                                    for(var j = 0; j < dataReqSym.children.length; j++) {
+                                                      dataReqSym.children[j].childrenByPropertyId["dataname"].schema.enum = dataReqSym.children[j].childrenByPropertyId["dataname"].options.optionLabels = gmsSymHdr[gmsSymName];
+                                                      dataReqSym.children[j].refresh();
+                                                    }
+                                                    var dygraph = graph.children[i].childrenByPropertyId["graph"].childrenByPropertyId["dygraph"];
+                                                    dataReqSym = dygraph.childrenByPropertyId["color"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = dygraph.childrenByPropertyId["xdata"];
+                                                    dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
+                                                    dataReqSym.refresh();
+                                                    dataReqSym = dygraph.childrenByPropertyId["ydata"];
+                                                    for(var j = 0; j < dataReqSym.children.length; j++) {
+                                                      dataReqSym.children[j].childrenByPropertyId["dataname"].schema.enum = dataReqSym.children[j].childrenByPropertyId["dataname"].options.optionLabels = gmsSymHdr[gmsSymName];
+                                                      dataReqSym.children[j].refresh();
+                                                    }
+                                                  }
+                                              });
+
                                               $("[data-alpaca-field-name='language']").addClass("alpaca-popup-image");
                                               $("[data-alpaca-field-name='language']>.control-label").append("<i class='fas fa-info-circle'/><img src='test.png' style = 'max-height:400px;'/>");
                                           }
