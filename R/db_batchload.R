@@ -195,8 +195,8 @@ BatchLoad <- R6Class("BatchLoad",
                                                                       innerSepAND = FALSE)[-1]
                            paverData[[1]] <- private$groupedNames[[i]]
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
-                           paverData[, c("NumberOfVariables", "NumberOfVariables", "NumberOfDiscreteVariables",
-                                         "NumberOfNonZeros", "NumberOfNonlinearNonZeros"), drop = FALSE] <- NULL
+                           paverData[, c("NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
+                                         "NumberOfNonZeros", "NumberOfNonlinearNonZeros")] <- NULL
                            write_csv(paverData, fileName, append = TRUE)
                            
                          })
