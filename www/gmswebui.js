@@ -1,3 +1,19 @@
+function changeTab(object, idActive, idRefer) {
+    tabPane = object.closest(".tabbable");
+    tabPane.find("li:nth-of-type(" + idActive + ")").removeClass();
+    tabPane.find("li:nth-of-type(" + idRefer + ")").addClass("active");
+    tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
+    tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
+}
+function isInputEl(id){
+  if(id.startsWith("#slider_") || id.startsWith("#dropdown_") ||
+  id.startsWith("#dropdowne_") || id.startsWith("#date_") ||
+  id.startsWith("#daterange_") || id.startsWith("#cb_")){
+    return true;
+  }else{
+    return false;
+  }
+}
 $(document).ready(function () {
   
 // besides these updates, gms-switchTab (see below) has always has to be considered as well
@@ -121,22 +137,7 @@ $(document).ready(function () {
       return "Are you sure you want to leave? Unsaved changes will be lost!";
     }
   });
-  function changeTab(object, idActive, idRefer) {
-      tabPane = object.closest(".tabbable");
-      tabPane.find("li:nth-of-type(" + idActive + ")").removeClass();
-      tabPane.find("li:nth-of-type(" + idRefer + ")").addClass("active");
-      tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
-      tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
-  }
-  function isInputEl(id){
-    if(id.startsWith("#slider_") || id.startsWith("#dropdown_") ||
-    id.startsWith("#dropdowne_") || id.startsWith("#date_") ||
-    id.startsWith("#daterange_") || id.startsWith("#cb_")){
-      return true;
-    }else{
-      return false;
-    }
-  }
+  
   Shiny.addCustomMessageHandler('gms-showEl', function(id) {
     if(isInputEl(id)){
       $(id).closest(".shiny-input-container").show();
