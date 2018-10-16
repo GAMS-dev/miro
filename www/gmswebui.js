@@ -128,12 +128,28 @@ $(document).ready(function () {
       tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
       tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
   }
-  
+  function isInputEl(id){
+    if(id.startsWith("#slider_") || id.startsWith("#dropdown_") ||
+    id.startsWith("#dropdowne_") || id.startsWith("#date_") ||
+    id.startsWith("#daterange_") || id.startsWith("#cb_")){
+      return true;
+    }else{
+      return false;
+    }
+  }
   Shiny.addCustomMessageHandler('gms-showEl', function(id) {
-    $(id).show();
+    if(isInputEl(id)){
+      $(id).closest(".shiny-input-container").show();
+    }else{
+      $(id).show();
+    }
   });
   Shiny.addCustomMessageHandler('gms-hideEl', function(id) {
-    $(id).hide();
+    if(isInputEl(id)){
+      $(id).closest(".shiny-input-container").hide();
+    }else{
+      $(id).hide();
+    }
   });
   Shiny.addCustomMessageHandler('gms-enableEl', function(id) {
     $(id).prop( "disabled", false);
