@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     <!-- Spectrum ColorPicker plugin -->
-    <script type="text/javascript" src="assets/js/spectrum/spectrum.css"></script>
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.css"></script>
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
@@ -1828,6 +1828,10 @@
                                                    }
                                                 }
                                               }
+                                          },
+                                          "postRender": function(control) {
+                                              $("[data-alpaca-field-name='language']").addClass("alpaca-popup-image");
+                                              $("[data-alpaca-field-name='language']>.control-label").append("<i class='fas fa-info-circle'/><img src='test.png' style = 'max-height:400px;'/>");
                                           }
                                       });
                                   }
@@ -1977,7 +1981,7 @@ renderTransportMap &#x3C;- function(input, output, server, data, options = NULL,
     <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <!-- Spectrum ColorPicker plugin -->
-    <script type="text/javascript" src="assets/js/spectrum/spectrum.js"></script>
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <!-- dependencies (jquery, handlebars and bootstrap) -->
