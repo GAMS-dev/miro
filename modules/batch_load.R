@@ -12,9 +12,10 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
     list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
   }else if(names(modelIn)[i] %in% c(scalarsFileName, scalarsOutName)){
-    aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
-      return()
-    })
+    #needs to be implemented -> currently scalars have to be displayed as widget in batch mode
+    #aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
+    #  return()
+    #})
   }else{
     NA
   }

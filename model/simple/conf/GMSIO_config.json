@@ -11,13 +11,10 @@
                 "plant type": {
                     "type": "set"
                 },
-                "co2": {
-                    "type": "parameter"
+                "plant_data_head": {
+                    "type": "set"
                 },
-                "cost": {
-                    "type": "parameter"
-                },
-                "expansion cost": {
+                "Plant information": {
                     "type": "parameter"
                 }
             }
@@ -28,44 +25,12 @@
                 "Time Intervals": {
                     "type": "set"
                 },
-                "photovoltaic": {
-                    "type": "parameter"
+                "time_series_head": {
+                    "type": "set"
                 },
-                "wind": {
-                    "type": "parameter"
-                },
-                "demand": {
+                "base case time series [GWh]": {
                     "type": "parameter"
                 }
-            }
-        },
-        "GMSPAR_RESOLUTION": {
-            "alias": "Time resolution",
-            "dropdown": {
-                "aliases": [
-                    "hours",
-                    "days",
-                    "weeks",
-                    "months"
-                ],
-                "choices": [
-                    1,
-                    24,
-                    168,
-                    720
-                ]
-            }
-        },
-        "GMSPAR_FROM_TO": {
-            "alias": "Time range",
-            "slider": {
-                "min": 0,
-                "max": 100,
-                "default": [
-                    5,
-                    70
-                ],
-                "step": 0.001
             }
         }
     },
@@ -124,6 +89,7 @@
         },
         "scalars_out": {
             "alias": "Scalars",
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

@@ -71,6 +71,7 @@ observeEvent(input$btPaver, {
     hideEl(session, "#newPaverRunButton")
     enableEl(session, "#btPaverInterrupt")
     updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
+    switchTab(session, "batchAna")
     
     if(!dir.exists(paverFileDir)){
       tryCatch({

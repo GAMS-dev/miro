@@ -1,7 +1,7 @@
 {
 	"loggingLevel"		 : "TRACE",
     "dataRendering"      : {
-		"stockdata"   	: {
+		"price"   	: {
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
@@ -15,7 +15,7 @@
 				},					
 				"xdata"     			:"date",
 				"ydata" 				: {
-					"price"    				: {
+					"Price"    				: {
 						"label"					: "stockSymbol",
 						"mode"      			:"lines"
 					}

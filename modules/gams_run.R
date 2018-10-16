@@ -285,6 +285,7 @@ observeEvent(input$btSolve, {
   
   #activate Interrupt button as GAMS is running now
   enableEl(session, "#btInterrupt")
+  switchTab(session, "gamsinter")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
@@ -393,6 +394,9 @@ observeEvent(input$btSolve, {
         
         # enable download button for saving scenario to Excel file
         enableEl(session, "#export_1")
+        
+        # show load button after solve
+        switchTab(session, "output")
         
         # mark scenario as unsaved
         markUnsaved()

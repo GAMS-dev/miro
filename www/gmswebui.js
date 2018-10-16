@@ -1,5 +1,6 @@
 $(document).ready(function () {
   
+// besides these updates, gms-switchTab (see below) has always has to be considered as well
   $("#btImport").show();
   $("#btSolve").show();
   $("#btInterrupt").hide();
@@ -54,6 +55,58 @@ $(document).ready(function () {
     $("#btSplitView").hide();
     $("#btCompareScen").hide();
     $("#btLoadScen").hide();
+  });
+  // show/hide buttons after (R triggered) tab switch.
+  Shiny.addCustomMessageHandler('gms-switchTab', function(el) {
+    switch(el) {
+    case "input":
+        $("#btImport").show();
+        $("#btSolve").show();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case "output":
+        $("#btImport").show();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case "gamsinter":
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").show();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case "batchAna":
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case "scenComp":
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").show();
+        $("#btCompareScen").show();
+        $("#btLoadScen").show();
+        break;
+    default:
+        $("#btImport").show();
+        $("#btSolve").show();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+    }
   });
   // hide pivot filter boxes when clicked outside of box
   $(document).click(function(e) {
