@@ -3,7 +3,9 @@ newPackages <- requiredPackages[!(requiredPackages %in%
 if(length(newPackages)){
   checkSourceDefault <- getOption("install.packages.check.source")
   options(install.packages.check.source = "no")
-  
+  newPackages <- unique(unlist(c(newPackages, 
+                                 tools::package_dependencies(newPackages,
+                                                             recursive = TRUE))))
   for(pkg_name in newPackages){
     tryCatch({
       pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\.zip$"), 
@@ -12,7 +14,7 @@ if(length(newPackages)){
         install.packages(pkg_name, lib = RLibPath, repos = CRANMirror, dependencies = TRUE)
       }else{
         install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
-                         type="binary", dependencies = TRUE)
+                         type="binary", dependencies = FALSE)
       }
     }, error = function(e){
       if(exists("flog.fatal")){
