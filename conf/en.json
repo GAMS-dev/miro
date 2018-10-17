@@ -331,7 +331,7 @@
     },
     "initErrors":{  
       "title":"Some errors occurred",
-      "desc":"Please fix the errors mentioned below and restart Shiny:"
+      "desc":"Please fix the errors mentioned below and restart the GAMS WebUI:"
     },
     "fetchScenData":{  
       "title":"Error fetching scenario metadata",

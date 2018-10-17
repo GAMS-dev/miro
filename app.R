@@ -31,6 +31,10 @@ webuiRDate   <- "Oct 08 2018"
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
+if(R.version[["major"]] < 3 || 
+   R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 6){
+  errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run the GAMS WebUI."
+}
 tmpFileDir <- tempdir(TRUE)
 # directory of configuration files
 configDir <- "./conf/"
@@ -307,7 +311,7 @@ if(!is.null(errMsg)){
              HTML("<br>"),
              div(
                if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
-                 "Please fix the errors mentioned below and restart Shiny:"
+                 "Please fix the errors mentioned below and restart the GAMS WebUI:"
                }else{
                  lang$errMsg$initErrors$desc
                }

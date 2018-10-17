@@ -329,7 +329,7 @@
     },
     "initErrors":{  
       "title":"Es sind Fehler aufgetreten",
-      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie Shiny neu."
+      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie das GAMS WebUI neu."
     },
     "fetchScenData":{  
       "title":"Fehler beim Lesen der Szenariodaten",
