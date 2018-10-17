@@ -71,7 +71,7 @@ BatchImport <- R6Class("BatchImport",
                            names(private$csvPaths) <- private$scenNames
                            invisible(self)
                          },
-                         validateScenFiles = function(includeTrc = FALSE){
+                         validateScenFiles = function(includeTrc){
                            # validates scenario data
                            #
                            # Args:
@@ -319,9 +319,14 @@ BatchImport <- R6Class("BatchImport",
                                                    ignore.case = TRUE)
                            scenData
                          },
-                         verifyScenFiles = function(csvPaths){
-                           csvNames      <- gsub("\\.(csv|trc)", "", basename(csvPaths), 
-                                                 ignore.case = TRUE)
+                         verifyScenFiles = function(csvPaths, includeTrc){
+                           if(includeTrc){
+                             csvNames      <- gsub("\\.(csv|trc)", "", basename(csvPaths), 
+                                                   ignore.case = TRUE)
+                           }else{
+                             csvNames      <- gsub("\\.csv", "", basename(csvPaths), 
+                                                   ignore.case = TRUE)
+                           }
                            verifiedIds   <- match(private$tableNamesToVerify, csvNames)
                            if(any(is.na(verifiedIds))){
                              return(NULL)
@@ -358,7 +363,7 @@ BatchImport <- R6Class("BatchImport",
                            }
                          },
                          getCsvPaths       = function(zipFilePath){
-                           return(grep("\\.csv$", unzip(zipFilePath, list = TRUE)$Name, 
+                           return(grep("\\.(csv|trc)$", unzip(zipFilePath, list = TRUE)$Name, 
                                        ignore.case = TRUE, value = TRUE))
                          },
                          fetchScenNames      = function(csvPaths){

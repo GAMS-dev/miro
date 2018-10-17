@@ -8,25 +8,49 @@
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
-				"tool"      			:"plotly",
-				"type"      			:"bar",
-				"title"     			:"Stock prices over time (year: 2016)",
+				"tool"      			: "dygraph",
+				"title"     			: "Stock prices over time (year: 2016)",
 				"color"					: "stockSymbol",
-				"margins"				: {
-					"b"						: 100
+				"dyOptions"				:{
+					"includeZero"			: true,
+					"logscale"				: false,
+					"drawGrid"				: true,
+					"drawPoints"			: false,
+					"pointSize"				: 2,
+					"fillGraph"				: false,
+					"fillAlpha"				: 0.15
+				},
+				"dylegend"				:{
+					"width"					: 450,
+					"show"					: "always",
+					"hideOnMouseOut"		: true
+				},
+				"dyHighlight"			:{
+					"highlightSeriesOpts"	:{
+						"strokeWidth" 			: 3,
+						"strokeBorderWidth"		: 1,
+						"highlightCircleSize"	: 5
+					},
+					"hideOnMouseOut"		: true
 					
-				},					
+				},
+				"dyRangeSelector"		:{
+					"height"				: 20,
+					"strokeColor"			: ""
+				},						
 				"xdata"     			:"date",
 				"ydata" 				: {
-					"Price"    				: {
+					"Price":{
 						"label"					: "stockSymbol"
 					}
 				},
 				"xaxis"     :{
-					"title"         		: "date"
+					"title"         		: "date",
+                    "showgrid"              : true
 				},		
 				"yaxis"     :{		
-					"title"         		: "price"
+					"title"         		: "price",
+                    "showgrid"              : true
 				}
 			}
 		},
