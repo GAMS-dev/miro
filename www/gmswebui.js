@@ -115,13 +115,6 @@ $(document).ready(function () {
         $("#btCompareScen").show();
         $("#btLoadScen").show();
         break;
-    default:
-        $("#btImport").show();
-        $("#btSolve").show();
-        $("#btInterrupt").hide();
-        $("#btSplitView").hide();
-        $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
     }
   });
   // hide pivot filter boxes when clicked outside of box
