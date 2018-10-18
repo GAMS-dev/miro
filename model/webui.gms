@@ -354,12 +354,15 @@ def is_number(s):
 try:
    from xlsxwriter.workbook import Workbook
 except:
-   import pip
-   if(hasattr(pip, 'main')):
-      pip.main(['install', 'xlsxwriter'])
-   else:
-      pip._internal.main(['install', 'xlsxwriter'])
-   from xlsxwriter.workbook import Workbook
+   try:
+      import pip
+      if(hasattr(pip, 'main')):
+         pip.main(['install', 'xlsxwriter'])
+      else:
+         pip._internal.main(['install', 'xlsxwriter'])
+      from xlsxwriter.workbook import Workbook
+   except Exception as e:
+      print("WARNING: xlsxwriter could not be installed! No Excel file will be written. Error message: " + str(e))
 try:
    import csv
        
@@ -519,11 +522,16 @@ import platform
 for s in rmfiles:
    os.remove(s.lower())
    
-if %GMSWEBUI%>2 and platform.system() == "Windows":
-    import winreg
+if %GMSWEBUI%>2:
     import re
     
     def get_r_path():
+        try:
+            with open(os.path.join(r'%gams.sysdir%', 'GMSWebUI', 'conf', 'rpath.conf')) as f:
+                RPath = f.readline().strip()
+                return RPath
+        except:
+            pass
         def major_minor_micro(version):
             RverTmp = re.search('(\d+)\.(\d+)\.(\d+)', version)
             if RverTmp is None:
@@ -531,28 +539,47 @@ if %GMSWEBUI%>2 and platform.system() == "Windows":
             else:
                major, minor, micro = RverTmp.groups()
             return int(major), int(minor), int(micro)
-        try:
-            aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
-            aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
-        except FileNotFoundError:
-            return("")
-        paths = []
-        for i in range(20):
+        def major_minor(version):
+            RverTmp = re.search('(\d+)\.(\d+)', version)
+            if RverTmp is None:
+               major, minor = (0,0)
+            else:
+               major, minor = RverTmp.groups()
+            return int(major), int(minor)
+        if platform.system() == "Windows":
+            import winreg
             try:
-                asubkey_name = winreg.EnumKey(aKey,i)
-                asubkey = winreg.OpenKey(aKey,asubkey_name)
-                paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
-            except EnvironmentError:
-                break
-        if len(paths) == 0:
-           return("")
-        latestRPath = max(paths, key=major_minor_micro)
-        latestR = major_minor_micro(latestRPath)
-       
+                aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+                aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
+            except FileNotFoundError:
+                return ""
+            paths = []
+            for i in range(20):
+                try:
+                    asubkey_name = winreg.EnumKey(aKey,i)
+                    asubkey = winreg.OpenKey(aKey,asubkey_name)
+                    paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
+                except EnvironmentError:
+                    break
+            if len(paths) == 0:
+               return ""
+            latestRPath = max(paths, key=major_minor_micro)
+            latestR = major_minor_micro(latestRPath)
+            latestRPath = latestRPath + os.sep + "bin" + os.sep
+        elif platform.system() == "Darwin":
+            RPath = r"/Library/Frameworks/R.framework/Versions"
+            RVers = os.listdir(RPath)
+            latestRPath = max(RVers, key=major_minor)
+            latestR = major_minor(latestRPath)
+            latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+        else:
+            return ""
+    
         if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
           os.environ["PYEXCEPT"] = "RVERSIONERROR"
           raise FileNotFoundError('Bad R version')
-        return latestRPath + os.sep + "bin" + os.sep
+        return latestRPath
+    
     os.environ["RPATH"] = get_r_path()
     if os.path.exists(r"%gams.sysdir%GMSWebUI"):
         sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
@@ -573,13 +600,6 @@ if %GMSWEBUI%>2 and platform.system() == "Windows":
            f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
            f.write("shiny::runApp(launch.browser=TRUE)")
-elif %GMSWEBUI%>2 and platform.system() == "Darwin":
-    os.environ["RPATH"] = "/Library/Frameworks/R.framework/Versions/"
-    with open("runapp.R", "w") as f: 
-           f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
-           f.write("shiny::runApp(launch.browser=TRUE)")
 elif %GMSWEBUI%>2:
     with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
@@ -589,7 +609,7 @@ elif %GMSWEBUI%>2:
 $offembeddedCode
 $hiddencall rm -rf __pycache__
 $ifthen not errorfree
-$if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort The R version you have installed is too old. Plase install R 3.5 or higher.
+$if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/GMSWebUI/conf/' directory."
 $terminate
 $endif
 $ifthene %GMSWEBUI%>2
