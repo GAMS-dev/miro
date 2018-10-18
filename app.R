@@ -1,5 +1,5 @@
 #version number
-webuiVersion <- "0.2.3.1"
+webuiVersion <- "0.2.4"
 webuiRDate   <- "Oct 08 2018"
 #####packages:
 # processx        #MIT
@@ -32,7 +32,7 @@ webuiRDate   <- "Oct 08 2018"
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 if(R.version[["major"]] < 3 || 
-   R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 6){
+   R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 5){
   errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run the GAMS WebUI."
 }
 tmpFileDir <- tempdir(TRUE)

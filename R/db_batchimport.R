@@ -32,24 +32,24 @@ BatchImport <- R6Class("BatchImport",
                            private$tableNameMetadata  <- db$getTableNameMetadata()
                            private$scenMetaColnames   <- db$getScenMetaColnames()
                            traceConfig                <- db$getTraceConfig()
-                           private$traceTabName       <- traceConfig[['colNames']]
+                           private$traceTabName       <- traceConfig[['tabName']]
                            private$traceColNames      <- traceConfig[['colNames']]
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
                            private$tableNamesToVerify <- tableNamesToVerify
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
+                           private$includeTrc         <- traceConfig[['tabName']] %in% tableNamesToVerify
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
-                         unzipScenData     = function(zipFilePath, extractDir, includeTrc){
+                         unzipScenData     = function(zipFilePath, extractDir){
                            # Unzips a zip archive into the extractDir folder
                            #
                            # Args:
                            #   zipFilePath:     path to zip archive
                            #   extractDir:      directory to extract 
                            #                    zip archive into
-                           #   includeTrc:      include trace files (boolean)
                            #   
                            
                            # BEGIN error checks
@@ -58,7 +58,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
                            
-                           csvPaths             <- private$getCsvPaths(zipFilePath, includeTrc)
+                           csvPaths             <- private$getCsvPaths(zipFilePath)
                            private$scenNames    <- private$fetchScenNames(csvPaths)
                            # workaround for unzip function as path with trailing slashes is not found
                            filePaths <- unzip(zipFilePath, 
@@ -77,19 +77,17 @@ BatchImport <- R6Class("BatchImport",
                            names(private$csvPaths) <- private$scenNames
                            invisible(self)
                          },
-                         validateScenFiles = function(includeTrc){
+                         validateScenFiles = function(){
                            # validates scenario data
                            #
                            # Args:
-                           #   includeTrc:   Boolean that specifies whether trace files 
-                           #                 must be included
                            #
                            # Returns:
                            #   reference to itself (importBatch R6 object)
                            
                            
                            csvNames       <- lapply(private$csvPaths, 
-                                                    private$verifyScenFiles, includeTrc)
+                                                    private$verifyScenFiles)
                            invalidScen    <- vapply(csvNames, is.null, logical(1L), USE.NAMES = FALSE)
                            
                            private$invalidScenIds <- private$scenNames[invalidScen]
@@ -188,8 +186,7 @@ BatchImport <- R6Class("BatchImport",
                            # END error checks
                            
                            scenData         <- private$scenData
-                           saveTraceFile    <- as.integer(private$traceTabName %in% 
-                                                           private$tableNamesToVerify)
+                           saveTraceFile    <- as.integer(private$includeTrc)
                            tableNames <- private$tableNamesScenario
                            if(saveTraceFile){
                              tableNames <- c(tableNames, private$traceTabName)
@@ -233,7 +230,9 @@ BatchImport <- R6Class("BatchImport",
                              }
                            }
                            tables <- lapply(seq_along(tableNamesRaw), function(tableId){
-                             do.call(bind_rows, tablesTmp[[tableId]])
+                             if(length(tablesTmp[[tableId]])){
+                               do.call(bind_rows, tablesTmp[[tableId]])
+                             }
                            })
                            if(!is.null(progressBar)){
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
@@ -296,6 +295,7 @@ BatchImport <- R6Class("BatchImport",
                          duplicatedScenIds       = character(0L),
                          traceColNames           = character(0L),
                          traceTabName            = character(0L),
+                         includeTrc              = logical(0L),
                          getScenFilePaths  = function(scenName, paths){
                            csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
                            return(paths[csvIdx])
@@ -319,8 +319,8 @@ BatchImport <- R6Class("BatchImport",
                                                    ignore.case = TRUE)
                            scenData
                          },
-                         verifyScenFiles = function(csvPaths, includeTrc){
-                           if(includeTrc){
+                         verifyScenFiles = function(csvPaths){
+                           if(private$includeTrc){
                              grepEx <- "\\.(csv|trc)$"
                            }else{
                              grepEx <- "\\.csv"
@@ -349,8 +349,8 @@ BatchImport <- R6Class("BatchImport",
                                  return(TRUE)
                                }
                              }else if(identical(names(scenTables)[tableId], private$traceTabName)){
-                               if(length(scenTables[[tabelId]]) != length(private$traceColNames)){
-                                 flog.info("Trace file does not have 22 columns.")
+                               if(length(scenTables[[tableId]]) != length(private$traceColNames)){
+                                 flog.info("Trace file does not have %d columns.", length(private$traceColNames))
                                  return(TRUE)
                                }
                              }
@@ -362,8 +362,8 @@ BatchImport <- R6Class("BatchImport",
                              return(TRUE)
                            }
                          },
-                         getCsvPaths       = function(zipFilePath, includeTrc){
-                           if(includeTrc){
+                         getCsvPaths       = function(zipFilePath){
+                           if(private$includeTrc){
                              grepEx <- "\\.(csv|trc)$"
                            }else{
                              grepEx <- "\\.csv$"

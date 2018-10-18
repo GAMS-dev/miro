@@ -345,8 +345,12 @@ body <- dashboardBody({
                              fileInput("batchImport", label = lang$nav$batch_import$uploadZip)
                     ),
                     tags$div(style="width:65vh",
-                             tagAppendAttributes(textInput("batchTags", lang$nav$batch_import$batchTags),
-                                                 disabled = ""),
+                             selectizeInput("batchTags", 
+                                            lang$nav$batch_import$batchTags, c(),
+                                            multiple = TRUE, options = list(
+                                              'create' = TRUE,
+                                              'persist' = FALSE)
+                             ),
                              actionButton("btUploadBatch", label = lang$nav$batch_import$uploadButton)
                     )
                 )

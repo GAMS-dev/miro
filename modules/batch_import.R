@@ -19,10 +19,10 @@ observeEvent(input$btUploadBatch, {
   req(input$batchImport)
   req(rv$clear)
   
-  if(grepl("^\\s*$", input[["batchTags"]])){
-    showErrorMsg("No tags", "Please provide a batch tag")
+  if(length(input$batchTags)){
+    batchTags <<- vector2Csv(input$batchTags)
   }else{
-    batchTags <<- input[["batchTags"]]
+    showErrorMsg("No tags", "Please provide a batch tag")
   }
   
   disableEl(session, "#btUploadBatch")
@@ -34,7 +34,7 @@ observeEvent(input$btUploadBatch, {
   errMsg            <- NULL
   
   tryCatch({
-    batchImport$unzipScenData(zipFilePath, extractDir = workDir, includeTrc = config$saveTraceFile)
+    batchImport$unzipScenData(zipFilePath, extractDir = workDir)
   }, error = function(e){
     flog.error("Problems unzipping the file. Error message: %s.", e)
     errMsg <<- "Problems unzipping the file. Please make sure you upload a valid zip file."
@@ -44,7 +44,7 @@ observeEvent(input$btUploadBatch, {
   }
   prog$set(message = "Validating zip file", value = 1/6)
   # validate here so only valid scenarios will be read
-  batchImport$validateScenFiles(config$saveTraceFile)
+  batchImport$validateScenFiles()
   
   tryCatch({  
     batchImport$readAllScenData()
@@ -134,14 +134,13 @@ observeEvent(virtualActionButton(rv$btSave), {
   prog$inc(amount = 1/2, message = "Done!")
   
   # clean up
-  reset('batchImport')
   rv$clear <- FALSE
 })
 
 observeEvent(input$batchImport, {
   enableEl(session, "#btUploadBatch")
-  enableEl(session, "#batchTags")
-  updateTextInput(session, "batchTags", value = gsub("\\..+$", "", input$batchImport$name))
+  tag <- gsub("\\..+$", "", input$batchImport$name)
+  updateSelectInput(session, "batchTags", choices = tag, selected = tag)
   rv$clear <- TRUE
 }, priority = 1000)
   

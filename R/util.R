@@ -528,9 +528,9 @@ showErrorMsg <- function(title, errMsg){
   }
   return(invisible(1))
 }
-readTraceData <- function(filePath, traceColNames = traceColNames){
+readTraceData <- function(filePath, traceColNames){
   traceData <- read_csv(filePath, col_names = FALSE,
-                       skip = 5, col_types = cols())
+                       skip = 5, col_types = "cccccdidddddiiiddddddc")
   traceData <- traceData[nrow(traceData), ]
   if(length(traceData) == length(traceColNames)){
     names(traceData) <- traceColNames
