@@ -403,11 +403,11 @@ def dict_merge(dct, merge_dct):
     """
     result = copy.deepcopy(dct)
     for k, v in merge_dct.items():
-        if (k in dct and isinstance(dct[k], dict)
+        if (k in result and isinstance(result[k], dict)
                 and isinstance(merge_dct[k], collections.Mapping)):
-            dict_merge(dct[k], merge_dct[k])
+            dict_merge(result[k], merge_dct[k])
         else:
-            dct[k] = merge_dct[k]
+            result[k] = merge_dct[k]
     return result
     
 import json
@@ -469,6 +469,7 @@ if len(s_webuiconf):
 elif os.path.isfile('webuiconf.json'):
    with open('webuiconf.json', 'r') as jffile:
       config['gamsInputFiles'] = dict_merge(io_dict,json.load(jffile))
+   
 else:
    config['gamsInputFiles'] = io_dict
    
@@ -527,7 +528,7 @@ if %GMSWEBUI%>2:
     
     def get_r_path():
         try:
-            with open(os.path.join(r'%gams.sysdir%', 'GMSWebUI', 'conf', 'rpath.conf')) as f:
+            with open(os.path.join(r"%gams.sysdir% ".strip(), 'GMSWebUI', 'conf', 'rpath.conf')) as f:
                 RPath = f.readline().strip()
                 return RPath
         except:
