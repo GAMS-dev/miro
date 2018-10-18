@@ -337,14 +337,14 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character
 }
 ######## BATCH MODE
 
-showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = ""){
+showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxConcurentLoad = 0L){
   showModal(modalDialog(
     title = lang$nav$batchMode$configPaverDialog$title,
     tags$div(id="batchLoadMethod",
              if(length(sidsToLoad) <= maxConcurentLoad){
                lang$nav$batchMode$configPaverDialog$selectMethod
              }else{
-               lang$nav$batchMode$configPaverDialog$maxScenWarning1 %+% 
+               sprintf(lang$nav$batchMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
                lang$nav$batchMode$configPaverDialog$maxScenWarning2
              }
     ),

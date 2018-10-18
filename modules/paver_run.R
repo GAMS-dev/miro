@@ -15,6 +15,7 @@ observeEvent(input$btPaverConfig, {
   showEl(session, "#configPaver")
   showEl(session, "#btPaver")
   hideEl(session, "#btBatchLoad")
+  hideEl(session, "#batchLoadMethod")
   hideEl(session, "#btPaverConfig")
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
@@ -24,8 +25,7 @@ observeEvent(input$btPaverConfig, {
 
 observeEvent(input$btPaver, {
   req(input$selPaverAttribs)
-  
-  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[sidsToLoad, ], 
+  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ], 
                             input$selPaverAttribs, maxSolversPaver, stimeIdentifier)){
     showEl(session, "#configPaverMaxSolversErr")
     return()

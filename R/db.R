@@ -731,7 +731,11 @@ Db <- R6Class("Db",
                     }else if(typeof(data[[i]]) == "integer" && !is.factor(data[[i]])){
                       data[[i]] <- as.numeric(data[[i]])
                     }
-                    return(DBI::dbDataType(private$conn, data[[i]]))
+                    dType <- dbDataType(private$conn, data[[i]])
+                    if(identical(dType, "REAL")){
+                      dType <- "DOUBLE PRECISION"
+                    }
+                    return(dType)
                   }, character(1), USE.NAMES = FALSE)
                   names(fieldTypes) <- names(data)
                   flog.trace("Db: Returned database field types: '%s'.", 

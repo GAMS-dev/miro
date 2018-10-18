@@ -261,21 +261,21 @@ observeEvent(input$batchLoadSelected, {
     return(NULL)
   }
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadMethodDialog(fields, maxSolversPaver)
+  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadCurrent, {
   if(is.null(input$batchLoadResults_rows_current)){
     return(NULL)
   }
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadMethodDialog(fields, maxSolversPaver)
+  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadAll, {
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
-  showBatchLoadMethodDialog(fields, maxSolversPaver)
+  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 
 noLinesInBlock <- function(blockId){
