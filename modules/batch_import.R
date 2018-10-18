@@ -4,7 +4,7 @@ disableEl(session, "#btUploadBatch")
 
 # table names that must exist in order for scenario to be valid
 tableNamesToVerify <- gsub(modelName %+% "_", "", c(scenTableNames, 
-                                                    tableNameTracePrefix %+% modelName), fixed = TRUE)
+                                                    if(config$saveTraceFile) tableNameTracePrefix %+% modelName), fixed = TRUE)
 # initialise batch import class
 batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesToVerify, 
                                config$csvDelim, workDir)
@@ -34,7 +34,7 @@ observeEvent(input$btUploadBatch, {
   errMsg            <- NULL
   
   tryCatch({
-    batchImport$unzipScenData(zipFilePath, extractDir = workDir)
+    batchImport$unzipScenData(zipFilePath, extractDir = workDir, includeTrc = config$saveTraceFile)
   }, error = function(e){
     flog.error("Problems unzipping the file. Error message: %s.", e)
     errMsg <<- "Problems unzipping the file. Please make sure you upload a valid zip file."
@@ -44,7 +44,7 @@ observeEvent(input$btUploadBatch, {
   }
   prog$set(message = "Validating zip file", value = 1/6)
   # validate here so only valid scenarios will be read
-  batchImport$validateScenFiles()
+  batchImport$validateScenFiles(config$saveTraceFile)
   
   tryCatch({  
     batchImport$readAllScenData()

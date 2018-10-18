@@ -37,13 +37,14 @@ BatchImport <- R6Class("BatchImport",
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
-                         unzipScenData     = function(zipFilePath, extractDir){
+                         unzipScenData     = function(zipFilePath, extractDir, includeTrc){
                            # Unzips a zip archive into the extractDir folder
                            #
                            # Args:
                            #   zipFilePath:     path to zip archive
                            #   extractDir:      directory to extract 
                            #                    zip archive into
+                           #   includeTrc:      include trace files (boolean)
                            #   
                            
                            # BEGIN error checks
@@ -52,7 +53,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
                            
-                           csvPaths             <- private$getCsvPaths(zipFilePath)
+                           csvPaths             <- private$getCsvPaths(zipFilePath, includeTrc)
                            private$scenNames    <- private$fetchScenNames(csvPaths)
                            # workaround for unzip function as path with trailing slashes is not found
                            filePaths <- unzip(zipFilePath, 
@@ -71,7 +72,7 @@ BatchImport <- R6Class("BatchImport",
                            names(private$csvPaths) <- private$scenNames
                            invisible(self)
                          },
-                         validateScenFiles = function(includeTrc = FALSE){
+                         validateScenFiles = function(includeTrc){
                            # validates scenario data
                            #
                            # Args:
@@ -81,10 +82,6 @@ BatchImport <- R6Class("BatchImport",
                            # Returns:
                            #   reference to itself (importBatch R6 object)
                            
-                           # BEGIN error checks
-                           stopifnot(length(private$csvPaths) >= 1)
-                           stopifnot(length(private$scenNames) >= 1)
-                           # END error checks
                            
                            csvNames       <- lapply(private$csvPaths, 
                                                     private$verifyScenFiles, includeTrc)
@@ -102,10 +99,6 @@ BatchImport <- R6Class("BatchImport",
                            # 
                            # Returns:
                            #    R6 object (reference to itself)
-                           
-                           # BEGIN error checks
-                           stopifnot(length(private$csvPaths) >= 1)
-                           # END error checks
                            
                            private$scenData <- lapply(private$csvPaths, private$readScenData)
                            invisible(self)
@@ -319,8 +312,13 @@ BatchImport <- R6Class("BatchImport",
                                                    ignore.case = TRUE)
                            scenData
                          },
-                         verifyScenFiles = function(csvPaths){
-                           csvNames      <- gsub("\\.(csv|trc)", "", basename(csvPaths), 
+                         verifyScenFiles = function(csvPaths, includeTrc){
+                           if(includeTrc){
+                             grepEx <- "\\.(csv|trc)$"
+                           }else{
+                             grepEx <- "\\.csv"
+                           }
+                           csvNames      <- gsub(grepEx, "", basename(csvPaths), 
                                                  ignore.case = TRUE)
                            verifiedIds   <- match(private$tableNamesToVerify, csvNames)
                            if(any(is.na(verifiedIds))){
@@ -357,8 +355,13 @@ BatchImport <- R6Class("BatchImport",
                              return(TRUE)
                            }
                          },
-                         getCsvPaths       = function(zipFilePath){
-                           return(grep("\\.csv$", unzip(zipFilePath, list = TRUE)$Name, 
+                         getCsvPaths       = function(zipFilePath, includeTrc){
+                           if(includeTrc){
+                             grepEx <- "\\.(csv|trc)$"
+                           }else{
+                             grepEx <- "\\.csv$"
+                           }
+                           return(grep(grepEx, unzip(zipFilePath, list = TRUE)$Name, 
                                        ignore.case = TRUE, value = TRUE))
                          },
                          fetchScenNames      = function(csvPaths){
