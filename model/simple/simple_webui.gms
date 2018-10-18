@@ -3,12 +3,8 @@ $kill planttypedata timeseries
 *$killUel
 $offExternalInput
 $offdigit
-$setEnv GMSWEBUI_EXPAND_HEADER 1
 $libInclude loadCSV planttypedata
-$dropEnv GMSWEBUI_EXPAND_HEADER
-$setEnv GMSWEBUI_EXPAND_HEADER 1
 $libInclude loadCSV timeseries
-$dropEnv GMSWEBUI_EXPAND_HEADER
 $onmulti
 $offmulti
 $ondigit

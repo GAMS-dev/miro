@@ -3,9 +3,9 @@ $ eolcom //
 Sets
    type   'plant type'      / coal, gas, photovoltaic, wind /
    ttX    'Time Intervals'  / tX0001*tX8760  /
-   time_series_head         / Demand, Photovoltaic, Wind /
-   plant_data_head          / CO2, Cost, 'Expansion Cost' /
-   location_head            / x,  y, lng, lat, pop /
+   time_series_hdr          / Demand, Photovoltaic, Wind /
+   plant_data_hdr           / CO2, Cost, 'Expansion Cost' /
+   location_hdr             / x,  y, lng, lat, pop /
 
 $ifthen not set NBREGIONS
 Sets
@@ -43,7 +43,7 @@ rLocData(rr,'pop') = uniform(0,1);
 $endif
 
 $onExternalInput
-Table planttypedata(type,plant_data_head) 'Plant information'
+Table planttypedata(type,plant_data_hdr) 'Plant information'
               CO2  Cost  'Expansion Cost'
 coal          390  0.019  1400
 gas           200  0.043   700
@@ -51,7 +51,7 @@ photovoltaic    0  0       900
 wind            0  0       900
 ;
 
-Table timeseries(ttX,time_series_head) 'base case time series [GWh]'
+Table timeseries(ttX,time_series_hdr) 'base case time series [GWh]'
 $ifthen exist "%gams.wdir%mytimeseries.csv"
 $  ondelim
 $  include mytimeseries.csv

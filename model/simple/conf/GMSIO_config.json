@@ -11,10 +11,13 @@
                 "plant type": {
                     "type": "set"
                 },
-                "plant_data_head": {
-                    "type": "set"
+                "co2": {
+                    "type": "parameter"
                 },
-                "Plant information": {
+                "cost": {
+                    "type": "parameter"
+                },
+                "expansion cost": {
                     "type": "parameter"
                 }
             }
@@ -25,10 +28,13 @@
                 "Time Intervals": {
                     "type": "set"
                 },
-                "time_series_head": {
-                    "type": "set"
+                "photovoltaic": {
+                    "type": "parameter"
                 },
-                "base case time series [GWh]": {
+                "wind": {
+                    "type": "parameter"
+                },
+                "demand": {
                     "type": "parameter"
                 }
             }

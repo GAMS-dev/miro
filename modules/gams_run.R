@@ -108,7 +108,10 @@ if(identical(config$activateModules$batchMode, TRUE)){
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
-    gmsString <- scenIds %+% ": " %+% gmsString
+    gmsString <- scenIds %+% ": " %+% gmsString 
+    if(config$saveTraceFile){
+      gmsString <- gmsString %+% " trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc" %+% " traceopt=3"
+    }
     return(list(ids = scenIds, gmspar = gmsString))
   })
   observeEvent(input$btBatchAll, {
@@ -262,7 +265,7 @@ observeEvent(input$btSolve, {
     gamsArgs <- c(paste0("idir1=", homeDir, .Platform$file.sep, modelDir), "idir2=" %+% currentModelDir, 
                   "curdir=" %+% workDir, "logOption=3")
     if(config$saveTraceFile){
-      gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% ".trc", "traceopt=3")
+      gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
     }
     pfFilePath <- workDir %+% tolower(modelName) %+% ".pf"
     if(isWindows()){
@@ -377,7 +380,7 @@ observeEvent(input$btSolve, {
         }
         if(config$saveTraceFile){
           tryCatch({
-            traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% ".trc", 
+            traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% modelName %+%".trc", 
                                         traceColNames)
           }, error = function(e){
             flog.error("Problems loading trace data. Error message: %s.", e)
