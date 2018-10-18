@@ -20,7 +20,7 @@ $gdxout
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
 $ifthene.a %GMSWEBUI%>2
-$ifthen.b dExist %gams.sysdir%GMSWebUI
+$ifthen.b exist %gams.sysdir%GMSWebUI%system.dirsep%app.R
 $  set WEBUIDIR %gams.sysdir%GMSWebUI
 $else.b
 $  set WEBUIDIR ..%system.dirsep%..
