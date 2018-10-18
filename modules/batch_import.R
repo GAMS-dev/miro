@@ -7,7 +7,7 @@ tableNamesToVerify <- gsub(modelName %+% "_", "", c(scenTableNames,
                                                     if(config$saveTraceFile) tableNameTracePrefix %+% modelName), fixed = TRUE)
 # initialise batch import class
 batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesToVerify, 
-                               config$csvDelim, workDir)
+                               config$csvDelim, workDir, traceColNames)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
 

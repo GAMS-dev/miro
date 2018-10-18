@@ -2,7 +2,7 @@ BatchImport <- R6Class("BatchImport",
                        inherit = Db,
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
-                                                      tableNamesToVerify, csvDelim, workDir){
+                                                      tableNamesToVerify, csvDelim, workDir, traceColNames){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
@@ -13,6 +13,7 @@ BatchImport <- R6Class("BatchImport",
                            #                            for the scenario to be valid
                            #   csvDelim:                csv delimiter
                            #   workDir:                 directory where temporary files are saved
+                           #   traceColNames:           column names of trace file
                            #
                            
                            # BEGIN error checks
@@ -22,6 +23,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(tableNamesToVerify), length(tableNamesToVerify) >= 1)
                            stopifnot(is.character(csvDelim), length(csvDelim) == 1)
                            stopifnot(is.character(workDir), length(workDir) == 1)
+                           stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                            # END error checks
                            
                            private$conn               <- db$getConn()
@@ -32,6 +34,7 @@ BatchImport <- R6Class("BatchImport",
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
                            private$tableNamesToVerify <- tableNamesToVerify
+                           private$traceColNames      <- traceColNames
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
                          },
@@ -290,6 +293,7 @@ BatchImport <- R6Class("BatchImport",
                          workDir                 = character(0L),
                          invalidScenIds          = character(0L),
                          duplicatedScenIds       = character(0L),
+                         traceColNames           = character(0L),
                          getScenFilePaths  = function(scenName, paths){
                            csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
                            return(paths[csvIdx])
@@ -298,9 +302,10 @@ BatchImport <- R6Class("BatchImport",
                            scenData <- lapply(csvPaths, function(csvPath){
                              tryCatch({
                                if(grepl("\\.trc$", csvPath, ignore.case = TRUE)){
-                                 scenData <- readTraceData(csvPath)
+                                 scenData <- readTraceData(csvPath, private$traceColNames)
                                }else{
-                                 scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE)
+                                 scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
+                                                        col_types = cols())
                                }
                                scenData
                              }, error = function(e){
