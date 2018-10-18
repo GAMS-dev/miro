@@ -188,12 +188,11 @@ BatchImport <- R6Class("BatchImport",
                            # END error checks
                            
                            scenData         <- private$scenData
-                           traceConfig      <- private$db$getTraceConfig()
-                           saveTraceFile    <- as.integer(traceConfig[["tabName"]] %in% 
+                           saveTraceFile    <- as.integer(private$traceTabName %in% 
                                                            private$tableNamesToVerify)
                            tableNames <- private$tableNamesScenario
                            if(saveTraceFile){
-                             tableNames <- c(tableNames, traceConfig[["tabName"]])
+                             tableNames <- c(tableNames, private$traceTabName)
                            }
                            
                            scenMetaColnames <- private$scenMetaColnames
@@ -218,7 +217,7 @@ BatchImport <- R6Class("BatchImport",
                            for(scenId in seq_along(scenData)){
                              for(tableId in seq_len(length(tableNamesRaw) + saveTraceFile)){
                                if(tableId > length(tableNamesRaw)){
-                                 scenTableId <- match(traceConfig[["tabName"]], names(scenData[[scenId]]))
+                                 scenTableId <- match(private$traceTabName, names(scenData[[scenId]]))
                                }
                                scenTableId <- match(tableNamesRaw[tableId], names(scenData[[scenId]]))
                                if(!is.na(scenTableId) && nrow(scenData[[scenId]][[scenTableId]])){
