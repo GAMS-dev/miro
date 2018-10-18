@@ -2,7 +2,7 @@ BatchImport <- R6Class("BatchImport",
                        inherit = Db,
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
-                                                      tableNamesToVerify, csvDelim, workDir, traceColNames){
+                                                      tableNamesToVerify, csvDelim, workDir){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
@@ -31,10 +31,12 @@ BatchImport <- R6Class("BatchImport",
                            private$tableNamesScenario <- db$getTableNamesScenario()
                            private$tableNameMetadata  <- db$getTableNameMetadata()
                            private$scenMetaColnames   <- db$getScenMetaColnames()
+                           traceConfig                <- db$getTraceConfig()
+                           private$traceTabName       <- traceConfig[['colNames']]
+                           private$traceColNames      <- traceConfig[['colNames']]
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
                            private$tableNamesToVerify <- tableNamesToVerify
-                           private$traceColNames      <- traceColNames
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
                          },
@@ -294,6 +296,7 @@ BatchImport <- R6Class("BatchImport",
                          invalidScenIds          = character(0L),
                          duplicatedScenIds       = character(0L),
                          traceColNames           = character(0L),
+                         traceTabName            = character(0L),
                          getScenFilePaths  = function(scenName, paths){
                            csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
                            return(paths[csvIdx])
@@ -346,8 +349,8 @@ BatchImport <- R6Class("BatchImport",
                                            names(scenTables)[tableId])
                                  return(TRUE)
                                }
-                             }else if(identical(names(scenTables)[tableId], private$db$getTraceConfig()[["tabName"]])){
-                               if(length(scenTables[[tabelId]]) != 22){
+                             }else if(identical(names(scenTables)[tableId], private$traceTabName)){
+                               if(length(scenTables[[tabelId]]) != length(private$traceColNames)){
                                  flog.info("Trace file does not have 22 columns.")
                                  return(TRUE)
                                }
