@@ -2,14 +2,16 @@ BatchImport <- R6Class("BatchImport",
                        inherit = Db,
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
-                                                      tableNamesToVerify, csvDelim, workDir){
+                                                      tableNamesCanHave, tableNamesMustHave,
+                                                      csvDelim, workDir){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
                            #   db:                      R6 database object
                            #   scalarsInputName:        file name of the scalar input file
                            #   scalarsOutputName:       file name of the scalar input file
-                           #   tableNamesToVerify:      tables that must exist in order 
+                           #   tableNamesCanHave:       tables that can exist in a scenario
+                           #   tableNamesMustHave:      tables that must exist in order 
                            #                            for the scenario to be valid
                            #   csvDelim:                csv delimiter
                            #   workDir:                 directory where temporary files are saved
@@ -20,7 +22,8 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.R6(db))
                            stopifnot(is.character(scalarsInputName), length(scalarsInputName) == 1)
                            stopifnot(is.character(scalarsOutputName), length(scalarsOutputName) == 1)
-                           stopifnot(is.character(tableNamesToVerify), length(tableNamesToVerify) >= 1)
+                           stopifnot(is.character(tableNamesCanHave), length(tableNamesCanHave) >= 1)
+                           stopifnot(is.character(tableNamesMustHave), length(tableNamesMustHave) >= 1)
                            stopifnot(is.character(csvDelim), length(csvDelim) == 1)
                            stopifnot(is.character(workDir), length(workDir) == 1)
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
@@ -36,10 +39,11 @@ BatchImport <- R6Class("BatchImport",
                            private$traceColNames      <- traceConfig[['colNames']]
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
-                           private$tableNamesToVerify <- tableNamesToVerify
+                           private$tableNamesMustHave <- tableNamesMustHave
+                           private$tableNamesToVerify <- c(tableNamesCanHave, tableNamesMustHave)
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
-                           private$includeTrc         <- traceConfig[['tabName']] %in% tableNamesToVerify
+                           private$includeTrc         <- traceConfig[['tabName']] %in% private$tableNamesToVerify
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
@@ -102,7 +106,6 @@ BatchImport <- R6Class("BatchImport",
                            # 
                            # Returns:
                            #    R6 object (reference to itself)
-                           
                            private$scenData <- lapply(private$csvPaths, private$readScenData)
                            invisible(self)
                          },
@@ -119,7 +122,6 @@ BatchImport <- R6Class("BatchImport",
                            #   reference to itself (importBatch R6 object)
                            
                            # BEGIN error checks
-                           stopifnot(is.list(private$scenData), length(private$scenData) >= 1)
                            if(!is.null(scalarInToVerify)){
                              stopifnot(is.character(scalarInToVerify), length(scalarInToVerify) >= 1)
                            }
@@ -288,6 +290,7 @@ BatchImport <- R6Class("BatchImport",
                          csvPaths                = character(0L),
                          scalarsInputName        = character(0L),
                          scalarsOutputName       = character(0L),
+                         tableNamesMustHave      = character(0L),
                          tableNamesToVerify      = character(0L),
                          csvDelim                = character(0L),
                          workDir                 = character(0L),
@@ -327,11 +330,16 @@ BatchImport <- R6Class("BatchImport",
                            }
                            csvNames      <- gsub(grepEx, "", basename(csvPaths), 
                                                  ignore.case = TRUE)
-                           verifiedIds   <- match(private$tableNamesToVerify, csvNames)
+                           verifiedIds   <- match(private$tableNamesMustHave, csvNames)
                            if(any(is.na(verifiedIds))){
                              return(NULL)
                            }else{
-                             return(csvNames)
+                             verifiedIds   <- match(csvNames, private$tableNamesToVerify)
+                             if(any(is.na(verifiedIds))){
+                               return(NULL)
+                             }else{
+                               return(csvNames)
+                             }
                            }
                          },
                          validateTables = function(scenTables, scalarInToVerify, scalarOutToVerify){

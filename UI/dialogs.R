@@ -371,3 +371,34 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxC
     fade = TRUE, easyClose = FALSE
   ))
 }
+
+showInvalidScenIdsDialog <- function(invalidScenIds){
+  showModal(modalDialog(
+    title = lang$nav$batchMode$invalidScenDialog$title,
+    sprintf(lang$nav$batchMode$invalidScenDialog$desc, 
+            length(invalidScenIds), paste(invalidScenIds, collapse = ", ")),
+    footer = tagList(
+      modalButton(lang$nav$batchMode$invalidScenDialog$cancelButton),
+      actionButton("btBatchImportInvalid", label = lang$nav$batchMode$invalidScenDialog$okButton)
+    ),
+    fade = TRUE, easyClose = FALSE
+  ))
+}
+showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
+  showModal(modalDialog(
+    title = lang$nav$batchMode$duplicatedScenDialog$title,
+    if(noScen == noDupScen){
+      sprintf(lang$nav$batchMode$duplicatedScenDialog$allDuplicated, dupScenTags)
+    }else{
+      sprintf(lang$nav$batchMode$duplicatedScenDialog$someDuplicated, noDupScen, dupScenTags)
+    },
+    footer = tagList(
+      modalButton(lang$nav$batchMode$duplicatedScenDialog$cancelButton),
+      if(noScen != noDupScen){
+        actionButton("btBatchImportNew", label = lang$nav$batchMode$duplicatedScenDialog$importNewButton)
+      },
+      actionButton("btBatchImportAll", label = lang$nav$batchMode$duplicatedScenDialog$importAllButton)
+    ),
+    fade = TRUE, easyClose = FALSE
+  ))
+}

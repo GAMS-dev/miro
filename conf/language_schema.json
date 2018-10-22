@@ -1331,6 +1331,70 @@
                   "required":true
                 }
               }
+            },
+            "invalidScenDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "okButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "duplicatedScenDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "allDuplicated":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "someDuplicated":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "importNewButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "importAllButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             }
            }
         },

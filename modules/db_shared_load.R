@@ -5,12 +5,12 @@ if(!is.null(datasetsToFetch)){
   errMsg <- NULL
   lapply(datasetsToFetch, function(dataset){
     i <- match(dataset, names(modelIn))
-    table.name <- paste0(sharedTablePrefix, "_", dataset)
+    tabNameShared <- paste0(sharedTablePrefix, "_", dataset)
     # load from database
     tryCatch({
-      sharedInputData[[i]] <<- auth$importShared(tableName = table.name)
+      sharedInputData[[i]] <<- auth$importShared(tableName = tabNameShared)
     }, error = function(e) {
-      flog.error("Problems fetching shared dataset from table: '%s'. Error message: %s.", table.name, e)
+      flog.error("Problems fetching shared dataset from table: '%s'. Error message: %s.", tabNameShared, e)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, dataset), sep = "\n")
     })
     if(!is.null(errMsg)){

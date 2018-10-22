@@ -288,6 +288,20 @@
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
         "selAttribs":"Attribute:",
         "runButton": "Paver starten"
+      },
+      "invalidScenDialog":{
+        "title":"Ungültige Szenarien",
+        "desc": "%d der Szenarien, die Sie hochladen möchten, sind ungültig (%s). Wollen Sie dennoch fortfahren?",
+        "okButton": "Abbrechen",
+        "cancelButton": "Fortfahren"
+      },
+      "duplicatedScenDialog":{
+        "title":"Duplizierte Szenarien gefunden",
+        "allDuplicated": "Alle Szenarien, die Sie importieren möchten, sind bereits in der Datenbank mit dem/den Tag(s):'%s' vorhanden. Wollen Sie trotzdem weitermachen?",
+        "someDuplicated":"%d der zu importierenden Szenarien existiert bereits in der Datenbank mit dem/den Tag(s):'%s'. Möchten Sie trotzdem fortfahren oder nur die Szenarien importieren, die noch nicht existieren?",
+        "cancelButton":"Abbrechen",
+        "importNewButton": "Nur neue importieren",
+        "importAllButton": "Alle importieren"
       }
     },
     "dialogPaverInUse":{

@@ -290,6 +290,20 @@
         "selAttribs":"Attributes to select:",
         "runButton":"Start Paver",
         "interactiveButton":"Interactive mode"
+      },
+      "invalidScenDialog":{
+        "title":"Invalid scenarios",
+        "desc": "%d of the scenarios you want to upload are invalid (%s). Do you still want to proceed?",
+        "okButton": "Abort",
+        "cancelButton": "Proceed"
+      },
+      "duplicatedScenDialog":{
+        "title":"Duplicated Scenarios found",
+        "allDuplicated": "All of the scenarios you want to import already exist in the database with the tag(s): '%s'. Do you still want to proceed?",
+        "someDuplicated":"%d of the scenarios you want to import already exist in the database with the tag(s): '%s'. Do you still want to proceed or only import those scenarios that do not yet exist.",
+        "cancelButton":"Abort",
+        "importNewButton": "Import only new",
+        "importAllButton": "Import all"
       }
     },
     "dialogPaverInUse":{

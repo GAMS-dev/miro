@@ -317,10 +317,10 @@ lapply(seq_along(modelIn), function(id){
                      data <- unique(modelInputData[[k]][[el[[1]]]])
                    }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
-                     try(
-                      data <- unique(sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[[paste0("dropdown_", k)]], 
-                                                            , drop = FALSE][[el[[1]]]])
-                     )
+                     suppressWarnings(try(
+                      data <- unique(sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]],, 
+                                                          drop = FALSE][[el[[1]]]])
+                     ))
                    }else{
                      return(NULL)
                    }

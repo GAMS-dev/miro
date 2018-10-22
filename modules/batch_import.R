@@ -2,11 +2,10 @@
 scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelInTabularData]
 disableEl(session, "#btUploadBatch")
 
-# table names that must exist in order for scenario to be valid
-tableNamesToVerify <- gsub(modelName %+% "_", "", c(scenTableNames, 
-                                                    if(config$saveTraceFile) tableNameTracePrefix %+% modelName), fixed = TRUE)
 # initialise batch import class
-batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesToVerify, 
+batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
+                               tableNamesMustHave = c(inputDsNames, if(config$saveTraceFile) 
+                                 tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
@@ -143,34 +142,3 @@ observeEvent(input$batchImport, {
   updateSelectInput(session, "batchTags", choices = tag, selected = tag)
   rv$clear <- TRUE
 }, priority = 1000)
-  
-showInvalidScenIdsDialog <- function(invalidScenIds){
-  showModal(modalDialog(
-    title = "Invalid scenarios",
-    sprintf("%d of the scenarios you want to upload are invalid (%s). Do you still want to proceed?", 
-            length(invalidScenIds), paste(invalidScenIds, collapse = ", ")),
-    footer = tagList(
-      modalButton("Abort"),
-      actionButton("btBatchImportInvalid", label = "Import all")
-    ),
-    fade = TRUE, easyClose = FALSE
-  ))
-}
-showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
-  showModal(modalDialog(
-    title = "Duplicated Scenarios found",
-    if(noScen == noDupScen){
-      sprintf("All of the scenarios you want to import already exist in the database with the tag(s): '%s'. Do you still want to proceed?", dupScenTags)
-    }else{
-      sprintf("%d of the scenarios you want to import already exist in the database with the tag(s): '%s'. Do you still want to proceed or only import those scenarios that do not yet exist.", noDupScen, dupScenTags)
-    },
-    footer = tagList(
-      modalButton("Abort"),
-      if(noScen != noDupScen){
-        actionButton("btBatchImportNew", label = "Import only new")
-      },
-      actionButton("btBatchImportAll", label = "Import all")
-    ),
-    fade = TRUE, easyClose = FALSE
-  ))
-}
