@@ -306,7 +306,7 @@ lapply(seq_along(modelIn), function(id){
                    }
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                          !is.null(input[["in_" %+% k]]) || 
-                                                         nrow(tableContent[[i]])) && !isEmptyInput[k]){
+                                                         (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
                      if(modelIn[[k]]$type == "hot"){
                        data <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]]]])
                      }else{
