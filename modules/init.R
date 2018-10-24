@@ -689,7 +689,6 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     scenTableNames    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scenTableNames
     # define scenario tables to display in interface
     scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames)
-    
     # get the operating system that shiny is running on
     serverOS    <- getOS()
     # generate GAMS return code map

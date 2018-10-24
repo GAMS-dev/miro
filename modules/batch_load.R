@@ -16,6 +16,7 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
     #aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
     #  return()
     #})
+    stop("Scalar tables in tabular form are not yet implemented in batch mode", call. = FALSE)
   }else{
     NA
   }

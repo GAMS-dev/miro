@@ -266,7 +266,6 @@ Scenario <- R6Class("Scenario",
                         #BEGIN error checks
                         stopifnot(missing(x))
                         stopifnot(!is.null(private$sid))
-                        stopifnot(length(metadata) == length())
                         #END error checks
                         
                         if(private$isLocked() || private$isReadonly())
