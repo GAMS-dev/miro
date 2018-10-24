@@ -270,7 +270,7 @@
       },
       "successDialog":{
         "title": "Batchlauf konfiguriert",
-        "desc": "Der Batchlauf wurde erfolgreich konfiguriert. Sobald die Ergebnisse zur Verfügung stehen, können Sie diese importieren."
+        "desc": "Der Batchlauf wurde erfolgreich konfiguriert. Die Batchdatei wurde in Ihr Arbeitsverzeichnis geschrieben. Um den Batchlauf zu starten, konvertieren Sie bitte diese Datei in eine ausführbare GAMS Datei. Weitere Informationen dazu finden Sie in der Dokumentation."
       }
     },
     "batchMode":{
