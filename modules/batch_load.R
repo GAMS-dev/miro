@@ -1,8 +1,8 @@
 inputType <- list(text = c("_stag", "_uid"), date = c("_stime"))
 keysRaw   <- NULL
 scalarKeyTypeList <- list()
-scalarsTabNameIn  <- modelName %+% "_" %+% scalarsFileName
-scalarsTabNameOut <- modelName %+% "_" %+% scalarsOutName
+scalarsTabNameIn  <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsFileName
+scalarsTabNameOut <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsOutName
 modelInSorted <- sort(names(modelIn))
 
 scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
