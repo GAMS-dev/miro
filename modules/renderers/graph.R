@@ -91,8 +91,13 @@ renderGraph <- function(data, configData, options, height = NULL){
           value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
           xts_data <- spread(data, key, value)
-          row.names(xts_data) <- as.character(xts_data[[1]])
-          xts_data <- xts_data[, -c(1), drop = FALSE]
+          xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
+          if(!length(xtsIdx)){
+            stop("No date column could be found in the dataset. If you want to use dygraph make sure you have a date column.", call. = FALSE)
+          }
+          xts_idx  <- as.Date(xts_data[[xtsIdx]])
+          xts_data <- xts_data[, -c(xtsIdx)]
+          xts_data <- xts(xts_data, order.by = xts_idx)
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
                         elementId = NULL)

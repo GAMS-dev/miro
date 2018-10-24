@@ -386,7 +386,9 @@ renderOutput <- function(data, type, dtOptions = NULL, graphOptions = NULL, mapO
   })
     
 }
-
+isDate <- function(x){
+  tryCatch(!is.na(as.Date(x[[1]])), error = function(e){FALSE})
+}
 verifyInput <- function(data, headers){
   # Checks whether a dataframe is valid with regard to a specific schema
   #
