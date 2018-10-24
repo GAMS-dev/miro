@@ -104,8 +104,8 @@ $onecho > webuiconf.json
      "alias": "rminlp-Solver",
      "dropdown": {
          "label": "Solver to use for rminlp",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
          "selected": "CONOPT3"
      }
   },
@@ -113,8 +113,8 @@ $onecho > webuiconf.json
      "alias": "minlp-Solver",
      "dropdown": {
          "label": "Solver to use for minlp",
-         "aliases": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","DICOPT","KNITRO","LINDO","LINDOGLOBAL","LOCALSOLVER","OQNLP","SBB","SCIP"],
-         "choices": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","DICOPT","KNITRO","LINDO","LINDOGLOBAL","LOCALSOLVER70","OQNLP","SBB","SCIP"],
+         "aliases": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","DICOPT","KNITRO","LINDO","LINDOGLOBAL","OQNLP","SBB","SCIP"],
+         "choices": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","DICOPT","KNITRO","LINDO","LINDOGLOBAL","OQNLP","SBB","SCIP"],
          "selected": "DICOPT"
      }
   },

@@ -86,8 +86,8 @@ $onecho > webuiconf.json
      "alias": "nlp-Solver",
      "dropdown": {
          "label": "Solver to use for nlp",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
          "selected": "CONOPT3"
      }
   },
@@ -104,8 +104,8 @@ $onecho > webuiconf.json
      "alias": "QCP-Solver",
      "dropdown": {
          "label": "Solver to use for QCP",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
          "selected": "CPLEX"
      }
   },

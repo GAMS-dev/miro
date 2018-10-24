@@ -81,8 +81,8 @@ $onecho > webuiconf.json
      "alias": "QCP-Solver",
      "dropdown": {
          "label": "Solver to use for QCP",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
          "selected": "CPLEX"
      }
   },
@@ -90,8 +90,8 @@ $onecho > webuiconf.json
      "alias": "cns-Solver",
      "dropdown": {
          "label": "Solver to use for cns",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KESTREL","KNITRO","LOCALSOLVER","MINOS","PATH","SCIP","SNOPT"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KESTREL","KNITRO","LOCALSOLVER70","MINOS","PATH","SCIP","SNOPT"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KESTREL","KNITRO","MINOS","PATH","SCIP","SNOPT"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","IPOPT","KESTREL","KNITRO","MINOS","PATH","SCIP","SNOPT"],
          "selected": "CONOPT3"
      }
   },

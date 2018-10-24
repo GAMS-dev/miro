@@ -88,8 +88,8 @@ $onecho > webuiconf.json
      "alias": "MIP-Solver",
      "dropdown": {
          "label": "Solver to use for MIP",
-         "aliases": ["BARON","BDMLP","CBC","CPLEX","GUROBI","LINDO","LINDOGLOBAL","LOCALSOLVER","MOSEK","ODHCPLEX","SCIP","XA","XPRESS"],
-         "choices": ["BARON","BDMLP","CBC","CPLEX","GUROBI","LINDO","LINDOGLOBAL","LOCALSOLVER70","MOSEK","ODHCPLEX","SCIP","XA","XPRESS"],
+         "aliases": ["BARON","BDMLP","CBC","CPLEX","GUROBI","LINDO","LINDOGLOBAL","MOSEK","ODHCPLEX","SCIP","XA","XPRESS"],
+         "choices": ["BARON","BDMLP","CBC","CPLEX","GUROBI","LINDO","LINDOGLOBAL","MOSEK","ODHCPLEX","SCIP","XA","XPRESS"],
          "selected": "CPLEX"
      }
   },
@@ -97,8 +97,8 @@ $onecho > webuiconf.json
      "alias": "miqcp-Solver",
      "dropdown": {
          "label": "Solver to use for miqcp",
-         "aliases": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","CPLEX","DICOPT","GLOMIQO","GUROBI","KNITRO","LINDO","LINDOGLOBAL","LOCALSOLVER","MOSEK","ODHCPLEX","OQNLP","SBB","SCIP","XPRESS"],
-         "choices": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","CPLEX","DICOPT","GLOMIQO","GUROBI","KNITRO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MOSEK","ODHCPLEX","OQNLP","SBB","SCIP","XPRESS"],
+         "aliases": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","CPLEX","DICOPT","GLOMIQO","GUROBI","KNITRO","LINDO","LINDOGLOBAL","MOSEK","ODHCPLEX","OQNLP","SBB","SCIP","XPRESS"],
+         "choices": ["ALPHAECP","ANTIGONE","BARON","BONMIN","COUENNE","CPLEX","DICOPT","GLOMIQO","GUROBI","KNITRO","LINDO","LINDOGLOBAL","MOSEK","ODHCPLEX","OQNLP","SBB","SCIP","XPRESS"],
          "selected": "CPLEX"
      }
   },
@@ -115,8 +115,8 @@ $onecho > webuiconf.json
      "alias": "rmiqcp-Solver",
      "dropdown": {
          "label": "Solver to use for rmiqcp",
-         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
-         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","LOCALSOLVER70","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "aliases": ["ANTIGONE","BARON","CONOPT 3","CONOPT 4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
+         "choices": ["ANTIGONE","BARON","CONOPT3","CONOPT4","COUENNE","CPLEX","GLOMIQO","GUROBI","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT","XPRESS"],
          "selected": "CPLEX"
      }
   },

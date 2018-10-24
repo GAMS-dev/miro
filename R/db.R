@@ -585,7 +585,7 @@ Db <- R6Class("Db",
                                       private$userAccessGroups, "=")
                   if(noBatch){
                     noBatchRuns <- tibble(private$scenMetaColnames['sname'], 
-                                         "[0-9a-z]{32}", "NOT SIMILAR TO")
+                                         "[0-9a-z]{64}", "NOT SIMILAR TO")
                   }
                   
                   scenList <- self$importDataset(private$tableNameMetadata, accessRights, 

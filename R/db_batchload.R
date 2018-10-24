@@ -187,7 +187,7 @@ BatchLoad <- R6Class("BatchLoad",
                            paverFile <- file(fileName, open = 'wt')
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
                                              "* ", paste(setdiff(private$traceColNames, exclTraceCols), collapse = ","),
-                                             "*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
+                                             "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
                            paverData      <- private$db$importDataset(private$tableNameTrace, 
                                                                       tibble(private$sidCol, private$groupedSids[[i]]), 
