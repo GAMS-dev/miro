@@ -20,7 +20,7 @@ $gdxout
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
 $ifthene.a %GMSWEBUI%>2
-$ifthen.b exist %gams.sysdir%GMSWebUI%system.dirsep%app.R
+$ifthen.b dExist %gams.sysdir%GMSWebUI
 $  set WEBUIDIR %gams.sysdir%GMSWebUI
 $else.b
 $  set WEBUIDIR ..%system.dirsep%..
@@ -389,33 +389,24 @@ try:
 except:
    pass
    
-import collections
-import copy
+from copy import deepcopy
 
-def dict_merge(dct, merge_dct):
-    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-    updating only top-level keys, dict_merge recurses down into dicts nested
-    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-    ``dct``.
-    :param dct: dict onto which the merge is executed
-    :param merge_dct: dct merged into dct
-    :return: None
-    """
-    result = copy.deepcopy(dct)
-    for k, v in merge_dct.items():
-        if (k in result and isinstance(result[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)):
-            dict_merge(result[k], merge_dct[k])
+def dict_merge(a, b):
+    '''recursively merges dict's. not just simple a['key'] = b['key'], if
+    both a and bhave a key who's value is a dict then dict_merge is called
+    on both values and the result stored in the returned dictionary.'''
+    if not isinstance(b, dict):
+        return b
+    result = deepcopy(a)
+    for k, v in b.items():
+        if k in result and isinstance(result[k], dict):
+                result[k] = dict_merge(result[k], v)
         else:
-            result[k] = merge_dct[k]
+            result[k] = deepcopy(v)
     return result
- 
+    
 import json
-
-titletmp = """ %system.title% """
-titletmp = titletmp.replace('\'',"").replace('\"',"")
-
-config = { "pageTitle" : titletmp,
+config = { "pageTitle" : "%system.title%",
            "gamsMetaDelim" : "###",
            "gamsWEBUISwitch" : "--GMSWEBUI=1",
            "fileExchange" : "csv",
@@ -426,7 +417,6 @@ for s in input_sym:
    text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
       e_dict = json.loads(text[text.find(' ###')+4:])
-      print(e_dict)
    else:   
       e_dict = {}
    headers = {}
@@ -467,14 +457,15 @@ for s in scalar_input_sym:
    else:
       needScalar = True;
 
-if needScalar:  
+if needScalar:      
    io_dict['scalars'] = { 'alias':'Scalars', 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
-if len(s_webuiconf):  
+if len(s_webuiconf):
    config['gamsInputFiles'] = dict_merge(io_dict,json.loads(s_webuiconf))
 elif os.path.isfile('webuiconf.json'):
    with open('webuiconf.json', 'r') as jffile:
       config['gamsInputFiles'] = dict_merge(io_dict,json.load(jffile))
-else:  
+   
+else:
    config['gamsInputFiles'] = io_dict
    
 io_dict = {}           
