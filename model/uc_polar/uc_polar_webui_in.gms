@@ -3,15 +3,15 @@ $onecho > webuiconf.json
 { "GMSPAR_casename": {
      "alias": "Input case",
      "dropdown": {
-         "label": "Select input case",
-	 "choices": "casename$filename"
-	 
-     }
+         "label": "Select input case [case]",
+	 "choices": "casename$filename"	 
+     },
+     "noBatch": true
   }, 
   "GMSPAR_times": {
      "alias": "Time range",
      "slider": {
-         "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data!",
+         "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data! [times]",
          "min": 1,
          "max": "max(casename$noPeriods)",
          "default": [1,"max(casename$noPeriods)"],
@@ -21,7 +21,7 @@ $onecho > webuiconf.json
   "GMSPAR_allon": {
      "alias": "allon",
      "dropdown": {
-         "label": "Turn on all gens and/or lines during solve",
+         "label": "Turn on all gens and/or lines during solve [allon]",
          "aliases": ["lines", "none"],
          "choices": ["lines", 0],
          "selected": "%allon%"
@@ -30,7 +30,7 @@ $onecho > webuiconf.json
   "GMSPAR_obj": {
      "alias": "Obj",
      "dropdown": {
-         "label": "Objective function",
+         "label": "Objective function [obj]",
          "aliases": ["quadratic","piecewise linear"],
          "choices": ["quad", "pwl"],
          "selected": "%obj%"
@@ -39,7 +39,7 @@ $onecho > webuiconf.json
   "GMSPAR_linelimits": {
      "alias": "linelimits",
      "dropdown": {
-         "label": "Type of line limit data to use",
+         "label": "Type of line limit data to use [linelimits]",
          "choices": ["given", "uwcalc", "inf"],
          "selected": "%linelimits%"
      }
@@ -47,7 +47,7 @@ $onecho > webuiconf.json
   "GMSPAR_genPmin": {
      "alias": "genPmin",
      "dropdown": {
-         "label": "Data for Generator lower limit",
+         "label": "Data for Generator lower limit [genPmin]",
          "choices": ["0", "given", "uwcalc"],
          "selected": "%genPmin%"
      }
@@ -55,7 +55,7 @@ $onecho > webuiconf.json
   "GMSPAR_ramprates": {
      "alias": "ramprates",
      "dropdown": {
-         "label": "Type of ramprate data to use",
+         "label": "Type of ramprate data to use [ramprates]",
          "choices": ["given", "uwcalc"],
          "selected": "%ramprates%"
      }
@@ -63,7 +63,7 @@ $onecho > webuiconf.json
   "GMSPAR_demandbids": {
      "alias": "demandbids",
      "checkbox": {
-         "label": "Turn on elastic demand bidding?",
+         "label": "Turn on elastic demand bidding? [demandbids]",
          "value": %demandbids%,
          "class": "checkbox-material"
      }
@@ -71,7 +71,7 @@ $onecho > webuiconf.json
   "GMSPAR_slim": {
      "alias": "slim",
      "checkbox": {
-         "label": "Use apparent power limits on line?",
+         "label": "Use apparent power limits on line? [slim]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -79,7 +79,7 @@ $onecho > webuiconf.json
   "GMSPAR_relax": {
      "alias": "relax",
      "checkbox": {
-         "label": "Relax integer models?",
+         "label": "Relax integer models? [relax]",
          "value": %relax%,
          "class": "checkbox-material"
      }
@@ -87,7 +87,7 @@ $onecho > webuiconf.json
   "GMSPAR_wind": {
      "alias": "wind",
      "checkbox": {
-         "label": "Turn off wind turbines?",
+         "label": "Turn off wind turbines? [wind]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -113,7 +113,7 @@ $onecho > webuiconf.json
   "GMSPAR_savesol": {
      "alias": "savesol",
      "checkbox": {
-         "label": "Save solution?",
+         "label": "Save solution? [savesol]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -121,7 +121,7 @@ $onecho > webuiconf.json
   "GMSPAR_verbose": {
      "alias": "verbose",
      "checkbox": {
-         "label": "Print input in listing output?",
+         "label": "Print input in listing output? [verbose]",
          "value": 1,
          "class": "checkbox-material"
      }

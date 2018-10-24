@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "dcopf"
 # show extensive error messages/ obscoure error messages
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -85,6 +85,8 @@ traceColNames <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianD
                    "NumberOfNonZeros","NumberOfNonlinearNonZeros","OptionFile",
                    "ModelStatus","SolverStatus","ObjectiveValue","ObjectiveValueEstimate",
                    "SolverTime","NumberOfIterations","NumberOfDomainViolations","NumberOfNodes","#User1")
+exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
+                   "NumberOfNonZeros", "NumberOfNonlinearNonZeros")
 tableNameTracePrefix <- "_sys_trace_"
 
 

@@ -1,22 +1,11 @@
 *the declaration of Ouput for the WebUI is done within the $onExternalOutput / $offExternalOutput keywords.
 
-*Set inopt         'input options'            / case, timeperiod, allon, obj, linelimits, genPmin, lineloss, wind, LP-solver, QCP-solver, qlim, slim, ic, iter, savesol, verbose /
-
 $onExternalOutput
 parameter      
     total_cost_Report                             'Final objective value     '
     version_Report                                'version                   '
     baseMVA_Report                                'baseMVA                   '
 ;    
-* header-row for tables containing multi-dimensional parameters
-set
-    businfoHdr    'businfo_Report header'    / Value /
-    geninfoHdr    'geninfo_Report header'    / Value /
-    branchinfoHdr 'branchinfo_Report header' / Value /
-    fuelinfoHdr   'fuelinfo_Report header'   / Text /
-*    demandbidinfoHdr  'demandbidinfo_Report header'  / Text /
-*    interfaceinfoHdr  'interfaceinfo_Report header'  / Text /
-;
 
 singleton set
     case_input(*)       'Selected Testcase'
@@ -44,12 +33,12 @@ singleton set
 ;
 
 parameter      
-    businfo_Report(bus,bus_t,bus_s,businfoHdr)    'businfo                   '
-    geninfo_Report(gen,gen_t,gen_s,geninfoHdr)    'geninfo                   '
-    branchinfo_Report(bus,bus,circuit,branch_t,branch_s,branchinfoHdr) 'branchinfo'
-    fuelinfo_Report(fuel_t,fuel_s,fuelinfoHdr)    'fuelinfo'
-*    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s,demandbidinfoHdr) 'demandbidinfo'
-*    interfaceinfo_Report(interface,t,interface_t,interfaceinfoHdr) 'interfaceinfo'
+    businfo_Report(bus,bus_t,bus_s)    'businfo                   '
+    geninfo_Report(gen,gen_t,gen_s)    'geninfo                   '
+    branchinfo_Report(bus,bus,circuit,branch_t,branch_s) 'branchinfo'
+    fuelinfo_Report(fuel_t,fuel_s)     'fuelinfo'
+*    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
+*    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
 ;
 $offExternalOutput
 
@@ -140,22 +129,23 @@ parameters businfo_tmp(bus,bus_t,bus_s), geninfo_tmp(gen,gen_t,gen_s), fuelinfo_
 *           demandbidinfo_tmp(demandbid,t,demandbid_t,demandbid_s), interfaceinfo_tmp(interface,t,interface_t)
            
 *load results
+if(infeas eq 0,
 execute_load '%out%', version, baseMVA, total_cost;
 execute_load '%out%', businfo_tmp = businfo, geninfo_tmp = geninfo, fuelinfo_tmp = fuelinfo;
 execute_load '%out%', branchinfo_tmp = branchinfo;
 *, demandbidinfo_tmp = demandbidinfo, interfaceinfo_tmp = interfaceinfo;
-
+);
 total_cost_Report           = total_cost;
 version_Report              = version;
 baseMVA_Report              = baseMVA;
 
 
-businfo_Report(bus,bus_t,bus_s,'Value')                             = businfo_tmp(bus,bus_t,bus_s);
-geninfo_Report(gen,gen_t,gen_s,'Value')                             = geninfo_tmp(gen,gen_t,gen_s);
-branchinfo_Report(i,j,c,branch_t,branch_s,'Value')                  = branchinfo_tmp(i,j,c,branch_t,branch_s);
-fuelinfo_Report(fuel_t,fuel_s,'Text')                               = fuelinfo_tmp(fuel_t,fuel_s);
-*demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s,'Text')    = demandbidinfo_tmp(demandbid,t,demandbid_t,demandbid_s);
-*interfaceinfo_Report(interface,t,interface_t,'Text')                = interfaceinfo_tmp(interface,t,interface_t);
+businfo_Report(bus,bus_t,bus_s)                             = businfo_tmp(bus,bus_t,bus_s);
+geninfo_Report(gen,gen_t,gen_s)                             = geninfo_tmp(gen,gen_t,gen_s);
+branchinfo_Report(i,j,c,branch_t,branch_s)                  = branchinfo_tmp(i,j,c,branch_t,branch_s);
+fuelinfo_Report(fuel_t,fuel_s)                              = fuelinfo_tmp(fuel_t,fuel_s);
+*demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s)    = demandbidinfo_tmp(demandbid,t,demandbid_t,demandbid_s);
+*interfaceinfo_Report(interface,t,interface_t)                = interfaceinfo_tmp(interface,t,interface_t);
 
 
 

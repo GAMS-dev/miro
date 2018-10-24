@@ -1,6 +1,7 @@
 {
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"
-    }
+    },
+    "saveTraceFile":true
 }
 

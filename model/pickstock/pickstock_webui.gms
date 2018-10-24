@@ -1,5 +1,5 @@
 $onExternalInput
-$kill price symbol date
+$kill price date symbol
 *$killUel
 $offExternalInput
 $offdigit

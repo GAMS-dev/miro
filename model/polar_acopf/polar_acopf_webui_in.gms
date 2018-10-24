@@ -4,7 +4,8 @@ $onecho > webuiconf.json
      "dropdown": {
          "label": "Select input case [case]",
 	 "choices": "casename$filename"
-     }
+     },
+     "noBatch": true
   }, 
   "GMSPAR_timeperiod": {
      "alias": "Timeperiod",
@@ -36,8 +37,8 @@ $onecho > webuiconf.json
   "GMSPAR_linelimits": {
      "alias": "linelimits",
      "dropdown": {
-         "label": "Type of line limit data to use",
-         "choices": ["given", "uwcalc", "inf"], [linelimits]
+         "label": "Type of line limit data to use [linelimits]",
+         "choices": ["given", "uwcalc", "inf"],
          "selected": "%linelimits%"
      }
   },

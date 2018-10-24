@@ -1,5 +1,5 @@
 {
-    "pageTitle": "Cost objective calculations for OPF models",
+    "pageTitle": " Cost objective calculations for OPF models ",
     "gamsMetaDelim": "###",
     "gamsWEBUISwitch": "--GMSWEBUI=1",
     "fileExchange": "csv",
@@ -8,14 +8,14 @@
         "GMSPAR_casename": {
             "alias": "Input case",
             "dropdown": {
-                "label": "Select input case",
+                "label": "Select input case [case]",
                 "choices": "casename$filename"
             }
         },
         "GMSPAR_timeperiod": {
             "alias": "Timeperiod",
             "slider": {
-                "label": "Select the time period to solve",
+                "label": "Select the time period to solve [t]",
                 "min": 1,
                 "max": "max(casename$noPeriods)",
                 "default": 1,
@@ -25,7 +25,7 @@
         "GMSPAR_allon": {
             "alias": "allon",
             "dropdown": {
-                "label": "Option to turn on all gens or lines during solve",
+                "label": "Option to turn on all gens or lines during solve [allon]",
                 "choices": [
                     "gens",
                     "lines",
@@ -38,7 +38,7 @@
         "GMSPAR_obj": {
             "alias": "Obj",
             "dropdown": {
-                "label": "Objective function, piecewise linear or quadratic",
+                "label": "Objective function, piecewise linear or quadratic [obj]",
                 "aliases": [
                     "quadratic",
                     "piecewise linear",
@@ -57,7 +57,7 @@
         "GMSPAR_linelimits": {
             "alias": "linelimits",
             "dropdown": {
-                "label": "Type of line limit data to use",
+                "label": "Type of line limit data to use [linelimits]",
                 "choices": [
                     "given",
                     "uwcalc",
@@ -69,7 +69,7 @@
         "GMSPAR_genPmin": {
             "alias": "genPmin",
             "dropdown": {
-                "label": "Data for Generator lower limit",
+                "label": "Data for Generator lower limit [genPmin]",
                 "choices": [
                     "0",
                     "given",
@@ -81,7 +81,7 @@
         "GMSPAR_qlim": {
             "alias": "qlim",
             "checkbox": {
-                "label": "Enforce reactive power limits as D-curve circle constraints?",
+                "label": "Enforce reactive power limits as D-curve circle constraints? [qlim]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -89,7 +89,7 @@
         "GMSPAR_slim": {
             "alias": "slim",
             "checkbox": {
-                "label": "Use apparent power limits on line?",
+                "label": "Use apparent power limits on line? [slim]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -97,7 +97,7 @@
         "GMSPAR_wind": {
             "alias": "wind",
             "checkbox": {
-                "label": "Turn off wind turbines?",
+                "label": "Turn off wind turbines? [wind]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -105,7 +105,7 @@
         "GMSPAR_ic": {
             "alias": "ic",
             "dropdown": {
-                "label": "Choose a method for generating initial conditions, i.e. NLP starting point",
+                "label": "Choose a method for generating initial conditions, i.e. NLP starting point [ic]",
                 "aliases": [
                     "_",
                     "1: Random",
@@ -276,7 +276,7 @@
         "GMSPAR_savesol": {
             "alias": "savesol",
             "checkbox": {
-                "label": "Save solution?",
+                "label": "Save solution? [savesol]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -284,7 +284,7 @@
         "GMSPAR_verbose": {
             "alias": "verbose",
             "checkbox": {
-                "label": "Print input in listing output?",
+                "label": "Print input in listing output? [verbose]",
                 "value": 1,
                 "class": "checkbox-material"
             }
@@ -303,7 +303,7 @@
                 "Set of bus info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "businfo": {
                     "type": "parameter"
                 }
             }
@@ -320,7 +320,7 @@
                 "Set of generator info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "geninfo": {
                     "type": "parameter"
                 }
             }
@@ -340,7 +340,7 @@
                 "Set of branch info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "branchinfo": {
                     "type": "parameter"
                 }
             }
@@ -354,13 +354,14 @@
                 "Set of fuel info selectors": {
                     "type": "set"
                 },
-                "text": {
+                "fuelinfo": {
                     "type": "parameter"
                 }
             }
         },
         "scalars_out": {
             "alias": "Scalars",
+            "count": 25,
             "headers": {
                 "Scalar": {
                     "type": "set"

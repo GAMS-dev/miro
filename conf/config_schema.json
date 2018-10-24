@@ -96,7 +96,7 @@
             "batchMode":{  
                "description":"Boolean which specifies whether scenarios should be solved in batch mode or not",
                "type":"boolean",
-               "default":true,
+               "default":false,
                "required":false
             },
             "logFile:":{  

@@ -112,6 +112,7 @@ def _barchart(data, datamax = None, bw = False) :
     plt.gca().set_xticks(ticks);
     plt.gca().set_xticklabels(realdata.index);
     plt.xlim(-0.5, nsolvers-0.5);
+    plt.xticks(rotation=45)
     #if meantype == 'arith' :
     #    plt.ylim(0, 1.1 * (m[-1] + s[-1]));
     #else :
@@ -798,15 +799,17 @@ class StatisticsGenerator():
                     _barchart(outcome.stat['count'], bw = bw);
                     plt.title(outcome.metric.attribute + ' - ' + outcome.filter.name);
                     plotfile = fileprefix + 'count{0:03d}'.format(count);
+                    plt.xticks(rotation=45);
+                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);                    
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                     if paver.options['figformat'] != 'png' :
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));  
                     plt.close();
                     
                     #print("<a href=" + plotfile + "." + paver.options['figformat'] + "><img src=paver/" + plotfile + ".png width=300 style='cursor: pointer;'></a>", file=out);
-                    print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;'/>", file=out);
+                    print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;'/>", file=out);
 
 				
                 # bar charts for each type of mean
@@ -819,14 +822,16 @@ class StatisticsGenerator():
                         plt.title(outcome.metric.attribute + ' - ' + meantype + '. means\nFilter: ' + outcome.filter.name);
 
                         plotfile = fileprefix + meantype + 'mean{0:03d}'.format(count);
+                        plt.xticks(rotation=45);
+                        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);     
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                         if paver.options['figformat'] != 'png' :
                             with utils.Timer() :
-                                plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                                plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
                         
-                        print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                        print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
                 
                 # boxplot
                 if outcome.metric.boxplot :
@@ -842,14 +847,16 @@ class StatisticsGenerator():
                     plt.title(outcome.metric.attribute + '\nFilter: ' + outcome.filter.name);
                     
                     plotfile = fileprefix + 'boxplot{0:03d}'.format(count);
+                    plt.xticks(rotation=45);
+                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);     
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                     if paver.options['figformat'] != 'png' :
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                     plt.close();
                     
-                    print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                    print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 print("</P>", file=out);
 
@@ -868,14 +875,16 @@ class StatisticsGenerator():
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
                 
                 plotfile = fileprefix + 'profilerel{0:03d}'.format(count);
+                plt.xticks(rotation=45);
+                plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                 with utils.Timer() :
-                    plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                    plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                 if paver.options['figformat'] != 'png' :
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                 plt.close();
 
-                print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
             if outcome.pprofileabs is not None :
                 plt.figure();
@@ -887,14 +896,16 @@ class StatisticsGenerator():
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
                 
                 plotfile = fileprefix + 'profileabs{0:03d}'.format(count);
+                plt.xticks(rotation=45);
+                plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                 with utils.Timer() :
-                    plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                    plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                 if paver.options['figformat'] != 'png' :
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                 plt.close();
 
-                print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
             if outcome.pprofileext is not None :
                 plt.figure();
@@ -906,14 +917,16 @@ class StatisticsGenerator():
                 plt.ylim(0, len(outcome.metric.ppfilter[0].index));
                 
                 plotfile = fileprefix + 'profileext{0:03d}'.format(count);
+                plt.xticks(rotation=45);
+                plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                 with utils.Timer() :
-                    plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                    plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                 if paver.options['figformat'] != 'png' :
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                 plt.close();
 
-                print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
             if haveprof :
                 print("</P>", file=out);
@@ -991,14 +1004,16 @@ class StatisticsGenerator():
                     plt.title(outcome.metric.attribute + ' w.r.t. ' + str(refsolver) + '\nFilter: ' + outcome.filter.name);
                     
                     plotfile = fileprefix + 'boxplot{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',"));
+                    plt.xticks(rotation=45);
+                    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                     with utils.Timer() :
-                        plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                        plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                     if paver.options['figformat'] != 'png' :
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                     plt.close();
                     
-                    print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                    print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 # bar charts for each type of mean
                 if outcome.metric.means :
@@ -1010,14 +1025,16 @@ class StatisticsGenerator():
                         plt.title(outcome.metric.attribute + ' w.r.t. ' + str(refsolver) + ' - ' + meantype + '. means\nFilter: '+ outcome.filter.name);
 
                         plotfile = fileprefix + meantype + 'mean{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',"));
+                        plt.xticks(rotation=45);
+                        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                         if paver.options['figformat'] != 'png' :
                             with utils.Timer() :
-                                plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                                plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
                         
-                        print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                        print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 # bar charts for number of instance close to/better than/worse than refsolver
                 for a in ['close', 'better', 'worse'] :
@@ -1034,14 +1051,16 @@ class StatisticsGenerator():
                         plt.title(title);
     
                         plotfile = fileprefix + a + '{0:03d}_'.format(count) + str(refsolver).translate(str.maketrans('', '', " ()',"));
+                        plt.xticks(rotation=45);
+                        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
                         with utils.Timer() :
-                            plt.savefig(os.path.join(args.writeimg, plotfile + '.png'));
+                            plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.png'));
                         if paver.options['figformat'] != 'png' :
                             with utils.Timer() :
-                                plt.savefig(os.path.join(args.writeimg, plotfile + '.' + paver.options['figformat']));
+                                plt.savefig(os.path.join(args.writeimg, args.gmswebiter + '_' + plotfile + '.' + paver.options['figformat']));
                         plt.close();
                         
-                        print("<img src=paver/" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
+                        print("<img src=paver/" + args.gmswebiter + "_" + plotfile + ".png onclick = \"$('#imagepreview').attr('src', $(this).attr('src')); $('#imagemodal').modal('show');\" width=300 style='cursor: pointer;' />", file=out);
 
                 print("</P>", file=out);
 

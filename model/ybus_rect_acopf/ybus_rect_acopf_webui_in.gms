@@ -2,14 +2,15 @@ $onecho > webuiconf.json
 { "GMSPAR_casename": {
      "alias": "Input case",
      "dropdown": {
-         "label": "Select input case",
+         "label": "Select input case [case]",
 	 "choices": "casename$filename"
-     }
+     },
+     "noBatch": true
   }, 
   "GMSPAR_timeperiod": {
      "alias": "Timeperiod",
      "slider": {
-         "label": "Select the time period to solve",
+         "label": "Select the time period to solve [t]",
          "min": 1,
          "max": "max(casename$noPeriods)",
          "default": 1,
@@ -19,7 +20,7 @@ $onecho > webuiconf.json
   "GMSPAR_allon": {
      "alias": "allon",
      "dropdown": {
-         "label": "Option to turn on all gens or lines during solve",
+         "label": "Option to turn on all gens or lines during solve [allon]",
          "choices": ["gens", "lines", "both", 0],
          "selected": "%allon%"
      }
@@ -27,7 +28,7 @@ $onecho > webuiconf.json
   "GMSPAR_obj": {
      "alias": "Obj",
      "dropdown": {
-         "label": "Objective function, piecewise linear or quadratic",
+         "label": "Objective function, piecewise linear or quadratic [obj]",
          "aliases": ["quadratic","piecewise linear","linear","none"],
          "choices": ["quad", "pwl", "linear", 0],
          "selected": "%obj%"
@@ -36,7 +37,7 @@ $onecho > webuiconf.json
   "GMSPAR_linelimits": {
      "alias": "linelimits",
      "dropdown": {
-         "label": "Type of line limit data to use",
+         "label": "Type of line limit data to use [linelimits]",
          "choices": ["given", "uwcalc", "inf"],
          "selected": "%linelimits%"
      }
@@ -44,7 +45,7 @@ $onecho > webuiconf.json
   "GMSPAR_genPmin": {
      "alias": "genPmin",
      "dropdown": {
-         "label": "Data for Generator lower limit",
+         "label": "Data for Generator lower limit [genPmin]",
          "choices": ["0", "given", "uwcalc"],
          "selected": "%genPmin%"
      }
@@ -52,7 +53,7 @@ $onecho > webuiconf.json
   "GMSPAR_qlim": {
      "alias": "qlim",
      "checkbox": {
-         "label": "Enforce reactive power limits as D-curve circle constraints?",
+         "label": "Enforce reactive power limits as D-curve circle constraints? [qlim]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -60,7 +61,7 @@ $onecho > webuiconf.json
   "GMSPAR_ic": {
      "alias": "ic",
      "dropdown": {
-         "label": "Choose a method for generating initial conditions, i.e. NLP starting point",
+         "label": "Choose a method for generating initial conditions, i.e. NLP starting point [ic]",
          "aliases": ["_","1: Random","2: Flat","3: Random/AC","4: DC/AC","5: DC-/AC","6: Decoupled","7: DCLoss","8: Matpower","9: inputFile"],
          "choices": ["_",1,2,3,4,5,6,7,8,9]
      }
@@ -95,7 +96,7 @@ $onecho > webuiconf.json
   "GMSPAR_savesol": {
      "alias": "savesol",
      "checkbox": {
-         "label": "Save solution?",
+         "label": "Save solution? [savesol]",
          "value": 0,
          "class": "checkbox-material"
      }
@@ -103,7 +104,7 @@ $onecho > webuiconf.json
   "GMSPAR_verbose": {
      "alias": "verbose",
      "checkbox": {
-         "label": "Print input in listing output?",
+         "label": "Print input in listing output? [verbose]",
          "value": 1,
          "class": "checkbox-material"
      }

@@ -1,5 +1,5 @@
 {
-    "pageTitle": "Cost objective calculations for OPF models",
+    "pageTitle": " Cost objective calculations for OPF models ",
     "gamsMetaDelim": "###",
     "gamsWEBUISwitch": "--GMSWEBUI=1",
     "fileExchange": "csv",
@@ -7,15 +7,16 @@
     "gamsInputFiles": {
         "GMSPAR_casename": {
             "alias": "Input case",
+            "noBatch": true,
             "dropdown": {
-                "label": "Select input case",
+                "label": "Select input case [case]",
                 "choices": "casename$filename"
             }
         },
         "GMSPAR_timeperiod": {
             "alias": "Timeperiod",
             "slider": {
-                "label": "Select the time period to solve",
+                "label": "Select the time period to solve [t]",
                 "min": 1,
                 "max": "max(casename$noPeriods)",
                 "default": 1,
@@ -25,7 +26,7 @@
         "GMSPAR_allon": {
             "alias": "allon",
             "dropdown": {
-                "label": "Option to turn on all gens or lines during solve",
+                "label": "Option to turn on all gens or lines during solve [allon]",
                 "choices": [
                     "gens",
                     "lines",
@@ -38,7 +39,7 @@
         "GMSPAR_obj": {
             "alias": "Obj",
             "dropdown": {
-                "label": "Objective function",
+                "label": "Objective function [obj]",
                 "aliases": [
                     "quadratic",
                     "piecewise linear",
@@ -57,7 +58,7 @@
         "GMSPAR_linelimits": {
             "alias": "linelimits",
             "dropdown": {
-                "label": "Type of line limit data to use",
+                "label": "Type of line limit data to use [linelimits]",
                 "choices": [
                     "given",
                     "uwcalc",
@@ -69,7 +70,7 @@
         "GMSPAR_genPmin": {
             "alias": "genPmin",
             "dropdown": {
-                "label": "Data for Generator lower limit",
+                "label": "Data for Generator lower limit [genPmin]",
                 "choices": [
                     "0",
                     "given",
@@ -81,31 +82,15 @@
         "GMSPAR_qlim": {
             "alias": "qlim",
             "checkbox": {
-                "label": "Enforce reactive power limits as D-curve circle constraints?",
+                "label": "Enforce reactive power limits as D-curve circle constraints? [qlim]",
                 "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_savesol": {
-            "alias": "savesol",
-            "checkbox": {
-                "label": "Save solution?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_verbose": {
-            "alias": "verbose",
-            "checkbox": {
-                "label": "Print input in listing output?",
-                "value": 1,
                 "class": "checkbox-material"
             }
         },
         "GMSPAR_wind": {
             "alias": "wind",
             "checkbox": {
-                "label": "Turn off wind turbines?",
+                "label": "Turn off wind turbines? [wind]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -113,7 +98,7 @@
         "GMSPAR_ic": {
             "alias": "ic",
             "dropdown": {
-                "label": "Choose a method for generating initial conditions, i.e. NLP starting point",
+                "label": "Choose a method for generating initial conditions, i.e. NLP starting point [ic]",
                 "aliases": [
                     "_",
                     "1: Random",
@@ -140,111 +125,30 @@
                 ]
             }
         },
-        "GMSOPT_solver": {
-            "alias": "Solver",
-            "dropdown": {
-                "label": "Default Solver",
-                "aliases": [
-                    "ALPHAECP",
-                    "ANTIGONE 1.1",
-                    "BARON",
-                    "BDMLP",
-                    "BONMIN 1.8",
-                    "CBC 2.9",
-                    "CONOPT 3",
-                    "CONOPT 4",
-                    "COUENNE 0.5",
-                    "CPLEX 12.8",
-                    "DECIS",
-                    "DICOPT",
-                    "GLOMIQO 2.3",
-                    "GUROBI 8.0",
-                    "IPOPT 3.12",
-                    "KNITRO 10.3",
-                    "LGO",
-                    "LINDO 11.0",
-                    "LINDOGLOBAL 11.0",
-                    "LOCALSOLVER 7.0",
-                    "MILES",
-                    "MINOS",
-                    "MOSEK 8",
-                    "MSNLP",
-                    "NLPEC",
-                    "ODHCPLEX 3.3",
-                    "OQNLP",
-                    "PATH",
-                    "SBB",
-                    "SCIP 5.0",
-                    "SNOPT",
-                    "SOPLEX 3.1",
-                    "XA",
-                    "XPRESS 32.01"
-                ],
-                "choices": [
-                    "ALPHAECP",
-                    "ANTIGONE",
-                    "BARON",
-                    "BDMLP",
-                    "BONMIN",
-                    "CBC",
-                    "CONOPT3",
-                    "CONOPT4",
-                    "COUENNE",
-                    "CPLEX",
-                    "DECIS",
-                    "DICOPT",
-                    "GLOMIQO",
-                    "GUROBI",
-                    "IPOPT",
-                    "KNITRO",
-                    "LGO",
-                    "LINDO",
-                    "LINDOGLOBAL",
-                    "LOCALSOLVER70",
-                    "MILES",
-                    "MINOS",
-                    "MOSEK",
-                    "MSNLP",
-                    "NLPEC",
-                    "ODHCPLEX",
-                    "OQNLP",
-                    "PATH",
-                    "SBB",
-                    "SCIP",
-                    "SNOPT",
-                    "SOPLEX",
-                    "XA",
-                    "XPRESS"
-                ],
-                "selected": "CONOPT3"
-            }
-        },
         "GMSOPT_nlp": {
             "alias": "nlp-Solver",
             "dropdown": {
-                "label": "Solver to use for nlp (optional)",
+                "label": "Solver to use for nlp",
                 "aliases": [
-                    "_",
-                    "ANTIGONE 1.1",
+                    "ANTIGONE",
                     "BARON",
                     "CONOPT 3",
                     "CONOPT 4",
-                    "COUENNE 0.5",
-                    "IPOPT 3.12",
-                    "KNITRO 10.3",
+                    "COUENNE",
+                    "IPOPT",
+                    "KNITRO",
                     "LGO",
-                    "LINDO 11.0",
-                    "LINDOGLOBAL 11.0",
-                    "LOCALSOLVER 7.0",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "LOCALSOLVER",
                     "MINOS",
-                    "MOSEK 8",
+                    "MOSEK",
                     "MSNLP",
                     "OQNLP",
-                    "SCIP 5.0",
+                    "SCIP",
                     "SNOPT"
                 ],
                 "choices": [
-                    "_",
                     "ANTIGONE",
                     "BARON",
                     "CONOPT3",
@@ -263,37 +167,35 @@
                     "SCIP",
                     "SNOPT"
                 ],
-                "selected": "_"
+                "selected": "CONOPT3"
             }
         },
         "GMSOPT_lp": {
             "alias": "LP-Solver",
             "dropdown": {
-                "label": "Solver to use for generating initial conditions via LP (optional) - only used for ic = 4,5,7 and obj = linear or piece-wise linear",
+                "label": "Solver to use for LP",
                 "aliases": [
-                    "_",
                     "BARON",
                     "BDMLP",
-                    "CBC 2.9",
+                    "CBC",
                     "CONOPT 3",
                     "CONOPT 4",
-                    "CPLEX 12.8",
+                    "CPLEX",
                     "DECIS",
-                    "GUROBI 8.0",
-                    "IPOPT 3.12",
-                    "KNITRO 10.3",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
                     "LGO",
-                    "LINDO 11.0",
-                    "LINDOGLOBAL 11.0",
+                    "LINDO",
+                    "LINDOGLOBAL",
                     "MINOS",
-                    "MOSEK 8",
+                    "MOSEK",
                     "SNOPT",
-                    "SOPLEX 3.1",
+                    "SOPLEX",
                     "XA",
-                    "XPRESS 32.01"
+                    "XPRESS"
                 ],
                 "choices": [
-                    "_",
                     "BARON",
                     "BDMLP",
                     "CBC",
@@ -314,39 +216,37 @@
                     "XA",
                     "XPRESS"
                 ],
-                "selected": "_"
+                "selected": "CPLEX"
             }
         },
         "GMSOPT_qcp": {
             "alias": "QCP-Solver",
             "dropdown": {
-                "label": "Solver to use for generating initial conditions via QCP (optional) - only used for ic = 4,5,7 and obj = quadratic",
+                "label": "Solver to use for QCP",
                 "aliases": [
-                    "_",
-                    "ANTIGONE 1.1",
+                    "ANTIGONE",
                     "BARON",
                     "CONOPT 3",
                     "CONOPT 4",
-                    "COUENNE 0.5",
-                    "CPLEX 12.8",
-                    "GLOMIQO 2.3",
-                    "GUROBI 8.0",
-                    "IPOPT 3.12",
-                    "KNITRO 10.3",
+                    "COUENNE",
+                    "CPLEX",
+                    "GLOMIQO",
+                    "GUROBI",
+                    "IPOPT",
+                    "KNITRO",
                     "LGO",
-                    "LINDO 11.0",
-                    "LINDOGLOBAL 11.0",
-                    "LOCALSOLVER 7.0",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "LOCALSOLVER",
                     "MINOS",
-                    "MOSEK 8",
+                    "MOSEK",
                     "MSNLP",
                     "OQNLP",
-                    "SCIP 5.0",
+                    "SCIP",
                     "SNOPT",
-                    "XPRESS 32.01"
+                    "XPRESS"
                 ],
                 "choices": [
-                    "_",
                     "ANTIGONE",
                     "BARON",
                     "CONOPT3",
@@ -369,7 +269,23 @@
                     "SNOPT",
                     "XPRESS"
                 ],
-                "selected": "_"
+                "selected": "CPLEX"
+            }
+        },
+        "GMSPAR_savesol": {
+            "alias": "savesol",
+            "checkbox": {
+                "label": "Save solution? [savesol]",
+                "value": 0,
+                "class": "checkbox-material"
+            }
+        },
+        "GMSPAR_verbose": {
+            "alias": "verbose",
+            "checkbox": {
+                "label": "Print input in listing output? [verbose]",
+                "value": 1,
+                "class": "checkbox-material"
             }
         }
     },
@@ -386,7 +302,7 @@
                 "Set of bus info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "businfo": {
                     "type": "parameter"
                 }
             }
@@ -403,7 +319,7 @@
                 "Set of generator info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "geninfo": {
                     "type": "parameter"
                 }
             }
@@ -423,7 +339,7 @@
                 "Set of branch info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "branchinfo": {
                     "type": "parameter"
                 }
             }
@@ -437,13 +353,14 @@
                 "Set of fuel info selectors": {
                     "type": "set"
                 },
-                "text": {
+                "fuelinfo": {
                     "type": "parameter"
                 }
             }
         },
         "scalars_out": {
             "alias": "Scalars",
+            "count": 25,
             "headers": {
                 "Scalar": {
                     "type": "set"

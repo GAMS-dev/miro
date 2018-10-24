@@ -8,7 +8,7 @@ paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
 genPaverArgs <- function(traceFilenames){
   stopifnot(is.character(traceFilenames), length(traceFilenames) >= 1)
   c(paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, "paver", .Platform$file.sep, "paver.py"), #, "--refsolver",  "Thorin"
-    traceFilenames, "--failtime", "3600", "--writehtml", paverFileDir , "--writeimg", paverFileDir)
+    traceFilenames, "--failtime", "3600", "--writehtml", paverFileDir , "--writeimg", paverFileDir, "--gmswebiter", gmswebiter)
 }
 
 observeEvent(input$btPaverConfig, {
@@ -23,7 +23,9 @@ observeEvent(input$btPaverConfig, {
   }
 })
 
+gmswebiter <- 0
 observeEvent(input$btPaver, {
+  gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
   if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ], 
                             input$selPaverAttribs, maxSolversPaver, stimeIdentifier)){
@@ -31,16 +33,16 @@ observeEvent(input$btPaver, {
     return()
   }else{
     errMsg <- NULL
-    paverDir <- workDir %+% "paver"
+    paverDir <- workDir %+% "paver" %+% .Platform$file.sep
     tryCatch({
       if(dir.exists(traceFileDir)){
-        traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = T)
-        unlink(traceFiles, force = TRUE)
+        unlink(file.path(traceFileDir,"*"), recursive = TRUE, force = TRUE)
       }else{
         dir.create(traceFileDir, showWarnings = FALSE)
       }
       if(dir.exists(paverDir)){
-        unlink(paverDir, recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir,"*"), recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir,"*.png"), recursive = TRUE, force = TRUE)
       }
       dir.create(paverDir, showWarnings = FALSE)
     }, error = function(e){
@@ -50,11 +52,11 @@ observeEvent(input$btPaver, {
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
       return()
     }
-    
-    batchLoad$genPaverTraceFiles(traceFileDir)
-    traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = T)
-    #traceFiles <- c(paste0(traceFileDir,"test.trc"))
+    batchLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+    traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = TRUE)
   }
+  addResourcePath("paver", paverDir)
+  
   removeModal()
   if(!is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")
@@ -73,14 +75,14 @@ observeEvent(input$btPaver, {
     updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
     switchTab(session, "batchAna")
     
-    if(!dir.exists(paverFileDir)){
-      tryCatch({
-        dir.create(paverFileDir, recursive = TRUE, showWarnings = FALSE)
-      }, warning = function(w){
-        errMsg <<- "Paver file directory for solution files could not be created. Check that you have sufficient read/write permissions."
-      })
-    }
-    addResourcePath("paver", paverFileDir)
+#    if(!dir.exists(paverFileDir)){
+#      tryCatch({
+#        dir.create(paverFileDir, recursive = TRUE, showWarnings = FALSE)
+#      }, warning = function(w){
+#        errMsg <<- "Paver file directory for solution files could not be created. Check that you have sufficient read/write permissions."
+#      })
+#    }
+
 
     errMsg <- NULL
     # run paver

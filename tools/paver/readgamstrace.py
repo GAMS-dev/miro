@@ -247,7 +247,7 @@ def read(f, paver, **attribs) :
         if paver.hasSolveAttributes(instanceid, solverid, thisrunname) :
             raise BaseException(str(f) + ':' + str(linenr) + ': Already have data for run ' + thisrunname + ' of solver ' + solverid + ' on instance ' + instanceid + '.');
             
-        if 'Direction' in record :
+        if ('Direction' in record) and (record['Direction'] != "NA") :
             # map trace record direction (0 = min, 1 = max) to SolveData direction (1 = min, -1 = max)
             record['Direction'] = 1 - 2 * int(record['Direction']);
         else :

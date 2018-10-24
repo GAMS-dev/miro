@@ -523,6 +523,7 @@ class SolveDataWriter() :
         if solverrun is not None:
             title += ' for ' + str(solverrun);
         plt.title(title);
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0);
 
         # generate output files
         if self._paver.options['figformat'] != 'png' :

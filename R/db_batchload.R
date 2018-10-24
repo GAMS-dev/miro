@@ -34,6 +34,8 @@ BatchLoad <- R6Class("BatchLoad",
                          private$keyTypeList        <- scalarKeyTypeList
                          private$tableFieldSep      <- tableFieldSep
                          private$tableNameTrace     <- db$getTraceConfig()[["tabName"]]
+                         private$traceColNames      <- db$getTraceConfig()[["colNames"]]
+                         
                          dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
                        },
                        fetchValues = function(field, table = NULL){
@@ -167,7 +169,7 @@ BatchLoad <- R6Class("BatchLoad",
                          private$groupLabels <- attr(groupedData, "labels")
                          return(FALSE)
                        },
-                       genPaverTraceFiles = function(workDir){
+                       genPaverTraceFiles = function(workDir, exclTraceCols = NULL) {
                          stopifnot(length(private$groupedSids) > 0L)
                          stopifnot(length(private$groupLabels) > 0L)
                          stopifnot(length(private$tableNameTrace) > 0L)
@@ -183,11 +185,8 @@ BatchLoad <- R6Class("BatchLoad",
                          lapply(seq_along(private$groupedSids), function(i){
                            fileName <- workDir %+% i %+% ".trc"
                            paverFile <- file(fileName, open = 'wt')
-                           
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
-                                             "* InputFileName,ModelType,SolverName,NLP,MIP,JulianDate,Direction,",
-                                             "OptionFile,ModelStatus,SolverStatus,",
-                                             "ObjectiveValue\n* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,NumberOfDomainViolations,NumberOfNodes,#User1\n",
+                                             "* ", paste(setdiff(private$traceColNames, exclTraceCols), collapse = ","),
                                              "*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
                            paverData      <- private$db$importDataset(private$tableNameTrace, 
@@ -195,8 +194,10 @@ BatchLoad <- R6Class("BatchLoad",
                                                                       innerSepAND = FALSE)[-1]
                            paverData[[1]] <- private$groupedNames[[i]]
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
-                           paverData[, c("NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
-                                         "NumberOfNonZeros", "NumberOfNonlinearNonZeros")] <- NULL
+                           if(length(exclTraceCols)){
+                             paverData[, exclTraceCols] <- NULL
+                           }
+                           
                            write_csv(paverData, fileName, append = TRUE)
                            
                          })
@@ -214,6 +215,7 @@ BatchLoad <- R6Class("BatchLoad",
                        tabNameMeta             = character(0L),
                        scalarTables            = character(0L),
                        tableNameTrace          = character(0L),
+                       traceColNames           = character(0L),
                        tableFieldSep           = character(0L),
                        keyTypeList             = NULL,
                        values                  = list(),

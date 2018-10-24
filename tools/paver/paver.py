@@ -28,6 +28,7 @@ DEFAULTWRITETEXT = None;
 DEFAULTWRITEHTML = 'results';
 DEFAULTFIGFORMAT = 'png';
 DEFAULTWRITEIMG = None;
+DEFAULTGMSWEBITER = 1;
 
 def _defaultaggrfunc(attribute, rundata) :
     '''Returns aggregated value for of several solver runs on the same instance for a particular solve attribute.''' 
@@ -722,7 +723,9 @@ def setupArgumentParser(paversetup) :
     parser.add_argument('--figformat', type = str, default = DEFAULTFIGFORMAT,
                         help = 'format for plotted figures (default: ' + str(DEFAULTFIGFORMAT) + ')');
     parser.add_argument('--writeimg', type = str, default = DEFAULTWRITEIMG,
-                        help = 'directory where to write results in IMG format (default: ' + str(DEFAULTWRITEIMG) + ')');						
+                        help = 'directory where to write results in IMG format (default: ' + str(DEFAULTWRITEIMG) + ')');	
+    parser.add_argument('--gmswebiter', type = str, default = DEFAULTGMSWEBITER,
+                        help = 'Iteration of the Paver runs in the current GAMS WebUI session.  (default: ' + str(DEFAULTGMSWEBITER) + ')');	                        
     
     # Paver object options
     parser.add_argument('--zerogaptol', type = float, default = DEFAULTZEROGAPTOL,

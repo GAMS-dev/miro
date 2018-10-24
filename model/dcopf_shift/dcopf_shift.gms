@@ -63,7 +63,7 @@ $setnames "%case%" casepath casename caseextension
 $batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
 
 $ifthen not exist %casepath%%casename%_Shift_Matrix%caseextension%
-$call 'gams %MODELPATH%..%system.dirsep%DataUtilities%system.dirsep%calc_S_matrix.gms --case=%case%';
+$call 'gams %MODELPATH%..%system.dirsep%tools%system.dirsep%DataUtilities%system.dirsep%calc_S_matrix.gms --case=%case%';
 if(errorlevel ne 0, abort "Calculating Shift matrix failed!");
 $endif
 

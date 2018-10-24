@@ -409,9 +409,13 @@ def dict_merge(dct, merge_dct):
         else:
             result[k] = merge_dct[k]
     return result
-    
+ 
 import json
-config = { "pageTitle" : "%system.title%",
+
+titletmp = """ %system.title% """
+titletmp = titletmp.replace('\'',"").replace('\"',"")
+
+config = { "pageTitle" : titletmp,
            "gamsMetaDelim" : "###",
            "gamsWEBUISwitch" : "--GMSWEBUI=1",
            "fileExchange" : "csv",
@@ -422,6 +426,7 @@ for s in input_sym:
    text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
       e_dict = json.loads(text[text.find(' ###')+4:])
+      print(e_dict)
    else:   
       e_dict = {}
    headers = {}
@@ -462,15 +467,14 @@ for s in scalar_input_sym:
    else:
       needScalar = True;
 
-if needScalar:      
+if needScalar:  
    io_dict['scalars'] = { 'alias':'Scalars', 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
-if len(s_webuiconf):
+if len(s_webuiconf):  
    config['gamsInputFiles'] = dict_merge(io_dict,json.loads(s_webuiconf))
 elif os.path.isfile('webuiconf.json'):
    with open('webuiconf.json', 'r') as jffile:
       config['gamsInputFiles'] = dict_merge(io_dict,json.load(jffile))
-   
-else:
+else:  
    config['gamsInputFiles'] = io_dict
    
 io_dict = {}           

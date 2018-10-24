@@ -4,9 +4,9 @@ $onecho > webuiconf.json
      "alias": "Input case",
      "dropdown": {
          "label": "Select input case [case]",
-	 "choices": "casename$filename"
-	 
-     }
+	 "choices": "casename$filename"	 
+     },
+     "noBatch": true
   }, 
   "GMSPAR_times": {
      "alias": "Time range",
