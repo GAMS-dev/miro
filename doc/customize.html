@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     <!-- Spectrum ColorPicker plugin -->
     <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
+    <!-- bootstrap datetimepicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
@@ -83,6 +85,10 @@
                                     <button class="upload-btn">Upload the GMSIO_config.json file</button>
                                     <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
                                   </div>
+                                  <div id="selectConfigType" style="display:none;">
+                                    <button type="button" id="launchConfigGenBt" class="upload-btn">Generate config.json file</button>
+                                    <button type="button" id="launchInputGenBt" class="upload-btn">Generate input widget</button>
+                                  </div>
                                   <div id="form1"></div>
                                   <script type="text/javascript">
                                   function parseGMSIO() {
@@ -98,41 +104,50 @@
 
                                       fr.onload = function(e) {
                                         try {
-                                          var gmsData = JSON.parse(e.target.result);
-                                          var gmsSym  = Object.keys(gmsData.gamsInputFiles);
-                                          gmsSym = gmsSym.concat(Object.keys(gmsData.gamsOutputFiles));
+                                          let gmsData = JSON.parse(e.target.result);
+                                          let gmsSymIn  = Object.keys(gmsData.gamsInputFiles);
+                                          let gmsSymOut  = Object.keys(gmsData.gamsOutputFiles);
+                                          let i = 0;
+                                          let scalarVals = [];
 
-                                          var gmsSymHdr = new Object();
-                                          var scalars = [];
-                                          for (let i in gmsSym){
-                                            if(gmsSym[i] === "scalars"){
+                                          while (i < gmsSymIn.length) {
+                                            if($.inArray("headers", Object.keys(gmsData.gamsInputFiles[gmsSymIn[i]])) === -1){
+                                              scalarVals.push(gmsSymIn[i]);
+                                              gmsSymIn.splice(i, 1);
+                                            }else{
+                                              i++;
+                                            }
+                                          }
+                                          let gmsSymHdrIn = new Object();
+                                          let gmsSymHdrOut = new Object();
+                                          let scalars = [];
+                                          for (let i in gmsSymIn){
+                                            if(gmsSymIn[i] === "scalars"){
                                               scalars.push("scalars");
                                               continue;
                                             }
-                                            if(gmsSym[i] === "scalars_out"){
+                                            gmsSymHdrIn[gmsSymIn[i]] = Object.keys(gmsData.gamsInputFiles[gmsSymIn[i]].headers);
+                                          }
+
+                                          for (let i in gmsSymOut){
+                                            if(gmsSymOut[i] === "scalars_out"){
                                               scalars.push("scalars_out");
                                               continue;
                                             }
-                                            if(jQuery.inArray(gmsSym[i], Object.keys(gmsData.gamsOutputFiles)) !== -1) {
-                                              gmsSymHdr[gmsSym[i]] = Object.keys(gmsData.gamsOutputFiles[gmsSym[i]].headers);
-                                            }else{
-                                              gmsSymHdr[gmsSym[i]] = Object.keys(gmsData.gamsInputFiles[gmsSym[i]].headers);
-                                            }
-                                            //var hdrsTmp = Object.keys(gmsData.gamsInputFiles[gmsIn[i]].headers);
-                                            //gmsInHdrMap[gmsIn[i]] = hdrsTmp;
+                                            gmsSymHdrOut[gmsSymOut[i]] = Object.keys(gmsData.gamsOutputFiles[gmsSymOut[i]].headers);
                                           }
-                                          let iScalar = gmsSym.indexOf("scalars");
+                                          let iScalar = gmsSymIn.indexOf("scalars");
                                           if(iScalar > -1){
-                                            gmsSym.splice(iScalar, 1);
+                                            gmsSymIn.splice(iScalar, 1);
                                           }
-                                          let iScalarOut = gmsSym.indexOf("scalars_out");
+                                          let iScalarOut = gmsSymOut.indexOf("scalars_out");
                                           if(iScalarOut > -1){
-                                            gmsSym.splice(iScalarOut, 1);
+                                            gmsSymOut.splice(iScalarOut, 1);
                                           }
                                           $("#gmsioUpload").hide();
-                                          launchAlpaca(gmsSym, gmsSymHdr, scalars);
+                                          $("#selectConfigType").show();
+                                          launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, scalars, scalarVals);
                                         }
-
                                         catch(err) {
                                             console.log(err)
                                             $("#errMsg").html("Problems parsing the JSON file. Please upload a valid GMSIO configutation file!");
@@ -141,7 +156,19 @@
                                       }
                                     fr.readAsText(files.item(0));
                                   };
-                                  function launchAlpaca(gmsSym, gmsSymHdr, scalars){
+                                  function launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, scalars, scalarVals){
+                                     $("#launchConfigGenBt").click(function(){
+                                       $("#selectConfigType").hide();
+                                       // Merge gmsSymHdrOut into gmsSymHdrIn
+                                       $.extend(gmsSymHdrIn, gmsSymHdrOut);
+                                       launchConfigGen(gmsSymIn.concat(gmsSymOut), gmsSymHdrIn, scalars);
+                                     })
+                                     $("#launchInputGenBt").click(function(){
+                                       $("#selectConfigType").hide();
+                                       launchInputGen(gmsSymIn.concat(scalarVals), gmsSymHdrIn);
+                                     })
+                                  }
+                                  function launchConfigGen(gmsSym, gmsSymHdr, scalars){
                                     Alpaca.defaultToolbarSticky = true;
                                       $("#form1").alpaca({
                                           "schema": {
@@ -1936,7 +1963,1072 @@
                                           }
                                       });
                                   }
+                                  function launchInputGen(gmsSymIn, gmsSymHdrIn){
+                                    let gmsSymHeaders = [];
+                                    for(let i=0;i<gmsSymIn.length;i++){
+                                      if(typeof gmsSymHdrIn[gmsSymIn[i]] !== 'undefined'){
+                                        gmsSymHeaders = gmsSymHeaders.concat(gmsSymHdrIn[gmsSymIn[i]]);
+                                      }
+                                    }
+                                    Alpaca.defaultToolbarSticky = true;
+                                      $("#form1").alpaca({
+                                        "schema": {
+                                          "$schema":"http://json-schema.org/draft-07/schema#",
+                                          "title":"",
+                                          "type":"object",
+                                          "additionalProperties":false,
+                                          "properties":{
+                                                "gmsParam":{
+                                                  "title":"Which parameter would you like to customize?",
+                                                  "type":"string",
+                                                  "enum":gmsSymIn,
+                                                  "default":gmsSymIn[0],
+                                                  "required":true
+                                                },
+                                                "widgetType":{
+                                                  "title":"What type of input widget do you want?",
+                                                  "type":"string",
+                                                  "enum":["table","slider","dropdown","date selector","daterange selector","checkbox"],
+                                                  "default":"table",
+                                                  "required":true
+                                                },
+                                                "readOnlyCols":{
+                                                  "title":"Select columns that are to be read-only",
+                                                  "type":"array",
+                                                  "items":{
+                                                    "type":"object",
+                                                    "properties":{
+                                                      "colName":{
+                                                        "title":"Column name",
+                                                        "type":"string",
+                                                        "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                        "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                        "required":true
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "slider":{
+                                                  "type":"object",
+                                                  "additionalProperties":false,
+                                                  "properties":{
+                                                    "label":{
+                                                      "title":"Descriptive text for slider",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "minDepSel":{
+                                                      "title":"Do you want the minimum slider value to be dependent on another dataset?",
+                                                      "type":"string",
+                                                      "enum":["dependent","static"],
+                                                      "default":"static",
+                                                      "required":true
+                                                    },
+                                                    "min":{
+                                                      "title":"Minimum value",
+                                                      "type":"number",
+                                                      "required":true
+                                                    },
+                                                    "minDep":{
+                                                      "type":"object",
+                                                      "additionalProperties":false,
+                                                      "properties":{
+                                                        "minop":{
+                                                          "title":"Operator to use in order to summarize set elements to single value",
+                                                          "type":"string",
+                                                          "enum":["minimum","maximum","variance","standard deviation","median","mean","count"],
+                                                          "default":["minimum"],
+                                                          "required":true
+                                                        },
+                                                        "minpar":{
+                                                          "title":"Parameter to depend on",
+                                                          "type":"string",
+                                                          "enum":gmsSymIn.concat('None'),
+                                                          "default":gmsSymIn[0],
+                                                          "required":true
+                                                        },
+                                                        "minhdr":{
+                                                          "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
+                                                          "type":"string",
+                                                          "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                          "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                          "required":true
+                                                        }
+                                                      }
+                                                    },
+                                                    "maxDepSel":{
+                                                      "title":"Do you want the maximum slider value to be dependent on another dataset?",
+                                                      "type":"string",
+                                                      "enum":["dependent","static"],
+                                                      "default":"static",
+                                                      "required":true
+                                                    },
+                                                    "max":{
+                                                      "title":"Maximum value",
+                                                      "type":"number",
+                                                      "required":true
+                                                    },
+                                                    "maxDep":{
+                                                      "type":"object",
+                                                      "additionalProperties":false,
+                                                      "properties":{
+                                                        "maxop":{
+                                                          "title":"Operator to use in order to summarize set elements to single value",
+                                                          "type":"string",
+                                                          "enum":["minimum","maximum","variance","standard deviation","median","mean","count"],
+                                                          "default":["minimum"],
+                                                          "required":true
+                                                        },
+                                                        "maxpar":{
+                                                          "title":"Parameter to depend on",
+                                                          "type":"string",
+                                                          "enum":gmsSymIn.concat('None'),
+                                                          "default":gmsSymIn[0],
+                                                          "required":true
+                                                        },
+                                                        "maxhdr":{
+                                                          "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
+                                                          "type":"string",
+                                                          "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                          "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                          "required":true
+                                                        }
+                                                      }
+                                                    },
+                                                    "defDepSel":{
+                                                      "title":"Do you want the default slider value to be dependent on another dataset?",
+                                                      "type":"string",
+                                                      "enum":["dependent","static"],
+                                                      "default":"static",
+                                                      "required":true
+                                                    },
+                                                    "default":{
+                                                      "title":"Default/starting value",
+                                                      "type": "number",
+                                                      "required":true
+                                                    },
+                                                    "defDep":{
+                                                      "type":"object",
+                                                      "additionalProperties":false,
+                                                      "properties":{
+                                                        "defop":{
+                                                          "title":"Operator to use in order to summarize set elements to single value",
+                                                          "type":"string",
+                                                          "enum":["minimum","maximum","variance","standard deviation","median","mean","count"],
+                                                          "default":["minimum"],
+                                                          "required":true
+                                                        },
+                                                        "defpar":{
+                                                          "title":"Parameter to depend on",
+                                                          "type":"string",
+                                                          "enum":gmsSymIn.concat('None'),
+                                                          "default":gmsSymIn[0],
+                                                          "required":true
+                                                        },
+                                                        "defhdr":{
+                                                          "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
+                                                          "type":"string",
+                                                          "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                          "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                          "required":true
+                                                        }
+                                                      }
+                                                    },
+                                                    "step":{
+                                                      "title":"Specify the interval between each selectable value",
+                                                      "type":"number",
+                                                      "required":true
+                                                    },
+                                                    "width":{
+                                                      "title":"Width of the slider (optional)",
+                                                      "type":"string",
+                                                      "required":false
+                                                    },
+                                                    "ticks":{
+                                                      "title":"Do you want to show tick marks on the slider?",
+                                                      "type":"boolean",
+                                                      "default":true,
+                                                      "required":false
+                                                    }
+                                                  },
+                                                  "dependencies":{
+                                                    "min":["minDepSel"],
+                                                    "minDep":["minDepSel"],
+                                                    "max":["maxDepSel"],
+                                                    "maxDep":["maxDepSel"],
+                                                    "default":["defDepSel"],
+                                                    "defDep":["defDepSel"]
+                                                  }
+                                                },
+                                                "dropdown":{
+                                                  "type":"object",
+                                                  "additionalProperties":false,
+                                                  "properties":{
+                                                    "label":{
+                                                      "title":"Descriptive text for dropdown menu",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "choices":{
+                                                      "title":"List of values to select from. This is the text that will be passed on to GAMS.",
+                                                      "type":"array",
+                                                      "minLength":1,
+                                                      "minItems":1,
+                                                      "required":true,
+                                                      "items":{
+                                                        "type":"object",
+                                                        "additionalProperties":false,
+                                                        "properties":{
+                                                          "choiceDepSel":{
+                                                            "title":"Should item be dependent on another dataset or static?",
+                                                            "type": "string",
+                                                            "enum":["dependent","static"],
+                                                            "default":"static",
+                                                            "required":true
+                                                          },
+                                                          "choice":{
+                                                            "type":"string",
+                                                            "title":"Enter new choice",
+                                                            "required": true,
+                                                            "minLength":1
+                                                          },
+                                                          "choiceDep":{
+                                                            "type":"object",
+                                                            "additionalProperties":false,
+                                                            "properties":{
+                                                              "choiceDepType":{
+                                                                "title":"Do you want to filter the dependent table based on the selection you made, fill the dropdown menu based on the elements in the dependent table or both?",
+                                                                "type": "string",
+                                                                "enum":["filter table","fill with values","both"],
+                                                                "default":"both",
+                                                                "required":true
+                                                              },
+                                                              "choicepar":{
+                                                                "title":"Parameter to depend on",
+                                                                "type":"string",
+                                                                "enum":gmsSymIn.concat('None'),
+                                                                "default":gmsSymIn[0],
+                                                                "required":true
+                                                              },
+                                                              "choicehdr":{
+                                                                "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
+                                                                "type":"string",
+                                                                "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                                "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                                "required":true
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "dependencies":{
+                                                          "choice":["choiceDepSel"],
+                                                          "choiceDep":["choiceDepSel"]
+                                                        }
+                                                      }
+                                                    },
+                                                    "aliases":{
+                                                      "type":"array",
+                                                      "title":"Aliases for the elements (length must match the number of choices you entered or left empty). This is the text the user will see in the UI.  In case no aliases are defined, the text displayed in the UI is the same as the one for choices.",
+                                                      "required":false,
+                                                      "items":{
+                                                        "type":"object",
+                                                        "additionalProperties":false,
+                                                        "properties":{
+                                                          "aliasDepSel":{
+                                                            "title":"Should item be dependent on another dataset or static?",
+                                                            "type": "string",
+                                                            "enum":["dependent","static"],
+                                                            "default":"static",
+                                                            "required":true
+                                                          },
+                                                          "alias":{
+                                                            "type":"string",
+                                                            "title":"Enter the element name",
+                                                            "required":true,
+                                                            "minLength":1
+                                                          },
+                                                          "aliasDep":{
+                                                            "type":"object",
+                                                            "additionalProperties":false,
+                                                            "properties":{
+                                                              "aliasDepType":{
+                                                                "title":"Do you want to filter the dependent table based on the selection you made, fill the dropdown menu based on the elements in the dependent table or both?",
+                                                                "type": "string",
+                                                                "enum":["filter table","fill with values","both"],
+                                                                "default":"both",
+                                                                "required":true
+                                                              },
+                                                              "aliaspar":{
+                                                                "title":"Parameter to depend on",
+                                                                "type":"string",
+                                                                "enum":gmsSymIn.concat('None'),
+                                                                "default":gmsSymIn[0],
+                                                                "required":true
+                                                              },
+                                                              "aliashdr":{
+                                                                "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
+                                                                "type":"string",
+                                                                "enum":gmsSymHdrIn[gmsSymIn[0]],
+                                                                "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                                                "required":true
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "dependencies":{
+                                                          "alias":["aliasDepSel"],
+                                                          "aliasDep":["aliasDepSel"]
+                                                        }
+                                                      }
+                                                    },
+                                                    "multiple":{
+                                                      "title":"Are multiple choices allowed to be selected?",
+                                                      "type":"boolean",
+                                                      "required":false
+                                                    },
+                                                    "selected":{
+                                                      "title":"The initially selected value",
+                                                      "type":"string",
+                                                      "required":false
+                                                    }
+                                                  }
+                                                },
+                                                "date":{
+                                                  "type":"object",
+                                                  "additionalProperties":false,
+                                                  "properties":{
+                                                    "label":{
+                                                      "title":"Descriptive text for date selector",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "value":{
+                                                      "title":"initial start date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "min":{
+                                                      "title":"minimum allowed date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "max":{
+                                                      "title":"maximum allowed date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "format":{
+                                                      "title":"format of the date to display in the browser",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "maxLength":10,
+                                                      "default":"yyyy-mm-dd",
+                                                      "required":false
+                                                    },
+                                                    "startview":{
+                                                      "title":"date range shown when the input object is first clicked",
+                                                      "type":"string",
+                                                      "enum":[
+                                                        "month",
+                                                        "year",
+                                                        "decade"
+                                                      ],
+                                                      "default":"month",
+                                                      "required":true
+                                                    },
+                                                    "weekstart":{
+                                                      "title":"Which day is displayed to be the first of the week (0=Sunday, 6=Saturday)?",
+                                                      "type":"integer",
+                                                      "minimum":0,
+                                                      "maximum":6,
+                                                      "required":false
+                                                    },
+                                                    "width":{
+                                                      "title":"width of the input",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    }
+                                                  }
+                                                },
+                                                "daterange":{
+                                                  "type":"object",
+                                                  "additionalProperties":false,
+                                                  "properties":{
+                                                    "label":{
+                                                      "title":"Descriptive text for date range selector",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "start":{
+                                                      "title":"initial start date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "end":{
+                                                      "title":"initial end date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "min":{
+                                                      "title":"minimum allowed date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "max":{
+                                                      "title":"maximum allowed date",
+                                                      "type":"string",
+                                                      "minLength":10,
+                                                      "maxLength":10,
+                                                      "required":false
+                                                    },
+                                                    "format":{
+                                                      "title":"format of the date to display in the browser.",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "maxLength":10,
+                                                      "default":"yyyy-mm-dd",
+                                                      "required":false
+                                                    },
+                                                    "startview":{
+                                                      "title":"date range shown when the input object is first clicked",
+                                                      "type":"string",
+                                                      "enum":[
+                                                        "month",
+                                                        "year",
+                                                        "decade"
+                                                      ],
+                                                      "default":"month",
+                                                      "required":true
+                                                    },
+                                                    "weekstart":{
+                                                      "title":"Which day is displayed to be the first of the week (0=Sunday, 6=Saturday)?",
+                                                      "type":"integer",
+                                                      "minimum":0,
+                                                      "maximum":6,
+                                                      "default":0,
+                                                      "required":false
+                                                    },
+                                                    "separator":{
+                                                      "title":"String to display between the start and end input boxes",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "default":" to ",
+                                                      "required":false
+                                                    },
+                                                    "width":{
+                                                      "title":"width of the input",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "autoclose":{
+                                                      "title":"Should the datepicker be closed automatically once a date is selected?",
+                                                      "type":"boolean",
+                                                      "required":false
+                                                    }
+                                                  }
+                                                },
+                                                "checkbox":{
+                                                  "type":"object",
+                                                  "additionalProperties":false,
+                                                  "properties":{
+                                                    "label":{
+                                                      "title":"Descriptive text for checkbox",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "value":{
+                                                      "title":"initial value",
+                                                      "type":"boolean",
+                                                      "required":false
+                                                    },
+                                                    "class":{
+                                                      "title":"css class",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    },
+                                                    "width":{
+                                                      "title":"width of the input",
+                                                      "type":"string",
+                                                      "minLength":1,
+                                                      "required":false
+                                                    }
+                                                  }
+                                                },
+                                                "noimport":{
+                                                  "title":"Should data NOT be imported from an external source (e.g. spreadsheet)?",
+                                                  "type":"boolean",
+                                                  "required":false
+                                                },
+                                                "readonly":{
+                                                  "title":"Should the entire table be readonly?",
+                                                  "type":"boolean"
+                                                },
+                                                "sharedData":{
+                                                  "title":"Is data for this widget stored in a shared database table and thus loaded at startup?",
+                                                  "type":"boolean",
+                                                  "required":false
+                                                },
+                                                "colSubset":{
+                                                  "title":"Which columns should be imported to the UI (names of columns)?",
+                                                  "type":"array",
+                                                  "uniqueItems":true,
+                                                  "minItems":1,
+                                                  "items":{
+                                                    "title":"Name of column",
+                                                    "type":"string",
+                                                    "minLength":1,
+                                                    "required":true
+                                                  },
+                                                  "required":false
+                                                },
+                                                "noBatch":{
+                                                  "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                                                  "type":"boolean",
+                                                  "required":false
+                                                }
+                                              },
+                                              "dependencies":{
+                                                "headers":["widgetType"],
+                                                "dropdown":["widgetType"],
+                                                "slider":["widgetType"],
+                                                "date":["widgetType"],
+                                                "daterange":["widgetType"],
+                                                "checkbox":["widgetType"],
+                                                "noimport":["widgetType"],
+                                                "readonly":["widgetType"],
+                                                "readOnlyCols":["widgetType"],
+                                                "sharedData":["widgetType"],
+                                                "colSubset":["sharedData"],
+                                                "noBatch":["sharedData"]
+                                              }
+                                            },
+                                            "options":{
+                                               "fields":{
+                                                  "headers":{
+                                                    "dependencies":{
+                                                       "widgetType": "table"
+                                                    }
+                                                  },
+                                                  "dropdown":{
+                                                    "dependencies":{
+                                                       "widgetType": "dropdown"
+                                                    },
+                                                    "fields":{
+                                                      "choices":{
+                                                        "fields":{
+                                                          "item":{
+                                                            "fields":{
+                                                              "choice":{
+                                                                "dependencies":{
+                                                                  "choiceDepSel": "static"
+                                                                }
+                                                              },
+                                                              "choiceDep":{
+                                                                "dependencies":{
+                                                                  "choiceDepSel":"dependent"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "aliases":{
+                                                        "fields":{
+                                                          "item":{
+                                                            "fields":{
+                                                              "alias":{
+                                                                "dependencies":{
+                                                                  "aliasDepSel": "static"
+                                                                }
+                                                              },
+                                                              "aliasDep":{
+                                                                "dependencies":{
+                                                                  "aliasDepSel": "dependent"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "slider":{
+                                                    "dependencies":{
+                                                       "widgetType": "slider"
+                                                    },
+                                                    "fields":{
+                                                      "min":{
+                                                        "dependencies":{
+                                                          "minDepSel": "static"
+                                                        }
+                                                      },
+                                                      "minDep":{
+                                                        "dependencies":{
+                                                          "minDepSel":"dependent"
+                                                        }
+                                                      },
+                                                      "max":{
+                                                        "dependencies":{
+                                                          "maxDepSel": "static"
+                                                        }
+                                                      },
+                                                      "maxDep":{
+                                                        "dependencies":{
+                                                          "maxDepSel": "dependent"
+                                                        }
+                                                      },
+                                                      "default":{
+                                                        "dependencies":{
+                                                          "defDepSel": "static"
+                                                        }
+                                                      },
+                                                      "defDep":{
+                                                        "dependencies":{
+                                                          "defDepSel": "dependent"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "date":{
+                                                    "dependencies":{
+                                                       "widgetType": "date selector"
+                                                    },
+                                                    "fields":{
+                                                      "value":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      },
+                                                      "min":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      },
+                                                      "max":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      }
+                                                    }
+                                                  },
+                                                  "daterange":{
+                                                    "dependencies":{
+                                                       "widgetType": "daterange selector"
+                                                    },
+                                                    "fields":{
+                                                      "start":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      },
+                                                      "end":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      },
+                                                      "min":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      },
+                                                      "max":{
+                                                        "type":"date",
+                                                        "dateFormat": "YYYY-MM-DD",
+                                                        "manualEntry": true
+                                                      }
+                                                    }
+                                                  },
+                                                  "checkbox":{
+                                                    "dependencies":{
+                                                       "widgetType": "checkbox"
+                                                    }
+                                                  },
+                                                  "noimport":{
+                                                    "dependencies":{
+                                                       "widgetType": "table"
+                                                    }
+                                                  },
+                                                  "readonly":{
+                                                    "dependencies":{
+                                                       "widgetType": "table"
+                                                    }
+                                                  },
+                                                  "readOnlyCols":{
+                                                    "dependencies":{
+                                                       "widgetType": "table"
+                                                    }
+                                                  },
+                                                  "sharedData":{
+                                                    "dependencies":{
+                                                       "widgetType": "table"
+                                                    }
+                                                  },
+                                                  "noBatch":{
+                                                    "dependencies":{
+                                                       "widgetType": ["checkbox","slider","dropdown","date selector","daterange selector"]
+                                                    }
+                                                  }
+                                                },
+                                                "form":{
+                                                  "buttons":{
+                                                     "submit":{
+                                                        "title":"Copy JSON to clipboard",
+                                                        "click":function(){
+                                                          co = this.getValue();
+                                                          switch(co.widgetType) {
+                                                            case "table":
+                                                              if(co.readOnlyCols.length){
+                                                                let roCols = new Object();
+                                                                for(let i=0;i<co.readOnlyCols.length;i++){
+                                                                  roCols[co.readOnlyCols[i].colName] = new Object();
+                                                                  roCols[co.readOnlyCols[i].colName].readonly = true;
+                                                                }
+                                                                co.headers = roCols;
+                                                              }
+                                                              delete co.readOnlyCols;
+                                                              // get rid of default values as this makes JSON string shorter
+                                                              if(!co.noimport){
+                                                                delete co.noimport;
+                                                              }
+                                                              if(!co.readonly){
+                                                                delete co.readonly;
+                                                              }
+                                                              if(!co.sharedData){
+                                                                delete co.sharedData;
+                                                              }
+                                                              if(!co.noBatch){
+                                                                delete co.noBatch;
+                                                              }
+                                                            break;
+                                                            case "slider":
+                                                              function addOp(opName, sliderVal){
+                                                                let sliderValOp;
+                                                                switch(opName){
+                                                                  case "count":
+                                                                    sliderValOp = 'card(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "maximum":
+                                                                    sliderValOp = 'max(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "mean":
+                                                                    sliderValOp = 'mean(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "median":
+                                                                    sliderValOp = 'median(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "minimum":
+                                                                    sliderValOp = 'min(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "standard deviation":
+                                                                    sliderValOp = 'sd(' + sliderVal + ')';
+                                                                  break;
+                                                                  case "variance":
+                                                                    sliderValOp = 'var(' + sliderVal + ')';
+                                                                  break;
+                                                                }
+                                                                return sliderValOp;
+                                                              }
+                                                              if(co.slider.minDepSel === "dependent"){
+                                                                let sliderVal = '';
+                                                                if($.inArray('minpar', Object.keys(co.slider.minDep)) !== -1){
+                                                                  sliderVal = co.slider.minDep.minpar + "$";
+                                                                }
+
+                                                                sliderVal = sliderVal + co.slider.minDep.minhdr;
+                                                                sliderVal = addOp(co.slider.minDep.minop, sliderVal);
+                                                                co.slider.min = sliderVal;
+                                                                delete co.slider.minDep;
+                                                              }
+                                                              delete co.slider.minDepSel;
+
+                                                              if(co.slider.maxDepSel === "dependent"){
+                                                                let sliderVal = '';
+                                                                if($.inArray('maxpar', Object.keys(co.slider.maxDep)) !== -1){
+                                                                  sliderVal = co.slider.maxDep.maxpar + "$";
+                                                                }
+                                                                sliderVal = sliderVal + co.slider.maxDep.maxhdr;
+                                                                sliderVal = addOp(co.slider.maxDep.maxop, sliderVal);
+                                                                co.slider.max = sliderVal;
+                                                                delete co.slider.maxDep;
+                                                              }
+                                                              delete co.slider.maxDepSel;
+
+                                                              if(co.slider.defDepSel === "dependent"){
+                                                                let sliderVal = '';
+                                                                if($.inArray('defpar', Object.keys(co.slider.defDep)) !== -1){
+                                                                  sliderVal = co.slider.defDep.defpar + "$";
+                                                                }
+                                                                sliderVal = sliderVal + co.slider.defDep.defhdr;
+                                                                sliderVal = addOp(co.slider.defDep.defop, sliderVal);
+                                                                co.slider.default = sliderVal;
+                                                                delete co.slider.defDep;
+                                                              }
+                                                              delete co.slider.defDepSel;
+                                                              // get rid of default values as this makes JSON string shorter
+                                                              if(co.slider.ticks){
+                                                                delete co.slider.ticks;
+                                                              }
+                                                            break;
+                                                            case "dropdown":
+                                                              if(co.dropdown.aliases.length !== 0 && co.dropdown.choices.length !== co.dropdown.aliases.length){
+                                                                alert("The number of choices does not match the number of aliases! Please make sure you enter as many aliases as you entered choices.");
+                                                                return;
+                                                              }
+                                                              let choicesR = co.dropdown.choices;
+                                                              let choices = [];
+                                                              for(let i=0;i<choicesR.length;i++){
+                                                                if(choicesR[i].choiceDepSel === 'dependent'){
+                                                                  let choice = '';
+                                                                  if($.inArray('choicepar', Object.keys(choicesR[i].choiceDep)) !== -1){
+                                                                    choice = choicesR[i].choiceDep.choicepar + "$";
+                                                                  }
+                                                                  choice = choice + choicesR[i].choiceDep.choicehdr;
+                                                                  switch(choicesR[i].choiceDep.choiceDepType){
+                                                                    case "fill with values":
+                                                                      choice = '$' + choice;
+                                                                    break;
+                                                                    case "filter table":
+                                                                      choice = choice + '$';
+                                                                    break;
+                                                                    case "both":
+                                                                      choice = '$' + choice + '$';
+                                                                    break;
+                                                                  }
+                                                                  choices.push(choice);
+                                                                }else{
+                                                                  choices.push(choicesR[i].choice);
+                                                                }
+                                                              }
+                                                              co.dropdown.choices = choices;
+                                                              choicesR = co.dropdown.aliases;
+                                                              let aliases = [];
+                                                              for(let i=0;i<choicesR.length;i++){
+                                                                if(choicesR[i].aliasDepSel === 'dependent'){
+                                                                  let alias = '';
+                                                                  if($.inArray('aliaspar', Object.keys(choicesR[i].aliasDep)) !== -1){
+                                                                    alias = choicesR[i].aliasDep.aliaspar + "$";
+                                                                  }
+                                                                  alias = alias + choicesR[i].aliasDep.aliashdr;
+                                                                  switch(choicesR[i].aliasDep.aliasDepType){
+                                                                    case "fill with values":
+                                                                      alias = '$' + alias;
+                                                                    break;
+                                                                    case "filter table":
+                                                                      alias = alias + '$';
+                                                                    break;
+                                                                    case "both":
+                                                                      alias = '$' + alias + '$';
+                                                                    break;
+                                                                  }
+                                                                  aliases.push(alias);
+                                                                }else{
+                                                                  aliases.push(choicesR[i].alias);
+                                                                }
+                                                              }
+                                                              if(aliases.length){
+                                                                co.dropdown.aliases = aliases;
+                                                              }else{
+                                                                delete co.dropdown.aliases;
+                                                              }
+                                                            break;
+                                                            case "date selector":
+                                                              // get rid of default values as this makes JSON string shorter
+                                                              if(co.date.format === 'yyyy-mm-dd'){
+                                                                delete co.date.format;
+                                                              }
+                                                              if(co.date.startview === 'month'){
+                                                                delete co.date.startview;
+                                                              }
+                                                              if($.isEmptyObject(co.date)){
+                                                                delete co.date;
+                                                              }
+                                                            break;
+                                                            case "daterange selector":
+                                                              // get rid of default values as this makes JSON string shorter
+                                                              if(co.daterange.format === 'yyyy-mm-dd'){
+                                                                delete co.daterange.format;
+                                                              }
+                                                              if(co.daterange.startview === 'month'){
+                                                                delete co.daterange.startview;
+                                                              }
+                                                              if(co.daterange.weekstart === 0){
+                                                                delete co.daterange.weekstart;
+                                                              }
+                                                              if(co.daterange.separator === ' to '){
+                                                                delete co.daterange.separator;
+                                                              }
+                                                              if(co.daterange.autoclose === false){
+                                                                delete co.daterange.autoclose;
+                                                              }
+                                                              if($.isEmptyObject(co.daterange)){
+                                                                delete co.daterange;
+                                                              }
+                                                            break;
+                                                            case "checkbox":
+                                                              if(co.checkbox.value){
+                                                                co.checkbox.value = 1;
+                                                              }else{
+                                                                co.checkbox.value = 0;
+                                                              }
+                                                            break;
+                                                          }
+                                                          delete co.gmsParam;
+                                                          delete co.widgetType;
+                                                          if($.isEmptyObject(co)){
+                                                            alert("No customization was found (you probably selected only defult values). You won't have to add any JSON to your GAMS prameter!");
+                                                            return;
+                                                          }
+                                                          // copy and paste idea from: https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+                                                          $("#cpTA-wrapper").show();
+                                                          let cpTA = $("#cpTA");
+                                                          cpTA.val('### ' + JSON.stringify(co,null,"  ").replace(/\s/g,''));
+                                                          cpTA.focus();
+                                                          cpTA.select();
+                                                          let err = false;
+                                                          try {
+                                                            let successful = document.execCommand('copy');
+                                                            if(!successful){
+                                                              err = true;
+                                                            }
+                                                          } catch (err) {
+                                                            err = true;
+                                                          }
+                                                          if(err){
+                                                            alert("Copying the text to clipboard was not successful. Please copy manually.")
+                                                            // don't remove textarea if copying failed
+                                                            return;
+                                                          }else{
+                                                            alert("Your cutomization options were copied to your clipboard. Please paste them at the end of the explanatory text of the parameter you just customized.");
+                                                            $("#cpTA-wrapper").hide();
+                                                          }
+
+                                                          console.log(JSON.stringify(co,null,"  "));
+                                                        }
+                                                     }
+                                                  }
+                                                }
+                                              },
+                                              "postRender": function(control) {
+                                                  let gmsParam = control.getControlByPath("gmsParam");
+                                                  gmsParam.on("change", function() {
+                                                    let roCols = control.getControlByPath("readOnlyCols");
+                                                    let gmsSymName = gmsParam.data[0].text;
+                                                      for(var i = 0; i < roCols.children.length; i++) {
+                                                        roCols.children[i].childrenByPropertyId['colName'].schema.enum=
+                                                        roCols.children[i].childrenByPropertyId['colName'].options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                        roCols.children[i].childrenByPropertyId['colName'].refresh();
+                                                      }
+                                                  });
+                                                  let minPar = control.getControlByPath("slider/minDep/minpar");
+                                                  minPar.on("change", function() {
+                                                    let minHdr = control.getControlByPath("slider/minDep/minhdr");
+                                                    let gmsSymName = minPar.data[0].text;
+
+                                                    if(gmsSymName === 'None'){
+                                                      minHdr.schema.enum=
+                                                      minHdr.options.optionLabels = gmsSymHeaders;
+                                                      minHdr.refresh();
+                                                    }else{
+                                                      minHdr.schema.default = gmsSymHdrIn[gmsSymName][1];
+                                                      minHdr.schema.enum=
+                                                      minHdr.options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                      minHdr.refresh();
+                                                    }
+                                                  });
+                                                  let maxPar = control.getControlByPath("slider/maxDep/maxpar");
+                                                  maxPar.on("change", function() {
+                                                    let maxHdr = control.getControlByPath("slider/maxDep/maxhdr");
+                                                    let gmsSymName = maxPar.data[0].text;
+
+                                                    if(gmsSymName === 'None'){
+                                                      maxHdr.schema.enum=
+                                                      maxHdr.options.optionLabels = gmsSymHeaders;
+                                                      maxHdr.refresh();
+                                                    }else{
+                                                      maxHdr.schema.default = gmsSymHdrIn[gmsSymName][1];
+                                                      minHdr.schema.enum=
+                                                      minHdr.options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                      minHdr.refresh();
+                                                    }
+                                                  });
+                                                  let defPar = control.getControlByPath("slider/defDep/defpar");
+                                                  defPar.on("change", function() {
+                                                    let defHdr = control.getControlByPath("slider/defDep/defhdr");
+                                                    let gmsSymName = defPar.data[0].text;
+
+                                                    if(gmsSymName === 'None'){
+                                                      defHdr.schema.enum=
+                                                      defHdr.options.optionLabels = gmsSymHeaders;
+                                                      defHdr.refresh();
+                                                    }else{
+                                                      defHdr.schema.default = gmsSymHdrIn[gmsSymName][1];
+                                                      minHdr.schema.enum=
+                                                      minHdr.options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                      minHdr.refresh();
+                                                    }
+                                                  });
+                                                  let choicePar = control.getControlByPath("dropdown/choices");
+                                                  choicePar.on("change", function() {
+                                                    for(let i = 0; i < choicePar.children.length; i++) {
+                                                      let gmsSymName = choicePar.children[i].childrenByPropertyId['choiceDep'].childrenByPropertyId['choicepar'].data[0].text;
+                                                      let hdr = choicePar.children[i].childrenByPropertyId['choiceDep'].childrenByPropertyId['choicehdr'];
+                                                      if(gmsSymName === 'None'){
+                                                        hdr.schema.enum =
+                                                        hdr.options.optionLabels = gmsSymHeaders;
+                                                        hdr.refresh();
+                                                      }else{
+                                                        hdr.schema.default = gmsSymHdrIn[gmsSymName][1];
+                                                        hdr.schema.enum=
+                                                        hdr.options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                        hdr.refresh();
+                                                      }
+                                                    }
+                                                  });
+                                                  let aliasPar = control.getControlByPath("dropdown/aliases");
+                                                  aliasPar.on("change", function() {
+                                                    for(let i = 0; i < choicePar.children.length; i++) {
+                                                      let gmsSymName = aliasPar.children[i].childrenByPropertyId['aliasDep'].childrenByPropertyId['aliaspar'].data[0].text;
+                                                      let hdr = aliasPar.children[i].childrenByPropertyId['aliasDep'].childrenByPropertyId['aliashdr'];
+
+                                                      if(gmsSymName === 'None'){
+                                                        hdr.schema.enum =
+                                                        hdr.options.optionLabels = gmsSymHeaders;
+                                                        hdr.refresh();
+                                                      }else{
+                                                        hdr.schema.default = gmsSymHdrIn[gmsSymName][1];
+                                                        hdr.schema.enum=
+                                                        hdr.options.optionLabels = gmsSymHdrIn[gmsSymName];
+                                                        hdr.refresh();
+                                                      }
+                                                    }
+                                                  });
+                                                }
+                                      });
+                                  }
                                   </script>
+                                  <div id="cpTA-wrapper" style="display:none;">
+                                    <textarea id="cpTA" style="width:50em;height:20px;padding:0;outline=none;boxShadow=none;background:transparent;border:none;"></textarea>
+                                  </div>
                                   </div><!--//section-block-->
                             </section><!--//doc-section-->
 
@@ -2083,6 +3175,10 @@ renderTransportMap &#x3C;- function(input, output, server, data, options = NULL,
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
     <!-- Spectrum ColorPicker plugin -->
     <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
+    <!-- Moment plugin -->
+    <script type="text/javascript" src="assets/plugins/moment/moment.min.js"></script>
+    <!-- Bootstrap datetimepicker plugin -->
+    <script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
 
     <script type="text/javascript" src="assets/js/main.js"></script>
     <!-- dependencies (jquery, handlebars and bootstrap) -->
