@@ -246,9 +246,14 @@ observeEvent(input$btSendQuery, {
     showErrorMsg("Error fetching data", errMsg)
     flog.warn("Problems executing batchLoad query. Error message: %s.", e)
   })
-  
+  if(length(isolate(rv$fetchedScenarios)) && nrow(isolate(rv$fetchedScenarios))){
+    showEl(session, "#batchLoadButtons")
+    hideEl(session, "#batchLoadNoData")
+  }else{
+    showEl(session, "#batchLoadNoData")
+    hideEl(session, "#batchLoadButtons")
+  }
   hideEl(session, "#loadDiv")
-  showEl(session, "#batchLoadButtons")
   enableEl(session, "#btSendQuery")
 })
 output$batchLoadResults <- renderDataTable({

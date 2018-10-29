@@ -16,6 +16,7 @@
     "sidebarButtons":{  
       "importInput":"Daten laden",
       "solve":"Modell lösen",
+      "solveBatch":"Jobs absenden",
       "load":"Szenario laden",
       "splitView":"Split Screen Ansicht",
       "tabView":"Tabansicht",
@@ -91,6 +92,7 @@
     },
     "batch_load":{
       "title":"Lade Szenarien",
+      "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
       "loadSelectedButton":"Lade ausgewählte",
       "loadCurrentButton":"Lade aktuelle Seite",
       "loadAllButton":"Lade alle"
@@ -429,6 +431,9 @@
     "lockScen":{
       "title":"Fehler beim Setzen/Löschen der Szenarienperre",
       "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten."
+    },
+    "paverFileLoad":{  
+      "desc":"Daten für diese Kategorie konnten nicht geladen werden."
     },
     "paverExec":{  
       "title":"Fehler beim Ausführen von Python",

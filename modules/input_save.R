@@ -142,6 +142,9 @@ lapply(seq_along(modelIn), function(i){
              j <<- j + 1L
            }else{
              # standard dropdown menu (one value)
+             if(identical(value, "_")){
+               return()
+             }
              scalar      <- names(modelIn)[[i]]
              description <- modelInAlias[i]
              if(is.null(dataTmp[[length(modelInFileNames)]])){

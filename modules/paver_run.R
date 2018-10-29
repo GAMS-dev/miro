@@ -74,15 +74,6 @@ observeEvent(input$btPaver, {
     enableEl(session, "#btPaverInterrupt")
     updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
     switchTab(session, "batchAna")
-    
-#    if(!dir.exists(paverFileDir)){
-#      tryCatch({
-#        dir.create(paverFileDir, recursive = TRUE, showWarnings = FALSE)
-#      }, warning = function(w){
-#        errMsg <<- "Paver file directory for solution files could not be created. Check that you have sufficient read/write permissions."
-#      })
-#    }
-
 
     errMsg <- NULL
     # run paver
@@ -113,10 +104,12 @@ observeEvent(input$btPaver, {
                                tags$div(id = "wrapper-" %+% paverResultTabs[i], 
                                         style = "overflow: auto; height: 75vh;",
                                         tryCatch(
-                                          includeHTML(paste0(paverDir, .Platform$file.sep, 
-                                                             paverResultTabs[i], ".html")),
+                                          suppressWarnings(includeHTML(paste0(paverDir, .Platform$file.sep, 
+                                                             paverResultTabs[i], ".html"))),
                                           error = function(e){
-                                            return()
+                                            tags$div(class="errMsg", style="text-align:center;font-size:16px;margin-top:50px;",
+                                                     lang$errMsg$paverFileLoad$desc)
+                                            
                                           })
                                )
                       )

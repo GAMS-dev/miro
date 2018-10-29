@@ -16,6 +16,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
+      "solveBatch":"Submit jobs",
       "load":"Load",
       "splitView":"Switch to split view",
       "tabView":"Switch to tab view",
@@ -91,6 +92,7 @@
     },
     "batch_load":{
       "title":"Load Scenarios",
+      "noData":"No data was returned by your query",
       "loadSelectedButton":"Load selected scenarios",
       "loadCurrentButton":"Load current page",
       "loadAllButton":"Load all"
@@ -431,6 +433,9 @@
     "lockScen":{
       "title":"Error setting/removing scenario lock",
       "desc":"Some error occurred while locking or unlocking the currently active scenario."
+    },
+    "paverFileLoad":{  
+      "desc":"Data could not be loaded for this category."
     },
     "paverExec":{  
       "title":"Error executing Python",

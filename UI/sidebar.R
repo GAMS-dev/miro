@@ -40,7 +40,7 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                 tags$div(style="display:block;",
                          actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "glow-animation")),
                 tags$div(style="display:block;",
-                         actionButton("btSolve", lang$nav$sidebarButtons$solve,width = "85%", class = "btHighlight1")),
+                         actionButton("btSolve", lang$nav$sidebarButtons$solveBatch, width = "85%", class = "btHighlight1")),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
                                  tags$div(style="display:block;",
                                           actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight1"))),

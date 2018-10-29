@@ -360,9 +360,11 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
   })
   rm(scenDataTmp)
   if(!is.list(sidsToLoad)){
+    switchTab(session, "scenComp")
     updateTabsetPanel(session, "sidebarMenuId", selected = "scenarios")
   }
   if(!isInSplitView){
+    switchTab(session, "scenComp")
     updateTabsetPanel(session, "scenTabset", selected = "scen_" %+% lastImportedSid %+% "_")
   }
   if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
