@@ -65,12 +65,7 @@
             "type":"boolean",
             "required":false
           },
-          "loadOnStartup":{  
-            "description":"Boolean that specifies whether data should be loaded on startup",
-            "type":"boolean",
-            "required":false
-          },
-          "colSubset":{  
+          "colSubset":{
             "description":"Array that specifies subset of columns to import to UI (names of columns)",
             "type":[  
               "array",
@@ -89,7 +84,7 @@
             "type":"boolean",
             "required":false
           },
-          "readonly":{  
+          "readonly":{
             "description":"Tables can be set to readonly to prevent the user from making changes (editing and pasting data). These tables will be available for keyboard navigation and CTRL+C. In the case of contradictory readonly specifications (true and false) at table and column level, the entries specified with true are taken into account.",
             "type":[  
               "boolean",
