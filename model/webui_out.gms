@@ -2,10 +2,16 @@
 
 $onExternalOutput
 parameter      
-    total_cost_Report                             'Final objective value     '
-    version_Report                                'version                   '
-    baseMVA_Report                                'baseMVA                   '
-;    
+    total_cost_Report                                    'Final objective value     '
+    version_Report                                       'version                   '
+    baseMVA_Report                                       'baseMVA                   '     
+    businfo_Report(bus,bus_t,bus_s)                      'businfo                   '
+    geninfo_Report(gen,gen_t,gen_s)                      'geninfo                   '
+    branchinfo_Report(bus,bus,circuit,branch_t,branch_s) 'branchinfo                '
+    fuelinfo_Report(fuel_t,fuel_s)                       'fuelinfo                  '
+*    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
+*    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
+;
 
 singleton set
     case_input(*)       'Selected Testcase'
@@ -30,15 +36,6 @@ singleton set
     wind_input(*)       'Whether to turn off wind turbines'
     savesol_input(*)    'Whether to save the solution as GDX'
     verbose_input(*)    'Whether to print input in listing output'
-;
-
-parameter      
-    businfo_Report(bus,bus_t,bus_s)    'businfo                   '
-    geninfo_Report(gen,gen_t,gen_s)    'geninfo                   '
-    branchinfo_Report(bus,bus,circuit,branch_t,branch_s) 'branchinfo'
-    fuelinfo_Report(fuel_t,fuel_s)     'fuelinfo'
-*    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
-*    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
 ;
 $offExternalOutput
 
