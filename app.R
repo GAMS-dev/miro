@@ -262,7 +262,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
-    requiredPackages <- c("RPostgres", "DBI")
+    requiredPackages <- c("bit64", "blob", "DBI", "RPostgres")
     source("./R/install_packages.R", local = TRUE)
     
     source("./R/db.R")
