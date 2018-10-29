@@ -23,6 +23,7 @@ body <- dashboardBody({
     tags$script(src = "gmswebui.js", type = "text/javascript"),
     
     # css sheets that depend on data from config JSON file
+    # Logo ratio should be 4,6 (width/height)
     tags$style(HTML(paste0('
 .main-header .logo {
   background-image: url("', if(dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
