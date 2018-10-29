@@ -3,19 +3,21 @@ newPackages <- requiredPackages[!(requiredPackages %in%
 if(length(newPackages)){
   checkSourceDefault <- getOption("install.packages.check.source")
   options(install.packages.check.source = "no")
-  newPackages <- unique(unlist(c(newPackages, 
-                                 tools::package_dependencies(newPackages,
-                                                             recursive = TRUE))))
+
   for(pkg_name in newPackages){
     tryCatch({
-      pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\.zip$"), 
-                             full.names = TRUE, recursive = TRUE)
-      if(is.null(RLibPath) || !length(pkg_path)){
-        install.packages(pkg_name, lib = RLibPath, repos = CRANMirror, dependencies = TRUE)
-      }else{
-        install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
-                         type="binary", dependencies = FALSE)
-      }
+	  if(!is.null(RLibPath)){
+	    pkg_path <- NULL
+	    try(pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\.zip$"), 
+	                               full.names = TRUE, recursive = TRUE))
+	    if(length(pkg_path)){
+	      install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
+	                       type="binary", dependencies = FALSE)
+	      next
+	    }
+	  }
+      
+    install.packages(pkg_name, lib = RLibPath, repos = CRANMirror, dependencies = TRUE)
     }, error = function(e){
       if(exists("flog.fatal")){
         flog.fatal("Problems installing required R packages. Error message: %s.", e)
@@ -29,7 +31,8 @@ if(length(newPackages)){
 }
 
 tryCatch({
-  lapply(requiredPackages, library, character.only = TRUE, lib.loc = RLibPath)
+  lapply(requiredPackages, library, character.only = TRUE, 
+         quietly = TRUE, verbose = FALSE, lib.loc = RLibPath)
 }, error = function(e){
   if(exists("flog.fatal")){
     flog.fatal("Problems loading required R packages. Error message: %s.", e)
