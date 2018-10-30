@@ -356,7 +356,7 @@ if(!is.null(errMsg)){
     # count number of open scenario tabs
     numberScenTabs     <- 0L
     # boolean that specifies whether input data shall be overridden
-    overrideInput      <- FALSE
+    overwriteInput      <- FALSE
     # boolean that specifies whether data shall be saved under a new name 
     # or existing scenario shall be overridden
     saveAsFlag         <- TRUE
@@ -537,7 +537,7 @@ if(!is.null(errMsg)){
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", 
                                                                 length = length(modelInMustImport)), 
-                         unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, 
+                         unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btOverwriteInput = 0L, 
                          btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
                          btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
@@ -563,7 +563,7 @@ if(!is.null(errMsg)){
     # gams process object
     gams <- NULL
     # boolean that specifies whether input data should be overridden
-    inputOverrideConfirmed <- FALSE
+    inputOverwriteConfirmed <- FALSE
     # trigger sidebar menu by shortcuts
     observeEvent(input$sidebarMenuShortcut, {
       switch(input$sidebarMenuShortcut,

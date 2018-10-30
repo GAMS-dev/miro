@@ -32,7 +32,7 @@ showNewScenDialog <- function(tmpScenName){
       ),
       tags$div(id = "dialogSaveConfirm", style = "display:none;",
                actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
-               actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, 
+               actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverwrite, 
                             class = "btHighlight1")
       )
     ),
@@ -156,8 +156,8 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                               ),
                                               fluidRow(
                                                 tags$div(style = "text-align: center;",
-                                                         actionButton("btOverrideLocal", 
-                                                                      lang$nav$dialogImport$overrideButton),
+                                                         actionButton("btOverwriteLocal", 
+                                                                      lang$nav$dialogImport$overwriteButton),
                                                          actionButton("btNewNameLocal", 
                                                                       lang$nav$dialogImport$newNameButton, 
                                                                       class = "btHighlight1")
@@ -216,14 +216,14 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
              }
     ),
-    tags$div(id = "importDataOverride", style = "display:none;",
-             lang$nav$dialogImport$descOverrideInput
+    tags$div(id = "importDataOverwrite", style = "display:none;",
+             lang$nav$dialogImport$descOverwriteInput
     ), footer = {
       tagList(
         modalButton(lang$nav$dialogImport$cancelButton),
-        actionButton("btOverrideInput", label = lang$nav$dialogImport$okButton, 
+        actionButton("btOverwriteInput", label = lang$nav$dialogImport$okButton, 
                      class = "btHighlight1", style = "display:none;"),
-        actionButton("btOverrideScen", label = lang$nav$dialogImport$okButton, 
+        actionButton("btOverwriteScen", label = lang$nav$dialogImport$okButton, 
                      class = "btHighlight1", style = "display:none;")
       )
     }

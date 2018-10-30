@@ -135,6 +135,8 @@ Scenario <- R6Class("Scenario",
                         updateProgress <- function(detail = NULL) {
                           prog$inc(amount = incAmount, detail = detail)
                         }
+                        # save current time stamp
+                        private$stime <- Sys.time()
                         # write scenario metadata
                         private$writeMetadata()
                         Map(function(dataset, tableName){
@@ -240,7 +242,7 @@ Scenario <- R6Class("Scenario",
                           private$writePerm <- newWritePerm
                         }
                         
-                        private$stime = Sys.time()
+                        private$stime <- Sys.time()
                         metadata <- tibble(private$sid, private$suid, private$sname, 
                                            private$stime, private$tags, private$readPerm,
                                            private$writePerm)

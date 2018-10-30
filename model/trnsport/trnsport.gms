@@ -18,13 +18,13 @@ Keywords: linear programming, transportation problem, scheduling
 $offText
 
 Set
-   i 'canning plants' / Seattle,  San-Diego /
+   i 'canning plants' / 1*2 /
    j 'markets'        / New-York, Chicago, Topeka /
 ;
 Table ilocData(i,*) 'Plant location information'
            lat           lng     
-Seattle   47.608013  -122.335167
-San-Diego 32.715736  -117.161087;
+1          47.608013  -122.335167
+2        32.715736  -117.161087;
 
 Table jlocData(j,*) 'Market location information'
            lat           lng     
@@ -42,8 +42,8 @@ $endif
 $onExternalInput
 Parameter
    a(i) 'capacity of plant i in cases'
-        / Seattle   350
-          San-Diego   600 /
+        / 1   350
+          2   600 /
 
    b(j) 'demand at market j in cases'
         / New-york   325
@@ -52,8 +52,8 @@ Parameter
 
 Table d(i,j) 'distance in thousands of miles'
               New-York  Chicago  Topeka
-   Seattle      2.5       1.7     1.8
-   San-Diego    2.5       1.8     1.4;
+   1            2.5       1.7     1.8
+   2            2.5       1.8     1.4;
 
 Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /

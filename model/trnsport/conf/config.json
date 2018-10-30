@@ -1,4 +1,7 @@
 {
+    "activateModules":{
+        "scenario":false
+    },
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"
     },
@@ -14,10 +17,10 @@
         "scalars_out"   : {
             "outType"			: "valueBox",
             "options"  :{
-            "icon":{
-            "name" : "list"
-            },
-            "color":"aqua"
+                "icon":{
+                    "name" : "list"
+                },
+                "color":"aqua"
             }
         }
     }

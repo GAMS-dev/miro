@@ -125,7 +125,7 @@
       "newScenName":"Neues Szenario",
       "scenExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "btNewName":"Anderen Namen wählen",
-      "btOverride":"Überschreiben",
+      "btOverwrite":"Überschreiben",
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
@@ -182,12 +182,12 @@
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
       "scenNameExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
-      "descOverrideInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
-      "overrideWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
       "okButton":"Importieren",
       "cancelButton":"Abbrechen",
-      "overrideButton": "Existierende Daten überschreiben",
+      "overwriteButton": "Existierende Daten überschreiben",
       "newNameButton": "Neuer Name"
     },
     "dialogLoadScen":{  
@@ -198,7 +198,7 @@
       "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
       "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
       "selTags": "Zeige nur Szenarios mit den Tag(s):",
-      "titleOverrideInput":"Warnung",
+      "titleOverwriteInput":"Warnung",
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "sortBy":"Sortieren nach:",

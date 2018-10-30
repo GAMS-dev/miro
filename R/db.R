@@ -622,7 +622,6 @@ Db <- R6Class("Db",
                   
                   limit <- min(nrow(scenList), limit)
                   scenList <- scenList[1:limit, , drop = FALSE]
-                  print(orderBy)
                   if(!is.null(orderBy)){
                     if(desc){
                       scenList <- dplyr::arrange(scenList, desc(!!as.name(orderBy)))

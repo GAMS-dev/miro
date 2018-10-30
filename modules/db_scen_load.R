@@ -134,7 +134,7 @@ observeEvent(input$btLoadScenConfirm, {
   rm(scenSelected)
   # if in comparison mode skip input data check
   if(!isInSolveMode){
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }
   
@@ -160,18 +160,18 @@ observeEvent(input$btLoadScenConfirm, {
   
   if(any(inputDatasetsExist)){
     hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverrideScen")
-    showEl(session, "#importDataOverride")
+    showEl(session, "#btOverwriteScen")
+    showEl(session, "#importDataOverwrite")
   }else{
-    overrideInput <<- FALSE
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+    overwriteInput <<- FALSE
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
   }
 })
 
-observeEvent(input$btOverrideScen, {
-  flog.debug("Override scenario button clicked.")
-  overrideInput <<- TRUE
-  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+observeEvent(input$btOverwriteScen, {
+  flog.debug("Overwrite scenario button clicked.")
+  overwriteInput <<- TRUE
+  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 
 observeEvent(input$btBatchLoad, {
@@ -180,10 +180,10 @@ observeEvent(input$btBatchLoad, {
   if(isInSplitView){
     rv$btSplitView <<- isolate(rv$btSplitView + 1L)
   }
-  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 
-observeEvent(virtualActionButton(rv$btOverrideScen), {
+observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))
   if(!length(sidsToLoad)){

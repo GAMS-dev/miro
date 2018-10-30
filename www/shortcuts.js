@@ -15,8 +15,8 @@ $(document).keyup(function(event) {
     if ($("#btLoadScenConfirm").is(":visible")) {
         $("#btLoadScenConfirm").click();
     }
-    if ($("#btOverrideScen").is(":visible")) {
-        $("#btOverrideScen").click();
+    if ($("#btOverwriteScen").is(":visible")) {
+        $("#btOverwriteScen").click();
     }
     if ($("#btRemoveOutput").is(":visible")) {
         $("#btRemoveOutput").click();
@@ -30,8 +30,8 @@ $(document).keyup(function(event) {
     if ($("#btRemoveConfirm").is(":visible")) {
         $("#btRemoveConfirm").click();
     }
-    if ($("#btOverrideLocal").is(":visible")) {
-        $("#btOverrideLocal").click();
+    if ($("#btOverwriteLocal").is(":visible")) {
+        $("#btOverwriteLocal").click();
     }
     if ($("#btDeleteConfirm").is(":visible")) {
         $("#btDeleteConfirm").click();

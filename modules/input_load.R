@@ -7,7 +7,7 @@ lapply(datasetsToFetch, function(dataset){
   }
   inputVerified <- FALSE
   # execute only if dataframe has not yet been imported or already imported data shall be overridden
-  if(!length(isolate(rv[["in_" %+% i]])) || overrideInput){
+  if(!length(isolate(rv[["in_" %+% i]])) || overwriteInput){
     # handsontable, multi dropdown, or daterange
     if(tolower(dataset) %in% modelInTabularData){
       if(identical(loadMode, "xls")){
@@ -116,7 +116,7 @@ lapply(datasetsToFetch, function(dataset){
     
     # check if input data is valid
     if(inputVerified){
-      flog.debug("Dataset: %s loaded successfully (mode: %s, override: %s)", dataset, loadMode, overrideInput)
+      flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
       newInputCount <<- newInputCount + 1
       # set identifier that data was overwritten 
       isEmptyInput[i] <<- TRUE
@@ -161,7 +161,7 @@ lapply(datasetsToFetch, function(dataset){
 })
 showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
-flog.trace("%d new input datasets loaded (load mode: %s, override: %s)", count.new.input, loadMode, overrideInput)
+flog.trace("%d new input datasets loaded (load mode: %s, overwrite: %s)", count.new.input, loadMode, overwriteInput)
 if(!is.null(isolate(rv$activeSname))){
   enableEl(session, "#btSave")
 }
