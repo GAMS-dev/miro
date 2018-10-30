@@ -1,6 +1,6 @@
 #version number
 webuiVersion <- "0.2.6.1"
-webuiRDate   <- "Oct 29 2018"
+webuiRDate   <- "Oct 30 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT

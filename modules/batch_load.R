@@ -12,11 +12,13 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
     list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
   }else if(names(modelIn)[i] %in% c(scalarsFileName, scalarsOutName)){
-    #needs to be implemented -> currently scalars have to be displayed as widget in batch mode
-    #aliasTypeVector <- vapply(modelIn[[i]]$content, function(j){
-    #  return()
-    #})
-    stop("Scalar tables in tabular form are not yet implemented in batch mode", call. = FALSE)
+    list(key = modelIn[[i]]$symnames, type = vapply(modelIn[[i]]$symtypes, function(type){
+      if(type %in% c("scalar", "parameter")){
+        return("number")
+      }else{
+        return("string")
+      }
+    }, character(1L), USE.NAMES = FALSE), alias = modelIn[[i]]$symtext)
   }else{
     NA
   }

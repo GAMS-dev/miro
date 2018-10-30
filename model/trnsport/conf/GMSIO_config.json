@@ -126,6 +126,9 @@
             "symnames": [
                 "total_cost"
             ],
+            "symtext": [
+                "total transportation costs in thousands of dollars"
+            ],
             "symtypes": [
                 "parameter"
             ],

@@ -89,6 +89,11 @@
                 "errHdr",
                 "lastDayTraining"
             ],
+            "symtext": [
+                "fund header",
+                "stock symbol header",
+                "last date of training period"
+            ],
             "symtypes": [
                 "set",
                 "set",
