@@ -44,10 +44,30 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
                     "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "processx", 
-                      "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
-                      "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "xts", "zip", "tidyr")
+
+requiredPackages <- c("R6","stringi","shiny","shinydashboard",
+                      "DT","processx","V8","dplyr",
+                      "readr","readxl","writexl","rhandsontable",
+                      "plotly","jsonlite","jsonvalidate","rpivotTable",
+                      "futile.logger","dygraphs","xts","zip",
+                      "tidyr","tools","utils","stats",
+                      "methods","grDevices","httpuv","mime",
+                      "xtable","digest","htmltools","sourcetools",
+                      "later","promises","crayon","rlang",
+                      "Rcpp","BH","magrittr","htmlwidgets",
+                      "crosstalk","lazyeval","ggplot2","yaml",
+                      "grid","gtable","MASS","mgcv",
+                      "plyr","reshape2","scales","tibble",
+                      "viridisLite","withr","graphics","nlme",
+                      "Matrix","stringr","labeling","munsell",
+                      "RColorBrewer","cli","pillar","assertthat",
+                      "lattice","colorspace","fansi","utf8",
+                      "glue","ps","curl","bindrcpp",
+                      "pkgconfig","tidyselect","plogr","bindr",
+                      "purrr","hms","cellranger","rematch",
+                      "httr","base64enc","hexbin","data.table",
+                      "openssl","lambda.r","futile.options","formatR",
+                      "zoo")
 
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
@@ -242,7 +262,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
-    requiredPackages <- c("RPostgres", "DBI")
+    requiredPackages <- c("bit64", "blob", "DBI", "RPostgres")
     source("./R/install_packages.R", local = TRUE)
     
     source("./R/db.R")
