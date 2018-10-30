@@ -252,7 +252,6 @@ Model PortfolioMIP / TR,      SPPx,  RVLB,    RVUB,    DEFcF
                      CNPl3,   CNPl4, DEFSOSx, DEFSOSy, DEFSOSone /;
 
 portfolioMIP.optCr = 1.05;
-$if set mkgmswebui portfolioMIP.optCA = 1e9;
 
 solve portfolioMIP using mip minimizing cTotal;
 abort$(portfolioMIP.modelstat<>%modelstat.optimal% and
