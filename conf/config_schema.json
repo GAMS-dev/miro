@@ -169,7 +169,10 @@
                            "valueBox"
                         ]
                      },
-                     "options":{  
+                     "options":{
+                       "type": "object",
+                       "additionalProperties":false,
+                       "properties":{  
                         "width":{  
                            "description":"Width of the output element.",
                            "type":"integer",
@@ -203,6 +206,7 @@
                               }
                            }
                         }
+                       }
                      }
                   },
                   "additionalProperties":false,

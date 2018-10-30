@@ -1288,6 +1288,7 @@
                                                                },
                                                                "options":{
                                                                   "type":"object",
+                                                                  "additionalProperties":false,
                                                                   "properties":{
                                                                      "width":{
                                                                         "title":"Width of the output element.",
@@ -1801,7 +1802,7 @@
                                                          delete co.aggregateWidgetsTmp
                                                          //restructuring of "dataRendering" for all output elements
                                                          makeKey("Format: datatable", "Parameter", "datatable");
-                                                         makeKey("Format: valuebox", "scalars", "valueBox");
+                                                         makeKey("Format: valuebox", "scalar_type", "valueBox");
                                                          makeKey("Format: pivottable", "Parameter", "pivot");
 
                                                          for (let i = 0; i < co.dataRendering["Format: custom"].length; i++) {
