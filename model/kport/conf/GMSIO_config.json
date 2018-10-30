@@ -14,10 +14,10 @@
                 "Scenario": {
                     "type": "set"
                 },
-                "vmin": {
+                "VMIN": {
                     "type": "parameter"
                 },
-                "vmax": {
+                "VMAX": {
                     "type": "parameter"
                 }
             }
@@ -31,10 +31,10 @@
                 "Scenario": {
                     "type": "set"
                 },
-                "demand": {
+                "Demand": {
                     "type": "parameter"
                 },
-                "production time": {
+                "Production Time": {
                     "type": "parameter"
                 }
             }
@@ -51,6 +51,18 @@
         },
         "scalars": {
             "alias": "Scalars",
+            "symnames": [
+                "whrs",
+                "csti",
+                "cstf",
+                "esf"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
             "headers": {
                 "Scalar": {
                     "type": "set"

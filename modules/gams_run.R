@@ -326,6 +326,7 @@ observeEvent(input$btSolve, {
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
     if(!is.null(modelStatus())){
+      
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
@@ -408,5 +409,6 @@ observeEvent(input$btSolve, {
     # print model status
     return(statusText)
   })
-  
+  # refresh even when modelStatus message is hidden (i.e. user is on another tab)
+  outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 })

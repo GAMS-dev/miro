@@ -576,8 +576,20 @@ modelInAlias[i], " does not match the number of choices with dependencies.
   }else{
     inputDsNames <- c(modelInTabularData, scalarsFileName)
   }
+  # get scalar input names
+  scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
+    if("headers" %in% names(modelIn[[i]])){
+      return(FALSE)
+    }else{
+      return(TRUE)
+    }
+  }, logical(1L), USE.NAMES = FALSE)]
+  
+  if(tolower(scalarsFileName) %in% modelInTabularData){
+    scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
   }
-
+  }
+  
   if(is.null(errMsg)){
     # determine the filenames for the model input datasets
     if(scalarsFileName %in% modelInTabularData){

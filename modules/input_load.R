@@ -28,15 +28,29 @@ lapply(datasetsToFetch, function(dataset){
       # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
       # rather than setting them to NULL
       if(nrow(dataTmp)){
-        if(verifyInput(dataTmp, modelIn[[i]]$headers)){
-          if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
+        
+        if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
+          if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
             # remove those rows from scalar dataset that are represented as a slider or dropdown menu
             scalarDataset <<- dataTmp 
             modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = F]
-          }else{
-            modelInputData[[i]] <<- dataTmp
+            inputVerified <- TRUE
           }
-          inputVerified <- TRUE
+        }else{
+          if(verifyInput(dataTmp, modelIn[[i]]$headers)){
+            # GAMS sets are always strings to make sure it is not parsed as a numeric
+            numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
+              if(is.numeric(dataTmp[[dataColIdx]]) && 
+                 identical(modelIn[[i]]$headers[[dataColIdx]]$type, "set")){
+                return(TRUE)
+              }else{
+                return(FALSE)
+              }
+            }, logical(1L), USE.NAMES = FALSE)
+            dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
+            modelInputData[[i]] <<- dataTmp
+            inputVerified <- TRUE
+          }
         }
       }else{
         # empty dataset
@@ -83,7 +97,7 @@ lapply(datasetsToFetch, function(dataset){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
           row.name <- paste0(row.name, c("_min", "_max"))
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% row.name, colValue, drop = F], use.names = F)
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% row.name, colValue, drop = FALSE], use.names = FALSE)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE

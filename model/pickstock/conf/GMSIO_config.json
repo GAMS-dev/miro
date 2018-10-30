@@ -84,6 +84,16 @@
         "scalars_out": {
             "alias": "Scalars",
             "hidden": true,
+            "symnames": [
+                "fHdr",
+                "errHdr",
+                "lastDayTraining"
+            ],
+            "symtypes": [
+                "set",
+                "set",
+                "set"
+            ],
             "count": 3,
             "headers": {
                 "Scalar": {

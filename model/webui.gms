@@ -156,6 +156,7 @@ input_sym = []
 scalar_input_sym = []
 output_sym = []
 scalar_output_sym = []
+scalar_output_type = []
 domsets = set()
 for sym in db:
    for d in range(sym.dimension):
@@ -183,11 +184,14 @@ for sym in db:
       if (sym.dimension>0) and (type(sym)==GamsParameter):
          output_sym.append(sym.name) 
       elif (sym.dimension==0) and (type(sym)==GamsParameter):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('parameter')
       elif (sym.dimension==1) and (type(sym)==GamsSet):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('set')
       elif (sym.dimension==1) and (type(sym)==GamsParameter):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('parameter')
       else:
          raise Exception('Unhandled external output symbol ' + sym.name)
 SOhidden = True
@@ -425,7 +429,7 @@ for s in input_sym:
          headers[extractSymText(d)] = { 'type':'set' }
    
       for r in db[s].domains[-1]:
-         headers[r.key(0).lower()] = { 'type':'parameter' }
+         headers[r.key(0)] = { 'type':'parameter' }
    else:
       for d in db[s].domains:
          headers[extractSymText(d)] = { 'type':'set' }
@@ -436,6 +440,8 @@ for s in input_sym:
    io_dict[s.lower()] = dict_merge(auto,e_dict)
 
 needScalar = False
+needScalarSymNames = []
+needScalarSymTypes = []
 for s in scalar_input_sym:
    text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
@@ -446,19 +452,28 @@ for s in scalar_input_sym:
    add2Dict = True
    if 'slider' in e_dict:
       auto['slider'] = {'label':extractSymText(db[s])}
+   elif 'date' in e_dict:
+      auto['date'] = {'label':extractSymText(db[s])}
    elif 'daterange' in e_dict:
       auto['daterange'] = {'label':extractSymText(db[s])}
    elif 'dropdown' in e_dict:
       auto['dropdown'] = {'label':extractSymText(db[s])}
+   elif 'chekbox' in e_dict:
+      auto['chekbox'] = {'label':extractSymText(db[s])}
    else:
       add2Dict = False
    if add2Dict:
       io_dict[s.lower()] = dict_merge(auto,e_dict)
    else:
+      needScalarSymNames.append(s.lower());
+      if(type(db[s]) == GamsSet):
+         needScalarSymTypes.append('set');
+      else:
+         needScalarSymTypes.append('parameter');
       needScalar = True;
 
 if needScalar:      
-   io_dict['scalars'] = { 'alias':'Scalars', 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+   io_dict['scalars'] = { 'alias':'Scalars', 'symnames':needScalarSymNames, 'symtypes':needScalarSymTypes, 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 if len(s_webuiconf):
    config['gamsInputFiles'] = dict_merge(io_dict,json.loads(s_webuiconf))
 elif os.path.isfile('webuiconf.json'):
@@ -499,9 +514,9 @@ for s in output_sym:
 
 if SOtrueLen>0:
    if SOhidden:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'symnames':scalar_output_sym, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
    else:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'symnames':scalar_output_sym, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 config['gamsOutputFiles'] = io_dict
 
 #json.dump(config, sys.stdout, indent=4, sort_keys=False)

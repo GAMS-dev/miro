@@ -328,8 +328,8 @@
                               ],
                               "default":"en"
                            },
-                           "readonly":{  
-                              "description":"Logical this optional parameter allows use of the pivottable subtotal plugin. Using this parameter will set all renderer names to the english locale.",
+                           "subtotals":{  
+                              "description":"Should the subtotals plugin be used?",
                               "type":"boolean",
                               "default":false
                            },

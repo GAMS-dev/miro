@@ -162,6 +162,7 @@ animation: none !important;
   visibility: hidden; 
 }
 .render-output{
+  padding: 1px;
   overflow-x: auto;
   overflow-y: auto;
 }

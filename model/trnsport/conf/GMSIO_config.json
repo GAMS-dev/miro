@@ -123,6 +123,12 @@
         },
         "scalars_out": {
             "alias": "Scalars",
+            "symnames": [
+                "total_cost"
+            ],
+            "symtypes": [
+                "parameter"
+            ],
             "count": 1,
             "headers": {
                 "Scalar": {

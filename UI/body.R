@@ -9,7 +9,7 @@ body <- dashboardBody({
     if(config$activateModules$batchMode){
       tagList(
         tags$script(src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML", 
-                    type = "text/javascript"),
+                    type = "application/javascript"),
         tags$script(type = "text/x-mathjax-config", {
           "MathJax.Hub.Config({
             skipStartupTypeset: true,
@@ -19,8 +19,8 @@ body <- dashboardBody({
       )
     },
     tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
-    tags$script(src = "shortcuts.js", type = "text/javascript"),
-    tags$script(src = "gmswebui.js", type = "text/javascript"),
+    tags$script(src = "shortcuts.js", type = "application/javascript"),
+    tags$script(src = "gmswebui.js", type = "application/javascript"),
     
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)
@@ -95,7 +95,7 @@ body <- dashboardBody({
                                  }
                                }),
                                tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                        style = paste0("display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                                        style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
                                           sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
                                         # loading animation
                                         if(configGraphsIn[[i]]$outType == "dtGraph" && 
