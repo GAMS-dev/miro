@@ -285,14 +285,15 @@ observeEvent(input$btSolve, {
     return(NULL)
   }
   
-  
   #activate Interrupt button as GAMS is running now
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader(500, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+      logfile <- reactiveFileReader2(300, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+      logfileObs <- logfile$obs
+      logfile <- logfile$re
     }, error = function(e) {
       flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
       errMsg <<- lang$errMsg$readLog$desc
@@ -300,11 +301,13 @@ observeEvent(input$btSolve, {
     showErrorMsg(lang$errMsg$readLog$title, errMsg)
   }
   
-  modelStatus <- reactivePoll(1000, session, checkFunc = function(){
+  modelStatus <- reactivePoll2(1000, session, checkFunc = function(){
     gams$get_exit_status()
   }, valueFunc = function(){
     gams$get_exit_status()
   })
+  modelStatusObs <- modelStatus$obs
+  modelStatus <- modelStatus$re
   
   if(config$activateModules$logFile){
     output$logStatus <- renderText({
@@ -326,10 +329,15 @@ observeEvent(input$btSolve, {
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
     if(!is.null(modelStatus())){
-      
+      modelStatusObs$destroy()
+      modelStatus <- NULL
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
+      if(config$activateModules$logFile){
+        logfileObs$destroy()
+        logfile <- NULL
+      }
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({

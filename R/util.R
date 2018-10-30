@@ -613,3 +613,42 @@ isBadScenName <- function(scenName){
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
 }
+# redefined reactiveFileReader and reactivePoll functions since the original shiny functions 
+# leak an observer that can not be destoryed
+# original implementation can be found here: 
+#       https://github.com/rstudio/shiny/blob/19623694f585c8e7a8cf2c38e831a6752e5520c6/R/reactives.R#L1316
+# Please note that this is a slightly modified version of the original functions 
+# by RStudio licensed under GPL v3
+#
+# once this issue (https://github.com/rstudio/shiny/issues/1548) is closed, 
+# the original functions can be used again!
+reactivePoll2 <- function(intervalMillis, session, checkFunc, valueFunc) {
+  
+  rv <- reactiveValues(cookie = isolate(checkFunc()))
+  
+  obs <- observe({
+    rv$cookie <- checkFunc()
+    invalidateLater(intervalMillis, session)
+  })
+  
+  re <- reactive({
+    rv$cookie
+    valueFunc()
+  })
+  
+  return(list("re" = re, "obs" = obs))
+}
+reactiveFileReader2 <- function(intervalMillis, session, filePath, readFunc, ...) {
+  extraArgs <- list(...)
+  
+  reactivePoll2(
+    intervalMillis, session,
+    function() {
+      info <- file.info(filePath)
+      return(paste(filePath, info$mtime, info$size))
+    },
+    function() {
+      do.call(readFunc, c(filePath, extraArgs))
+    }
+  )
+}
