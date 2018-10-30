@@ -17,7 +17,7 @@ header <- dashboardHeader(
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$help$title, tags$span(class="caret")),
             tags$ul(class = "dropdown-menu", role="menu",
-                    tags$li(tags$a(href = "https://www.gams.com/latest/webui/readme.pdf", 
+                    tags$li(tags$a(href = "https://www.gams.com/latest/webui/", 
                            target = "_blank", lang$nav$header$help$doc)),
                     tags$li(actionLink("aboutDialog", lang$nav$header$help$about)))),
   title=config$pageTitle, disable = if(isShinyProxy) TRUE else FALSE)

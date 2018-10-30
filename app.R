@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.4"
-webuiRDate   <- "Oct 08 2018"
+webuiVersion <- "0.2.6.1"
+webuiRDate   <- "Oct 30 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -117,7 +117,7 @@ if(is.null(errMsg)){
   })
 }
 if(is.null(errMsg)){
-  logFileDir <- tmpFileDir %+% .Platform$file.sep %+% logFileDir
+  logFileDir <- file.path(tmpFileDir, logFileDir)
   # check if GAMS model file exists
   if(file.exists(modelPath %+% modelGmsName)){
     currentModelDir  <- modelPath
@@ -242,7 +242,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
-    requiredPackages <- c("RPostgres", "DBI")
+    requiredPackages <- c("DBI", "RPostgres")
     source("./R/install_packages.R", local = TRUE)
     
     source("./R/db.R")
@@ -682,9 +682,9 @@ if(!is.null(errMsg)){
       }else{
         nameSuffix <- ""
         if(rv$unsavedFlag){
-          nameSuffix <- "(*)"
+          nameSuffix <- " (*)"
         }
-        return(paste0(rv$activeSname, nameSuffix))
+        return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
       }
     )
     output$inputDataTitle <- renderText(getScenTitle())

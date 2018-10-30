@@ -4,6 +4,22 @@
     },
     "UILogo"    : "kport.jpg",
     "dataRendering"      : {
+				"rdata": {
+					"pivottable": {
+						"rows": [
+							"Scenario"
+						],
+						"cols": [
+							"Reactor"
+						],
+						"aggregatorName": "Sum",
+						"vals": "VMIN",
+						"rendererName": "Table",
+						"locale": "en",
+						"subtotals": false
+					},
+					"outType": "pivot"
+				},
         "cost"              : {
             "outType"               : "dtGraph",
             "graph"                 : {
@@ -14,5 +30,5 @@
                 "values"                : "Cost report"
             }
         }
-    } 
+    }
 }

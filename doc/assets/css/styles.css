@@ -14,6 +14,16 @@
   font-weight: bold;
 }
 
+.configgen-reset-btn{
+  border: 2px solid gray;
+  color: gray;
+  margin:5px;
+  background-color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 .upload-btn-wrapper input[type=file] {
   font-size: 100px;
   position: absolute;

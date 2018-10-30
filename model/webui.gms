@@ -156,6 +156,8 @@ input_sym = []
 scalar_input_sym = []
 output_sym = []
 scalar_output_sym = []
+scalar_output_type = []
+scalar_output_text = []
 domsets = set()
 for sym in db:
    for d in range(sym.dimension):
@@ -181,13 +183,19 @@ for sym in db:
 
    if sym.text.startswith(output_tag):
       if (sym.dimension>0) and (type(sym)==GamsParameter):
-         output_sym.append(sym.name) 
+         output_sym.append(sym.name)
       elif (sym.dimension==0) and (type(sym)==GamsParameter):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('parameter')
+         scalar_output_text.append(extractSymText(sym))
       elif (sym.dimension==1) and (type(sym)==GamsSet):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('set')
+         scalar_output_text.append(extractSymText(sym))
       elif (sym.dimension==1) and (type(sym)==GamsParameter):
-         scalar_output_sym.append(sym.name) 
+         scalar_output_sym.append(sym.name)
+         scalar_output_type.append('parameter')
+         scalar_output_text.append(extractSymText(sym))
       else:
          raise Exception('Unhandled external output symbol ' + sym.name)
 SOhidden = True
@@ -425,7 +433,7 @@ for s in input_sym:
          headers[extractSymText(d)] = { 'type':'set' }
    
       for r in db[s].domains[-1]:
-         headers[r.key(0).lower()] = { 'type':'parameter' }
+         headers[r.key(0)] = { 'type':'parameter' }
    else:
       for d in db[s].domains:
          headers[extractSymText(d)] = { 'type':'set' }
@@ -436,6 +444,9 @@ for s in input_sym:
    io_dict[s.lower()] = dict_merge(auto,e_dict)
 
 needScalar = False
+needScalarSymNames = []
+needScalarSymTypes = []
+needScalarSymText = []
 for s in scalar_input_sym:
    text = extractSymText(db[s],1)
    if text.find(' ###')>=0:
@@ -446,19 +457,29 @@ for s in scalar_input_sym:
    add2Dict = True
    if 'slider' in e_dict:
       auto['slider'] = {'label':extractSymText(db[s])}
+   elif 'date' in e_dict:
+      auto['date'] = {'label':extractSymText(db[s])}
    elif 'daterange' in e_dict:
       auto['daterange'] = {'label':extractSymText(db[s])}
    elif 'dropdown' in e_dict:
       auto['dropdown'] = {'label':extractSymText(db[s])}
+   elif 'chekbox' in e_dict:
+      auto['chekbox'] = {'label':extractSymText(db[s])}
    else:
       add2Dict = False
    if add2Dict:
       io_dict[s.lower()] = dict_merge(auto,e_dict)
    else:
+      needScalarSymNames.append(s.lower());
+      needScalarSymText.append(extractSymText(db[s]));
+      if(type(db[s]) == GamsSet):
+         needScalarSymTypes.append('set');
+      else:
+         needScalarSymTypes.append('parameter');
       needScalar = True;
 
 if needScalar:      
-   io_dict['scalars'] = { 'alias':'Scalars', 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+   io_dict['scalars'] = { 'alias':'Scalars', 'symnames':needScalarSymNames, 'symtext':needScalarSymText, 'symtypes':needScalarSymTypes, 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 if len(s_webuiconf):
    config['gamsInputFiles'] = dict_merge(io_dict,json.loads(s_webuiconf))
 elif os.path.isfile('webuiconf.json'):
@@ -499,9 +520,9 @@ for s in output_sym:
 
 if SOtrueLen>0:
    if SOhidden:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
    else:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Scalars', 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 config['gamsOutputFiles'] = io_dict
 
 #json.dump(config, sys.stdout, indent=4, sort_keys=False)
@@ -569,15 +590,19 @@ if %GMSWEBUI%>2:
             latestR = major_minor(latestRPath)
             latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
         else:
-            return ""
-    
+            RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
+            if not len(RPath):
+               latestR = (0, 0)
+            else:
+               RPath = RPath.decode('utf-8').strip().strip('Rscript')
+
         if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
           os.environ["PYEXCEPT"] = "RVERSIONERROR"
           raise FileNotFoundError('Bad R version')
         return latestRPath
     
     os.environ["RPATH"] = get_r_path()
-    if os.path.exists(r"%gams.sysdir%GMSWebUI"):
+    if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
         sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
         with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
@@ -592,12 +617,6 @@ if %GMSWEBUI%>2:
            f.write("runApp(launch.browser=TRUE)")
     else:
         with open("runapp.R", "w") as f: 
-           f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
-           f.write("shiny::runApp(launch.browser=TRUE)")
-elif %GMSWEBUI%>2:
-    with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
            f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")

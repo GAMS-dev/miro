@@ -84,6 +84,21 @@
         "scalars_out": {
             "alias": "Scalars",
             "hidden": true,
+            "symnames": [
+                "fHdr",
+                "errHdr",
+                "lastDayTraining"
+            ],
+            "symtext": [
+                "fund header",
+                "stock symbol header",
+                "last date of training period"
+            ],
+            "symtypes": [
+                "set",
+                "set",
+                "set"
+            ],
             "count": 3,
             "headers": {
                 "Scalar": {

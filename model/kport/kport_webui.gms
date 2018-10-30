@@ -1,5 +1,5 @@
 $onExternalInput
-$kill RData PData s rR pP
+$kill RData PData rR pP s
 *$killUel
 $offExternalInput
 $offdigit

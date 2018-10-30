@@ -389,6 +389,22 @@ renderOutput <- function(data, type, dtOptions = NULL, graphOptions = NULL, mapO
 isDate <- function(x){
   tryCatch(!is.na(as.Date(x[[1]])), error = function(e){FALSE})
 }
+verifyScalarInput <- function(data, scalarHeaders, scalarSymbols){
+  # Checks whether the scalar dataframe is valid
+  #
+  # Args:
+  #   data:          dataframe to be verified
+  #   scalarHeaders: headers that need to match those of the dataframe
+  #   scalarSymbols: symbols that need to be present in dataframe
+  #
+  # Returns:
+  #   boolean specifying whether input data is valid (TRUE) or not (FASLE)
+  if(!verifyInput(data, scalarHeaders) || 
+     any(is.na(match(tolower(data[[1]]), tolower(scalarSymbols))))){
+    return(FALSE)
+  }
+  return(TRUE)
+}
 verifyInput <- function(data, headers){
   # Checks whether a dataframe is valid with regard to a specific schema
   #

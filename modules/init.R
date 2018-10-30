@@ -60,7 +60,7 @@ if(is.null(errMsg)){
   if(!length(config$db$username)){
     pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
     if(is.na(pg_user)){
-      errMsg <<- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username.",
+      errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
                        sep = "\n")
     }else{
       config$db$username <- pg_user
@@ -69,7 +69,7 @@ if(is.null(errMsg)){
   if(!length(config$db$password)){
     pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
     if(is.na(pg_pass)){
-      errMsg <<- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password.",
+      errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
                        sep = "\n")
     }else{
       config$db$password <- pg_pass
@@ -576,8 +576,20 @@ modelInAlias[i], " does not match the number of choices with dependencies.
   }else{
     inputDsNames <- c(modelInTabularData, scalarsFileName)
   }
+  # get scalar input names
+  scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
+    if("headers" %in% names(modelIn[[i]])){
+      return(FALSE)
+    }else{
+      return(TRUE)
+    }
+  }, logical(1L), USE.NAMES = FALSE)]
+  
+  if(tolower(scalarsFileName) %in% modelInTabularData){
+    scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
   }
-
+  }
+  
   if(is.null(errMsg)){
     # determine the filenames for the model input datasets
     if(scalarsFileName %in% modelInTabularData){
