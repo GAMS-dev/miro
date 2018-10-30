@@ -245,4 +245,4 @@ execute 'rm temp_solution.gdx'
 );
 
 $if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set gmswebui $libinclude webui.gms
