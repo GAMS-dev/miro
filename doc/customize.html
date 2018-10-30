@@ -52,7 +52,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Customize</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 29th, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 30th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -85,11 +85,25 @@
                                     <button class="upload-btn">Upload the GMSIO_config.json file</button>
                                     <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
                                   </div>
-                                  <div id="selectConfigType" style="display:none;">
-                                    <button type="button" id="launchConfigGenBt" class="upload-btn">Generate config.json file</button>
-                                    <button type="button" id="launchInputGenBt" class="upload-btn">Generate input widget</button>
+                                  <div id="confGenContent" style="display:none;">
+                                    <div id="selectConfigType" style="display:none;">
+                                      <button type="button" id="launchConfigGenBt" class="upload-btn">Generate config.json file</button>
+                                      <button type="button" id="launchInputGenBt" class="upload-btn">Generate input widget</button>
+                                    </div>
+                                    <div id="form1"></div>
+                                    <div id="cpTA-wrapper" style="display:none;">
+                                      <textarea id="cpTA" style="width:50em;height:20px;padding:0;outline=none;boxShadow=none;background:transparent;border:none;"></textarea>
+                                    </div>
+                                    <button id="reset-config-gen" type="button" class="configgen-reset-btn" onclick="if(window.confirm('Are you sure you want to reset the configuration generator?')){
+                                      $('#form1').alpaca('destroy');
+                                      $('#launchConfigGenBt').unbind();
+                                      $('#launchInputGenBt').unbind();
+                                      $('#gmsioUpload').show();
+                                      $('#confGenContent').hide();
+                                      $(window).scrollTo($('#config-gen'));
+                                      $('#errMsg').hide();
+                                    }">Reset</button>
                                   </div>
-                                  <div id="form1"></div>
                                   <script type="text/javascript">
                                   function parseGMSIO() {
                                   /*
@@ -101,18 +115,21 @@
                                         return false;
                                       }
                                       var fr = new FileReader();
-
                                       fr.onload = function(e) {
                                         try {
                                           let gmsData = JSON.parse(e.target.result);
                                           let gmsSymIn  = Object.keys(gmsData.gamsInputFiles);
                                           let gmsSymOut  = Object.keys(gmsData.gamsOutputFiles);
                                           let i = 0;
-                                          let scalarVals = [];
+                                          let scalarSyms = [];
 
                                           while (i < gmsSymIn.length) {
-                                            if($.inArray("headers", Object.keys(gmsData.gamsInputFiles[gmsSymIn[i]])) === -1){
-                                              scalarVals.push(gmsSymIn[i]);
+                                            if($.inArray("headers", Object.keys(gmsData.gamsInputFiles[gmsSymIn[i]])) === -1 || gmsSymIn[i] === "scalars"){
+                                              if(gmsSymIn[i] === "scalars"){
+                                                scalarSyms = scalarSyms.concat(gmsData.gamsInputFiles[gmsSymIn[i]].symnames);
+                                              }else{
+                                                scalarSyms.push(gmsSymIn[i]);
+                                              }
                                               gmsSymIn.splice(i, 1);
                                             }else{
                                               i++;
@@ -158,28 +175,29 @@
                                             gmsSymOut.splice(iScalarOut, 1);
                                           }
                                           $("#gmsioUpload").hide();
+                                          $('#confGenContent').show();
                                           $("#selectConfigType").show();
-                                          launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, gmsSymNumHdrIn, gmsSymNumHdrOut, scalars, scalarVals);
+                                          launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, gmsSymNumHdrIn, gmsSymNumHdrOut, scalars, scalarSyms);
                                         }
                                         catch(err) {
-                                            console.log(err)
                                             $("#errMsg").html("Problems parsing the JSON file. Please upload a valid GMSIO configutation file!");
+                                            $("#errMsg").show();
                                             return;
                                         }
                                       }
                                     fr.readAsText(files.item(0));
                                   };
-                                  function launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, gmsSymNumHdrIn, gmsSymNumHdrOut, scalars, scalarVals){
-                                     $("#launchConfigGenBt").click(function(){
+                                  function launchGenSelector(gmsSymIn, gmsSymOut, gmsSymHdrIn, gmsSymHdrOut, gmsSymNumHdrIn, gmsSymNumHdrOut, scalars, scalarSyms){
+                                     $("#launchConfigGenBt").one("click", function(){
                                        $("#selectConfigType").hide();
                                        // Merge gmsSymHdrOut into gmsSymHdrIn
                                        $.extend(gmsSymHdrIn, gmsSymHdrOut);
                                        $.extend(gmsSymNumHdrIn, gmsSymNumHdrOut);
                                        launchConfigGen(gmsSymIn.concat(gmsSymOut), gmsSymHdrIn, gmsSymNumHdrIn, scalars);
                                      })
-                                     $("#launchInputGenBt").click(function(){
+                                     $("#launchInputGenBt").one("click", function(){
                                        $("#selectConfigType").hide();
-                                       launchInputGen(gmsSymIn.concat(scalarVals), gmsSymHdrIn);
+                                       launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn);
                                      })
                                   }
                                   function launchConfigGen(gmsSym, gmsSymHdr, gmsSymNumHdr, scalars){
@@ -1982,7 +2000,7 @@
                                           }
                                       });
                                   }
-                                  function launchInputGen(gmsSymIn, gmsSymHdrIn){
+                                  function launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
                                     let gmsSymHeaders = [];
                                     for(let i=0;i<gmsSymIn.length;i++){
                                       if(typeof gmsSymHdrIn[gmsSymIn[i]] !== 'undefined'){
@@ -2000,14 +2018,14 @@
                                                 "gmsParam":{
                                                   "title":"Which parameter would you like to customize?",
                                                   "type":"string",
-                                                  "enum":gmsSymIn,
-                                                  "default":gmsSymIn[0],
+                                                  "enum":gmsSymIn.concat(scalarSyms),
+                                                  "default":gmsSymIn.concat(scalarSyms)[0],
                                                   "required":true
                                                 },
                                                 "widgetType":{
                                                   "title":"What type of input widget do you want?",
                                                   "type":"string",
-                                                  "enum":["table","slider","dropdown","date selector","daterange selector","checkbox"],
+                                                  "enum":["slider","dropdown","date selector","daterange selector","checkbox"],
                                                   "default":"table",
                                                   "required":true
                                                 },
@@ -2510,11 +2528,11 @@
                                                   "title":"Should the entire table be readonly?",
                                                   "type":"boolean"
                                                 },
-                                                "sharedData":{
+                                                /*"sharedData":{
                                                   "title":"Is data for this widget stored in a shared database table and thus loaded at startup?",
                                                   "type":"boolean",
                                                   "required":false
-                                                },
+                                                },*/
                                                 "colSubset":{
                                                   "title":"Which columns should be imported to the UI (names of columns)?",
                                                   "type":"array",
@@ -2535,25 +2553,31 @@
                                                 }
                                               },
                                               "dependencies":{
-                                                "headers":["widgetType"],
+                                                "widgetType":["gmsParam"],
+                                                "headers":["gmsParam"],
                                                 "dropdown":["widgetType"],
                                                 "slider":["widgetType"],
                                                 "date":["widgetType"],
                                                 "daterange":["widgetType"],
                                                 "checkbox":["widgetType"],
-                                                "noimport":["widgetType"],
-                                                "readonly":["widgetType"],
-                                                "readOnlyCols":["widgetType"],
-                                                "sharedData":["widgetType"],
+                                                "noimport":["gmsParam"],
+                                                "readonly":["gmsParam"],
+                                                "readOnlyCols":["gmsParam"],
+                                                "sharedData":["gmsParam"],
                                                 "colSubset":["sharedData"],
                                                 "noBatch":["sharedData"]
                                               }
                                             },
                                             "options":{
                                                "fields":{
+                                                 "widgetType":{
+                                                   "dependencies":{
+                                                      "gmsParam": scalarSyms
+                                                   }
+                                                 },
                                                   "headers":{
                                                     "dependencies":{
-                                                       "widgetType": "table"
+                                                       "gmsParam": gmsSymIn
                                                     }
                                                   },
                                                   "dropdown":{
@@ -2697,22 +2721,22 @@
                                                   },
                                                   "noimport":{
                                                     "dependencies":{
-                                                       "widgetType": "table"
+                                                       "gmsParam": gmsSymIn
                                                     }
                                                   },
                                                   "readonly":{
                                                     "dependencies":{
-                                                       "widgetType": "table"
+                                                       "gmsParam": gmsSymIn
                                                     }
                                                   },
                                                   "readOnlyCols":{
                                                     "dependencies":{
-                                                       "widgetType": "table"
+                                                       "gmsParam": gmsSymIn
                                                     }
                                                   },
                                                   "sharedData":{
                                                     "dependencies":{
-                                                       "widgetType": "table"
+                                                       "gmsParam": gmsSymIn
                                                     }
                                                   },
                                                   "noBatch":{
@@ -3066,9 +3090,6 @@
                                       });
                                   }
                                   </script>
-                                  <div id="cpTA-wrapper" style="display:none;">
-                                    <textarea id="cpTA" style="width:50em;height:20px;padding:0;outline=none;boxShadow=none;background:transparent;border:none;"></textarea>
-                                  </div>
                                   </div><!--//section-block-->
                             </section><!--//doc-section-->
 

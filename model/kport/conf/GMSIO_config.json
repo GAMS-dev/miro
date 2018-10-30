@@ -57,6 +57,12 @@
                 "cstf",
                 "esf"
             ],
+            "symtext": [
+                "Length of considered period [hours]",
+                "Depreciation cost per m^3 reactor and period [kEuro]",
+                "Fixed cost per week and reactor [kEuro]",
+                "Economies of scale factor"
+            ],
             "symtypes": [
                 "parameter",
                 "parameter",
