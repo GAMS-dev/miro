@@ -590,15 +590,19 @@ if %GMSWEBUI%>2:
             latestR = major_minor(latestRPath)
             latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
         else:
-            return ""
-    
+            RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
+            if not len(RPath):
+               latestR = (0, 0)
+            else:
+               RPath = RPath.decode('utf-8').strip().strip('Rscript')
+
         if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
           os.environ["PYEXCEPT"] = "RVERSIONERROR"
           raise FileNotFoundError('Bad R version')
         return latestRPath
     
     os.environ["RPATH"] = get_r_path()
-    if os.path.exists(r"%gams.sysdir%GMSWebUI"):
+    if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
         sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
         with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
@@ -613,12 +617,6 @@ if %GMSWEBUI%>2:
            f.write("runApp(launch.browser=TRUE)")
     else:
         with open("runapp.R", "w") as f: 
-           f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
-           f.write("shiny::runApp(launch.browser=TRUE)")
-elif %GMSWEBUI%>2:
-    with open("runapp.R", "w") as f: 
            f.write("library('methods')\n")
            f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
            f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
