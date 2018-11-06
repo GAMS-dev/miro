@@ -67,10 +67,9 @@
     },
     "scen":{  
       "noScen":"Kein Szenario geladen. Bitte laden Sie zuerst ein Szenario.",
-      "scalarsAlias":"Skalare",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
-        "btTableView":"Zur tabellaren Ansicht wechseln",
+        "btTableView":"Ansicht wechseln",
         "btClose":"Szenario schließen",
         "inputSheet":"Eingabedaten",
         "outputSheet":"Ausgabedaten",

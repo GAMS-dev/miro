@@ -15,28 +15,41 @@ Set date   'date'
 Parameter
     price(date,symbol)        'UIOutput: stock price';
 
-$ifthen %GMSWEBUI%==1
-$  libInclude loadCSV scalars
-$  if setenv PICKSTOCK_LIVE_TW_min $set TW_MIN %sysenv.PICKSTOCK_LIVE_TW_MIN%
-$  if setenv PICKSTOCK_LIVE_TW_max $set TW_MAX %sysenv.PICKSTOCK_LIVE_TW_MAX%
-$endif
-
-$if not set TW_MIN $set TW_MIN "2016-02-01"
-$if not set TW_MAX $set TW_MAX "2016-03-31"
+$if not set TW_LO $set TW_LO "2016-02-01"
+$if not set TW_UP $set TW_UP "2016-03-31"
 
 $ifthen %GMSWEBUI% == 1
 $onEmbeddedCode Python:
-import pandas as pd
-from datetime import datetime
+try:
+   import pandas as pd
+except:
+   import pip
+   if(hasattr(pip, 'main')):
+      pip.main(['install', 'pandas'])
+   else:
+      pip._internal.main(['install', 'pandas'])
+   import pandas as pd
+   
 # This is a work-around for a pandas_datareader bug
 pd.core.common.is_list_like = pd.api.types.is_list_like
-import pandas_datareader.data as web
+
+try:
+   import pandas_datareader.data as web
+except:
+   import pip
+   if(hasattr(pip, 'main')):
+      pip.main(['install', 'pandas-datareader'])
+   else:
+      pip._internal.main(['install', 'pandas-datareader'])
+   import pandas_datareader.data as web
+   
+from datetime import datetime
 
 # stockSymbols in DowJones index
 djSymbols  = ["MMM", "AXP", "AAPL", "BA", "CAT", "CVX", "CSCO", "KO", "DIS", "DWDP", "XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
 
-start = datetime.strptime("%TW_MIN%", '%Y-%m-%d')
-end   = datetime.strptime("%TW_MAX%", '%Y-%m-%d')
+start = datetime.strptime("%TW_LO%", '%Y-%m-%d')
+end   = datetime.strptime("%TW_UP%", '%Y-%m-%d')
 price = []
 for sym in djSymbols:
    price_sym = web.DataReader(sym, 'iex', start, end)[['close']]

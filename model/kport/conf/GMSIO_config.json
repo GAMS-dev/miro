@@ -1,7 +1,7 @@
 {
     "pageTitle": "Product Portfolio Optimization",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -50,7 +50,7 @@
             }
         },
         "scalars": {
-            "alias": "Scalars",
+            "alias": "Input Scalars",
             "symnames": [
                 "whrs",
                 "csti",

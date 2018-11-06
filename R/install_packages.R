@@ -39,7 +39,7 @@ if(length(newPackages)){
 	    }
 	  }
       
-    install.packages(pkg_name, lib = RLibPath, repos = CRANMirror, dependencies = TRUE)
+    install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], repos = CRANMirror, dependencies = TRUE)
     }, error = function(e){
       if(exists("flog.fatal")){
         flog.fatal("Problems installing required R packages. Error message: %s.", e)
@@ -54,7 +54,7 @@ if(length(newPackages)){
 
 tryCatch({
   lapply(requiredPackages, library, character.only = TRUE, 
-         quietly = TRUE, verbose = FALSE, lib.loc = RLibPath)
+         quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
 }, error = function(e){
   if(exists("flog.fatal")){
     flog.fatal("Problems loading required R packages. Error message: %s.", e)

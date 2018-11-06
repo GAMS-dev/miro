@@ -16,15 +16,17 @@ getScenTabData <- function(sheetName){
   }else{
     # sheet is input sheet
     if(is.null(configGraphsIn[[i]]$outType)){
-      configGraphsIn[[i]]$outType <- "datatable"
+      configGraphsIn[[i]]$outType <- "pivot"
+      # prepopulate scalar table
+      if(inputDsNames[i] == scalarsFileName && !length(configGraphsIn[[i]]$pivottable)){
+        configGraphsIn[[i]]$pivottable$rows = c("Scalar")
+        configGraphsIn[[i]]$pivottable$aggregatorName = "Sum"
+        configGraphsIn[[i]]$pivottable$vals = "Value"
+      }
     }
     tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
-    if(inputDsNames[i] == scalarsFileName){
-      tabData$sheetName <- lang$nav$scen$scalarsAlias
-    }else{
-      tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
-    }
+    tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
   }
   # get data index
   tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),

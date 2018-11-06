@@ -53,7 +53,7 @@ lapply(seq_along(modelIn), function(i){
            # add name and description fields
            if(length(value) > 1){
              # double slider (two values)
-             scalar      <- paste0(tolower(names(modelIn))[[i]], c("_min", "_max"))
+             scalar      <- paste0(tolower(names(modelIn))[[i]], c("_lo", "_up"))
              description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
            }else{
              # standard slider (one value)
@@ -109,8 +109,8 @@ lapply(seq_along(modelIn), function(i){
              return(NULL)
            }
            # add name and description fields
-           scalar      <- paste0(names(modelIn)[[i]], c("_min", "_max"))
-           description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
+           scalar      <- paste0(names(modelIn)[[i]], c("_lo", "_up"))
+           description <- paste0(modelInAlias[i], c(" (lower)", " (upper)"))
         
            # generate data frame
            if(is.null(dataTmp[[length(modelInFileNames)]])){

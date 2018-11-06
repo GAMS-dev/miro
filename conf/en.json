@@ -67,10 +67,9 @@
     },
     "scen":{  
       "noScen":"No scenarios loaded. Please first load a scenario",
-      "scalarsAlias":"Scalars",
       "tooltips":{  
         "btExport":"export scenario",
-        "btTableView":"switch to table view",
+        "btTableView":"switch view",
         "btClose":"close scenario",
         "inputSheet":"model input",
         "outputSheet":"model output"
@@ -87,7 +86,7 @@
     "batch_import":{
       "title":"Import data",
       "uploadZip":"Upload zip file with results here.",
-      "batchTags":"Batch Tags (seperate with comma)",
+      "batchTags":"Batch Tags (separate with comma)",
       "uploadButton":"Upload"
     },
     "batch_load":{

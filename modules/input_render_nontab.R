@@ -148,7 +148,7 @@ lapply(seq_along(modelIn), function(id){
              
              # observe changes of dropdown menu data
              observe({
-               shiny::updateSelectInput(session, "dropdown_" %+% id, selected = getSelected[[id]]())
+               updateSelectInput(session, "dropdown_" %+% id, selected = getSelected[[id]]())
              })
            }else{
              # has dependencies on other datasets
@@ -231,7 +231,7 @@ lapply(seq_along(modelIn), function(id){
                if(!inputInitialized[i]){
                  choices <- getData[[i]]()
                  if(!is.null(choices)){
-                   shiny::updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
+                   updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                             selected = modelIn[[id]]$dropdown$selected)
                    inputInitialized[i] <<- TRUE
                    showEl(session, paste0("#dropdown_", id))
@@ -276,8 +276,10 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of slider data
              observe({
                # update slider with default value
-               shiny::updateSliderInput(session, paste0("slider_", id), value = getSelected[[id]]())
-               
+               value <- getSelected[[id]]()
+               if(!is.null(value)){
+                 updateSliderInput(session, paste0("slider_", id), value = value)
+               }
              })
            }else{
              # has dependencies on other datasets
@@ -398,6 +400,7 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
+               
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
                
@@ -417,7 +420,10 @@ lapply(seq_along(modelIn), function(id){
              })
              # update slider default value
              observe({
-               shiny::updateSliderInput(session, inputId = paste0("slider_", id), value = getSelected[[id]]())
+               value <- getSelected[[id]]()
+               if(!is.null(value)){
+                 updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+               }
              })
            }
          }

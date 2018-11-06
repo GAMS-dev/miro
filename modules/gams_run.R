@@ -72,8 +72,8 @@ if(identical(config$activateModules$batchMode, TRUE)){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["batchMode_" %+% i]], TRUE)){
                    # double slider in non batch mode
-                   return(paste0("--", names(modelIn)[[i]], "_min=", value[1], 
-                                 " --", names(modelIn)[[i]], "_max=", value[2]))
+                   return(paste0("--", names(modelIn)[[i]], "_lo=", value[1], 
+                                 " --", names(modelIn)[[i]], "_up=", value[2]))
                  }
                  
                  stepSize <- input[["batchStep_" %+% i]]
@@ -82,8 +82,8 @@ if(identical(config$activateModules$batchMode, TRUE)){
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0("--", names(modelIn)[[i]], "_min=", value$min, 
-                               " --", names(modelIn)[[i]], "_max=", value$max))
+                 return(paste0("--", names(modelIn)[[i]], "_lo=", value$min, 
+                               " --", names(modelIn)[[i]], "_up=", value$max))
                }
              },
              dropdown = {
@@ -218,8 +218,8 @@ observeEvent(input$btSolve, {
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), tolower(scalarsFileName))){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
       DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
       GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
@@ -262,7 +262,7 @@ observeEvent(input$btSolve, {
   # run GAMS
   tryCatch({
     homeDir <- getwd()
-    gamsArgs <- c(paste0("idir1=", homeDir, .Platform$file.sep, modelDir), "idir2=" %+% currentModelDir, 
+    gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", homeDir, .Platform$file.sep, modelDir), 
                   "curdir=" %+% workDir, "logOption=3")
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
@@ -272,7 +272,7 @@ observeEvent(input$btSolve, {
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
-    writeLines(c(gamsArgs, pfFileContent), paste0(workDir, tolower(modelName), ".pf"))
+    writeLines(c(pfFileContent, gamsArgs), pfFilePath)
     gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
                                                          "pf=" %+% pfFilePath, 
                                                          config$gamsWEBUISwitch), 

@@ -146,4 +146,4 @@ schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif
 
-$if set gmswebui $libInclude webui
+$libInclude webui

@@ -1,7 +1,7 @@
 {
     "pageTitle": "Stock Selection Optimization with live data from the web",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -89,8 +89,23 @@
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
             "hidden": true,
+            "symnames": [
+                "fHdr",
+                "errHdr",
+                "lastDayTraining"
+            ],
+            "symtext": [
+                "fund header",
+                "stock symbol header",
+                "last date of training period"
+            ],
+            "symtypes": [
+                "set",
+                "set",
+                "set"
+            ],
             "count": 3,
             "headers": {
                 "Scalar": {

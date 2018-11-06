@@ -7,8 +7,7 @@ $onExternalInput
 Set date   'date'
     symbol 'stockSymbol';
 
-Parameter
-    price(date,symbol) 'Price   ### { "headers":{"date":{"readonly":true}} }';
+Parameter price(date,symbol) 'Price ### {"readonly":true}';
 
 Scalar maxstock        'maximum number of stocks to select ### { "slider":{"min":1, "max":"card(price$stocksymbol)", "default":5,  "step":1 }}'  / 2  /
        trainingdays    'number of days for training        ### { "slider":{"min":1, "max":"card(price$date)", "default":99, "step":1 }}'  / 99  /;

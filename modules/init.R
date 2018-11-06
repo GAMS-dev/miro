@@ -129,6 +129,14 @@ if(is.null(errMsg)){
     errMsg <- "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!"
     flog.fatal(errMsg)
   }
+  # rename input and output scalar aliases
+  if(length(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
+    modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
+  }
+  if(length(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
+    modelOut[[scalarsOutName]]$alias <- config$scalarAliases$outputScalars
+  }
+    
 }
 
 if(is.null(errMsg)){
@@ -625,8 +633,8 @@ modelInAlias[i], " does not match the number of choices with dependencies.
           # test if sheetDep has a forward dependency on considered sheet without forward dependencies
           if(col %in% ddownDep[[sheetDep]]$bw[[sheet]]){
             if(col %in% names(colsWithDep[[i]])){
-              errMsg <<- paste(errMsg,paste0(col, " of input sheet ", sheet, 
-                                             "has more than one dependency. Only one backward dependency per column is allowed.", e), 
+              errMsg <<- paste(errMsg,paste0("Column: '", col, "' of input sheet '", sheet, 
+                                             "' has more than one dependency. Only one backward dependency per column is allowed."), 
                                sep = "\n")
             }else{
               id <- match(tolower(sheetDep), names(modelIn))

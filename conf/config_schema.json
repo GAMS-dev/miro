@@ -126,6 +126,25 @@
             }
          }
       },
+      "scalarAliases":{  
+         "description":"Specify the aliases for the input and output scalar tables",
+         "type":"object",
+         "additionalProperties":false,
+         "properties":{  
+            "inputScalars":{  
+               "description":"Alias for the input scalar table",
+               "type":"string",
+               "minLength":"1",
+               "required":false
+            },
+            "outputScalars":{  
+               "description":"Alias for the output scalar table",
+               "type":"string",
+               "minLength":"1",
+               "required":false
+            }
+         }
+      },
       "saveTraceFile":{  
          "description":"Boolean which specifies whether trace file should be saved",
          "type":"boolean",
@@ -237,7 +256,7 @@
                               "description":"Array of the names of columns in the data.frame to prepopulate the rows of the pivot table.",
                               "type":"array",
                               "uniqueItems":true,
-                              "minItems":1,
+                              "minItems":0,
                               "items":{  
                                  "type":"string",
                                  "minLength":1
@@ -248,7 +267,7 @@
                               "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
                               "type":"array",
                               "uniqueItems":true,
-                              "minItems":1,
+                              "minItems":0,
                               "items":{  
                                  "type":"string",
                                  "minLength":1

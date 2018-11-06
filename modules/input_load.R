@@ -96,7 +96,7 @@ lapply(datasetsToFetch, function(dataset){
       if(!is.null(scalarDataset) && nrow(scalarDataset)){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
-          row.name <- paste0(row.name, c("_min", "_max"))
+          row.name <- paste0(row.name, c("_lo", "_up"))
           dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% row.name, colValue, drop = FALSE], use.names = FALSE)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp

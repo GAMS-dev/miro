@@ -310,11 +310,6 @@
               "minLength":1,
               "required":true
             },
-            "scalarsAlias":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "tooltips":{  
               "type":"object",
               "additionalProperties":false,
