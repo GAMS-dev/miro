@@ -26,4 +26,4 @@ RLibPath <- ''
     rm(checkSourceDefault)
   }
   library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
-  shiny::runApp(appDir = file.path("C:/Users/frepr/Documents/gmswebui_git/model/kport/../.."), launch.browser=TRUE)
+  shiny::runApp(appDir = file.path("/Applications/GAMS25.1/sysdir/GMSWebUI"), launch.browser=TRUE)

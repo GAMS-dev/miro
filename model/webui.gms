@@ -18,21 +18,20 @@ $gdxout %fn%_webui
 $unload
 $gdxout
 
+$if not set appLogoPath $set appLogoPath ""
+$ifthen not set mkApp
+$   set mkApp 0
+$else
+$   set mkApp 1
+$endif
+
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
-$ifthen.a %WEBUI%=="launch"
-$if not set appLogoPath $set appLogoPath ""
-$ifthen.b not set mkApp
-$   set mkApp 0
-$else.b
-$   set mkApp 1
-$endif.b
-$ifthen.b dExist %gams.sysdir%GMSWebUI
+$ifthen dExist %gams.sysdir%GMSWebUI
 $  set WEBUIDIR %gams.sysdir%GMSWebUI
-$else.b
+$else
 $  set WEBUIDIR %fp%..%system.dirsep%..
-$endif.b
-$endif.a
+$endif
 $onecho > writecsv.py
 from subprocess import run
 from shlex import quote
@@ -561,6 +560,7 @@ with open('conf/GMSIO_config.json', 'w') as f:
 db.__del__()
 import os
 from platform import system
+import subprocess
 for s in rmfiles:
    os.remove(s.lower())
    
@@ -624,15 +624,14 @@ def get_r_path():
     return latestRPath
 RPath = get_r_path()
 
-if """%WEBUI% """.strip().strip("\"") == "launch":
-    os.environ["RPATH"] = RPath
-    if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
-        sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\") + r"GMSWebUI\library"
-    else:
-        sysdir = ""
-    with open("runapp.R", "w") as f: 
-       f.write("RLibPath <- '"+sysdir+"'\n")
-       f.write("""
+os.environ["RPATH"] = RPath
+if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\") + r"GMSWebUI\library"
+else:
+    sysdir = ""
+with open("runapp.R", "w") as f: 
+   f.write("RLibPath <- '"+sysdir+"'\n")
+   f.write("""
 if(RLibPath == ""){{
    RLibPath <- NULL
 }}
@@ -671,24 +670,27 @@ if %mkApp%>0:
         with open(fn_model + ".bat", "w") as f:
             f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
+        from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
             f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
-        call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
+        if os.path.isdir(fn_model + ".app"):
+           rmtree(fn_model + ".app")
+        subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
         os.remove(fn_model + ".applescript")
         appLogoPath = r"%appLogoPath% ".strip()
         if(len(appLogoPath) > 0 and os.path.isfile(appLogoPath)):
           logoPath = appLogoPath
         else:
-          logoPath = os.path.join(r"%WEBUIDIR% ".strip(), "gmslogo.icns")
-        call(["cp", logoPath, fn_model + ".app/Contents/Resources/"])
+          logoPath = os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "gmslogo.icns")
+        subprocess.call(["cp", logoPath, fn_model + ".app/Contents/Resources/"])
 
         plistPath = fn_model + ".app/Contents/Info.plist"
         with open(plistPath, "r") as f:
             plist = f.readlines()
 
         idx = len(plist) - 2
-
-        plist.insert(idx, "  <key>CFBundleIconFile</key>\n  <string>" + os.path.splitext(logoPath)[0] +"</string>\n")
+        
+        plist.insert(idx, "  <key>CFBundleIconFile</key>\n  <string>" + os.path.basename(logoPath) +"</string>\n")
         with open(plistPath, "w") as f:
            plist = "".join(plist)
            f.write(plist)

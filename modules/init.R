@@ -57,22 +57,24 @@ if(is.null(errMsg)){
     flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
     config$activateModules$sharedScenarios <- FALSE
   }
-  if(!length(config$db$username)){
-    pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
-    if(is.na(pg_user)){
-      errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
-                       sep = "\n")
-    }else{
-      config$db$username <- pg_user
+  if(config$activateModules$scenario){
+    if(!length(config$db$username)){
+      pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
+      if(is.na(pg_user)){
+        errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
+                         sep = "\n")
+      }else{
+        config$db$username <- pg_user
+      }
     }
-  }
-  if(!length(config$db$password)){
-    pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
-    if(is.na(pg_pass)){
-      errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
-                       sep = "\n")
-    }else{
-      config$db$password <- pg_pass
+    if(!length(config$db$password)){
+      pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
+      if(is.na(pg_pass)){
+        errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
+                         sep = "\n")
+      }else{
+        config$db$password <- pg_pass
+      }
     }
   }
 }
