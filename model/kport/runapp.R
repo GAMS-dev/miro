@@ -1,4 +1,4 @@
-RLibPath <- ''
+RLibPath <- 'C:/GAMS/win64/25.2/GMSWebUI/library'
 
   if(RLibPath == ""){
      RLibPath <- NULL
@@ -26,4 +26,4 @@ RLibPath <- ''
     rm(checkSourceDefault)
   }
   library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
-  shiny::runApp(appDir = file.path("/Applications/GAMS25.1/sysdir/GMSWebUI"), launch.browser=TRUE)
+  shiny::runApp(appDir = file.path("C:/GAMS/win64/25.2/GMSWebUI"), launch.browser=TRUE)

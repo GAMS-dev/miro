@@ -18,7 +18,7 @@ Auth <- R6Class("Auth",
                     #   groupLimit:          maximum number of access groups a user can belong to
                     
                     #BEGIN error checks 
-                    stopifnot(inherits(conn, "PqConnection"))
+                    stopifnot(inherits(conn, "PqConnection") || inherits(conn, "SQLiteConnection"))
                     stopifnot(is.character(uid), length(uid) == 1)
                     stopifnot(is.character(defaultGroup), length(defaultGroup) == 1)
                     stopifnot(is.character(tableNameGroups), length(tableNameGroups) == 1)

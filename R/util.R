@@ -487,6 +487,20 @@ getOS <- function(){
   }
   tolower(os)
 }
+dateColToChar <- function(conn, df){
+  # converts date columns to character
+  if(inherits(conn, "PqConnection")){
+    return(df)
+  }
+  df[] <- lapply(df, function(col){
+    if(inherits(col, "POSIXt") || inherits(col, "Date")){
+      as.character(col)
+    }else{
+      col
+    } 
+  })
+  return(df)
+}
 addCssDim <- function(x, y){
   # Adds two css dimensions together
   #
@@ -651,4 +665,19 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath, readFunc, ...
       do.call(readFunc, c(filePath, extraArgs))
     }
   )
+}
+prepopPivot <- function(symbol){
+  pivotConf <- list(rows = c(), vals = character(1L), aggregatorName = "Sum")
+  setEl     <- vector("character", length(symbol$headers))
+  j <- 1L
+  for(i in seq_along(symbol$headers)){
+    if(symbol$headers[[i]]$type == "parameter"){
+      pivotConf$vals <- names(symbol$headers)[[i]]
+    }else{
+      setEl[j] <- names(symbol$headers)[[i]]
+      j <- j + 1L
+    }
+  }
+  pivotConf$rows <- setEl[nchar(setEl) > 0.5]
+  return(pivotConf)
 }

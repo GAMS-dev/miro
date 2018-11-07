@@ -72,10 +72,10 @@
         "btTableView":"Ansicht wechseln",
         "btClose":"Szenario schließen",
         "inputSheet":"Eingabedaten",
-        "outputSheet":"Ausgabedaten",
-        "split":{
-          "load":"Szenario öffnen"
-        }
+        "outputSheet":"Ausgabedaten"
+      },
+      "split":{
+        "load":"Szenario öffnen"
       }
     },
     "advanced":{
@@ -180,7 +180,7 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
-      "scenNameExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "scenNameExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
@@ -197,7 +197,6 @@
       "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
       "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
       "selTags": "Zeige nur Szenarios mit den Tag(s):",
-      "titleOverwriteInput":"Warnung",
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "sortBy":"Sortieren nach:",
@@ -288,7 +287,8 @@
         "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
         "selAttribs":"Attribute:",
-        "runButton": "Paver starten"
+        "runButton": "Paver starten",
+        "interactiveButton":"Interaktiver Modus"
       },
       "invalidScenDialog":{
         "title":"Ungültige Szenarien",
@@ -328,7 +328,7 @@
       "title":"Speichern von Szenariodaten in der Datenbank ",
       "progress":"Speichern von Datensatz "
     },
-    "removeScenDb":{  
+    "deleteScenDb":{  
       "title":"Löschen von Szenario aus Datenbank",
       "progress":"Löschen von Datensatz "
     }
@@ -362,7 +362,7 @@
       "title":"Fehler beim Lesen der Ergebnisse",
       "desc":"Beim Lesen der Ergebnisse von GAMS ist ein Fehler aufgetreten."
     },
-    "dataConcat":{  
+    "dataError":{  
       "title":"Fehler in den Daten",
       "desc":"Ein Datenfehler ist aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt."
     },

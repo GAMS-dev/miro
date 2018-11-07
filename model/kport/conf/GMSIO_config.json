@@ -100,10 +100,10 @@
                 "Product": {
                     "type": "set"
                 },
-                "demand": {
+                "Demand": {
                     "type": "parameter"
                 },
-                "surplus": {
+                "Surplus": {
                     "type": "parameter"
                 }
             }
@@ -114,10 +114,10 @@
                 "Reactor": {
                     "type": "set"
                 },
-                "production time": {
+                "Production Time": {
                     "type": "parameter"
                 },
-                "max. production time": {
+                "max. Production Time": {
                     "type": "parameter"
                 }
             }
@@ -131,10 +131,10 @@
                 "Product": {
                     "type": "set"
                 },
-                "utilization rate": {
+                "Utilization rate": {
                     "type": "parameter"
                 },
-                "number of batches": {
+                "Number of batches": {
                     "type": "parameter"
                 }
             }

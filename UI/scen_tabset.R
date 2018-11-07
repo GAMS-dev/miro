@@ -26,7 +26,12 @@ getScenTabData <- function(sheetName){
     }
     tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
-    tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
+    
+    if(inputDsNames[i] == scalarsFileName){
+      tabData$sheetName <- config$scalarAliases$inputScalars
+    }else{
+      tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
+    }
   }
   # get data index
   tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),

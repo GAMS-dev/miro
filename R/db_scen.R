@@ -429,7 +429,8 @@ Scenario <- R6Class("Scenario",
                                             DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
                                             " int UNIQUE,", 
                                             DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), 
-                                            " timestamp with time zone);")
+                                            if(inherits(private$conn, "PqConnection")) 
+                                              " timestamp with time zone);" else " text);")
                             DBI::dbExecute(private$conn, query)
                             flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)
                           }, error = function(e){
@@ -453,6 +454,7 @@ Scenario <- R6Class("Scenario",
                         colnames(lockData) <- c(private$scenMetaColnames['uid'], 
                                                 private$scenMetaColnames['sid'], 
                                                 private$slocktimeIdentifier)
+                        lockData <- dateColToChar(private$conn, lockData)
                         tryCatch({
                           DBI::dbWriteTable(private$conn, private$tableNameScenLocks, lockData, row.names = FALSE, append = TRUE)
                           flog.debug("Db: %s: Lock was added for scenario: '%s' (Scenario.lock).", private$uid, private$sid)

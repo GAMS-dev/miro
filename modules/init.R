@@ -57,7 +57,7 @@ if(is.null(errMsg)){
     flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
     config$activateModules$sharedScenarios <- FALSE
   }
-  if(config$activateModules$scenario){
+  if(config$activateModules$scenario && !identical(config$db$type, "sqlite")){
     if(!length(config$db$username)){
       pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
       if(is.na(pg_user)){
@@ -75,6 +75,15 @@ if(is.null(errMsg)){
       }else{
         config$db$password <- pg_pass
       }
+    }
+  }
+  if(!is.null(config$db$name) && nchar(config$db$name) &&
+     identical(config$db$type, "sqlite")){
+    if(identical(gamsSysDir, "")){
+      config$db$name <- paste0(getwd(), .Platform$file.sep, config$db$name, ".sqlite3")
+    }else{
+      config$db$name <- paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, 
+                               config$db$name, ".sqlite3")
     }
   }
 }
@@ -132,13 +141,20 @@ if(is.null(errMsg)){
     flog.fatal(errMsg)
   }
   # rename input and output scalar aliases
-  if(length(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
+  if(!is.null(config$scalarAliases$inputScalars) && 
+     nchar(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
     modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
+  }else if(!length(config$scalarAliases$inputScalars)){
+    if(!length(modelIn[[scalarsFileName]])){
+      config$scalarAliases$inputScalars <- "Input scalars"
+    }else{
+      config$scalarAliases$inputScalars <- modelIn[[scalarsFileName]]$alias
+    }
   }
-  if(length(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
+  if(!is.null(config$scalarAliases$outputScalars) && 
+     nchar(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
     modelOut[[scalarsOutName]]$alias <- config$scalarAliases$outputScalars
   }
-    
 }
 
 if(is.null(errMsg)){
@@ -267,6 +283,9 @@ if(is.null(errMsg)){
         configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
       }else{
         configGraphsOut[[i]]$outType <<- defOutType
+        if(identical(defOutType, "pivot")){
+          configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
+        }
       }
     }
   })
@@ -286,6 +305,9 @@ if(is.null(errMsg)){
       if(!is.null(modelIn[[i]]$headers)){
         if(is.null(configGraphsIn[[i]])){
           configGraphsIn[[i]]$outType <<- defInType
+          if(identical(defInType, "pivot")){
+            configGraphsIn[[i]]$pivottable <<- prepopPivot(modelIn[[i]])
+          }
         }
       }
     }

@@ -8,10 +8,11 @@
       "type":{  
          "description":"Type of database to use",
          "type":"string",
-         "default":"postgres",
          "enum":[  
-            "postgres"
+            "postgres",
+            "sqlite"
          ],
+         "default":"sqlite",
          "required":false
       },
       "name":{  

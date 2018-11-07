@@ -263,7 +263,7 @@ observeEvent(input$btSolve, {
   tryCatch({
     homeDir <- getwd()
     gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", homeDir, .Platform$file.sep, modelDir), 
-                  "curdir=" %+% workDir, "logOption=3")
+                  "curdir=" %+% workDir, "logOption=3", config$gamsWEBUISwitch)
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
     }
@@ -274,8 +274,7 @@ observeEvent(input$btSolve, {
     }
     writeLines(c(pfFileContent, gamsArgs), pfFilePath)
     gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                         "pf=" %+% pfFilePath, 
-                                                         config$gamsWEBUISwitch), 
+                                                         "pf=" %+% pfFilePath), 
                          stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc

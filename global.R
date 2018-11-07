@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "kport"
 # show extensive error messages/ obscoure error messages
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use

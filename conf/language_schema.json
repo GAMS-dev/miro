@@ -821,17 +821,7 @@
               "minLength":1,
               "required":true
             },
-            "btImportDb":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "cbSelectManually":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "cbDatabase":{  
               "type":"string",
               "minLength":1,
               "required":true

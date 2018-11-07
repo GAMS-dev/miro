@@ -50,7 +50,6 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
           if(gmsSymOut[i] === "scalars_out"){
             scalars.push("scalars_out");
             gmsSymNumHdrOut[gmsSymOut[i]] = ["Value"];
-            continue;
           }else{
             gmsSymNumHdrOut[gmsSymOut[i]] = [];
           }
