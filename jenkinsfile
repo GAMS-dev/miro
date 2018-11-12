@@ -60,7 +60,7 @@ pipeline {
                             hdiutil detach $DMG_ROOT
 
                             cd installer/macOS
-                            hdiutil convert -verbose -format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
+                            hdiutil convert -verbose -debug -format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
                         '''
                         archiveArtifacts artifacts: 'GAMSWebUI-final.dmg', fingerprint: true
                     }
