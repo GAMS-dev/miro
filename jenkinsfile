@@ -41,7 +41,6 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         sh '''
-                            ls -al
                             cd installer/macOS
                             gzip -d GAMSWebUI.dmg.gz
                             cd ../..
@@ -59,9 +58,9 @@ pipeline {
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
-                            hdiutil convert GAMSWebUI.dmg -format UDBZ
+                            hdiutil convert installer/macOS/GAMSWebUI.dmg -format UDBZ -o GAMSWebUI-final.dmg
                         '''
-                        archiveArtifacts artifacts: 'GAMSWebUI.dmg', fingerprint: true
+                        archiveArtifacts artifacts: 'GAMSWebUI-final.dmg', fingerprint: true
                     }
                 }
             }
