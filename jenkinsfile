@@ -31,7 +31,7 @@ pipeline {
                 macos: {
                     node('macos') {
                         sh '''
-                            gzip -d GAMSWebUI.dmg.gz
+                            gzip -d installer/macOS/GAMSWebUI.dmg.gz
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
