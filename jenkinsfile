@@ -12,6 +12,7 @@ pipeline {
                 parallel linux: {
                     node('master') {
                         step([$class: 'WsCleanup'])
+                        checkout scm
                         sh '''
                             echo "Do the linux packaging stuff here."
                         '''
@@ -20,6 +21,7 @@ pipeline {
                 windowsX86: {
                     node('windowsX86') {
                         step([$class: 'WsCleanup'])
+                        checkout scm
                         bat '''
                             echo "Do all Windows x32 specific stuff here. In case there is just one Windows installer drop this section."
                         '''
@@ -28,6 +30,7 @@ pipeline {
                 windowsX64: {
                     node('windowsX64') {
                         step([$class: 'WsCleanup'])
+                        checkout scm
                         bat '''
                             echo "Do Windows packaging stuff here."
                         '''
@@ -36,6 +39,7 @@ pipeline {
                 macos: {
                     node('macos') {
                         step([$class: 'WsCleanup'])
+                        checkout scm
                         sh '''
                             ls -al
                             cd installer/macOS
