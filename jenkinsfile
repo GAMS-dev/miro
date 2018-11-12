@@ -37,6 +37,7 @@ pipeline {
                     node('macos') {
                         step([$class: 'WsCleanup'])
                         sh '''
+                            ls -al
                             cd installer/macOS
                             gzip -d GAMSWebUI.dmg.gz
                             cd ../..
