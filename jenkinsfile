@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '2', daysToKeepStr: '1'))
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Pack') {
+            steps {
+                parallel linux: {
+                    node('master') {
+                        sh '''
+                            echo "Do the linux packaging stuff here."
+                        '''
+                    }
+                },
+                windowsX86: {
+                    node('windowsX86') {
+                        echo "Do all Windows x32 specific stuff here. In case there is just one Windows installer drop this section."
+                    }
+                },
+                windowsX64: {
+                    node('windowsX64') {
+                        bat '''
+                            echo "Do Windows packaging stuff here."
+                        '''
+                    }
+                },
+                macos: {
+                    node('macos') {
+                        sh '''
+                            echo "Do the macOS packaging stuff here."
+                        '''
+                    }
+                }
+            }
+        }
+    }
+}
