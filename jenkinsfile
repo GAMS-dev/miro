@@ -58,10 +58,9 @@ pipeline {
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
-                            hdiutil convert installer/macOS/GAMSWebUI.dmg -format UDBZ -o GAMSWebUI-final.dmg
-                        '''
-                        sh '''
-                            mount
+
+                            cd installer/macOS
+                            hdiutil convert -verbose GAMSWebUI.dmg -format UDBZ -o GAMSWebUI-final.dmg
                         '''
                         archiveArtifacts artifacts: 'GAMSWebUI-final.dmg', fingerprint: true
                     }
