@@ -37,7 +37,9 @@ pipeline {
                     node('macos') {
                         step([$class: 'WsCleanup'])
                         sh '''
-                            gzip -d installer/macOS/GAMSWebUI.dmg.gz
+                            cd installer/macOS
+                            gzip -d GAMSWebUI.dmg.gz
+                            cd ../..
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
