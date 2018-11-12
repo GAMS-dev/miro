@@ -31,8 +31,24 @@ pipeline {
                 macos: {
                     node('macos') {
                         sh '''
-                            echo "Do the macOS packaging stuff here."
+                            gzip -d GAMSWebUI.dmg.gz
+
+                            DMG_ROOT=volume
+                            mkdir $DMG_ROOT
+                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/GAMSWebUI.dmg
+
+                            TARGET=$DMG_ROOT/GAMS25.1/sysdir
+
+                            mkdir $TARGET/GMSWebUI
+                            mkdir $TARGET/inclib
+
+                            cp -r app.R conf doc global.R JS LICENSE LICENSE_full modules R resources UI www $TARGET/GMSWebUI
+                            cp model/loadCSV.gms model/webui.gms $TARGET/inclib
+
+                            hdiutil detach $DMG_ROOT
+                            hdiutil convert GAMSWebUI.dmg -format UDBZ
                         '''
+                        archiveArtifacts artifacts: 'GAMSWebUI.dmg', fingerprint: true
                     }
                 }
             }
