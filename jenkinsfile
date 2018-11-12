@@ -11,6 +11,7 @@ pipeline {
             steps {
                 parallel linux: {
                     node('master') {
+                        step([$class: 'WsCleanup'])
                         sh '''
                             echo "Do the linux packaging stuff here."
                         '''
@@ -18,11 +19,15 @@ pipeline {
                 },
                 windowsX86: {
                     node('windowsX86') {
-                        echo "Do all Windows x32 specific stuff here. In case there is just one Windows installer drop this section."
+                        step([$class: 'WsCleanup'])
+                        bat '''
+                            echo "Do all Windows x32 specific stuff here. In case there is just one Windows installer drop this section."
+                        '''
                     }
                 },
                 windowsX64: {
                     node('windowsX64') {
+                        step([$class: 'WsCleanup'])
                         bat '''
                             echo "Do Windows packaging stuff here."
                         '''
@@ -30,6 +35,7 @@ pipeline {
                 },
                 macos: {
                     node('macos') {
+                        step([$class: 'WsCleanup'])
                         sh '''
                             gzip -d installer/macOS/GAMSWebUI.dmg.gz
 
