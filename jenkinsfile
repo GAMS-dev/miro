@@ -42,7 +42,7 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         sh '''
-                            WEBUI_VERSION="$(grep -e '^webuiVersion' app.R | cut -f3 -d'\"')"
+                            WEBUI_VERSION=$(grep -e "^webuiVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
                             echo $DMG_NAME
                             cd installer/macOS
