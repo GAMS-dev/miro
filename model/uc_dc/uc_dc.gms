@@ -331,5 +331,10 @@ execute 'rm temp_solution.gdx'
 * END IF-loop if(infeas eq 0)
 );
 
+$onExternalOutput
+Parameter ePrice(i,t) 'Electricity prices';
+$offExternalOutput
+ePrice(i,t) = c_BalanceP.m(i,t);
+
 $if set gmswebui $include %MODELPATH%webui_out.gms
 $if set gmswebui $batinclude %MODELPATH%webui.gms
