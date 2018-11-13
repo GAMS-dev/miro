@@ -44,6 +44,8 @@ $if not set relax $set relax 0
 $if not set savesol $set savesol 0
 * Default: Line loss not approximated
 $if not set lineloss $set lineloss 0
+* Default: Available generator scenario: all generators
+$if not set genrun $set genrun allgen
 
 * Define filepath, name and extension.
 $setnames "%gams.i%" filepath filename fileextension
