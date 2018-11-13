@@ -22,17 +22,16 @@ pipeline {
                     node('windowsX64') {
                         step([$class: 'WsCleanup'])
                         checkout scm
-                        bat '''
-                            iscc "installer\\win\\setup_win.iss" /DMyAppVersion=0.2.6.1
-                        '''
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
+                                for /f "tokens=*" %%i in ('findstr /B /C:"webuiVersion <-" app.R') do set WEBUI_VERSION=%%i
+                                set WEBUI_VERSION=%WEBUI_VERSION:webuiVersion <- =%
+                                iscc "installer\\win\\setup_win.iss" /DMyAppVersion=%WEBUI_VERSION%
                                 echo Setting up environment for VS2017 usage...
                                 cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
                                 call vcvars64.bat
                                 cd %WORKSPACE%\\installer\\win\\Output
-                                for /f "tokens=*" %%i in ('dir /B ^| findstr /I GAMS_WebUI-.*') do set INSTFILE=%%i
-                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 %INSTFILE%
+                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_WebUI-%WEBUI_VERSION%.exe
                             '''
                         }
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.exe', fingerprint: true
@@ -43,13 +42,16 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         sh '''
+                            WEBUI_VERSION="$(grep -e '^webuiVersion' app.R | cut -f3 -d'\"')"
+                            DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
+                            echo $DMG_NAME
                             cd installer/macOS
-                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg GAMS_WebUI.dmg
+                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg $DMG_NAME
                             cd ../..
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
-                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/GAMS_WebUI.dmg
+                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/$DMG_NAME
 
                             TARGET=$DMG_ROOT/GAMS25.1/sysdir
 
@@ -69,7 +71,7 @@ pipeline {
                             # If we do the latter we have of better coverage of older macOS versions.
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
                         '''
-                        archiveArtifacts artifacts: '**/GAMS_WebUI*.dmg', fingerprint: true
+                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
                     }
                 }
             }
