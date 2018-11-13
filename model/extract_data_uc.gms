@@ -53,6 +53,23 @@ parameters
 ;    
 $offempty
 
+$onembeddedCode Python:
+import os
+if r'%GENRUN%'.lower() == 'allgen':
+  os.environ["HAVEGENRUN"] = '3'
+else:
+  gams.wsWorkingDir = '.'
+  db = gams.ws.add_database_from_gdx(r'%case%')
+  try:
+    s = db['genRun']
+    try:
+      r = s.find_record(r'%GENRUN%')
+      os.environ["HAVEGENRUN"] = '1'
+    except:
+      os.environ["HAVEGENRUN"] = '2'
+  except:
+    os.environ["HAVEGENRUN"] = '0'
+$offembeddedCode
 
 *==== SECTION: Data read-in from input file
 $GDXIN %case%
@@ -66,6 +83,16 @@ $LOAD bus_t, bus_s, gen_t, gen_s, branch_t, branch_s
 $LOAD fuel_t, fuel_s, prime_mover
 $LOAD businfo, geninfo, branchinfo, fuelinfo
 $LOAD interface, interfacemap, interfaceinfo, interface_t
+
+$if %sysEnv.HAVEGENRUN%==0 $log *** No symbol GENRUN in case GDX. Using all generators.
+$if %sysEnv.HAVEGENRUN%==2 $log *** Symbol GENRUN in case GDX, but no element >%GENRUN%<. Using all generators.
+$if %sysEnv.HAVEGENRUN%==3 $log --- Using all generators.
+
+$ifthen %sysEnv.HAVEGENRUN%==1
+set genRun;
+set genRunAvail(genRun,gen) 'Generators available in run';
+$load genRun genRunAvail
+$endif
 
 * Option to use elastic demand bidding turned on
 $if %demandbids% == 1 $LOADR demandbid_t, demandbid_s, demandbid, demandbidmap, demandbidinfo
@@ -166,6 +193,12 @@ $ifthen %genPmin% == 0
 $else
   Pmin(gen)= geninfo(gen,'Pmin','%genPmin%')/baseMVA;
 $endif
+
+$ifthen %sysEnv.HAVEGENRUN%==1
+Pmax(gen)$(not genRunAvail('%GENRUN%',gen)) = 0;
+Pmin(gen)$(not genRunAvail('%GENRUN%',gen)) = 0;
+$endif
+
 
 * Voltage angle
 Va(bus,t)  = businfo(bus,'Va',t)*pi/180;
