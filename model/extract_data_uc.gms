@@ -53,6 +53,7 @@ parameters
 ;    
 $offempty
 
+$if not set GENRUN $set GENRUN allgen
 $onembeddedCode Python:
 import os
 if r'%GENRUN%'.lower() == 'allgen':
