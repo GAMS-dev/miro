@@ -18,21 +18,12 @@ pipeline {
                         '''
                     }
                 },
-                windowsX86: {
-                    node('windowsX86') {
-                        step([$class: 'WsCleanup'])
-                        checkout scm
-                        bat '''
-                            echo "Do all Windows x32 specific stuff here. In case there is just one Windows installer drop this section."
-                        '''
-                    }
-                },
                 windowsX64: {
                     node('windowsX64') {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         bat '''
-                            echo "Do Windows packaging stuff here."
+                            iscc installer\win\setup_win.iss
                         '''
                     }
                 },
