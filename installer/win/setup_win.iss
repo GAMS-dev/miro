@@ -1,5 +1,4 @@
 #define MyAppName "GAMS WebUI"
-#define MyAppVersion "0.2.3.1"
 #define RMajor 3
 #define RMinor 5
 #define RPatch 1
@@ -11,7 +10,7 @@ AppName = GAMS WebUI
 AppId = {{R77BWYZ1-KM2Y-WCD5-E8JC-Z7CIVDSLX2Y4}
 DefaultDirName={code:GetDefaultDirName}
 DefaultGroupName = GAMS WebUI
-OutputBaseFilename = setup_GMSWebUI_{#MyAppVersion}
+OutputBaseFilename = GAMS_WebUI-{#MyAppVersion}
 SetupIconFile = setup.ico
 AppVersion = {#MyAppVersion}
 AppPublisher = {#MyAppPublisher}

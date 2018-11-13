@@ -23,7 +23,7 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         bat '''
-                            iscc "installer\\win\\setup_win.iss"
+                            iscc "installer\\win\\setup_win.iss" /DMyAppVersion=0.2.6.1
                         '''
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
@@ -31,11 +31,11 @@ pipeline {
                                 cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
                                 call vcvars64.bat
                                 cd %WORKSPACE%\\installer\\win\\Output
-                                for /f "tokens=*" %%i in ('dir /B ^| findstr /I setup_GMSWebUI_.*') do set INSTFILE=%%i
+                                for /f "tokens=*" %%i in ('dir /B ^| findstr /I GAMS_WebUI-.*') do set INSTFILE=%%i
                                 signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 %INSTFILE%
                             '''
                         }
-
+                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.exe', fingerprint: true
                     }
                 },
                 macos: {
@@ -44,12 +44,12 @@ pipeline {
                         checkout scm
                         sh '''
                             cd installer/macOS
-                            gzip -d GAMSWebUI.dmg.gz
+                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg GAMS_WebUI.dmg
                             cd ../..
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
-                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/GAMSWebUI.dmg
+                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/GAMS_WebUI.dmg
 
                             TARGET=$DMG_ROOT/GAMS25.1/sysdir
 
@@ -69,7 +69,7 @@ pipeline {
                             # If we do the latter we have of better coverage of older macOS versions.
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
                         '''
-                        archiveArtifacts artifacts: '**/GAMSWebUI.dmg', fingerprint: true
+                        archiveArtifacts artifacts: '**/GAMS_WebUI*.dmg', fingerprint: true
                     }
                 }
             }
