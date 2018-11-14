@@ -9,10 +9,12 @@ logs
 *.dat
 *.cmd
 *.lst
-*.log
+*.log*
 *.lxi
 *.~gm
 *.gpr
+*.sqlite3
+.matplotlib
 tmp
 tools/paver/examples
 tools/paver/__pycache__
