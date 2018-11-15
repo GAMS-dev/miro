@@ -145,7 +145,6 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
       # examples : "a$$b"  <- "a$b" (string without dependencies), "a$$" -> "a$" (same), "$$a" <- "$a" (same)
       
       # check case with both backward and forward dependency on the same column and issue error if stric mode is active
-      
       if(grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", choices[[i]])){
         # find out if column has dependency defined and replace leading and ending signs
         forwardDep  <- grepl("^\\$", choices[[i]])
@@ -168,7 +167,6 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
               j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
               ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
-            # new element was added so increment counter
             if(!(forwardDep || backwardDep)){
               # neither forward nor backward dependency selected results in error or rendering as string
               if(strictMode){
@@ -191,7 +189,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
             }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forwardDep){
               # dependency on another dropdown menu, so dont check header info
               j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][[2]]
+              depTmp <- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][c(-1)]
+              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(depTmp)
             }else{
               if(strictMode){
                 stop(paste0("The header: '", el[[2]], "' for input sheet: '", el[[1]], "' could not be found. Make sure you define a valid reference."), call. = F)
@@ -313,7 +312,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
           }else if(!is.na(idx1) && modelIn[[idx1]]$type == "dropdown" && length(dep) > 1){
             # dependency on another dropdown menu
             sliderValue <- list()
-            sliderValue[[tolower(dep[[1]])]] <- dep[2]
+            sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
             sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
             return(sliderValue)
           }
@@ -680,4 +679,27 @@ prepopPivot <- function(symbol){
   }
   pivotConf$rows <- setEl[nchar(setEl) > 0.5]
   return(pivotConf)
+}
+
+getNestedDep <- function(depStr){
+  if(length(depStr) > 1L){
+    if(grepl(".+\\[.+\\]$", depStr[[1]])){
+      filterCol <- strsplit(depStr, "[", fixed=TRUE)[[1]]
+      return(c(gsub("[", "", filterCol[[1]], fixed = TRUE), gsub("]", "", filterCol[[2]], fixed = TRUE), depStr[[2]]))
+    }else{
+      stop(sprintf("Dependency: '%s' could not be parsed.", paste0(depStr, collapse = "$")), call. = FALSE)
+    }
+  }else{
+    return(depStr)
+  }
+}
+filterDf <- function(df, filterCondition){
+  filterCondition <- unlist(filterCondition)
+  if(length(filterCondition) == 1L){
+    return(df[[filterCondition]])
+  }else if(length(filterCondition) == 3L){
+    return(df[df[[filterCondition[[1]]]] == filterCondition[[2]], ][[filterCondition[[3]]]])
+  }else{
+    stop(sprintf("Bad filter condition: '%s'.", filterCondition), call. = FALSE)
+  }
 }

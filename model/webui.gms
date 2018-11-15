@@ -452,16 +452,29 @@ for s in input_sym:
    headers = {}
    if 'dropdown' in e_dict:
       auto = { 'alias':extractSymText(db[s]) }
-   else:   
+   else:
+      domdict = {}
       if expandLastCol(db[s], %MAX_VAL_COL%):
          for d in db[s].domains[:-1]:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
       
          for r in db[s].domains[-1]:
             headers[r.key(0)] = { 'type':'parameter' }
       else:
          for d in db[s].domains:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
       
          headers[extractSymText(db[s])] = { 'type':'parameter' }
       
@@ -529,15 +542,29 @@ for s in output_sym:
          io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{extractSymText(db[s]):{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
    else:         
       headers = {}
+      domdict = {}
       if expandLastCol(db[s], %MAX_VAL_COL%):
          for d in db[s].domains[:-1]:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
       
          for r in db[s].domains[-1]:
             headers[r.key(0).lower()] = { 'type':'parameter' }
       else:
          for d in db[s].domains:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
+            
          headers[extractSymText(db[s])] = { 'type':'parameter' }
       
       auto = { 'alias':extractSymText(db[s]), 'headers':headers }

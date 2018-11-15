@@ -25,6 +25,7 @@ webuiRDate   <- "Oct 30 2018"
 
 # RPostgres       #GPL-2
 # DBI (database)  #LGPL >=2
+# RSQLite(database) #LGPL >=2
 # openssl (batch) #MIT
 
 
@@ -502,8 +503,8 @@ if(!is.null(errMsg)){
     observeEvent(input$aboutDialog, {
       showModal(modalDialog(HTML(paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
                                    "Release Date: ", webuiRDate, "<br/>", 
-                                   "Copyright (c) 2017-2018 GAMS Software GmbH <support@gams.com><br/>
-                                   Copyright (c) 2017-2018 GAMS Development Corp. <support@gams.com><br/><br/>
+                                   "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>
+                                   Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>
                                    This program is free software: you can redistribute it and/or modify 
                                    it under the terms of the GNU General Public License as published by
                                    the Free Software Foundation, either version 3 of the License, or 
@@ -546,6 +547,7 @@ if(!is.null(errMsg)){
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
     sharedInputData <- vector(mode = "list", length = length(modelIn))
+    sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
     # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
     previousInputData <- vector(mode = "list", length = length(modelIn))
     noDataChanges     <- vector(mode = "logical", length = length(modelIn))

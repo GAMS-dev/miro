@@ -1,7 +1,7 @@
 {
     "pageTitle": "Cost objective calculations for OPF models",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -18,9 +18,17 @@
             "slider": {
                 "label": "Select the time period to solve [t]",
                 "min": 1,
-                "max": "max(casename$noPeriods)",
-                "default": "max(casename$noPeriods)",
+                "max": "max(casename$symName[noPeriods]$symVal)",
+                "default": "max(casename$symName[noPeriods]$symVal)",
                 "step": 1
+            }
+        },
+        "GMSPAR_genrun": {
+            "alias": "Initial generator conditions",
+            "dropdown": {
+                "label": "Select the initial conditions of the generators",
+                "choices": "$casename$symName[genRun]$symVal",
+                "aliases": "$casename$symName[genRun]$symDesc"
             }
         },
         "GMSPAR_allon": {
@@ -97,7 +105,8 @@
             "alias": "wind",
             "checkbox": {
                 "label": "Turn off wind turbines? [wind]",
-                "value": 0,
+                "value": "max(casename$symName[wind]$symVal)",
+                "disable": true,
                 "class": "checkbox-material"
             }
         },
@@ -168,7 +177,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -191,7 +199,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER70",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -261,6 +268,9 @@
                 "Set of buses": {
                     "type": "set"
                 },
+                "Set of buses1": {
+                    "type": "set"
+                },
                 "Indices for multiple lines between buses": {
                     "type": "set"
                 },
@@ -290,7 +300,88 @@
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost_Report",
+                "version_Report",
+                "baseMVA_Report",
+                "case_input",
+                "obj_input",
+                "LP_solver",
+                "QCP_solver",
+                "NLP_solver",
+                "CNS_solver",
+                "timeperiod_input",
+                "allon_input",
+                "linelimits_input",
+                "genPmin_input",
+                "lineloss_input",
+                "qlim_input",
+                "slim_input",
+                "ic_input",
+                "iter_input",
+                "times_input",
+                "ramprates_input",
+                "relax_input",
+                "demandbids_input",
+                "wind_input",
+                "savesol_input",
+                "verbose_input"
+            ],
+            "symtext": [
+                "Final objective value",
+                "version",
+                "baseMVA",
+                "Selected Testcase",
+                "Objective function",
+                "LP-solver",
+                "QCP-solver",
+                "NLP-solver",
+                "CNS-solver",
+                "Selected time period to solve",
+                "Turned on gens and/or lines during solve",
+                "Type of line limit data to use",
+                "Data for Generator lower limit",
+                "Whether to approximate lineloss",
+                "Whether to enforce reactive power limits as D-curve circle constraints",
+                "Whether to use apparent power limits on line",
+                "Choosen method for generating initial conditions, i.e. NLP starting point",
+                "Number of iterations",
+                "Time range",
+                "Type of ramprate data to use",
+                "Whether to relax integer models",
+                "Whether to turn on elastic demand bidding",
+                "Whether to turn off wind turbines",
+                "Whether to save the solution as GDX",
+                "Whether to print input in listing output"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set",
+                "set"
+            ],
             "count": 25,
             "headers": {
                 "Scalar": {

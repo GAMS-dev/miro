@@ -49,7 +49,7 @@ $if not set savesol $setGlobal savesol 0
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 $LOG %MODELPATH%
-$if set gmswebui $include dcopf_webui_in.gms
+$if set webui $include dcopf_webui_in.gms
 
 * Define type of model
 $set modeltype "DC"
@@ -244,5 +244,5 @@ if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $libinclude %MODELPATH%webui.gms

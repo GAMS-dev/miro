@@ -51,7 +51,7 @@ $if not set genrun $set genrun allgen
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 
-$if set gmswebui $include uc_dc_webui_in.gms
+$if set webui $include uc_dc_webui_in.gms
 
 * Define type of model
 $set modeltype "DC"
@@ -336,5 +336,5 @@ Parameter ePrice(i,t) 'Electricity prices';
 $offExternalOutput
 ePrice(i,t) = c_BalanceP.m(i,t);
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $batinclude %MODELPATH%webui.gms

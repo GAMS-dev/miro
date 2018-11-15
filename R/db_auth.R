@@ -186,12 +186,13 @@ Auth <- R6Class("Auth",
                     
                     return(invisible(TRUE))
                   },
-                  importShared    = function(tableName, accessIdentifier = private$accessIdentifier, limit = 1e6){
+                  importShared    = function(tableName, accessIdentifier = private$accessIdentifier, keyCol = character(0L),limit = 1e6){
                     # Imports shared dataset from specified table with only data that user has permission to see
                     #
                     # Args:
                     #   tableName :       name of the table to import dataframe from
                     #   limit:            maximum number of rows to fetch (optional)
+                    #   keyCol:           column that specifies key (used for join)
                     #   accessIdentifier: name of the column where access permissions are specified
                     #
                     # Returns:
@@ -200,14 +201,24 @@ Auth <- R6Class("Auth",
                     #BEGIN error checks 
                     stopifnot(is.character(tableName), length(tableName) == 1)
                     stopifnot(is.character(accessIdentifier), length(accessIdentifier) == 1)
+                    stopifnot(is.character(keyCol), length(keyCol) <= 1)
                     stopifnot(is.numeric(limit), length(limit) == 1)
                     #END error checks 
                     dataset <- dplyr::tibble()
-                    if(DBI::dbExistsTable(private$conn, tableName)) { 
+                    if(dbExistsTable(private$conn, tableName)) {
+                      joinSQL <- ""
+                      if(length(keyCol) && nchar(keyCol) && dbExistsTable(private$conn, paste0(tableName, "_data"))){
+                        joinSQL <- paste0(" INNER JOIN ", dbQuoteIdentifier(private$conn, paste0(tableName, "_data")),
+                                          " ON ", dbQuoteIdentifier(private$conn, tableName), ".", 
+                                          dbQuoteIdentifier(private$conn, keyCol), " = ", 
+                                          dbQuoteIdentifier(private$conn, paste0(tableName, "_data")), ".", 
+                                          dbQuoteIdentifier(private$conn, keyCol))
+                      }
                       tryCatch({
-                        sql     <- paste0("SELECT * FROM ", DBI::dbQuoteIdentifier(private$conn, tableName), " WHERE ", 
-                                          DBI::dbQuoteIdentifier(private$conn, accessIdentifier), " IN (", 
-                                          DBI::SQL(paste(DBI::dbQuoteString(private$conn, private$accessGroups), collapse = ", ")), ") LIMIT ?lim ;")
+                        sql     <- paste0("SELECT * FROM ", dbQuoteIdentifier(private$conn, tableName), joinSQL, " WHERE ", 
+                                          dbQuoteIdentifier(private$conn, tableName), ".",
+                                          dbQuoteIdentifier(private$conn, accessIdentifier), " IN (", 
+                                          SQL(paste(dbQuoteString(private$conn, private$accessGroups), collapse = ", ")), ") LIMIT ?lim ;")
                         query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                         dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                       }, error = function(e){

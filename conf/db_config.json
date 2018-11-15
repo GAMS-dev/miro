@@ -1,5 +1,5 @@
 {  
-   "type":"sqlite",
+   "type":"postgres",
    "name":"shiny",
    "host":"localhost",
    "port":5432

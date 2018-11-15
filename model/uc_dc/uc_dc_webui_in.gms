@@ -13,10 +13,17 @@ $onecho > webuiconf.json
      "slider": {
          "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data! [times]",
          "min": 1,
-         "max": "max(casename$noPeriods)",
-         "default": [1,"max(casename$noPeriods)"],
+         "max": "max(casename$symName[noPeriods]$symVal)",
+         "default": [1,"max(casename$symName[noPeriods]$symVal)"],
          "step": 1
      }
+  },
+  "GMSPAR_genrun": {
+    "alias": "Initial generator conditions",
+    "dropdown": {
+        "label": "Select the initial conditions of the generators",
+        "choices": "$casename$symName[genRun]$symVal"
+    }
   },
   "GMSPAR_allon": {
      "alias": "allon",
@@ -80,7 +87,8 @@ $onecho > webuiconf.json
      "alias": "wind",
      "checkbox": {
          "label": "Turn off wind turbines? [wind]",
-         "value": 0,
+         "value": "max(casename$symName[wind]$symVal)",
+         "disable": true,
          "class": "checkbox-material"
      }
   },

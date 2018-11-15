@@ -431,7 +431,7 @@ if(is.null(errMsg)){
                }else if(length(aliases$shared) > 0){
                  ddownDep[[name]]$aliases <<- aliases$shared
                }
-               # remove identifier string that specifies where shared data comes from rom dropdown
+               # remove identifier string from dropdown that specifies where shared data comes from 
                ddownDep[[name]]$shared <<- choices$shared
                
                if(!identical(name, choices$shared)){
@@ -564,20 +564,38 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                  if(grepl("\\$+$", modelIn[[i]]$checkbox$value)){
                    errMsg <<- paste(errMsg,paste0("The checkbox: '", modelInAlias[i], 
                                                   "' has a backward dependency assigned. Currently only forward dependencies are supported for checkboxes."), sep = "\n")
+                   return(NULL)
                  }
                  # END error checks
                  
                  # remove trailing or leading dollar signs
-                 cbValue <- gsub("(\\$+$|^\\$+)", "", modelIn[[i]]$checkbox$value)
-                 cbValue <- strsplit(cbValue, "\\$")[[1]]
+                 if(grepl("\\(", modelIn[[i]]$checkbox$value)){
+                   cbValueTmp <- strsplit(modelIn[[i]]$checkbox$value, "\\(|\\$")[[1]]
+                   cbValue <- NULL
+                   if(length(cbValueTmp) %in% c(3L, 4L)){
+                     cbValueTmp <- gsub(")", "", cbValueTmp, fixed = TRUE)
+                     modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
+                     cbValue <- cbValueTmp[c(-1)]
+                   }else{
+                     errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
+                                                      operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn).", modelInAlias[i]))
+                     return(NULL)
+                   }
+                 }else{
+                   cbValue <- gsub("(\\$+$|^\\$+)", "", modelIn[[i]]$checkbox$value)
+                   cbValue <- strsplit(cbValue, "\\$")[[1]]
+                 }
                  idx1    <- match(cbValue[1], names(modelIn))[1]
                  if(!is.na(idx1)){
                    # add forward dependency
                    modelIn[[i]]$checkbox$sheetId <<- idx1
-                   modelIn[[i]]$checkbox$value   <<- cbValue[2]
-                   modelInWithDep[[name]]      <<- modelIn[[i]]
+                   tryCatch(modelIn[[i]]$checkbox$value   <<- getNestedDep(cbValue[c(-1)]), error = function(e){
+                     errMsg <<- paste(errMsg, conditionMessage(e))
+                   })
+                   
+                   modelInWithDep[[name]]        <<- modelIn[[i]]
                  }else{
-                   errMsg <<- paste(errMsg,paste0("The dependent dataset for checkbox: '", 
+                   errMsg <<- paste(errMsg,paste0("The dependent dataset: '", cbValue[1], "' for checkbox: '", 
                                                   modelInAlias[i], "' could not be found. Please make sure you define a valid reference."), sep = "\n")
                  }
                }
@@ -599,7 +617,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     }
     return(dependentDataIds)
   })
-  
+
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
@@ -719,6 +737,21 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     })
     scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
     scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
+    
+    # get column types for output sheets
+    for(i in seq_along(modelOut)){
+      modelOut[[i]]$colTypes <- paste(vapply(modelOut[[i]]$headers, function(header){
+        switch(header$type,
+               "set" = 'c',
+               "parameter" = 'd',
+               "acronym" = 'c',
+               "string" = 'c',
+               "scalar" = 'c',
+               {
+                 'c'
+               })
+      }, character(1L), USE.NAMES = FALSE), collapse = "")
+    }
   }
   if(is.null(errMsg)){
     if(identical(config$activateModules$scenario, TRUE) && 

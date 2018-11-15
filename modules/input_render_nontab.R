@@ -1,7 +1,52 @@
 # render input data for input sheets with forward dependency on other input sheets
+getScalarValue <- function(data, operator){
+  stopifnot(length(operator) >= 0L)
+  if(!length(data)){
+    return(NULL)
+  }
+  
+  numVector <- as.numeric(data)
+  errMsg    <- NULL
+  scalarVal <- NULL
+
+  switch(operator,
+         count = {
+           scalarVal <- length(numVector)
+         },
+         max = {
+           try(scalarVal <- max(numVector))
+         },
+         min = {
+           try(minData <- min(numVector))
+         },
+         mean = {
+           try(scalarVal <- mean(numVector))
+         },
+         median = {
+           try(scalarVal <- median(numVector))
+         },
+         var = {
+           try(scalarVal <- var(numVector))
+         },
+         sd = {
+           try(scalarVal <- sd(numVector))
+         },
+         {
+           flog.error("Unknown operator: '%s'.", operator)
+           stop()
+         }
+  )
+  if(!is.numeric(scalarVal) || is.na(scalarVal)){
+    stop("Could not determine slider value.", call. = FALSE)
+  }else{
+    return(scalarVal)
+  }
+}
+
 getData     <- vector(mode = "list", length = length(modelInWithDep))
 getSelected <- vector(mode = "list", length = length(modelIn))
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
+
 lapply(seq_along(modelIn), function(id){
   i    <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
   if(!is.na(i)){
@@ -44,13 +89,20 @@ lapply(seq_along(modelIn), function(id){
                if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
-                          try(
-                            value <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], 
-                                                            modelIn[[id]]$checkbox$value, drop = FALSE]
-                          )
+                          input[["dropdown_" %+% k]]
+                          if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                            tryCatch(
+                                value <- filterDf(sharedInputData_filtered[[k]], modelIn[[id]]$checkbox$value)
+                            , error = function(e){
+                              flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
+                                           "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                         modelInAlias[id], modelInAlias[k], e)
+                              errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                            })
+                          }
                         },
                         {
-                          flog.debug("Widgets other than dropdown menus are currently not supported for shared datasets.")
+                          flog.debug("Widgets other than dropdown menus are currently not supported for shared datasets of checkboxes.")
                           return()
                         })
                }else{
@@ -66,14 +118,22 @@ lapply(seq_along(modelIn), function(id){
                    return()
                  }
                }
-               
-               value <- suppressWarnings(max(unlist(value, use.names = FALSE)))
-               
+               tryCatch({
+                 value <- getScalarValue(unlist(value, use.names = FALSE), modelIn[[id]]$checkbox$operator)
+               }, error = function(e){
+                 flog.warn("Input type for checkbox: '%s' is not numeric.", name)
+                 errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+               })
+               if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
+                 return()
+               }
                if(!inputInitialized[i]){
                  if(is.numeric(value) && !identical(value, -Inf)){
                    inputInitialized[i] <<- TRUE
                    showEl(session, "#cbDiv_" %+% id)
                    hideEl(session, "#no_data_dep_" %+% id)
+                 }else{
+                   return()
                  }
                }
               
@@ -174,13 +234,28 @@ lapply(seq_along(modelIn), function(id){
                    
                    if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
-                     try(
-                       choices[[j]] <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddownDep[[name]]$fw[[dataSheet]]]]
-                     )
+                     input[["dropdown_" %+% k]]
+                     if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                       tryCatch(
+                         choices[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$fw[[dataSheet]])
+                         , error = function(e){
+                           flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
+                                        "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                      modelInAlias[id], modelInAlias[k], e)
+                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                       })
+                     }
                      if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                       try(
-                         aliases[[j]] <- sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]], , drop = FALSE][[ddownDep[[name]]$aliases[[dataSheet]]]]
-                       )
+                       if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                         tryCatch(
+                           aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$aliases[[dataSheet]])
+                           , error = function(e){
+                             flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
+                                          "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                        modelInAlias[id], modelInAlias[k], e)
+                             errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                           })
+                       }
                      }
                    }else{
                      rv[["in_" %+% k]]
@@ -287,6 +362,7 @@ lapply(seq_along(modelIn), function(id){
              # retrieve choices for slider
              getData[[i]] <<- shiny::reactive({
                errMsg <- NULL
+               dataTmp <- NULL
                sliderData <- lapply(sliderValues[[name]], function(el){
                  # return numeric data (no external dependency)
                  if(is.numeric(el)){
@@ -310,81 +386,42 @@ lapply(seq_along(modelIn), function(id){
                                                          !is.null(input[["in_" %+% k]]) || 
                                                          (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
                      if(modelIn[[k]]$type == "hot"){
-                       data <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]]]])
+                       dataTmp <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]]]])
                      }else{
-                       data <- unique(tableContent[[i]][[el[[1]]]])
+                       dataTmp <- unique(tableContent[[i]][[el[[1]]]])
                      } 
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
-                     data <- unique(modelInputData[[k]][[el[[1]]]])
+                     dataTmp <- unique(modelInputData[[k]][[el[[1]]]])
                    }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
-                     suppressWarnings(try(
-                      data <- unique(sharedInputData[[k]][sharedInputData[[k]][[colSubset[[k]][1]]] == input[["dropdown_" %+% k]],, 
-                                                          drop = FALSE][[el[[1]]]])
-                     ))
+                     input[["dropdown_" %+% k]]
+                     if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                       tryCatch(
+                         dataTmp <- unique(filterDf(sharedInputData_filtered[[k]], el[[1]]))
+                         , error = function(e){
+                           flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
+                                        "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                      modelInAlias[id], modelInAlias[k], e)
+                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                         })
+                     }
                    }else{
                      return(NULL)
                    }
-                   if(!length(data) || identical(data, "")){
+                   if(!length(dataTmp) || identical(dataTmp, "")){
                      return(NULL)
                    }
-                   
-                   switch(el[["$operator"]],
-                          count = {
-                            return(length(data))
-                          },
-                          max = {
-                            maxData <- max(data)
-                            if((!is.numeric(maxData) || is.na(maxData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(maxData)
-                            }
-                          },
-                          min = {
-                            minData <- min(data)
-                            if((!is.numeric(min(data)) || is.na(minData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(minData)
-                            }
-                          },
-                          mean = {
-                            meanData = mean(data)
-                            if((!is.numeric(meanData) || is.na(meanData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(meanData)
-                            }
-                          },
-                          median = {
-                            medianData = median(data)
-                            if((!is.numeric(medianData) || is.na(medianData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(medianData)
-                            }
-                          },
-                          var = {
-                            varData = var(data)
-                            if((!is.numeric(varData) || is.na(varData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(varData)
-                            }
-                          },
-                          sd = {
-                            sdData = sd(data)
-                            if((!is.numeric(sdData) || is.na(sdData)) && strictMode){
-                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el, name), sep = "\n")
-                            }else{
-                              return(sdData)
-                            }
-                          }
-                   )
+                   tryCatch({
+                     scalarVal <- getScalarValue(dataTmp, el[["$operator"]])
+                     return(scalarVal)
+                   }, error = function(e){
+                     flog.warn("Input type for slider: '%s' is not numeric.", name)
+                     errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el[[1]][[1]], name), sep = "\n")
+                   })
                  }
                })
+               
                showErrorMsg(lang$errMsg$renderSlider$title, errMsg)
                
                if(is.numeric(sliderData$def1) && is.numeric(sliderData$def2)){
