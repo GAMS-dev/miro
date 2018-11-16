@@ -61,7 +61,10 @@ if r'%GENRUN%'.lower() == 'allgen':
   os.environ["HAVEGENRUN"] = '3'
 else:
   gams.wsWorkingDir = '.'
-  db = gams.ws.add_database_from_gdx(r'%case%.gdx')
+  gdx_file_path = r'%case% '.strip()
+  if not gdx_file_path.lower().endswith('.gdx'):
+    gdx_file_path = gdx_file_path + '.gdx'
+  db = gams.ws.add_database_from_gdx(gdx_file_path)
   try:
     s = db['genRun']
     try:
