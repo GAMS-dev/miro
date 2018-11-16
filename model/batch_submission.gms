@@ -126,7 +126,7 @@ if outScript == "gams":
       # scalars.csv file manually filled (needed in webui for data validation)
       linestmp += "$call cd " + zipname + "/" + dirname + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
       # gams call
-      linestmp += "$call cd " + zipname + "/" + dirname + " && " + call + " --gmswebui=1 idir = ../../" + modelpath + " idir2 = ../../" + datapath + " idir3 = ../../" + webuipath + "\n\n"      
+      linestmp += "$call cd " + zipname + "/" + dirname + " && " + call + " --webui=1 idir = ../../" + modelpath + " idir2 = ../../" + datapath + " idir3 = ../../" + webuipath + "\n\n"      
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
    linestmp += "$call if exist " + zipname + ".zip rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"

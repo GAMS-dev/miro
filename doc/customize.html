@@ -264,7 +264,7 @@ $offecho</code></pre>
   ns &#x3C;- NS(id)
 }
 
-render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
 }
                                         </code></pre>
                                     </div><!--//code-block-->
@@ -273,7 +273,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, server, data, opt
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
 }
-renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
 }</code></pre>
                                     </div><!--//code-block-->
                                     <div class="callout-block callout-warning">
@@ -292,7 +292,7 @@ renderTransportMap &#x3C;- function(input, output, server, data, options = NULL,
   ns &#x3C;- NS(id)
   leafletOutput(ns(&#x22;map&#x22;), height = height)
 }
-renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
   output$map &#x3C;- renderLeaflet(leaflet(data))
 }</code></pre>
                                       </div><!--//code-block-->
@@ -326,7 +326,7 @@ renderTransportMap &#x3C;- function(input, output, server, data, options = NULL,
     leafletOutput(ns(&#x22;map&#x22;))
   )
 }
-renderTransportMap &#x3C;- function(input, output, server, data, options = NULL, path = NULL){
+renderTransportMap &#x3C;- function(input, output, session, data, options = NULL, path = NULL){
   output$title &#x3C;- renderText(options$title)
   output$map   &#x3C;- renderLeaflet(leaflet(data) %&#x3E;%
                                   addTiles() %&#x3E;%

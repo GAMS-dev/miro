@@ -1,13 +1,13 @@
 # gams model name
-modelName <- "kport"
+modelName <- "uc_dc"
 # show extensive error messages/ obscoure error messages
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "SHINYPROXY_MODELNAME"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
-keywordsNoImport <- c("noimport")
+keywordsNoImport <- c("noImport")
 # keywords that define data MUST not be imported in order to run the model
-keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
+keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
 keywordsType <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
@@ -38,7 +38,7 @@ maxNumberScenarios <- 50
 # local user ID (single user)
 uid <- "Freddy"
 # define the default type for output format
-defOutType <- "pivot"
+defOutType <- "datatable"
 # define the default format for input sheets
 defInType <- "pivot"
 # default height of pivot table

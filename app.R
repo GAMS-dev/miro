@@ -166,7 +166,7 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
-  customRendererDir <<- paste0(currentModelDir, customRendererDirName, .Platform$file.sep)
+  customRendererDirs <<- paste0(c(modelDir, currentModelDir), customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
@@ -185,26 +185,28 @@ if(is.null(errMsg)){
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
     }
   }
-
-  rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
-  lapply(rendererFiles, function(file){
-    if(!file.access(customRendererDir %+% file, mode = 4)){
-      tryCatch({
-        source(customRendererDir %+% file)
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, e), sep = "\n")
-      }, warning = function(w){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, w), sep = "\n")
-      })
-    }else{
-      errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                       file), sep = "\n")
-    }
-  })
+  for(customRendererDir in customRendererDirs){
+    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
+    lapply(rendererFiles, function(file){
+      if(!file.access(customRendererDir %+% file, mode = 4)){
+        tryCatch({
+          source(customRendererDir %+% file)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, e), sep = "\n")
+        }, warning = function(w){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, w), sep = "\n")
+        })
+      }else{
+        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                         file), sep = "\n")
+      }
+    })
+  }
+  
   requiredPackages <- NULL
   for(customRendererConfig in configGraphsOut){
     # check whether non standard renderers were defined in graph config

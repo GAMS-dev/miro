@@ -287,7 +287,7 @@ with open(inc, 'w') as f:
          f.write(') = sum(webui'+str(db[s].dimension-1)+'_, ' + s + '(webui0_')
          for i in range(dim-1):
             f.write(',webui'+str(i+1)+'_')
-         f.write('));\n'+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') = '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') + eps;\n')
+         f.write('));\nloop((webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+'), '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') = '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') + eps;break;);\n')
          f.write('option clear=webuis'+str(dim-1)+'_;\n')
       
    f.write('execute_unload "gmswebui.gdx";\n')

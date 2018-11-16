@@ -9,7 +9,7 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
   leaflet::leafletOutput(ns("trnsport"), height = height)
 }
 
-renderTrnsport1 <- function(input, output, server, data, options = NULL, path = NULL){
+renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL){
 
   tryCatch({
     map.data <- read_sf(paste0(path, options$geojsonloc))

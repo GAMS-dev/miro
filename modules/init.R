@@ -131,6 +131,78 @@ if(is.null(errMsg)){
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
   
+  for(el in names(config$dataRendering)){
+    i <- match(tolower(el), names(modelIn))
+    if(is.na(i)){
+      if(tolower(scalarsFileName) %in% names(modelIn)){
+        j <- match(tolower(el), tolower(modelIn[[tolower(scalarsFileName)]]$symnames))
+        if(!is.na(j)){
+          widgetConfig <- config$dataRendering[[el]]
+          outType      <- widgetConfig$outType
+          widgetConfig$outType <- NULL
+          if(!is.null(widgetConfig$noBatch)){
+            modelIn[[i]]$noBatch <- widgetConfig$noBatch
+            widgetConfig$noBatch <- NULL
+          }
+          if(!is.null(widgetConfig$noImport)){
+            modelIn[[i]]$noImport <- widgetConfig$noImport
+            widgetConfig$noImport  <- NULL
+          }
+          config$dataRendering[[el]] <- NULL
+          modelIn[[i]][[outType]] <- widgetConfig
+          modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
+          if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
+            # remove scalar table entirely if no scalar symbols are left
+            modelIn[[tolower(scalarsFileName)]] <- NULL
+          }else{
+            modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
+            modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
+          }
+        }else if(any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))){
+          widgetConfig <- config$dataRendering[[el]]
+          outType      <- widgetConfig$outType
+          widgetConfig$outType <- NULL
+          if(!is.null(widgetConfig$noBatch)){
+            modelIn[[el]]$noBatch <- widgetConfig$noBatch
+            widgetConfig$noBatch <- NULL
+          }
+          if(!is.null(widgetConfig$noImport)){
+            modelIn[[el]]$noImport <- widgetConfig$noImport
+            widgetConfig$noImport  <- NULL
+          }
+          modelIn[[el]] <- widgetConfig
+        }
+      }
+    }else{
+      widgetConfig <- config$dataRendering[[el]]
+      outType      <- widgetConfig$outType
+      symDim       <- length(modelIn[[i]]$headers)
+      if(symDim > 1L && !identical(outType, "table")){
+        errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
+                                names(modelIn[[i]])), sep = "\n")
+        flog.fatal(errMsg)
+        next
+      }
+      if(identical(symDim, 1L) && !(outType %in% c("table", "dropdown"))){
+        errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.", 
+                                        names(modelIn[[i]])), sep = "\n")
+        flog.fatal(errMsg)
+        next
+      }
+      widgetConfig$outType <- NULL
+      if(!is.null(widgetConfig$noBatch)){
+        modelIn[[i]]$noBatch <- widgetConfig$noBatch
+        widgetConfig$noBatch <- NULL
+      }
+      if(!is.null(widgetConfig$noImport)){
+        modelIn[[i]]$noImport <- widgetConfig$noImport
+        widgetConfig$noImport  <- NULL
+      }
+      modelIn[[i]][[outType]] <- widgetConfig
+      config$dataRendering[[el]] <- NULL
+    }
+  }
+  
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if(any(duplicated(names(modelIn)))){
     errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"

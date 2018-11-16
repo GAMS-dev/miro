@@ -340,8 +340,7 @@ observeEvent(input$btSolve, {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          output$listFile <- renderText(paste(readLines(workDir %+% modelName %+% ".lst", 
-                                                        warn = FALSE), collapse = "\n"))
+          output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
           flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 

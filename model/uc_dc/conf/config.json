@@ -2,5 +2,13 @@
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"
     },
+    "dataRendering"      : {
+		"eprice"   	: {
+			"outType"			: "eprice",
+		    "height"			: 700,
+		    "options"			: {
+		    }
+         }
+     },
     "saveTraceFile":true
 }

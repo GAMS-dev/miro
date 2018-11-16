@@ -90,7 +90,7 @@
             "required":false
           },
           "sharedData":{  
-            "description":"Boolean that specifies whether data for this widget is shared with other models (only valid for certain widgets such as table or dropdown ith data from external source)",
+            "description":"Boolean that specifies whether data for this widget is shared with other models (only valid for certain widgets such as table or dropdown with data from external source)",
             "type":"boolean",
             "required":false
           },

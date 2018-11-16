@@ -2476,7 +2476,7 @@ function launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
                   }
                 }
               },
-              "noimport":{
+              "noImport":{
                 "title":"Should data NOT be imported from an external source (e.g. spreadsheet)?",
                 "type":"boolean",
                 "required":false
@@ -2517,7 +2517,7 @@ function launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
               "date":["widgetType"],
               "daterange":["widgetType"],
               "checkbox":["widgetType"],
-              "noimport":["gmsParam"],
+              "noImport":["gmsParam"],
               "readonly":["gmsParam"],
               "readOnlyCols":["gmsParam"],
               "sharedData":["gmsParam"],
@@ -2537,7 +2537,7 @@ function launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
                      "gmsParam": gmsSymIn
                   }
                 },
-                "noimport":{
+                "noImport":{
                   "dependencies":{
                      "gmsParam": gmsSymIn
                   }
@@ -2920,8 +2920,8 @@ function launchInputGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
                             }
                             delete co.readOnlyCols;
                             // get rid of default values as this makes JSON string shorter
-                            if(!co.noimport){
-                              delete co.noimport;
+                            if(!co.noImport){
+                              delete co.noImport;
                             }
                             if(!co.readonly){
                               delete co.readonly;
@@ -3976,8 +3976,8 @@ function launchInputCGen(gmsSymIn, scalarSyms, gmsSymHdrIn){
                               }
                               delete co.readOnlyCols;
                               // get rid of default values as this makes JSON string shorter
-                              if(!co.noimport){
-                                delete co.noimport;
+                              if(!co.noImport){
+                                delete co.noImport;
                               }
                               if(!co.readonly){
                                 delete co.readonly;

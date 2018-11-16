@@ -54,13 +54,14 @@ parameters
 $offempty
 
 $if not set GENRUN $set GENRUN allgen
+$log %case%
 $onembeddedCode Python:
 import os
 if r'%GENRUN%'.lower() == 'allgen':
   os.environ["HAVEGENRUN"] = '3'
 else:
   gams.wsWorkingDir = '.'
-  db = gams.ws.add_database_from_gdx(r'%case%')
+  db = gams.ws.add_database_from_gdx(r'%case%.gdx')
   try:
     s = db['genRun']
     try:

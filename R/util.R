@@ -703,3 +703,13 @@ filterDf <- function(df, filterCondition){
     stop(sprintf("Bad filter condition: '%s'.", filterCondition), call. = FALSE)
   }
 }
+plotlyOutput_spinner <- function(...){
+  div(
+      div(class = "lds-ellipsis", style = "z-index:1;position:absolute;left:50%;top:50%;", 
+          div(style = "background:#000;"),
+          div(style = "background:#000;"),
+          div(style = "background:#000;"),
+          div(style = "background:#000;")
+      ), plotlyOutput(...)
+  )
+}

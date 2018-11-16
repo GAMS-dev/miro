@@ -452,6 +452,11 @@ animation: none !important;
     transform: translate(19px, 0);
   }
 }
+/* bring plotly charts to front */
+.plotly {
+  z-index: 22;
+  position: relative; 
+}
 /* PAVER */
 .dataframe { 
   text-align: right; 
