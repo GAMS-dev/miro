@@ -58,6 +58,8 @@ prefixDDPar  <- "GMSPAR_"
 prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
+# get maximum number of lines to read automatically for lst files
+maxNoLinesToRead <- 1e3
 # ACCESS CONTROL
 # db table name where group hierarchies are stored
 amTableNameHierarchy <- "access_test2"

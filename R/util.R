@@ -713,3 +713,12 @@ plotlyOutput_spinner <- function(...){
       ), plotlyOutput(...)
   )
 }
+getNoLinesInFile <- function(filePath){
+  if(identical(tolower(getOS()), "windows")){
+    as.integer(strsplit(system2("find", c("/c", "/v", "$$$$$$$$$$$$$$$$$$$$$$$", filePath), 
+                                stdout = TRUE, stderr = TRUE), " ", fixed = TRUE)[[1]][[1]])
+  }else{
+    as.integer(strsplit(system2("wc", c("-l", filePath), stdout = TRUE, stderr = TRUE),
+                        " ", fixed = TRUE)[[1]][[1]])
+  }
+}

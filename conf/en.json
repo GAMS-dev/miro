@@ -397,7 +397,8 @@
     },
     "readLst":{  
       "title":"Error reading listing file",
-      "desc":"Some error occurred reading the GAMS listing file."
+      "desc":"Some error occurred reading the GAMS listing file.",
+      "fileSize":"The lst file you are trying to read is too large to be displayed. Please download the lst file to access it."
     },
     "saveScen":{  
       "title":"Error saving scenario",
