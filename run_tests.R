@@ -20,11 +20,17 @@ if(!file.copy("tests/data/db_config.json", "conf/db_config.json", overwrite = FA
 }
 # END setup
 
+errMsg <- NULL
 
-test_that("Functional tests pass", {
-  expect_pass(testApp(".", "excel_upload", compareImages = FALSE))
-  expect_pass(testApp(".", "excel_upload_overwrite", compareImages = FALSE))
-  expect_pass(testApp(".", "load_from_db", compareImages = FALSE))
+tryCatch(
+  test_that("Functional tests pass", {
+    expect_pass(testApp(".", "excel_upload", compareImages = FALSE))
+    expect_pass(testApp(".", "excel_upload_overwrite", compareImages = FALSE))
+    expect_pass(testApp(".", "load_from_db", compareImages = FALSE))
+    expect_pass(testApp(".", "gams_interrupt", compareImages = FALSE))
+  })
+, error = function(e){
+  errMsg <<- e
 })
 
 # BEGIN teardown
@@ -36,5 +42,8 @@ if(!file.rename("conf/db_config_prod.json", "conf/db_config.json")){
 }
 if(!file.remove("test.sqlite3")){
   stop("Could not remove database SQLite file for tests")
+}
+if(!is.null(errMsg)){
+  stop(errMsg, call. = FALSE)
 }
 # END teardown

@@ -880,7 +880,8 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     # get the operating system that shiny is running on
     serverOS    <- getOS()
     # generate GAMS return code map
-    GAMSReturnCodeMap <- c('1' = "Solver is to be called, the system should never return this number", 
+    GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
+                           '1' = "Solver is to be called, the system should never return this number", 
                            '2' = "There was a compilation error", 
                            '3' = "There was an execution error", 
                            '4' = "System limits were reached",
@@ -891,7 +892,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                            '9' = "GAMS could not be started",
                            '10' = "Out of memory",
                            '11' = "Out of disk",
-                           "15" = "Model execution was interrupted",
+                           '15' = "Model execution was interrupted",
                            '109' = "Could not create process/scratch directory",
                            '110' = "Too many process/scratch directories",
                            '112' = "Could not delete the process/scratch directory",
