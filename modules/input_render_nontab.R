@@ -4,32 +4,30 @@ getScalarValue <- function(data, operator){
   if(!length(data)){
     return(NULL)
   }
-  
-  numVector <- as.numeric(data)
   errMsg    <- NULL
   scalarVal <- NULL
-
+  
   switch(operator,
          count = {
-           scalarVal <- length(numVector)
+           scalarVal <- length(data)
          },
          max = {
-           try(scalarVal <- max(numVector))
+           try(scalarVal <- max(data))
          },
          min = {
-           try(minData <- min(numVector))
+           try(minData <- min(data))
          },
          mean = {
-           try(scalarVal <- mean(numVector))
+           try(scalarVal <- mean(data))
          },
          median = {
-           try(scalarVal <- median(numVector))
+           try(scalarVal <- median(data))
          },
          var = {
-           try(scalarVal <- var(numVector))
+           try(scalarVal <- var(data))
          },
          sd = {
-           try(scalarVal <- sd(numVector))
+           try(scalarVal <- sd(data))
          },
          {
            flog.error("Unknown operator: '%s'.", operator)
@@ -70,12 +68,12 @@ lapply(seq_along(modelIn), function(id){
                    value <- FALSE
                  }
                  modelInputData[[id]] <<- list(NULL)
-                 noCheck[id]            <<- TRUE
                  return(value)
                }
              })
              
              observe({
+               noCheck[id] <<- TRUE
                shiny::updateCheckboxInput(session, "cb_" %+% id, value = getSelected[[id]]())
              })
            }else{
@@ -158,12 +156,12 @@ lapply(seq_along(modelIn), function(id){
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
-               noCheck[id]          <<- TRUE
                return(value)
              }
            })
            # TODO: support dependency
            observe({
+             noCheck[id] <<- TRUE
              shiny::updateDateInput(session, "date_" %+% id, value = getSelected[[id]]())
            })
          },
@@ -177,13 +175,13 @@ lapply(seq_along(modelIn), function(id){
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
-               noCheck[id]           <<- TRUE
                return(value)
              }
            })
            # TODO: support dependency
            
            observe({
+             noCheck[id] <<- TRUE
              shiny::updateDateRangeInput(session, "daterange_" %+% id, 
                                          start = getSelected[[id]]()[[1]], end = getSelected[[id]]()[[2]])
            })
@@ -199,7 +197,6 @@ lapply(seq_along(modelIn), function(id){
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
-               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -208,6 +205,7 @@ lapply(seq_along(modelIn), function(id){
              
              # observe changes of dropdown menu data
              observe({
+               noCheck[id] <<- TRUE
                updateSelectInput(session, "dropdown_" %+% id, selected = getSelected[[id]]())
              })
            }else{
@@ -326,9 +324,10 @@ lapply(seq_along(modelIn), function(id){
              })
              # observe changes of dropdown default value
              observe({
+               noCheck[id] <<- TRUE
                # update default
                updateSelectInput(session, paste0("dropdown_", id), selected = getSelected[[id]]())
-             })
+             }, priority = -1)
            }
          },
          slider = {
@@ -342,7 +341,6 @@ lapply(seq_along(modelIn), function(id){
              }else{
                value <- modelInputData[[id]]
                modelInputData[[id]] <<- list(NULL)
-               noCheck[id]           <<- TRUE
                return(value)
              }
            })
@@ -353,6 +351,7 @@ lapply(seq_along(modelIn), function(id){
                # update slider with default value
                value <- getSelected[[id]]()
                if(!is.null(value)){
+                 noCheck[id] <<- TRUE
                  updateSliderInput(session, paste0("slider_", id), value = value)
                }
              })
@@ -437,10 +436,10 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
+               noCheck[[id]] <<- TRUE
                
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
-               
                if(!inputInitialized[i]){
                  if(!is.null(isolate(getData[[i]]()$min)) && !is.null(isolate(getData[[i]]()$max))){
                    inputInitialized[i] <<- TRUE
@@ -459,9 +458,10 @@ lapply(seq_along(modelIn), function(id){
              observe({
                value <- getSelected[[id]]()
                if(!is.null(value)){
+                 noCheck[[id]] <<- TRUE
                  updateSliderInput(session, inputId = paste0("slider_", id), value = value)
                }
-             })
+             }, priority = -1)
            }
          }
   )

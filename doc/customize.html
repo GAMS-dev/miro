@@ -52,7 +52,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Customize</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: November 1st, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: November 19th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -64,11 +64,11 @@
                                       The GAMS Web Interface is configured using JSON files. For a GAMS model used in the WebUI, these files are located in <span class="code">&lt;modeldirectory&gt;/conf</span>. Two JSON files are used: </p>
                                       <ol class="list">
                                         <li><h6>GMSIO_config.json</h6>
-                                      This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code">--webui=compile</span> or <span class="code"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in the GAMS code with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. In addition, the type of representation of those GAMS symbols (table, slider, dropdown menu), which is also defined in GAMS, is determined here. For more information on the different input widgets, see the section on <a href="#input-widgets" class="scrollto">input widgets</a>.
+                                      This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code">--webui=compile</span> or <span class="code"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in the GAMS code with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. This file should not be modified manually.
                                     </li>
                                     <li>
                                       <h6>config.json</h6>
-                                      In config.json the remaining, mainly GAMS unspecific, configuration of the WebUI takes place: e.g. the setting of the language, the general appearance, the functionality of the WebUI and much more. Furthermore, all the graphics are defined here.
+                                      All the customization of your WebUI happens via the JSON file: <span class="code">config.json</span>. Here you can configure the language of your WebUI, the general appearance, the functionality and much more. Furthermore, all the graphics and widgets are defined here.
                                     </li>
                                   </ol>
                                       <div class="section-block">
@@ -88,7 +88,18 @@
                                       <div class="section-block">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/editable-table.png" alt="editable table"/>
                                       </div>
-                                      <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you will need to customize your GAMS parameter. You do this by adding this kind of information to the explanatory text of the GAMS parameter. In order to separate the "real" explanatory that you have defined for this symbol from the WebUI customization for this symbol, the separator "<span class="code"> ###</span>" (a space character followed by three hash symbols) needs to be used. For example, if we decide that the table for our parameter <span class="code">price</span> should not be editable, our parameter should be declared as: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter-readonly.png" alt="Parameter price(date,symbol) 'Price ### {&quot;readonly&quot;:true}';" />. Users will now be able to see the stock prices your model is fed with, but can not edit them.</p>
+                                      <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you will need to customize your GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">price</span> should not be editable, this information needs to be added to your JSON file as follows:
+                                        <div class="code-block">
+                                            <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;price&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;readonly&#x22;: true
+    }
+  }
+}</code></pre>
+                                        </div><!--//code-block-->
+                                         Users will now be able to see the stock prices your model is fed with, but can not edit them.</p>
                                       <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -98,7 +109,7 @@
                                               <p>You can use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to customize your input widgets.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
-                                      <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (in the following both referred to as "scalar values" or simply "scalars") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called "Scalars". This saves space and also makes adding new scalars easy as all you have to do is add a new row to the "Scalars" table. Thus, it improves compactness and flexibility, especially when the GAMS WebUI is connected to a database. However, scalars don't have to be displayed in tabular form. Instead, you can display them as sliders, dropdown menus, checkboxes and more. The idea stays the same as with customized tables: Simply add the customization string to the explanatory text of your scalar, seperated by "<span class="code"> ###</span>". The scalar will then get automatically removed from the "Scalars" table and is instead rendered as an individual widget.</p>
+                                      <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (in the following both referred to as "scalar values" or simply "scalars") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called "Scalars". This saves space and also makes adding new scalars easy as all you have to do is add a new row to the "Scalars" table. Thus, it improves compactness and flexibility, especially when the GAMS WebUI is connected to a database. However, scalars don't have to be displayed in tabular form. Instead, you can display them as sliders, dropdown menus, checkboxes and more. The idea stays the same as with customized tables: Simply add the customization information in to the configuration file. The scalar will then get automatically removed from the "Scalars" table and is instead rendered as an individual widget.</p>
                                       <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -171,35 +182,34 @@
                                       </div><!--//section-block-->
                                       <div class="section-block" id="widgets-commandLine">
                                         <h3 class="block-title">Command line parameters</h3>
-                                           <p>Aside from creating widgets for your GAMS Symbols, you can also generate widgets for GAMS command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtc_DoubleDashParam" target="_blank">double dash parameters</a> as well as <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_ListOfCommandLineParameters" target="_blank">GAMS options</a>). However, as there is no formal declaration for these parameters, we need to generate a special JSON file for those. This file must be called <span class="code">webuiconf.json</span> and must be located in the same folder as your model. You may create this file from within your model by using the GAMS dollar control option: <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARonoffecho" target="_blank">$onEcho</a>. In order for the GAMS WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.</p>
-                                           <p>Let's assume you want the WebUI to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd> set to a value between 1 and 14 (since your model allows up to 14 time periods and the minimum number of periods allowed should be 1). You also want the user to be able to select the MIP solver to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. You decided to generate the <span class="code">webuiconf.json</span> from within your model, so you simply add the following code somewhere in your model:</p>
+                                           <p>Aside from creating widgets for your GAMS Symbols, you can also generate widgets for GAMS command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtc_DoubleDashParam" target="_blank">double dash parameters</a> as well as <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_ListOfCommandLineParameters" target="_blank">GAMS options</a>). Again: All you have to do is add information on how these command line parameters should be displayed inside the WebUI to your <span class="code">config.json</span> file. In order for the GAMS WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.</p>
+                                           <p>Let's assume you want the WebUI to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd> set to a value between 1 and 14 (since your model allows up to 14 time periods and the minimum number of periods allowed should be 1). You also want the user to be able to select the MIP solver to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">config.json</span> file should look as follows:</p>
                                              <div class="code-block">
-                                                 <pre><code class="language-json">$onecho &#x3E; webuiconf.json
-{
-  &#x22;GMSPAR_numberPeriods&#x22;:{
-    &#x22;alias&#x22;:&#x22;Number of time periods&#x22;,
-    &#x22;slider&#x22;:{
-      &#x22;label&#x22;:&#x22;Select the number of time periods to solve&#x22;,
-      &#x22;min&#x22;:1,
-      &#x22;max&#x22;:14,
-      &#x22;default&#x22;:1,
-      &#x22;step&#x22;:1
-    }
-  },
-  &#x22;GMSOPT_mip&#x22;:{
-    &#x22;alias&#x22;:&#x22;MIP Solver&#x22;,
-    &#x22;dropdown&#x22;:{
-      &#x22;label&#x22;:&#x22;Solver to use&#x22;,
-      &#x22;choices&#x22;:[
+                                                 <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;GMSPAR_numberPeriods&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;slider&#x22;,
+      &#x22;alias&#x22;: &#x22;Number of time periods&#x22;,
+      &#x22;label&#x22;: &#x22;Select the number of time periods to solve&#x22;,
+      &#x22;min&#x22;: 1,
+      &#x22;max&#x22;: 14,
+      &#x22;default&#x22;: 1,
+      &#x22;step&#x22;: 1
+    },
+    &#x22;GMSOPT_mip&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;dropdown&#x22;,
+      &#x22;alias&#x22;: &#x22;MIP Solver&#x22;,
+      &#x22;label&#x22;: &#x22;Solver to use for MIP models&#x22;,
+      &#x22;choices&#x22;: [
         &#x22;CPLEX&#x22;,
         &#x22;GUROBI&#x22;,
         &#x22;XPRESS&#x22;
       ],
-      &#x22;selected&#x22;:&#x22;CPLEX&#x22;
+      &#x22;multiple&#x22;: false,
+      &#x22;selected&#x22;: &#x22;CPLEX&#x22;
     }
   }
-}
-$offecho</code></pre>
+}</code></pre>
                                              </div><!--//code-block-->
                                              <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets via our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
                                              <div class="callout-block callout-warning">
@@ -214,16 +224,16 @@ $offecho</code></pre>
                                       </div><!--//section-block-->
                                       <div class="section-block" id="widgets-advanced">
                                         <h3 class="block-title">Advanced topics</h3>
-                                         <p>Now that we covered the basics of how to use widgets for your scalar inputs as well as command line parameters, we will now go into the technical details of how the communication between the GAMS WebUI and the GAMS compiler works.</p>
+                                         <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Now, we will go into the technical details of how the communication between the GAMS WebUI and the GAMS compiler works.</p>
                                          <p>Whenever a scalar value is set in the GAMS WebUI and GAMS is called, the scalar is read and an environment variable is set. The name of this environment variable is simply the name of the variable prefixed with the filename of your model followed by an underscore. So if your model is called <span class="code">hello.gms</span> and you defined a scalar input called <kbd>myScalar</kbd> that is read from the GAMS WebUI, the environment variable that is created when executing your model from the WebUI is called <kbd>HELLO_MYSCALAR</kbd>. Inside your GAMS model, this environment variable can be be accessed at compile time via: <kbd>%sysenv.HELLO_MYSCALAR%</kbd>. Note that we follow the convention that environment variables are capitalized.</p>
-                                         <p>Knowing that, internally, scalars that are imported from the WebUI by setting environment variables comes in handy in certain situations for example if you want to access them inside an <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded code</a> section. Thus, you might want to keep this detail in the back of your mind.</p>
-                                         <p>One more important detail you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets are currently a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd>.</p>
+                                         <p>Knowing that, internally, scalars are imported from the WebUI by setting environment variables comes in handy in certain situations e.g. if you want to access them inside an <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded code</a> section. Thus, you might want to keep this detail in the back of your mind.</p>
+                                         <p>One more important aspect you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets are currently a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set.</p>
                                       </div><!--//section-block-->
                             </section>
                             <section id="config-gen" class="doc-section">
                                   <h2 class="section-title">Configuration Generator</h2>
                                   <div class="section-block">
-                                    <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Generator. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>. In the case of input widgets, the string that must be added to the explanatory text of your GAMS symbol is copied to the clipboard.</p>
+                                    <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Generator. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>.</p>
                                     <div class="upload-btn-wrapper" id="gmsioUpload">
                                       <span id = "errMsg" style="color:red;font-weight:bold;"></span>
                                       <button class="upload-btn">Upload your GMSIO_config.json file</button>
@@ -231,19 +241,17 @@ $offecho</code></pre>
                                     </div>
                                     <div id="confGenContent" style="display:none;">
                                       <div id="selectConfigType" style="display:none;">
-                                        <button type="button" id="launchConfigGenBt" class="upload-btn">Generate config.json file</button>
-                                        <button type="button" id="launchInputGenBt" class="upload-btn">Generate input widget</button>
-                                        <button type="button" id="launchInputGenCBt" class="upload-btn-small">Generate widgets for Command line parameters</button>
+                                        <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new config.json file</button>
+                                        <div class="upload-btn-wrapper" id="configJSONupload" style="overflow:visible;">
+                                          <span id = "errMsg" style="color:red;font-weight:bold;"></span>
+                                          <button class="upload-btn">Merge with existing config.json file</button>
+                                          <input id="configJSONfile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="mergeExisting()"/><br />
+                                        </div>
                                       </div>
                                       <div id="form1"></div>
-                                      <div id="cpTA-wrapper" style="display:none;">
-                                        <textarea id="cpTA" style="width:50em;height:20px;padding:0;outline=none;boxShadow=none;background:transparent;border:none;"></textarea>
-                                      </div>
                                       <button id="reset-config-gen" type="button" class="configgen-reset-btn" onclick="if(window.confirm('Are you sure you want to reset the configuration generator?')){
                                         $('#form1').alpaca('destroy');
                                         $('#launchConfigGenBt').unbind();
-                                        $('#launchInputGenBt').unbind();
-                                        $('#launchInputGenCBt').unbind();
                                         $('#gmsioUpload').show();
                                         $('#confGenContent').hide();
                                         $(window).scrollTo($('#config-gen'));
@@ -413,6 +421,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
 
     <!-- alpaca -->
     <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+    <!-- AJV -->
+    <script type="text/javascript" src="assets/js/ajv.min.js"></script>
     <!-- config generator -->
     <script type="text/javascript" src="assets/js/config-gen.js"></script>
     <!-- gifplayer plugin -->

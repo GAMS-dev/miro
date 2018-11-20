@@ -42,8 +42,7 @@ configDir <- "./conf/"
 # files that require schema file
 jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
-                    "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
+filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
 requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
@@ -109,7 +108,7 @@ if(is.null(errMsg)){
   tryCatch({
     modelPath <- paste0(getwd(), .Platform$file.sep, modelDir, modelName, 
                         .Platform$file.sep, modelName, ".gms")
-    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar)
+    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, paste0(getwd(), .Platform$file.sep, modelDir))
     modelGmsName <- modelPath[[2]]
     modelName <- modelPath[[3]]
     modelPath <- modelPath[[1]]
@@ -117,6 +116,7 @@ if(is.null(errMsg)){
     errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
   })
 }
+
 if(is.null(errMsg)){
   logFileDir <- file.path(tmpFileDir, logFileDir)
   # check if GAMS model file exists
@@ -660,7 +660,7 @@ if(!is.null(errMsg)){
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
         }
-      })
+      }, priority = 1000L)
     })
     
     markUnsaved <- function(){

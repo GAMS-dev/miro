@@ -151,8 +151,8 @@
          "default":false,
          "required":false
       },
-      "dataRendering":{  
-         "description":"Format in which input or output data is to be displayed in the WebUI.",
+      "inputWidgets":{
+        "description":"Format in which input or output data is to be displayed in the WebUI.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
@@ -160,7 +160,7 @@
             "oneOf":[
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -223,14 +223,14 @@
                      "required":false
                    },
                    "additionalProperties":false,
-                  "required":[  
-                     "outType", "step", "min", "max", "default"
-                  ]
-                 }
+                   "required":[  
+                      "widgetType", "step", "min", "max", "default"
+                   ]
+                  }
                },
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -296,14 +296,14 @@
                       ]
                     },
                    "additionalProperties":false,
-                  "required":[  
-                     "outType"
-                  ]
-                 }
+                   "required":[  
+                      "widgetType"
+                   ]
+                  }
                },
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -375,14 +375,14 @@
                      "minLength":1
                    },
                    "additionalProperties":false,
-                  "required":[  
-                     "outType", "min", "max", "value"
-                  ]
+                   "required":[  
+                      "widgetType", "min", "max", "value"
+                   ]
                  }
                },
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -470,14 +470,14 @@
                      "type":"boolean"
                    },
                    "additionalProperties":false,
-                  "required":[  
-                     "outType"
-                  ]
+                   "required":[  
+                      "widgetType"
+                   ]
                  }
                },
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -531,13 +531,13 @@
                    }
                  },
                  "additionalProperties":false,
-                  "required":[  
-                     "outType"
-                  ]
+                 "required":[  
+                    "widgetType"
+                 ]
                },
                {
                  "properties":{
-                   "outType":{
+                   "widgetType":{
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
@@ -547,10 +547,6 @@
                    "alias":{  
                      "type":"string",
                      "minLength":1
-                   },
-                   "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
-                    "type":"boolean"
                    },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
@@ -570,10 +566,20 @@
                     }
                  },
                  "additionalProperties":false,
-                  "required":[  
-                     "outType"
-                  ]
-               },
+                 "required":[  
+                    "widgetType"
+                 ]
+               }
+            ]
+         }
+      },
+      "dataRendering":{  
+        "description":"Format in which input or output data is to be displayed in the WebUI.",
+         "type":"object",
+         "additionalProperties":{  
+            "type":"object",
+            "minProperties":1,
+            "oneOf":[
                {
                   "properties":{  
                      "outType":{  

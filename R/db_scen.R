@@ -4,7 +4,7 @@ Scenario <- R6Class("Scenario",
                     public = list(
                       initialize                    = function(db, sid = NULL, sname = NULL,
                                                                readPerm = NULL, writePerm = NULL,
-                                                               tags = NULL){
+                                                               tags = NULL, overwrite = FALSE){
                         # Initialize scenario class
                         #
                         # Args:
@@ -14,6 +14,7 @@ Scenario <- R6Class("Scenario",
                         #   readPerm:          users/groups that have read permissions (optional)
                         #   writePerm:         users/groups that have write permissions (optional)
                         #   tags:              vector of tags that can be specified (optional)
+                        #   overwrite:         logical that specifies whether data should be overwritten or appended
                         
                         #BEGIN error checks 
                         stopifnot(is.R6(db))
@@ -42,6 +43,7 @@ Scenario <- R6Class("Scenario",
                           sid <- suppressWarnings(as.integer(sid))
                           stopifnot(!is.na(sid), length(sid) == 1)
                         }
+                        stopifnot(is.logical(overwrite), length(overwrite) == 1)
                         #END error checks 
                         
                         private$slocktimeLimit      <- db$getSlocktimeLimit
@@ -54,7 +56,12 @@ Scenario <- R6Class("Scenario",
                         private$traceConfig         <- db$getTraceConfig()
                         
                         if(is.null(sid)){
-                          tryCatch(private$fetchMetadata(sname = sname, uid = private$uid),
+                          tryCatch({
+                            private$fetchMetadata(sname = sname, uid = private$uid)
+                            if(overwrite){
+                              private$writeMetadata()
+                            }
+                            },
                                    error = function(e){
                                      # scenario with name/uid combination does not exist, so create it
                                      private$stime     <- Sys.time()
@@ -384,7 +391,6 @@ Scenario <- R6Class("Scenario",
                         # Returns:
                         #   Db class object:  invisibly returns reference to object if successful, 
                         #   throws exception in case of error
-                        
                         if(!length(private$sid)){
                           # new scenario
                           metadata           <- data.frame(private$suid, private$sname,

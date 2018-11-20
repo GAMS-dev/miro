@@ -95,6 +95,8 @@ Db <- R6Class("Db",
                   }else if(type == "sqlite"){
                     tryCatch({
                       private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbname)
+                      # turn foreign key usage on
+                      dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
                     }, error = function(e){
                       stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
                            call. = FALSE)
@@ -329,7 +331,7 @@ Db <- R6Class("Db",
                     tryCatch({
                       query <- paste0("DELETE FROM ", DBI::dbQuoteIdentifier(private$conn, tableName),
                                       " WHERE ", subsetRows)
-                      DBI::dbExecute(private$conn, query)
+                      affectedRows <- DBI::dbExecute(private$conn, query)
                       flog.debug("Db: %s rows in table: '%s' were deleted. (Db.deleteRows)", affectedRows, tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while deleting rows from the database (Db.deleteRows, " %+% 
@@ -451,7 +453,7 @@ Db <- R6Class("Db",
                   stopifnot(inherits(dataset, "data.frame") || is.null(dataset))
                   stopifnot(is.character(tableName), length(tableName) == 1)
                   #END error checks 
-                  str(dataset)
+
                   dataset <- dateColToChar(private$conn, dataset)
                   if(DBI::dbExistsTable(private$conn, tableName)){
                     if(!is.null(dataset)){
@@ -487,6 +489,16 @@ Db <- R6Class("Db",
                       DBI::dbExecute(private$conn, query)
                     }, error = function(e){
                       stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). " %+%
+                                     "Error message: %s.", tableName, e), call. = FALSE)
+                    })
+                    tryCatch({
+                      query <- paste0("CREATE INDEX ", DBI::dbQuoteIdentifier(private$conn, "sid_index_" %+% tableName), " ON ", 
+                                      DBI::dbQuoteIdentifier(private$conn, tableName), 
+                                      " (", DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ");")
+                      print(query)
+                      DBI::dbExecute(private$conn, query)
+                    }, error = function(e){
+                      stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset). " %+%
                                      "Error message: %s.", tableName, e), call. = FALSE)
                     })
                     flog.debug("Db: A database table named: '%s' did not yet exist. 

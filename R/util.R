@@ -29,13 +29,30 @@ hasContent <- function(x){
   return(TRUE)
 }
 
-getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL){
+isShinyProxy <- function(){
+  # specifies whether shiny proxy is used
+  # 
+  # Args:
+  #
+  # Returns:
+  # boolean that specifies whether shiny proxy is used
+  
+  uid <- Sys.getenv("SHINYPROXY_USERNAME")
+  if(is.null(uid) || grepl("^\\s*$",uid)){
+    invisible(FALSE)
+  }else{
+    invisible(TRUE)
+  }
+}
+
+getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaselDir = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
   # isShinyProxy:               boolean that specifies whether shiny proxy is used
   # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
+  # modeBaselDir:               durectory where model folders are located
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
@@ -50,7 +67,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
     }else{
       envName <- Sys.getenv(envVarPath)
       if(length(envName)){
-        modelPath <- envName
+        modelPath <- paste0(modeBaselDir, envName, .Platform$file.sep, envName, ".gms") 
       }else if(is.null(modelPath)){
         stop(errMsg, call. = FALSE)
       }
@@ -67,7 +84,6 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
   gmsFileName <- basename(modelPath)
   modelName   <- tolower(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
   modelDir    <- dirname(modelPath) %+% .Platform$file.sep
-
   return(list(modelDir, gmsFileName, modelName))
 }
 getInputToImport <- function(data, keywordsNoImport){
@@ -713,6 +729,7 @@ plotlyOutput_spinner <- function(...){
       ), plotlyOutput(...)
   )
 }
+
 getNoLinesInFile <- function(filePath){
   if(identical(tolower(getOS()), "windows")){
     as.integer(strsplit(system2("find", c("/c", "/v", "$$$$$$$$$$$$$$$$$$$$$$$", filePath), 

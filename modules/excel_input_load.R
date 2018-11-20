@@ -2,7 +2,7 @@
 observeEvent(input$btOverwriteLocal, {
   scenName <- isolate(input$local_newScenName)
   flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
-  activeScen <<- Scenario$new(db = db, sname = scenName)
+  activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
   rv$activeSname <- scenName
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })

@@ -131,65 +131,85 @@ if(is.null(errMsg)){
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
   
-  for(el in names(config$dataRendering)){
-    i <- match(tolower(el), names(modelIn))
+  for(el in names(config$inputWidgets)){
+    i    <- match(tolower(el), names(modelIn))
+    el_l <- tolower(el)
+    
+    widgetConfig    <- config$inputWidgets[[el]]
+    widgetType      <- widgetConfig$widgetType
     if(is.na(i)){
+      j <- NA
       if(tolower(scalarsFileName) %in% names(modelIn)){
         j <- match(tolower(el), tolower(modelIn[[tolower(scalarsFileName)]]$symnames))
-        if(!is.na(j)){
-          widgetConfig <- config$dataRendering[[el]]
-          outType      <- widgetConfig$outType
-          widgetConfig$outType <- NULL
-          if(!is.null(widgetConfig$noBatch)){
-            modelIn[[i]]$noBatch <- widgetConfig$noBatch
-            widgetConfig$noBatch <- NULL
-          }
-          if(!is.null(widgetConfig$noImport)){
-            modelIn[[i]]$noImport <- widgetConfig$noImport
-            widgetConfig$noImport  <- NULL
-          }
-          config$dataRendering[[el]] <- NULL
-          modelIn[[i]][[outType]] <- widgetConfig
-          modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
-          if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
-            # remove scalar table entirely if no scalar symbols are left
-            modelIn[[tolower(scalarsFileName)]] <- NULL
-          }else{
-            modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
-            modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
-          }
-        }else if(any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))){
-          widgetConfig <- config$dataRendering[[el]]
-          outType      <- widgetConfig$outType
-          widgetConfig$outType <- NULL
-          if(!is.null(widgetConfig$noBatch)){
-            modelIn[[el]]$noBatch <- widgetConfig$noBatch
-            widgetConfig$noBatch <- NULL
-          }
-          if(!is.null(widgetConfig$noImport)){
-            modelIn[[el]]$noImport <- widgetConfig$noImport
-            widgetConfig$noImport  <- NULL
-          }
-          modelIn[[el]] <- widgetConfig
+      }
+      widgetConfig$widgetType <- NULL
+      
+      if(!is.na(j)){
+        modelIn[[el_l]] <- list()
+        
+        if(!is.null(widgetConfig$alias)){
+          modelIn[[el_l]]$alias <- widgetConfig$alias
+          widgetConfig$alias    <- NULL
         }
+        if(!is.null(widgetConfig$noBatch)){
+          modelIn[[el_l]]$noBatch <- widgetConfig$noBatch
+          widgetConfig$noBatch    <- NULL
+        }
+        if(!is.null(widgetConfig$noImport)){
+          modelIn[[el_l]]$noImport <- widgetConfig$noImport
+          widgetConfig$noImport    <- NULL
+        }
+        config$inputWidgets[[el]]     <- NULL
+        modelIn[[el_l]][[widgetType]] <- widgetConfig
+        modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
+        if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
+          # remove scalar table entirely if no scalar symbols are left
+          modelIn[[tolower(scalarsFileName)]] <- NULL
+        }else{
+          modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
+          modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
+        }
+      }else if(any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))){
+        modelIn[[el]]   <- list()
+        
+        if(!is.null(widgetConfig$alias)){
+          modelIn[[el]]$alias <- widgetConfig$alias
+          widgetConfig$alias <- NULL
+        }
+        if(!is.null(widgetConfig$noBatch)){
+          modelIn[[el]]$noBatch <- widgetConfig$noBatch
+          widgetConfig$noBatch <- NULL
+        }
+        if(!is.null(widgetConfig$noImport)){
+          modelIn[[el]]$noImport <- widgetConfig$noImport
+          widgetConfig$noImport  <- NULL
+        }
+        modelIn[[el]][[widgetType]] <- widgetConfig
+      }else{
+        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not amongst the symbols you defined to be input data to your model!")
+        flog.fatal(errMsgTmp)
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }else{
-      widgetConfig <- config$dataRendering[[el]]
-      outType      <- widgetConfig$outType
-      symDim       <- length(modelIn[[i]]$headers)
-      if(symDim > 1L && !identical(outType, "table")){
+      symDim          <- length(modelIn[[i]]$headers)
+      if(symDim > 1L && !identical(widgetType, "table")){
         errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
                                 names(modelIn[[i]])), sep = "\n")
         flog.fatal(errMsg)
         next
       }
-      if(identical(symDim, 1L) && !(outType %in% c("table", "dropdown"))){
+      if(identical(symDim, 1L) && !(widgetType %in% c("table", "dropdown"))){
         errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.", 
                                         names(modelIn[[i]])), sep = "\n")
         flog.fatal(errMsg)
         next
       }
-      widgetConfig$outType <- NULL
+      widgetConfig$widgetType <- NULL
+      
+      if(!is.null(widgetConfig$alias)){
+        modelIn[[i]]$alias <- widgetConfig$alias
+        widgetConfig$alias <- NULL
+      }
       if(!is.null(widgetConfig$noBatch)){
         modelIn[[i]]$noBatch <- widgetConfig$noBatch
         widgetConfig$noBatch <- NULL
@@ -198,8 +218,27 @@ if(is.null(errMsg)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
         widgetConfig$noImport  <- NULL
       }
-      modelIn[[i]][[outType]] <- widgetConfig
-      config$dataRendering[[el]] <- NULL
+      if(!identical(widgetType, "table")){
+        modelIn[[i]][[widgetType]] <- widgetConfig
+        next
+      }
+      if(!is.null(widgetConfig$readonly)){
+        modelIn[[i]]$readonly <- widgetConfig$readonly
+        widgetConfig$readonly  <- NULL
+      }
+      if(length(widgetConfig$readonlyCols)){
+        for(col in widgetConfig$readonlyCols){
+          if(col %in% names(modelIn[[i]]$headers)){
+            modelIn[[i]]$headers[[col]]$readonly <- TRUE
+          }else{
+            errMsg <- paste(errMsg, sprintf("The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.", 
+                                            names(modelIn)[[i]], names(modelIn[[i]]$headers)[[j]]))
+            flog.fatal(errMsg)
+            next
+          }
+        }
+      }
+      config$inputWidgets[[el]] <- NULL
     }
   }
   
