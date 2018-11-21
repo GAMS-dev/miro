@@ -56,7 +56,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
-    tags$div(id = ns("data"), style = "display:none;", data)
+    tags$div(id = ns("data"), data)
   ))
 }
 

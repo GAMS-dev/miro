@@ -31,9 +31,8 @@ if(isInSplitView){
 # generate title and date
 output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scenIdLong]][[2]][1])
 output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[3]][1]))
-
 eMsg <- NULL
-lapply(scenTableNamesToDisplay, function(sheetName) {
+for(sheetName in scenTableNamesToDisplay){
   # get sheet configuration information
   tabData <- getScenTabData(sheetName)
   # call render functions
@@ -54,7 +53,8 @@ lapply(scenTableNamesToDisplay, function(sheetName) {
   # show graph view per default
   showEl(session, "#scenGraph_" %+% scenId %+% "_" %+% tabData$tabId)
   hideEl(session, "#scenTable_" %+% scenId %+% "_" %+% tabData$tabId)
-})
+}
+
 if(!is.null(eMsg)){
   stop(eMsg, call. = F)
 }

@@ -1,5 +1,5 @@
 app <- ShinyDriver$new("../", loadTimeout = 10000)
-app$snapshotInit("excel_upload_overwrite")
+app$snapshotInit("excel_upload_overwrite_test")
 
 app$setInputs(btImport = "click")
 Sys.sleep(0.5)
@@ -13,3 +13,4 @@ Sys.sleep(2)
 app$snapshot(items = list(output = c("in_1")), screenshot = TRUE)
 app$setInputs(btSave = "click")
 Sys.sleep(1)
+app$stop()

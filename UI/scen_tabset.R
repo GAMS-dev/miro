@@ -50,15 +50,13 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                     # get sheet configuration information
                                     tabData <- getScenTabData(sheetName)
                                     
-                                    
                                     tabPanel(value = "contentScen_" %+% scenId %+% "_" %+% tabData$tabId,
                                              title = span(tabData$sheetName, title = tabData$tooltip), 
                                              tags$div(class="space"),
                                              if(noData[tabData$tabId]){
-                                               tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
+                                               tags$div(class = "out-no-data", noDataTxt)
                                              }else{
                                                tagList(
-                                                 # loading animation
                                                  tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 
                                                           style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", addCssDim(tabData$graphConfig$height, 5)),{
                                                             tryCatch({
