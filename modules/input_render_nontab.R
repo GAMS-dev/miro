@@ -6,28 +6,27 @@ getScalarValue <- function(data, operator){
   }
   errMsg    <- NULL
   scalarVal <- NULL
-  
   switch(operator,
          count = {
            scalarVal <- length(data)
          },
          max = {
-           try(scalarVal <- max(data))
+           try(scalarVal <- max(as.numeric(data)))
          },
          min = {
-           try(minData <- min(data))
+           try(minData <- min(as.numeric(data)))
          },
          mean = {
-           try(scalarVal <- mean(data))
+           try(scalarVal <- mean(as.numeric(data)))
          },
          median = {
-           try(scalarVal <- median(data))
+           try(scalarVal <- median(as.numeric(data)))
          },
          var = {
-           try(scalarVal <- var(data))
+           try(scalarVal <- var(as.numeric(data)))
          },
          sd = {
-           try(scalarVal <- sd(data))
+           try(scalarVal <- sd(as.numeric(data)))
          },
          {
            flog.error("Unknown operator: '%s'.", operator)
@@ -137,7 +136,7 @@ lapply(seq_along(modelIn), function(id){
               
                shiny::updateCheckboxInput(session, "cb_" %+% id, value = value)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
-                 if(value <= 0){
+                 if(value <= 0.5){
                    disableEl(session, "#cb_" %+% id)
                  }else{
                    enableEl(session, "#cb_" %+% id)
@@ -242,9 +241,7 @@ lapply(seq_along(modelIn), function(id){
                                       modelInAlias[id], modelInAlias[k], e)
                            errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                        })
-                     }
-                     if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
-                       if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                       if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
                          tryCatch(
                            aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$aliases[[dataSheet]])
                            , error = function(e){
@@ -253,6 +250,25 @@ lapply(seq_along(modelIn), function(id){
                                         modelInAlias[id], modelInAlias[k], e)
                              errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                            })
+                       }
+                       if(!is.null(modelIn[[k]]$dropdown$operator)){
+                         # element is checkbox with shared dependency that was transformed to dropdown in batch mode
+                         tryCatch({
+                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), modelIn[[k]]$dropdown$operator)
+                         }, error = function(e){
+                           flog.warn("Input type for checkbox: '%s' is not numeric.", modelInAlias[id])
+                           errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                         })
+                         if(!is.null(errMsg)){
+                           next
+                         }
+                         if(value <= 0.5 && identical(modelIn[[id]]$checkbox$disable, TRUE)){
+                           choices[[j]] <- c(0L)
+                           aliases[[j]] <- lang$nav$batchMode$checkboxAliases[[1]]
+                         }else{
+                           choices[[j]] <- c(0L, 1L)
+                           aliases[[j]] <- lang$nav$batchMode$checkboxAliases
+                         }
                        }
                      }
                    }else{
@@ -304,8 +320,14 @@ lapply(seq_along(modelIn), function(id){
                if(!inputInitialized[i]){
                  choices <- getData[[i]]()
                  if(!is.null(choices)){
+                   selectedEl <- modelIn[[id]]$dropdown$selected[[1]]
+                   if((!length(selectedEl) && (!identical(modelIn[[id]]$dropdown$multiple, TRUE) || 
+                       identical(modelIn[[id]]$dropdown$single, TRUE))) || 
+                      (length(selectedEl) && !selectedEl %in% choices)){
+                     selectedEl <- choices[[1]]
+                   }
                    updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
-                                            selected = modelIn[[id]]$dropdown$selected)
+                                            selected = selectedEl)
                    inputInitialized[i] <<- TRUE
                    showEl(session, paste0("#dropdown_", id))
                    hideEl(session, paste0("#no_data_dep_", id))

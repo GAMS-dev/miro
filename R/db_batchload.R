@@ -237,14 +237,16 @@ BatchLoad <- R6Class("BatchLoad",
                          as_tibble(dbGetQuery(private$conn, query))
                        },
                        genPivotQuery          = function(tableName, keyCol, valCol, keyTypeList){
+                         keyCols <- vapply(keyTypeList, "[[", character(1L), "key", USE.NAMES = FALSE)
                          SQL(paste0("SELECT * FROM crosstab ('SELECT ", 
                                     dbQuoteIdentifier(private$conn, private$sidCol),  ", ", 
                                     dbQuoteIdentifier(private$conn, keyCol), 
-                                    ", max(", dbQuoteIdentifier(private$conn, valCol), ") FROM ", 
+                                    ", ", dbQuoteIdentifier(private$conn, valCol), " FROM ", 
                                     dbQuoteIdentifier(private$conn, tableName), 
-                                    " GROUP BY 1,2 ORDER BY 1,2','SELECT DISTINCT ", 
-                                    dbQuoteIdentifier(private$conn, keyCol), " FROM ", 
-                                    dbQuoteIdentifier(private$conn, tableName), " ORDER BY 1') AS ", 
+                                    " WHERE ", dbQuoteIdentifier(private$conn, keyCol), " IN ('", 
+                                    paste(dbQuoteString(private$conn, keyCols), collapse = "', '"), 
+                                    "') ORDER BY 1,2',$$ VALUES (", 
+                                    paste(dbQuoteString(private$conn, keyCols), collapse = "), ("), ")$$) AS ", 
                                     dbQuoteIdentifier(private$conn, tableName %+% "_tmp"), " (", 
                                     dbQuoteIdentifier(private$conn, private$sidCol), " int, ", 
                                     private$genKeyTypeString(keyTypeList), ")"))
@@ -252,9 +254,9 @@ BatchLoad <- R6Class("BatchLoad",
                        genKeyTypeString       = function(keyTypeList){
                          keyTypeList <- vapply(keyTypeList, function(keyTypeEl){
                            dbQuoteIdentifier(private$conn, "_" %+% keyTypeEl$key) %+%
-                             if(identical(keyTypeEl$type, "string")){
+                             if(keyTypeEl$type %in% c("set", "string", "acronym")){
                                " varchar"
-                             }else if(identical(keyTypeEl$type, "number")){
+                             }else if(keyTypeEl$type %in% c("scalar", "parameter", "number")){
                                " numeric"
                              }else{
                                stop("Invalid type: ''. Allowed types are: 'string, number'.")

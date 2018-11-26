@@ -267,10 +267,6 @@
       "badStepSizeDialog":{
         "title": "Falsche Schrittweite",
         "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
-      },
-      "successDialog":{
-        "title": "Batchlauf konfiguriert",
-        "desc": "Der Batchlauf wurde erfolgreich konfiguriert. Die Batchdatei wurde in Ihr Arbeitsverzeichnis geschrieben. Um den Batchlauf zu starten, konvertieren Sie bitte diese Datei in eine ausführbare GAMS Datei. Weitere Informationen dazu finden Sie in der Dokumentation."
       }
     },
     "batchMode":{

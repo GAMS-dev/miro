@@ -54,7 +54,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                              title = span(tabData$sheetName, title = tabData$tooltip), 
                                              tags$div(class="space"),
                                              if(noData[tabData$tabId]){
-                                               tags$div(class = "out-no-data", noDataTxt)
+                                               tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
                                              }else{
                                                tagList(
                                                  tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 

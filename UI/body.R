@@ -171,7 +171,7 @@ body <- dashboardBody({
                                  )
                                }else if(identical(modelIn[[i]]$slider$single, TRUE)){
                                  tagList(
-                                   column(width = 11, style = "padding-left:0px;",
+                                   column(width = 10, style = "padding-left:0px;",
                                           slider
                                    ),
                                    column(width = 1, style = "min-width: 100px; min-height:100px;",

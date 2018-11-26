@@ -18,6 +18,10 @@ $title "DC Optimal Power Flow model"
 *         PrimeMover,pm_WT. Default=0.
 *_______________________________________________________________________________
 
+
+* Default: Do not supress printout
+$if not set verbose $setGlobal verbose 0
+
 *===== SECTION: OPTIONS & ENVIRONMENT VARIABLES
 * Printout options
 $ifthen %verbose% == 0
@@ -44,6 +48,8 @@ $if not set genPmin $setGlobal genPmin "given"
 $if not set lineloss $setGlobal lineloss 0
 * Default: Save solution option turned off
 $if not set savesol $setGlobal savesol 0
+* Default: Wind turbines turned off
+$if not set wind $setGlobal wind 0
 
 * Define filepath, name and extension.
 $setnames "%gams.i%" filepath filename fileextension

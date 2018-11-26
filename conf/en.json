@@ -267,10 +267,6 @@
       "badStepSizeDialog":{
         "title": "Bad step size",
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
-      },
-      "successDialog":{
-        "title": "Batch run configured",
-        "desc": "The batch run was configured successfully. The batch file was written in your working directory. To start the batch run, please convert this file into an executable GAMS file. More information on this can be found in the documentation."
       }
     },
     "batchMode":{

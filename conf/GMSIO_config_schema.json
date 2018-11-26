@@ -46,7 +46,6 @@
     "gamsInputFiles":{  
       "description":"Name of GAMS input data sheets. Identifiers are case insensitive.",
       "type":"object",
-      "minProperties":1,
       "additionalProperties":{  
         "type":"object",
         "additionalProperties":false,

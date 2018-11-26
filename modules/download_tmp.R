@@ -1,7 +1,7 @@
 observeEvent(input$btDownloadTmpFiles, {
   flog.debug("Button to download files from temp folder clicked.")
   
-  fileNames <- list.files(workDir, pattern = "\\..+$")
+  fileNames <- list.files(workDir, pattern = ".+\\..+$")
   showModal(modalDialog(
     title = lang$nav$dialogDownloadTmp$title,
     if(length(fileNames)){
@@ -46,7 +46,7 @@ output$btDownloadTmpZip <- downloadHandler(
     wd <- getwd()
     setwd(workDir)
     on.exit(setwd(wd))
-    zip(file, list.files(path = ".", pattern = "\\..+$"), compression_level = 6)
+    zip(file, list.files(path = ".", pattern = ".+\\..+$"), compression_level = 6)
   },
   contentType = "application/zip"
 )

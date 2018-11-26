@@ -12,30 +12,71 @@ parameter
 *    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
 *    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
 ;
-
+$offExternalOutput
+$ontext
 singleton set
+$ifthen set case
     case_input(*)       'Selected Testcase'
+$endif
+$ifthen set obj
     obj_input(*)        'Objective function'
+$endif
     LP_solver(*)        'LP-solver'
     QCP_solver(*)       'QCP-solver'
+$ifthen %modeltype% == 'AC'
     NLP_solver(*)       'NLP-solver'
+$endif
+$ifthen set cns
     CNS_solver(*)       'CNS-solver'
+$endif
+$ifthen set timeperiod
     timeperiod_input(*) 'Selected time period to solve'
+$endif
+$ifthen set allon
     allon_input(*)      'Turned on gens and/or lines during solve'
+$endif
+$ifthen set linelimits
     linelimits_input(*) 'Type of line limit data to use'
+$endif
+$ifthen set genPmin
     genPmin_input(*)    'Data for Generator lower limit'
+$endif
+$ifthen set lineloss
     lineloss_input(*)   'Whether to approximate lineloss'
+$endif
+$ifthen set qlim
     qlim_input(*)       'Whether to enforce reactive power limits as D-curve circle constraints'
+$endif
+$ifthen set slim
     slim_input(*)       'Whether to use apparent power limits on line'
+$endif
+$ifthen set ic
     ic_input(*)         'Choosen method for generating initial conditions, i.e. NLP starting point'
+$endif
+$ifthen set iter
     iter_input(*)       'Number of iterations'
+$endif
+$ifthen set times
     times_input(*)      'Time range'
+$endif
+$ifthen set ramprates
     ramprates_input(*)  'Type of ramprate data to use'
+$endif
+$ifthen set relax
     relax_input(*)      'Whether to relax integer models'
+$endif
+$ifthen set demandbids
     demandbids_input(*) 'Whether to turn on elastic demand bidding'    
+$endif
+$ifthen set wind
     wind_input(*)       'Whether to turn off wind turbines'
+$endif
+$ifthen set savesol
     savesol_input(*)    'Whether to save the solution as GDX'
+$endif
+$ifthen set verbose
     verbose_input(*)    'Whether to print input in listing output'
+$endif
 ;
 $offExternalOutput
 
@@ -119,7 +160,7 @@ $ifthen.verbose set verbose
     verbose_input('%verbose%') = yes;
 $endif.verbose
 
-
+$offtext
 parameters version_tmp, baseMVA_tmp, total_cost_tmp;
 parameters businfo_tmp(bus,bus_t,bus_s), geninfo_tmp(gen,gen_t,gen_s), fuelinfo_tmp(fuel_t,fuel_s),
            branchinfo_tmp(bus,bus,circuit,branch_t,branch_s);
