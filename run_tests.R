@@ -27,7 +27,7 @@ tryCatch(
     expect_pass(testApp(".", "excel_upload_test", compareImages = FALSE))
     expect_pass(testApp(".", "excel_upload_overwrite_test", compareImages = FALSE))
     expect_pass(testApp(".", "load_from_db_test", compareImages = FALSE))
-    #expect_pass(testApp(".", "gams_interrupt_test", compareImages = FALSE))
+    expect_pass(testApp(".", "gams_interrupt_test", compareImages = FALSE))
     expect_pass(testApp(".", "compare_scen_split_test", compareImages = FALSE))
     expect_pass(testApp(".", "compare_scen_tab_test", compareImages = FALSE))
   })
