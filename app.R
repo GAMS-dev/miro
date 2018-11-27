@@ -568,39 +568,7 @@ if(!is.null(errMsg)){
     gams <- NULL
     # boolean that specifies whether input data should be overridden
     inputOverwriteConfirmed <- FALSE
-    # trigger sidebar menu by shortcuts
-    observeEvent(input$sidebarMenuShortcut, {
-      switch(input$sidebarMenuShortcut,
-             inputData = {
-               flog.debug("Navigated to input menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "inputData")
-             },
-             outputData = {
-               flog.debug("Navigated to output menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "outputData")
-             },
-             gamsinter = {
-               flog.debug("Navigated to gams interaction menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
-             }
-      )
-      if(config$activateModules$scenario){
-        if(input$sidebarMenuShortcut == "scenarios"){
-          flog.debug("Navigated to scenario comparison view menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "scenarios")
-        }else if(input$sidebarMenuShortcut == "advanced" ){
-          flog.debug("Navigated to advanced options menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "advanced")
-        }
-      }else{
-        if(input$sidebarMenuShortcut %in% c("scenarios", "advanced")){
-          flog.debug("Navigated to advanced options menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "advanced")
-        }
-      }
-    })
 
-    # show/hide buttons in sidebar depending on menu item selected
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       if((config$activateModules$scenario || config$activateModules$batchMode)

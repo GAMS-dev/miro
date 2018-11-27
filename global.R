@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "uc_dc"
 # show extensive error messages/ obscoure error messages
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -77,7 +77,9 @@ defaultGroup <- "user"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # maximum number of scenarios that can be solved per batch run
-maxNoBatch <- 200000L
+maxNoBatch <- 10000L
+# maximum number of scenarios to fetch when querying the database
+batchLoadMaxScen <- 1000L
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L

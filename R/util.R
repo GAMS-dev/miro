@@ -739,3 +739,6 @@ getNoLinesInFile <- function(filePath){
                         " ", fixed = TRUE)[[1]][[1]])
   }
 }
+downloadHandlerError <- function(file, msg = "Some error occurred trying to download this file."){
+  return(writeLines(msg, file))
+}

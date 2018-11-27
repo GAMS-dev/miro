@@ -361,6 +361,8 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxC
     ),
     footer = tagList(
       modalButton(lang$nav$batchMode$configPaverDialog$cancelButton),
+      tags$a(id="btBatchDownload", class='btn btn-default shiny-download-link',
+             href='', target='_blank', download=NA, lang$nav$batchMode$configPaverDialog$downloadButton),
       actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton,
                    class = "btHighlight1"),
       actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 

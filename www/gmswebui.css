@@ -235,6 +235,9 @@ animation: none !important;
 .checkbox-material .checkbox input {
     opacity: 0;
 }
+.checkbox-material .checkbox input[disabled] + span {
+    opacity: 0.5;
+}
 .checkbox-material .checkbox span {
     position: relative;
     display: inline-block;

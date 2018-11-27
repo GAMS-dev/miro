@@ -14,7 +14,7 @@ getScalarValue <- function(data, operator){
            try(scalarVal <- max(as.numeric(data)))
          },
          min = {
-           try(minData <- min(as.numeric(data)))
+           try(scalarVal <- min(as.numeric(data)))
          },
          mean = {
            try(scalarVal <- mean(as.numeric(data)))
@@ -34,7 +34,7 @@ getScalarValue <- function(data, operator){
          }
   )
   if(!is.numeric(scalarVal) || is.na(scalarVal)){
-    stop("Could not determine slider value.", call. = FALSE)
+    stop("Input data is not numeric.", call. = FALSE)
   }else{
     return(scalarVal)
   }
@@ -118,7 +118,7 @@ lapply(seq_along(modelIn), function(id){
                tryCatch({
                  value <- getScalarValue(unlist(value, use.names = FALSE), modelIn[[id]]$checkbox$operator)
                }, error = function(e){
-                 flog.warn("Input type for checkbox: '%s' is not numeric.", name)
+                 flog.warn("Input type for checkbox: '%s' is not numeric. (Operator: '%s')", name, modelIn[[id]]$checkbox$operator)
                  errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                })
                if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
@@ -319,7 +319,7 @@ lapply(seq_along(modelIn), function(id){
                # update choices
                if(!inputInitialized[i]){
                  choices <- getData[[i]]()
-                 if(!is.null(choices)){
+                 if(length(choices)){
                    selectedEl <- modelIn[[id]]$dropdown$selected[[1]]
                    if((!length(selectedEl) && (!identical(modelIn[[id]]$dropdown$multiple, TRUE) || 
                        identical(modelIn[[id]]$dropdown$single, TRUE))) || 

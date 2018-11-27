@@ -306,15 +306,16 @@ if(is.null(errMsg)){
   lapply(seq_along(modelIn), function(i){
     tryCatch({
       modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
-      if(identical(modelIn[[i]]$type, "checkbox") && grepl("\\(", modelIn[[i]]$checkbox$value)){
+      if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$value)){
         cbValueTmp <- strsplit(modelIn[[i]]$checkbox$value, "\\(|\\$")[[1]]
-        if(length(cbValueTmp) %in% c(3L, 4L)){
+        if(length(cbValueTmp) %in% c(4L, 5L) && cbValueTmp[[1]] %in% listOfOperators){
           cbValueTmp <- gsub(")", "", cbValueTmp, fixed = TRUE)
           modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
-          modelIn[[i]]$checkbox$value    <<- cbValueTmp[c(-1)]
+          modelIn[[i]]$checkbox$value    <<- paste(cbValueTmp[c(-1)], collapse = "$")
         }else{
           errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
-                                                      operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn).", modelInAlias[i]))
+                                                      operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
+                                           Currently, the following operators are supported: '%s'.", modelInAlias[i], paste(listOfOperators, collapse = "', '")))
           return(NULL)
         }
       }
@@ -323,7 +324,8 @@ if(is.null(errMsg)){
       errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
     })
   })
-  
+}
+if(is.null(errMsg)){
   # declare input sheets as they will be displayed in UI
   if(!length(config$aggregateWidgets$title)){
     # every input element on its own tab
@@ -400,7 +402,7 @@ if(is.null(errMsg)){
       }
     }
     if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10){
+      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10 && all(modelOut[[i]]$symtypes == "parameter")){
         configGraphsOut[[i]]$outType <<- "valuebox"
         configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
       }else{
@@ -460,7 +462,7 @@ if(is.null(errMsg)){
                    modelIn[[i]]$dropdown$aliases <<- lang$nav$batchMode$checkboxAliases
                    modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
                  }else{
-                   modelIn[[i]]$checkbox$value    <<- paste0("$", paste(modelIn[[i]]$checkbox$value, collapse = "$"))
+                   modelIn[[i]]$checkbox$value    <<- paste0("$", modelIn[[i]]$checkbox$value)
                    modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
                    modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$value
                  }
@@ -681,7 +683,6 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                }
                if(is.character(modelIn[[i]]$checkbox$value)){
                  # checkbox has dependency
-                 
                  # BEGIN error checks
                  if(grepl("\\$+$", modelIn[[i]]$checkbox$value)){
                    errMsg <<- paste(errMsg,paste0("The checkbox: '", modelInAlias[i], 
@@ -690,8 +691,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                  }
                  # END error checks
                  
-                 # remove trailing or leading dollar signs
-                 cbValue <- strsplit(cbValue, "\\$")[[1]]
+                 cbValue <- strsplit(modelIn[[i]]$checkbox$value, "\\$")[[1]]
                  idx1    <- match(cbValue[1], names(modelIn))[1]
                  if(!is.na(idx1)){
                    # add forward dependency

@@ -427,6 +427,7 @@ Db <- R6Class("Db",
                       }
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
+                      dataset[['_v']] <- NULL
                       flog.debug("Db: Data was imported from table: '%s' (Db.importDataset).", tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while querying the database (Db.importDataset, " %+%

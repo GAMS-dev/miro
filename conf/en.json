@@ -284,7 +284,8 @@
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
         "selAttribs":"Attributes to select:",
         "runButton":"Start Paver",
-        "interactiveButton":"Interactive mode"
+        "interactiveButton":"Interactive mode",
+        "downloadButton":"Download data"
       },
       "invalidScenDialog":{
         "title":"Invalid scenarios",
@@ -337,6 +338,9 @@
     "fileWrite":{  
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."
+    },
+    "downloadHandler":{
+      "msg" : "Some error occurred trying to download the file. If this error persists, please contact the system administrator."
     },
     "initErrors":{  
       "title":"Some errors occurred",

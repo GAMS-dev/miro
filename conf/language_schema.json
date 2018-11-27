@@ -1307,6 +1307,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "downloadButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -1527,6 +1532,18 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "downloadHandler":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "msg":{  
               "type":"string",
               "minLength":1,
               "required":true

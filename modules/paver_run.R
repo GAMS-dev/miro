@@ -17,6 +17,7 @@ observeEvent(input$btPaverConfig, {
   hideEl(session, "#btBatchLoad")
   hideEl(session, "#batchLoadMethod")
   hideEl(session, "#btPaverConfig")
+  hideEl(session, "#btBatchDownload")
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")

@@ -274,10 +274,15 @@ observeEvent(input$btSendQuery, {
                                                FUN.VALUE = "characer", 1,
                                                USE.NAMES = FALSE))
   tryCatch({
-    rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN, limit = maxRecordsBatchLoad)
+    rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN, limit = batchLoadMaxScen)
   }, error = function(e){
-    errMsg <- "An error occurred while executing the database query. " %+%
-      "Please try again or contact the system administrator in case this problem persists."
+    if(identical(conditionMessage(e), "maxNoRowsVio")){
+      errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
+                        batchLoadMaxScen)
+    }else{
+      errMsg <- "An error occurred while executing the database query. " %+%
+        "Please try again or contact the system administrator in case this problem persists."
+    }
     showErrorMsg("Error fetching data", errMsg)
     flog.warn("Problems executing batchLoad query. Error message: %s.", e)
   })
@@ -298,6 +303,7 @@ output$batchLoadResults <- renderDataTable({
 }, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE)
 
 observeEvent(input$batchLoadSelected, {
+  flog.debug("Button to load selected scenarios (batch load) clicked.")
   if(is.null(input$batchLoadResults_rows_selected)){
     return(NULL)
   }
@@ -305,6 +311,7 @@ observeEvent(input$batchLoadSelected, {
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadCurrent, {
+  flog.debug("Button to load current page of scenarios (batch load) clicked.")
   if(is.null(input$batchLoadResults_rows_current)){
     return(NULL)
   }
@@ -312,12 +319,59 @@ observeEvent(input$batchLoadCurrent, {
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadAll, {
+  flog.debug("Button to load all scenarios (batch load) clicked.")
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
+
+output$btBatchDownload <- downloadHandler(
+  filename = function() {
+    tolower(modelName) %+% "_data.zip"
+  },
+  content = function(file) {
+    flog.debug("Button to download batch files clicked.")
+    
+    if(!length(sidsToLoad)){
+      flog.warning("No scenario IDs to download could be found.")
+      return(downloadHandlerError(file))
+    }
+    if(length(sidsToLoad) > batchLoadMaxScen){
+      flog.warning("Maximum number of scenarios to download was exceeded.")
+      return(downloadHandlerError(file))
+    }
+    wd <- getwd()
+    on.exit(setwd(wd), add = TRUE)
+    tmpDir      <- tempdir() %+% .Platform$file.sep %+% "scenDL"
+    on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
+    if(dir.exists(tmpDir)){
+      unlink(tmpDir, recursive = TRUE, force = TRUE)
+      Sys.sleep(0.5)
+    }
+    if(!dir.create(tmpDir)){
+      flog.error("Temporary folder could not be created")
+      return(downloadHandlerError(file))
+    }
+    
+    
+    setwd(tmpDir)
+    prog <- shiny::Progress$new()
+    on.exit(prog$close(), add = TRUE)
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    tryCatch({
+      batchLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+      return(zip(file, list.files(recursive = TRUE), compression_level = 6))
+    }, error = function(e){
+      flog.error(e)
+    })
+    return(downloadHandlerError(file))
+  },
+  contentType = "application/zip")
 
 noLinesInBlock <- function(blockId){
   if(any(activeLines[((blockId - 1) * maxNumBlocks + 1):
