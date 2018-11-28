@@ -84,12 +84,8 @@ lapply(modelInTabularData, function(sheet){
                  tryCatch({
                    data <- bind_rows(hotInput[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debugMode){
-                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc,
-                                                    e, sep = "\n"), sep = "\n")
-                   }else{
-                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                   }
+                   flog.warn(paste0(lang$errMsg$dataError$desc,e))
+                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                  })
                  modelInputData[[i]] <<- data
                }
@@ -182,12 +178,8 @@ lapply(modelInTabularData, function(sheet){
                  tryCatch({
                    data <- bind_rows(tableContent[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debugMode){
-                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), 
-                                      sep = "\n")
-                   }else{
-                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                   }
+                   flog.warn(paste0(lang$errMsg$dataError$desc, e))
+                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                  })
                  modelInputData[[i]] <<- data
                }

@@ -1,7 +1,7 @@
 # gams model name
 modelName <- "uc_dc"
-# show extensive error messages/ obscoure error messages
-debugMode <- TRUE
+# controls whether webUI parameters are compiled on startup or loaded from save file
+developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "SHINYPROXY_MODELNAME"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
@@ -36,7 +36,7 @@ scenLockTablePrefix      <- "_sys_scenlocks_"
 # (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
 # local user ID (single user)
-uid <- "Freddy"
+uid <- "user"
 # define the default type for output format
 defOutType <- "datatable"
 # define the default format for input sheets
@@ -49,8 +49,6 @@ customRendererDirName <- "customRenderer"
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
 scalarsFileHeaders <- c("Scalar", "Description", "Value")
-# supported operating systems for "Stop"-Button for gams.exe
-osSupportInterrupt <- c("windows", "linux", "osx")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"
 # prefix used for identifying compile time variables
@@ -59,10 +57,14 @@ prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
 # get maximum number of lines to read automatically for lst files
-maxNoLinesToRead <- 1e3
+lstMaxNoLinesToRead <- 1e3
+# Limits on external programs that are allowed to be executed 
+# (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
+gamsExecMode <- 0L
+
 # ACCESS CONTROL
 # db table name where group hierarchies are stored
-amTableNameHierarchy <- "access_test2"
+amTableNameHierarchy <- "_sys_am_hier"
 # db table name where user groups are stored
 amTableNameGroups    <- "_sys_am_groups"
 # db table name where restricted elements as well as the permissions are stored

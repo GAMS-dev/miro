@@ -216,7 +216,7 @@ observeEvent(input$btSolve, {
   tryCatch({
     homeDir <- getwd()
     gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", homeDir, .Platform$file.sep, modelDir), 
-                  "curdir=" %+% workDir, "logOption=3", config$gamsWEBUISwitch)
+                  "curdir=" %+% workDir, "logOption=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
     }
@@ -293,7 +293,7 @@ observeEvent(input$btSolve, {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > maxNoLinesToRead){
+          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > lstMaxNoLinesToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
             output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))

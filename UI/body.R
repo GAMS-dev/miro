@@ -112,12 +112,8 @@ body <- dashboardBody({
                                                        height = configGraphsIn[[i]]$height, 
                                                        noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                         }, error = function(e) {
-                                          if(debugMode){
-                                            errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), 
-                                                            e, sep = "\n")
-                                          }else{
-                                            errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                          }
+                                          flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                          errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
                                           showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                         })
                                ))
@@ -396,12 +392,8 @@ body <- dashboardBody({
                         renderDataUI(paste0("table-out_",i), type = "datatable", 
                                      noDataTxt = lang$nav$outputScreen$boxResults$noData)
                       }, error = function(e) {
-                        if(debugMode){
-                          eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 
-                                         sep = "\n")
-                        }else{
-                          eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-                        }
+                        flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
+                        eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
                       })
                     }),
                     tags$div(class="space"))

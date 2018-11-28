@@ -158,7 +158,7 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   
-  if(!file.exists(rSaveFilePath) || debugMode){
+  if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
