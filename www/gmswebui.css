@@ -49,6 +49,13 @@ animation: none !important;
   /* bring datepicker menu to the front */
   z-index: 9999 !important;
 }
+.labelClass{
+  cursor: default;
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
 /* header */
 .main-header .logo {
   background-size: cover;
@@ -63,12 +70,16 @@ animation: none !important;
   background-color: #F39619;
 }
 /* model input */
-.btClose{
+.btIcon{
   padding: 0;
   border: none;
+  background-color: inherit !important;
 }
-.btClose:hover, .btClose:active{
-  background: none !important;
+.btIcon:hover, .btIcon:active{
+  background-color: inherit !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
 }
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes glow{

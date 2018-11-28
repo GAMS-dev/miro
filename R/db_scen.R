@@ -54,6 +54,7 @@ Scenario <- R6Class("Scenario",
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
                         private$traceConfig         <- db$getTraceConfig()
+                        private$attachmentConfig    <- db$getAttachmentConfig()
                         
                         if(is.null(sid)){
                           tryCatch({
@@ -148,12 +149,7 @@ Scenario <- R6Class("Scenario",
                         private$writeMetadata()
                         Map(function(dataset, tableName){
                           if(!is.null(dataset) && nrow(dataset)){
-                            # bind scenario ID column to the left of the dataset
-                            dataset <- bind_cols(sid = rep.int(private$sid, 
-                                                               nrow(dataset)), 
-                                                 dataset)
-                            colnames(dataset)[1] <- private$scenMetaColnames['sid']
-                            super$exportScenDataset(dataset, tableName)
+                            super$exportScenDataset(private$bindSidCol(dataset), tableName)
                           }
                           # increment progress bar
                           updateProgress(detail = msgProgress$progress)
@@ -175,12 +171,101 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         
-                        sidCol <- private$scenMetaColnames['sid']
-                        if(!identical(names(data)[1], sidCol)){
-                          traceData <- dplyr::bind_cols(!!sidCol := rep.int(private$sid, nrow(traceData)), 
-                                                        traceData)
+                        super$exportScenDataset(private$bindSidCol(traceData), private$traceConfig[["tabName"]])
+                        invisible(self)
+                      },
+                      addAttachments = function(filePaths, fileNames = NULL){
+                        # Saves attachments
+                        # 
+                        # Args:
+                        #   filePaths:   character vector with file paths to read data from
+                        #   fileNames:   names of the files in case custom name should be chosen
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        stopifnot(!is.null(private$sid))
+                        stopifnot(is.character(filePaths), length(filePaths) >= 1L)
+                        if(!is.null(fileNames))
+                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
+                        
+                        if(!is.null(fileNames)){
+                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
+                        }else{
+                          fileNames <- basename(filePaths)
                         }
-                        super$exportScenDataset(traceData, private$traceConfig[["tabName"]])
+                        
+                        fileNamesDb    <- self$fetchAttachmentNames(distinctNames = FALSE)
+                        
+                        if(any(fileNames %in% fileNamesDb)){
+                          stop("duplicateException", call. = FALSE)
+                        }
+                        if(length(fileNamesDb) + length(filePaths) > private$attachmentConfig[["maxNo"]]){
+                          stop("maxNoException", call. = FALSE)
+                        }
+                        
+                        attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], fileNames = fileNames)
+                        
+                        super$exportScenDataset(private$bindSidCol(attachmentData), private$attachmentConfig[["tabName"]])
+                        invisible(self)
+                      },
+                      fetchAttachmentNames = function(distinctNames = TRUE){
+                        # Fetches file names of saved attachments from database
+                        # 
+                        # Args:
+                        #   distinctNames:  Whether results shoul be distinct
+                        #
+                        # Returns:
+                        #   character vector with file names of saved attachments
+                        
+                        stopifnot(!is.null(private$sid))
+                        
+                        attachments <- super$importDataset(private$attachmentConfig[["tabName"]], colNames = "fileName", 
+                                                           distinct = distinctNames, subsetSids = private$sid)
+                        if(length(attachments)){
+                          return(attachments[[1]])
+                        }else{
+                          return(character(0L))
+                        }
+                      },
+                      getAttachmentData = function(fileName){
+                        # Fetches attachment data from db
+                        # 
+                        # Args:
+                        #   fileName:  name of the file whose data to fetch
+                        #
+                        # Returns:
+                        #   blob object with binary data of file
+                        
+                        stopifnot(is.character(fileName), length(fileName) == 1L)
+                        stopifnot(!is.null(private$sid))
+                        
+                        data <- super$importDataset(private$attachmentConfig[["tabName"]], 
+                                                           tibble("fileName", fileName),
+                                                           colNames = "fileContent", 
+                                                           subsetSids = private$sid)
+                        if(length(data)){
+                          return(data[[1]][[1]])
+                        }else{
+                          return(character(0L))
+                        }
+                        writeBin(data$fileContent[[i]], file.path(filePath, data$fileName[[i]]))
+                      },
+                      removeAttachments = function(fileNames){
+                        # Deletes attachments from scenario
+                        # 
+                        # Args:
+                        #   fileNames:   file names of attachments to remove
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        stopifnot(!is.null(private$sid))
+                        stopifnot(is.character(fileNames), length(fileNames) > 0L)
+                        
+                        super$deleteRows(private$attachmentConfig[["tabName"]], "fileName", fileNames, 
+                                         conditionSep = "OR", subsetSids = private$sid)
+                        invisible(self)
                       },
                       delete = function(){
                         # Wrapper to deleteRows function to easily remove scenario from database
@@ -222,7 +307,9 @@ Scenario <- R6Class("Scenario",
                         
                         #BEGIN error checks 
                         stopifnot(is.character(newName), length(newName) <= 1L)
-                        stopifnot(is.character(newTags))
+                        if(length(newTags)){
+                          stopifnot(is.character(newTags)) 
+                        }
                         stopifnot(is.character(newReadPerm))
                         stopifnot(is.character(newWritePerm))
                         #END error checks 
@@ -255,6 +342,11 @@ Scenario <- R6Class("Scenario",
                                            private$writePerm)
                         names(metadata) <- private$scenMetaColnames
                         super$writeMetadata(metadata, update = TRUE)
+                        
+                        # refresh lock for scenario
+                        private$lock()
+                        
+                        invisible(self)
                       },
                       finalize = function(){
                         if(length(private$sid)){
@@ -312,8 +404,7 @@ Scenario <- R6Class("Scenario",
                         
                         if(!is.null(sid)){
                           metadata <- self$importDataset(private$tableNameMetadata, 
-                                                         tibble(private$scenMetaColnames['sid'], 
-                                                                sid))
+                                                         subsetSids = sid)
                           if(!nrow(metadata)){
                             stop(sprintf("A scenario with ID: '%s' could not be found.", sid), call. = FALSE)
                           }
@@ -532,6 +623,32 @@ Scenario <- R6Class("Scenario",
                         # Spreads scalar dataset
                         dataset <- dataset[, -2, drop = FALSE]
                         spread(dataset, 1, 2)
+                      },
+                      bindSidCol = function(data){
+                        # binds sid column to dataset
+                        sidCol <- private$scenMetaColnames['sid']
+                        if(!identical(names(data)[[1]], sidCol)){
+                          data <- dplyr::bind_cols(!!sidCol := rep.int(private$sid, nrow(data)), 
+                                                   data)
+                        }
+                        return(data)
+                      },
+                      readBlob = function(filePaths, maxSize, fileNames){
+                        # reads blob data and returns tibble with meta data and file content
+                        
+                        stopifnot(is.character(filePaths), length(filePaths) >= 1L)
+                        stopifnot(is.numeric(maxSize), length(maxSize) == 1L)
+                        
+                        
+                        fileSize <- file.info(filePaths, extra_cols = FALSE)$size
+                        
+                        if(any(fileSize > maxSize)){
+                          stop("maxSizeException", call. = FALSE)
+                        }
+                        content <- blob::new_blob(lapply(seq_along(filePaths), 
+                                                         function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
+                        return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
+                                      execPerm = rep.int(FALSE, length(filePaths)), fileContent = content))
                       }
                     )
 )

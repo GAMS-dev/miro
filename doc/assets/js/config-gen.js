@@ -234,6 +234,12 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "type":"boolean",
                        "default":true,
                        "required":false
+                    },
+                    "attachments":{
+                       "description": "Should users be allowed to add attachments to scenarios?",
+                       "type": "boolean",
+                       "default":true,
+                       "required":false
                     }
                  }
               },

@@ -70,44 +70,50 @@
          "additionalProperties":false,
          "properties":{  
             "scenario":{  
-               "description":"Boolean which specifies whether to activate scenario functionality",
+               "description":"Activate scenario functionality?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "strictmode":{  
-               "description":"Boolean which specifies whether app is to be launched in strict mode, resulting in throwing error messages instead of accepting possibly faulty user entries",
+               "description":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "loadLocal":{  
-               "description":"Boolean which specifies whether local data upload module should be activated or not",
+               "description":"Activate local data upload module?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "sharedScenarios":{  
-               "description":"Boolean which specifies whether scenarios can be shared between different users",
+               "description":"Enable scenario sharing between different users?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "batchMode":{  
-               "description":"Boolean which specifies whether scenarios should be solved in batch mode or not",
+               "description":"Solve scenarios in batch mode?",
                "type":"boolean",
                "default":false,
                "required":false
             },
             "logFile:":{  
-               "description":"Boolean which specifies whether log file should be visible in UI",
+               "description":"Show log file in UI?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "lstFile:":{  
-               "description":"Boolean which specifies whether lst file should be visible in UI",
+               "description":"Show lst file in UI?",
                "type":"boolean",
+               "default":true,
+               "required":false
+            },
+            "attachments":{
+               "description": "Should users be allowed to add attachments to scenarios?",
+               "type": "boolean",
                "default":true,
                "required":false
             }

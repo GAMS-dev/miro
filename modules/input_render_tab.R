@@ -189,7 +189,7 @@ lapply(modelInTabularData, function(sheet){
                  id  <- colsWithDep[[i]][[idDep]]
                  # in case nothing was selected in dropdown menu, skip this iteration
                  if(is.null(input[["dropdown_" %+% id]]) || 
-                    input[["dropdown_" %+% id]] %in% c("","_")){
+                    input[["dropdown_" %+% id]] %in% c("", "_")){
                    next
                  }
                  # get column name with dependency

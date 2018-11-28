@@ -57,6 +57,20 @@ function changeActiveButtons(tabId){
         $("#btLoadScen").hide();
   }
 }
+let removeButtonCounter = {};
+  
+function removeAttachment(elId){
+  console.log(elId);
+  $('#btRemoveAttachment_' + elId).parent().remove();
+  if(typeof(removeButtonCounter[elId]) == 'undefined'){
+    removeButtonCounter[elId] = 0;
+  }else{
+    removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
+  }
+  
+  Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
+}
+
 $(document).ready(function () {
   
 // besides these updates, gms-switchTab (see below) has always has to be considered as well
@@ -161,6 +175,11 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-hideModal', function(delay) {
     setTimeout(function() { $('#shiny-modal-wrapper').find('.modal').modal('hide'); }, delay * 1000);
   });
+  Shiny.addCustomMessageHandler('gms-updateAttachList', function(el){
+    $('<div style="cursor: default;"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id + '" type="button" onclick="removeAttachment(' + el.id + ')"><i class="fa fa-times-circle"></i></button><a id="downloadAttachment_' + el.id + '" class="shiny-download-link" href="session/' + el.token + '/download/downloadAttachment_' + el.id + '?w=" target="_blank" download="">' + el.name + '</a></div>').insertBefore('#endAttachList');
+    
+  });
+  
 });
 
 function renderMathJax() {

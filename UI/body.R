@@ -58,7 +58,7 @@ body <- dashboardBody({
                 tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                                          icon("exclamation-triangle")),
                 textOutput("inputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btClose", icon = icon("times"), label = NULL))
+                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btIcon", icon = icon("times"), label = NULL))
               ), status="primary", solidHeader = TRUE, width = 12,
               do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
                 i <- inputTabs[[tabId]][1]
@@ -364,7 +364,7 @@ body <- dashboardBody({
                            icon("exclamation-triangle")),
                   textOutput("outputDataTitle", inline = T),
                   tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                                 class = "btClose", icon = icon("times"), label = NULL))
+                                                                 class = "btIcon", icon = icon("times"), label = NULL))
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
                          tags$div(class = "out-buttons-wrapper",
@@ -413,7 +413,7 @@ body <- dashboardBody({
                              tagList(textOutput("title_2", inline = T), 
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
-                                                           class = "btClose", icon = icon("times"), label = NULL))), 
+                                                           class = "btIcon", icon = icon("times"), label = NULL))), 
                            tags$div(id = "scenSplit1_content", style = "display:none;", 
                                     generateScenarioTabsetSplit(2)), 
                            tags$div(id = "scenSplit1_open", 
@@ -423,7 +423,7 @@ body <- dashboardBody({
                            title = tagList(textOutput("title_3", inline = T), 
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
-                                                                 class = "btClose", icon = icon("times"), label = NULL))),
+                                                                 class = "btIcon", icon = icon("times"), label = NULL))),
                            tags$div(id = "scenSplit2_content", style = "display:none;", generateScenarioTabsetSplit(3)), 
                            tags$div(id = "scenSplit2_open", 
                                     actionButton("btScenSplit2_open", lang$nav$scen$split$load, 

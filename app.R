@@ -261,7 +261,10 @@ if(is.null(errMsg)){
                      tableNameScenLocks = scenLockTablePrefix %+% modelName, 
                      tableNamesScenario = scenTableNames, 
                      slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type,
-                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames)
+                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames,
+                     attachmentConfig = if(config$activateModules$attachments) list(tabName = tableNameAttachPrefix %+% modelName,
+                                                                                   maxSize = attachMaxFileSize, maxNo = attachMaxNo)
+                     else NULL)
       conn <- db$getConn()
       flog.debug("Database connection established.")
     }, error = function(e){
@@ -378,6 +381,8 @@ if(!is.null(errMsg)){
     # boolean that specifies whether check if data is unsaved should be skipped
     noCheck            <- vector("logical", length = length(modelIn))
     noCheck[]          <- TRUE
+    # list of attachments for active scenario
+    attachmentList     <- vector("character", attachMaxNo)
     # boolean that specifies whether input data does not match output data
     dirtyFlag          <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE

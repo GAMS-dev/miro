@@ -5,7 +5,7 @@ Db <- R6Class("Db",
                                              snameIdentifier, stimeIdentifier, slocktimeIdentifier, stagIdentifier,
                                              accessIdentifier, tableNameMetadata, tableNameScenLocks, 
                                              tableNamesScenario, slocktimeLimit, port = NULL, type = "postgres",
-                                             tableNameTrace = NULL, traceColNames = NULL){
+                                             tableNameTrace = NULL, traceColNames = NULL, attachmentConfig = NULL){
                   # Initialize database class
                   #
                   # Args:
@@ -30,6 +30,7 @@ Db <- R6Class("Db",
                   #   type:                type of database used (optional)
                   #   tableNameTrace:      table name where trace data is saved
                   #   traceColNames:       column names of trace data table
+                  #   attachmentConfig:    attachment module configuration
                   
                   #BEGIN error checks 
                   if(is.null(private$info$isInitialized)){
@@ -65,6 +66,9 @@ Db <- R6Class("Db",
                     stopifnot(is.character(tableNameTrace), length(tableNameTrace) == 1)
                     stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                   }
+                  if(!is.null(attachmentConfig)){
+                    stopifnot(is.list(attachmentConfig), length(attachmentConfig) >= 1L)
+                  }
                   #END error checks 
                   
                   private$uid                         <- uid
@@ -83,6 +87,7 @@ Db <- R6Class("Db",
                   private$slocktimeLimit              <- slocktimeLimit
                   private$traceConfig[['tabName']]    <- tableNameTrace
                   private$traceConfig[['colNames']]   <- traceColNames
+                  private$attachmentConfig            <- attachmentConfig
                   
                   if(type == "postgres"){
                     tryCatch({
@@ -114,6 +119,7 @@ Db <- R6Class("Db",
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getTraceConfig        = function() private$traceConfig,
+                getAttachmentConfig   = function() private$attachmentConfig,
                 getMetadata           = function(uid, sname, stime, stag = character(0L), 
                                                  readPerm = character(0L), writePerm = character(0L), 
                                                  uidAlias = private$scenMetaColnames[['uid']], 
@@ -304,13 +310,16 @@ Db <- R6Class("Db",
                   })
                   return(scenData)
                 },
-                deleteRows        = function(tableName, colNames, values){
+                deleteRows        = function(tableName, colNames, values, conditionSep = c("AND", "OR"), 
+                                             subsetSids = NULL){
                   # remove rows from table where rows have given values
                   #
                   # Args:
                   #   tableName:        name of the table where entries should be removed from
                   #   colNames:         character vector of column names
                   #   values:           character vector of values that should be removed
+                  #   conditionSep:     seperator used for concatenating subsetting conditions (AND or OR)
+                  #   subsetSids:       vector of scenario IDs that query should be filtered on
                   #
                   # Returns:
                   #   Db object: invisibly returns reference to object in case of success, 
@@ -321,12 +330,31 @@ Db <- R6Class("Db",
                   stopifnot(is.character(colNames), length(colNames) >= 1)
                   values <- as.character(values)
                   stopifnot(is.character(values), length(values) >= 1)
+                  if(!is.null(subsetSids)){
+                    subsetSids <- as.integer(subsetSids)
+                    stopifnot(!any(is.na(subsetSids)))
+                  }
                   #END error checks 
                   
+                  conditionSep <- match.arg(conditionSep)
+                  
                   affectedRows <- 0
-                  subsetRows <- DBI::SQL(paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                                     DBI::dbQuoteString(private$conn, values), sep = " = "), 
-                                               collapse = " AND "))
+                  
+                  subsetSidSQL <- NULL
+                  
+                  subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
+                                            DBI::dbQuoteString(private$conn, values), sep = " = "), 
+                                      collapse = paste0(" ", conditionSep, " "))
+                  if(!is.null(subsetSids) && length(subsetSids) >= 1L){
+                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                           " IN (", paste(subsetSids, collapse = ","), ") ")
+                    if(length(subsetRows) && nchar(subsetRows)){
+                      subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
+                    }else{
+                      subsetRows <- DBI::SQL(subsetSidSQL)
+                    }
+                  }
+                  
                   if(DBI::dbExistsTable(private$conn, tableName)){
                     tryCatch({
                       query <- paste0("DELETE FROM ", DBI::dbQuoteIdentifier(private$conn, tableName),
@@ -496,7 +524,6 @@ Db <- R6Class("Db",
                       query <- paste0("CREATE INDEX ", DBI::dbQuoteIdentifier(private$conn, "sid_index_" %+% tableName), " ON ", 
                                       DBI::dbQuoteIdentifier(private$conn, tableName), 
                                       " (", DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ");")
-                      print(query)
                       DBI::dbExecute(private$conn, query)
                     }, error = function(e){
                       stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset). " %+%
@@ -740,6 +767,7 @@ Db <- R6Class("Db",
                 slocktimeLimit      = character(0L),
                 traceConfig         = vector("list", 2L),
                 info                = new.env(),
+                attachmentConfig    = vector("list", 3L),
                 isValidSubsetGroup  = function(dataFrame){
                   if(inherits(dataFrame, "data.frame") 
                      && length(dataFrame) <= 3L

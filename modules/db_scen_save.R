@@ -144,7 +144,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
-    if(config$saveTraceFile){
+    if(config$saveTraceFile && length(traceData)){
       activeScen$saveTraceData(traceData)
     }
     flog.debug("%s: Scenario saved to database (Scenario: %s).", uid, activeScen$getScenName())
@@ -155,7 +155,6 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
     return(NULL)
   }
-  
   # check whether output data was saved and in case it was set identifier accordingly
   if(any(vapply(scenData[[scenStr]][seq_along(modelOut)], 
                 hasContent, logical(1L), USE.NAMES = FALSE))){
@@ -173,16 +172,28 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
 })
 observeEvent(input$btEditMeta, {
   req(activeScen)
+  
+  attachmentNames <- NULL
+  if(config$activateModules$attachments){
+    attachmentList <<- activeScen$fetchAttachmentNames()
+    attachmentNames <- attachmentList
+  }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm"), noPermFields = FALSE), 
-                     config$activateModules$sharedScenarios)
+                     config$activateModules$sharedScenarios, allowAttachments = config$activateModules$attachments, 
+                     attachmentNames = attachmentNames)
 })
+
 observeEvent(input$btUpdateMeta, {
   req(activeScen)
   scenName <- isolate(input$editMetaName)
   hideEl(session, "#editMetaBadName")
   hideEl(session, "#editMetaError")
   hideEl(session, "#editMetaNameExists")
+  hideEl(session, "#attachMaxSizeError")
+  hideEl(session, "#attachMaxNoError")
+  hideEl(session, "#attachDuplicateError")
+  hideEl(session, "#attachUnknownError")
   
   if(isBadScenName(scenName)){
     showEl(session, "#editMetaBadName")
@@ -230,3 +241,67 @@ observeEvent(input$btUpdateMeta, {
     }
   }
 })
+
+if(config$activateModules$attachments){
+  lapply(seq_len(attachMaxNo), function(i){
+    observeEvent(input[["btRemoveAttachment_" %+% i]], {
+      req(nchar(attachmentList[[i]]) > 0L, activeScen)
+      activeScen$removeAttachments(attachmentList[[i]])
+      attachmentList[[i]] <<- NA_character_
+    })
+    output[['downloadAttachment_' %+% i]] <- downloadHandler(
+      filename = function() { attachmentList[[i]] },
+      content = function(file) {
+        req(activeScen)
+        data <- activeScen$getAttachmentData(attachmentList[[i]])
+        writeBin(data, file)
+      }
+    )
+  })
+  observeEvent(input$file_addAttachments$datapath, {
+    req(activeScen)
+    
+    showEl(session, "#addAttachLoading")
+    hideEl(session, "#attachMaxSizeError")
+    hideEl(session, "#attachMaxNoError")
+    hideEl(session, "#attachDuplicateError")
+    hideEl(session, "#attachUnknownError")
+    errMsg <- NULL
+    
+    tryCatch({
+      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), fileNames = isolate(input$file_addAttachments$name))
+      for(i in seq_along(isolate(input$file_addAttachments$name))){
+        idx <- which(is.na(attachmentList))[[1]]
+        if(!length(idx)){
+          idx <- length(attachmentList) + 1L
+        }
+        if(idx > attachMaxNo){
+          stop("The number of attachments exceeds the maximum allowed number. 
+               This is not supposed to happen as addAttachment method of Scenario class should raise an appropriate exception!", call. = FALSE)
+        }
+        attachmentList[[idx]] <<- isolate(input$file_addAttachments$name)[[i]]
+      }
+      updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idx, token = session$token)
+    }, error = function(e){
+      errMsg <<- character(1L)
+      switch(conditionMessage(e),
+             maxSizeException = {
+               flog.info(e)
+               showEl(session, "#attachMaxSizeError")
+             },
+             maxNoException = {
+               flog.info(e)
+               showEl(session, "#attachMaxNoError")
+             },
+             duplicateException = {
+               flog.info(e)
+               showEl(session, "#attachDuplicateError")
+             },
+             {
+               flog.error(e)
+               showEl(session, "#attachUnknownError") 
+             })
+    })
+    hideEl(session, "#addAttachLoading")
+  })
+}

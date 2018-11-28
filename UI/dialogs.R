@@ -287,7 +287,10 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
   ))
   addClassEl(session, "#btSortTime", "scen-sort-by-selected")
 }
-showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character(0L)){
+showEditMetaDialog <- function(metadata, sharedScen = FALSE, 
+                               ugroups = character(0L), 
+                               allowAttachments = FALSE, 
+                               attachmentNames = character(0L)){
   scenTags <- csv2Vector(metadata[["stag"]][[1]])
   showModal(modalDialog(
     title = lang$nav$dialogEditMeta$title,
@@ -298,6 +301,14 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character
              lang$nav$dialogNewScen$scenExits),
     tags$div(class = "errMsg", id = "editMetaError", style = "display:none;", 
              lang$nav$dialogEditMeta$errMsg),
+    tags$div(class = "errMsg", id = "attachMaxNoError", style = "display:none;", 
+             lang$nav$dialogEditMeta$attachMaxNoError),
+    tags$div(class = "errMsg", id = "attachMaxSizeError", style = "display:none;", 
+             lang$nav$dialogEditMeta$attachMaxSizeError),
+    tags$div(class = "errMsg", id = "attachDuplicateError", style = "display:none;", 
+             lang$nav$dialogEditMeta$attachDuplicateError),
+    tags$div(class = "errMsg", id = "attachUnknownError", style = "display:none;", 
+             lang$nav$dialogEditMeta$attachUnknownError),
     tags$div(id = "editMetaSuccess", style = "display:none;", 
              lang$nav$dialogEditMeta$success),
     tags$div(id = "editMetaUI",
@@ -324,6 +335,22 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character
                       multiple = TRUE, options = list(
                         'create' = TRUE,
                         'persist' = FALSE))
+        )
+      },
+      if(allowAttachments){
+        tagList(
+          tags$div(class = "labelClass", lang$nav$dialogEditMeta$attachmentsLabel),
+          if(length(attachmentNames)){
+            lapply(seq_along(attachmentNames), function(i){
+              tags$div(style = "cursor: default;", 
+                       HTML(paste0('<button class="btn btn-default btIcon" id="btRemoveAttachment_', i,
+'" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
+                       downloadLink("downloadAttachment_" %+% i, attachmentNames[[i]]))
+            })
+          },
+          tags$div(id = "endAttachList", class = "small-space"),
+          genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE),
+          fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE)
         )
       }
     ),

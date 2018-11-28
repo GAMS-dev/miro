@@ -67,6 +67,7 @@ closeScenario <- function(){
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   noCheck[]         <<- FALSE
+  attachmentList    <<- vector("character", attachMaxNo)
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){

@@ -636,6 +636,9 @@ removeClassEl <- function(session, id, class){
 hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
 }
+updateAttachList <- function(session, id, fileName, token){
+  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, token = token))
+}
 isBadScenName <- function(scenName){
   grepl("^\\s*$", scenName)
 }
@@ -709,6 +712,15 @@ getNestedDep <- function(depStr){
     return(depStr)
   }
 }
+genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE){
+  div(id = id, class = "lds-ellipsis", 
+      style = paste0(if(absolute) "position:absolute;top:50%;left:50%;z-index:1;" else "display:block;", if(hidden) "display:none;"), 
+      div(style = "background:#000;"),
+      div(style = "background:#000;"),
+      div(style = "background:#000;"),
+      div(style = "background:#000;")
+  )
+}
 filterDf <- function(df, filterCondition){
   filterCondition <- unlist(filterCondition)
   if(length(filterCondition) == 1L){
@@ -721,12 +733,7 @@ filterDf <- function(df, filterCondition){
 }
 plotlyOutput_spinner <- function(...){
   div(
-      div(class = "lds-ellipsis", style = "z-index:1;position:absolute;left:50%;top:50%;", 
-          div(style = "background:#000;"),
-          div(style = "background:#000;"),
-          div(style = "background:#000;"),
-          div(style = "background:#000;")
-      ), plotlyOutput(...)
+    genSpinner(), plotlyOutput(...)
   )
 }
 
