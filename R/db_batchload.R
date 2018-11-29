@@ -236,6 +236,8 @@ BatchLoad <- R6Class("BatchLoad",
                                              message = sprintf("Importing table %d of %d from database.", tabId, noScenTables))
                            }
                            tableTmp <- private$db$importDataset(scenTableNames[[tabId]], subsetSids = scenIds)
+                           tableTmp[[private$sidCol]] <- NULL
+                           
                            if(length(tableTmp)){
                              tableTmp <- split(tableTmp, tableTmp[[1]])
                            }else{
