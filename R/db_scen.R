@@ -186,8 +186,6 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
-                        if(!is.null(fileNames))
-                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
                         
                         if(!is.null(fileNames)){
                           stopifnot(is.character(fileNames), length(fileNames) >= 1L)
@@ -195,7 +193,7 @@ Scenario <- R6Class("Scenario",
                           fileNames <- basename(filePaths)
                         }
                         
-                        fileNamesDb    <- self$fetchAttachmentNames(distinctNames = FALSE)
+                        fileNamesDb    <- self$fetchAttachmentList()[["name"]]
                         
                         if(any(fileNames %in% fileNamesDb)){
                           stop("duplicateException", call. = FALSE)
@@ -209,47 +207,90 @@ Scenario <- R6Class("Scenario",
                         super$exportScenDataset(private$bindSidCol(attachmentData), private$attachmentConfig[["tabName"]])
                         invisible(self)
                       },
-                      fetchAttachmentNames = function(distinctNames = TRUE){
+                      fetchAttachmentList = function(){
                         # Fetches file names of saved attachments from database
                         # 
                         # Args:
-                        #   distinctNames:  Whether results shoul be distinct
                         #
                         # Returns:
-                        #   character vector with file names of saved attachments
+                        #   tibble with columns name and execPerm
                         
                         stopifnot(!is.null(private$sid))
                         
-                        attachments <- super$importDataset(private$attachmentConfig[["tabName"]], colNames = "fileName", 
-                                                           distinct = distinctNames, subsetSids = private$sid)
+                        attachments <- super$importDataset(private$attachmentConfig[["tabName"]], 
+                                                           colNames = c("fileName", "execPerm"), 
+                                                           subsetSids = private$sid)
                         if(length(attachments)){
-                          return(attachments[[1]])
+                          return(tibble(name = attachments[[1]], execPerm = attachments[[2]]))
                         }else{
-                          return(character(0L))
+                          return(tibble(name = character(0L), execPerm = logical(0L)))
                         }
                       },
-                      getAttachmentData = function(fileName){
+                      downloadAttachmentData = function(filePath, fileNames = NULL, 
+                                                        fullPath = FALSE, allExecPerm = FALSE){
                         # Fetches attachment data from db
                         # 
                         # Args:
-                        #   fileName:  name of the file whose data to fetch
+                        #   filePath:      1d character vector where to save files
+                        #   fileNames:     character vector with names of the files to download (optional)
+                        #   fullPath:      whether filePath includes file name + extension or not (optional)
+                        #   allExecPerm:   whether to download all files with execution permission (optional)
                         #
                         # Returns:
-                        #   blob object with binary data of file
+                        #   R6 object (reference to itself)
                         
-                        stopifnot(is.character(fileName), length(fileName) == 1L)
                         stopifnot(!is.null(private$sid))
+                        stopifnot(is.character(filePath), length(filePath) == 1L)
+                        stopifnot(is.logical(fullPath), length(fullPath) == 1L)
+                        stopifnot(is.logical(allExecPerm), length(allExecPerm) == 1L)
                         
-                        data <- super$importDataset(private$attachmentConfig[["tabName"]], 
-                                                           tibble("fileName", fileName),
-                                                           colNames = "fileContent", 
-                                                           subsetSids = private$sid)
-                        if(length(data)){
-                          return(data[[1]][[1]])
+                        if(fullPath){
+                          if(length(fileNames) != 1L){
+                            stop("Only single file name allowed when full path is specified.", call. = FALSE)
+                          }
+                          filePaths <- filePath
                         }else{
-                          return(character(0L))
+                          filePaths <- file.path(filePath, fileNames)
                         }
-                        writeBin(data$fileContent[[i]], file.path(filePath, data$fileName[[i]]))
+                        
+                        if(!allExecPerm){
+                          stopifnot(is.character(fileNames), length(fileNames) >= 1L)
+                        }
+                        
+                        data <- super$importDataset(private$attachmentConfig[["tabName"]],
+                                                    if(allExecPerm) 
+                                                      tibble("execPerm", TRUE) 
+                                                    else 
+                                                      tibble(rep.int("fileName", length(fileNames)), fileNames),
+                                                    colNames = c("fileName", "fileContent"), innerSepAND = FALSE,
+                                                    subsetSids = private$sid)
+                        if(length(data)){
+                          if(allExecPerm){
+                            filePaths <- file.path(filePath, data[["fileName"]])
+                          }
+                          Map(writeBin, data[["fileContent"]], filePaths)
+                        }
+                        
+                        invisible(self)
+                      },
+                      setAttachmentExecPerm = function(fileName, value){
+                        # Sets execute permission for particular attachment
+                        # 
+                        # Args:
+                        #   fileName:  name of the file whose data to fetch
+                        #   value:     logical that specifies whether data can be executed by GAMS
+                        #
+                        # Returns:
+                        #   R6 object (reference to itself)
+                        
+                        stopifnot(!is.null(private$sid))
+                        stopifnot(is.character(fileName), length(fileName) == 1L)
+                        stopifnot(is.logical(value), length(value) == 1L)
+                        
+                        
+                        super$updateRows(private$attachmentConfig[["tabName"]], tibble("fileName", fileName), 
+                                         colNames = "execPerm", values = value, subsetSids = private$sid)
+                        invisible(self)
                       },
                       removeAttachments = function(fileNames){
                         # Deletes attachments from scenario
@@ -648,7 +689,7 @@ Scenario <- R6Class("Scenario",
                         content <- blob::new_blob(lapply(seq_along(filePaths), 
                                                          function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
                         return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
-                                      execPerm = rep.int(FALSE, length(filePaths)), fileContent = content))
+                                      execPerm = rep.int(TRUE, length(filePaths)), fileContent = content))
                       }
                     )
 )

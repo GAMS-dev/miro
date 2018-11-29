@@ -109,7 +109,7 @@
       "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
     },
     "notificationNewInput":{  
-      "new":" Datensätze importiert.",
+      "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
     "dialogSaveSuccess":{  
@@ -134,6 +134,8 @@
       "newTags":"New tags",
       "attachmentsLabel": "Anhänge",
       "attachmentsAdd": "Anhänge hinzufügen",
+      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
+      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
       "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
       "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
       "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
@@ -322,6 +324,11 @@
     "renderOutput":{  
       "title":"Rendern der Grafiken",
       "progress":"Rendern von Grafik "
+    },
+    "prepRun":{
+      "title":"Optimierungslauf wird vorbereitet",
+      "sendInput":"Senden der Eingabedaten",
+      "downloadAttach": "Laden der Anhänge"
     },
     "loadScenDb":{  
       "title":"Laden von Szenariodaten aus der Datenbank",

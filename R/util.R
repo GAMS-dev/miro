@@ -615,6 +615,9 @@ showEl <- function(session, id){
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
+showHideEl <- function(session, id, delay = 2000){
+  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay))
+}
 enableEl <- function(session, id){
   session$sendCustomMessage("gms-enableEl", id)
 }
@@ -636,8 +639,10 @@ removeClassEl <- function(session, id, class){
 hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
 }
-updateAttachList <- function(session, id, fileName, token){
-  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, token = token))
+updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE){
+  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, 
+                                                         token = token, labelCb = labelCb, 
+                                                         allowExec = allowExec))
 }
 isBadScenName <- function(scenName){
   grepl("^\\s*$", scenName)

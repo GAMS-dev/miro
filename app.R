@@ -382,7 +382,8 @@ if(!is.null(errMsg)){
     noCheck            <- vector("logical", length = length(modelIn))
     noCheck[]          <- TRUE
     # list of attachments for active scenario
-    attachmentList     <- vector("character", attachMaxNo)
+    attachmentList     <- tibble(name = vector("character", attachMaxNo),
+                                 execPerm = vector("logical", attachMaxNo))
     # boolean that specifies whether input data does not match output data
     dirtyFlag          <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE

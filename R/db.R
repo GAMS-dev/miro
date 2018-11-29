@@ -343,11 +343,11 @@ Db <- R6Class("Db",
                   subsetSidSQL <- NULL
                   
                   subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                            DBI::dbQuoteString(private$conn, values), sep = " = "), 
+                                            DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
                                       collapse = paste0(" ", conditionSep, " "))
                   if(!is.null(subsetSids) && length(subsetSids) >= 1L){
                     subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                           " IN (", paste(subsetSids, collapse = ","), ") ")
+                                           " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), collapse = ","), ") ")
                     if(length(subsetRows) && nchar(subsetRows)){
                       subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
                     }else{
@@ -366,6 +366,67 @@ Db <- R6Class("Db",
                                      "table: '%s'). Error message: %s.", tableName, e), call. = FALSE)
                     })
                   }
+                  invisible(self)
+                },
+                updateRows = function(tableName, ..., colNames, values, innerSepAND = TRUE, subsetSids = NULL){
+                  # Update records in database table based on subset conditions
+                  #
+                  # Args:
+                  #   tableName:        name of the table where entries should be removed from
+                  #   ...:              row subsetting: dataframes with 3 columns (column, value, operator)
+                  #                     these will be handled as a block of AND conditions
+                  #                     (if innerSep AND is TRUE) different blocks are concatenated with OR
+                  #   colNames:         column names to select, if NULL all will be selected (optional)
+                  #   values:           character vector of new values that colNames should be set to
+                  #   innerSepAND:      boolean that specifies whether inner seperator in 
+                  #                     substrings should be AND (TRUE) or OR (FALSE)  
+                  #   subsetSids:       vector of scenario IDs that query should be filtered on
+                  #
+                  # Returns:
+                  #   Db object: invisibly returns reference to object in case of success, 
+                  #   throws exception if error
+                  
+                  dots <- list(...)
+                  stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L), 
+                                       USE.NAMES = FALSE)))
+                  if(innerSepAND){
+                    innerSep <- " AND "
+                    outerSep <- " OR "
+                  }else{
+                    innerSep <- " OR "
+                    outerSep <- " AND "
+                  }
+                  if(!is.null(subsetSids)){
+                    subsetSids <- as.integer(subsetSids)
+                    stopifnot(!any(is.na(subsetSids)))
+                  }
+                  stopifnot(is.character(tableName), length(tableName) == 1)
+                  if(!is.null(colNames)){
+                    stopifnot(is.character(colNames), length(colNames) >= 1)
+                    stopifnot(length(values) >= 1)
+                  }
+                  
+                  subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
+                  stopifnot(length(subsetRows) >= 0L)
+                  
+                  if(!is.null(subsetSids) && length(subsetSids) >= 1L){
+                    subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                           " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), 
+                                                          collapse = ","), ") ")
+                    subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
+                  }
+                  tryCatch({
+                    query <- SQL(paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, tableName), " SET ",
+                                      paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
+                                                  DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
+                                            collapse = ", "), " WHERE ", subsetRows, ";"))
+                    affectedRows <- DBI::dbExecute(private$conn, query)
+                    flog.debug("Db: %s rows in table: '%s' were updated (Db.updateRows)", affectedRows, tableName)
+                  }, error = function(e){
+                    stop(sprintf("Db: An error occurred while querying the database (Db.updateRows, " %+%
+                                   "table: '%s'). Error message: %s.",
+                                 tableName, e), call. = FALSE)
+                  })
                   invisible(self)
                 },
                 importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
@@ -435,24 +496,33 @@ Db <- R6Class("Db",
                       colNames <- "COUNT(" %+% colNames %+% ")"
                     }
                     innerJoin <- NULL
+                    subsetRows <- NULL
+                    
+                    if(length(dots)){
+                      subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
+                    }
                     if(!is.null(subsetSids) && length(subsetSids) >= 1L){
-                      innerJoin <- " INNER JOIN (VALUES " %+% paste("(" %+% subsetSids, collapse = "), ") %+%
-                        ")) vals(_v) ON " %+%  DBI::dbQuoteIdentifier(private$conn, 
-                                                                      private$scenMetaColnames['sid']) %+% "=_v"
-                      
+                      if(inherits(private$conn, "PqConnection")){
+                        # POSTGRES subsetting
+                        innerJoin <- " INNER JOIN (VALUES " %+% paste("(" %+% subsetSids, collapse = "), ") %+%
+                          ")) vals(_v) ON " %+%  DBI::dbQuoteIdentifier(private$conn, 
+                                                                        private$scenMetaColnames['sid']) %+% "=_v"
+                      }else{
+                        subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                               " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), 
+                                                              collapse = ","), ") ")
+                        if(length(subsetRows)){
+                          subsetRows <- DBI::SQL(paste0(subsetRows, " AND ", subsetSidSQL))
+                        }else{
+                          subsetRows <- DBI::SQL(subsetSidSQL)
+                        }
+                      }
                     }
                     tryCatch({
-                      if(length(dots)){
-                        subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
-                        sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
-                                                   DBI::dbQuoteIdentifier(private$conn, tableName),
-                                                   innerJoin, if(length(subsetRows)) " WHERE ", 
-                                                   subsetRows, " LIMIT ?lim ;"))
-                      }else{
-                        sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ",
-                                                   DBI::dbQuoteIdentifier(private$conn, tableName), 
-                                                   innerJoin, " LIMIT ?lim ;"))
-                      }
+                      sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
+                                                 DBI::dbQuoteIdentifier(private$conn, tableName),
+                                                 innerJoin, if(length(subsetRows)) paste0(" WHERE ", subsetRows),
+                                                 " LIMIT ?lim ;"))
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                       dataset[['_v']] <- NULL
@@ -773,7 +843,8 @@ Db <- R6Class("Db",
                      && length(dataFrame) <= 3L
                      && is.character(dataFrame[[1]])
                      && (is.character(dataFrame[[2]])
-                         || is.numeric(dataFrame[[2]]))){
+                         || is.numeric(dataFrame[[2]])
+                         || is.logical(dataFrame[[2]]))){
                     if(length(dataFrame) < 3L){
                       return(TRUE)
                     }else if(all(dataFrame[[3]] %in% 
@@ -792,8 +863,8 @@ Db <- R6Class("Db",
                   fields <- dataFrame[[1]]
                   vals   <- as.character(dataFrame[[2]])
                   if(SQL){
-                    fields <- dbQuoteIdentifier(private$conn, fields)
-                    vals   <- dbQuoteString(private$conn, vals)
+                    fields <- DBI::dbQuoteIdentifier(private$conn, fields)
+                    vals   <- DBI::dbQuoteLiteral(private$conn, vals)
                   }else{
                     fields <- "`" %+% fields %+% "`"
                   }

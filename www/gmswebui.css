@@ -14,12 +14,35 @@ body{
   display: -webkit-flex; 
   display: flex;
 }
+/* custom alerts */
+.gmsalert{
+  position:absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-width: 400px;
+  display:none;
+  font-weight: 600;
+  padding: 15px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.gmsalert-success{
+  color: #fff;
+  background-color: #4BB543;
+}
+.gmsalert-error{
+  background-color: #F39619;
+}
 /* title field in boxes */
 .box-title{
   width: 100%;
 }
 .inline-el{
   display: inline;
+}
+.progress-bar{
+  background-color: #F39619;
 }
 .no-animations {
 -webkit-animation: none !important;
@@ -55,6 +78,12 @@ animation: none !important;
   max-width: 100%;
   margin-bottom: 5px;
   font-weight: 700;
+}
+.attachment-line .shiny-input-container{
+  margin:0;
+}
+.attachment-line .checkbox{
+  margin: 5px;
 }
 /* header */
 .main-header .logo {

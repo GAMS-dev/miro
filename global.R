@@ -96,6 +96,7 @@ exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "Numb
 tableNameTracePrefix <- "_sys_trace_"
 
 tableNameAttachPrefix <- "_sys_attach_"
+attachAllowExec       <- TRUE
 attachMaxFileSize     <- 1e7
 attachMaxNo           <- 5L
 

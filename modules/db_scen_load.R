@@ -137,7 +137,6 @@ observeEvent(input$btLoadScenConfirm, {
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }
-  
   # update input sheets
   # check whether current input datasets are empty
   if(identical(isolate(input$cbSelectManually), TRUE) && 
@@ -216,10 +215,19 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   if(isInSolveMode){
     # close currently opened scenario
+    
     if(!closeScenario()){
       return()
     }
-    activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
+    tryCatch(activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]]), 
+             error = function(e){
+               flog.error("Error generating new Scenario object. Error message: %s.", e)
+               errMsg <<- lang$errMsg$loadScen$desc
+             })
+    if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
+      return()
+    }
+    
     
     # check whether all input datasets were imported
     if(length(modelOut)){

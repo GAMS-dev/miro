@@ -1,6 +1,7 @@
 #remove the currently active scenario
 closeScenario <- function(){
   # remove output data
+  errMsg <- NULL
   lapply(seq_along(modelOut), function(i){
     scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
   })
@@ -67,7 +68,8 @@ closeScenario <- function(){
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   noCheck[]         <<- FALSE
-  attachmentList    <<- vector("character", attachMaxNo)
+  attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
+                               execPerm = vector("logical", attachMaxNo))
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){

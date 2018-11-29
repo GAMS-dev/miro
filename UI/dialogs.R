@@ -290,25 +290,27 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
 showEditMetaDialog <- function(metadata, sharedScen = FALSE, 
                                ugroups = character(0L), 
                                allowAttachments = FALSE, 
-                               attachmentNames = character(0L)){
+                               attachmentMetadata = character(0L), attachAllowExec = FALSE){
   scenTags <- csv2Vector(metadata[["stag"]][[1]])
   showModal(modalDialog(
     title = lang$nav$dialogEditMeta$title,
-    tags$div(class = "space"),
-    tags$div(class = "errMsg", id = "editMetaBadName", style = "display:none;",
+    tags$div(class = "gmsalert gmsalert-success", id = "attachSuccess", 
+             lang$nav$dialogEditMeta$attachSuccess),
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaBadName", 
              lang$nav$dialogNewScen$badName),
-    tags$div(class = "errMsg", id = "editMetaNameExists", style = "display:none;",
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
              lang$nav$dialogNewScen$scenExits),
-    tags$div(class = "errMsg", id = "editMetaError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
              lang$nav$dialogEditMeta$errMsg),
-    tags$div(class = "errMsg", id = "attachMaxNoError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
              lang$nav$dialogEditMeta$attachMaxNoError),
-    tags$div(class = "errMsg", id = "attachMaxSizeError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxSizeError", 
              lang$nav$dialogEditMeta$attachMaxSizeError),
-    tags$div(class = "errMsg", id = "attachDuplicateError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "attachDuplicateError", 
              lang$nav$dialogEditMeta$attachDuplicateError),
-    tags$div(class = "errMsg", id = "attachUnknownError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
              lang$nav$dialogEditMeta$attachUnknownError),
+    tags$div(class = "space"),
     tags$div(id = "editMetaSuccess", style = "display:none;", 
              lang$nav$dialogEditMeta$success),
     tags$div(id = "editMetaUI",
@@ -340,17 +342,25 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
       if(allowAttachments){
         tagList(
           tags$div(class = "labelClass", lang$nav$dialogEditMeta$attachmentsLabel),
-          if(length(attachmentNames)){
-            lapply(seq_along(attachmentNames), function(i){
-              tags$div(style = "cursor: default;", 
-                       HTML(paste0('<button class="btn btn-default btIcon" id="btRemoveAttachment_', i,
-'" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
-                       downloadLink("downloadAttachment_" %+% i, attachmentNames[[i]]))
+          fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE),
+          if(length(attachmentMetadata[["name"]])){
+            lapply(seq_along(attachmentMetadata[["name"]]), function(i){
+              tags$div(class = "row attachment-line", 
+                       column(width = 6, 
+                              HTML(paste0('<button class="btn btn-default btIcon" id="btRemoveAttachment_', i,
+                                          '" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
+                              downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
+                              ),
+                       if(attachAllowExec){
+                         column(width = 6,
+                                checkboxInput("execPermAttachment_" %+% i, lang$nav$dialogEditMeta$attachmentsExecPerm, 
+                                              value = attachmentMetadata[["execPerm"]][[i]]))
+                       }
+                              )
             })
           },
           tags$div(id = "endAttachList", class = "small-space"),
-          genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE),
-          fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE)
+          genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
         )
       }
     ),

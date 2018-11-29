@@ -133,7 +133,7 @@ lapply(seq_along(modelIn), function(id){
                    return()
                  }
                }
-              
+               noCheck[id] <<- TRUE
                shiny::updateCheckboxInput(session, "cb_" %+% id, value = value)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
                  if(value <= 0.5){
@@ -326,6 +326,7 @@ lapply(seq_along(modelIn), function(id){
                       (length(selectedEl) && !selectedEl %in% choices)){
                      selectedEl <- choices[[1]]
                    }
+                   noCheck[id] <<- TRUE
                    updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                             selected = selectedEl)
                    inputInitialized[i] <<- TRUE
@@ -340,6 +341,7 @@ lapply(seq_along(modelIn), function(id){
                    }
                  }
                }else{
+                 noCheck[id] <<- TRUE
                  updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
                                           selected = isolate(input[[paste0("dropdown_", id)]]))
                }
@@ -413,6 +415,7 @@ lapply(seq_along(modelIn), function(id){
                      } 
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
+                     print(el[[1]])
                      dataTmp <- unique(modelInputData[[k]][[el[[1]]]])
                    }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
@@ -458,7 +461,7 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               noCheck[[id]] <<- TRUE
+               noCheck[id] <<- TRUE
                
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
@@ -480,7 +483,7 @@ lapply(seq_along(modelIn), function(id){
              observe({
                value <- getSelected[[id]]()
                if(!is.null(value)){
-                 noCheck[[id]] <<- TRUE
+                 noCheck[id] <<- TRUE
                  updateSliderInput(session, inputId = paste0("slider_", id), value = value)
                }
              }, priority = -1)

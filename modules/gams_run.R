@@ -161,9 +161,13 @@ observeEvent(input$btSolve, {
     
     return(NULL)
   }
+  prog <- shiny::Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$nav$progressBar$prepRun$title, value = 0)
   
   updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   
+  prog$inc(amount = 0.5, detail = lang$nav$progressBar$prepRun$sendInput)
   # save input data 
   source("./modules/input_save.R", local = TRUE)
   pfFileContent <- NULL
@@ -226,6 +230,12 @@ observeEvent(input$btSolve, {
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
     writeLines(c(pfFileContent, gamsArgs), pfFilePath)
+    
+    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
+      prog$inc(amount = 0, detail = lang$nav$progressBar$prepRun$downloadAttach)
+      activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+    }
+    prog$close()
     gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
                                                          "pf=" %+% pfFilePath), 
                          stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)

@@ -173,15 +173,15 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
 observeEvent(input$btEditMeta, {
   req(activeScen)
   
-  attachmentNames <- NULL
+  attachmentMetadata <- NULL
   if(config$activateModules$attachments){
-    attachmentList <<- activeScen$fetchAttachmentNames()
-    attachmentNames <- attachmentList
+    attachmentList <<- activeScen$fetchAttachmentList()
+    attachmentMetadata <- attachmentList
   }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm"), noPermFields = FALSE), 
                      config$activateModules$sharedScenarios, allowAttachments = config$activateModules$attachments, 
-                     attachmentNames = attachmentNames)
+                     attachmentMetadata = attachmentMetadata, attachAllowExec = attachAllowExec)
 })
 
 observeEvent(input$btUpdateMeta, {
@@ -196,7 +196,7 @@ observeEvent(input$btUpdateMeta, {
   hideEl(session, "#attachUnknownError")
   
   if(isBadScenName(scenName)){
-    showEl(session, "#editMetaBadName")
+    showHideEl(session, "#editMetaBadName", 6000)
     return()
   }else{
     disableEl(session, "#btUpdateMeta")
@@ -213,12 +213,12 @@ observeEvent(input$btUpdateMeta, {
       errMsg <<- lang$errMsg$fetchScenData$desc
     })
     if(!is.null(errMsg)){
-      showEl(session, "#editMetaError")
+      showHideEl(session, "#editMetaError", 6000)
       return()
     }
     if((!identical(activeScen$getScenName(), scenName)) && scenExists){
       enableEl(session, "#btUpdateMeta")
-      showEl(session, "#editMetaNameExists")
+      showHideEl(session, "#editMetaNameExists", 6000)
       return()
     }
     newReadPerm  <- character(0L)
@@ -236,7 +236,7 @@ observeEvent(input$btUpdateMeta, {
       errMsg <<- character(1L)
     })
     if(!is.null(errMsg)){
-      showEl(session, "#editMetaError")
+      showHideEl(session, "#editMetaError")
       return()
     }
   }
@@ -245,16 +245,34 @@ observeEvent(input$btUpdateMeta, {
 if(config$activateModules$attachments){
   lapply(seq_len(attachMaxNo), function(i){
     observeEvent(input[["btRemoveAttachment_" %+% i]], {
-      req(nchar(attachmentList[[i]]) > 0L, activeScen)
-      activeScen$removeAttachments(attachmentList[[i]])
-      attachmentList[[i]] <<- NA_character_
+      req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
+      activeScen$removeAttachments(attachmentList[["name"]][[i]])
+      attachmentList[i, ] <<- c(NA_character_, FALSE)
+      showHideEl(session, "#attachSuccess")
+    })
+    observe({
+      value <- input[["execPermAttachment_" %+% i]]
+      req(activeScen)
+      if(is.na(attachmentList[["name"]][[i]]) || is.null(value) ||
+         identical(value, attachmentList[["execPerm"]][[i]])){
+        return(NULL)
+      }
+      tryCatch({
+        activeScen$setAttachmentExecPerm(attachmentList[["name"]][[i]], 
+                                         value)
+        attachmentList[i, "execPerm"] <<- value
+        showHideEl(session, "#attachSuccess")
+        }, error = function(e){
+          flog.error(e)
+          showHideEl(session, "#attachUnknownError", 6000) 
+        })
+      
     })
     output[['downloadAttachment_' %+% i]] <- downloadHandler(
-      filename = function() { attachmentList[[i]] },
+      filename = function() { attachmentList[["name"]][[i]] },
       content = function(file) {
         req(activeScen)
-        data <- activeScen$getAttachmentData(attachmentList[[i]])
-        writeBin(data, file)
+        activeScen$downloadAttachmentData(file, fileNames = attachmentList[["name"]][[i]], fullPath = TRUE)
       }
     )
   })
@@ -270,36 +288,43 @@ if(config$activateModules$attachments){
     
     tryCatch({
       activeScen$addAttachments(isolate(input$file_addAttachments$datapath), fileNames = isolate(input$file_addAttachments$name))
+      idxes <- vector("integer", length(isolate(input$file_addAttachments$name)))
       for(i in seq_along(isolate(input$file_addAttachments$name))){
-        idx <- which(is.na(attachmentList))[[1]]
+        idx <- which(is.na(attachmentList[["name"]]))
         if(!length(idx)){
-          idx <- length(attachmentList) + 1L
-        }
-        if(idx > attachMaxNo){
-          stop("The number of attachments exceeds the maximum allowed number. 
+          idx <- nrow(attachmentList) + 1L
+          if(idx > attachMaxNo){
+            stop("The number of attachments exceeds the maximum allowed number. 
                This is not supposed to happen as addAttachment method of Scenario class should raise an appropriate exception!", call. = FALSE)
+          }
+          attachmentList <<- add_row(attachmentList, name = isolate(input$file_addAttachments$name)[[i]], execPerm = TRUE)
+        }else{
+          idx <- idx[[1]]
+          attachmentList[idx, ] <<- c(isolate(input$file_addAttachments$name)[[i]], TRUE)
         }
-        attachmentList[[idx]] <<- isolate(input$file_addAttachments$name)[[i]]
+        idxes[[i]] <- idx
       }
-      updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idx, token = session$token)
+      updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idxes, token = session$token, 
+                       labelCb = lang$nav$dialogEditMeta$attachmentsExecPerm, allowExec = attachAllowExec)
+      showHideEl(session, "#attachSuccess")
     }, error = function(e){
       errMsg <<- character(1L)
       switch(conditionMessage(e),
              maxSizeException = {
                flog.info(e)
-               showEl(session, "#attachMaxSizeError")
+               showHideEl(session, "#attachMaxSizeError", 6000)
              },
              maxNoException = {
                flog.info(e)
-               showEl(session, "#attachMaxNoError")
+               showHideEl(session, "#attachMaxNoError", 6000)
              },
              duplicateException = {
                flog.info(e)
-               showEl(session, "#attachDuplicateError")
+               showHideEl(session, "#attachDuplicateError", 6000)
              },
              {
                flog.error(e)
-               showEl(session, "#attachUnknownError") 
+               showHideEl(session, "#attachUnknownError", 6000) 
              })
     })
     hideEl(session, "#addAttachLoading")

@@ -60,14 +60,12 @@ function changeActiveButtons(tabId){
 let removeButtonCounter = {};
   
 function removeAttachment(elId){
-  console.log(elId);
-  $('#btRemoveAttachment_' + elId).parent().remove();
+  $('#btRemoveAttachment_' + elId).parent().parent().remove();
   if(typeof(removeButtonCounter[elId]) == 'undefined'){
     removeButtonCounter[elId] = 0;
   }else{
     removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
   }
-  
   Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
 }
 
@@ -144,6 +142,10 @@ $(document).ready(function () {
       $(id).hide();
     }
   });
+  Shiny.addCustomMessageHandler('gms-showHideEl', function(data) {
+    el = $(data.id);
+    el.show().delay(data.delay).fadeOut();
+  });
   Shiny.addCustomMessageHandler('gms-enableEl', function(id) {
     $(id).prop( "disabled", false);
   });
@@ -176,8 +178,16 @@ $(document).ready(function () {
     setTimeout(function() { $('#shiny-modal-wrapper').find('.modal').modal('hide'); }, delay * 1000);
   });
   Shiny.addCustomMessageHandler('gms-updateAttachList', function(el){
-    $('<div style="cursor: default;"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id + '" type="button" onclick="removeAttachment(' + el.id + ')"><i class="fa fa-times-circle"></i></button><a id="downloadAttachment_' + el.id + '" class="shiny-download-link" href="session/' + el.token + '/download/downloadAttachment_' + el.id + '?w=" target="_blank" download="">' + el.name + '</a></div>').insertBefore('#endAttachList');
-    
+    el.id = $.makeArray(el.id);
+    el.name = $.makeArray(el.name);
+    for(i=0;i<el.id.length;i++){
+      if(el.allowExec){
+        checkBoxHTML = '</div><div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_' + el.id[i] +'\', $(this).is(\':checked\'));" checked="checked"><span>' + el.labelCb + '</span></label></div></div></div></div>';
+      }else{
+        checkBoxHTML = '';
+      }
+      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> <a id="downloadAttachment_' + el.id[i] + '" class="shiny-download-link" href="session/' + el.token + '/download/downloadAttachment_' + el.id + '?w=" target="_blank" download="">' + el.name[i] + '</a>' + checkBoxHTML).insertBefore('#endAttachList');
+    }
   });
   
 });

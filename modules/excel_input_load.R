@@ -126,7 +126,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   # set no output identifier
   noOutputData <<- T
   if(newInputCount){
-    showNotification(paste0(newInputCount, lang$nav$notificationNewInput$new))
+    showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
   }else{
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
   }

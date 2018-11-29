@@ -109,7 +109,7 @@
       "error":"Run did not terminate successfully: "
     },
     "notificationNewInput":{  
-      "new":" datasets imported.",
+      "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
     "dialogSaveSuccess":{  
@@ -135,6 +135,8 @@
       "newTags":"New tags",
       "attachmentsLabel": "Attachments",
       "attachmentsAdd": "Add attachments",
+      "attachmentsExecPerm": "Allow model to read this file",
+      "attachSuccess": "Attachments were updated successfully",
       "attachMaxSizeError": "Your attachments exceed the maximum attachment size of %s bytes.",
       "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
       "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
@@ -322,6 +324,11 @@
     "renderOutput":{  
       "title":"Rendering output graphs",
       "progress":"Rendering output "
+    },
+    "prepRun":{
+      "title":"Preparing optimization run",
+      "sendInput":"Sending input data",
+      "downloadAttach": "Downloading attachments"
     },
     "loadScenDb":{  
       "title":"Loading scenario data from database",

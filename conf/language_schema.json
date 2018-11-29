@@ -612,6 +612,16 @@
               "minLength":1,
               "required":true
             },
+            "attachmentsExecPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachSuccess":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "attachMaxSizeError":{  
               "type":"string",
               "minLength":1,
@@ -1469,6 +1479,28 @@
               "required":true
             },
             "progress":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "prepRun":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "sendInput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "downloadAttach":{  
               "type":"string",
               "minLength":1,
               "required":true
