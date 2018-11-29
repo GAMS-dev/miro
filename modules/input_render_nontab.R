@@ -415,7 +415,6 @@ lapply(seq_along(modelIn), function(id){
                      } 
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
-                     print(el[[1]])
                      dataTmp <- unique(modelInputData[[k]][[el[[1]]]])
                    }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data

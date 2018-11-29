@@ -335,10 +335,8 @@ if(!is.null(errMsg)){
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
     session$onSessionEnded(function() {
-      if(!interactive()){
-        stopApp()
-        q("no")
-      }
+      stopApp()
+      q("no")
     })
   }
   
