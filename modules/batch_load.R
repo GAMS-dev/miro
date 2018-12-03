@@ -19,16 +19,26 @@ appendInputTypeList <- function(scalarsTabName){
   inputType$number <<- inputType$number[!is.na(inputType$number)]
 }
 
-scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
+k <- 1L
+for(j in seq_along(modelIn)){
   i <- match(modelInSorted[[j]], names(modelIn))
-  if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
-    list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
+  if(!is.null(modelIn[[i]]$daterange)){
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
+    k <- k + 2L
+  }else if(!is.null(modelIn[[i]]$slider) && length(modelIn[[i]]$slider$default) > 1L){
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "number", alias = modelInAlias[[i]] %+% " (lower)")
+    scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "number", alias = modelInAlias[[i]] %+% " (upper)")
+    k <- k + 2L
+  }else if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
+    k <- k + 1L
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
-    list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
-  }else{
-    NA
+    scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
+    k <- k + 1L
   }
-})
+}
+
 if(length(modelIn[[scalarsFileName]])){
   scalarKeyTypeList[[scalarsTabNameIn]] <- c(scalarKeyTypeList[[scalarsTabNameIn]], 
                                              lapply(seq_along(modelIn[[scalarsFileName]]$symnames), function(i){
@@ -37,8 +47,7 @@ if(length(modelIn[[scalarsFileName]])){
                                                    alias = modelOut[[scalarsOutName]]$symtext[[i]])
                                              }))
 }
-scalarKeyTypeList[[scalarsTabNameIn]]   <- 
-  scalarKeyTypeList[[scalarsTabNameIn]][!is.na(scalarKeyTypeList[[scalarsTabNameIn]])]
+
 if(length(scalarKeyTypeList[[scalarsTabNameIn]])){
   appendInputTypeList(scalarsTabNameIn)
   scalarFields        <- scalarsTabNameIn %+% "-_" %+% 
@@ -78,7 +87,7 @@ fieldsSelected <- vector("character", maxNumBlocks^2)
 
 hideEl(session, "#batchLoadButtons")
 
-generateLine <- function(i, j, type, label, values = NULL){
+generateLine <- function(i, j, type, label){
   tags$div(id = "line" %+% i %+% "_" %+% j, class = "itemLine",
            tags$div(class = "itemName", helpText(label)),
            tags$div(class = "itemScenDrop", switch(type,
@@ -103,14 +112,10 @@ generateLine <- function(i, j, type, label, values = NULL){
            tags$div(class = "itemSearchCrit",
                     switch(type,
                            number = {
-                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL, value = values[[1]])
+                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL)
                            },
                            text = {
-                             if(length(values) > 20){
-                               textInput("val_" %+% i %+% "_" %+% j, label=NULL)
-                             }else{
-                               selectInput("val_" %+% i %+% "_" %+% j, label=NULL, choices = values)
-                             }
+                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
                            },
                            date = {
                              dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
@@ -182,8 +187,7 @@ lapply(seq_len(maxNumBlocks), function(i){
     field <- strsplit(input[["newLine_" %+% i]], "-", fixed = TRUE)[[1]][[2]]
     
     if(field %in% inputType[['text']]){
-      values <- batchLoad$fetchValues(input[["newLine_" %+% i]])
-      ui <- generateLine(i, j, "text", label, values)
+      ui <- generateLine(i, j, "text", label)
     }else if(field %in% inputType[['date']]){
       ui <- generateLine(i, j, "date", label)
     }else{
@@ -357,7 +361,7 @@ output$btBatchDownload <- downloadHandler(
     
     
     setwd(tmpDir)
-    prog <- shiny::Progress$new()
+    prog <- Progress$new()
     on.exit(prog$close(), add = TRUE)
     prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
