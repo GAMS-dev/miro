@@ -52,9 +52,9 @@ $if not set savesol $setGlobal savesol 0
 $if not set wind $setGlobal wind 0
 
 * Define filepath, name and extension.
-$setnames "%gams.i%" filepath filename fileextension
-$setglobal MODELPATH '%filepath%..%system.dirsep%'
-$LOG %MODELPATH%
+*$setnames "%gams.i%" filepath filename fileextension
+
+$setglobal MODELPATH '%gams.idir1%..%system.dirsep%'
 $if set webui $include dcopf_webui_in.gms
 
 * Define type of model

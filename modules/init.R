@@ -37,7 +37,7 @@ if(is.null(errMsg)){
       e
     })
     if(inherits(error, "error")){
-      next
+      return(NULL)
     }
     
     if(names(jsonSchemaMap)[[i]] == "config" && is.null(eval[[2]])){
@@ -53,6 +53,8 @@ if(is.null(errMsg)){
       jsonErrors <<- rbind(jsonErrors, cbind(file_name = paste0(names(jsonSchemaMap)[[i]], ".json"), eval[[2]]))
     }
   })
+}
+if(is.null(errMsg)){
   if(identical(config$activateModules$sharedScenarios, TRUE) && identical(config$activateModules$scenario, FALSE)){
     flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
     config$activateModules$sharedScenarios <- FALSE
@@ -234,7 +236,7 @@ if(is.null(errMsg)){
             errMsg <- paste(errMsg, sprintf("The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.", 
                                             names(modelIn)[[i]], names(modelIn[[i]]$headers)[[j]]))
             flog.fatal(errMsg)
-            next
+            break
           }
         }
       }

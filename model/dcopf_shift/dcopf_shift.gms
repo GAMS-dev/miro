@@ -51,7 +51,7 @@ $if not set savesol $setGlobal savesol 0
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 
-$if set gmswebui $include dcopf_shift_webui_in.gms
+$if set webui $include dcopf_shift_webui_in.gms
 
 * Define type of model
 $set modeltype "DC"
