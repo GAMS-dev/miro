@@ -182,11 +182,11 @@ $(document).ready(function () {
     el.name = $.makeArray(el.name);
     for(i=0;i<el.id.length;i++){
       if(el.allowExec){
-        checkBoxHTML = '</div><div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_' + el.id[i] +'\', $(this).is(\':checked\'));" checked="checked"><span>' + el.labelCb + '</span></label></div></div></div></div>';
+        checkBoxHTML = '<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_' + el.id[i] +'\', $(this).is(\':checked\'));" checked="checked"><span>' + el.labelCb + '</span></label></div></div></div>';
       }else{
         checkBoxHTML = '';
       }
-      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> <a id="downloadAttachment_' + el.id[i] + '" class="shiny-download-link" href="session/' + el.token + '/download/downloadAttachment_' + el.id + '?w=" target="_blank" download="">' + el.name[i] + '</a>' + checkBoxHTML).insertBefore('#endAttachList');
+      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML+ '</div>').insertBefore('#endAttachList');
     }
   });
   
