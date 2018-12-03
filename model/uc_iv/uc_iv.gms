@@ -471,5 +471,5 @@ execute 'rm temp_solution.gdx'
 * END IF-loop if(infeas eq 0)
 );
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $libinclude webui.gms

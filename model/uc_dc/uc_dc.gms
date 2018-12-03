@@ -337,4 +337,4 @@ $offExternalOutput
 ePrice(i,t) = c_BalanceP.m(i,t);
 
 $if set webui $include %MODELPATH%webui_out.gms
-$if set webui $batinclude %MODELPATH%webui.gms
+$if set webui $libinclude webui.gms

@@ -34,6 +34,7 @@ outScript = "%outScript%"
 zipname = "%zipname%"
 fscalars = "scalars.csv"
 
+
 # string manipulation (batch file)
 def extractCall(call):
    call = call[66:]
@@ -105,7 +106,7 @@ def dummyTrace(text):
    
 
 # read batch file
-with open(bfdir + bfname) as f:
+with open(bfname) as f:
    content = f.readlines()
    content = [x.strip() for x in content]
 
@@ -116,17 +117,20 @@ if outScript == "gams":
    linestmp += "$call mkdir " + zipname + "\n" 
    for index, item in enumerate(content):
       dirname = extractDir(item)
+      tmpdir = "tmp"+str(index)
       call = extractCall(item)
       fjobsub = open(fJobSubName,"w")
-      linestmp += "$call cd " + zipname + " && if exist " + dirname + " rm -r " + dirname + "\n"
-      linestmp += "$call cd " + zipname + " && mkdir " + dirname + "\n"
-      linestmp += "$if errorlevel 1 $abort problems mkdir " + dirname + "\n"
+      linestmp += "$call cd " + zipname + " && if exist " + tmpdir + " rm -r " + tmpdir + "\n"
+      linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
+      linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
       # dummy trace file (to gurantee that a trace file exists for each run)
-      linestmp += "$call cd " + zipname + "/" + dirname + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
       # scalars.csv file manually filled (needed in webui for data validation)
-      linestmp += "$call cd " + zipname + "/" + dirname + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
       # gams call
-      linestmp += "$call cd " + zipname + "/" + dirname + " && " + call + " --webui=1 idir = ../../" + modelpath + " idir2 = ../../" + datapath + "\n\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + " --webui=1 idir = ..\\..\\" + modelpath + " idir2 = ..\\..\\" + datapath + "\n"      
+      linestmp += "$call cd " + zipname + " && if exist " + dirname + " rm -r " + dirname + "\n"
+      linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
    linestmp += "$call if exist " + zipname + ".zip rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"

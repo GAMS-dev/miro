@@ -290,5 +290,5 @@ lines_at_limit(i,j,c)$(branchstatus(i,j,c) or branchstatus(j,i,c))
 
 display lines_at_limit;
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $libinclude webui.gms
