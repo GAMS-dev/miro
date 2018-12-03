@@ -251,4 +251,4 @@ execute 'rm temp_solution.gdx'
 );
 
 $if set webui $include %MODELPATH%webui_out.gms
-$if set webui $libinclude %MODELPATH%webui.gms
+$if set webui $libinclude webui.gms
