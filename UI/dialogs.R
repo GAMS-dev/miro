@@ -353,10 +353,12 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
                               ),
                        if(attachAllowExec){
                          column(width = 6,
-                                checkboxInput("execPermAttachment_" %+% i, lang$nav$dialogEditMeta$attachmentsExecPerm, 
-                                              value = attachmentMetadata[["execPerm"]][[i]]))
+                                HTML(paste0('<div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_', 
+                                            i, '\', $(this).is(\':checked\'));"', if(attachmentMetadata[["execPerm"]][[i]]) 'checked="checked"', '><span>', 
+                                            lang$nav$dialogEditMeta$attachmentsExecPerm, '</span></label></div></div>'))
+                                )
                        }
-                              )
+                    )
             })
           },
           tags$div(id = "endAttachList", class = "small-space"),
