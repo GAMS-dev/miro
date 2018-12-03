@@ -653,7 +653,7 @@ RPath = get_r_path()
 
 os.environ["RPATH"] = RPath
 if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
-    sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\") + r"GMSWebUI\library"
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "GMSWebUI/library"
 else:
     sysdir = ""
 with open("runapp.R", "w") as f: 
@@ -730,7 +730,7 @@ $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher require
 $terminate
 $endif
 $ifthen %WEBUI%=="launch"
-$  call cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
+$  hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing the GAMS WebUI. Make sure you have a valid WebUI installation.
 $endif
 $terminate

@@ -1,5 +1,13 @@
 # elements that must be saved in scalar table
-scalarInToVerify <- names(modelIn)[!names(modelIn) %in% modelInTabularData]
+scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTabularData], function(el){
+  if((!is.null(modelIn[[el]]$slider) && length(modelIn[[el]]$slider$default) > 1L) || 
+     !is.null(modelIn[[el]]$daterange)){
+    return(paste0(el, c("_lo", "_up")))
+  }else{
+    return(el)
+  }
+}), use.names = FALSE)
+
 disableEl(session, "#btUploadBatch")
 
 # initialise batch import class
@@ -9,7 +17,6 @@ batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCa
                                config$csvDelim, workDir)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
-
 
 ##############
 #      1
