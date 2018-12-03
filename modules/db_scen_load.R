@@ -304,7 +304,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   if(!is.list(sidsToLoad)){
     rowIds         <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
     scenMetaTmp    <- rv$fetchedScenarios[rowIds, ]
-    scenMetaTmp[[snameIdentifier]] <- as.character(seq_len(nrow(scenMetaTmp)))
+    scenMetaTmp[[snameIdentifier]] <- as.character(seq.int(isolate(rv$scenId) - 3L, 
+                                                           isolate(rv$scenId) - 4L + nrow(scenMetaTmp)))
     metadataFull   <- scenMetaTmp[, db$getScenMetaColnames()[c("sid", "uid", 
                                                                "stime", "sname")]]
   }else{

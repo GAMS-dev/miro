@@ -17,9 +17,9 @@ epriceOutput <- function(id, height = NULL, options = NULL, path = NULL){
 
 renderEprice <- function(input, output, session, data, options = NULL, path = NULL){
   colTimePeriodName <- names(data)[2]
-  PriceDf <- data %>% rename(Buses = 'Set of buses', TimePeriods = colTimePeriodName)
-  PriceDf[[2]] <- as.numeric(PriceDf[[2]])
-  PriceDf[[1]] <- as.numeric(PriceDf[[1]])
+  PriceDf <- data %>% rename(Buses = 'Set of buses', TimePeriods = colTimePeriodName) %>% 
+    mutate(Buses = as.numeric(Buses), TimePeriods = as.numeric(TimePeriods)) %>%
+    arrange(Buses, TimePeriods)
   PriceDf_spread <- PriceDf %>% spread(2, 3) 
   Bus <- unique(PriceDf[[1]])
   TimePeriod <- unique(PriceDf[[2]])
