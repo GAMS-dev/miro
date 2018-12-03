@@ -342,5 +342,5 @@ if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $libinclude webui.gms
