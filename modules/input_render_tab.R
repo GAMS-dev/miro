@@ -84,12 +84,8 @@ lapply(modelInTabularData, function(sheet){
                  tryCatch({
                    data <- bind_rows(hotInput[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debugMode){
-                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc,
-                                                    e, sep = "\n"), sep = "\n")
-                   }else{
-                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                   }
+                   flog.warn(paste0(lang$errMsg$dataError$desc,e))
+                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                  })
                  modelInputData[[i]] <<- data
                }
@@ -182,12 +178,8 @@ lapply(modelInTabularData, function(sheet){
                  tryCatch({
                    data <- bind_rows(tableContent[[i]], modelInputData[[i]])
                  }, error = function(e){
-                   if(debugMode){
-                     errMsg <<- paste(errMsg, paste(lang$errMsg$dataError$desc, e, sep = "\n"), 
-                                      sep = "\n")
-                   }else{
-                     errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                   }
+                   flog.warn(paste0(lang$errMsg$dataError$desc, e))
+                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                  })
                  modelInputData[[i]] <<- data
                }
@@ -197,7 +189,7 @@ lapply(modelInTabularData, function(sheet){
                  id  <- colsWithDep[[i]][[idDep]]
                  # in case nothing was selected in dropdown menu, skip this iteration
                  if(is.null(input[["dropdown_" %+% id]]) || 
-                    input[["dropdown_" %+% id]] %in% c("","_")){
+                    input[["dropdown_" %+% id]] %in% c("", "_")){
                    next
                  }
                  # get column name with dependency

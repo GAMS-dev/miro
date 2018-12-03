@@ -67,16 +67,15 @@
     },
     "scen":{  
       "noScen":"Kein Szenario geladen. Bitte laden Sie zuerst ein Szenario.",
-      "scalarsAlias":"Skalare",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
-        "btTableView":"Zur tabellaren Ansicht wechseln",
+        "btTableView":"Ansicht wechseln",
         "btClose":"Szenario schließen",
         "inputSheet":"Eingabedaten",
-        "outputSheet":"Ausgabedaten",
-        "split":{
-          "load":"Szenario öffnen"
-        }
+        "outputSheet":"Ausgabedaten"
+      },
+      "split":{
+        "load":"Szenario öffnen"
       }
     },
     "advanced":{
@@ -110,7 +109,7 @@
       "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
     },
     "notificationNewInput":{  
-      "new":" Datensätze importiert.",
+      "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
     "dialogSaveSuccess":{  
@@ -125,7 +124,7 @@
       "newScenName":"Neues Szenario",
       "scenExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "btNewName":"Anderen Namen wählen",
-      "btOverride":"Überschreiben",
+      "btOverwrite":"Überschreiben",
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
@@ -133,6 +132,14 @@
       "title":"Metadaten bearbeiten",
       "newName": "New name",
       "newTags":"New tags",
+      "attachmentsLabel": "Anhänge",
+      "attachmentsAdd": "Anhänge hinzufügen",
+      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
+      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
+      "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
+      "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
+      "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
+      "attachUnknownError": "Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "success": "Metadaten wurden erfolgreich aktualisiert.",
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
@@ -181,13 +188,13 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
-      "scenNameExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
-      "descOverrideInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "scenNameExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
-      "overrideWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
       "okButton":"Importieren",
       "cancelButton":"Abbrechen",
-      "overrideButton": "Existierende Daten überschreiben",
+      "overwriteButton": "Existierende Daten überschreiben",
       "newNameButton": "Neuer Name"
     },
     "dialogLoadScen":{  
@@ -198,7 +205,6 @@
       "descNoScen":"Es konnten keine gespeicherten Szenarien gefunden werden.",
       "selLoadScen":"Wählen Sie die Szenarien, die Sie laden möchten",
       "selTags": "Zeige nur Szenarios mit den Tag(s):",
-      "titleOverrideInput":"Warnung",
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "sortBy":"Sortieren nach:",
@@ -269,10 +275,6 @@
       "badStepSizeDialog":{
         "title": "Falsche Schrittweite",
         "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
-      },
-      "successDialog":{
-        "title": "Batchlauf konfiguriert",
-        "desc": "Der Batchlauf wurde erfolgreich konfiguriert. Die Batchdatei wurde in Ihr Arbeitsverzeichnis geschrieben. Um den Batchlauf zu starten, konvertieren Sie bitte diese Datei in eine ausführbare GAMS Datei. Weitere Informationen dazu finden Sie in der Dokumentation."
       }
     },
     "batchMode":{
@@ -289,7 +291,9 @@
         "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
         "selAttribs":"Attribute:",
-        "runButton": "Paver starten"
+        "runButton": "Paver starten",
+        "interactiveButton":"Interaktiver Modus",
+        "downloadButton":"Daten herunterladen"
       },
       "invalidScenDialog":{
         "title":"Ungültige Szenarien",
@@ -321,6 +325,11 @@
       "title":"Rendern der Grafiken",
       "progress":"Rendern von Grafik "
     },
+    "prepRun":{
+      "title":"Optimierungslauf wird vorbereitet",
+      "sendInput":"Senden der Eingabedaten",
+      "downloadAttach": "Laden der Anhänge"
+    },
     "loadScenDb":{  
       "title":"Laden von Szenariodaten aus der Datenbank",
       "progress":"Laden von Datensatz "
@@ -329,7 +338,7 @@
       "title":"Speichern von Szenariodaten in der Datenbank ",
       "progress":"Speichern von Datensatz "
     },
-    "removeScenDb":{  
+    "deleteScenDb":{  
       "title":"Löschen von Szenario aus Datenbank",
       "progress":"Löschen von Datensatz "
     }
@@ -342,6 +351,9 @@
     "fileWrite":{  
       "title":"Fehler beim Schreiben von Datei",
       "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."
+    },
+    "downloadHandler":{
+      "msg" : "Beim Versuch die angefragte Datei herunterzuladen ist ein Fehler aufgetreten. Falls dieses Problem bestehen bleibt, kontaktieren Sie bitte den Administrator."
     },
     "initErrors":{  
       "title":"Es sind Fehler aufgetreten",
@@ -363,7 +375,7 @@
       "title":"Fehler beim Lesen der Ergebnisse",
       "desc":"Beim Lesen der Ergebnisse von GAMS ist ein Fehler aufgetreten."
     },
-    "dataConcat":{  
+    "dataError":{  
       "title":"Fehler in den Daten",
       "desc":"Ein Datenfehler ist aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt."
     },
@@ -398,7 +410,8 @@
     },
     "readLst":{  
       "title":"Fehler beim Lesen der listing-Datei",
-      "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten."
+      "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten.",
+      "fileSize":"Die lst-Datei, die sie versuchen zu lesen ist zu groß, um hier dargestellt zu werden. Bitte laden Sie die Datei herunter, um sie zu öffnen."
     },
     "saveScen":{  
       "title":"Fehler beim Speichern des Szenarien",
@@ -410,7 +423,7 @@
     },
     "deleteScen":{  
       "title":"Fehler beim Löschen des Szenarien",
-      "desc":"Beim Löschen des Szenarien ist ein Fehler aufgetreten. Falls dieses Problem weiterhin besteht, kontaktieren Sie bitte den Administrator."
+      "desc":"Beim Löschen des Szenarien ist ein Fehler aufgetreten. Falls dieses Problem bestehen bleibt, kontaktieren Sie bitte den Administrator."
     },
     "renderTable":{  
       "title":"Fehler beim Darstellen der Tabelle",

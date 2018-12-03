@@ -9,7 +9,7 @@ simple1Output <- function(id, height = NULL, options = NULL, path = NULL){
   leaflet::leafletOutput(ns("simple"), height = height)
 }
 
-renderSimple1 <- function(input, output, server, data, options = NULL, path = NULL){
+renderSimple1 <- function(input, output, session, data, options = NULL, path = NULL){
 
   tryCatch({
     map.data <- read_sf(paste0(path, options$geojsonloc))
@@ -48,7 +48,7 @@ simple2Output <- function(id, height = NULL, options = NULL, path = NULL){
   leaflet::leafletOutput(ns("simple"), height = height)
 }
 
-renderSimple2 <- function(input, output, server, data, options = NULL, path = NULL){
+renderSimple2 <- function(input, output, session, data, options = NULL, path = NULL){
 
   tryCatch({
     map.data <- sf::read_sf(paste0(path, options$geojsonloc))

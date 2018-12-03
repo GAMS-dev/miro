@@ -58,7 +58,7 @@ body <- dashboardBody({
                 tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                                          icon("exclamation-triangle")),
                 textOutput("inputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btClose", icon = icon("times"), label = NULL))
+                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btIcon", icon = icon("times"), label = NULL))
               ), status="primary", solidHeader = TRUE, width = 12,
               do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
                 i <- inputTabs[[tabId]][1]
@@ -112,12 +112,8 @@ body <- dashboardBody({
                                                        height = configGraphsIn[[i]]$height, 
                                                        noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                         }, error = function(e) {
-                                          if(debugMode){
-                                            errMsg <- paste(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), 
-                                                            e, sep = "\n")
-                                          }else{
-                                            errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                          }
+                                          flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                          errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
                                           showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
                                         })
                                ))
@@ -171,7 +167,7 @@ body <- dashboardBody({
                                  )
                                }else if(identical(modelIn[[i]]$slider$single, TRUE)){
                                  tagList(
-                                   column(width = 11, style = "padding-left:0px;",
+                                   column(width = 10, style = "padding-left:0px;",
                                           slider
                                    ),
                                    column(width = 1, style = "min-width: 100px; min-height:100px;",
@@ -368,7 +364,7 @@ body <- dashboardBody({
                            icon("exclamation-triangle")),
                   textOutput("outputDataTitle", inline = T),
                   tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                                 class = "btClose", icon = icon("times"), label = NULL))
+                                                                 class = "btIcon", icon = icon("times"), label = NULL))
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
                          tags$div(class = "out-buttons-wrapper",
@@ -396,12 +392,8 @@ body <- dashboardBody({
                         renderDataUI(paste0("table-out_",i), type = "datatable", 
                                      noDataTxt = lang$nav$outputScreen$boxResults$noData)
                       }, error = function(e) {
-                        if(debugMode){
-                          eMsg <<- paste(eMsg, paste(sprintf(lang$errMsg$renderTable$desc, name), e, sep = "\n"), 
-                                         sep = "\n")
-                        }else{
-                          eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-                        }
+                        flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
+                        eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
                       })
                     }),
                     tags$div(class="space"))
@@ -421,7 +413,7 @@ body <- dashboardBody({
                              tagList(textOutput("title_2", inline = T), 
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
-                                                           class = "btClose", icon = icon("times"), label = NULL))), 
+                                                           class = "btIcon", icon = icon("times"), label = NULL))), 
                            tags$div(id = "scenSplit1_content", style = "display:none;", 
                                     generateScenarioTabsetSplit(2)), 
                            tags$div(id = "scenSplit1_open", 
@@ -431,7 +423,7 @@ body <- dashboardBody({
                            title = tagList(textOutput("title_3", inline = T), 
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
-                                                                 class = "btClose", icon = icon("times"), label = NULL))),
+                                                                 class = "btIcon", icon = icon("times"), label = NULL))),
                            tags$div(id = "scenSplit2_content", style = "display:none;", generateScenarioTabsetSplit(3)), 
                            tags$div(id = "scenSplit2_open", 
                                     actionButton("btScenSplit2_open", lang$nav$scen$split$load, 

@@ -1,13 +1,13 @@
 # gams model name
-modelName <- "pickstock"
-# show extensive error messages/ obscoure error messages
-debugMode <- TRUE
+modelName <- "uc_dc"
+# controls whether webUI parameters are compiled on startup or loaded from save file
+developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "SHINYPROXY_MODELNAME"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
-keywordsNoImport <- c("noimport")
+keywordsNoImport <- c("noImport")
 # keywords that define data MUST not be imported in order to run the model
-keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "noimport")
+keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
 keywordsType <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
@@ -36,9 +36,9 @@ scenLockTablePrefix      <- "_sys_scenlocks_"
 # (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
 # local user ID (single user)
-uid <- "Freddy"
+uid <- "user"
 # define the default type for output format
-defOutType <- "pivot"
+defOutType <- "datatable"
 # define the default format for input sheets
 defInType <- "pivot"
 # default height of pivot table
@@ -49,8 +49,6 @@ customRendererDirName <- "customRenderer"
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
 scalarsFileHeaders <- c("Scalar", "Description", "Value")
-# supported operating systems for "Stop"-Button for gams.exe
-osSupportInterrupt <- c("windows", "linux", "osx")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"
 # prefix used for identifying compile time variables
@@ -58,9 +56,15 @@ prefixDDPar  <- "GMSPAR_"
 prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
+# get maximum number of lines to read automatically for lst files
+lstMaxNoLinesToRead <- 1e3
+# Limits on external programs that are allowed to be executed 
+# (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
+gamsExecMode <- 0L
+
 # ACCESS CONTROL
 # db table name where group hierarchies are stored
-amTableNameHierarchy <- "access_test2"
+amTableNameHierarchy <- "_sys_am_hier"
 # db table name where user groups are stored
 amTableNameGroups    <- "_sys_am_groups"
 # db table name where restricted elements as well as the permissions are stored
@@ -75,7 +79,9 @@ defaultGroup <- "user"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # maximum number of scenarios that can be solved per batch run
-maxNoBatch <- 200000L
+maxNoBatch <- 10000L
+# maximum number of scenarios to fetch when querying the database
+batchLoadMaxScen <- 1000L
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L
@@ -88,5 +94,10 @@ traceColNames <- c("InputFileName","ModelType","SolverName","NLP","MIP","JulianD
 exclTraceCols <- c("NLP", "MIP", "NumberOfEquations", "NumberOfVariables", "NumberOfDiscreteVariables",
                    "NumberOfNonZeros", "NumberOfNonlinearNonZeros")
 tableNameTracePrefix <- "_sys_trace_"
+
+tableNameAttachPrefix <- "_sys_attach_"
+attachAllowExec       <- TRUE
+attachMaxFileSize     <- 1e7
+attachMaxNo           <- 5L
 
 

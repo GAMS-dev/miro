@@ -105,14 +105,18 @@ def getCSVHeader(sym, max_val_col):
       return ','.join(d_list)
 
       
-def writeCSVParam(sym, gdxname='none', max_val_col = 5):
+def writeCSVParam(sym, gdxname='none', max_val_col = 5, isGamsSet = False):
    expand_last_col = expandLastCol(sym, max_val_col)
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
          if sym.dimension==1:
             f.write(getCSVHeader(sym, max_val_col)+'\n')
-            for r in sym:
-               f.write(r.key(0) + ',' + str(r.value) + '\n')
+            if(isGamsSet):
+               for r in sym:
+                  f.write(r.key(0) + '\n')
+            else:
+               for r in sym:
+                  f.write(r.key(0) + ',' + str(r.value) + '\n')
          else:
             dbX = sym.database.workspace.add_database(source_database=sym.database)
             if expand_last_col:

@@ -57,22 +57,33 @@ if(is.null(errMsg)){
     flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
     config$activateModules$sharedScenarios <- FALSE
   }
-  if(!length(config$db$username)){
-    pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
-    if(is.na(pg_user)){
-      errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
-                       sep = "\n")
-    }else{
-      config$db$username <- pg_user
+  if(config$activateModules$scenario && !identical(config$db$type, "sqlite")){
+    if(!length(config$db$username)){
+      pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
+      if(is.na(pg_user)){
+        errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
+                         sep = "\n")
+      }else{
+        config$db$username <- pg_user
+      }
+    }
+    if(!length(config$db$password)){
+      pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
+      if(is.na(pg_pass)){
+        errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
+                         sep = "\n")
+      }else{
+        config$db$password <- pg_pass
+      }
     }
   }
-  if(!length(config$db$password)){
-    pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
-    if(is.na(pg_pass)){
-      errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
-                       sep = "\n")
+  if(!is.null(config$db$name) && nchar(config$db$name) &&
+     identical(config$db$type, "sqlite")){
+    if(identical(gamsSysDir, "")){
+      config$db$name <- paste0(getwd(), .Platform$file.sep, config$db$name, ".sqlite3")
     }else{
-      config$db$password <- pg_pass
+      config$db$name <- paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, 
+                               config$db$name, ".sqlite3")
     }
   }
 }
@@ -120,6 +131,116 @@ if(is.null(errMsg)){
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
   
+  for(el in names(config$inputWidgets)){
+    i    <- match(tolower(el), names(modelIn))
+    el_l <- tolower(el)
+    
+    widgetConfig    <- config$inputWidgets[[el]]
+    widgetType      <- widgetConfig$widgetType
+    if(is.na(i)){
+      j <- NA
+      if(tolower(scalarsFileName) %in% names(modelIn)){
+        j <- match(tolower(el), tolower(modelIn[[tolower(scalarsFileName)]]$symnames))
+      }
+      widgetConfig$widgetType <- NULL
+      
+      if(!is.na(j)){
+        modelIn[[el_l]] <- list()
+        
+        if(!is.null(widgetConfig$alias)){
+          modelIn[[el_l]]$alias <- widgetConfig$alias
+          widgetConfig$alias    <- NULL
+        }
+        if(!is.null(widgetConfig$noBatch)){
+          modelIn[[el_l]]$noBatch <- widgetConfig$noBatch
+          widgetConfig$noBatch    <- NULL
+        }
+        if(!is.null(widgetConfig$noImport)){
+          modelIn[[el_l]]$noImport <- widgetConfig$noImport
+          widgetConfig$noImport    <- NULL
+        }
+        config$inputWidgets[[el]]     <- NULL
+        modelIn[[el_l]][[widgetType]] <- widgetConfig
+        modelIn[[tolower(scalarsFileName)]]$symnames <- modelIn[[tolower(scalarsFileName)]]$symnames[-c(j)]
+        if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
+          # remove scalar table entirely if no scalar symbols are left
+          modelIn[[tolower(scalarsFileName)]] <- NULL
+        }else{
+          modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
+          modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
+        }
+      }else if(any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))){
+        modelIn[[el]]   <- list()
+        
+        if(!is.null(widgetConfig$alias)){
+          modelIn[[el]]$alias <- widgetConfig$alias
+          widgetConfig$alias <- NULL
+        }
+        if(!is.null(widgetConfig$noBatch)){
+          modelIn[[el]]$noBatch <- widgetConfig$noBatch
+          widgetConfig$noBatch <- NULL
+        }
+        if(!is.null(widgetConfig$noImport)){
+          modelIn[[el]]$noImport <- widgetConfig$noImport
+          widgetConfig$noImport  <- NULL
+        }
+        modelIn[[el]][[widgetType]] <- widgetConfig
+      }else{
+        errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not amongst the symbols you defined to be input data to your model!")
+        flog.fatal(errMsgTmp)
+        errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+      }
+    }else{
+      symDim          <- length(modelIn[[i]]$headers)
+      if(symDim > 1L && !identical(widgetType, "table")){
+        errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
+                                names(modelIn[[i]])), sep = "\n")
+        flog.fatal(errMsg)
+        next
+      }
+      if(identical(symDim, 1L) && !(widgetType %in% c("table", "dropdown"))){
+        errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.", 
+                                        names(modelIn[[i]])), sep = "\n")
+        flog.fatal(errMsg)
+        next
+      }
+      widgetConfig$widgetType <- NULL
+      
+      if(!is.null(widgetConfig$alias)){
+        modelIn[[i]]$alias <- widgetConfig$alias
+        widgetConfig$alias <- NULL
+      }
+      if(!is.null(widgetConfig$noBatch)){
+        modelIn[[i]]$noBatch <- widgetConfig$noBatch
+        widgetConfig$noBatch <- NULL
+      }
+      if(!is.null(widgetConfig$noImport)){
+        modelIn[[i]]$noImport <- widgetConfig$noImport
+        widgetConfig$noImport  <- NULL
+      }
+      if(!identical(widgetType, "table")){
+        modelIn[[i]][[widgetType]] <- widgetConfig
+        next
+      }
+      if(!is.null(widgetConfig$readonly)){
+        modelIn[[i]]$readonly <- widgetConfig$readonly
+        widgetConfig$readonly  <- NULL
+      }
+      if(length(widgetConfig$readonlyCols)){
+        for(col in widgetConfig$readonlyCols){
+          if(col %in% names(modelIn[[i]]$headers)){
+            modelIn[[i]]$headers[[col]]$readonly <- TRUE
+          }else{
+            errMsg <- paste(errMsg, sprintf("The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.", 
+                                            names(modelIn)[[i]], names(modelIn[[i]]$headers)[[j]]))
+            flog.fatal(errMsg)
+            next
+          }
+        }
+      }
+      config$inputWidgets[[el]] <- NULL
+    }
+  }
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if(any(duplicated(names(modelIn)))){
     errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"
@@ -128,6 +249,21 @@ if(is.null(errMsg)){
   if(any(duplicated(names(modelOut)))){
     errMsg <- "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!"
     flog.fatal(errMsg)
+  }
+  # rename input and output scalar aliases
+  if(!is.null(config$scalarAliases$inputScalars) && 
+     nchar(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
+    modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
+  }else if(!length(config$scalarAliases$inputScalars)){
+    if(!length(modelIn[[scalarsFileName]])){
+      config$scalarAliases$inputScalars <- "Input scalars"
+    }else{
+      config$scalarAliases$inputScalars <- modelIn[[scalarsFileName]]$alias
+    }
+  }
+  if(!is.null(config$scalarAliases$outputScalars) && 
+     nchar(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
+    modelOut[[scalarsOutName]]$alias <- config$scalarAliases$outputScalars
   }
 }
 
@@ -170,12 +306,26 @@ if(is.null(errMsg)){
   lapply(seq_along(modelIn), function(i){
     tryCatch({
       modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
+      if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$value)){
+        cbValueTmp <- strsplit(modelIn[[i]]$checkbox$value, "\\(|\\$")[[1]]
+        if(length(cbValueTmp) %in% c(4L, 5L) && cbValueTmp[[1]] %in% listOfOperators){
+          cbValueTmp <- gsub(")", "", cbValueTmp, fixed = TRUE)
+          modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
+          modelIn[[i]]$checkbox$value    <<- paste(cbValueTmp[c(-1)], collapse = "$")
+        }else{
+          errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
+                                                      operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
+                                           Currently, the following operators are supported: '%s'.", modelInAlias[i], paste(listOfOperators, collapse = "', '")))
+          return(NULL)
+        }
+      }
     }, error = function(e){
       flog.fatal(errMsgTmp)
       errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
     })
   })
-  
+}
+if(is.null(errMsg)){
   # declare input sheets as they will be displayed in UI
   if(!length(config$aggregateWidgets$title)){
     # every input element on its own tab
@@ -252,11 +402,14 @@ if(is.null(errMsg)){
       }
     }
     if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10){
+      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10 && all(modelOut[[i]]$symtypes == "parameter")){
         configGraphsOut[[i]]$outType <<- "valuebox"
         configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
       }else{
         configGraphsOut[[i]]$outType <<- defOutType
+        if(identical(defOutType, "pivot")){
+          configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
+        }
       }
     }
   })
@@ -276,6 +429,9 @@ if(is.null(errMsg)){
       if(!is.null(modelIn[[i]]$headers)){
         if(is.null(configGraphsIn[[i]])){
           configGraphsIn[[i]]$outType <<- defInType
+          if(identical(defInType, "pivot")){
+            configGraphsIn[[i]]$pivottable <<- prepopPivot(modelIn[[i]])
+          }
         }
       }
     }
@@ -303,12 +459,12 @@ if(is.null(errMsg)){
                  modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
                  value <- modelIn[[i]]$checkbox$value
                  if(!is.null(value) && !is.na(suppressWarnings(as.integer(value)))){
-                   modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
                    modelIn[[i]]$dropdown$aliases <<- lang$nav$batchMode$checkboxAliases
                    modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
                  }else{
-                   modelIn[[i]]$dropdown$fixedAliases <<- lang$nav$batchMode$checkboxAliases
-                   modelIn[[i]]$dropdown$choices <<- modelIn[[i]]$checkbox$value
+                   modelIn[[i]]$checkbox$value    <<- paste0("$", modelIn[[i]]$checkbox$value)
+                   modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
+                   modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$value
                  }
                  modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
                  modelIn[[i]]$dropdown$width <<- modelIn[[i]]$checkbox$width
@@ -399,7 +555,7 @@ if(is.null(errMsg)){
                }else if(length(aliases$shared) > 0){
                  ddownDep[[name]]$aliases <<- aliases$shared
                }
-               # remove identifier string that specifies where shared data comes from rom dropdown
+               # remove identifier string from dropdown that specifies where shared data comes from 
                ddownDep[[name]]$shared <<- choices$shared
                
                if(!identical(name, choices$shared)){
@@ -416,13 +572,13 @@ if(is.null(errMsg)){
                  errMsg <<- paste(errMsg,paste0("The number of fixed aliases for dropdown menu: ", modelInAlias[i], 
 " does not match the number of choices without dependencies. 
                                                 Aliases: '", paste(aliases$strings, collapse = ","), 
-". Choices: '", paste(choices$strings, collapse = ","), "'."), sep = "\n")
+"'. Choices: '", paste(choices$strings, collapse = ","), "'."), sep = "\n")
                  return(NULL)
                }else if(length(aliases$fw) != length(choices$fw)){
                  errMsg <<- paste(errMsg,paste0("The number of aliases with dependencies for dropdown menu: ", 
 modelInAlias[i], " does not match the number of choices with dependencies. 
                                                 Aliases: '", paste(aliases$fw, collapse = ","), 
-". Choices: '", paste(choices$fw, collapse = ","), "'."), sep = "\n")
+"'. Choices: '", paste(choices$fw, collapse = ","), "'."), sep = "\n")
                  return(NULL)
                  # sheet names of aliases and choices do not match
                }else if(any(vapply(names(aliases$fw), function(sheet){
@@ -527,25 +683,26 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                }
                if(is.character(modelIn[[i]]$checkbox$value)){
                  # checkbox has dependency
-                 
                  # BEGIN error checks
                  if(grepl("\\$+$", modelIn[[i]]$checkbox$value)){
                    errMsg <<- paste(errMsg,paste0("The checkbox: '", modelInAlias[i], 
                                                   "' has a backward dependency assigned. Currently only forward dependencies are supported for checkboxes."), sep = "\n")
+                   return(NULL)
                  }
                  # END error checks
                  
-                 # remove trailing or leading dollar signs
-                 cbValue <- gsub("(\\$+$|^\\$+)", "", modelIn[[i]]$checkbox$value)
-                 cbValue <- strsplit(cbValue, "\\$")[[1]]
+                 cbValue <- strsplit(modelIn[[i]]$checkbox$value, "\\$")[[1]]
                  idx1    <- match(cbValue[1], names(modelIn))[1]
                  if(!is.na(idx1)){
                    # add forward dependency
                    modelIn[[i]]$checkbox$sheetId <<- idx1
-                   modelIn[[i]]$checkbox$value   <<- cbValue[2]
-                   modelInWithDep[[name]]      <<- modelIn[[i]]
+                   tryCatch(modelIn[[i]]$checkbox$value   <<- getNestedDep(cbValue[c(-1)]), error = function(e){
+                     errMsg <<- paste(errMsg, conditionMessage(e))
+                   })
+                   
+                   modelInWithDep[[name]]        <<- modelIn[[i]]
                  }else{
-                   errMsg <<- paste(errMsg,paste0("The dependent dataset for checkbox: '", 
+                   errMsg <<- paste(errMsg,paste0("The dependent dataset: '", cbValue[1], "' for checkbox: '", 
                                                   modelInAlias[i], "' could not be found. Please make sure you define a valid reference."), sep = "\n")
                  }
                }
@@ -567,7 +724,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     }
     return(dependentDataIds)
   })
-  
+
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
@@ -625,8 +782,8 @@ modelInAlias[i], " does not match the number of choices with dependencies.
           # test if sheetDep has a forward dependency on considered sheet without forward dependencies
           if(col %in% ddownDep[[sheetDep]]$bw[[sheet]]){
             if(col %in% names(colsWithDep[[i]])){
-              errMsg <<- paste(errMsg,paste0(col, " of input sheet ", sheet, 
-                                             "has more than one dependency. Only one backward dependency per column is allowed.", e), 
+              errMsg <<- paste(errMsg,paste0("Column: '", col, "' of input sheet '", sheet, 
+                                             "' has more than one dependency. Only one backward dependency per column is allowed."), 
                                sep = "\n")
             }else{
               id <- match(tolower(sheetDep), names(modelIn))
@@ -687,6 +844,21 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     })
     scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
     scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
+    
+    # get column types for output sheets
+    for(i in seq_along(modelOut)){
+      modelOut[[i]]$colTypes <- paste(vapply(modelOut[[i]]$headers, function(header){
+        switch(header$type,
+               "set" = 'c',
+               "parameter" = 'd',
+               "acronym" = 'c',
+               "string" = 'c',
+               "scalar" = 'c',
+               {
+                 'c'
+               })
+      }, character(1L), USE.NAMES = FALSE), collapse = "")
+    }
   }
   if(is.null(errMsg)){
     if(identical(config$activateModules$scenario, TRUE) && 
@@ -704,7 +876,8 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     # get the operating system that shiny is running on
     serverOS    <- getOS()
     # generate GAMS return code map
-    GAMSReturnCodeMap <- c('1' = "Solver is to be called, the system should never return this number", 
+    GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
+                           '1' = "Solver is to be called, the system should never return this number", 
                            '2' = "There was a compilation error", 
                            '3' = "There was an execution error", 
                            '4' = "System limits were reached",
@@ -715,7 +888,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                            '9' = "GAMS could not be started",
                            '10' = "Out of memory",
                            '11' = "Out of disk",
-                           "15" = "Model execution was interrupted",
+                           '15' = "Model execution was interrupted",
                            '109' = "Could not create process/scratch directory",
                            '110' = "Too many process/scratch directories",
                            '112' = "Could not delete the process/scratch directory",

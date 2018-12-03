@@ -29,13 +29,30 @@ hasContent <- function(x){
   return(TRUE)
 }
 
-getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL){
+isShinyProxy <- function(){
+  # specifies whether shiny proxy is used
+  # 
+  # Args:
+  #
+  # Returns:
+  # boolean that specifies whether shiny proxy is used
+  
+  uid <- Sys.getenv("SHINYPROXY_USERNAME")
+  if(is.null(uid) || grepl("^\\s*$",uid)){
+    invisible(FALSE)
+  }else{
+    invisible(TRUE)
+  }
+}
+
+getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaselDir = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
   # isShinyProxy:               boolean that specifies whether shiny proxy is used
   # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
+  # modeBaselDir:               durectory where model folders are located
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
@@ -50,7 +67,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
     }else{
       envName <- Sys.getenv(envVarPath)
       if(length(envName)){
-        modelPath <- envName
+        modelPath <- paste0(modeBaselDir, envName, .Platform$file.sep, envName, ".gms") 
       }else if(is.null(modelPath)){
         stop(errMsg, call. = FALSE)
       }
@@ -67,7 +84,6 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
   gmsFileName <- basename(modelPath)
   modelName   <- tolower(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
   modelDir    <- dirname(modelPath) %+% .Platform$file.sep
-
   return(list(modelDir, gmsFileName, modelName))
 }
 getInputToImport <- function(data, keywordsNoImport){
@@ -145,7 +161,6 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
       # examples : "a$$b"  <- "a$b" (string without dependencies), "a$$" -> "a$" (same), "$$a" <- "$a" (same)
       
       # check case with both backward and forward dependency on the same column and issue error if stric mode is active
-      
       if(grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", choices[[i]])){
         # find out if column has dependency defined and replace leading and ending signs
         forwardDep  <- grepl("^\\$", choices[[i]])
@@ -168,7 +183,6 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
               j <- length(ddownDep$bw[[names(modelIn)[[idx1]]]]) + 1
               ddownDep$bw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- names(modelIn[[idx1]]$headers)[[idx2]]
             }
-            # new element was added so increment counter
             if(!(forwardDep || backwardDep)){
               # neither forward nor backward dependency selected results in error or rendering as string
               if(strictMode){
@@ -191,7 +205,8 @@ getDependenciesDropdown <- function(choices, modelIn, name = NULL, strictMode = 
             }else if(!is.na(idx1) && identical(modelIn[[idx1]]$type, "dropdown") && length(el) > 1 && forwardDep){
               # dependency on another dropdown menu, so dont check header info
               j <- length(ddownDep$fw[[names(modelIn)[[idx1]]]]) + 1
-              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][[2]]
+              depTmp <- strsplit(gsub("^\\$|\\$$", "", choices[[i]]), "\\$")[[1]][c(-1)]
+              ddownDep$fw[[tolower(names(modelIn)[[idx1]])]][[j]] <<- getNestedDep(depTmp)
             }else{
               if(strictMode){
                 stop(paste0("The header: '", el[[2]], "' for input sheet: '", el[[1]], "' could not be found. Make sure you define a valid reference."), call. = F)
@@ -313,7 +328,7 @@ getDependenciesSlider <- function(min, max, def, step, modelIn, listOfOperators)
           }else if(!is.na(idx1) && modelIn[[idx1]]$type == "dropdown" && length(dep) > 1){
             # dependency on another dropdown menu
             sliderValue <- list()
-            sliderValue[[tolower(dep[[1]])]] <- dep[2]
+            sliderValue[[tolower(dep[[1]])]] <- getNestedDep(dep[c(-1)])
             sliderValue[["$operator"]] <- names(listOfOperators)[[match(operator, listOfOperators)]]
             return(sliderValue)
           }
@@ -487,6 +502,20 @@ getOS <- function(){
   }
   tolower(os)
 }
+dateColToChar <- function(conn, df){
+  # converts date columns to character
+  if(inherits(conn, "PqConnection")){
+    return(df)
+  }
+  df[] <- lapply(df, function(col){
+    if(inherits(col, "POSIXt") || inherits(col, "Date")){
+      as.character(col)
+    }else{
+      col
+    } 
+  })
+  return(df)
+}
 addCssDim <- function(x, y){
   # Adds two css dimensions together
   #
@@ -586,6 +615,9 @@ showEl <- function(session, id){
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
+showHideEl <- function(session, id, delay = 2000){
+  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay))
+}
 enableEl <- function(session, id){
   session$sendCustomMessage("gms-enableEl", id)
 }
@@ -607,9 +639,118 @@ removeClassEl <- function(session, id, class){
 hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
 }
+updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = FALSE){
+  session$sendCustomMessage("gms-updateAttachList", list(name = fileName, id = id, 
+                                                         token = token, labelCb = labelCb, 
+                                                         allowExec = allowExec))
+}
 isBadScenName <- function(scenName){
   grepl("^\\s*$", scenName)
 }
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
+}
+# redefined reactiveFileReader and reactivePoll functions since the original shiny functions 
+# leak an observer that can not be destoryed
+# original implementation can be found here: 
+#       https://github.com/rstudio/shiny/blob/19623694f585c8e7a8cf2c38e831a6752e5520c6/R/reactives.R#L1316
+# Please note that this is a slightly modified version of the original functions 
+# by RStudio licensed under GPL v3
+#
+# once this issue (https://github.com/rstudio/shiny/issues/1548) is closed, 
+# the original functions can be used again!
+reactivePoll2 <- function(intervalMillis, session, checkFunc, valueFunc) {
+  
+  rv <- reactiveValues(cookie = isolate(checkFunc()))
+  
+  obs <- observe({
+    rv$cookie <- checkFunc()
+    invalidateLater(intervalMillis, session)
+  })
+  
+  re <- reactive({
+    rv$cookie
+    valueFunc()
+  })
+  
+  return(list("re" = re, "obs" = obs))
+}
+reactiveFileReader2 <- function(intervalMillis, session, filePath, readFunc, ...) {
+  extraArgs <- list(...)
+  
+  reactivePoll2(
+    intervalMillis, session,
+    function() {
+      info <- file.info(filePath)
+      return(paste(filePath, info$mtime, info$size))
+    },
+    function() {
+      do.call(readFunc, c(filePath, extraArgs))
+    }
+  )
+}
+prepopPivot <- function(symbol){
+  pivotConf <- list(rows = c(), vals = character(1L), aggregatorName = "Sum")
+  setEl     <- vector("character", length(symbol$headers))
+  j <- 1L
+  for(i in seq_along(symbol$headers)){
+    if(symbol$headers[[i]]$type == "parameter"){
+      pivotConf$vals <- names(symbol$headers)[[i]]
+    }else{
+      setEl[j] <- names(symbol$headers)[[i]]
+      j <- j + 1L
+    }
+  }
+  pivotConf$rows <- setEl[nchar(setEl) > 0.5]
+  return(pivotConf)
+}
+
+getNestedDep <- function(depStr){
+  if(length(depStr) > 1L){
+    if(grepl(".+\\[.+\\]$", depStr[[1]])){
+      filterCol <- strsplit(depStr, "[", fixed=TRUE)[[1]]
+      return(c(gsub("[", "", filterCol[[1]], fixed = TRUE), gsub("]", "", filterCol[[2]], fixed = TRUE), depStr[[2]]))
+    }else{
+      stop(sprintf("Dependency: '%s' could not be parsed.", paste0(depStr, collapse = "$")), call. = FALSE)
+    }
+  }else{
+    return(depStr)
+  }
+}
+genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE){
+  div(id = id, class = "lds-ellipsis", 
+      style = paste0(if(absolute) "position:absolute;top:50%;left:50%;z-index:1;" else "display:block;", if(hidden) "display:none;"), 
+      div(style = "background:#000;"),
+      div(style = "background:#000;"),
+      div(style = "background:#000;"),
+      div(style = "background:#000;")
+  )
+}
+filterDf <- function(df, filterCondition){
+  filterCondition <- unlist(filterCondition)
+  if(length(filterCondition) == 1L){
+    return(df[[filterCondition]])
+  }else if(length(filterCondition) == 3L){
+    return(df[df[[filterCondition[[1]]]] == filterCondition[[2]], ][[filterCondition[[3]]]])
+  }else{
+    stop(sprintf("Bad filter condition: '%s'.", filterCondition), call. = FALSE)
+  }
+}
+plotlyOutput_spinner <- function(...){
+  div(
+    genSpinner(), plotlyOutput(...)
+  )
+}
+
+getNoLinesInFile <- function(filePath){
+  if(identical(tolower(getOS()), "windows")){
+    as.integer(strsplit(trimws(system2("find", c("/c", "/v", "$$$$$$$$$$$$$$$$$$$$$$$", filePath), 
+                                stdout = TRUE, stderr = TRUE)[[1]]), " ", fixed = TRUE)[[1]][[1]])
+  }else{
+    as.integer(strsplit(trimws(system2("wc", c("-l", filePath), stdout = TRUE, stderr = TRUE)[[1]]),
+                        " ", fixed = TRUE)[[1]][[1]])
+  }
+}
+downloadHandlerError <- function(file, msg = "Some error occurred trying to download this file."){
+  return(writeLines(msg, file))
 }

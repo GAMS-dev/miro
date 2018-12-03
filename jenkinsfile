@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '2', daysToKeepStr: '1'))
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Pack') {
+            steps {
+                parallel linux: {
+                    node('master') {
+                        step([$class: 'WsCleanup'])
+                        checkout scm
+                        sh '''
+                            echo "Do the linux packaging stuff here."
+                        '''
+                    }
+                },
+                windowsX64: {
+                    node('windowsX64') {
+                        step([$class: 'WsCleanup'])
+                        checkout scm
+                        withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
+                            bat '''
+                                for /f "tokens=*" %%i in ('findstr /B /C:"webuiVersion <-" app.R') do set WEBUI_VERSION=%%i
+                                set WEBUI_VERSION=%WEBUI_VERSION:webuiVersion <- =%
+                                iscc "installer\\win\\setup_win.iss" /DMyAppVersion=%WEBUI_VERSION%
+                                echo Setting up environment for VS2017 usage...
+                                cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
+                                call vcvars64.bat
+                                cd %WORKSPACE%\\installer\\win\\Output
+                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_WebUI-%WEBUI_VERSION%.exe
+                            '''
+                        }
+                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.exe', fingerprint: true
+                    }
+                },
+                macos: {
+                    node('macos') {
+                        step([$class: 'WsCleanup'])
+                        checkout scm
+                        sh '''
+                            WEBUI_VERSION=$(grep -e "^webuiVersion" app.R | cut -f3 -d" " | xargs)
+                            DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
+                            echo $DMG_NAME
+                            cd installer/macOS
+                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg $DMG_NAME
+                            cd ../..
+
+                            DMG_ROOT=volume
+                            mkdir $DMG_ROOT
+                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/$DMG_NAME
+
+                            TARGET=$DMG_ROOT/GAMS25.1/sysdir
+
+                            mkdir $TARGET/GMSWebUI
+                            mkdir $TARGET/inclib
+
+                            cp -r app.R conf doc global.R JS LICENSE LICENSE_full modules R resources UI www $TARGET/GMSWebUI
+                            cp model/loadCSV.gms model/webui.gms $TARGET/inclib
+
+                            hdiutil detach $DMG_ROOT
+                            mount
+
+                            cd installer/macOS
+
+                            # TODO (AF): The following command does not work on Jenkins.
+                            # Probabaly we should update to Mojave or change the DMG fs to '-fs HFS+ -format UDRW'.
+                            # If we do the latter we have of better coverage of older macOS versions.
+                            #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
+                        '''
+                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
+                    }
+                }
+            }
+        }
+    }
+}

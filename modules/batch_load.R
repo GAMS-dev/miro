@@ -1,9 +1,23 @@
 inputType <- list(text = c("_stag", "_uid"), date = c("_stime"))
 keysRaw   <- NULL
+scalarFields  <- NULL
+scalarTables  <- NULL
 scalarKeyTypeList <- list()
 scalarsTabNameIn  <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsFileName
 scalarsTabNameOut <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scalarsOutName
 modelInSorted <- sort(names(modelIn))
+modelOutSorted <- sort(modelOut[[scalarsTabNameOut]]$symnames)
+
+appendInputTypeList <- function(scalarsTabName){
+  inputType$text <<- c(inputType$text, vapply(scalarKeyTypeList[[scalarsTabName]], 
+                                             function(el) if(el$type %in% c("set", "string", "acronym")) "_" %+% el$key else NA_character_, 
+                                             character(1L), USE.NAMES = FALSE))
+  inputType$text <<- inputType$text[!is.na(inputType$text)]
+  inputType$number <<- c(inputType$number, vapply(scalarKeyTypeList[[scalarsTabName]], 
+                                                 function(el) if(el$type %in% c("scalar", "parameter", "number")) "_" %+% el$key else NA_character_, 
+                                                 character(1L), USE.NAMES = FALSE))
+  inputType$number <<- inputType$number[!is.na(inputType$number)]
+}
 
 scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
   i <- match(modelInSorted[[j]], names(modelIn))
@@ -11,26 +25,47 @@ scalarKeyTypeList[[scalarsTabNameIn]] <- lapply(seq_along(modelIn), function(j){
     list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
     list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
-  }else if(names(modelIn)[i] %in% c(scalarsFileName, scalarsOutName)){
-    list(key = modelIn[[i]]$symnames, type = vapply(modelIn[[i]]$symtypes, function(type){
-      if(type %in% c("scalar", "parameter")){
-        return("number")
-      }else{
-        return("string")
-      }
-    }, character(1L), USE.NAMES = FALSE), alias = modelIn[[i]]$symtext)
   }else{
     NA
   }
 })
+if(length(modelIn[[scalarsFileName]])){
+  scalarKeyTypeList[[scalarsTabNameIn]] <- c(scalarKeyTypeList[[scalarsTabNameIn]], 
+                                             lapply(seq_along(modelIn[[scalarsFileName]]$symnames), function(i){
+                                               list(key = modelOut[[scalarsOutName]]$symnames[[i]], 
+                                                   type = modelOut[[scalarsOutName]]$symtypes[[i]], 
+                                                   alias = modelOut[[scalarsOutName]]$symtext[[i]])
+                                             }))
+}
 scalarKeyTypeList[[scalarsTabNameIn]]   <- 
   scalarKeyTypeList[[scalarsTabNameIn]][!is.na(scalarKeyTypeList[[scalarsTabNameIn]])]
-scalarFields        <- scalarsTabNameIn %+% "-" %+% "_" %+% 
-  unlist(lapply(scalarKeyTypeList[[scalarsTabNameIn]], "[[", "key"))
-names(scalarFields) <- unlist(lapply(scalarKeyTypeList[[scalarsTabNameIn]],
-                                     "[[", "alias"))
+if(length(scalarKeyTypeList[[scalarsTabNameIn]])){
+  appendInputTypeList(scalarsTabNameIn)
+  scalarFields        <- scalarsTabNameIn %+% "-_" %+% 
+    vapply(scalarKeyTypeList[[scalarsTabNameIn]], "[[", character(1L), "key", USE.NAMES = FALSE)
+  names(scalarFields) <- vapply(scalarKeyTypeList[[scalarsTabNameIn]],
+                                "[[", character(1L), "alias", USE.NAMES = FALSE)
+  scalarTables <- scalarsTabNameIn
+}
+if(length(modelOut[[scalarsOutName]])){
+  scalarKeyTypeList[[scalarsTabNameOut]] <- lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(i){
+    list(key = modelOut[[scalarsOutName]]$symnames[[i]], 
+         type = modelOut[[scalarsOutName]]$symtypes[[i]], 
+         alias = modelOut[[scalarsOutName]]$symtext[[i]])
+  })
+  scalarKeyTypeList[[scalarsTabNameOut]] <- scalarKeyTypeList[[scalarsTabNameOut]][order(vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
+                                                                                                "[[", character(1L), "key", USE.NAMES = FALSE))]
+  appendInputTypeList(scalarsTabNameOut)
+  scalarOutFields        <- scalarsTabNameOut %+% "-_" %+% 
+                             vapply(scalarKeyTypeList[[scalarsTabNameOut]], "[[", character(1L), "key", USE.NAMES = FALSE)
+  names(scalarOutFields) <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
+                                   "[[", character(1L), "alias", USE.NAMES = FALSE)
+  scalarFields <- c(scalarFields, scalarOutFields)
+  scalarTables <- c(scalarTables, scalarsTabNameOut)
+}
+
 batchLoad <- BatchLoad$new(db, scalarsFileHeaders[c(1, 3)],
-                           scalarsTabNameIn, scalarKeyTypeList)
+                           scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "-" %+% metaCols[c("uid", "stime", "stag")])
 names(fields) <- c("", "Owner", "Date of creation", "Batch tags")
@@ -58,7 +93,7 @@ generateLine <- function(i, j, type, label, values = NULL){
                                                      "starts with" = "LIKE%",
                                                      "ends with" = "%LIKE",
                                                      is = "LIKE",
-                                                     "is not" = "NOT LIKE"), selected = "%LIKE%")
+                                                     "is not" = "NOT LIKE"), selected = "LIKE")
                            },
                            date = {
                              selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
@@ -68,14 +103,14 @@ generateLine <- function(i, j, type, label, values = NULL){
            tags$div(class = "itemSearchCrit",
                     switch(type,
                            number = {
+                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL, value = values[[1]])
+                           },
+                           text = {
                              if(length(values) > 20){
-                               numericInput("val_" %+% i %+% "_" %+% j, label=NULL, value = values[[1]])
+                               textInput("val_" %+% i %+% "_" %+% j, label=NULL)
                              }else{
                                selectInput("val_" %+% i %+% "_" %+% j, label=NULL, choices = values)
                              }
-                           },
-                           text = {
-                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
                            },
                            date = {
                              dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
@@ -141,19 +176,18 @@ lapply(seq_len(maxNumBlocks), function(i){
     j <- which.min(activeLines[((i - 1) * maxNumBlocks + 1):
                                  ((i - 1) * maxNumBlocks + maxNumBlocks)])
     activeLines[j + (i - 1) * maxNumBlocks]  <<- TRUE
-    
     label <- names(fields)[match(input[["newLine_" %+% i]], fields)]
     
     fieldsSelected[j + (i - 1) * maxNumBlocks] <<- input[["newLine_" %+% i]]
     field <- strsplit(input[["newLine_" %+% i]], "-", fixed = TRUE)[[1]][[2]]
     
     if(field %in% inputType[['text']]){
-      ui <- generateLine(i, j, "text", label)
+      values <- batchLoad$fetchValues(input[["newLine_" %+% i]])
+      ui <- generateLine(i, j, "text", label, values)
     }else if(field %in% inputType[['date']]){
       ui <- generateLine(i, j, "date", label)
     }else{
-      values <- batchLoad$fetchValues(input[["newLine_" %+% i]])
-      ui <- generateLine(i, j, "number", label, values)
+      ui <- generateLine(i, j, "number", label)
     }
     insertUI(
       selector = "#blockContent" %+% i,
@@ -239,12 +273,16 @@ observeEvent(input$btSendQuery, {
   names(colN) <- c(scenMetadataTable, vapply(colsToFetch, '[[', 
                                                FUN.VALUE = "characer", 1,
                                                USE.NAMES = FALSE))
-  
   tryCatch({
-    rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN)
+    rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN, limit = batchLoadMaxScen)
   }, error = function(e){
-    errMsg <- "An error occurred while executing the database query. " %+%
-      "Please try again or contact the system administrator in case this problem persists."
+    if(identical(conditionMessage(e), "maxNoRowsVio")){
+      errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
+                        batchLoadMaxScen)
+    }else{
+      errMsg <- "An error occurred while executing the database query. " %+%
+        "Please try again or contact the system administrator in case this problem persists."
+    }
     showErrorMsg("Error fetching data", errMsg)
     flog.warn("Problems executing batchLoad query. Error message: %s.", e)
   })
@@ -265,6 +303,7 @@ output$batchLoadResults <- renderDataTable({
 }, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE)
 
 observeEvent(input$batchLoadSelected, {
+  flog.debug("Button to load selected scenarios (batch load) clicked.")
   if(is.null(input$batchLoadResults_rows_selected)){
     return(NULL)
   }
@@ -272,6 +311,7 @@ observeEvent(input$batchLoadSelected, {
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadCurrent, {
+  flog.debug("Button to load current page of scenarios (batch load) clicked.")
   if(is.null(input$batchLoadResults_rows_current)){
     return(NULL)
   }
@@ -279,12 +319,59 @@ observeEvent(input$batchLoadCurrent, {
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
 observeEvent(input$batchLoadAll, {
+  flog.debug("Button to load all scenarios (batch load) clicked.")
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
   showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
 })
+
+output$btBatchDownload <- downloadHandler(
+  filename = function() {
+    tolower(modelName) %+% "_data.zip"
+  },
+  content = function(file) {
+    flog.debug("Button to download batch files clicked.")
+    
+    if(!length(sidsToLoad)){
+      flog.warning("No scenario IDs to download could be found.")
+      return(downloadHandlerError(file))
+    }
+    if(length(sidsToLoad) > batchLoadMaxScen){
+      flog.warning("Maximum number of scenarios to download was exceeded.")
+      return(downloadHandlerError(file))
+    }
+    wd <- getwd()
+    on.exit(setwd(wd), add = TRUE)
+    tmpDir      <- tempdir() %+% .Platform$file.sep %+% "scenDL"
+    on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
+    if(dir.exists(tmpDir)){
+      unlink(tmpDir, recursive = TRUE, force = TRUE)
+      Sys.sleep(0.5)
+    }
+    if(!dir.create(tmpDir)){
+      flog.error("Temporary folder could not be created")
+      return(downloadHandlerError(file))
+    }
+    
+    
+    setwd(tmpDir)
+    prog <- shiny::Progress$new()
+    on.exit(prog$close(), add = TRUE)
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    tryCatch({
+      batchLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+      return(zip(file, list.files(recursive = TRUE), compression_level = 6))
+    }, error = function(e){
+      flog.error(e)
+    })
+    return(downloadHandlerError(file))
+  },
+  contentType = "application/zip")
 
 noLinesInBlock <- function(blockId){
   if(any(activeLines[((blockId - 1) * maxNumBlocks + 1):

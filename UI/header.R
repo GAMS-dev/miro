@@ -20,4 +20,4 @@ header <- dashboardHeader(
                     tags$li(tags$a(href = "https://www.gams.com/latest/webui/", 
                            target = "_blank", lang$nav$header$help$doc)),
                     tags$li(actionLink("aboutDialog", lang$nav$header$help$about)))),
-  title=config$pageTitle, disable = if(isShinyProxy) TRUE else FALSE)
+  title=config$pageTitle, disable = FALSE)

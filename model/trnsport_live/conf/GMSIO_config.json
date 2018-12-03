@@ -1,7 +1,7 @@
 {
     "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -108,7 +108,16 @@
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost"
+            ],
+            "symtext": [
+                "total transportation costs in thousands of dollars"
+            ],
+            "symtypes": [
+                "parameter"
+            ],
             "count": 1,
             "headers": {
                 "Scalar": {

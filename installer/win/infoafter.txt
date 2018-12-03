@@ -1,0 +1,5 @@
+Thank you for installing alpha version 0.2.3 of GMSWebUI. 
+If you encounter any bugs or have any comments, please contact: support@gams.com.
+
+The sample models can be found in your "~/Documents/" folder (if you selected them for installation).
+To start the WebUI from within GAMS Studio, start it with the compile time variable: "--gmswebui=3". Have fun!

@@ -1,6 +1,7 @@
 #remove the currently active scenario
 closeScenario <- function(){
   # remove output data
+  errMsg <- NULL
   lapply(seq_along(modelOut), function(i){
     scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
   })
@@ -25,8 +26,8 @@ closeScenario <- function(){
              }else{
                showEl(session, "#no_data_dep_" %+% i)
                hideEl(session, "#slider_" %+% i)
-               updateSliderInput(session, "slider_" %+% i, min = NULL, max = NULL, 
-                                  value = NULL, step = 1)
+               updateSliderInput(session, "slider_" %+% i, min = 0, max = 1, 
+                                  value = 0, step = 1)
              }
            },
            dropdown = {
@@ -67,6 +68,8 @@ closeScenario <- function(){
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   noCheck[]         <<- FALSE
+  attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
+                               execPerm = vector("logical", attachMaxNo))
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){
@@ -77,6 +80,7 @@ closeScenario <- function(){
 }
 
 observeEvent(input$btDelete, {
+  req(activeScen)
   flog.debug("Button to delete scenario from database clicked.")
   showDeleteScenDialog()
 })

@@ -44,12 +44,14 @@ $if not set relax $set relax 0
 $if not set savesol $set savesol 0
 * Default: Line loss not approximated
 $if not set lineloss $set lineloss 0
+* Default: Available generator scenario: all generators
+$if not set genrun $set genrun allgen
 
 * Define filepath, name and extension.
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 
-$if set gmswebui $include uc_dc_webui_in.gms
+$if set webui $include uc_dc_webui_in.gms
 
 * Define type of model
 $set modeltype "DC"
@@ -329,5 +331,10 @@ execute 'rm temp_solution.gdx'
 * END IF-loop if(infeas eq 0)
 );
 
-$if set gmswebui $include %MODELPATH%webui_out.gms
-$if set gmswebui $batinclude %MODELPATH%webui.gms
+$onExternalOutput
+Parameter ePrice(i,t) 'Electricity prices';
+$offExternalOutput
+ePrice(i,t) = c_BalanceP.m(i,t);
+
+$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $batinclude %MODELPATH%webui.gms

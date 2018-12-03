@@ -310,11 +310,6 @@
               "minLength":1,
               "required":true
             },
-            "scalarsAlias":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "tooltips":{  
               "type":"object",
               "additionalProperties":false,
@@ -570,7 +565,7 @@
               "minLength":1,
               "required":true
             },
-            "btOverride":{  
+            "btOverwrite":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -603,6 +598,46 @@
               "required":true
             },
             "newTags":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachmentsLabel":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachmentsAdd":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachmentsExecPerm":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachSuccess":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachMaxSizeError":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachMaxNoError":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachDuplicateError":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "attachUnknownError":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -826,27 +861,17 @@
               "minLength":1,
               "required":true
             },
-            "btImportDb":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "cbSelectManually":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-            "cbDatabase":{  
+            "overwriteWarning":{  
               "type":"string",
               "minLength":1,
               "required":true
             },
-            "overrideWarning":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "descOverrideInput":{  
+            "descOverwriteInput":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -861,7 +886,7 @@
               "minLength":1,
               "required":true
             },
-            "overrideButton":{  
+            "overwriteButton":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1234,23 +1259,6 @@
                   "required":true
                 }
               }
-            },
-            "successDialog":{
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "title":{  
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "desc":{  
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
             }
          }
         },
@@ -1336,6 +1344,11 @@
                   "required":true
                 },
                 "interactiveButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "downloadButton":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1472,6 +1485,28 @@
             }
           }
         },
+        "prepRun":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "sendInput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "downloadAttach":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "loadScenDb":{  
           "type":"object",
           "additionalProperties":false,
@@ -1559,6 +1594,18 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "downloadHandler":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "msg":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1805,6 +1852,11 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "fileSize":{  
               "type":"string",
               "minLength":1,
               "required":true

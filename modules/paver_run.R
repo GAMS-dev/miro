@@ -17,6 +17,7 @@ observeEvent(input$btPaverConfig, {
   hideEl(session, "#btBatchLoad")
   hideEl(session, "#batchLoadMethod")
   hideEl(session, "#btPaverConfig")
+  hideEl(session, "#btBatchDownload")
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
@@ -27,8 +28,12 @@ gmswebiter <- 0
 observeEvent(input$btPaver, {
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
-  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ], 
-                            input$selPaverAttribs, maxSolversPaver, stimeIdentifier)){
+  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, 
+                                                       names(rv$fetchedScenarios) %in% c(sidIdentifier,
+                                                                                         paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameIn]], 
+                                                                                              "[[", character(1L), "key", USE.NAMES = FALSE))), 
+                                                       drop = FALSE], 
+                            input$selPaverAttribs, maxSolversPaver)){
     showEl(session, "#configPaverMaxSolversErr")
     return()
   }else{

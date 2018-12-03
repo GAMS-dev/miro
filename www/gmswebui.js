@@ -14,6 +14,61 @@ function isInputEl(id){
     return false;
   }
 }
+function changeActiveButtons(tabId){
+  switch(tabId) {
+    case 'inputData':
+        $("#btImport").show();
+        $("#btSolve").show();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case 'outputData':
+        $("#btImport").show();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case 'gamsinter':
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").show();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+        break;
+    case 'scenarios':
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").show();
+        $("#btCompareScen").show();
+        $("#btLoadScen").show();
+        break;
+    default:
+        $("#btImport").hide();
+        $("#btSolve").hide();
+        $("#btInterrupt").hide();
+        $("#btSplitView").hide();
+        $("#btCompareScen").hide();
+        $("#btLoadScen").hide();
+  }
+}
+let removeButtonCounter = {};
+  
+function removeAttachment(elId){
+  $('#btRemoveAttachment_' + elId).parent().parent().remove();
+  if(typeof(removeButtonCounter[elId]) == 'undefined'){
+    removeButtonCounter[elId] = 0;
+  }else{
+    removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
+  }
+  Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
+}
+
 $(document).ready(function () {
   
 // besides these updates, gms-switchTab (see below) has always has to be considered as well
@@ -25,95 +80,37 @@ $(document).ready(function () {
   $("#btLoadScen").hide();
   
   $("a[data-value='inputData']").click(function() {
-    $("#btImport").show();
-    $("#btSolve").show();
-    $("#btInterrupt").hide();
-    $("#btSplitView").hide();
-    $("#btCompareScen").hide();
-    $("#btLoadScen").hide();
+    changeActiveButtons('inputData');
   });
   $("a[data-value='outputData']").click(function() {
-    $("#btImport").show();
-    $("#btSolve").hide();
-    $("#btInterrupt").hide();
-    $("#btSplitView").hide();
-    $("#btCompareScen").hide();
-    $("#btLoadScen").hide();
+    changeActiveButtons('outputData');
   });
   $("a[data-value='gamsinter']").click(function() {
-    $("#btImport").hide();
-    $("#btSolve").hide();
-    $("#btInterrupt").show();
-    $("#btSplitView").hide();
-    $("#btCompareScen").hide();
-    $("#btLoadScen").hide();
+    changeActiveButtons('gamsinter');
   });
   $("a[data-value='scenarios']").click(function() {
-    $("#btImport").hide();
-    $("#btSolve").hide();
-    $("#btInterrupt").hide();
-    $("#btSplitView").show();
-    $("#btCompareScen").show();
-    $("#btLoadScen").show();
-  });
-  $("a[data-value='advanced']").click(function() {
-    $("#btImport").hide();
-    $("#btSolve").hide();
-    $("#btInterrupt").hide();
-    $("#btSplitView").hide();
-    $("#btCompareScen").hide();
-    $("#btLoadScen").hide();
+    changeActiveButtons('scenarios');
   });
   $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='batchAnalyze']").click(function() {
-    $("#btImport").hide();
-    $("#btSolve").hide();
-    $("#btInterrupt").hide();
-    $("#btSplitView").hide();
-    $("#btCompareScen").hide();
-    $("#btLoadScen").hide();
+    changeActiveButtons('default');
   });
   // show/hide buttons after (R triggered) tab switch.
   Shiny.addCustomMessageHandler('gms-switchTab', function(el) {
     switch(el) {
     case "input":
-        $("#btImport").show();
-        $("#btSolve").show();
-        $("#btInterrupt").hide();
-        $("#btSplitView").hide();
-        $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
+        changeActiveButtons('inputData');
         break;
     case "output":
-        $("#btImport").show();
-        $("#btSolve").hide();
-        $("#btInterrupt").hide();
-        $("#btSplitView").hide();
-        $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
+        changeActiveButtons('outputData');
         break;
     case "gamsinter":
-        $("#btImport").hide();
-        $("#btSolve").hide();
-        $("#btInterrupt").show();
-        $("#btSplitView").hide();
-        $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
+        changeActiveButtons('gamsinter');
         break;
     case "batchAna":
-        $("#btImport").hide();
-        $("#btSolve").hide();
-        $("#btInterrupt").hide();
-        $("#btSplitView").hide();
-        $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
+        changeActiveButtons('default');
         break;
     case "scenComp":
-        $("#btImport").hide();
-        $("#btSolve").hide();
-        $("#btInterrupt").hide();
-        $("#btSplitView").show();
-        $("#btCompareScen").show();
-        $("#btLoadScen").show();
+        changeActiveButtons('scenarios');
         break;
     }
   });
@@ -144,6 +141,10 @@ $(document).ready(function () {
     }else{
       $(id).hide();
     }
+  });
+  Shiny.addCustomMessageHandler('gms-showHideEl', function(data) {
+    el = $(data.id);
+    el.show().delay(data.delay).fadeOut();
   });
   Shiny.addCustomMessageHandler('gms-enableEl', function(id) {
     $(id).prop( "disabled", false);
@@ -176,6 +177,19 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-hideModal', function(delay) {
     setTimeout(function() { $('#shiny-modal-wrapper').find('.modal').modal('hide'); }, delay * 1000);
   });
+  Shiny.addCustomMessageHandler('gms-updateAttachList', function(el){
+    el.id = $.makeArray(el.id);
+    el.name = $.makeArray(el.name);
+    for(i=0;i<el.id.length;i++){
+      if(el.allowExec){
+        checkBoxHTML = '</div><div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_' + el.id[i] +'\', $(this).is(\':checked\'));" checked="checked"><span>' + el.labelCb + '</span></label></div></div></div></div>';
+      }else{
+        checkBoxHTML = '';
+      }
+      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> <a id="downloadAttachment_' + el.id[i] + '" class="shiny-download-link" href="session/' + el.token + '/download/downloadAttachment_' + el.id + '?w=" target="_blank" download="">' + el.name[i] + '</a>' + checkBoxHTML).insertBefore('#endAttachList');
+    }
+  });
+  
 });
 
 function renderMathJax() {

@@ -1,8 +1,8 @@
 # load input data from excel sheet
-observeEvent(input$btOverrideLocal, {
+observeEvent(input$btOverwriteLocal, {
   scenName <- isolate(input$local_newScenName)
-  flog.debug("Override existing scenario (name: '%s') button clicked.", scenName)
-  activeScen <<- Scenario$new(db = db, sname = scenName)
+  flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
+  activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
   rv$activeSname <- scenName
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })
@@ -60,20 +60,20 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   
   if(any(datasetsImported)){
     hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverrideInput")
-    showEl(session, "#importDataOverride")
+    showEl(session, "#btOverwriteInput")
+    showEl(session, "#importDataOverwrite")
   }else{
-    overrideInput <<- FALSE
-    rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)
+    overwriteInput <<- FALSE
+    rv$btOverwriteInput <<- isolate(rv$btOverwriteInput + 1L)
 }
 })
 
-observeEvent(input$btOverrideInput, {
-  overrideInput <<- TRUE
-  rv$btOverrideInput <<- isolate(rv$btOverrideInput + 1L)
+observeEvent(input$btOverwriteInput, {
+  overwriteInput <<- TRUE
+  rv$btOverwriteInput <<- isolate(rv$btOverwriteInput + 1L)
 })
 
-observeEvent(virtualActionButton(rv$btOverrideInput),{
+observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(is.null(input$localInput$datapath)){
     flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)
@@ -126,7 +126,7 @@ observeEvent(virtualActionButton(rv$btOverrideInput),{
   # set no output identifier
   noOutputData <<- T
   if(newInputCount){
-    showNotification(paste0(newInputCount, lang$nav$notificationNewInput$new))
+    showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
   }else{
     showNotification(lang$nav$notificationNewInput$noNew, type = "error")
   }

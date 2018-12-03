@@ -123,13 +123,16 @@ BatchLoad <- R6Class("BatchLoad",
                                                  paste(innerJoin, collapse = " "), if(length(subsetList)) " WHERE ", 
                                                  subsetRows, " LIMIT ?lim ;"))
                            flog.debug("Db: Data was imported (BatchLoad.fetchResults).")
-                           query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
+                           query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                          }, error = function(e){
                            stop(sprintf("Db: An error occurred while querying the database (BatchLoad.fetchResults)." %+%
                                           "Error message: '%s'.", e),
                                 call. = FALSE)
                          })
+                         if(nrow(dataset) > limit){
+                           stop("maxNoRowsVio", call. = FALSE)
+                         }
                          
                          return(dataset)
                        },
@@ -190,8 +193,7 @@ BatchLoad <- R6Class("BatchLoad",
                                              "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
                            paverData      <- private$db$importDataset(private$tableNameTrace, 
-                                                                      tibble(private$sidCol, private$groupedSids[[i]]), 
-                                                                      innerSepAND = FALSE)[-1]
+                                                                      subsetSids = private$groupedSids[[i]])[-1]
                            paverData[[1]] <- private$groupedNames[[i]]
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
                            if(length(exclTraceCols)){
@@ -202,6 +204,79 @@ BatchLoad <- R6Class("BatchLoad",
                            
                          })
                          
+                       },
+                       genCsvFiles = function(scenIds, tmpDir, progressBar = NULL){
+                         stopifnot(length(scenIds) >= 1L)
+                         stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
+                         
+                         scenTableNames <- c(private$db$getTableNameMetadata(), private$db$getTableNamesScenario(), private$tableNameTrace)
+                         noScenTables   <- length(scenTableNames)
+                         colScenName <- private$db$getScenMetaColnames()['sname']
+                         
+                         sameNameCounter  <- NULL
+                         scenIdDirNameMap <- list()
+                         
+                         if(!is.null(progressBar)){
+                           noProgressSteps <- (noScenTables * 2L + 1L)
+                         }
+                         for(tabId in seq_along(scenTableNames)){
+                           if(identical(tabId, 1L)){
+                             tableName <- "_metadata_"
+                           }else if(identical(tabId, length(scenTableNames))){
+                             tableName <- "_trace_"
+                           }else{
+                             tableName <- regmatches(scenTableNames[[tabId]], 
+                                                     regexpr("_", scenTableNames[[tabId]]), invert = TRUE)[[1]][[2]]
+                             if(startsWith(tableName, "_")){
+                               tableName <- substring(tableName, 2)
+                             }
+                           }
+                           if(!is.null(progressBar)){
+                             progressBar$inc(amount = 1/noProgressSteps, 
+                                             message = sprintf("Importing table %d of %d from database.", tabId, noScenTables))
+                           }
+                           tableTmp <- private$db$importDataset(scenTableNames[[tabId]], subsetSids = scenIds)
+                           tableTmp[[private$sidCol]] <- NULL
+                           
+                           if(length(tableTmp)){
+                             tableTmp <- split(tableTmp, tableTmp[[1]])
+                           }else{
+                             tableTmp <- list()
+                           }
+                           
+                           
+                           if(!is.null(progressBar)){
+                             progressBar$inc(amount = 1/noProgressSteps, 
+                                             message = sprintf("Writing CSV files for table %d of %d.", tabId, noScenTables))
+                           }
+                           lapply(seq_along(tableTmp), function(i){
+                             scenId   <- tableTmp[[i]][[1L]][[1L]]
+                             
+                             if(identical(tabId, 1L)){
+                               sameNameCounter   <<- vector("list", length(tableTmp))
+                               
+                               scenName <- tableTmp[[i]][[colScenName]][[1L]]
+                               
+                               dirNameScen <- tmpDir %+% .Platform$file.sep %+% scenName
+                               
+                               if(!is.null(sameNameCounter[[i]])){
+                                 dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[i]])
+                               }
+                               scenIdDirNameMap[[scenId]] <<- dirNameScen
+                               if(!dir.create(dirNameScen)){
+                                 stop(sprintf("Temporary folder: '%s' could not be created.", 
+                                              dirNameScen), call. = FALSE)
+                               }
+                               sameNameCounter[[i]] <<- sameNameCounter[[i]] + 1L
+                             }
+                             write_csv(tableTmp[[i]], paste0(scenIdDirNameMap[[scenId]], .Platform$file.sep, tableName, ".csv"))
+                           })
+                         }
+                         if(!is.null(progressBar)){
+                           progressBar$inc(amount = 1/noProgressSteps, 
+                                           message = "Generating zip file.")
+                         }
+                         return(invisible())
                        },
                        finalize = function(){
                          NULL
@@ -237,14 +312,16 @@ BatchLoad <- R6Class("BatchLoad",
                          as_tibble(dbGetQuery(private$conn, query))
                        },
                        genPivotQuery          = function(tableName, keyCol, valCol, keyTypeList){
+                         keyCols <- vapply(keyTypeList, "[[", character(1L), "key", USE.NAMES = FALSE)
                          SQL(paste0("SELECT * FROM crosstab ('SELECT ", 
                                     dbQuoteIdentifier(private$conn, private$sidCol),  ", ", 
                                     dbQuoteIdentifier(private$conn, keyCol), 
-                                    ", max(", dbQuoteIdentifier(private$conn, valCol), ") FROM ", 
+                                    ", ", dbQuoteIdentifier(private$conn, valCol), " FROM ", 
                                     dbQuoteIdentifier(private$conn, tableName), 
-                                    " GROUP BY 1,2 ORDER BY 1,2','SELECT DISTINCT ", 
-                                    dbQuoteIdentifier(private$conn, keyCol), " FROM ", 
-                                    dbQuoteIdentifier(private$conn, tableName), " ORDER BY 1') AS ", 
+                                    " WHERE ", dbQuoteIdentifier(private$conn, keyCol), " IN ('", 
+                                    paste(dbQuoteString(private$conn, keyCols), collapse = "', '"), 
+                                    "') ORDER BY 1,2',$$ VALUES (", 
+                                    paste(dbQuoteString(private$conn, keyCols), collapse = "), ("), ")$$) AS ", 
                                     dbQuoteIdentifier(private$conn, tableName %+% "_tmp"), " (", 
                                     dbQuoteIdentifier(private$conn, private$sidCol), " int, ", 
                                     private$genKeyTypeString(keyTypeList), ")"))
@@ -252,9 +329,9 @@ BatchLoad <- R6Class("BatchLoad",
                        genKeyTypeString       = function(keyTypeList){
                          keyTypeList <- vapply(keyTypeList, function(keyTypeEl){
                            dbQuoteIdentifier(private$conn, "_" %+% keyTypeEl$key) %+%
-                             if(identical(keyTypeEl$type, "string")){
+                             if(keyTypeEl$type %in% c("set", "string", "acronym")){
                                " varchar"
-                             }else if(identical(keyTypeEl$type, "number")){
+                             }else if(keyTypeEl$type %in% c("scalar", "parameter", "number")){
                                " numeric"
                              }else{
                                stop("Invalid type: ''. Allowed types are: 'string, number'.")

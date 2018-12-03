@@ -72,8 +72,8 @@ if(identical(config$activateModules$batchMode, TRUE)){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["batchMode_" %+% i]], TRUE)){
                    # double slider in non batch mode
-                   return(paste0("--", names(modelIn)[[i]], "_min=", value[1], 
-                                 " --", names(modelIn)[[i]], "_max=", value[2]))
+                   return(paste0("--", names(modelIn)[[i]], "_lo=", value[1], 
+                                 " --", names(modelIn)[[i]], "_up=", value[2]))
                  }
                  
                  stepSize <- input[["batchStep_" %+% i]]
@@ -82,8 +82,8 @@ if(identical(config$activateModules$batchMode, TRUE)){
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0("--", names(modelIn)[[i]], "_min=", value$min, 
-                               " --", names(modelIn)[[i]], "_max=", value$max))
+                 return(paste0("--", names(modelIn)[[i]], "_lo=", value$min, 
+                               " --", names(modelIn)[[i]], "_up=", value$max))
                }
              },
              dropdown = {
@@ -114,56 +114,8 @@ if(identical(config$activateModules$batchMode, TRUE)){
     }
     return(list(ids = scenIds, gmspar = gmsString))
   })
-  observeEvent(input$btBatchAll, {
-    # solve all scenarios in batch run
-    prog <- shiny::Progress$new()
-    on.exit(prog$close())
-    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
-    updateProgress <- function(incAmount, detail = NULL) {
-      prog$inc(amount = incAmount, detail = detail)
-    }
-    
-    # BEGIN EPIGRIDS specific
-    tryCatch({
-      writeLines(scenGmsPar, workDir %+% tolower(modelName) %+% ".gmsb")
-      updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
-    }, error = function(e) {
-      errMsg <<- lang$errMsg$gamsExec$desc
-      flog.error("GAMS batch file was not written successfully. Error message: %s.", e)
-    })
-    if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
-      return(NULL)
-    }
-    # END EPIGRIDS specific
-    
-    showModal(modalDialog(title = lang$nav$dialogBatch$successDialog$title, 
-                          lang$nav$dialogBatch$successDialog$desc))
-  })
-  observeEvent(input$btBatchNew, {
-    # solve only scenarios that do not yet exist
-    prog <- shiny::Progress$new()
-    on.exit(prog$close())
-    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
-    updateProgress <- function(incAmount, detail = NULL) {
-      prog$inc(amount = incAmount, detail = detail)
-    }
-    
-    # BEGIN EPIGRIDS specific
-    tryCatch({
-      writeLines(scenGmsPar[idxDiff], workDir %+% tolower(modelName) %+% ".gmsb")
-      updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
-    }, error = function(e) {
-      errMsg <<- lang$errMsg$gamsExec$desc
-      flog.error("GAMS batch file was not written successfully. Error message: %s.", e)
-    })
-    if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
-      return(NULL)
-    }
-    # END EPIGRIDS specific
-    
-    showModal(modalDialog(title = lang$nav$dialogBatch$successDialog$title, 
-                          lang$nav$dialogBatch$successDialog$desc))
-  })
+  if(file.exists("./modules/gams_run_epigrids.R"))
+    source("./modules/gams_run_epigrids.R", local = TRUE)
 }
 
 
@@ -200,17 +152,22 @@ observeEvent(input$btSolve, {
                           title = lang$nav$dialogBatch$title,
                           footer = tagList(
                             modalButton(lang$nav$dialogBatch$cancelButton),
-                            actionButton("btBatchAll", label = lang$nav$dialogBatch$processAllButton),
-                            actionButton("btBatchNew", label = lang$nav$dialogBatch$processUnsolvedButton, 
-                                         class = "btHighlight1")),
+                            tags$a(id="btBatchAll", class='btn btn-default shiny-download-link',
+                                   href='', target='_blank', download=NA, lang$nav$dialogBatch$processAllButton),
+                            tags$a(id="btBatchNew", class='btn btn-default shiny-download-link btHighlight1',
+                                   href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)),
                           fade = TRUE, easyClose = FALSE))
     enableEl(session, "#btSolve")
     
     return(NULL)
   }
+  prog <- shiny::Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$nav$progressBar$prepRun$title, value = 0)
   
   updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   
+  prog$inc(amount = 0.5, detail = lang$nav$progressBar$prepRun$sendInput)
   # save input data 
   source("./modules/input_save.R", local = TRUE)
   pfFileContent <- NULL
@@ -218,8 +175,8 @@ observeEvent(input$btSolve, {
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), tolower(scalarsFileName))){
       # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_min|_max)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
       DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
       GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
@@ -262,8 +219,8 @@ observeEvent(input$btSolve, {
   # run GAMS
   tryCatch({
     homeDir <- getwd()
-    gamsArgs <- c(paste0("idir1=", homeDir, .Platform$file.sep, modelDir), "idir2=" %+% currentModelDir, 
-                  "curdir=" %+% workDir, "logOption=3")
+    gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", homeDir, .Platform$file.sep, modelDir), 
+                  "curdir=" %+% workDir, "logOption=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
     }
@@ -272,10 +229,15 @@ observeEvent(input$btSolve, {
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
     }
-    writeLines(c(gamsArgs, pfFileContent), paste0(workDir, tolower(modelName), ".pf"))
+    writeLines(c(pfFileContent, gamsArgs), pfFilePath)
+    
+    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
+      prog$inc(amount = 0, detail = lang$nav$progressBar$prepRun$downloadAttach)
+      activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+    }
+    prog$close()
     gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                         "pf=" %+% pfFilePath, 
-                                                         config$gamsWEBUISwitch), 
+                                                         "pf=" %+% pfFilePath), 
                          stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
@@ -285,14 +247,15 @@ observeEvent(input$btSolve, {
     return(NULL)
   }
   
-  
   #activate Interrupt button as GAMS is running now
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader(500, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+      logfile <- reactiveFileReader2(300, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+      logfileObs <- logfile$obs
+      logfile <- logfile$re
     }, error = function(e) {
       flog.error("GAMS log file could not be read (model: '%s'). Error message: %s.", modelName, e)
       errMsg <<- lang$errMsg$readLog$desc
@@ -300,11 +263,13 @@ observeEvent(input$btSolve, {
     showErrorMsg(lang$errMsg$readLog$title, errMsg)
   }
   
-  modelStatus <- reactivePoll(1000, session, checkFunc = function(){
+  modelStatus <- reactivePoll2(1000, session, checkFunc = function(){
     gams$get_exit_status()
   }, valueFunc = function(){
     gams$get_exit_status()
   })
+  modelStatusObs <- modelStatus$obs
+  modelStatus <- modelStatus$re
   
   if(config$activateModules$logFile){
     output$logStatus <- renderText({
@@ -326,15 +291,23 @@ observeEvent(input$btSolve, {
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
     if(!is.null(modelStatus())){
-      
+      modelStatusObs$destroy()
+      modelStatus <- NULL
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       
+      if(config$activateModules$logFile){
+        logfileObs$destroy()
+        logfile <- NULL
+      }
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          output$listFile <- renderText(paste(readLines(workDir %+% modelName %+% ".lst", 
-                                                        warn = FALSE), collapse = "\n"))
+          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > lstMaxNoLinesToRead){
+            output$listFile <- renderText(lang$errMsg$readLst$fileSize)
+          }else{
+            output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
+          }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
           flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 

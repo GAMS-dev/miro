@@ -32,7 +32,7 @@ showNewScenDialog <- function(tmpScenName){
       ),
       tags$div(id = "dialogSaveConfirm", style = "display:none;",
                actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
-               actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverride, 
+               actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverwrite, 
                             class = "btHighlight1")
       )
     ),
@@ -156,8 +156,8 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                               ),
                                               fluidRow(
                                                 tags$div(style = "text-align: center;",
-                                                         actionButton("btOverrideLocal", 
-                                                                      lang$nav$dialogImport$overrideButton),
+                                                         actionButton("btOverwriteLocal", 
+                                                                      lang$nav$dialogImport$overwriteButton),
                                                          actionButton("btNewNameLocal", 
                                                                       lang$nav$dialogImport$newNameButton, 
                                                                       class = "btHighlight1")
@@ -216,14 +216,14 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
              }
     ),
-    tags$div(id = "importDataOverride", style = "display:none;",
-             lang$nav$dialogImport$descOverrideInput
+    tags$div(id = "importDataOverwrite", style = "display:none;",
+             lang$nav$dialogImport$descOverwriteInput
     ), footer = {
       tagList(
         modalButton(lang$nav$dialogImport$cancelButton),
-        actionButton("btOverrideInput", label = lang$nav$dialogImport$okButton, 
+        actionButton("btOverwriteInput", label = lang$nav$dialogImport$okButton, 
                      class = "btHighlight1", style = "display:none;"),
-        actionButton("btOverrideScen", label = lang$nav$dialogImport$okButton, 
+        actionButton("btOverwriteScen", label = lang$nav$dialogImport$okButton, 
                      class = "btHighlight1", style = "display:none;")
       )
     }
@@ -287,17 +287,30 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
   ))
   addClassEl(session, "#btSortTime", "scen-sort-by-selected")
 }
-showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character(0L)){
+showEditMetaDialog <- function(metadata, sharedScen = FALSE, 
+                               ugroups = character(0L), 
+                               allowAttachments = FALSE, 
+                               attachmentMetadata = character(0L), attachAllowExec = FALSE){
   scenTags <- csv2Vector(metadata[["stag"]][[1]])
   showModal(modalDialog(
     title = lang$nav$dialogEditMeta$title,
-    tags$div(class = "space"),
-    tags$div(class = "errMsg", id = "editMetaBadName", style = "display:none;",
+    tags$div(class = "gmsalert gmsalert-success", id = "attachSuccess", 
+             lang$nav$dialogEditMeta$attachSuccess),
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaBadName", 
              lang$nav$dialogNewScen$badName),
-    tags$div(class = "errMsg", id = "editMetaNameExists", style = "display:none;",
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
              lang$nav$dialogNewScen$scenExits),
-    tags$div(class = "errMsg", id = "editMetaError", style = "display:none;", 
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
              lang$nav$dialogEditMeta$errMsg),
+    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
+             lang$nav$dialogEditMeta$attachMaxNoError),
+    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxSizeError", 
+             lang$nav$dialogEditMeta$attachMaxSizeError),
+    tags$div(class = "gmsalert gmsalert-error", id = "attachDuplicateError", 
+             lang$nav$dialogEditMeta$attachDuplicateError),
+    tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
+             lang$nav$dialogEditMeta$attachUnknownError),
+    tags$div(class = "space"),
     tags$div(id = "editMetaSuccess", style = "display:none;", 
              lang$nav$dialogEditMeta$success),
     tags$div(id = "editMetaUI",
@@ -324,6 +337,30 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE, ugroups = character
                       multiple = TRUE, options = list(
                         'create' = TRUE,
                         'persist' = FALSE))
+        )
+      },
+      if(allowAttachments){
+        tagList(
+          tags$div(class = "labelClass", lang$nav$dialogEditMeta$attachmentsLabel),
+          fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE),
+          if(length(attachmentMetadata[["name"]])){
+            lapply(seq_along(attachmentMetadata[["name"]]), function(i){
+              tags$div(class = "row attachment-line", 
+                       column(width = 6, 
+                              HTML(paste0('<button class="btn btn-default btIcon" id="btRemoveAttachment_', i,
+                                          '" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
+                              downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
+                              ),
+                       if(attachAllowExec){
+                         column(width = 6,
+                                checkboxInput("execPermAttachment_" %+% i, lang$nav$dialogEditMeta$attachmentsExecPerm, 
+                                              value = attachmentMetadata[["execPerm"]][[i]]))
+                       }
+                              )
+            })
+          },
+          tags$div(id = "endAttachList", class = "small-space"),
+          genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
         )
       }
     ),
@@ -361,6 +398,8 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxC
     ),
     footer = tagList(
       modalButton(lang$nav$batchMode$configPaverDialog$cancelButton),
+      tags$a(id="btBatchDownload", class='btn btn-default shiny-download-link',
+             href='', target='_blank', download=NA, lang$nav$batchMode$configPaverDialog$downloadButton),
       actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton,
                    class = "btHighlight1"),
       actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 

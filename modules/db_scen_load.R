@@ -134,10 +134,9 @@ observeEvent(input$btLoadScenConfirm, {
   rm(scenSelected)
   # if in comparison mode skip input data check
   if(!isInSolveMode){
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
     return()
   }
-  
   # update input sheets
   # check whether current input datasets are empty
   if(identical(isolate(input$cbSelectManually), TRUE) && 
@@ -160,18 +159,18 @@ observeEvent(input$btLoadScenConfirm, {
   
   if(any(inputDatasetsExist)){
     hideEl(session, "#importDataTabset")
-    showEl(session, "#btOverrideScen")
-    showEl(session, "#importDataOverride")
+    showEl(session, "#btOverwriteScen")
+    showEl(session, "#importDataOverwrite")
   }else{
-    overrideInput <<- FALSE
-    rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+    overwriteInput <<- FALSE
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
   }
 })
 
-observeEvent(input$btOverrideScen, {
-  flog.debug("Override scenario button clicked.")
-  overrideInput <<- TRUE
-  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+observeEvent(input$btOverwriteScen, {
+  flog.debug("Overwrite scenario button clicked.")
+  overwriteInput <<- TRUE
+  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 
 observeEvent(input$btBatchLoad, {
@@ -180,10 +179,10 @@ observeEvent(input$btBatchLoad, {
   if(isInSplitView){
     rv$btSplitView <<- isolate(rv$btSplitView + 1L)
   }
-  rv$btOverrideScen <<- isolate(rv$btOverrideScen + 1L)
+  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 
-observeEvent(virtualActionButton(rv$btOverrideScen), {
+observeEvent(virtualActionButton(rv$btOverwriteScen), {
   flog.debug("Loading and rendering scenarios: '%s'.",
              paste(sidsToLoad, collapse = ", "))
   if(!length(sidsToLoad)){
@@ -216,10 +215,19 @@ observeEvent(virtualActionButton(rv$btOverrideScen), {
   
   if(isInSolveMode){
     # close currently opened scenario
+    
     if(!closeScenario()){
       return()
     }
-    activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
+    tryCatch(activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]]), 
+             error = function(e){
+               flog.error("Error generating new Scenario object. Error message: %s.", e)
+               errMsg <<- lang$errMsg$loadScen$desc
+             })
+    if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
+      return()
+    }
+    
     
     # check whether all input datasets were imported
     if(length(modelOut)){

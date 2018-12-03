@@ -16,12 +16,19 @@ getScenTabData <- function(sheetName){
   }else{
     # sheet is input sheet
     if(is.null(configGraphsIn[[i]]$outType)){
-      configGraphsIn[[i]]$outType <- "datatable"
+      configGraphsIn[[i]]$outType <- "pivot"
+      # prepopulate scalar table
+      if(inputDsNames[i] == scalarsFileName && !length(configGraphsIn[[i]]$pivottable)){
+        configGraphsIn[[i]]$pivottable$rows = c("Scalar")
+        configGraphsIn[[i]]$pivottable$aggregatorName = "Sum"
+        configGraphsIn[[i]]$pivottable$vals = "Value"
+      }
     }
     tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
+    
     if(inputDsNames[i] == scalarsFileName){
-      tabData$sheetName <- lang$nav$scen$scalarsAlias
+      tabData$sheetName <- config$scalarAliases$inputScalars
     }else{
       tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
     }
@@ -43,7 +50,6 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                     # get sheet configuration information
                                     tabData <- getScenTabData(sheetName)
                                     
-                                    
                                     tabPanel(value = "contentScen_" %+% scenId %+% "_" %+% tabData$tabId,
                                              title = span(tabData$sheetName, title = tabData$tooltip), 
                                              tags$div(class="space"),
@@ -51,7 +57,6 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
                                              }else{
                                                tagList(
-                                                 # loading animation
                                                  tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 
                                                           style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", addCssDim(tabData$graphConfig$height, 5)),{
                                                             tryCatch({

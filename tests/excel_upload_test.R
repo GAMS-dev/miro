@@ -1,0 +1,10 @@
+app <- ShinyDriver$new("../", loadTimeout = 10000)
+app$snapshotInit("excel_upload_test")
+
+app$setInputs(btImport = "click")
+Sys.sleep(0.5)
+app$setInputs(tb_importData = "tb_importData_local")
+app$uploadFile(localInput = "data/pickstock.xlsx")
+app$setInputs(btCheckSnameLocal = "click")
+app$snapshot(items = list(output = c("in_1")), screenshot = TRUE)
+app$stop()

@@ -1,12 +1,13 @@
 * webui.gms
+$offListing
 $if not set MAX_VAL_COL $set MAX_VAL_COL -1
-$if not set GMSWEBUI $exit
+$if not set WEBUI $exit
 $setNames "%gams.input%" fp fn fe
 
-$if %GMSWEBUI%==0 $exit
-$if %GMSWEBUI%==1 $goto runwebui
-$ife %GMSWEBUI%>1 $goto mkwebui
-$abort Unexpected setting of GMSWEBUI=%GMSWEBUI%
+$if %WEBUI%==1 $goto runwebui
+$if %WEBUI%=="launch" $goto mkwebui
+$if %WEBUI%=="compile" $goto mkwebui
+$abort Unexpected setting of WEBUI=%WEBUI%. Please use either "launch" to launch the WebUI or "compile" to compile configuration files. 
 
 $label runwebui
 $batinclude %fn%_webui
@@ -17,16 +18,20 @@ $gdxout %fn%_webui
 $unload
 $gdxout
 
+$if not set appLogoPath $set appLogoPath ""
+$ifthen not set mkApp
+$   set mkApp 0
+$else
+$   set mkApp 1
+$endif
+
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
-$ifthene.a %GMSWEBUI%>2
-$ifthen.b dExist %gams.sysdir%GMSWebUI
+$ifthen dExist %gams.sysdir%GMSWebUI
 $  set WEBUIDIR %gams.sysdir%GMSWebUI
-$else.b
-$  set WEBUIDIR ..%system.dirsep%..
-$  echo library('methods');if(!"shiny"%in%installed.packages()){install.packages("shiny",repos="https://cloud.r-project.org",dependencies=TRUE)};shiny::runApp(launch.browser=TRUE) > runapp.R
-$endif.b
-$endif.a
+$else
+$  set WEBUIDIR %fp%..%system.dirsep%..
+$endif
 $onecho > writecsv.py
 from subprocess import run
 from shlex import quote
@@ -87,14 +92,18 @@ def getCSVHeader(sym, max_val_col):
       return ','.join(d_list)
 
       
-def writeCSVParam(sym, gdxname='none', max_val_col = 5):
+def writeCSVParam(sym, gdxname='none', max_val_col = 5, isGamsSet = False):
    expand_last_col = expandLastCol(sym, max_val_col)
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
          if sym.dimension==1:
             f.write(getCSVHeader(sym, max_val_col)+'\n')
-            for r in sym:
-               f.write(r.key(0) + ',' + str(r.value) + '\n')
+            if(isGamsSet):
+               for r in sym:
+                  f.write(r.key(0) + '\n')
+            else:
+               for r in sym:
+                  f.write(r.key(0) + ',' + str(r.value) + '\n')
          else:
             dbX = sym.database.workspace.add_database(source_database=sym.database)
             if expand_last_col:
@@ -139,8 +148,10 @@ def writeCSVParam(sym, gdxname='none', max_val_col = 5):
 $offecho
 $if not set WEBUICONF $set WEBUICONF
 $onEmbeddedCode Python:
-import sys
-sys.path.append('.')
+from sys import path
+from re import search
+path.append('.')
+
 from writecsv import *
 
 rmfiles = ['writecsv.py','%fn%_webui.gdx']
@@ -175,7 +186,10 @@ for sym in db:
       elif (sym.dimension==0) and (type(sym)==GamsParameter):
          scalar_input_sym.append(sym.name)
       elif (sym.dimension==1) and (type(sym)==GamsSet) and (sym.name not in domsets):
-         scalar_input_sym.append(sym.name)
+         if search(r'["\']multiple["\']\s*:\s*true',sym.text):
+            input_sym.append(sym.name)
+         else:
+            scalar_input_sym.append(sym.name)
       elif (sym.dimension==1) and (type(sym)==GamsSet) and (sym.name in input_domsets):
          pass
       else:
@@ -235,11 +249,18 @@ with open(inc, 'w') as f:
                f.write(' '+d)
          f.write('\n')
       else:
-         f.write('$setEnv GMSWEBUI_EXPAND_HEADER 1\n$libInclude loadCSV '+s.lower())
+         if type(db[s]) != GamsSet:
+            f.write('$setEnv GMSWEBUI_EXPAND_HEADER 1\n')
+         
+         f.write('$libInclude loadCSV '+s.lower())
          for d in db[s].domains_as_strings:
             if (d!='*') and db[d].text.startswith(input_tag):
                f.write(' '+d)
-         f.write('\n$dropEnv GMSWEBUI_EXPAND_HEADER\n')
+         if type(db[s]) != GamsSet:
+            f.write('\n$dropEnv GMSWEBUI_EXPAND_HEADER\n')
+         else:
+            f.write('\n')
+         
    f.write('$onmulti\n')
    for s in scalar_input_sym:
       if type(db[s])==GamsParameter:
@@ -266,7 +287,7 @@ with open(inc, 'w') as f:
          f.write(') = sum(webui'+str(db[s].dimension-1)+'_, ' + s + '(webui0_')
          for i in range(dim-1):
             f.write(',webui'+str(i+1)+'_')
-         f.write('));\n'+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') = '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') + eps;\n')
+         f.write('));\nloop((webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+'), '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') = '+s+'(webuis'+str(dim-1)+'_,'+db[s].domains_as_strings[-1]+') + eps;break;);\n')
          f.write('option clear=webuis'+str(dim-1)+'_;\n')
       
    f.write('execute_unload "gmswebui.gdx";\n')
@@ -333,7 +354,7 @@ if SOtrueLen>0:
 
 for s in input_sym:
    rmfiles.append(s.lower()+'.csv')
-   writeCSVParam(db[s], max_val_col = %MAX_VAL_COL%)
+   writeCSVParam(db[s], max_val_col = %MAX_VAL_COL%, isGamsSet = type(db[s])==GamsSet)
 
 for s in output_sym:
    rmfiles.append(s.lower()+'.csv')
@@ -416,7 +437,7 @@ def dict_merge(a, b):
 import json
 config = { "pageTitle" : "%system.title%",
            "gamsMetaDelim" : "###",
-           "gamsWEBUISwitch" : "--GMSWEBUI=1",
+           "gamsWEBUISwitch" : "--WEBUI=1",
            "fileExchange" : "csv",
            "csvDelim" : "," }
 
@@ -427,20 +448,37 @@ for s in input_sym:
       e_dict = json.loads(text[text.find(' ###')+4:])
    else:   
       e_dict = {}
+   
    headers = {}
-   if expandLastCol(db[s], %MAX_VAL_COL%):
-      for d in db[s].domains[:-1]:
-         headers[extractSymText(d)] = { 'type':'set' }
-   
-      for r in db[s].domains[-1]:
-         headers[r.key(0)] = { 'type':'parameter' }
+   if 'dropdown' in e_dict:
+      auto = { 'alias':extractSymText(db[s]) }
    else:
-      for d in db[s].domains:
-         headers[extractSymText(d)] = { 'type':'set' }
-
-      headers[extractSymText(db[s])] = { 'type':'parameter' }
-   
-   auto = { 'alias':extractSymText(db[s]), 'headers':headers }
+      domdict = {}
+      if expandLastCol(db[s], %MAX_VAL_COL%):
+         for d in db[s].domains[:-1]:
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
+      
+         for r in db[s].domains[-1]:
+            headers[r.key(0)] = { 'type':'parameter' }
+      else:
+         for d in db[s].domains:
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
+      
+         headers[extractSymText(db[s])] = { 'type':'parameter' }
+      
+      auto = { 'alias':extractSymText(db[s]), 'headers':headers }
    io_dict[s.lower()] = dict_merge(auto,e_dict)
 
 needScalar = False
@@ -479,7 +517,7 @@ for s in scalar_input_sym:
       needScalar = True;
 
 if needScalar:      
-   io_dict['scalars'] = { 'alias':'Scalars', 'symnames':needScalarSymNames, 'symtext':needScalarSymText, 'symtypes':needScalarSymTypes, 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+   io_dict['scalars'] = { 'alias':'Input Scalars', 'symnames':needScalarSymNames, 'symtext':needScalarSymText, 'symtypes':needScalarSymTypes, 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 if len(s_webuiconf):
    config['gamsInputFiles'] = dict_merge(io_dict,json.loads(s_webuiconf))
 elif os.path.isfile('webuiconf.json'):
@@ -504,15 +542,29 @@ for s in output_sym:
          io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{extractSymText(db[s]):{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
    else:         
       headers = {}
+      domdict = {}
       if expandLastCol(db[s], %MAX_VAL_COL%):
          for d in db[s].domains[:-1]:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
       
          for r in db[s].domains[-1]:
             headers[r.key(0).lower()] = { 'type':'parameter' }
       else:
          for d in db[s].domains:
-            headers[extractSymText(d)] = { 'type':'set' }
+            symText = extractSymText(d)
+            if symText in domdict:
+               headers[symText + str(domdict[symText])] = { 'type':'set' }
+               domdict[symText] = domdict[symText]+1
+            else:
+               domdict[symText] = 1
+               headers[symText] = { 'type':'set' }
+            
          headers[extractSymText(db[s])] = { 'type':'parameter' }
       
       auto = { 'alias':extractSymText(db[s]), 'headers':headers }
@@ -520,12 +572,11 @@ for s in output_sym:
 
 if SOtrueLen>0:
    if SOhidden:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'hidden':True, 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Output Scalars', 'hidden':True, 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
    else:
-      io_dict['scalars_out'] = { 'alias':'Scalars', 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
+      io_dict['scalars_out'] = { 'alias':'Output Scalars', 'symnames':scalar_output_sym, 'symtext':scalar_output_text, 'symtypes':scalar_output_type, 'count':len(scalar_output_sym), 'headers':{'Scalar':{'type':'set'},'Description':{'type':'acronym'},'Value':{'type':'acronym'}} }
 config['gamsOutputFiles'] = io_dict
 
-#json.dump(config, sys.stdout, indent=4, sort_keys=False)
 try:
    if not os.path.exists('./conf/'):
       os.makedirs('./conf/')
@@ -535,100 +586,151 @@ with open('conf/GMSIO_config.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 db.__del__()
 import os
-import platform
+from platform import system
+import subprocess
 for s in rmfiles:
    os.remove(s.lower())
    
-if %GMSWEBUI%>2:
-    import re
-    
-    def get_r_path():
-        try:
-            with open(os.path.join(r"%gams.sysdir% ".strip(), 'GMSWebUI', 'conf', 'rpath.conf')) as f:
-                RPath = f.readline().strip()
-                return RPath
-        except:
-            pass
-        def major_minor_micro(version):
-            RverTmp = re.search('(\d+)\.(\d+)\.(\d+)', version)
-            if RverTmp is None:
-               major, minor, micro = (0,0,0)
-            else:
-               major, minor, micro = RverTmp.groups()
-            return int(major), int(minor), int(micro)
-        def major_minor(version):
-            RverTmp = re.search('(\d+)\.(\d+)', version)
-            if RverTmp is None:
-               major, minor = (0,0)
-            else:
-               major, minor = RverTmp.groups()
-            return int(major), int(minor)
-        if platform.system() == "Windows":
-            import winreg
-            try:
-                aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
-                aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
-            except FileNotFoundError:
-                return ""
-            paths = []
-            for i in range(20):
-                try:
-                    asubkey_name = winreg.EnumKey(aKey,i)
-                    asubkey = winreg.OpenKey(aKey,asubkey_name)
-                    paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
-                except EnvironmentError:
-                    break
-            if len(paths) == 0:
-               return ""
-            latestRPath = max(paths, key=major_minor_micro)
-            latestR = major_minor_micro(latestRPath)
-            latestRPath = latestRPath + os.sep + "bin" + os.sep
-        elif platform.system() == "Darwin":
-            RPath = r"/Library/Frameworks/R.framework/Versions"
-            RVers = os.listdir(RPath)
-            latestRPath = max(RVers, key=major_minor)
-            latestR = major_minor(latestRPath)
-            latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+def get_r_path():
+    try:
+        with open(os.path.join(r"%gams.sysdir% ".strip(), 'GMSWebUI', 'conf', 'rpath.conf')) as f:
+            RPath = f.readline().strip()
+            return RPath
+    except:
+        pass
+    def major_minor_micro(version):
+        RverTmp = search('(\d+)\.(\d+)\.(\d+)', version)
+        if RverTmp is None:
+           major, minor, micro = (0,0,0)
         else:
-            RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
-            if not len(RPath):
-               latestR = (0, 0)
-            else:
-               RPath = RPath.decode('utf-8').strip().strip('Rscript')
-
-        if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
-          os.environ["PYEXCEPT"] = "RVERSIONERROR"
-          raise FileNotFoundError('Bad R version')
-        return latestRPath
-    
-    os.environ["RPATH"] = get_r_path()
-    if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
-        sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\")
-        with open("runapp.R", "w") as f: 
-           f.write("library('methods')\n")
-           f.write("RLibPath <- '"+sysdir+"GMSWebUI\\\\library'\n")
-           f.write("pkg_path <- list.files(RLibPath,'^shiny_.*\\\\.zip$', full.names = TRUE, recursive = TRUE)\n")
-           f.write("if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){\n")
-           f.write("if(length(pkg_path)){\n")
-           f.write("install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, type='binary', dependencies = TRUE)\n")
-           f.write("}else{\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}}\n")
-           f.write("library('shiny', lib.loc= RLibPath, character.only = TRUE)\n")
-           f.write("runApp(launch.browser=TRUE)")
+           major, minor, micro = RverTmp.groups()
+        return int(major), int(minor), int(micro)
+    def major_minor(version):
+        RverTmp = search('(\d+)\.(\d+)', version)
+        if RverTmp is None:
+           major, minor = (0,0)
+        else:
+           major, minor = RverTmp.groups()
+        return int(major), int(minor)
+    if system() == "Windows":
+        import winreg
+        try:
+            aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+            aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
+        except FileNotFoundError:
+            return ""
+        paths = []
+        for i in range(20):
+            try:
+                asubkey_name = winreg.EnumKey(aKey,i)
+                asubkey = winreg.OpenKey(aKey,asubkey_name)
+                paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
+            except EnvironmentError:
+                break
+        if len(paths) == 0:
+           return ""
+        latestRPath = max(paths, key=major_minor_micro)
+        latestR = major_minor_micro(latestRPath)
+        latestRPath = latestRPath + os.sep + "bin" + os.sep
+    elif system() == "Darwin":
+        RPath = r"/Library/Frameworks/R.framework/Versions"
+        RVers = os.listdir(RPath)
+        latestRPath = max(RVers, key=major_minor)
+        latestR = major_minor(latestRPath)
+        latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
     else:
-        with open("runapp.R", "w") as f: 
-           f.write("library('methods')\n")
-           f.write("if(!'shiny'%in%installed.packages()[, 'Package']){\n")
-           f.write("install.packages('shiny',repos='https://cloud.r-project.org',dependencies=TRUE)}\n")
-           f.write("shiny::runApp(launch.browser=TRUE)")
+        RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
+        if not len(RPath):
+           latestR = (0, 0)
+        else:
+           RPath = RPath.decode('utf-8').strip().strip('Rscript')
+
+    if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
+      os.environ["PYEXCEPT"] = "RVERSIONERROR"
+      raise FileNotFoundError('Bad R version')
+    return latestRPath
+RPath = get_r_path()
+
+os.environ["RPATH"] = RPath
+if os.path.exists(r"%gams.sysdir%GMSWebUI%system.dirsep%library"):
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","\\\\") + r"GMSWebUI\library"
+else:
+    sysdir = ""
+with open("runapp.R", "w") as f: 
+   f.write("RLibPath <- '"+sysdir+"'\n")
+   f.write("""
+if(RLibPath == ""){{
+   RLibPath <- NULL
+}}
+if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
+  checkSourceDefault <- getOption("install.packages.check.source")
+  options(install.packages.check.source = "no")
+  newPackages <- c("methods", "utils", "grDevices", "httpuv", "mime", 
+                   "jsonlite", "xtable", "digest", "htmltools", "R6", 
+                   "sourcetools", "later", "promises", "tools", "crayon", "rlang", "shiny")
+  for(pkg_name in newPackages){{
+    if(!is.null(RLibPath)){{
+      pkg_path <- NULL
+      try(pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\\\.zip$"), 
+                                 full.names = TRUE, recursive = TRUE))
+      if(length(pkg_path)){{
+        install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
+                         type="binary", dependencies = FALSE)
+        next
+      }}
+    }}
+    install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], repos = 'https://cloud.r-project.org', dependencies = TRUE)
+  }}
+  options(install.packages.check.source = checkSourceDefault)
+  rm(checkSourceDefault)
+}}
+library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
+shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)""".format(r"%WEBUIDIR% ".strip().replace("\\","/")))
+
+if %mkApp%>0:
+    fn_model = "%fn%"
+    fe_model = "%fe%"
+    fp_model = r"%fp% ".strip()
+    gams_sysdir = r"%gams.sysdir% ".strip()
+    
+    if system() == "Windows":
+        with open(fn_model + ".bat", "w") as f:
+            f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+    elif system() == "Darwin":
+        from shutil import rmtree
+        with open(fn_model + ".applescript", "w") as f:
+            f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+        if os.path.isdir(fn_model + ".app"):
+           rmtree(fn_model + ".app")
+        subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
+        os.remove(fn_model + ".applescript")
+        appLogoPath = r"%appLogoPath% ".strip()
+        if(len(appLogoPath) > 0 and os.path.isfile(appLogoPath)):
+          logoPath = appLogoPath
+        else:
+          logoPath = os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "gmslogo.icns")
+        subprocess.call(["cp", logoPath, fn_model + ".app/Contents/Resources/"])
+
+        plistPath = fn_model + ".app/Contents/Info.plist"
+        with open(plistPath, "r") as f:
+            plist = f.readlines()
+
+        idx = len(plist) - 2
+        
+        plist.insert(idx, "  <key>CFBundleIconFile</key>\n  <string>" + os.path.basename(logoPath) +"</string>\n")
+        with open(plistPath, "w") as f:
+           plist = "".join(plist)
+           f.write(plist)
+    else:
+        pass
 $offembeddedCode
 $hiddencall rm -rf __pycache__
 $ifthen not errorfree
 $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/GMSWebUI/conf/' directory."
 $terminate
 $endif
-$ifthene %GMSWEBUI%>2
-$  call cd "%WEBUIDIR%" && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
-$  if errorlevel 1 $abort Problems executing GMS WebUI. Make sure you have a valid WebUI installation.
+$ifthen %WEBUI%=="launch"
+$  call cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
+$  if errorlevel 1 $abort Problems executing the GAMS WebUI. Make sure you have a valid WebUI installation.
 $endif
 $terminate

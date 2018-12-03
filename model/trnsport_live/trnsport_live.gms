@@ -54,7 +54,15 @@ c(i,j) 'transport cost in thousands of dollars per case';
 
 
 EmbeddedCode Python:
-import geocoder
+try:
+   from geocoder import osm
+except:
+   import pip
+   if(hasattr(pip, 'main')):
+      pip.main(['install', 'geocoder'])
+   else:
+      pip._internal.main(['install', 'geocoder'])
+   from geocoder import osm
 from math import sin, cos, sqrt, atan2, radians
 import itertools
 
@@ -74,7 +82,7 @@ i = list(gams.get("i"))
 iCoords = []
 iLocData = []
 for plant in i:
-    g = geocoder.osm(plant)
+    g = osm(plant)
     coords = tuple(g.latlng)
     iLocData.append((plant, 'lat', coords[0]))
     iLocData.append((plant, 'lng', coords[1]))
@@ -85,7 +93,7 @@ j = list(gams.get("j"))
 jCoords = []
 jLocData = []
 for market in j:
-    g = geocoder.osm(market)
+    g = osm(market)
     coords = tuple(g.latlng)
     jLocData.append((market, 'lat', coords[0]))
     jLocData.append((market, 'lng', coords[1]))

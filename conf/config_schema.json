@@ -70,44 +70,50 @@
          "additionalProperties":false,
          "properties":{  
             "scenario":{  
-               "description":"Boolean which specifies whether to activate scenario functionality",
+               "description":"Activate scenario functionality?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "strictmode":{  
-               "description":"Boolean which specifies whether app is to be launched in strict mode, resulting in throwing error messages instead of accepting possibly faulty user entries",
+               "description":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "loadLocal":{  
-               "description":"Boolean which specifies whether local data upload module should be activated or not",
+               "description":"Activate local data upload module?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "sharedScenarios":{  
-               "description":"Boolean which specifies whether scenarios can be shared between different users",
+               "description":"Enable scenario sharing between different users?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "batchMode":{  
-               "description":"Boolean which specifies whether scenarios should be solved in batch mode or not",
+               "description":"Solve scenarios in batch mode?",
                "type":"boolean",
                "default":false,
                "required":false
             },
             "logFile:":{  
-               "description":"Boolean which specifies whether log file should be visible in UI",
+               "description":"Show log file in UI?",
                "type":"boolean",
                "default":true,
                "required":false
             },
             "lstFile:":{  
-               "description":"Boolean which specifies whether lst file should be visible in UI",
+               "description":"Show lst file in UI?",
                "type":"boolean",
+               "default":true,
+               "required":false
+            },
+            "attachments":{
+               "description": "Should users be allowed to add attachments to scenarios?",
+               "type": "boolean",
                "default":true,
                "required":false
             }
@@ -126,20 +132,461 @@
             }
          }
       },
+      "scalarAliases":{  
+         "description":"Specify the aliases for the input and output scalar tables",
+         "type":"object",
+         "additionalProperties":false,
+         "properties":{  
+            "inputScalars":{  
+               "description":"Alias for the input scalar table",
+               "type":"string",
+               "minLength":"1",
+               "required":false
+            },
+            "outputScalars":{  
+               "description":"Alias for the output scalar table",
+               "type":"string",
+               "minLength":"1",
+               "required":false
+            }
+         }
+      },
       "saveTraceFile":{  
          "description":"Boolean which specifies whether trace file should be saved",
          "type":"boolean",
          "default":false,
          "required":false
       },
-      "dataRendering":{  
-         "description":"Format in which input or output data is to be displayed in the WebUI.",
+      "inputWidgets":{
+        "description":"Format in which input or output data is to be displayed in the WebUI.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
             "minProperties":1,
-            "oneOf":[  
-               {  
+            "oneOf":[
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "slider"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noBatch":{  
+                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "type":"boolean"
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"Label of considered inputdata",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "min":{  
+                     "description":"Minimum value of inputdata",
+                     "type":[  
+                       "number",
+                       "string"
+                     ]
+                   },
+                   "max":{  
+                     "description":"Maximum value of inputdata",
+                     "type":[  
+                       "number",
+                       "string"
+                     ]
+                   },
+                   "default":{  
+                     "description":"Default/starting value of inputdata",
+                     "type":[  
+                       "number",
+                       "string",
+                       "array"
+                     ]
+                   },
+                   "step":{  
+                     "description":"Specifies the interval between each selectable value",
+                     "type":[  
+                       "number",
+                       "string"
+                     ]
+                   },
+                   "width":{  
+                     "description":"Width of the slider (optional)",
+                     "type":"number"
+                   },
+                   "ticks":{  
+                     "description":"Boolean that specifies whether to hide or show tick marks (optional)",
+                     "type":"boolean",
+                     "required":false
+                   },
+                   "additionalProperties":false,
+                   "required":[  
+                      "widgetType", "step", "min", "max", "default"
+                   ]
+                  }
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "dropdown"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noBatch":{  
+                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "type":"boolean"
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                      "description":"display label for the dropdown menu",
+                      "type":"string",
+                      "minLength":1
+                    },
+                    "choices":{  
+                      "description":"List of values to select from.",
+                      "type":[  
+                        "array",
+                        "string"
+                      ],
+                      "minLength":1,
+                      "uniqueItems":true,
+                      "minItems":1,
+                      "required":true,
+                      "items":{  
+                        "type":[  
+                          "string",
+                          "number"
+                        ]
+                      }
+                    },
+                    "multiple":{  
+                      "description":"Boolean that specifies whether multiple options are allowed to be selected in dropdown menu",
+                      "type":"boolean"
+                    },
+                    "aliases":{  
+                      "type":[  
+                        "array",
+                        "string"
+                      ],
+                      "minLength":1,
+                      "uniqueItems":true,
+                      "minItems":1,
+                      "required":false,
+                      "items":{  
+                        "type":"string"
+                      }
+                    },
+                    "selected":{  
+                      "description":"The initially selected value.",
+                      "type":[  
+                        "string",
+                        "number"
+                      ]
+                    },
+                   "additionalProperties":false,
+                   "required":[  
+                      "widgetType"
+                   ]
+                  }
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "date"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noBatch":{  
+                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "type":"boolean"
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"display label for the date selector",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "value":{  
+                     "description":"initial start date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "min":{  
+                     "description":"minimum allowed date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "max":{  
+                     "description":"maximum allowed date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "format":{  
+                     "description":"format of the date to display in the browser.",
+                     "type":"string",
+                     "minLength":1,
+                     "maxLength":10
+                   },
+                   "startview":{  
+                     "description":"date range shown when the input object is first clicked",
+                     "type":"string",
+                     "enum":[  
+                       "month",
+                       "year",
+                       "decade"
+                     ]
+                   },
+                   "weekstart":{  
+                     "description":"which day is displayed to be the first of the week ",
+                     "type":"integer",
+                     "minimum":0,
+                     "maximum":6
+                   },
+                   "width":{  
+                     "description":"width of the input",
+                     "type":[  
+                       "string",
+                       "integer"
+                     ],
+                     "minLength":1
+                   },
+                   "additionalProperties":false,
+                   "required":[  
+                      "widgetType", "min", "max", "value"
+                   ]
+                 }
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "daterange"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noBatch":{  
+                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "type":"boolean"
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean",
+                    "required":false
+                   },
+                   "label":{  
+                     "description":"display label for the daterange selector",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "start":{  
+                     "description":"initial start date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "end":{  
+                     "description":"initial end date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "min":{  
+                     "description":"minimum allowed date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "max":{  
+                     "description":"maximum allowed date",
+                     "type":"string",
+                     "minLength":10,
+                     "maxLength":10
+                   },
+                   "format":{  
+                     "description":"format of the date to display in the browser.",
+                     "type":"string",
+                     "minLength":1,
+                     "maxLength":10
+                   },
+                   "startview":{  
+                     "description":"date range shown when the input object is first clicked",
+                     "type":"string",
+                     "enum":[  
+                       "month",
+                       "year",
+                       "decade"
+                     ]
+                   },
+                   "weekstart":{  
+                     "description":"which day is displayed to be the first of the week ",
+                     "type":"integer",
+                     "minimum":0,
+                     "maximum":6
+                   },
+                   "separator":{  
+                     "description":"String to display between the start and end input boxes",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "width":{  
+                     "description":"width of the input",
+                     "type":[  
+                       "string",
+                       "integer"
+                     ],
+                     "minLength":1
+                   },
+                   "autoclose":{  
+                     "description":"Whether or not to close the datepicker immediately when a date is selected",
+                     "type":"boolean"
+                   },
+                   "additionalProperties":false,
+                   "required":[  
+                      "widgetType"
+                   ]
+                 }
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "checkbox"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noBatch":{  
+                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "type":"boolean"
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"display label for the checkbox",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "value":{  
+                     "description":"initial value",
+                     "type":[  
+                       "boolean",
+                       "integer",
+                       "string"
+                     ],
+                     "minimum":0,
+                     "maximum":1,
+                     "minLength":1
+                   },
+                   "disable":{  
+                     "description":"Boolean that specifies whether checkbox should be disabled when value of dependent dataset is 0 (only used if checkbox has dependency)",
+                     "type":"boolean"
+                   },
+                   "class":{  
+                     "description":"css class",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "width":{  
+                     "description":"width of the input",
+                     "type":[  
+                       "string",
+                       "integer"
+                     ],
+                     "minLength":1
+                   }
+                 },
+                 "additionalProperties":false,
+                 "required":[  
+                    "widgetType"
+                 ]
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "table"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "readonly":{
+                        "description":"Either true or false for entire table to be readonly",
+                        "type":"boolean"
+                    },
+                    "readonlyCols":{
+                      "description":"Either true or false for certain columns of table to be readonly",
+                      "type":"array",
+                      "items":{
+                        "type":"string",
+                        "minLength":1
+                      }
+                    }
+                 },
+                 "additionalProperties":false,
+                 "required":[  
+                    "widgetType"
+                 ]
+               }
+            ]
+         }
+      },
+      "dataRendering":{  
+        "description":"Format in which input or output data is to be displayed in the WebUI.",
+         "type":"object",
+         "additionalProperties":{  
+            "type":"object",
+            "minProperties":1,
+            "oneOf":[
+               {
                   "properties":{  
                      "outType":{  
                         "description":"Style of widget (table, pivottable, graph, graph+table).",
@@ -151,8 +598,7 @@
                      "height":{  
                         "description":"Height of the output element.",
                         "type":"integer",
-                        "minimum":0,
-                        "default":null
+                        "minimum":0
                      }
                   },
                   "additionalProperties":false,
@@ -237,7 +683,7 @@
                               "description":"Array of the names of columns in the data.frame to prepopulate the rows of the pivot table.",
                               "type":"array",
                               "uniqueItems":true,
-                              "minItems":1,
+                              "minItems":0,
                               "items":{  
                                  "type":"string",
                                  "minLength":1
@@ -248,7 +694,7 @@
                               "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
                               "type":"array",
                               "uniqueItems":true,
-                              "minItems":1,
+                              "minItems":0,
                               "items":{  
                                  "type":"string",
                                  "minLength":1

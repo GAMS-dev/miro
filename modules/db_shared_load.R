@@ -1,14 +1,18 @@
 # import datasets that should be loaded automatically on startup
-datasetsToFetch <- names(modelIn)[vapply(seq_along(modelIn), function(i){return(identical(sharedData[i], TRUE))}, logical(1), USE.NAMES = FALSE)]
+datasetsToFetch <- names(modelIn)[vapply(seq_along(modelIn), function(i){return(identical(sharedData[i], TRUE))}, logical(1L), USE.NAMES = FALSE)]
 
 if(!is.null(datasetsToFetch)){
   errMsg <- NULL
   lapply(datasetsToFetch, function(dataset){
     i <- match(dataset, names(modelIn))
     tabNameShared <- paste0(sharedTablePrefix, "_", dataset)
+    keyCol <- character(0L)
+    if(length(colSubset[[i]])){
+      keyCol <- colSubset[[i]][[1]]
+    }
     # load from database
     tryCatch({
-      sharedInputData[[i]] <<- auth$importShared(tableName = tabNameShared)
+      sharedInputData[[i]] <<- auth$importShared(tableName = tabNameShared, keyCol = keyCol)
     }, error = function(e) {
       flog.error("Problems fetching shared dataset from table: '%s'. Error message: %s.", tabNameShared, e)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, dataset), sep = "\n")
@@ -44,6 +48,13 @@ if(!is.null(datasetsToFetch)){
              }
              updateSelectInput(session, "dropdown_" %+% i, choices = choices, selected = modelIn[[i]]$dropdown$selected)
              
+             observe({
+               if(!identical(length(input[["dropdown_" %+% i]]), 1L) || identical(nchar(input[["dropdown_" %+% i]]), 0L)){
+                 return()
+               }
+               sharedInputData_filtered[[i]] <<- sharedInputData[[i]][sharedInputData[[i]][[colSubset[[i]][1]]] == input[["dropdown_" %+% i]],]
+             }, priority = 1e6)
+             
            },
            hot = {
              tryCatch({
@@ -62,6 +73,11 @@ if(!is.null(datasetsToFetch)){
              }else{
                rv[[paste0("in_", i)]] <<- 1
              }
+           },
+           {
+             flog.error("Input type: '%s' is not supported for share datesets.", modelIn[[i]]$type)
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$fetchDataset$desc, modelInAlias[i]), sep = "\n")
+             return(NULL)
            }
     )
   })

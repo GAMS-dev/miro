@@ -67,10 +67,9 @@
     },
     "scen":{  
       "noScen":"No scenarios loaded. Please first load a scenario",
-      "scalarsAlias":"Scalars",
       "tooltips":{  
         "btExport":"export scenario",
-        "btTableView":"switch to table view",
+        "btTableView":"switch view",
         "btClose":"close scenario",
         "inputSheet":"model input",
         "outputSheet":"model output"
@@ -87,7 +86,7 @@
     "batch_import":{
       "title":"Import data",
       "uploadZip":"Upload zip file with results here.",
-      "batchTags":"Batch Tags (seperate with comma)",
+      "batchTags":"Batch Tags (separate with comma)",
       "uploadButton":"Upload"
     },
     "batch_load":{
@@ -110,7 +109,7 @@
       "error":"Run did not terminate successfully: "
     },
     "notificationNewInput":{  
-      "new":" datasets imported.",
+      "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
     "dialogSaveSuccess":{  
@@ -123,9 +122,9 @@
       "tags":"Add tag(s) to your scenario (optional):",
       "newScenName":"New Scenario",
       "badName":"Please choose a valid name for the new scenario.",
-      "scenExits":"The scenario name you chose does already exist. Do you want to override the existing data?",
+      "scenExits":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "btNewName":"Choose different name",
-      "btOverride":"Override",
+      "btOverwrite":"Overwrite",
       "cancelButton":"Cancel",
       "okButton":"Ok"
     },
@@ -134,6 +133,14 @@
       "success": "Metadata updated successfully.",
       "newName": "New name",
       "newTags":"New tags",
+      "attachmentsLabel": "Attachments",
+      "attachmentsAdd": "Add attachments",
+      "attachmentsExecPerm": "Allow model to read this file",
+      "attachSuccess": "Attachments were updated successfully",
+      "attachMaxSizeError": "Your attachments exceed the maximum attachment size of %s bytes.",
+      "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
+      "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
+      "attachUnknownError": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
@@ -181,15 +188,13 @@
       "descLocal":"Choose file with data to import",
       "newScenName": "Choose a name for the new scenario",
       "badScenName": "Please specify a valid name",
-      "scenNameExists":"The scenario name you chose does already exist. Do you want to override the existing data?",
-      "descOverrideInput":"You already have input data loaded. Are you sure you want to override this data?",
-      "btImportDb":"Import",
+      "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
+      "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
-      "cbDatabase":"Import scenario from database",
-      "overrideWarning":"Already imported datasets might be lost if you did not save them!",
+      "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
       "okButton":"Import",
-      "overrideButton": "Override existing data",
+      "overwriteButton": "Overwrite existing data",
       "newNameButton": "New name"
     },
     "dialogLoadScen":{  
@@ -270,10 +275,6 @@
       "badStepSizeDialog":{
         "title": "Bad step size",
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
-      },
-      "successDialog":{
-        "title": "Batch run configured",
-        "desc": "The batch run was configured successfully. The batch file was written in your working directory. To start the batch run, please convert this file into an executable GAMS file. More information on this can be found in the documentation."
       }
     },
     "batchMode":{
@@ -291,7 +292,8 @@
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
         "selAttribs":"Attributes to select:",
         "runButton":"Start Paver",
-        "interactiveButton":"Interactive mode"
+        "interactiveButton":"Interactive mode",
+        "downloadButton":"Download data"
       },
       "invalidScenDialog":{
         "title":"Invalid scenarios",
@@ -323,6 +325,11 @@
       "title":"Rendering output graphs",
       "progress":"Rendering output "
     },
+    "prepRun":{
+      "title":"Preparing optimization run",
+      "sendInput":"Sending input data",
+      "downloadAttach": "Downloading attachments"
+    },
     "loadScenDb":{  
       "title":"Loading scenario data from database",
       "progress":"Loading dataset "
@@ -344,6 +351,9 @@
     "fileWrite":{  
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."
+    },
+    "downloadHandler":{
+      "msg" : "Some error occurred trying to download the file. If this error persists, please contact the system administrator."
     },
     "initErrors":{  
       "title":"Some errors occurred",
@@ -400,7 +410,8 @@
     },
     "readLst":{  
       "title":"Error reading listing file",
-      "desc":"Some error occurred reading the GAMS listing file."
+      "desc":"Some error occurred reading the GAMS listing file.",
+      "fileSize":"The lst file you are trying to read is too large to be displayed. Please download the lst file to access it."
     },
     "saveScen":{  
       "title":"Error saving scenario",

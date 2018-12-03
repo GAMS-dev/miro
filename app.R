@@ -25,6 +25,7 @@ webuiRDate   <- "Oct 30 2018"
 
 # RPostgres       #GPL-2
 # DBI (database)  #LGPL >=2
+# RSQLite(database) #LGPL >=2
 # openssl (batch) #MIT
 
 
@@ -41,8 +42,7 @@ configDir <- "./conf/"
 # files that require schema file
 jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/shiny_proxy.R", 
-                    "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
+filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
 requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
@@ -108,7 +108,7 @@ if(is.null(errMsg)){
   tryCatch({
     modelPath <- paste0(getwd(), .Platform$file.sep, modelDir, modelName, 
                         .Platform$file.sep, modelName, ".gms")
-    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar)
+    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, paste0(getwd(), .Platform$file.sep, modelDir))
     modelGmsName <- modelPath[[2]]
     modelName <- modelPath[[3]]
     modelPath <- modelPath[[1]]
@@ -116,6 +116,7 @@ if(is.null(errMsg)){
     errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
   })
 }
+
 if(is.null(errMsg)){
   logFileDir <- file.path(tmpFileDir, logFileDir)
   # check if GAMS model file exists
@@ -152,12 +153,12 @@ if(is.null(errMsg)){
       errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
     })
   }
-  flog.appender(appender.file(paste0(logFileDir, modelName, "_", uid, "_", 
-                                     format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))
+  flog.appender(appender.file(file.path(logFileDir, paste0(modelName, "_", uid, "_", 
+                                     format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log"))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   
-  if(!file.exists(rSaveFilePath) || debugMode){
+  if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
@@ -165,7 +166,7 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
-  customRendererDir <<- paste0(currentModelDir, customRendererDirName, .Platform$file.sep)
+  customRendererDirs <<- paste0(c(modelDir, currentModelDir), customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
@@ -184,26 +185,28 @@ if(is.null(errMsg)){
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
     }
   }
-
-  rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
-  lapply(rendererFiles, function(file){
-    if(!file.access(customRendererDir %+% file, mode = 4)){
-      tryCatch({
-        source(customRendererDir %+% file)
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, e), sep = "\n")
-      }, warning = function(w){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                 file, w), sep = "\n")
-      })
-    }else{
-      errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                       file), sep = "\n")
-    }
-  })
+  for(customRendererDir in customRendererDirs){
+    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
+    lapply(rendererFiles, function(file){
+      if(!file.access(customRendererDir %+% file, mode = 4)){
+        tryCatch({
+          source(customRendererDir %+% file)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, e), sep = "\n")
+        }, warning = function(w){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, w), sep = "\n")
+        })
+      }else{
+        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                         file), sep = "\n")
+      }
+    })
+  }
+  
   requiredPackages <- NULL
   for(customRendererConfig in configGraphsOut){
     # check whether non standard renderers were defined in graph config
@@ -258,7 +261,10 @@ if(is.null(errMsg)){
                      tableNameScenLocks = scenLockTablePrefix %+% modelName, 
                      tableNamesScenario = scenTableNames, 
                      slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type,
-                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames)
+                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames,
+                     attachmentConfig = if(config$activateModules$attachments) list(tabName = tableNameAttachPrefix %+% modelName,
+                                                                                   maxSize = attachMaxFileSize, maxNo = attachMaxNo)
+                     else NULL)
       conn <- db$getConn()
       flog.debug("Database connection established.")
     }, error = function(e){
@@ -329,10 +335,8 @@ if(!is.null(errMsg)){
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
     session$onSessionEnded(function() {
-      if(!interactive()){
-        stopApp()
-        q("no")
-      }
+      stopApp()
+      q("no")
     })
   }
   
@@ -356,7 +360,7 @@ if(!is.null(errMsg)){
     # count number of open scenario tabs
     numberScenTabs     <- 0L
     # boolean that specifies whether input data shall be overridden
-    overrideInput      <- FALSE
+    overwriteInput      <- FALSE
     # boolean that specifies whether data shall be saved under a new name 
     # or existing scenario shall be overridden
     saveAsFlag         <- TRUE
@@ -375,6 +379,9 @@ if(!is.null(errMsg)){
     # boolean that specifies whether check if data is unsaved should be skipped
     noCheck            <- vector("logical", length = length(modelIn))
     noCheck[]          <- TRUE
+    # list of attachments for active scenario
+    attachmentList     <- tibble(name = vector("character", attachMaxNo),
+                                 execPerm = vector("logical", attachMaxNo))
     # boolean that specifies whether input data does not match output data
     dirtyFlag          <- FALSE
     isInSplitView      <- if(identical(config$defCompMode, "split")) TRUE else FALSE
@@ -502,8 +509,8 @@ if(!is.null(errMsg)){
     observeEvent(input$aboutDialog, {
       showModal(modalDialog(HTML(paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
                                    "Release Date: ", webuiRDate, "<br/>", 
-                                   "Copyright (c) 2017-2018 GAMS Software GmbH <support@gams.com><br/>
-                                   Copyright (c) 2017-2018 GAMS Development Corp. <support@gams.com><br/><br/>
+                                   "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>
+                                   Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>
                                    This program is free software: you can redistribute it and/or modify 
                                    it under the terms of the GNU General Public License as published by
                                    the Free Software Foundation, either version 3 of the License, or 
@@ -537,7 +544,7 @@ if(!is.null(errMsg)){
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", 
                                                                 length = length(modelInMustImport)), 
-                         unsavedFlag = TRUE, btLoadScen = 0L, btOverrideScen = 0L, btOverrideInput = 0L, 
+                         unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btOverwriteInput = 0L, 
                          btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
                          btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
@@ -546,6 +553,7 @@ if(!is.null(errMsg)){
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
     sharedInputData <- vector(mode = "list", length = length(modelIn))
+    sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
     # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
     previousInputData <- vector(mode = "list", length = length(modelIn))
     noDataChanges     <- vector(mode = "logical", length = length(modelIn))
@@ -563,40 +571,8 @@ if(!is.null(errMsg)){
     # gams process object
     gams <- NULL
     # boolean that specifies whether input data should be overridden
-    inputOverrideConfirmed <- FALSE
-    # trigger sidebar menu by shortcuts
-    observeEvent(input$sidebarMenuShortcut, {
-      switch(input$sidebarMenuShortcut,
-             inputData = {
-               flog.debug("Navigated to input menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "inputData")
-             },
-             outputData = {
-               flog.debug("Navigated to output menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "outputData")
-             },
-             gamsinter = {
-               flog.debug("Navigated to gams interaction menu (using shortcut).")
-               updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
-             }
-      )
-      if(config$activateModules$scenario){
-        if(input$sidebarMenuShortcut == "scenarios"){
-          flog.debug("Navigated to scenario comparison view menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "scenarios")
-        }else if(input$sidebarMenuShortcut == "advanced" ){
-          flog.debug("Navigated to advanced options menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "advanced")
-        }
-      }else{
-        if(input$sidebarMenuShortcut %in% c("scenarios", "advanced")){
-          flog.debug("Navigated to advanced options menu (using shortcut).")
-          updateTabsetPanel(session, "sidebarMenuId", selected = "advanced")
-        }
-      }
-    })
+    inputOverwriteConfirmed <- FALSE
 
-    # show/hide buttons in sidebar depending on menu item selected
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       if((config$activateModules$scenario || config$activateModules$batchMode)
@@ -656,7 +632,7 @@ if(!is.null(errMsg)){
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
         }
-      })
+      }, priority = 1000L)
     })
     
     markUnsaved <- function(){

@@ -29,6 +29,19 @@
                 "labels"                : "Cost Header",
                 "values"                : "Cost report"
             }
-        }
+        },
+        "scalars": {
+      "pivottable": {
+        "rows": [
+          "Scalar"
+        ],
+        "aggregatorName": "Sum",
+        "vals": "Value",
+        "rendererName": "Table",
+        "locale": "en",
+        "subtotals": false
+      },
+      "outType": "pivot"
+    }
     }
 }

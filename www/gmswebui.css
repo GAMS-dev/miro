@@ -14,12 +14,37 @@ body{
   display: -webkit-flex; 
   display: flex;
 }
+/* custom alerts */
+.gmsalert{
+  position:absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-align: center;
+  max-width: 400px;
+  display:none;
+  font-weight: 600;
+  padding: 15px;
+  border: 1px solid #000;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+}
+.gmsalert-success{
+  color: #fff;
+  background-color: #3c8dbc;
+}
+.gmsalert-error{
+  background-color: #F39619;
+}
 /* title field in boxes */
 .box-title{
   width: 100%;
 }
 .inline-el{
   display: inline;
+}
+.progress-bar{
+  background-color: #F39619;
 }
 .no-animations {
 -webkit-animation: none !important;
@@ -49,6 +74,19 @@ animation: none !important;
   /* bring datepicker menu to the front */
   z-index: 9999 !important;
 }
+.labelClass{
+  cursor: default;
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.attachment-line .shiny-input-container{
+  margin:0;
+}
+.attachment-line .checkbox{
+  margin: 5px;
+}
 /* header */
 .main-header .logo {
   background-size: cover;
@@ -63,12 +101,16 @@ animation: none !important;
   background-color: #F39619;
 }
 /* model input */
-.btClose{
+.btIcon{
   padding: 0;
   border: none;
+  background-color: inherit !important;
 }
-.btClose:hover, .btClose:active{
-  background: none !important;
+.btIcon:hover, .btIcon:active{
+  background-color: inherit !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
 }
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes glow{
@@ -234,6 +276,9 @@ animation: none !important;
 
 .checkbox-material .checkbox input {
     opacity: 0;
+}
+.checkbox-material .checkbox input[disabled] + span {
+    opacity: 0.5;
 }
 .checkbox-material .checkbox span {
     position: relative;
@@ -451,6 +496,11 @@ animation: none !important;
   100% {
     transform: translate(19px, 0);
   }
+}
+/* bring plotly charts to front */
+.plotly {
+  z-index: 22;
+  position: relative; 
 }
 /* PAVER */
 .dataframe { 

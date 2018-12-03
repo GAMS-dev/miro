@@ -15,8 +15,8 @@ $(document).keyup(function(event) {
     if ($("#btLoadScenConfirm").is(":visible")) {
         $("#btLoadScenConfirm").click();
     }
-    if ($("#btOverrideScen").is(":visible")) {
-        $("#btOverrideScen").click();
+    if ($("#btOverwriteScen").is(":visible")) {
+        $("#btOverwriteScen").click();
     }
     if ($("#btRemoveOutput").is(":visible")) {
         $("#btRemoveOutput").click();
@@ -30,8 +30,8 @@ $(document).keyup(function(event) {
     if ($("#btRemoveConfirm").is(":visible")) {
         $("#btRemoveConfirm").click();
     }
-    if ($("#btOverrideLocal").is(":visible")) {
-        $("#btOverrideLocal").click();
+    if ($("#btOverwriteLocal").is(":visible")) {
+        $("#btOverwriteLocal").click();
     }
     if ($("#btDeleteConfirm").is(":visible")) {
         $("#btDeleteConfirm").click();
@@ -99,23 +99,31 @@ $(document).keyup(function(event) {
   }
   // Select input menu shortcut: CTRL + ALT + 1
   if(event.ctrlKey && event.altKey && event.keyCode === 49) {
-    Shiny.onInputChange("sidebarMenuShortcut", "inputData");
+    $("a[href='#shiny-tab-inputData']").click();
   }
   // Select output menu shortcut: CTRL + ALT + 2
   if(event.ctrlKey && event.altKey && event.keyCode === 50) {
-    Shiny.onInputChange("sidebarMenuShortcut", "outputData");
+    $("a[href='#shiny-tab-outputData']").click();
   }
   // Select gams interaction menu shortcut: CTRL + ALT + 3
   if(event.ctrlKey && event.altKey && event.keyCode === 51) {
-    Shiny.onInputChange("sidebarMenuShortcut", "gamsinter");
+    $("a[href='#shiny-tab-gamsinter']").click();
   }
-  // Select scenario compare menu shortcut: CTRL + ALT + 4
+  // Select scenario menu shortcut: CTRL + ALT + 4
   if(event.ctrlKey && event.altKey && event.keyCode === 52) {
-    Shiny.onInputChange("sidebarMenuShortcut", "scenarios");
+    scenTab = $("a[href='#shiny-tab-scenarios']");
+    if(scenTab.length > 0){
+      $("a[href='#shiny-tab-scenarios']").click();
+    }else{
+      $("a[href='#shiny-tab-advanced']").click();
+    }
   }
-  // Select advanced options menu shortcut: CTRL + ALT + 4
+  // Select advanced options menu shortcut: CTRL + ALT + 5
   if(event.ctrlKey && event.altKey && event.keyCode === 53) {
-    Shiny.onInputChange("sidebarMenuShortcut", "advanced");
+    scenTab = $("a[href='#shiny-tab-scenarios']");
+    if(scenTab.length > 0){
+      $("a[href='#shiny-tab-advanced']").click();
+    }
   }
   // Table view (scenario compare mode) shortcut: CTRL + ALT + T
   if(event.ctrlKey && event.altKey && event.keyCode === 84) {

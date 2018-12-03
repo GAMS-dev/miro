@@ -89,9 +89,16 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     }
   }else if(type == "valuebox"){
     lapply(seq_len(customOptions$count), function(i){
+      scalarDataTmp <- suppressWarnings(as.numeric(data[[3]][[i]]))
+      if(is.na(scalarDataTmp)){
+        scalarData <- data[[3]][[i]]
+      }else{
+        scalarData <- formatC(round(scalarDataTmp, roundPrecision), big.mark = " ", 
+                              big.interval = 3, format = "f", drop0trailing = TRUE)
+      }
       output[["valBox" %+% i]] <- renderValueBox({
         valueBox(
-          round(data[[3]][[i]], roundPrecision), data[[2]][[i]], 
+          scalarData, data[[2]][[i]], 
           getIcon(customOptions$icon$name, customOptions$icon$lib),
           if(identical(customOptions$color, NULL)) "aqua" else customOptions$color
         )
