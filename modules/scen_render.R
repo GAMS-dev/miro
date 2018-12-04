@@ -47,8 +47,8 @@ for(sheetName in scenTableNamesToDisplay){
                data = scenData[[scenIdLong]][[tabData$scenTableId]], 
                dtOptions = config$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
-    flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", tabData$name, e)
-    eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, tabData$name), sep = "\n")
+    flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", sheetName, e)
+    eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderGraph$desc, sheetName), sep = "\n")
   })
   # show graph view per default
   showEl(session, "#scenGraph_" %+% scenId %+% "_" %+% tabData$tabId)

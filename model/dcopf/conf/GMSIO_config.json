@@ -77,6 +77,43 @@
                 }
             }
         },
+        "demandbidinfo_report": {
+            "alias": "demandbidinfo",
+            "headers": {
+                "demandbid": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "demandbid_t": {
+                    "type": "set"
+                },
+                "demandbid_s": {
+                    "type": "set"
+                },
+                "demandbidinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "interfaceinfo_report": {
+            "alias": "interfaceinfo",
+            "headers": {
+                "Set of interfaces to monitor in the transmission network": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "Set of interface limit types": {
+                    "type": "set"
+                },
+                "interfaceinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
         "scalars_out": {
             "alias": "Output Scalars",
             "symnames": [

@@ -1,19 +1,37 @@
 *the declaration of Ouput for the WebUI is done within the $onExternalOutput / $offExternalOutput keywords.
 
 $onExternalOutput
-parameter      
+scalar
     total_cost_Report                                    'Final objective value     '
     version_Report                                       'version                   '
-    baseMVA_Report                                       'baseMVA                   '     
+    baseMVA_Report                                       'baseMVA                   ' 
+parameter      
     businfo_Report(bus,bus_t,bus_s)                      'businfo                   '
     geninfo_Report(gen,gen_t,gen_s)                      'geninfo                   '
     branchinfo_Report(bus,bus,circuit,branch_t,branch_s) 'branchinfo                '
     fuelinfo_Report(fuel_t,fuel_s)                       'fuelinfo                  '
-*    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
-*    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
+    demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s) 'demandbidinfo'
+    interfaceinfo_Report(interface,t,interface_t) 'interfaceinfo'
 ;
 $offExternalOutput
+          
+*load results
+if(infeas eq 0,
+execute_load '%out%', version_Report = version, baseMVA_Report = baseMVA,
+total_cost_Report = total_cost, businfo_Report = businfo,
+geninfo_Report = geninfo, fuelinfo_Report = fuelinfo,
+branchinfo_Report = branchinfo, demandbidinfo_Report = demandbidinfo,
+interfaceinfo_Report = interfaceinfo;
+);
+
+* delete result-GDX if savesol = 0
+$ifthen.sol %savesol% == 0
+execute 'rm "%out%"';
+$endif.sol
+
+
 $ontext
+$onExternalOutput
 singleton set
 $ifthen set case
     case_input(*)       'Selected Testcase'
@@ -161,34 +179,3 @@ $ifthen.verbose set verbose
 $endif.verbose
 
 $offtext
-parameters version_tmp, baseMVA_tmp, total_cost_tmp;
-parameters businfo_tmp(bus,bus_t,bus_s), geninfo_tmp(gen,gen_t,gen_s), fuelinfo_tmp(fuel_t,fuel_s),
-           branchinfo_tmp(bus,bus,circuit,branch_t,branch_s);
-*           demandbidinfo_tmp(demandbid,t,demandbid_t,demandbid_s), interfaceinfo_tmp(interface,t,interface_t)
-           
-*load results
-if(infeas eq 0,
-execute_load '%out%', version, baseMVA, total_cost;
-execute_load '%out%', businfo_tmp = businfo, geninfo_tmp = geninfo, fuelinfo_tmp = fuelinfo;
-execute_load '%out%', branchinfo_tmp = branchinfo;
-*, demandbidinfo_tmp = demandbidinfo, interfaceinfo_tmp = interfaceinfo;
-);
-total_cost_Report           = total_cost;
-version_Report              = version;
-baseMVA_Report              = baseMVA;
-
-
-businfo_Report(bus,bus_t,bus_s)                             = businfo_tmp(bus,bus_t,bus_s);
-geninfo_Report(gen,gen_t,gen_s)                             = geninfo_tmp(gen,gen_t,gen_s);
-branchinfo_Report(i,j,c,branch_t,branch_s)                  = branchinfo_tmp(i,j,c,branch_t,branch_s);
-fuelinfo_Report(fuel_t,fuel_s)                              = fuelinfo_tmp(fuel_t,fuel_s);
-*demandbidinfo_Report(demandbid,t,demandbid_t,demandbid_s)    = demandbidinfo_tmp(demandbid,t,demandbid_t,demandbid_s);
-*interfaceinfo_Report(interface,t,interface_t)                = interfaceinfo_tmp(interface,t,interface_t);
-
-
-
-
-* delete result-GDX if savesol = 0
-$ifthen.sol %savesol% == 0
-execute 'rm "%out%"';
-$endif.sol

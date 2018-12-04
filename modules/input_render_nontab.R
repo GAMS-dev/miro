@@ -232,6 +232,7 @@ lapply(seq_along(modelIn), function(id){
                    if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
+                     rv[["in_" %+% k]]
                      if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
                        tryCatch(
                          choices[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$fw[[dataSheet]])
@@ -461,7 +462,6 @@ lapply(seq_along(modelIn), function(id){
                  value <- isolate(input[[paste0("slider_", id)]])
                }
                noCheck[id] <<- TRUE
-               
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){

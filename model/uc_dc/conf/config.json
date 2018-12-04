@@ -23,7 +23,8 @@
             "alias": "Initial generator conditions",
             "widgetType":"dropdown",
             "label": "Select the initial conditions of the generators",
-            "choices": "$casename$symName[genRun]$symVal"
+            "choices": "$casename$symName[genRun]$symVal",
+            "aliases": "$casename$symName[genRun]$symDesc"
         },
         "GMSPAR_allon": {
             "alias": "allon",

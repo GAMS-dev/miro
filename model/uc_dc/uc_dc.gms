@@ -28,6 +28,17 @@ $offlisting
 option limrow=0, limcol=0
 $endif
 
+* Define filepath, name and extension.
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include uc_dc_webui_in.gms
+
+* Define type of model
+$set modeltype "DC"
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
+$setnames "%case%" casepath casename caseextension
+
 * Default: Piecewise linear objective
 $if not set obj $set obj "pwl"
 * Default: elastic demand bidding turned off
@@ -46,18 +57,6 @@ $if not set savesol $set savesol 0
 $if not set lineloss $set lineloss 0
 * Default: Available generator scenario: all generators
 $if not set genrun $set genrun allgen
-
-* Define filepath, name and extension.
-$setnames "%gams.i%" filepath filename fileextension
-$setglobal MODELPATH '%filepath%..%system.dirsep%'
-
-$if set webui $include uc_dc_webui_in.gms
-
-* Define type of model
-$set modeltype "DC"
-* Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
 $batinclude "%MODELPATH%extract_data_uc.gms" modeltype case times demandbids linelimits ramprates genPmin allon

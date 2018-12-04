@@ -59,7 +59,7 @@ $LOAD bus, gen, circuit, line, transformer, monitored_lines,
 $LOAD bus_t, bus_s, gen_t, gen_s, branch_t, branch_s
 $LOAD fuel_t, fuel_s, prime_mover
 $LOAD businfo, geninfo, branchinfo, fuelinfo
-$LOAD interface, interfacemap, interfaceinfo
+$LOAD interface, interface_t, interfacemap, interfaceinfo
 $GDXIN
 
 * Option to use elastic demand bidding turned on
