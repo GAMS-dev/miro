@@ -59,7 +59,7 @@ $set condensed 'no'
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 
-$if set gmswebui $include rect_acopf_webui_in.gms
+$if set webui $include rect_acopf_webui_in.gms
 
 * Define type of model
 $set modeltype "AC"

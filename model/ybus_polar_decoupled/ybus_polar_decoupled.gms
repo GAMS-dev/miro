@@ -60,7 +60,7 @@ $if not set iter $set iter 1
 $setnames "%gams.i%" filepath filename fileextension
 $setglobal MODELPATH '%filepath%..%system.dirsep%'
 
-$if set gmswebui $include ybus_polar_decoupled_webui_in.gms
+$if set webui $include ybus_polar_decoupled_webui_in.gms
 
 * Define type of model
 $set modeltype "AC"
