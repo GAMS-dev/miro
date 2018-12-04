@@ -1,5 +1,5 @@
 $title "Power System GDX data file maker"
-*this file is used each gams run for the output sheets of the WebUI. A gdx is only generated, if %savesol% == 1
+
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
 $if not set casepath $setnames "%case%" casepath casename caseextension
 $if not set solution $set solution "temp_solution.gdx"
@@ -7,6 +7,7 @@ $if not set out $set out %filepath%%casename%_solution.gdx
 $if not set ac $set ac 1
 
 $if not set timeperiod abort "Time period not set!"
+
 
 sets
     ints,
@@ -93,6 +94,7 @@ businfo(bus,'LMP_Congestion','%timeperiod%') = LMP_Congestion(bus) / baseMVA;
 $endif
 
 branchinfo(i,j,c,'LineSP','%timeperiod%') = LineSP(i,j,c) * baseMVA;
+
 
 execute_unload "%out%temp", version, total_cost, baseMVA, ints, t, bus, gen, circuit,
                         line, transformer, monitored_lines, demandbid, demandbidmap, interface, interfacemap

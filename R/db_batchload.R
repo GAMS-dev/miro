@@ -236,7 +236,6 @@ BatchLoad <- R6Class("BatchLoad",
                                              message = sprintf("Importing table %d of %d from database.", tabId, noScenTables))
                            }
                            tableTmp <- private$db$importDataset(scenTableNames[[tabId]], subsetSids = scenIds)
-                           tableTmp[[private$sidCol]] <- NULL
                            
                            if(length(tableTmp)){
                              tableTmp <- split(tableTmp, tableTmp[[1]])
@@ -269,7 +268,7 @@ BatchLoad <- R6Class("BatchLoad",
                                }
                                sameNameCounter[[i]] <<- sameNameCounter[[i]] + 1L
                              }
-                             write_csv(tableTmp[[i]], paste0(scenIdDirNameMap[[scenId]], .Platform$file.sep, tableName, ".csv"))
+                             write_csv(tableTmp[[i]][-1L], paste0(scenIdDirNameMap[[scenId]], .Platform$file.sep, tableName, ".csv"))
                            })
                          }
                          if(!is.null(progressBar)){

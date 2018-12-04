@@ -20,7 +20,7 @@ $title "DC Optimal Power Flow model"
 
 
 * Default: Do not supress printout
-$if not set verbose $setGlobal verbose 0
+$if not set verbose $set verbose 0
 
 *===== SECTION: OPTIONS & ENVIRONMENT VARIABLES
 * Printout options
@@ -32,29 +32,9 @@ option solprint=off
 option limrow=0, limcol=0
 $endif
 
-* Default: timeperiod = 1
-$if not set timeperiod $setGlobal timeperiod "1"
-* Default: allon=0
-$if not set allon $setGlobal allon 0
-* Default: Quadratic objective function
-$if not set obj $setGlobal obj "quad"
-* Default: elastic demand bidding turned off
-$setGlobal demandbids 0
-* Default: Use provided line limits (as opposed to uwcalc)
-$if not set linelimits $setGlobal linelimits "given"
-* Default: Use provided generator lower limit
-$if not set genPmin $setGlobal genPmin "given"
-* Default: Line loss not approximated
-$if not set lineloss $setGlobal lineloss 0
-* Default: Save solution option turned off
-$if not set savesol $setGlobal savesol 0
-* Default: Wind turbines turned off
-$if not set wind $setGlobal wind 0
-
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
-
-$setglobal MODELPATH '%gams.idir1%..%system.dirsep%'
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
 $if set webui $include dcopf_webui_in.gms
 
 * Define type of model
@@ -62,6 +42,25 @@ $set modeltype "DC"
 * Define input case
 $if not set case $abort "Model aborted. Please provide input case"
 $setnames "%case%" casepath casename caseextension
+
+* Default: timeperiod = 1
+$if not set timeperiod $set timeperiod "1"
+* Default: allon=0
+$if not set allon $set allon 0
+* Default: Quadratic objective function
+$if not set obj $set obj "quad"
+* Default: elastic demand bidding turned off
+$set demandbids 0
+* Default: Use provided line limits (as opposed to uwcalc)
+$if not set linelimits $set linelimits "given"
+* Default: Use provided generator lower limit
+$if not set genPmin $set genPmin "given"
+* Default: Line loss not approximated
+$if not set lineloss $set lineloss 0
+* Default: Save solution option turned off
+$if not set savesol $set savesol 0
+* Default: Wind turbines turned off
+$if not set wind $set wind 0
 
 *===== SECTION: EXTRACT DATA
 $batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
@@ -245,7 +244,7 @@ display lines_at_limit;
 *==== SECTION: Solution Save
 $Set out %casename%_DC_base_solution.gdx
 execute_unload 'temp_solution.gdx',  Pg, Vm, Va, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --case=%case% --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod% --savesol=%savesol%';
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --case=%case% --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
