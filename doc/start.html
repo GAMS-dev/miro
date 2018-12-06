@@ -46,7 +46,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Getting started</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: November 5th, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: December 6th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -136,7 +136,7 @@ A click on the <i>"Solve model"</i> button starts the model run. During the calc
 </li>
 <li><b>Results</b><br/>
   In the <i>"Output"</i> section the result parameters are visualized in tabular form. With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" alt="Switch to tabular view button" /> button in the upper right corner you can switch between tabular and graphical data visualization. All scalar results are summarized in the tab <i>"Scalars"</i>.
-  The <img class="img-fluid" src="assets/images/export-btn.png" alt="Download data button" /> button enables the user to download the model input and output data.
+  </br>The <img class="img-fluid" src="assets/images/export-btn.png" alt="Download data button" /> button enables the user to download the model input and output data.
 
   <div class="section-block">
       <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
@@ -186,7 +186,11 @@ Besides the model input and output data all temporarily created files of the mod
       </div>
       <p>Note that a table width in this way quickly increases when the number of set elements of the last index gets higher. A number of for example 30 Stocks to be represented in a table would lead to 30 stock columns. In this case the default configuration for a table as shown first might be better.</p>
       <p>If a Parameters with <b>multiple value columns</b> has to be displayed within the WebUI, a manual definition of the header is required. In the picture below this is done for the Parameter <span class="code">PData</span>. By defining the Index <span class="code">phdr</span>, the set elements <span class="code">Demand</span> and <span class="code">Production Time</span> are shown as value columns in the WebUI table.
-        <div class="callout-block callout-success">
+          <div class="section-block">
+              <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
+          </div>
+          </br>
+          <div class="callout-block callout-success">
             <div class="icon-holder">
                 <i class="fas fa-thumbs-up"></i>
             </div><!--//icon-holder-->
@@ -195,10 +199,7 @@ Besides the model input and output data all temporarily created files of the mod
                 <p>Scalars and singleton sets are by default collected in a separate table in the interface.</p>
             </div><!--//content-->
         </div><!--//callout-block-->
-        <p>If all input and output symbols for the WebUI have been flagged, in a last step a file <span class="code">webui.gms</span> has to be included by a <img class="img-fluid" style="height:14px;" src="assets/images/incl-webui.png" alt="$libInclude webui" /> <b>at the very end of the GAMS model</b>. With the help of this file all model specific configuration files are created automatically.
-          <div class="section-block">
-              <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
-          </div>
+        <p>If all input and output symbols for the WebUI have been flagged, in a last step a file <span class="code">webui.gms</span> has to be included by a <img class="img-fluid" style="height:14px;" src="assets/images/incl-webui.png" alt="$libInclude webui" /> <b>at the very end of the GAMS model</b>. With the help of this file all model specific configuration files are created automatically.</p>
 </div><!--//section-block-->
 <div id="create-4" class="section-block">
     <h3 class="block-title">Generating model-specific configuration files</h3>
@@ -218,8 +219,8 @@ Besides the model input and output data all temporarily created files of the mod
             </div><!--//content-->
         </div><!--//callout-block-->
       </li>
-      <li>After the run, a new directory named <i>conf</i> was automatically created. This directory contains the file <span class="code">GMSIO_config.json</span>. In this file you can find the configuration of the input and output symbols in JSON Synax, which were previously defined in the GAMS model with the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> tags.
-        The model folder also contains an Excel file with the same name as your model file. This Excel file contains all the relevant input data that was extracted from your model and can be used to populate your WebUI.
+      <li>After the run, a new directory named <i>conf</i> is automatically created. This directory contains the file <span class="code">GMSIO_config.json</span>. In this file you can find the configuration of the input and output symbols in JSON Synax, which were previously defined in the GAMS model with the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> tags.
+        </br>The model folder also contains an Excel file with the same name as your model file. This Excel file contains all the relevant input data that was extracted from your model and can be used to populate your WebUI.
         <div class="callout-block callout-warning">
             <div class="icon-holder">
                 <i class="fas fa-info-circle"></i>
@@ -230,7 +231,7 @@ Besides the model input and output data all temporarily created files of the mod
             </div><!--//content-->
         </div><!--//callout-block-->
       </li>
-      <li>The very basic configuration is now done. You can start the WebUI by running the model again, this time with <span class="code">--webui=launch</span>.
+      <li>The very basic configuration is now done. You can start the WebUI by running the model again, this time with <span class="code" style="white-space:nowrap">--webui=launch</span>.
         <div class="section-block">
             <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
         </div>
@@ -281,7 +282,7 @@ Besides the model input and output data all temporarily created files of the mod
                                     <p>To learn more about the GAMS WebUI, you have several options. This list will grow over time as the software evolves.</p>
                                     <ul>
                                       <li>For more advanced topics, see <a href="./customize.html" target="_blank">here</a>.
-                                      <li>Attend one of our webinars taking place on December, 12th 2018: 8 am CET as well as on December, 13th 2018 10 am EST. More information including how to sign up will follow shortly.
+                                      <li>Attend one of our webinars taking place on January, 23th 2019: 4 pm CET as well as on January, 24th 2019: 8 am CET. More information including how to sign up will follow shortly.
                                         <li>Watch the video of our talk at the EURO 2018 in Valencia
                                         <!-- 16:9 aspect ratio -->
                                         <div class="embed-responsive embed-responsive-16by9">
