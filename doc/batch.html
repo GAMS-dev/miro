@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GAMS WebUI documentation</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+
+<body class="body-orange">
+    <div class="page-wrapper">
+        <!-- ******Header****** -->
+        <header id="header" class="header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Batch runs</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Batch runs</h1>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: December 6th, 2018</div>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="batch-introduction-section" class="doc-section">
+                                <h2 class="section-title">Introduction</h2>
+                                <div class="section-block">      
+                                    <p>The web interface allows the user to load input data, manipulate it, start & stop the GAMS run, inspect the results as well as save, manage and compare them as scenarios. </p>
+                                    <p>Beside this "regular" WebUI there is another interface which allows to configure and evaluate so-called batch runs. A batch run describes the automated execution of a certain number of scenarios that differ with regard to their parameterization.</p>
+                                    <p>Let's take the model "pickstock" as an example. In the regular WebUI, the user determines the maximum number of stocks of the Dow Jones that can be selected for the representative portfolio. He also determines the time up to which the model should be in the "training phase". With a click on solve he starts the GAMS run for this parameterized scenario.</p>
+                                    <p>But what if the user wants to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely?  To avoid having to configure and solve each scenario individually, there is the "batch" module. In this module any number of scenarios can be configured at once. </p>
+                                    <p>Results of such batch runs can be stored in the database and inspected directly in the WebUI. For this purpose, the Automated Performance Analysis & Visualization tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> was integrated. The direct comparison of scenarios in the scenario view (via split screen / tab view) is also available. Of course, the user is free to analyze all the scenarios carried out with the help of external tools as well. </p>
+                                    <p>In short, the module presented here is designed to generate scenarios and analyze them. </p>
+                                    <p>The following sections explain the basic aspects of batch mode, including its functionality and workflow.</p>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="batch-overview-section" class="doc-section">
+                                <h2 class="section-title">Overview</h2>
+                                <div class="section-block">      
+                                    <p>Visually, the WebUI for batch mode hardly differs from the regular one. After starting the application, the following familiar start screen appears.</p>
+                                    <img class="img-fluid" src="assets/images/batch_img/batch_start.png" alt="start screen in batch mode" />
+                                    <p>The navigation menu on the left side now consists of the following sections:</p>
+                                        <ol class="list">
+                                        <li><b>Configure batch run: </b><br/>
+                                        Configuration of batch runs.
+                                        </li>
+                                        <li><b>Import results:</b><br/>
+                                        Loading the results of already calculated scenarios into the database in the form of zip files. 
+                                          </li>
+                                        <li><b>Load results:</b><br/>
+                                          Filtered search of the database for scenarios stored there for evaluation and analysis.
+                                          </li>
+                                        <li><b>Compare Scenarios:</b><br/>
+                                        Module known from the regular WebUI for the direct comparison of scenarios in Spit-screeen or Tab mode.
+                                        </li>
+                                        <li><b>Analyze scenarios:</b><br/>
+                                          Automatic performance analyses with the integrated analysis tool PAVER.              
+                                          </li>
+                                        </ol>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                            <section id="scengen-section" class="doc-section">
+                                <h2 class="section-title">Scenario generation</h2>
+                                <div class="section-block">
+                                    <p>This section deals with how to generate multiple scenarios, which can then be analyzed.</p>
+                                    
+                                    <p><b>Note:</b> For calculating a scenario the WebUI currently only provides scalar values in the form of compile-time (double-dash) parameters and GAMS options.</p>
+                                     
+                                    <div  id="scengen-2"  class="section-block">
+                                        <h3 class="block-title">Parameterization</h3>
+                                        <p></p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/batch_configure.png" alt="Parameterization of batch runs" />
+                                        </div>
+                                        <img class="img-fluid" src="assets/images/batch_img/regular_batch.png" alt="regular pickstock parameterization" />
+                                        <div class="table-responsive">
+                                          <table class="table table-striped">
+                                              <thead>
+                                                  <tr>
+                                                    <th>Single mode</th>
+                                                    <th>Batch mode</th>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                                  <tr>
+                                                    <td>Single dropdown menu</td>
+                                                    <td>Multi dropdown menu</td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Single slider</td>
+                                                    <td>Slider range with step size selection</td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Checkbox</td>
+                                                    <td>Multi dropdown menu</td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Date selector</td>
+                                                    <td>Daterange selector</td>
+                                                  </tr>
+                                              </tbody>
+                                          </table>
+                                        </div><!--//table-responsive-->
+                                        
+                                    </div><!--//section-block-->                                
+                                    <div  id="scengen-3"  class="section-block">
+                                        <h3 class="block-title">Batch script</h3>
+                                        <p></p>
+                                    </div><!--//section-block-->     
+                                    <div  id="scengen-4"  class="section-block">
+                                        <h3 class="block-title">Compute server</h3>
+                                        <p></p>
+                                    </div><!--//section-block-->                                     
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            
+                            <section id="analyses-section" class="doc-section">
+                                <h2 class="section-title">Analyses</h2>
+                                <div class="section-block">
+                                    <p></p>
+                                    <div  id="analyze-1"  class="section-block">
+                                        <h3 class="block-title">Scenario upload</h3>
+                                        <p>Once the desired scenarios have been calculated, the next step is to load the results into the WebUI database. For this purpose the module "import results" is used.</p>
+                                        <div class="section-block">
+                                                  <img class="img-fluid" style="display:block; margin:auto;" width="500" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
+                                        </div>
+                                        <h6>Upload Zip file with results:</h6>
+                                        <p>For a trouble-free upload, the scenario data must be available in a zip file. Each calculated scenario is located in a separate folder, which is named after the hash value of the scenario. In addition to the input and output data of the scenario (in the form of CSV files), the trace file of the GAMS run is also located there. </p>
+                                        <div class="section-block">
+                                                  <img class="img-fluid" style="display:block; margin:auto;" width="500" src="assets/images/batch_img/upload_zip.png" alt="contents of the ZIP file to be uploaded" />
+                                        </div>
+                                        <h6>Batch tags:</h6>
+                                        <p>When uploading the zip file you can optionally specify batch tags. With the help of assigned batch tags, batch runs can be uniquely identified, independent of the input and output data of the scenarios. They represent an additional identification feature of a batch run, on the basis of which the database can be searched at a later time. These batch tags can also be used to compare different batch runs with each other with regard to scenario analyses to be carried out. </p>
+                                    
+                                    </div><!--//section-block-->  
+                                    <div  id="analyze-2"  class="section-block">
+                                        <h3 class="block-title">Scenario selection</h3>
+                                        <p>Scenarios that have been imported into the database can be loaded at a later time for subsequent analyses. For this purpose the module "load scenarios" is used, which sends and evaluates database queries. If not all available entries are to be displayed, the database query can be strongly individualized. All scalar input parameters set by the user to perform a batch run as well as the optionally defined batch tags can be selected as filters. </p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/batch_img/batch_db_query.png" alt="Filtered database search" />
+                                        </div>
+                                    </div><!--//section-block-->                                
+                                    <div  id="analyze-3"  class="section-block">
+                                        <h3 class="block-title">Internal Analyses</h3>
+                                        
+                                        <h6>Scenario comparison:</h6>
+                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. If two scenarios are to be compared, the slipt-screen display is particularly suitable. In this way, the data can be displayed side by side and compared. </p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/batch_img/single_compare.png" alt="Integrated scenario comparison" />
+                                        </div>
+                                        <h6>PAVER:</h6>
+                                        <p><a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is an Open Source Environment for Automated Performance Analysis of Benchmarking Data. This tools is meant to simplify the task of solver performance data comparison and visualization by providing a variety of performance measurement tools with convenient and easy ways to represent (e.g. objective values, solution times, and result codes from multiple runs in order to summarize, gain insight, or detect inconsistencies) [Bussieck, Michael R., Steven P. Dirkse, and Stefan Vigerske. "PAVER 2.0: an open source environment for automated performance analysis of benchmarking data." Journal of Global Optimization 59.2-3 (2014): 259-275.].</p>
+                                        <p></p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/batch_img/batch_paver.png" alt="Scenario analyzing tool" />
+                                        </div>
+                                        <p> Some description can be found in:</p> <div style="text-align:center;">Michael R. Bussieck, Steven P. Dirkse, Stefan Vigerske</br>PAVER 2.0: An Open Source Environment for Automated Performance Analysis of Benchmarking Data </br>submitted (2013)</br><a href="http://www.gamsworld.org/performance/paver2/paver2_paper.pdf" target="_blank">http://www.gamsworld.org/performance/paver2/paver2_paper.pdf</a></div>
+                                    </div><!--//section-block-->     
+                                    <div  id="analyze-4"  class="section-block">
+                                        <h3 class="block-title">External Analyses</h3>
+                                        <p>If external analyses are to be carried out instead of the WebUI's integrated analysis methods, this is also possible. For this purpose, the WebUI offers the possibility to download a selection of scenarios so that the corresponding data can be used elsewhere. Each scenario is stored in a separate folder. Such a scenario folder contains both input and output data in CSV format including scalar values from the trace file of the corresponding GAMS run. </p>
+                                    </div><!--//section-block-->                                     
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="batch-summary-section" class="doc-section">
+                                <h2 class="section-title">Summary</h2>
+                                <div class="section-block">      
+                                    <p>The figure below gives a rough overview of the different components of this ecosystem.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" src="assets/images/batch_img/batch_ecosystem.png" alt="batch ecosystem" />
+                                    </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+
+	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+	                                <a class="nav-link scrollto" href="#batch-introduction-section">Introduction</a>
+                                    <a class="nav-link scrollto" href="#batch-overview-section">Overview</a>
+	                                <a class="nav-link scrollto" href="#scengen-section">Scenario generation</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                      <a class="nav-link scrollto" href="#scengen-2">Parameterization</a>
+                                      <a class="nav-link scrollto" href="#scengen-3">Batch script</a>
+                                      <a class="nav-link scrollto" href="#scengen-4">Compute server</a>
+                                    </nav><!--//nav-->
+	                                <a class="nav-link scrollto" href="#analyses-section">Analyses</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#analyze-1">Scenario upload</a>
+                                        <a class="nav-link scrollto" href="#analyze-2">Scenario selection</a>
+                                        <a class="nav-link scrollto" href="#analyze-3">Internal Analyses</a>
+                                        <a class="nav-link scrollto" href="#analyze-4">External Analyses</a>
+                                    </nav><!--//nav-->
+                                    <a class="nav-link scrollto" href="#batch-summary-section">Summary</a>
+	                            </nav><!--//doc-menu-->
+
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    </div><!--//page-wrapper-->
+
+    <footer id="footer" class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+
+        </div><!--//container-->
+    </footer><!--//footer-->
+
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>
