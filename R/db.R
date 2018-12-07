@@ -259,15 +259,30 @@ Db <- R6Class("Db",
                     return(0L)
                   }
                 },
-                getLatestSid          = function(){
-                  # Fetch the latest exported sid from database 
+                getNextSid          = function(){
+                  # Fetch the next sid from database 
                   # This is a small wrapper around private getMaximum method
                   #
                   # Args:
                   # 
                   # Returns:
                   # integer: latest scenario Id exported to database
-                  private$getMaximum(private$tableNameMetadata, private$scenMetaColnames['sid'])
+                  
+                  if(inherits(private$conn, "PqConnection")){
+                    tryCatch({
+                      query <- SQL(paste0("SELECT nextval(pg_get_serial_sequence(",
+                                                        DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
+                                                        ", ", DBI::dbQuoteString(private$conn, private$scenMetaColnames['sid']), "));"))
+                      nextVal <- DBI::dbGetQuery(private$conn, query)
+                      return(as.integer(nextVal[[1L]][1]))
+                    }, error = function(e){
+                      stop(sprintf("Db: An error occurred while querying the database (Db.getNextSid, " %+%
+                                     "table: '%s'). Error message: %s.",
+                                   private$tableNameMetadata, e), call. = FALSE)
+                    })
+                  }else{
+                    stop("No other database but postgres supported for this function", call. = FALSE)
+                  }
                 },
                 loadScenarios = function(sids, limit = 1e7, msgProgress){
                   # Load multiple scenarios from database

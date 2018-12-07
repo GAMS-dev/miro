@@ -140,7 +140,7 @@ observeEvent(input$btSolve, {
     }
     disableEl(session, "#btSolve")
     
-    idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier))
+    idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier)[[1L]])
     scenToSolve <- scenToSolve()
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- scenToSolve$gmspar
@@ -154,8 +154,11 @@ observeEvent(input$btSolve, {
                             modalButton(lang$nav$dialogBatch$cancelButton),
                             tags$a(id="btBatchAll", class='btn btn-default shiny-download-link',
                                    href='', target='_blank', download=NA, lang$nav$dialogBatch$processAllButton),
-                            tags$a(id="btBatchNew", class='btn btn-default shiny-download-link btHighlight1',
-                                   href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)),
+                            if(length(idsToSolve) - length(sidsDiff) > 0L){
+                              tags$a(id="btBatchNew", class='btn btn-default shiny-download-link btHighlight1',
+                                     href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)
+                            }
+                            ),
                           fade = TRUE, easyClose = FALSE))
     enableEl(session, "#btSolve")
     

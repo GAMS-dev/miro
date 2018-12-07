@@ -209,7 +209,7 @@ BatchImport <- R6Class("BatchImport",
                                                        stringsAsFactors = FALSE)
                            metadataTable[[3]] <- Sys.time()
                            names(metadataTable) <- scenMetaColnames[-1]
-                           firstScenId <- self$getLatestSid() + 1L
+                           firstScenId <- self$getNextSid() + 1L
                            self$writeMetadata(metadataTable)
                            
                            # concatenate to single table first and then do bulk export to database

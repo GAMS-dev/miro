@@ -52,7 +52,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
-                         path = customRendererDir)
+                         path = customRendererDirs[[2L]])
   }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
@@ -113,7 +113,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
     tryCatch({
       callModule(customRenderer, "custom", as_tibble(data), options = customOptions, 
-                 path = customRendererDir)
+                 path = customRendererDirs[[2L]])
     }, error = function(e){
       stop(sprintf("An error occured in the custom renderer function: '%s'. Error message: %s.", typeCustom, e), call. = FALSE)
     })

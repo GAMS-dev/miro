@@ -863,11 +863,6 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     }
   }
   if(is.null(errMsg)){
-    if(identical(config$activateModules$scenario, TRUE) && 
-       !file.exists("./modules/db_scen_save.R")){
-      errMsg <- "The GMSWebUI version you possess does not support the scenario mode. " %+%
-"Please contact GAMS support if you wish to receive a version that does." 
-    }
     
     # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
     # scenario data is a concatenated list of outputData and inputData

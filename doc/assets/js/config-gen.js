@@ -120,7 +120,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
         gmsSymHeaders = gmsSymHeaders.concat(gmsSymHdrIn[gmsSymIn[i]]);
       }
     }
-
+  if(typeof(gmsSymHdrIn[gmsSymIn[0]]) == 'undefined'){
+    gmsSymHdrIngmsSymIn0 = []
+  }else{
+    gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]]
+  }
   Alpaca.defaultToolbarSticky = true;
     $("#form1").alpaca({
         "schema": {
@@ -320,8 +324,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "items":{
                               "title":"Column name",
                               "type":"string",
-                              "enum":gmsSymHdrIn[gmsSymIn[0]],
-                              "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                              "enum":gmsSymHdrIngmsSymIn0,
+                              "default":gmsSymHdrIngmsSymIn0[0],
                               "required":true
                           }
                         },
@@ -382,8 +386,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                             "minhdr":{
                               "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
                               "type":"string",
-                              "enum":gmsSymHdrIn[gmsSymIn[0]],
-                              "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                              "enum":gmsSymHdrIngmsSymIn0,
+                              "default":gmsSymHdrIngmsSymIn0[0],
                               "required":true
                             }
                           }
@@ -421,8 +425,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                             "maxhdr":{
                               "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
                               "type":"string",
-                              "enum":gmsSymHdrIn[gmsSymIn[0]],
-                              "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                              "enum":gmsSymHdrIngmsSymIn0,
+                              "default":gmsSymHdrIngmsSymIn0[0],
                               "required":true
                             }
                           }
@@ -470,8 +474,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                             "defhdr":{
                               "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
                               "type":"string",
-                              "enum":gmsSymHdrIn[gmsSymIn[0]],
-                              "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                              "enum":gmsSymHdrIngmsSymIn0,
+                              "default":gmsSymHdrIngmsSymIn0[0],
                               "required":true
                             }
                           }
@@ -569,8 +573,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   "choicehdr":{
                                     "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
                                     "type":"string",
-                                    "enum":gmsSymHdrIn[gmsSymIn[0]],
-                                    "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                    "enum":gmsSymHdrIngmsSymIn0,
+                                    "default":gmsSymHdrIngmsSymIn0[0],
                                     "required":true
                                   }
                                 }
@@ -624,8 +628,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   "aliashdr":{
                                     "title":"Set to depend on (in case Parameter is not 'None', only set elements from this parameter are used)",
                                     "type":"string",
-                                    "enum":gmsSymHdrIn[gmsSymIn[0]],
-                                    "default":gmsSymHdrIn[gmsSymIn[0]][0],
+                                    "enum":gmsSymHdrIngmsSymIn0,
+                                    "default":gmsSymHdrIngmsSymIn0[0],
                                     "required":true
                                   }
                                 }
@@ -645,7 +649,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                         "choiceMandatory":{
                           "title":"Is it mandatory to select an option in the dropdown menu?",
                           "type":"boolean",
-                          "required":false
+                          "required":false,
+                          "default":true
                         },
                         "selected":{
                           "title":"The initially selected value",

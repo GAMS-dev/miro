@@ -1,6 +1,6 @@
 # elements that must be saved in scalar table
 scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTabularData], function(el){
-  if((!is.null(modelIn[[el]]$slider) && length(modelIn[[el]]$slider$default) > 1L) || 
+  if((!is.null(modelIn[[el]]$slider) && identical(modelIn[[el]]$slider$double, TRUE)) || 
      !is.null(modelIn[[el]]$daterange)){
     return(paste0(el, c("_lo", "_up")))
   }else{

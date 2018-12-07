@@ -1,4 +1,4 @@
-filesToDownloadForBatchRun <- c("cases", "dcopf_shift", "calc_PowerFlow.gms", "calc_Ybus.gms", "cost_objective.gms", 
+filesToDownloadForBatchRun <- c("cases", "calc_PowerFlow.gms", "calc_Ybus.gms", "cost_objective.gms", 
                                 "cost_objective_uc.gms", "extract_data.gms", "extract_data_uc.gms", 
                                 "reactive_limits.gms", "save_domain_info.gms", "save_solution.gms", 
                                 "save_solution_uc.gms", "webui_out.gms", "batch_submission.gms", "webui.gms")
@@ -71,7 +71,7 @@ output$btBatchNew <- downloadHandler(
     file.copy(currentModelDir %+% modelFiles, paste0(workDirBatch, .Platform$file.sep, tolower(modelName), .Platform$file.sep, modelFiles), recursive = FALSE)
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
     
-    zip(file, list.files(path = ".", pattern = "\\..+$"), compression_level = 6)
+    zip(file, list.files(recursive = TRUE), compression_level = 6)
     # END EPIGRIDS specific
   },
   contentType = "application/zip")

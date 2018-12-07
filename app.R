@@ -391,12 +391,13 @@ if(!is.null(errMsg)){
     isInCompareMode    <- FALSE
     isInSolveMode      <- TRUE
     
+    # currently active scenario (R6 object)
+    activeScen       <- NULL
+    
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
       scenMetaDb       <- NULL
-      # currently active scenario (R6 object)
-      activeScen       <- NULL
       # temporary name and sid of the scenario currently active in the UI
       activeSnameTmp   <- NULL
       scenTags         <- NULL
