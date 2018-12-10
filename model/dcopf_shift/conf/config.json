@@ -22,7 +22,7 @@
           "label": "Turn on all gens and/or lines during solve [allon]",
           "aliases": ["generators", "lines", "generators & lines", "none"],
           "choices": ["gens", "lines", "both", 0],
-          "selected": "%allon%"
+          "selected": 0
        },
        "GMSPAR_obj": {
           "alias": "Obj",
@@ -30,21 +30,21 @@
           "label": "Objective function [obj]",
           "aliases": ["quadratic","piecewise linear","linear","none"],
           "choices": ["quad", "pwl", "linear", 0],
-          "selected": "%obj%"
+          "selected": "quad"
        },
        "GMSPAR_linelimits": {
           "alias": "linelimits",
           "widgetType":"dropdown",
           "label": "Type of line limit data to use [linelimits]",
           "choices": ["given", "uwcalc", "inf"],
-          "selected": "%linelimits%"
+          "selected": "given"
        },
        "GMSPAR_genPmin": {
           "alias": "genPmin",
           "widgetType":"dropdown",
           "label": "Data for Generator lower limit [genPmin]",
           "choices": ["0", "given", "uwcalc"],
-          "selected": "%genPmin%"
+          "selected": "given"
        },
        "GMSPAR_lineloss": {
           "alias": "lineloss",

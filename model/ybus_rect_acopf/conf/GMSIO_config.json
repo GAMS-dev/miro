@@ -1,138 +1,10 @@
 {
     "pageTitle": "Cost objective calculations for OPF models",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
-    "gamsInputFiles": {
-        "GMSPAR_casename": {
-            "alias": "Input case",
-            "dropdown": {
-                "label": "Select input case",
-                "choices": "casename$filename"
-            }
-        },
-        "GMSPAR_timeperiod": {
-            "alias": "Timeperiod",
-            "slider": {
-                "label": "Select the time period to solve",
-                "min": 1,
-                "max": "max(casename$noPeriods)",
-                "default": 1,
-                "step": 1
-            }
-        },
-        "GMSPAR_allon": {
-            "alias": "allon",
-            "dropdown": {
-                "label": "Option to turn on all gens or lines during solve",
-                "choices": [
-                    "gens",
-                    "lines",
-                    "both",
-                    0
-                ],
-                "selected": "0"
-            }
-        },
-        "GMSPAR_obj": {
-            "alias": "Obj",
-            "dropdown": {
-                "label": "Objective function, piecewise linear or quadratic",
-                "aliases": [
-                    "quadratic",
-                    "piecewise linear",
-                    "linear",
-                    "none"
-                ],
-                "choices": [
-                    "quad",
-                    "pwl",
-                    "linear",
-                    0
-                ],
-                "selected": "quad"
-            }
-        },
-        "GMSPAR_linelimits": {
-            "alias": "linelimits",
-            "dropdown": {
-                "label": "Type of line limit data to use",
-                "choices": [
-                    "given",
-                    "uwcalc",
-                    "inf"
-                ],
-                "selected": "given"
-            }
-        },
-        "GMSPAR_genPmin": {
-            "alias": "genPmin",
-            "dropdown": {
-                "label": "Data for Generator lower limit",
-                "choices": [
-                    "0",
-                    "given",
-                    "uwcalc"
-                ],
-                "selected": "given"
-            }
-        },
-        "GMSPAR_qlim": {
-            "alias": "qlim",
-            "checkbox": {
-                "label": "Enforce reactive power limits as D-curve circle constraints?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_savesol": {
-            "alias": "savesol",
-            "checkbox": {
-                "label": "Save solution?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_verbose": {
-            "alias": "verbose",
-            "checkbox": {
-                "label": "Listing printout?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_ic": {
-            "alias": "ic",
-            "dropdown": {
-                "label": "Choose a method for generating initial conditions, i.e. NLP starting point",
-                "aliases": [
-                    "_",
-                    "1: Random",
-                    "2: Flat",
-                    "3: Random/AC",
-                    "4: DC/AC",
-                    "5: DC-/AC",
-                    "6: Decoupled",
-                    "7: DCLoss",
-                    "8: Matpower",
-                    "9: inputFile"
-                ],
-                "choices": [
-                    "_",
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9
-                ]
-            }
-        }
-    },
+    "gamsInputFiles": {},
     "gamsOutputFiles": {
         "businfo_report": {
             "alias": "businfo",
@@ -146,7 +18,7 @@
                 "Set of bus info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "businfo": {
                     "type": "parameter"
                 }
             }
@@ -163,7 +35,7 @@
                 "Set of generator info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "geninfo": {
                     "type": "parameter"
                 }
             }
@@ -172,6 +44,9 @@
             "alias": "branchinfo",
             "headers": {
                 "Set of buses": {
+                    "type": "set"
+                },
+                "Set of buses1": {
                     "type": "set"
                 },
                 "Indices for multiple lines between buses": {
@@ -183,7 +58,7 @@
                 "Set of branch info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "branchinfo": {
                     "type": "parameter"
                 }
             }
@@ -197,13 +72,66 @@
                 "Set of fuel info selectors": {
                     "type": "set"
                 },
-                "text": {
+                "fuelinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "demandbidinfo_report": {
+            "alias": "demandbidinfo",
+            "headers": {
+                "demandbid": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "demandbid_t": {
+                    "type": "set"
+                },
+                "demandbid_s": {
+                    "type": "set"
+                },
+                "demandbidinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "interfaceinfo_report": {
+            "alias": "interfaceinfo",
+            "headers": {
+                "Set of interfaces to monitor in the transmission network": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "Set of interface limit types": {
+                    "type": "set"
+                },
+                "interfaceinfo": {
                     "type": "parameter"
                 }
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost_Report",
+                "version_Report",
+                "baseMVA_Report"
+            ],
+            "symtext": [
+                "Final objective value",
+                "version",
+                "baseMVA"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

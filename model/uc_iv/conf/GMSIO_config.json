@@ -1,21 +1,22 @@
 {
     "pageTitle": "Cost objective calculations for UC models",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
         "GMSPAR_casename": {
             "alias": "Input case",
             "dropdown": {
-                "label": "Select input case",
+                "label": "Select input case [case]",
                 "choices": "casename$filename"
-            }
+            },
+            "noBatch": true
         },
         "GMSPAR_times": {
             "alias": "Time range",
             "slider": {
-                "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data!",
+                "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data! [times]",
                 "min": 1,
                 "max": "max(casename$noPeriods)",
                 "default": [
@@ -28,7 +29,7 @@
         "GMSPAR_allon": {
             "alias": "allon",
             "dropdown": {
-                "label": "Turn on all gens and/or lines during solve",
+                "label": "Turn on all gens and/or lines during solve [allon]",
                 "aliases": [
                     "lines",
                     "none"
@@ -43,7 +44,7 @@
         "GMSPAR_obj": {
             "alias": "Obj",
             "dropdown": {
-                "label": "Objective function",
+                "label": "Objective function [obj]",
                 "aliases": [
                     "quadratic",
                     "piecewise linear"
@@ -58,7 +59,7 @@
         "GMSPAR_linelimits": {
             "alias": "linelimits",
             "dropdown": {
-                "label": "Type of line limit data to use",
+                "label": "Type of line limit data to use [linelimits]",
                 "choices": [
                     "given",
                     "uwcalc",
@@ -70,7 +71,7 @@
         "GMSPAR_genPmin": {
             "alias": "genPmin",
             "dropdown": {
-                "label": "Data for Generator lower limit",
+                "label": "Data for Generator lower limit [genPmin]",
                 "choices": [
                     "0",
                     "given",
@@ -82,7 +83,7 @@
         "GMSPAR_qlim": {
             "alias": "qlim",
             "checkbox": {
-                "label": "Enforce reactive power limits as D-curve circle constraints?",
+                "label": "Enforce reactive power limits as D-curve circle constraints? [qlim]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -98,23 +99,7 @@
         "GMSPAR_demandbids": {
             "alias": "demandbids",
             "checkbox": {
-                "label": "Turn on elastic demand bidding?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_savesol": {
-            "alias": "savesol",
-            "checkbox": {
-                "label": "Save solution?",
-                "value": 0,
-                "class": "checkbox-material"
-            }
-        },
-        "GMSPAR_verbose": {
-            "alias": "verbose",
-            "checkbox": {
-                "label": "Listing printout?",
+                "label": "Turn on elastic demand bidding? [demandbids]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -122,7 +107,7 @@
         "GMSPAR_ramprates": {
             "alias": "ramprates",
             "dropdown": {
-                "label": "Type of ramprate data to use",
+                "label": "Type of ramprate data to use [ramprates]",
                 "choices": [
                     "given",
                     "uwcalc"
@@ -133,7 +118,7 @@
         "GMSPAR_relax": {
             "alias": "relax",
             "checkbox": {
-                "label": "Relax integer models, e.g. solve with rmip/rmiqcp?",
+                "label": "Relax integer models? [relax]",
                 "value": 0,
                 "class": "checkbox-material"
             }
@@ -141,8 +126,102 @@
         "GMSPAR_wind": {
             "alias": "wind",
             "checkbox": {
-                "label": "Turn off wind turbines?",
+                "label": "Turn off wind turbines? [wind]",
                 "value": 0,
+                "class": "checkbox-material"
+            }
+        },
+        "GMSOPT_rminlp": {
+            "alias": "rminlp-Solver",
+            "dropdown": {
+                "label": "Solver to use for rminlp",
+                "aliases": [
+                    "ANTIGONE",
+                    "BARON",
+                    "CONOPT 3",
+                    "CONOPT 4",
+                    "COUENNE",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "MINOS",
+                    "MOSEK",
+                    "MSNLP",
+                    "OQNLP",
+                    "SCIP",
+                    "SNOPT"
+                ],
+                "choices": [
+                    "ANTIGONE",
+                    "BARON",
+                    "CONOPT3",
+                    "CONOPT4",
+                    "COUENNE",
+                    "IPOPT",
+                    "KNITRO",
+                    "LGO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "MINOS",
+                    "MOSEK",
+                    "MSNLP",
+                    "OQNLP",
+                    "SCIP",
+                    "SNOPT"
+                ],
+                "selected": "CONOPT3"
+            }
+        },
+        "GMSOPT_minlp": {
+            "alias": "minlp-Solver",
+            "dropdown": {
+                "label": "Solver to use for minlp",
+                "aliases": [
+                    "ALPHAECP",
+                    "ANTIGONE",
+                    "BARON",
+                    "BONMIN",
+                    "COUENNE",
+                    "DICOPT",
+                    "KNITRO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "OQNLP",
+                    "SBB",
+                    "SCIP"
+                ],
+                "choices": [
+                    "ALPHAECP",
+                    "ANTIGONE",
+                    "BARON",
+                    "BONMIN",
+                    "COUENNE",
+                    "DICOPT",
+                    "KNITRO",
+                    "LINDO",
+                    "LINDOGLOBAL",
+                    "OQNLP",
+                    "SBB",
+                    "SCIP"
+                ],
+                "selected": "DICOPT"
+            }
+        },
+        "GMSPAR_savesol": {
+            "alias": "savesol",
+            "checkbox": {
+                "label": "Save solution? [savesol]",
+                "value": 0,
+                "class": "checkbox-material"
+            }
+        },
+        "GMSPAR_verbose": {
+            "alias": "verbose",
+            "checkbox": {
+                "label": "Print input in listing output? [verbose]",
+                "value": 1,
                 "class": "checkbox-material"
             }
         }
@@ -160,7 +239,7 @@
                 "Set of bus info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "businfo": {
                     "type": "parameter"
                 }
             }
@@ -177,7 +256,7 @@
                 "Set of generator info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "geninfo": {
                     "type": "parameter"
                 }
             }
@@ -186,6 +265,9 @@
             "alias": "branchinfo",
             "headers": {
                 "Set of buses": {
+                    "type": "set"
+                },
+                "Set of buses1": {
                     "type": "set"
                 },
                 "Indices for multiple lines between buses": {
@@ -197,7 +279,7 @@
                 "Set of branch info selectors": {
                     "type": "set"
                 },
-                "value": {
+                "branchinfo": {
                     "type": "parameter"
                 }
             }
@@ -211,13 +293,66 @@
                 "Set of fuel info selectors": {
                     "type": "set"
                 },
-                "text": {
+                "fuelinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "demandbidinfo_report": {
+            "alias": "demandbidinfo",
+            "headers": {
+                "demandbid": {
+                    "type": "set"
+                },
+                "Set of time periods (up to 24 for UC)": {
+                    "type": "set"
+                },
+                "demandbid_t": {
+                    "type": "set"
+                },
+                "demandbid_s": {
+                    "type": "set"
+                },
+                "demandbidinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "interfaceinfo_report": {
+            "alias": "interfaceinfo",
+            "headers": {
+                "Set of interfaces to monitor in the transmission network": {
+                    "type": "set"
+                },
+                "Set of time periods (up to 24 for UC)": {
+                    "type": "set"
+                },
+                "Set of interface limit types": {
+                    "type": "set"
+                },
+                "interfaceinfo": {
                     "type": "parameter"
                 }
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost_Report",
+                "version_Report",
+                "baseMVA_Report"
+            ],
+            "symtext": [
+                "Final objective value",
+                "version",
+                "baseMVA"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

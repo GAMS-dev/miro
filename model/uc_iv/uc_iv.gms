@@ -37,31 +37,31 @@ option limrow=0, limcol=0
 $endif
 
 * Default: Piecewise linear objective
-$if not set obj $setGlobal obj "pwl"
+$if not set obj $set obj "pwl"
 * Default: elastic demand bidding turned off
-$if not set demandbids $setGlobal demandbids 0
+$if not set demandbids $set demandbids 0
 * Default: Use provided ramprates (as opposed to uwcalc)
-$if not set ramprates $setGlobal ramprates "given"
+$if not set ramprates $set ramprates "given"
 * Default: Use provided line limits (as opposed to uwcalc)
-$if not set linelimits $setGlobal linelimits "given"
+$if not set linelimits $set linelimits "given"
 * Default: Use provided generator lower limit
-$if not set genPmin $setGlobal genPmin "given"
+$if not set genPmin $set genPmin "given"
 * Default: allon=0
-$if not set allon $setGlobal allon 0
+$if not set allon $set allon 0
 * Default: slim option does not apply here. Apparent limits always used
 $set slim 0
 * Default: Ignore D-curve constraints
-$if not set qlim $setGlobal qlim 0
+$if not set qlim $set qlim 0
 * Default: Relaxed MIP option turned off
-$if not set relax $setGlobal relax 0
+$if not set relax $set relax 0
 * Default: Save solution option turned off
-$if not set savesol $setGlobal savesol 0
+$if not set savesol $set savesol 0
 
 * Define filepath, name and extension.
-$setnames "%gams.i%" filepath filename fileextension
-$setglobal MODELPATH '%filepath%..%system.dirsep%'
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
 
-$if set webui $include uc_iv_webui_in.gms
+$if set webui $include %MODELPATH%webui_in.gms
 
 * Define type of model
 $set modeltype "AC"
@@ -465,7 +465,7 @@ display lines_at_limit;
 $SetGlobal out %casename%_AC_UC_solution.gdx
 *added to execute_unload: t
 execute_unload 'temp_solution.gdx', t, Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP, status;
-execute 'gams %MODELPATH%save_solution_uc.gms gdxcompress=1 --ac=1 --uc=1 --timeperiod=%timeperiod% --case=%case% --savesol=%savesol% --solution=temp_solution.gdx --out=%out% lo=3'
+execute 'gams %MODELPATH%save_solution_uc.gms gdxcompress=1 --ac=1 --uc=1 --timeperiod=%timeperiod% --case=%case% --solution=temp_solution.gdx --out=%out% lo=3'
 execute 'rm temp_solution.gdx'
 
 * END IF-loop if(infeas eq 0)

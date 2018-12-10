@@ -31,23 +31,23 @@ option limrow=0, limcol=0
 $endif
 
 * Default: timeperiod = 1
-$if not set timeperiod $setGlobal timeperiod "1"
+$if not set timeperiod $set timeperiod "1"
 * Default: verbose=1
-$if not set verbose $setGlobal verbose 1
+$if not set verbose $set verbose 1
 * Default: allon=0
-$if not set allon $setGlobal allon 0
+$if not set allon $set allon 0
 * Default: Quadratic objective function
-$if not set obj $setGlobal obj "quad"
+$if not set obj $set obj "quad"
 * Default: Ignore D-curve constraints
-$if not set qlim $setGlobal qlim 0
+$if not set qlim $set qlim 0
 * Default: elastic demand bidding does not apply here
 $set demandbids 0
 * Default: Use provided line limits (as opposed to uwcalc)
-$if not set linelimits $setGlobal linelimits "given"
+$if not set linelimits $set linelimits "given"
 * Default: Use provided generator lower limit
-$if not set genPmin $setGlobal genPmin "given"
+$if not set genPmin $set genPmin "given"
 * Default: Save solution option turned off
-$if not set savesol $setGlobal savesol 0
+$if not set savesol $set savesol 0
 
 $set condensed yes
 
@@ -57,10 +57,10 @@ option decimals=8;
 $if not set iter $set iter 1
 
 * Define filepath, name and extension.
-$setnames "%gams.i%" filepath filename fileextension
-$setglobal MODELPATH '%filepath%..%system.dirsep%'
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
 
-$if set webui $include ybus_polar_decoupled_webui_in.gms
+$if set webui $include %MODELPATH%webui_in.gms
 
 * Define type of model
 $set modeltype "AC"
@@ -277,7 +277,7 @@ shuntB(i) = sum(bus_s, V_shunt.l(i,bus_s)*Bswitched(i,bus_s));
 
 $SetGlobal out %casename%_ybus_solution.gdx
 execute_unload 'temp_solution.gdx' Pg, Qg, Vm, Va, total_cost, LMP, LineSP, shuntB;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --out=%out% --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --savesol=%savesol%'
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --out=%out% --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod%
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 
