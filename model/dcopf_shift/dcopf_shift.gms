@@ -30,6 +30,16 @@ option solprint=off
 option limrow=0, limcol=0
 $endif
 
+* Define filepath, name and extension.
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include %MODELPATH%webui_in.gms
+* Define type of model
+$set modeltype "DC"
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
+$setnames "%case%" casepath casename caseextension
+
 * Default: timeperiod = 1
 $if not set timeperiod $set timeperiod "1"
 * Default: allon=0
@@ -46,18 +56,6 @@ $if not set genPmin $set genPmin "given"
 $if not set lineloss $set lineloss 0
 * Default: Save solution option turned off
 $if not set savesol $set savesol 0
-
-* Define filepath, name and extension.
-*$setnames "%gams.i%" filepath filename fileextension
-$set MODELPATH '%gams.idir1%..%system.dirsep%'
-
-$if set webui $include %MODELPATH%webui_in.gms
-
-* Define type of model
-$set modeltype "DC"
-* Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
 $batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
@@ -254,7 +252,7 @@ display lines_at_limit;
 
 $Set out %casename%_DC_shift_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Vm, Va, total_cost, LMP_Energy, LMP_Loss, LMP_Congestion, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --decompose_lmp=1 --case=%case% --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%;
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --decompose_lmp=1 --case=%case% --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );

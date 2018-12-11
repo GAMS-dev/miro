@@ -33,6 +33,16 @@ $offlisting
 option limrow=0, limcol=0
 $endif
 
+* Define filepath, name and extension.
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include %MODELPATH%webui_in.gms
+* Define type of model
+$set modeltype "AC"
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
+$setnames "%case%" casepath casename caseextension
+
 * Default: timeperiod = 1
 $if not set timeperiod $set timeperiod "1"
 * Default: Quadratic objective function
@@ -54,18 +64,6 @@ $if not set savesol $set savesol 0
 * Default: elastic demand bidding does not apply here
 $set demandbids 0
 $set condensed 'no'
-
-* Define filepath, name and extension.
-*$setnames "%gams.i%" filepath filename fileextension
-$set MODELPATH '%gams.idir1%..%system.dirsep%'
-
-$if set webui $include %MODELPATH%webui_in.gms
-
-* Define type of model
-$set modeltype "AC"
-* Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
 $batinclude "%MODELPATH%extract_data.gms" modeltype case timeperiod demandbids linelimits genPmin allon
@@ -351,7 +349,7 @@ display lines_at_limit;
 
 $SetGlobal out %casename%_AC_base_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%'
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );

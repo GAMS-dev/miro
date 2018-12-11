@@ -31,6 +31,16 @@ option solprint=off
 option limrow=0, limcol=0
 $endif
 
+* Define filepath, name and extension.
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include %MODELPATH%webui_in.gms
+* Define type of model
+$set modeltype "AC"
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
+$setnames "%case%" casepath casename caseextension
+
 * Default: Piecewise linear objective
 $if not set obj $set obj "pwl"
 * Default: elastic demand bidding turned off
@@ -51,18 +61,6 @@ $if not set qlim $set qlim 0
 $if not set relax $set relax 0
 * Default: Save solution option turned off
 $if not set savesol $set savesol 0
-
-* Define filepath, name and extension.
-*$setnames "%gams.i%" filepath filename fileextension
-$set MODELPATH '%gams.idir1%..%system.dirsep%'
-
-$if set webui $include %MODELPATH%webui_in.gms
-
-* Define type of model
-$set modeltype "AC"
-* Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
 $batinclude "%MODELPATH%extract_data_uc.gms" modeltype case times demandbids linelimits ramprates genPmin allon

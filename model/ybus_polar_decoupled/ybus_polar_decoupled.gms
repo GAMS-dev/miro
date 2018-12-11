@@ -30,6 +30,16 @@ option solprint=off
 option limrow=0, limcol=0
 $endif
 
+* Define filepath, name and extension.
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include %MODELPATH%webui_in.gms
+* Define type of model
+$set modeltype "AC"
+* Define input case
+$if not set case $abort "Model aborted. Please provide input case"
+$setnames "%case%" casepath casename caseextension
+
 * Default: timeperiod = 1
 $if not set timeperiod $set timeperiod "1"
 * Default: verbose=1
@@ -55,18 +65,6 @@ option decimals=8;
 
 * Number of iterations
 $if not set iter $set iter 1
-
-* Define filepath, name and extension.
-*$setnames "%gams.i%" filepath filename fileextension
-$set MODELPATH '%gams.idir1%..%system.dirsep%'
-
-$if set webui $include %MODELPATH%webui_in.gms
-
-* Define type of model
-$set modeltype "AC"
-* Define input case
-$if not set case $abort "Model aborted. Please provide input case"
-$setnames "%case%" casepath casename caseextension
 
 *===== SECTION: EXTRACT DATA
 $batinclude "%MODELPATH%extract_data.gms" case Plim limits allon timeperiod
@@ -246,6 +244,14 @@ V_Theta.fx(bus) = V_Theta.l(bus);
           abort "Optimal solution not found.";);
 );
 
+*==== SECTION: Solution Analysis
+* See if model is solved
+parameter
+    infeas "Number of infeasibilities from model solve";
+
+infeas = decoupled_Q.numInfes;
+display infeas;
+
 parameters
     Power(i) "to calculate injection power from generator after Q-Vm subproblem"
 ;
@@ -277,7 +283,7 @@ shuntB(i) = sum(bus_s, V_shunt.l(i,bus_s)*Bswitched(i,bus_s));
 
 $SetGlobal out %casename%_ybus_solution.gdx
 execute_unload 'temp_solution.gdx' Pg, Qg, Vm, Va, total_cost, LMP, LineSP, shuntB;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --out=%out% --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod%
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --out=%out% --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 
