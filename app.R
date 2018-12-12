@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.7"
-webuiRDate   <- "Dec 3 2018"
+webuiVersion <- "0.2.7.4"
+webuiRDate   <- "Dec 12 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -129,7 +129,9 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # name of the R save file
-  rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, '.RData')
+  rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
+                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "batch")) "_batch",
+                          '.RData')
   # set user ID (user name) and user groups
   if(isShinyProxy){
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
@@ -245,7 +247,11 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
-    requiredPackages <- c("DBI", "RPostgres")
+    if(identical(tolower(config$db$type), "sqlite")){
+      requiredPackages <- c("RSQLite")
+    }else{
+      requiredPackages <- c("RPostgres")
+    }
     source("./R/install_packages.R", local = TRUE)
     
     source("./R/db.R")
@@ -335,8 +341,10 @@ if(!is.null(errMsg)){
       if(exists("jsonErrors")) jsonErrors, bordered = TRUE
     )
     session$onSessionEnded(function() {
-      stopApp()
-      q("no")
+      if(!interactive()){
+        stopApp()
+        q("no")
+      }
     })
   }
   

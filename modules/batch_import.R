@@ -7,14 +7,23 @@ scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTab
     return(el)
   }
 }), use.names = FALSE)
+scalarOutToVerify <- NULL
+if(scalarsOutName %in% names(modelOut)){
+  scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
+}
+gmsColTypes <- unlist(lapply(c(modelIn, modelOut), function(el){
+  el$colTypes
+}))
+gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
 
 disableEl(session, "#btUploadBatch")
 
 # initialise batch import class
 batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
-                               tableNamesMustHave = c(inputDsNames, if(config$saveTraceFile) 
-                                 tableNameTracePrefix %+% modelName),
-                               config$csvDelim, workDir)
+                               tableNamesMustHave = c(inputDsNames, if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
+                                                      if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
+                               config$csvDelim, workDir, gmsColTypes = gmsColTypes)
+rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
 
@@ -64,7 +73,7 @@ observeEvent(input$btUploadBatch, {
   
   prog$inc(amount = 0, message = "Validating scenario data")
   
-  batchImport$validateScenTables(scalarInToVerify)
+  batchImport$validateScenTables(scalarInToVerify, scalarOutToVerify)
   invalidScenIds <- batchImport$getInvalidScenIds()
   if(length(batchImport$getScenNames()) - length(invalidScenIds) == 0){
     showErrorMsg("No valid scenarios", "There are no valid scenarios in your zip file. Please upload valid data.")

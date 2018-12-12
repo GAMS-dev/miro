@@ -13,7 +13,7 @@ lapply(datasetsToFetch, function(dataset){
       if(identical(loadMode, "xls")){
         # load from Excel workbook
         tryCatch({
-          dataTmp <- read_excel(input$localInput$datapath, dataset)
+          dataTmp <- read_excel(input$localInput$datapath, dataset, col_types = modelIn[[i]]$colTypes)
         }, error = function(e) {
           flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", 
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
@@ -74,8 +74,8 @@ lapply(datasetsToFetch, function(dataset){
           # load from excel workbook
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
-            sheet.id <- match(tolower(scalarsFileName), tolower(readxl::excel_sheets(isolate(input$localInput$datapath))))[1]
-            dataTmp <- readxl::read_excel(input$localInput$datapath, sheet.id)
+            sheetId <- match(tolower(scalarsFileName), tolower(excel_sheets(isolate(input$localInput$datapath))))[1]
+            dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = "ccc")
             #set names of scalar sheet to scalar headers
             names(dataTmp) <- scalarsFileHeaders
           }, error = function(e) {

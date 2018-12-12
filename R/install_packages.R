@@ -24,7 +24,8 @@ if(length(newPackages)){
                        "xts" = c("zoo", "methods"), "zip" = c(), "tidyr" = c("dplyr", "glue", "magrittr", "purrr", "Rcpp", "rlang", 
                                                                              "stringi", "tibble", "tidyselect"),
                        "DBI" = c("methods"), "RPostgres" = c("bit64", "blob", "DBI", "hms", "methods", "Rcpp", 
-                                                             "withr", "BH", "plogr"))
+                                                             "withr", "BH", "plogr"),
+                       "RSQLite" = c("bit64", "blob", "DBI", "memoise", "methods", "pkgconfig", "Rcpp", "BH", "plogr"))
   newPackages <- unique(unlist(c(lapply(newPackages, function(package){packageDepDb[[package]]}), newPackages)))
   for(pkg_name in newPackages){
     tryCatch({

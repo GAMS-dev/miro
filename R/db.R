@@ -323,16 +323,16 @@ Db <- R6Class("Db",
                   })
                   return(scenData)
                 },
-                deleteRows        = function(tableName, colNames, values, conditionSep = c("AND", "OR"), 
+                deleteRows        = function(tableName, colNames = NULL, values = NULL, conditionSep = c("AND", "OR"), 
                                              subsetSids = NULL){
                   # remove rows from table where rows have given values
                   #
                   # Args:
                   #   tableName:        name of the table where entries should be removed from
-                  #   colNames:         character vector of column names
-                  #   values:           character vector of values that should be removed
-                  #   conditionSep:     seperator used for concatenating subsetting conditions (AND or OR)
-                  #   subsetSids:       vector of scenario IDs that query should be filtered on
+                  #   colNames:         character vector of column names (optional)
+                  #   values:           character vector of values that should be removed (optional)
+                  #   conditionSep:     seperator used for concatenating subsetting conditions (AND or OR) (optional)
+                  #   subsetSids:       vector of scenario IDs that query should be filtered on (optional)
                   #
                   # Returns:
                   #   Db object: invisibly returns reference to object in case of success, 
@@ -340,12 +340,15 @@ Db <- R6Class("Db",
                   
                   #BEGIN error checks 
                   stopifnot(is.character(tableName), length(tableName) == 1)
-                  stopifnot(is.character(colNames), length(colNames) >= 1)
-                  values <- as.character(values)
-                  stopifnot(is.character(values), length(values) >= 1)
-                  if(!is.null(subsetSids)){
+                  if(!is.null(colNames)){
+                    stopifnot(is.character(colNames), length(colNames) >= 1)
+                    values <- as.character(values)
+                    stopifnot(is.character(values), length(values) >= 1)
+                  }else if(!is.null(subsetSids)){
                     subsetSids <- as.integer(subsetSids)
                     stopifnot(!any(is.na(subsetSids)))
+                  }else{
+                    stop("Can't delete entire table. Please specify subset.", call. = FALSE)
                   }
                   #END error checks 
                   
@@ -355,9 +358,12 @@ Db <- R6Class("Db",
                   
                   subsetSidSQL <- NULL
                   
-                  subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
-                                            DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
-                                      collapse = paste0(" ", conditionSep, " "))
+                  subsetRows <- NULL
+                  if(!is.null(colNames)){
+                    subsetRows <- paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
+                                              DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
+                                        collapse = paste0(" ", conditionSep, " "))
+                  }
                   if(!is.null(subsetSids) && length(subsetSids) >= 1L){
                     subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
                                            " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), collapse = ","), ") ")

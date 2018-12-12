@@ -1,3 +1,6 @@
+hasBatchRemovePermission <- FALSE
+batchRemoveConfirmed <- FALSE
+
 inputType <- list(text = c("_stag", "_uid"), date = c("_stime"))
 keysRaw   <- NULL
 scalarFields  <- NULL
@@ -311,24 +314,30 @@ observeEvent(input$batchLoadSelected, {
   if(is.null(input$batchLoadResults_rows_selected)){
     return(NULL)
   }
+  batchRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
+  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
+                            hasRemovePerm = hasBatchRemovePermission)
 })
 observeEvent(input$batchLoadCurrent, {
   flog.debug("Button to load current page of scenarios (batch load) clicked.")
   if(is.null(input$batchLoadResults_rows_current)){
     return(NULL)
   }
+  batchRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
+  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
+                            hasRemovePerm = hasBatchRemovePermission)
 })
 observeEvent(input$batchLoadAll, {
   flog.debug("Button to load all scenarios (batch load) clicked.")
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
+  batchRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
-  showBatchLoadMethodDialog(fields, maxSolversPaver, maxConcurentLoad)
+  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
+                            hasRemovePerm = hasBatchRemovePermission)
 })
 
 output$btBatchDownload <- downloadHandler(
@@ -390,3 +399,29 @@ removeBlock <- function(blockId){
   activeLines[(blockId - 1) * maxNumBlocks + 1]  <<- FALSE
   removeUI(selector = "#block" %+% blockId)
 }
+
+observeEvent(input$btBatchRemove, {
+  req(hasBatchRemovePermission)
+  if(batchRemoveConfirmed){
+    errMsg <- NULL
+    disableEl(session, "#btBatchRemove")
+    tryCatch(db$deleteRows(db$getTableNameMetadata(), subsetSids = sidsToLoad), error = function(e){
+      flog.error("Problems removing batch scenarios. Error message: %s", e)
+      errMsg <<- TRUE
+    })
+    if(!is.null(errMsg)){
+      showEl(session, "#batchRemoveError")
+      return(NULL)
+    }
+    hideEl(session, "#batchRemoveConfirm")
+    showEl(session, "#batchRemoveSuccess")
+    hideModal(session, 1L)
+  }else{
+    hideEl(session, "#btBatchLoad")
+    hideEl(session, "#batchLoadMethod")
+    hideEl(session, "#btPaverConfig")
+    hideEl(session, "#btBatchDownload")
+    showEl(session, "#batchRemoveConfirm")
+    batchRemoveConfirmed <<- TRUE
+  }
+})

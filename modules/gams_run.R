@@ -139,8 +139,10 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     disableEl(session, "#btSolve")
-    
-    idsSolved <- unique(db$importDataset(scenMetadataTable, colNames = snameIdentifier)[[1L]])
+    idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier)
+    if(length(idsSolved)){
+      idsSolved <- unique(idsSolved[[1L]])
+    }
     scenToSolve <- scenToSolve()
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- scenToSolve$gmspar

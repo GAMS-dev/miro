@@ -3,7 +3,8 @@ modelName <- "uc_dc"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
-spModelPathEnvVar <- "SHINYPROXY_MODELNAME"
+spModelPathEnvVar <- "GMSMODELNAME"
+spModelModeEnvVar <- "GMSMODE"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noImport")
 # keywords that define data MUST not be imported in order to run the model
