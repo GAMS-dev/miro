@@ -276,9 +276,7 @@ Db <- R6Class("Db",
                       nextVal <- DBI::dbGetQuery(private$conn, query)
                       return(as.integer(nextVal[[1L]][1]))
                     }, error = function(e){
-                      stop(sprintf("Db: An error occurred while querying the database (Db.getNextSid, " %+%
-                                     "table: '%s'). Error message: %s.",
-                                   private$tableNameMetadata, e), call. = FALSE)
+                      return(0L)
                     })
                   }else{
                     stop("No other database but postgres supported for this function", call. = FALSE)

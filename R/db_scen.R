@@ -217,9 +217,9 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         
-                        attachments <- super$importDataset(private$attachmentConfig[["tabName"]], 
+                        attachments <- dplyr::arrange(super$importDataset(private$attachmentConfig[["tabName"]], 
                                                            colNames = c("fileName", "execPerm"), 
-                                                           subsetSids = private$sid)
+                                                           subsetSids = private$sid), fileName)
                         if(length(attachments)){
                           return(tibble(name = attachments[[1]], execPerm = attachments[[2]]))
                         }else{
