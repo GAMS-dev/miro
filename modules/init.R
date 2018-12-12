@@ -455,6 +455,12 @@ if(is.null(errMsg)){
       }
     }), use.names = FALSE)
     lapply(seq_along(modelIn), function(i){
+      if(!names(modelIn)[i] %in% c(DDPar, GMSOpt)){
+        errMsg <<- paste(errMsg, 
+                        sprintf("Currenty only GAMS command line parameters (double dash parameters or GAMS options) are supported as input elements in batch mode (Element: '%s').", 
+                                modelInAlias[i]), sep = "\n")
+        return(NULL)
+      }
       if(!identical(modelIn[[i]]$noBatch, TRUE)){
         switch(modelIn[[i]]$type,
                checkbox = {
