@@ -1,4 +1,95 @@
 {
+    "inputWidgets"        : { 
+      "GMSPAR_casename": {
+         "alias": "Input case",
+         "widgetType":"dropdown",
+         "label": "Select input case [case]",
+    	 "choices": "casename$filename",
+         "noBatch": true
+      }, 
+      "GMSPAR_timeperiod": {
+         "alias": "Timeperiod",
+         "widgetType":"slider",
+         "label": "Select the time period to solve [t]",
+         "min": 1,
+         "max": "max(casename$symName[noPeriods]$symVal)",
+         "default": 1,
+         "step": 1
+      },
+      "GMSPAR_allon": {
+         "alias": "allon",
+         "widgetType":"dropdown",
+         "label": "Turn on all gens and/or lines during solve [allon]",
+         "aliases": ["generators", "lines", "generators & lines", "none"],
+         "choices": ["gens", "lines", "both", 0],
+         "selected": 0
+      },
+      "GMSPAR_obj": {
+         "alias": "Obj",
+         "widgetType":"dropdown",
+         "label": "Objective function [obj]",
+         "aliases": ["quadratic","piecewise linear","linear","none"],
+         "choices": ["quad", "pwl", "linear", 0],
+         "selected": "quad"
+      },
+      "GMSPAR_linelimits": {
+         "alias": "linelimits",
+         "widgetType":"dropdown",
+         "label": "Type of line limit data to use [linelimits]",
+         "choices": ["given", "uwcalc", "inf"],
+         "selected": "given"
+      },
+      "GMSPAR_genPmin": {
+         "alias": "genPmin",
+         "widgetType":"dropdown",
+         "label": "Data for Generator lower limit [genPmin]",
+         "choices": ["0", "given", "uwcalc"],
+         "selected": "given"
+      },
+      "GMSPAR_qlim": {
+         "alias": "qlim",
+         "widgetType":"checkbox",
+         "label": "Enforce reactive power limits as D-curve circle constraints? [qlim]",
+         "value": 0,
+         "class": "checkbox-material"
+      },
+      "GMSPAR_ramprates": {
+         "alias": "ramprates",
+         "widgetType":"dropdown",
+         "label": "Type of ramprate data to use [ramprates]",
+         "choices": ["given", "uwcalc"],
+         "selected": "given"
+      }, 
+      "GMSPAR_iter": {
+         "alias": "iter",                                   
+         "widgetType":"dropdown",                                   
+         "label": "Number of iterations [iter]",               
+         "choices": [1,2,3,4,5],                        
+         "selected": 1                           
+      },
+      "GMSOPT_nlp": {
+         "alias": "nlp-Solver",
+         "widgetType":"dropdown",
+         "label": "Solver to use for nlp",
+         "aliases": ["ANTIGONE","CONOPT 3","CONOPT 4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "choices": ["ANTIGONE","CONOPT3","CONOPT4","COUENNE","IPOPT","KNITRO","LGO","LINDO","LINDOGLOBAL","MINOS","MOSEK","MSNLP","OQNLP","SCIP","SNOPT"],
+         "selected": "CONOPT3"
+      },
+      "GMSPAR_savesol": {
+         "alias": "savesol",
+         "widgetType":"checkbox",
+         "label": "Save solution? [savesol]",
+         "value": 0,
+         "class": "checkbox-material"
+      },
+      "GMSPAR_verbose": {
+         "alias": "verbose",
+         "widgetType":"checkbox",
+         "label": "Listing printout? [verbose]",
+         "value": 0,
+         "class": "checkbox-material"
+      }
+    },
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"
     },

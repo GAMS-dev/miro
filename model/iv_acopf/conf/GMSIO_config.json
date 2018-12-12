@@ -1,17 +1,17 @@
 {
-    "pageTitle": " Cost objective calculations for OPF models ",
+    "pageTitle": "Cost objective calculations for OPF models",
     "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--GMSWEBUI=1",
+    "gamsWEBUISwitch": "--WEBUI=1",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
         "GMSPAR_casename": {
             "alias": "Input case",
-            "noBatch": true,
             "dropdown": {
                 "label": "Select input case [case]",
                 "choices": "casename$filename"
-            }
+            },
+            "noBatch": true
         },
         "GMSPAR_timeperiod": {
             "alias": "Timeperiod",
@@ -140,7 +140,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -159,7 +158,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER70",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -237,7 +235,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -260,7 +257,6 @@
                     "LGO",
                     "LINDO",
                     "LINDOGLOBAL",
-                    "LOCALSOLVER70",
                     "MINOS",
                     "MOSEK",
                     "MSNLP",
@@ -330,6 +326,9 @@
                 "Set of buses": {
                     "type": "set"
                 },
+                "Set of buses1": {
+                    "type": "set"
+                },
                 "Indices for multiple lines between buses": {
                     "type": "set"
                 },
@@ -358,9 +357,61 @@
                 }
             }
         },
+        "demandbidinfo_report": {
+            "alias": "demandbidinfo",
+            "headers": {
+                "demandbid": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "demandbid_t": {
+                    "type": "set"
+                },
+                "demandbid_s": {
+                    "type": "set"
+                },
+                "demandbidinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "interfaceinfo_report": {
+            "alias": "interfaceinfo",
+            "headers": {
+                "Set of interfaces to monitor in the transmission network": {
+                    "type": "set"
+                },
+                "t": {
+                    "type": "set"
+                },
+                "Set of interface limit types": {
+                    "type": "set"
+                },
+                "interfaceinfo": {
+                    "type": "parameter"
+                }
+            }
+        },
         "scalars_out": {
-            "alias": "Scalars",
-            "count": 25,
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost_Report",
+                "version_Report",
+                "baseMVA_Report"
+            ],
+            "symtext": [
+                "Final objective value",
+                "version",
+                "baseMVA"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "count": 3,
             "headers": {
                 "Scalar": {
                     "type": "set"

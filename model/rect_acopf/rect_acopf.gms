@@ -33,39 +33,37 @@ $offlisting
 option limrow=0, limcol=0
 $endif
 
-* Default: timeperiod = 1
-$if not set timeperiod $setGlobal timeperiod "1"
-* Default: Quadratic objective function
-$if not set obj $setGlobal obj "quad"
-* Default: Use provided line limits (as opposed to uwcalc)
-$if not set linelimits $setGlobal linelimits "given"
-* Default: Use provided generator lower limit
-$if not set genPmin $setGlobal genPmin "given"
-* Default: allon=0
-$if not set allon $setGlobal allon 0
-* Default: Use active power limits on line, instead of apparent limits
-$if not set slim $setGlobal slim 0
-* Default: Ignore D-curve constraints
-$if not set qlim $setGlobal qlim 0
-* Default: Treat wind turbines the same way
-$if not set wind $setGlobal wind 0
-* Default: Save solution option turned off
-$if not set savesol $setGlobal savesol 0
-* Default: elastic demand bidding does not apply here
-$set demandbids 0
-$set condensed 'no'
-
 * Define filepath, name and extension.
-$setnames "%gams.i%" filepath filename fileextension
-$setglobal MODELPATH '%filepath%..%system.dirsep%'
-
-$if set gmswebui $include rect_acopf_webui_in.gms
-
+*$setnames "%gams.i%" filepath filename fileextension
+$set MODELPATH '%gams.idir1%..%system.dirsep%'
+$if set webui $include %MODELPATH%webui_in.gms
 * Define type of model
 $set modeltype "AC"
 * Define input case
 $if not set case $abort "Model aborted. Please provide input case"
 $setnames "%case%" casepath casename caseextension
+
+* Default: timeperiod = 1
+$if not set timeperiod $set timeperiod "1"
+* Default: Quadratic objective function
+$if not set obj $set obj "quad"
+* Default: Use provided line limits (as opposed to uwcalc)
+$if not set linelimits $set linelimits "given"
+* Default: Use provided generator lower limit
+$if not set genPmin $set genPmin "given"
+* Default: allon=0
+$if not set allon $set allon 0
+* Default: Use active power limits on line, instead of apparent limits
+$if not set slim $set slim 0
+* Default: Ignore D-curve constraints
+$if not set qlim $set qlim 0
+* Default: Treat wind turbines the same way
+$if not set wind $set wind 0
+* Default: Save solution option turned off
+$if not set savesol $set savesol 0
+* Default: elastic demand bidding does not apply here
+$set demandbids 0
+$set condensed 'no'
 
 *===== SECTION: EXTRACT DATA
 $batinclude "%MODELPATH%extract_data.gms" modeltype case timeperiod demandbids linelimits genPmin allon
@@ -351,7 +349,7 @@ display lines_at_limit;
 
 $SetGlobal out %casename%_AC_base_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%'
+execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );

@@ -1,305 +1,305 @@
 {
     "inputWidgets"        : {
-        "GMSPAR_casename": {
-            "alias": "Input case",
-            "widgetType":"dropdown",
-            "label": "Select input case [case]",
-            "choices": "casename$filename",
-            "noBatch": true
-        },
-        "GMSPAR_times": {
-            "alias": "Time range",
-            "widgetType":"slider",
-            "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data! [times]",
-            "min": 1,
-            "max": "max(casename$symName[noPeriods]$symVal)",
-            "default": [
-                1,
-                "max(casename$symName[noPeriods]$symVal)"
-            ],
-            "step": 1
-        },
-        "GMSPAR_genrun": {
-            "alias": "Initial generator conditions",
-            "widgetType":"dropdown",
-            "label": "Select the initial conditions of the generators",
-            "choices": "$casename$symName[genRun]$symVal",
-            "aliases": "$casename$symName[genRun]$symDesc"
-        },
-        "GMSPAR_allon": {
-            "alias": "allon",
-            "widgetType":"dropdown",
-            "label": "Turn on all gens and/or lines during solve [allon]",
-            "aliases": [
-                "lines",
-                "none"
-            ],
-            "choices": [
-                "lines",
-                0
-            ],
-            "selected": "lines"
-        },
-        "GMSPAR_obj": {
-            "alias": "Obj",
-            "widgetType":"dropdown",
-            "label": "Objective function [obj]",
-            "aliases": [
-                "quadratic",
-                "piecewise linear"
-            ],
-            "choices": [
-                "quad",
-                "pwl"
-            ],
-            "selected": "pwl"
-        },
-        "GMSPAR_linelimits": {
-            "alias": "linelimits",
-            "widgetType":"dropdown",
-            "label": "Type of line limit data to use [linelimits]",
-            "choices": [
-                "given",
-                "uwcalc",
-                "inf"
-            ],
-            "selected": "given"
-        },
-        "GMSPAR_genPmin": {
-            "alias": "genPmin",
-            "widgetType":"dropdown",
-            "label": "Data for Generator lower limit [genPmin]",
-            "choices": [
-                "0",
-                "given",
-                "uwcalc"
-            ],
-            "selected": "given"
-        },
-        "GMSPAR_ramprates": {
-            "alias": "ramprates",
-            "widgetType":"dropdown",
-            "label": "Type of ramprate data to use [ramprates]",
-            "choices": [
-                "given",
-                "uwcalc"
-            ],
-            "selected": "given"
-        },
-        "GMSPAR_relax": {
-            "alias": "relax",
-            "widgetType":"checkbox",
-            "label": "Relax integer models? [relax]",
-            "value": 0,
-            "class": "checkbox-material"
-        },
-        "GMSPAR_lineloss": {
-            "alias": "lineloss",
-            "widgetType":"checkbox",
-            "label": "Approximate lineloss? [lineloss]",
-            "value": 0,
-            "class": "checkbox-material"
-        },
-        "GMSPAR_wind": {
-            "alias": "wind",
-            "widgetType":"checkbox",
-            "label": "Turn off wind turbines? [wind]",
-            "value": "max(casename$symName[wind]$symVal)",
-            "disable": true,
-            "class": "checkbox-material"
-        },
-        "GMSOPT_mip": {
-            "alias": "MIP-Solver",
-            "widgetType":"dropdown",
-            "label": "Solver to use for MIP",
-            "aliases": [
-                "BARON",
-                "BDMLP",
-                "CBC",
-                "CPLEX",
-                "GUROBI",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MOSEK",
-                "ODHCPLEX",
-                "SCIP",
-                "XA",
-                "XPRESS"
-            ],
-            "choices": [
-                "BARON",
-                "BDMLP",
-                "CBC",
-                "CPLEX",
-                "GUROBI",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MOSEK",
-                "ODHCPLEX",
-                "SCIP",
-                "XA",
-                "XPRESS"
-            ],
-            "selected": "CPLEX"
-        },
-        "GMSOPT_miqcp": {
-            "alias": "miqcp-Solver",
-            "widgetType":"dropdown",
-            "label": "Solver to use for miqcp",
-            "aliases": [
-                "ALPHAECP",
-                "ANTIGONE",
-                "BARON",
-                "BONMIN",
-                "COUENNE",
-                "CPLEX",
-                "DICOPT",
-                "GLOMIQO",
-                "GUROBI",
-                "KNITRO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MOSEK",
-                "ODHCPLEX",
-                "OQNLP",
-                "SBB",
-                "SCIP",
-                "XPRESS"
-            ],
-            "choices": [
-                "ALPHAECP",
-                "ANTIGONE",
-                "BARON",
-                "BONMIN",
-                "COUENNE",
-                "CPLEX",
-                "DICOPT",
-                "GLOMIQO",
-                "GUROBI",
-                "KNITRO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MOSEK",
-                "ODHCPLEX",
-                "OQNLP",
-                "SBB",
-                "SCIP",
-                "XPRESS"
-            ],
-            "selected": "CPLEX"
-        },
-        "GMSOPT_rmip": {
-            "alias": "rmip-Solver",
-            "widgetType":"dropdown",
-            "label": "Solver to use for rmip",
-            "aliases": [
-                "BARON",
-                "BDMLP",
-                "CBC",
-                "CONOPT 3",
-                "CONOPT 4",
-                "CPLEX",
-                "DECIS",
-                "GUROBI",
-                "IPOPT",
-                "KNITRO",
-                "LGO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MINOS",
-                "MOSEK",
-                "SNOPT",
-                "SOPLEX",
-                "XA",
-                "XPRESS"
-            ],
-            "choices": [
-                "BARON",
-                "BDMLP",
-                "CBC",
-                "CONOPT3",
-                "CONOPT4",
-                "CPLEX",
-                "DECIS",
-                "GUROBI",
-                "IPOPT",
-                "KNITRO",
-                "LGO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MINOS",
-                "MOSEK",
-                "SNOPT",
-                "SOPLEX",
-                "XA",
-                "XPRESS"
-            ],
-            "selected": "CPLEX"
-        },
-        "GMSOPT_rmiqcp": {
-            "alias": "rmiqcp-Solver",
-            "widgetType":"dropdown",
-            "label": "Solver to use for rmiqcp",
-            "aliases": [
-                "ANTIGONE",
-                "BARON",
-                "CONOPT 3",
-                "CONOPT 4",
-                "COUENNE",
-                "CPLEX",
-                "GLOMIQO",
-                "GUROBI",
-                "IPOPT",
-                "KNITRO",
-                "LGO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MINOS",
-                "MOSEK",
-                "MSNLP",
-                "OQNLP",
-                "SCIP",
-                "SNOPT",
-                "XPRESS"
-            ],
-            "choices": [
-                "ANTIGONE",
-                "BARON",
-                "CONOPT3",
-                "CONOPT4",
-                "COUENNE",
-                "CPLEX",
-                "GLOMIQO",
-                "GUROBI",
-                "IPOPT",
-                "KNITRO",
-                "LGO",
-                "LINDO",
-                "LINDOGLOBAL",
-                "MINOS",
-                "MOSEK",
-                "MSNLP",
-                "OQNLP",
-                "SCIP",
-                "SNOPT",
-                "XPRESS"
-            ],
-            "selected": "CPLEX"
-        },
-        "GMSPAR_savesol": {
-            "alias": "savesol",
-            "widgetType":"checkbox",
-            "label": "Save solution? [savesol]",
-            "value": 0,
-            "class": "checkbox-material"
-        },
-        "GMSPAR_verbose": {
-            "alias": "verbose",
-            "widgetType":"checkbox",
-            "label": "Print input in listing output? [verbose]",
-            "value": 1,
-            "class": "checkbox-material"
-        }
+      "GMSPAR_casename": {
+          "alias": "Input case",
+          "widgetType":"dropdown",
+          "label": "Select input case [case]",
+          "choices": "casename$filename",
+          "noBatch": true
+      },
+      "GMSPAR_times": {
+          "alias": "Time range",
+          "widgetType":"slider",
+          "label": "Select the time range to solve. Note: times > 1 only usable for RTS-96 cases with 24 hour demand data! [times]",
+          "min": 1,
+          "max": "max(casename$symName[noPeriods]$symVal)",
+          "default": [
+              1,
+              "max(casename$symName[noPeriods]$symVal)"
+          ],
+          "step": 1
+      },
+      "GMSPAR_genrun": {
+          "alias": "Initial generator conditions",
+          "widgetType":"dropdown",
+          "label": "Select the initial conditions of the generators",
+          "choices": "$casename$symName[genRun]$symVal",
+          "aliases": "$casename$symName[genRun]$symDesc"
+      },
+      "GMSPAR_allon": {
+          "alias": "allon",
+          "widgetType":"dropdown",
+          "label": "Turn on all gens and/or lines during solve [allon]",
+          "aliases": [
+              "lines",
+              "none"
+          ],
+          "choices": [
+              "lines",
+              0
+          ],
+          "selected": "lines"
+      },
+      "GMSPAR_obj": {
+          "alias": "Obj",
+          "widgetType":"dropdown",
+          "label": "Objective function [obj]",
+          "aliases": [
+              "quadratic",
+              "piecewise linear"
+          ],
+          "choices": [
+              "quad",
+              "pwl"
+          ],
+          "selected": "pwl"
+      },
+      "GMSPAR_linelimits": {
+          "alias": "linelimits",
+          "widgetType":"dropdown",
+          "label": "Type of line limit data to use [linelimits]",
+          "choices": [
+              "given",
+              "uwcalc",
+              "inf"
+          ],
+          "selected": "given"
+      },
+      "GMSPAR_genPmin": {
+          "alias": "genPmin",
+          "widgetType":"dropdown",
+          "label": "Data for Generator lower limit [genPmin]",
+          "choices": [
+              "0",
+              "given",
+              "uwcalc"
+          ],
+          "selected": "given"
+      },
+      "GMSPAR_ramprates": {
+          "alias": "ramprates",
+          "widgetType":"dropdown",
+          "label": "Type of ramprate data to use [ramprates]",
+          "choices": [
+              "given",
+              "uwcalc"
+          ],
+          "selected": "given"
+      },
+      "GMSPAR_relax": {
+          "alias": "relax",
+          "widgetType":"checkbox",
+          "label": "Relax integer models? [relax]",
+          "value": 0,
+          "class": "checkbox-material"
+      },
+      "GMSPAR_lineloss": {
+          "alias": "lineloss",
+          "widgetType":"checkbox",
+          "label": "Approximate lineloss? [lineloss]",
+          "value": 0,
+          "class": "checkbox-material"
+      },
+      "GMSPAR_wind": {
+          "alias": "wind",
+          "widgetType":"checkbox",
+          "label": "Turn off wind turbines? [wind]",
+          "value": "max(casename$symName[wind]$symVal)",
+          "disable": true,
+          "class": "checkbox-material"
+      },
+      "GMSOPT_mip": {
+          "alias": "MIP-Solver",
+          "widgetType":"dropdown",
+          "label": "Solver to use for MIP",
+          "aliases": [
+              "BARON",
+              "BDMLP",
+              "CBC",
+              "CPLEX",
+              "GUROBI",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MOSEK",
+              "ODHCPLEX",
+              "SCIP",
+              "XA",
+              "XPRESS"
+          ],
+          "choices": [
+              "BARON",
+              "BDMLP",
+              "CBC",
+              "CPLEX",
+              "GUROBI",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MOSEK",
+              "ODHCPLEX",
+              "SCIP",
+              "XA",
+              "XPRESS"
+          ],
+          "selected": "CPLEX"
+      },
+      "GMSOPT_miqcp": {
+          "alias": "miqcp-Solver",
+          "widgetType":"dropdown",
+          "label": "Solver to use for miqcp",
+          "aliases": [
+              "ALPHAECP",
+              "ANTIGONE",
+              "BARON",
+              "BONMIN",
+              "COUENNE",
+              "CPLEX",
+              "DICOPT",
+              "GLOMIQO",
+              "GUROBI",
+              "KNITRO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MOSEK",
+              "ODHCPLEX",
+              "OQNLP",
+              "SBB",
+              "SCIP",
+              "XPRESS"
+          ],
+          "choices": [
+              "ALPHAECP",
+              "ANTIGONE",
+              "BARON",
+              "BONMIN",
+              "COUENNE",
+              "CPLEX",
+              "DICOPT",
+              "GLOMIQO",
+              "GUROBI",
+              "KNITRO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MOSEK",
+              "ODHCPLEX",
+              "OQNLP",
+              "SBB",
+              "SCIP",
+              "XPRESS"
+          ],
+          "selected": "CPLEX"
+      },
+      "GMSOPT_rmip": {
+          "alias": "rmip-Solver",
+          "widgetType":"dropdown",
+          "label": "Solver to use for rmip",
+          "aliases": [
+              "BARON",
+              "BDMLP",
+              "CBC",
+              "CONOPT 3",
+              "CONOPT 4",
+              "CPLEX",
+              "DECIS",
+              "GUROBI",
+              "IPOPT",
+              "KNITRO",
+              "LGO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MINOS",
+              "MOSEK",
+              "SNOPT",
+              "SOPLEX",
+              "XA",
+              "XPRESS"
+          ],
+          "choices": [
+              "BARON",
+              "BDMLP",
+              "CBC",
+              "CONOPT3",
+              "CONOPT4",
+              "CPLEX",
+              "DECIS",
+              "GUROBI",
+              "IPOPT",
+              "KNITRO",
+              "LGO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MINOS",
+              "MOSEK",
+              "SNOPT",
+              "SOPLEX",
+              "XA",
+              "XPRESS"
+          ],
+          "selected": "CPLEX"
+      },
+      "GMSOPT_rmiqcp": {
+          "alias": "rmiqcp-Solver",
+          "widgetType":"dropdown",
+          "label": "Solver to use for rmiqcp",
+          "aliases": [
+              "ANTIGONE",
+              "BARON",
+              "CONOPT 3",
+              "CONOPT 4",
+              "COUENNE",
+              "CPLEX",
+              "GLOMIQO",
+              "GUROBI",
+              "IPOPT",
+              "KNITRO",
+              "LGO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MINOS",
+              "MOSEK",
+              "MSNLP",
+              "OQNLP",
+              "SCIP",
+              "SNOPT",
+              "XPRESS"
+          ],
+          "choices": [
+              "ANTIGONE",
+              "BARON",
+              "CONOPT3",
+              "CONOPT4",
+              "COUENNE",
+              "CPLEX",
+              "GLOMIQO",
+              "GUROBI",
+              "IPOPT",
+              "KNITRO",
+              "LGO",
+              "LINDO",
+              "LINDOGLOBAL",
+              "MINOS",
+              "MOSEK",
+              "MSNLP",
+              "OQNLP",
+              "SCIP",
+              "SNOPT",
+              "XPRESS"
+          ],
+          "selected": "CPLEX"
+      },
+      "GMSPAR_savesol": {
+          "alias": "savesol",
+          "widgetType":"checkbox",
+          "label": "Save solution? [savesol]",
+          "value": 0,
+          "class": "checkbox-material"
+      },
+      "GMSPAR_verbose": {
+          "alias": "verbose",
+          "widgetType":"checkbox",
+          "label": "Print input in listing output? [verbose]",
+          "value": 1,
+          "class": "checkbox-material"
+      }
     },
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"

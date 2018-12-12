@@ -35,7 +35,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include dcopf_webui_in.gms
+$if set webui $include %MODELPATH%webui_in.gms
 
 * Define type of model
 $set modeltype "DC"

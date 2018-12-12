@@ -34,6 +34,12 @@ option clear=webuis4_;
 webuis1_(webui0_) = sum(webui1_, fuelinfo_Report(webui0_,webui1_));
 loop((webuis1_,fuel_s), fuelinfo_Report(webuis1_,fuel_s) = fuelinfo_Report(webuis1_,fuel_s) + eps;break;);
 option clear=webuis1_;
+webuis3_(webui0_,webui1_,webui2_) = sum(webui3_, demandbidinfo_Report(webui0_,webui1_,webui2_,webui3_));
+loop((webuis3_,demandbid_s), demandbidinfo_Report(webuis3_,demandbid_s) = demandbidinfo_Report(webuis3_,demandbid_s) + eps;break;);
+option clear=webuis3_;
+webuis2_(webui0_,webui1_) = sum(webui2_, interfaceinfo_Report(webui0_,webui1_,webui2_));
+loop((webuis2_,interface_t), interfaceinfo_Report(webuis2_,interface_t) = interfaceinfo_Report(webuis2_,interface_t) + eps;break;);
+option clear=webuis2_;
 execute_unload "gmswebui.gdx";
 embeddedCode Python:
 from subprocess import run
@@ -155,6 +161,8 @@ writeCSVParam(db["businfo_Report"],"gmswebui.gdx", -1)
 writeCSVParam(db["geninfo_Report"],"gmswebui.gdx", -1)
 writeCSVParam(db["branchinfo_Report"],"gmswebui.gdx", -1)
 writeCSVParam(db["fuelinfo_Report"],"gmswebui.gdx", -1)
+writeCSVParam(db["demandbidinfo_Report"],"gmswebui.gdx", -1)
+writeCSVParam(db["interfaceinfo_Report"],"gmswebui.gdx", -1)
 with open('scalars_out.csv', 'w') as f:
    f.write('Scalar,Description,Value\n')
    f.write('total_cost_Report,"Final objective value",' + str(db['total_cost_Report'].first_record().value) + '\n')
