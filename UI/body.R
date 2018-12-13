@@ -458,15 +458,14 @@ body <- dashboardBody({
       )
     }else{
        tabItem(tabName = "advanced",
-               column(width = 4,
-                      box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
-                          tags$hr(),
-                          tags$span(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
-                          actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
-                          tags$hr()
-                      )
+                    box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
+                        tags$hr(),
+                        tags$div(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
+                        tags$div(class = "space"),
+                        actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
+                        tags$hr()
+                    )
                )
-       )
     }
   )
 )})

@@ -9,21 +9,17 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                   menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy"))
                 },
                 menuItem(lang$nav$sidebarMenu$advanced, tabName="advanced", icon = icon("ellipsis-h")),
-                tags$div(style="display:block;",
-                         actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "glow-animation")),
+                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "btHighlight3 glow-animation", style = "display:block;"),
                 tagAppendAttributes(actionButton("btSolve", lang$nav$sidebarButtons$solve, 
-                                                 width = "85%", class = "btHighlight1"), disabled = ""),
+                                                 width = "85%", class = "btHighlight2", style = "display:block;"), disabled = ""),
                 tagAppendAttributes(actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt, 
-                                                 width = "85%", class = "btHighlight1"), disabled = ""),
+                                                 width = "85%", class = "btHighlight2", style = "display:block;"), disabled = ""),
                 if(config$activateModules$scenario){
                   tagList(
                     conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
-                                     tags$div(style="display:block;",
-                                              actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight1"))),
-                    tags$div(style="display:block;",
-                            actionButton("btSplitView", lang$nav$sidebarButtons$tabView, width = "85%", class = "btHighlight1")),
-                    tags$div(style="display:block;",
-                            actionButton("btCompareScen", lang$nav$sidebarButtons$compareStart, width = "85%"))
+                                     actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight2", style = "display:block;")),
+                    actionButton("btSplitView", lang$nav$sidebarButtons$tabView, width = "85%", class = "btHighlight2", style = "display:block;"),
+                    actionButton("btCompareScen", class = "btHighlight3", lang$nav$sidebarButtons$compareStart, width = "85%", style = "display:block;")
                   )
                 }
     )
@@ -37,17 +33,12 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 menuItem(lang$nav$sidebarMenu$batch$analyze, tabName="batchAnalyze", icon = icon("pie-chart")),
-                tags$div(style="display:block;",
-                         actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "glow-animation")),
-                tags$div(style="display:block;",
-                         actionButton("btSolve", lang$nav$sidebarButtons$solveBatch, width = "85%", class = "btHighlight1")),
+                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "btHighlight3 glow-animation", style = "display:block;"),
+                actionButton("btSolve", lang$nav$sidebarButtons$solveBatch, width = "85%", class = "btHighlight2", style = "display:block;"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
-                                 tags$div(style="display:block;",
-                                          actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight1"))),
-                tags$div(style="display:block;",
-                         actionButton("btSplitView", lang$nav$sidebarButtons$tabView, width = "85%", class = "btHighlight1")),
-                tagAppendAttributes(tags$div(style="display:block;",
-                                             actionButton("btCompareScen", lang$nav$sidebarButtons$compareStart, width = "85%"),disabled = ""))
+                                 actionButton("btLoadScen", class = "btHighlight3", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight2", style = "display:block;")),
+                actionButton("btSplitView", class = "btHighlight3", lang$nav$sidebarButtons$tabView, width = "85%", class = "btHighlight2", style = "display:block;"),
+                tagAppendAttributes(actionButton("btCompareScen", class = "btHighlight3", lang$nav$sidebarButtons$compareStart, width = "85%", style = "display:block;"), disabled = "")
     )
   )
 }
