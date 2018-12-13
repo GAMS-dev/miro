@@ -15,6 +15,9 @@ gmsColTypes <- unlist(lapply(c(modelIn, modelOut), function(el){
   el$colTypes
 }))
 gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
+gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
+  names(el$headers)
+})
 
 disableEl(session, "#btUploadBatch")
 
@@ -22,7 +25,7 @@ disableEl(session, "#btUploadBatch")
 batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
                                tableNamesMustHave = c(inputDsNames, if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
-                               config$csvDelim, workDir, gmsColTypes = gmsColTypes)
+                               config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders)
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)

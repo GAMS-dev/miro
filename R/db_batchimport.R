@@ -3,7 +3,7 @@ BatchImport <- R6Class("BatchImport",
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
-                                                      csvDelim, workDir, gmsColTypes){
+                                                      csvDelim, workDir, gmsColTypes, gmsFileHeaders){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
@@ -17,6 +17,7 @@ BatchImport <- R6Class("BatchImport",
                            #   workDir:                 directory where temporary files are saved
                            #   traceColNames:           column names of trace file
                            #   gmsColTypes:             character vector of column types per datasheet
+                           #   gmsFileHeaders:          character vector of file headers per datasheet
                            #
                            
                            # BEGIN error checks
@@ -29,6 +30,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(workDir), length(workDir) == 1)
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                            stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
+                           stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
                            # END error checks
                            
                            private$conn               <- db$getConn()
@@ -47,6 +49,7 @@ BatchImport <- R6Class("BatchImport",
                            private$workDir            <- workDir
                            private$includeTrc         <- traceConfig[['tabName']] %in% private$tableNamesToVerify
                            private$gmsColTypes        <- gmsColTypes
+                           private$gmsFileHeaders     <- gmsFileHeaders
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
@@ -291,6 +294,7 @@ BatchImport <- R6Class("BatchImport",
                          scenNames               = character(0L),
                          csvPaths                = character(0L),
                          gmsColTypes             = character(0L),
+                         gmsFileHeaders          = character(0L),
                          scalarsInputName        = character(0L),
                          scalarsOutputName       = character(0L),
                          tableNamesMustHave      = character(0L),
@@ -322,6 +326,7 @@ BatchImport <- R6Class("BatchImport",
                                  scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
                                                         col_types = cols())
                                  scenData[is.na(scenData)] <- 0L
+                                 
                                  if(!is.null(colTypes)){
                                    scenData <- fixColTypes(scenData, colTypes)
                                  }
@@ -357,23 +362,34 @@ BatchImport <- R6Class("BatchImport",
                          },
                          validateTables = function(scenTables, scalarInToVerify, scalarOutToVerify){
                            isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
-                             if(identical(names(scenTables)[tableId], private$scalarsInputName)){
+                             tableName <- tolower(names(scenTables)[tableId])
+                             if(identical(tableName, private$scalarsInputName)){
                                if(any(!scalarInToVerify %in% scenTables[[tableId]][[1]]) ||
                                   length(scalarInToVerify) != length(scenTables[[tableId]][[1]])){
                                  flog.info("Missing or additional elements in table: '%s'.", 
-                                           names(scenTables)[tableId])
+                                           tableName)
                                  return(TRUE)
                                }
-                             }else if(identical(names(scenTables)[tableId], private$scalarsOutputName)){
+                             }else if(identical(tableName, private$scalarsOutputName)){
                                if(any(!scalarOutToVerify %in% scenTables[[tableId]][[1]]) || 
                                   length(scalarOutToVerify) != length(scenTables[[tableId]][[1]])){
                                  flog.info("Missing or additional elements in table: '%s'.", 
-                                           names(scenTables)[tableId])
+                                           tableName)
                                  return(TRUE)
                                }
-                             }else if(identical(names(scenTables)[tableId], private$traceTabName)){
+                             }else if(identical(tableName, private$traceTabName)){
                                if(length(scenTables[[tableId]]) != length(private$traceColNames)){
                                  flog.info("Trace file does not have %d columns.", length(private$traceColNames))
+                                 return(TRUE)
+                               }
+                             }else if(!is.null(private$gmsFileHeaders[[tableName]])){
+                               if(validateHeaders(names(scenTables[[tableId]]), 
+                                                  private$gmsFileHeaders[[tableName]])){
+                                 names(scenTables[[tableId]]) <- private$gmsFileHeaders[[tableName]]
+                               }else{
+                                 flog.info("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
+                                           tableName, paste(names(scenTables[[tableId]]), collapse = "', '"), 
+                                           paste(private$gmsFileHeaders[[tableName]], collapse = "', '"))
                                  return(TRUE)
                                }
                              }
