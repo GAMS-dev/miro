@@ -376,9 +376,22 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
 }
 ######## BATCH MODE
 
-showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxConcurentLoad = 0L){
+showBatchLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
+                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE){
   showModal(modalDialog(
-    title = lang$nav$batchMode$configPaverDialog$title,
+    title = list(lang$nav$batchMode$configPaverDialog$title, 
+                 HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
+    if(hasRemovePerm){
+      tagList(
+        tags$div(id = "batchRemoveConfirm", style = "display:none;",
+                 sprintf(lang$nav$batchMode$configPaverDialog$removeConfirm, noScenSelected)
+        ),
+        tags$div(id = "batchRemoveSuccess", style = "display:none",
+                 lang$nav$batchMode$configPaverDialog$removeSuccess),
+        tags$div(id = "batchRemoveError", class = "errMsg", style = "display:none",
+                 lang$nav$batchMode$configPaverDialog$removeError)
+      )
+    },
     tags$div(id="batchLoadMethod",
              if(length(sidsToLoad) <= maxConcurentLoad){
                lang$nav$batchMode$configPaverDialog$selectMethod
@@ -399,11 +412,13 @@ showBatchLoadMethodDialog <- function(attribs = NULL, maxSolversPaver = "", maxC
                     lang$nav$batchMode$configPaverDialog$delTrace
     ),
     footer = tagList(
-      modalButton(lang$nav$batchMode$configPaverDialog$cancelButton),
+      if(hasRemovePerm){
+        actionButton("btBatchRemove", lang$nav$batchMode$configPaverDialog$removeButton,
+                     class = "btRemove")
+      },
       tags$a(id="btBatchDownload", class='btn btn-default shiny-download-link',
              href='', target='_blank', download=NA, lang$nav$batchMode$configPaverDialog$downloadButton),
-      actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton,
-                   class = "btHighlight1"),
+      actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton),
       actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
                    class = "btHighlight1", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)

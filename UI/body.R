@@ -293,9 +293,9 @@ body <- dashboardBody({
                              style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                              lang$nav$batch_load$noData),
                     tags$div(id = "batchLoadButtons", style = "margin:15px;display:none;",
-                             actionButton("batchLoadSelected", lang$nav$batch_load$loadSelectedButton , class = "btHighlight1"),
-                             actionButton("batchLoadCurrent", lang$nav$batch_load$loadCurrentButton , class = "btHighlight1"),
-                             actionButton("batchLoadAll", lang$nav$batch_load$loadAllButton, class = "btHighlight1")
+                             actionButton("batchLoadSelected", lang$nav$batch_load$chooseSelectedButton , class = "btHighlight1"),
+                             actionButton("batchLoadCurrent", lang$nav$batch_load$chooseCurrentButton , class = "btHighlight1"),
+                             actionButton("batchLoadAll", lang$nav$batch_load$chooseAllButton, class = "btHighlight1")
                     )
                 )
               )
@@ -458,15 +458,14 @@ body <- dashboardBody({
       )
     }else{
        tabItem(tabName = "advanced",
-               column(width = 4,
-                      box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
-                          tags$hr(),
-                          tags$span(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
-                          actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
-                          tags$hr()
-                      )
+                    box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$advanced$titleDownloadTemp, 
+                        tags$hr(),
+                        tags$div(style = "margin-right:15px;", lang$nav$advanced$downloadTempDesc),
+                        tags$div(class = "space"),
+                        actionButton("btDownloadTmpFiles", label = lang$nav$advanced$downloadTempButton),
+                        tags$hr()
+                    )
                )
-       )
     }
   )
 )})

@@ -441,6 +441,7 @@ if(is.null(errMsg)){
   # batch mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$batchMode, TRUE)){
+    rSaveFilePath <- gsub(".RData", "_batch.RData", rSaveFilePath, fixed = TRUE)
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
           && length(modelIn[[i]]$slider$default) > 1) 
@@ -454,6 +455,12 @@ if(is.null(errMsg)){
       }
     }), use.names = FALSE)
     lapply(seq_along(modelIn), function(i){
+      if(!names(modelIn)[i] %in% c(DDPar, GMSOpt)){
+        errMsg <<- paste(errMsg, 
+                        sprintf("Currenty only GAMS command line parameters (double dash parameters or GAMS options) are supported as input elements in batch mode (Element: '%s').", 
+                                modelInAlias[i]), sep = "\n")
+        return(NULL)
+      }
       if(!identical(modelIn[[i]]$noBatch, TRUE)){
         switch(modelIn[[i]]$type,
                checkbox = {
@@ -494,7 +501,6 @@ if(is.null(errMsg)){
                    modelIn[[i]]$slider$double <<- TRUE
                  }
                },
-               hot = {},
                {
                  errMsg <<- paste(errMsg, 
                                   sprintf("Elements other than sliders, checkboxes and single " %+% 
@@ -847,7 +853,23 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
     scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
     
-    # get column types for output sheets
+    # get column types for tabular datasets
+    for(i in seq_along(modelIn)){
+      if(is.null(modelIn[[i]]$headers)){
+        next
+      }
+      modelIn[[i]]$colTypes <- paste(vapply(modelIn[[i]]$headers, function(header){
+        switch(header$type,
+               "set" = 'c',
+               "parameter" = 'd',
+               "acronym" = 'c',
+               "string" = 'c',
+               "scalar" = 'c',
+               {
+                 'c'
+               })
+      }, character(1L), USE.NAMES = FALSE), collapse = "")
+    }
     for(i in seq_along(modelOut)){
       modelOut[[i]]$colTypes <- paste(vapply(modelOut[[i]]$headers, function(header){
         switch(header$type,

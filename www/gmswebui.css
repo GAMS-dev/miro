@@ -2,6 +2,12 @@
 body{
   font-family: "Helvetica", Times, "Times New Roman", serif;
 }
+.btn-default{
+  border: 2px solid #ADADAD;
+  background-color: #FFF;
+  background-color: rgba(0,0,0,0);
+  transition: all 500ms ease; 
+}
 .errMsg{
   margin: 5px;
   color: #F39619;
@@ -98,7 +104,30 @@ animation: none !important;
 }
 /* sidebar*/
 .btHighlight1{
-  background-color: #F39619;
+  border: 2px solid #F39619;
+}
+.btHighlight2{
+  border: 2px solid #F39619;
+  background-color: #222d32;
+  background-color: rgba(0,0,0,0);
+  color: #fff;
+  transition: all 500ms ease; 
+}
+.btHighlight2:hover{
+  border: 2px solid #ADADAD;
+}
+.btHighlight3{
+  border: 2px solid #ADADAD;
+  background-color: #222D32;
+  background-color: rgba(0,0,0,0);
+  color: #fff;
+  transition: all 500ms ease; 
+}
+.btHighlight3:hover{
+  border: 2px solid #F39619;
+}
+.btRemove{
+  border: 2px solid #d11a2a;
 }
 /* model input */
 .btIcon{

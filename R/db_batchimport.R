@@ -3,7 +3,7 @@ BatchImport <- R6Class("BatchImport",
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
-                                                      csvDelim, workDir){
+                                                      csvDelim, workDir, gmsColTypes){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
@@ -16,6 +16,7 @@ BatchImport <- R6Class("BatchImport",
                            #   csvDelim:                csv delimiter
                            #   workDir:                 directory where temporary files are saved
                            #   traceColNames:           column names of trace file
+                           #   gmsColTypes:             character vector of column types per datasheet
                            #
                            
                            # BEGIN error checks
@@ -27,6 +28,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(csvDelim), length(csvDelim) == 1)
                            stopifnot(is.character(workDir), length(workDir) == 1)
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
+                           stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
                            # END error checks
                            
                            private$conn               <- db$getConn()
@@ -44,6 +46,7 @@ BatchImport <- R6Class("BatchImport",
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
                            private$includeTrc         <- traceConfig[['tabName']] %in% private$tableNamesToVerify
+                           private$gmsColTypes        <- gmsColTypes
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
@@ -246,7 +249,6 @@ BatchImport <- R6Class("BatchImport",
                                                                              i, length(tables)))
                              }
                            })
-                           
                            invisible(self)
                          },
                          getScenDuplicates = function(scenNames = NULL){
@@ -288,6 +290,7 @@ BatchImport <- R6Class("BatchImport",
                          scenMetaColnames        = character(0L),
                          scenNames               = character(0L),
                          csvPaths                = character(0L),
+                         gmsColTypes             = character(0L),
                          scalarsInputName        = character(0L),
                          scalarsOutputName       = character(0L),
                          tableNamesMustHave      = character(0L),
@@ -304,13 +307,20 @@ BatchImport <- R6Class("BatchImport",
                            return(paths[csvIdx])
                          },
                          readScenData      = function(csvPaths){
-                           scenData <- lapply(csvPaths, function(csvPath){
+                           scenDataNames <- gsub("\\.(csv|trc)$", "", tolower(basename(csvPaths)), 
+                                                 ignore.case = TRUE)
+                           scenData <- lapply(seq_along(csvPaths), function(i){
+                             csvPath <- csvPaths[[i]]
                              tryCatch({
                                if(grepl("\\.trc$", csvPath, ignore.case = TRUE)){
                                  scenData <- readTraceData(csvPath, private$traceColNames)
                                }else{
+                                 colTypes <- NULL
+                                 if(!is.na(private$gmsColTypes[scenDataNames[[i]]])){
+                                   colTypes <- private$gmsColTypes[[scenDataNames[[i]]]]
+                                 }
                                  scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
-                                                        col_types = cols())
+                                                        col_types = if(is.null(colTypes)) cols() else colTypes)
                                }
                                scenData
                              }, error = function(e){
@@ -318,8 +328,7 @@ BatchImport <- R6Class("BatchImport",
                                     call. = FALSE)
                              })
                            })
-                           names(scenData) <- gsub("\\.(csv|trc)", "", tolower(basename(csvPaths)), 
-                                                   ignore.case = TRUE)
+                           names(scenData) <- scenDataNames
                            scenData
                          },
                          verifyScenFiles = function(csvPaths){
@@ -345,14 +354,16 @@ BatchImport <- R6Class("BatchImport",
                          validateTables = function(scenTables, scalarInToVerify, scalarOutToVerify){
                            isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
                              if(identical(names(scenTables)[tableId], private$scalarsInputName)){
-                               if(any(!scalarInToVerify %in% scenTables[[tableId]][[1]])){
-                                 flog.info("Missing elements in table: '%s'.", 
+                               if(any(!scalarInToVerify %in% scenTables[[tableId]][[1]]) ||
+                                  length(scalarInToVerify) != length(scenTables[[tableId]][[1]])){
+                                 flog.info("Missing or additional elements in table: '%s'.", 
                                            names(scenTables)[tableId])
                                  return(TRUE)
                                }
                              }else if(identical(names(scenTables)[tableId], private$scalarsOutputName)){
-                               if(any(!scalarOutToVerify %in% scenTables[[tableId]][[1]])){
-                                 flog.info("Missing elements in table: '%s'.", 
+                               if(any(!scalarOutToVerify %in% scenTables[[tableId]][[1]]) || 
+                                  length(scalarOutToVerify) != length(scenTables[[tableId]][[1]])){
+                                 flog.info("Missing or additional elements in table: '%s'.", 
                                            names(scenTables)[tableId])
                                  return(TRUE)
                                }

@@ -92,9 +92,9 @@
     "batch_load":{
       "title":"Load Scenarios",
       "noData":"No data was returned by your query",
-      "loadSelectedButton":"Load selected scenarios",
-      "loadCurrentButton":"Load current page",
-      "loadAllButton":"Load all"
+      "chooseSelectedButton":"Choose selected scenarios",
+      "chooseCurrentButton":"Choose current page",
+      "chooseAllButton":"Choose all"
     },
     "batch_analyze":{
       "title":"Analyze Scenarios",
@@ -290,10 +290,14 @@
         "desc":"Please select the attributes you want to compare.",
         "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
+        "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
+        "removeSuccess": "The selected scenarios were removed successfully.",
+        "removeError": "Some error occurred while trying to remove the selected scenarios. If this problem persists, please contact a system administrator.",
         "selAttribs":"Attributes to select:",
         "runButton":"Start Paver",
         "interactiveButton":"Interactive mode",
-        "downloadButton":"Download data"
+        "downloadButton":"Download data",
+        "removeButton": "Delete scenarios"
       },
       "invalidScenDialog":{
         "title":"Invalid scenarios",
