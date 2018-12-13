@@ -319,8 +319,10 @@ if(is.null(errMsg) && developMode){
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(orphanedTables)){
-      flog.warn(sprintf("There are orphaned tables in your database: '%s'.",
-                           paste(orphanedTables, collapse = "', '")))
+      msg <- sprintf("There are orphaned tables in your database: '%s'.",
+                     paste(orphanedTables, collapse = "', '"))
+      warning(msg, call. = FALSE)
+      flog.warn(msg)
     }
     inconsistentTables <- NULL
     tryCatch({
@@ -333,9 +335,13 @@ if(is.null(errMsg) && developMode){
     if(length(inconsistentTables$names)){
       flog.error(sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
-      errMsg <<- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
-                                      paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
-                      collapse = "\n")
+      msg <- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
+                                   paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
+                   collapse = "\n")
+      warning(msg, call. = FALSE)
+      if(config$activateModules$strictmode){
+        errMsg <<- paste(errMsg, msg, sep = "\n")
+      }
     }
   })
 }
