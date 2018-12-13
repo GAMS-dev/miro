@@ -400,6 +400,10 @@
       "badInputData":"Die GAMS Eingabedaten: '%s' sind ungültig. Bitte überprüfen Sie das Format der Daten, die Sie importieren möchten.",
       "writeCsv":"Beim Schreiben der csv-Datei: '%s' ist ein Fehler aufgetreten."
     },
+    "GAMSOutput":{  
+      "title":"Fehler beim Lesen der Ergebnisse",
+      "badOutputData":"Der Datensatz: '%s' ist ungültig. Bitte überprüfen Sie das Format der Ausgabedaten."
+    },
     "gamsExec":{  
       "title":"Fehler beim Ausführen von GAMS",
       "desc":"Bei der Ausführung von GAMS ist ein Fehler aufgetreten."

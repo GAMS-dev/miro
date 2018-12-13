@@ -12,8 +12,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
            csv = {
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
                scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
-                                       csvDelim, col_types = modelOut[[scalarsOutName]]$colTypes)
-               scalarTmp[is.na(scalarTmp)] <- 0L
+                                       csvDelim, col_types = cols())
+               
              }
            })
     
@@ -21,6 +21,17 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
     stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
                  scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
   })
+  scalarTmp[is.na(scalarTmp)] <- 0L
+  scalarTmp <- fixColTypes(scalarTmp,  "ccc")
+  #set names of scalar sheet to scalar headers
+  if(validateHeaders(names(scalarTmp), scalarsFileHeaders)){
+    names(scalarTmp) <- scalarsFileHeaders
+  }else{
+    flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
+              modelOutAlias[i], paste(names(scalarTmp), collapse = "', '"), 
+              paste(scalarsFileHeaders, collapse = "', '"))
+    stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, modelOutAlias[i]), call. = FALSE)
+  }
   
   # fetch results from csv files
   lapply(seq_along(modelOut), function(i){
@@ -46,8 +57,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
                csv = {
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
                    ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
-                                                   csvDelim, col_types = modelOut[[i]]$colTypes)
-                   ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
+                                                   csvDelim, col_types = cols())
                  }else{
                    stop(sprintf("Data for output dataset: '%s' could not be found.", names(modelOut)[[i]]), call. = FALSE)
                  }
@@ -56,6 +66,17 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
         stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
                      names(modelOut)[[i]] %+% ".csv", modelName, e), call. = FALSE)
       })
+      ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
+      ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
+      
+      if(validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
+        names(ret$tabular[[i]]) <- names(modelOut[[i]]$headers)
+      }else{
+        flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
+                  modelOutAlias[i], paste(names(ret$tabular[[i]]), collapse = "', '"), 
+                  paste(names(modelOut[[i]]$headers), collapse = "', '"))
+        stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, modelOutAlias[i]), call. = FALSE)
+      }
     }
   })
   

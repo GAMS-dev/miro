@@ -754,3 +754,19 @@ getNoLinesInFile <- function(filePath){
 downloadHandlerError <- function(file, msg = "Some error occurred trying to download this file."){
   return(writeLines(msg, file))
 }
+validateHeaders <- function(headersData, headersConfig){
+  return(identical(length(headersData), length(headersConfig)) && 
+    all(!is.na(match(tolower(headersData), tolower(headersConfig)))))
+}
+fixColTypes <- function(data, colTypes){
+  stopifnot(identical(length(data), nchar(colTypes)))
+
+  data[] <- lapply(seq_along(data), function(i){
+    if(identical(substr(colTypes, i, i), "c") && is.numeric(data[[i]])){
+      return(as.character(data[[i]]))
+    }else{
+      return(data[[i]])
+    } 
+  })
+  return(data)
+}

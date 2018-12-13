@@ -320,7 +320,11 @@ BatchImport <- R6Class("BatchImport",
                                    colTypes <- private$gmsColTypes[[scenDataNames[[i]]]]
                                  }
                                  scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
-                                                        col_types = if(is.null(colTypes)) cols() else colTypes)
+                                                        col_types = cols())
+                                 scenData[is.na(scenData)] <- 0L
+                                 if(!is.null(colTypes)){
+                                   scenData <- fixColTypes(scenData, colTypes)
+                                 }
                                }
                                scenData
                              }, error = function(e){

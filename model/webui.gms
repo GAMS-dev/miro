@@ -537,9 +537,9 @@ for s in output_sym:
    headers = {}
    if db[s].dimension==1:
       if db[s].domains_as_strings[0] == '*':
-         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{'key':{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
+         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{'key':{'type':'set'},extractSymText(db[s]):{'type':'parameter'}} }, e_dict)
       else:
-         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{extractSymText(db[s]):{'type':'set'},db[s].name:{'type':'parameter'}} }, e_dict)
+         io_dict[s.lower()] = dict_merge({ 'alias':extractSymText(db[s]), 'headers':{extractSymText(db[s].domains[0]):{'type':'set'},extractSymText(db[s]):{'type':'parameter'}} }, e_dict)
    else:         
       headers = {}
       domdict = {}

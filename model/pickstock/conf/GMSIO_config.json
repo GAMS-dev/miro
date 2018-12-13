@@ -9,8 +9,7 @@
             "alias": "Price",
             "headers": {
                 "date": {
-                    "type": "set",
-                    "readonly": true
+                    "type": "set"
                 },
                 "stockSymbol": {
                     "type": "set"
@@ -18,7 +17,8 @@
                 "Price": {
                     "type": "parameter"
                 }
-            }
+            },
+            "readonly": true
         },
         "maxstock": {
             "alias": "maximum number of stocks to select",
@@ -45,10 +45,10 @@
         "partofportfolio": {
             "alias": "what part of the portfolio",
             "headers": {
-                "what part of the portfolio": {
+                "stockSymbol": {
                     "type": "set"
                 },
-                "partOfPortfolio": {
+                "what part of the portfolio": {
                     "type": "parameter"
                 }
             }
@@ -82,7 +82,7 @@
             }
         },
         "scalars_out": {
-            "alias": "Scalars",
+            "alias": "Output Scalars",
             "hidden": true,
             "symnames": [
                 "fHdr",

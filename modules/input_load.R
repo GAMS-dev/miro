@@ -13,12 +13,22 @@ lapply(datasetsToFetch, function(dataset){
       if(identical(loadMode, "xls")){
         # load from Excel workbook
         tryCatch({
-          dataTmp <- read_excel(input$localInput$datapath, dataset, col_types = modelIn[[i]]$colTypes)
+          dataTmp <- read_excel(input$localInput$datapath, dataset)
+          dataTmp[is.na(dataTmp)] <- 0L
+          dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
         }, error = function(e) {
           flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", 
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
         })
+        if(validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
+          names(dataTmp) <- names(modelIn[[i]]$headers)
+        }else{
+          flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
+                    dataset, paste(names(dataTmp), collapse = "', '"), 
+                    paste(names(modelIn[[i]]$headers), collapse = "', '"))
+          errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
+        }
       }else if(identical(loadMode, "scen")){
         dataTmp <- scenInputData[[dataset]]
       }
@@ -75,14 +85,22 @@ lapply(datasetsToFetch, function(dataset){
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
             sheetId <- match(tolower(scalarsFileName), tolower(excel_sheets(isolate(input$localInput$datapath))))[1]
-            dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = "ccc")
-            #set names of scalar sheet to scalar headers
-            names(dataTmp) <- scalarsFileHeaders
+            dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = c("text", "text", "text"))
           }, error = function(e) {
             flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 
                       Error message: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
           })
+          dataTmp[is.na(dataTmp)] <- 0L
+          #set names of scalar sheet to scalar headers
+          if(validateHeaders(names(dataTmp), scalarsFileHeaders)){
+            names(dataTmp) <- scalarsFileHeaders
+          }else{
+            flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
+                      dataset, paste(names(dataTmp), collapse = "', '"), 
+                      paste(scalarsFileHeaders, collapse = "', '"))
+            errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
+          }
         }
         if(!is.null(errMsg)){
           return(NULL)

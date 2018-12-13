@@ -34,10 +34,10 @@ set webuis17_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,we
 set webuis18_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,webui8_,webui9_,webui10_,webui11_,webui12_,webui13_,webui14_,webui15_,webui16_,webui17_);
 set webuis19_(webui0_,webui1_,webui2_,webui3_,webui4_,webui5_,webui6_,webui7_,webui8_,webui9_,webui10_,webui11_,webui12_,webui13_,webui14_,webui15_,webui16_,webui17_,webui18_);
 webuis1_(webui0_) = sum(webui1_, dowVSindex(webui0_,webui1_));
-dowVSindex(webuis1_,fHdr) = dowVSindex(webuis1_,fHdr) + eps;
+loop((webuis1_,fHdr), dowVSindex(webuis1_,fHdr) = dowVSindex(webuis1_,fHdr) + eps;break;);
 option clear=webuis1_;
 webuis1_(webui0_) = sum(webui1_, abserror(webui0_,webui1_));
-abserror(webuis1_,errHdr) = abserror(webuis1_,errHdr) + eps;
+loop((webuis1_,errHdr), abserror(webuis1_,errHdr) = abserror(webuis1_,errHdr) + eps;break;);
 option clear=webuis1_;
 execute_unload "gmswebui.gdx";
 embeddedCode Python:
@@ -100,14 +100,18 @@ def getCSVHeader(sym, max_val_col):
       return ','.join(d_list)
 
       
-def writeCSVParam(sym, gdxname='none', max_val_col = 5):
+def writeCSVParam(sym, gdxname='none', max_val_col = 5, isGamsSet = False):
    expand_last_col = expandLastCol(sym, max_val_col)
    if gdxname=='none':
       with open(sym.name.lower()+'.csv', 'w') as f:
          if sym.dimension==1:
             f.write(getCSVHeader(sym, max_val_col)+'\n')
-            for r in sym:
-               f.write(r.key(0) + ',' + str(r.value) + '\n')
+            if(isGamsSet):
+               for r in sym:
+                  f.write(r.key(0) + '\n')
+            else:
+               for r in sym:
+                  f.write(r.key(0) + ',' + str(r.value) + '\n')
          else:
             dbX = sym.database.workspace.add_database(source_database=sym.database)
             if expand_last_col:
