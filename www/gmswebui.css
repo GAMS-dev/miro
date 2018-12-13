@@ -274,6 +274,10 @@ animation: none !important;
   background-color: #337ab7; 
   border-color: #2e6da4;
 }
+#scenSplitView .col-sm-6{
+  padding-right: 5px;
+  padding-left: 5px;
+}
 .scenSplit-button-load{
   height: 400px;
   width: 100%;

@@ -21,7 +21,8 @@ lapply(datasetsToFetch, function(dataset){
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
         })
-        if(validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
+        if(!config$activateModules$strictmode || 
+           validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
           names(dataTmp) <- names(modelIn[[i]]$headers)
         }else{
           flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
@@ -93,7 +94,8 @@ lapply(datasetsToFetch, function(dataset){
           })
           dataTmp[is.na(dataTmp)] <- 0L
           #set names of scalar sheet to scalar headers
-          if(validateHeaders(names(dataTmp), scalarsFileHeaders)){
+          if(!config$activateModules$strictmode || 
+             validateHeaders(names(dataTmp), scalarsFileHeaders)){
             names(dataTmp) <- scalarsFileHeaders
           }else{
             flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 

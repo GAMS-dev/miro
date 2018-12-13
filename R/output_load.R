@@ -24,7 +24,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
   scalarTmp[is.na(scalarTmp)] <- 0L
   scalarTmp <- fixColTypes(scalarTmp,  "ccc")
   #set names of scalar sheet to scalar headers
-  if(validateHeaders(names(scalarTmp), scalarsFileHeaders)){
+  if(!config$activateModules$strictmode ||
+     validateHeaders(names(scalarTmp), scalarsFileHeaders)){
     names(scalarTmp) <- scalarsFileHeaders
   }else{
     flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
@@ -69,7 +70,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
       ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
       
-      if(validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
+      if(!config$activateModules$strictmode ||
+         validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
         names(ret$tabular[[i]]) <- names(modelOut[[i]]$headers)
       }else{
         flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 

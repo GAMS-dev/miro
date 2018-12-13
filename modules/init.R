@@ -951,14 +951,3 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                            '5000' = "Driver error: internal error: cannot load option handling library"
     )
   }
-if(is.null(errMsg)){
-  save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
-       modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
-       sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
-       choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, 
-       inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
-       modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
-       modelInToImportAlias, modelInToImport, scenTableNames,
-       scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
-       modelInGmsString, file = rSaveFilePath)
-}

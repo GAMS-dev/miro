@@ -11,9 +11,7 @@ scalarOutToVerify <- NULL
 if(scalarsOutName %in% names(modelOut)){
   scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
 }
-gmsColTypes <- unlist(lapply(c(modelIn, modelOut), function(el){
-  el$colTypes
-}))
+gmsColTypes <- unlist(lapply(c(modelIn, modelOut), "[[", "colTypes"))
 gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
 gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
   names(el$headers)
@@ -25,7 +23,8 @@ disableEl(session, "#btUploadBatch")
 batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
                                tableNamesMustHave = c(inputDsNames, if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
-                               config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders)
+                               config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
+                               strictmode = config$activateModules$strictmode)
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)

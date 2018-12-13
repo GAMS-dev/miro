@@ -3,7 +3,8 @@ BatchImport <- R6Class("BatchImport",
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
-                                                      csvDelim, workDir, gmsColTypes, gmsFileHeaders){
+                                                      csvDelim, workDir, gmsColTypes, gmsFileHeaders,
+                                                      strictmode = TRUE){
                            # R6 class to import scenarios in batch mode
                            #
                            # Args:      
@@ -18,6 +19,7 @@ BatchImport <- R6Class("BatchImport",
                            #   traceColNames:           column names of trace file
                            #   gmsColTypes:             character vector of column types per datasheet
                            #   gmsFileHeaders:          character vector of file headers per datasheet
+                           #   strictmode:              logical that specifies whether strict mode is active
                            #
                            
                            # BEGIN error checks
@@ -31,6 +33,7 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                            stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
                            stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
+                           stopifnot(is.logical(strictmode), length(strictmode) == 1)
                            # END error checks
                            
                            private$conn               <- db$getConn()
@@ -50,6 +53,7 @@ BatchImport <- R6Class("BatchImport",
                            private$includeTrc         <- traceConfig[['tabName']] %in% private$tableNamesToVerify
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
+                           private$strictmode         <- strictmode
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
@@ -305,6 +309,7 @@ BatchImport <- R6Class("BatchImport",
                          duplicatedScenIds       = character(0L),
                          traceColNames           = character(0L),
                          traceTabName            = character(0L),
+                         strictmode              = logical(1L),
                          includeTrc              = logical(0L),
                          getScenFilePaths  = function(scenName, paths){
                            csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
@@ -383,7 +388,8 @@ BatchImport <- R6Class("BatchImport",
                                  return(TRUE)
                                }
                              }else if(!is.null(private$gmsFileHeaders[[tableName]])){
-                               if(validateHeaders(names(scenTables[[tableId]]), 
+                               if(!private$strictmode || 
+                                  validateHeaders(names(scenTables[[tableId]]), 
                                                   private$gmsFileHeaders[[tableName]])){
                                  names(scenTables[[tableId]]) <- private$gmsFileHeaders[[tableName]]
                                }else{

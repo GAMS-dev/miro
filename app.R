@@ -163,10 +163,10 @@ if(is.null(errMsg)){
   if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
+    load(rSaveFilePath, envir = .GlobalEnv)
     if(isShinyProxy){
       config$db <- fromJSON(paste0(configDir, jsonFilesWithSchema[3], ".json"))
     }
-    load(rSaveFilePath, envir = .GlobalEnv)
   }
 }
 if(is.null(errMsg)){
@@ -302,6 +302,10 @@ if(is.null(errMsg)){
     requiredPackages <- c("openssl")
     source("./R/install_packages.R", local = TRUE)
     
+    if(!identical(tolower(config$db$type), "postgres")){
+      errMsg <-paste(errMsg, "Database types other than PostgreSQL are currently not supported in batch mode.", sep = '\n')
+    }
+    
     source("./R/batch.R")
     source("./R/db_batchimport.R")
     source("./R/db_batchload.R")
@@ -326,13 +330,15 @@ if(is.null(errMsg) && developMode){
     }
     inconsistentTables <- NULL
     tryCatch({
-      inconsistentTables <- db$getInconsistentTables(lapply(c(modelIn, modelOut), function(el) return(names(el$headers))))
+      inconsistentTables <- db$getInconsistentTables(lapply(c(modelIn, modelOut), function(el) return(names(el$headers))),
+                                                     unlist(lapply(c(modelIn, modelOut), "[[", "colTypes")), 
+                                                     strictMode = config$activateModules$strictmode)
     }, error = function(e){
       flog.error("Problems fetching inconsistent database tables.\nError message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching inconsistent database tables. Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })
-    if(length(inconsistentTables$names)){
+    if(length(inconsistentTables$errMsg)){
       flog.error(sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
       msg <- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
@@ -341,6 +347,15 @@ if(is.null(errMsg) && developMode){
       warning(msg, call. = FALSE)
       if(config$activateModules$strictmode){
         errMsg <<- paste(errMsg, msg, sep = "\n")
+      }else{
+        for(i in seq_along(inconsistentTables$headers)){
+          tabName <- names(inconsistentTables$headers)[i]
+          if(!is.null(names(modelIn[[tabName]]$headers))){
+            names(modelIn[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
+          }else{
+            names(modelOut[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
+          }
+        }
       }
     }
   })
@@ -392,6 +407,18 @@ if(!is.null(errMsg)){
   shinyApp(ui = ui_initError, server = server_initError)
   
 }else{
+  if(developMode){
+    save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
+         modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
+         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
+         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, 
+         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
+         modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
+         modelInToImportAlias, modelInToImport, scenTableNames,
+         scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
+         modelInGmsString, file = rSaveFilePath)
+  }
+  
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server

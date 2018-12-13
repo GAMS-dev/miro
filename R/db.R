@@ -140,26 +140,72 @@ Db <- R6Class("Db",
                   })
                   return(dbTables[!dbTables %in% private$tableNamesScenario])
                 },
-                getInconsistentTables = function(headers){
-                  errMsg <- NULL
+                getInconsistentTables = function(colNames, colTypes, strictMode = TRUE){
+                  errMsg  <- NULL
+                  headers <- colNames
+                  numericTypes <- c("float", "real", 
+                                    "numeric", "double",
+                                    "double precision",
+                                    "int", "integer",
+                                    "smallint", "bigint")
                   
                   badTables <- vapply(private$tableNamesScenario, function(tabName){
                     tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
-                    confHeaders <- headers[[tabNameRaw]]
+                    confHeaders <- colNames[[tabNameRaw]]
                     if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
-                      query <- SQL(paste0("SELECT * FROM ",
-                                          dbQuoteIdentifier(private$conn, tabName), " LIMIT 1;"))
+                      if(inherits(private$conn, "PqConnection")){
+                        query <- SQL(paste0("SELECT name,type FROM information_schema.columns 
+                                            WHERE table_name = ", 
+                                            dbQuoteIdentifier(private$conn, tabName), ");"))
+                        
+                      }else{
+                        query <- SQL(paste0("PRAGMA table_info(", 
+                                            dbQuoteIdentifier(private$conn, tabName), ");"))
+                      }
                       tryCatch({
-                        tabHeaders <- names(dbGetQuery(private$conn, query))[-1]
+                        tabInfo     <- dbGetQuery(private$conn, query)
+                        tabColNames <- tabInfo$name[-1L]
+                        tabColTypes <- tabInfo$type[-1L]
                       }, error = function(e){
                         stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
                                      tabName, e), call. = FALSE)
                       })
-                      if(!identical(length(tabHeaders), length(confHeaders)) || 
-                         any(is.na(match(confHeaders, tabHeaders)))){
-                        errMsg <<- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!",
-                                                         paste(tabHeaders, collapse = "', '"),
+                      errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!",
+                                                         paste(tabColNames, collapse = "', '"),
                                                          paste(confHeaders, collapse = "', '")))
+                      if(!identical(length(tabColNames), length(confHeaders))){
+                        errMsg <<- errMsgTmp
+                        return(tabNameRaw)
+                      }else if(any(is.na(match(confHeaders, tabColNames)))){
+                        if(strictMode || any(vapply(seq_along(tabColTypes), function(i){
+                          switch(tolower(substr(colTypes[tabNameRaw], i, i)),
+                                 "d" = {
+                                   if(tabColTypes[[i]] %in% numericTypes){
+                                     return(FALSE)
+                                   }else{
+                                     return(TRUE)
+                                   }
+                                 },
+                                 "c" = {
+                                   if(tabColTypes[[i]] %in% numericTypes){
+                                     return(TRUE)
+                                   }else{
+                                     return(FALSE)
+                                   }
+                                 },
+                                 { 
+                                   stop(sprintf("Unsupported column type detected: %s.", 
+                                                substr(colTypes[tabNameRaw], i, i)), call. = FALSE)
+                                }
+                          )
+                        }, logical(1L), USE.NAMES = FALSE))){
+                          errMsg <<- errMsgTmp
+                        }else{
+                          errMsg <<- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nConfiguration was adjusted accordingly. You might want to turn strict mode on in case you would like the execution to stop in such case instead of seeing this warning.",
+                                                           paste(tabColNames, collapse = "', '"),
+                                                           paste(confHeaders, collapse = "', '")))
+                          headers[[tabNameRaw]] <<- tabColNames
+                        }
                         return(tabNameRaw)
                       }
                     }
@@ -167,7 +213,7 @@ Db <- R6Class("Db",
                   }, character(1L), USE.NAMES = FALSE)
                   badTables <- badTables[!is.na(badTables)]
                   
-                  return(list(names = badTables, errMsg = errMsg))
+                  return(list(names = badTables, headers = headers, errMsg = errMsg))
                 },
                 getMetadata           = function(uid, sname, stime, stag = character(0L), 
                                                  readPerm = character(0L), writePerm = character(0L), 
