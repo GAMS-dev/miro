@@ -330,7 +330,7 @@ execute 'rm temp_solution.gdx'
 );
 
 $onExternalOutput
-Parameter ePrice(i,t) 'Electricity prices';
+Parameter ePrice(bus,t) 'Electricity prices';
 $offExternalOutput
 ePrice(i,t) = c_BalanceP.m(i,t);
 
