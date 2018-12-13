@@ -33,7 +33,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include %MODELPATH%webui_in.gms
+$if set webui $include "%MODELPATH%webui_in.gms"
 * Define type of model
 $set modeltype "DC"
 * Define input case
@@ -58,16 +58,16 @@ $if not set lineloss $set lineloss 0
 $if not set savesol $set savesol 0
 
 *===== SECTION: EXTRACT DATA
-$batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
+$batinclude "%MODELPATH%extract_data.gms" modeltype case timeperiod demandbids linelimits genPmin allon
 
-$ifthen not exist %casepath%%casename%_Shift_Matrix%caseextension%
-$call 'gams %MODELPATH%..%system.dirsep%tools%system.dirsep%DataUtilities%system.dirsep%calc_S_matrix.gms --case=%case%';
+$ifthen not exist '%casepath%%casename%_Shift_Matrix%caseextension%'
+$call 'gams "%MODELPATH%DataUtilities%system.dirsep%calc_S_matrix.gms" --case="%case%"';
 if(errorlevel ne 0, abort "Calculating Shift matrix failed!");
 $endif
 
 
 parameter S "Shift matrix information";
-$GDXIN '%casepath%%casename%_Shift_Matrix%caseextension%'
+$GDXIN %casepath%%casename%_Shift_Matrix%caseextension%
 $LOAD S
 $GDXIN
 
@@ -143,7 +143,7 @@ c_InterfaceLimit(interface)..
 sum((i,j,c)$interfacemap(interface,i,j), V_interfaceP(i,j,c)) =l=  interfaceLimit(interface);
 
 * Objective functions and pwl costs are listed in a separate file
-$batinclude %MODELPATH%cost_objective.gms obj demandbids
+$batinclude "%MODELPATH%cost_objective.gms" obj demandbids
 
 *===== SECTION: VARIABLE BOUNDS
 * Generator power generation limits
@@ -252,10 +252,10 @@ display lines_at_limit;
 
 $Set out %casename%_DC_shift_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Vm, Va, total_cost, LMP_Energy, LMP_Loss, LMP_Congestion, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --decompose_lmp=1 --case=%case% --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%';
+execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=0 --decompose_lmp=1 --case="%case%" --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $include "%MODELPATH%webui_out.gms"
 $if set webui $libinclude webui.gms

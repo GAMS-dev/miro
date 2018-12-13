@@ -36,7 +36,7 @@ parameters businfo(bus,bus_t,bus_s), geninfo(gen,gen_t,gen_s), fuelinfo(fuel_t,f
            demandbidinfo(demandbid,t,demandbid_t,demandbid_s),
            interfaceinfo(interface,t,interface_t);
 
-$GDXIN %case%
+$GDXIN "%case%"
 $LOAD version, baseMVA, total_cost
 $LOAD ints, t, bus, gen, circuit, line, transformer, monitored_lines,
 $LOAD bus_t, bus_s, gen_t, gen_s, branch_t, branch_s,

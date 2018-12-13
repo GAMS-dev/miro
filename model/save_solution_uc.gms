@@ -31,7 +31,7 @@ parameters version, baseMVA, total_cost;
 parameters businfo(*,*,*), geninfo(*,*,*), fuelinfo(*,*),
            branchinfo(*,*,*,*,*), demandbidinfo(*,*,*,*), interfaceinfo(*,*,*);
 
-$GDXIN %case%
+$GDXIN "%case%"
 $LOAD version, baseMVA, total_cost
 $LOAD ints, t, bus, gen, circuit, line, transformer, monitored_lines,
 $LOAD bus_t, bus_s, gen_t, gen_s, branch_t, branch_s,

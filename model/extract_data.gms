@@ -52,7 +52,7 @@ parameters
 $offempty
 
 *==== SECTION: Data read-in from input file
-$GDXIN %case%
+$GDXIN "%case%"
 $LOAD version, baseMVA, total_cost
 
 $LOAD bus, gen, circuit, line, transformer, monitored_lines,

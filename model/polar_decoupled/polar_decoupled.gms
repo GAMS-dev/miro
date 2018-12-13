@@ -34,7 +34,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include %MODELPATH%webui_in.gms
+$if set webui $include "%MODELPATH%webui_in.gms"
 * Define type of model
 $set modeltype "AC"
 * Define input case
@@ -62,7 +62,7 @@ $set demandbids 0
 $set condensed 'no'
 
 *===== SECTION: EXTRACT DATA
-$batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
+$batinclude "%MODELPATH%extract_data.gms" modeltype case timeperiod demandbids linelimits genPmin allon
 
 *===== SECTION: DATA MANIPULATION
 *--- Define load, gen buses and active lines
@@ -79,9 +79,9 @@ activeGen(bus)$(isGen(bus) and (sum(gen$atBus(gen,bus), status(gen))>0) ) = 1;
 option isLine < branchstatus;
 
 * Calculate Ybus matrix
-$batinclude %MODELPATH%calc_Ybus.gms
+$batinclude "%MODELPATH%calc_Ybus.gms"
 * Set Starting Point for P-subproblem (Power Flow Problem)
-$batinclude %MODELPATH%calc_PowerFlow.gms
+$batinclude "%MODELPATH%calc_PowerFlow.gms"
 
 
 *===== SECTION: VARIABLE DEFINITION
@@ -174,7 +174,7 @@ Loss_objective..
 ;
 
 * Objective functions and pwl costs are listed in a separate file
-$batinclude %MODELPATH%cost_objective.gms obj
+$batinclude "%MODELPATH%cost_objective.gms" obj
 
 *===== SECTION: MODEL DEFINITION
 model decoupled_P / c_S_Limit, c_LinePij, c_LinePji, c_LineQij, c_LineQji,
@@ -310,10 +310,10 @@ display lines_at_limit;
 *==== SECTION: Solution Save
 $SetGlobal out %casename%_AC_base_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
+execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=1 --case="%case%" --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $include "%MODELPATH%webui_out.gms"
 $if set webui $libinclude webui.gms

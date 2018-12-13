@@ -8,7 +8,7 @@ $call gams "%MODELPATH%ic_rect%sep%ic_xls2gdx.gms" idir1=%MODELPATH%ic_rect idir
 
 parameters ic_bus, ic_gen;
 
-$GDXIN %MODELPATH%ic_rect%sep%sol_%casename%.gdx
+$GDXIN "%MODELPATH%ic_rect%sep%sol_%casename%.gdx"
 $LOAD ic_bus, ic_gen
 $GDXIN
 

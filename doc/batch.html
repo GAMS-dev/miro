@@ -220,7 +220,7 @@
                                         </div>
                                         <ul>
                                         <li><b>Interactive mode: </b><br/>
-                                        Internal scenario comparison. Compare different scenarios directly in split view or tab view. Best suited for a small number of scenarios to compare.
+                                        Internal scenario comparison. Compare different scenarios directly in split view or tab view. Best suited for a small number of scenarios to compare (maximum number of scenarios allowed: 10).
                                         </li>
                                         <li><b>Paver:</b><br/>
                                          Automated Performance Analysis. Suitable for a large number of scenarios to be compared with regard to defined performance criteria.
@@ -235,7 +235,7 @@
                                         <h3 class="block-title">Internal Analyses</h3>
                                         
                                         <h6>Scenario comparison:</h6>
-                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. The data which is displayed here corresponds to those GAMS Symbols which were marked within the corresponding GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags, i.e. those symbols which were marked for inclusion into the WebUI. Conversely, this means that all parameters and scalar values which shall be compared in the WebUI must be marked in the GAMS model accordingly. More information about these tags can be found <a href="start.html#create-2" target="_blank">here</a>.
+                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. The data which is displayed here corresponds to those GAMS Symbols which were marked within the corresponding GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags, i.e. those symbols which were marked for inclusion into the WebUI. Conversely, this means that all parameters and scalar values which shall be compared in the WebUI must be marked in the GAMS model accordingly. More information about these tags can be found <a href="start.html#create-2">here</a>.
                                         <br>If two scenarios are to be compared, the slipt-screen display is particularly suitable. In this way, the data can be displayed side by side and compared. </p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split screen" />
@@ -246,8 +246,8 @@
                                         </div>
                                         <p>The <b>comparison mode</b> makes comparing scenarios much more efficient and convenient. As soon as this option is activated in the navigation bar, switching the displayed data within a scenario is also performed for all other open scenarios. This means that if you change the symbol to be displayed in a scenario (e.g. switch from 'Price' to 'absolute error' in the picture above), the view also changes accordingly for the compared scenario(s). </p>
                                         <h6>PAVER:</h6>
-                                        <p><a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is an Open Source Environment for Automated Performance Analysis of Benchmarking Data. This tools is meant to simplify the task of solver performance data comparison and visualization by providing a variety of performance measurement tools with convenient and easy ways to represent (e.g. objective values, solution times, and result codes from multiple runs in order to summarize, gain insight, or detect inconsistencies) [Bussieck, Michael R., Steven P. Dirkse, and Stefan Vigerske. "PAVER 2.0: an open source environment for automated performance analysis of benchmarking data." Journal of Global Optimization 59.2-3 (2014): 259-275.].</p>
-                                        <p>PAVER independently performs a variety of analyses regarding the performance of selected scenarios. A scenario is defined by the individual parameterization of its input data.  In addition to the input data, the results, i.e. the output data, are of course particularly interesting and relevant for a performance analysis. 
+                                        <p><a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is an Open Source Environment for Automated Performance Analysis of Benchmarking Data. This tools is meant to simplify the task of solver performance data comparison and visualization by providing a variety of performance measurement tools with convenient and easy ways to represent (e.g. objective values, solution times, and result codes from multiple runs in order to summarize, gain insight, or detect inconsistencies) [Bussieck, Michael R., Steven P. Dirkse, and Stefan Vigerske. "PAVER 2.0: an open source environment for automated performance analysis of benchmarking data." Journal of Global Optimization 59.2-3 (2014): 259-275, <a href="http://www.gamsworld.org/performance/paver2/paver2_paper.pdf" target="_blank">link</a>].</p>
+                                        <p><br>PAVER independently performs a variety of analyses regarding the performance of selected scenarios. A scenario is defined by the individual parameterization of its input data.  In addition to the input data, the results, i.e. the output data, are of course particularly interesting and relevant for a performance analysis. 
                                         Paver uses this output data for its evaluations. So far, PAVER can read comma separated value (csv) files that contain in each line the outcome of a solver run (instance name, solver name, options file name, instance statistics, solving statistics, ...). With GAMS, files in this format can be generated with the options trace=file.trc and traceopt=3 which is done in the <a href="#scengen-3" class="scrollto">batch file</a> by default. </p>
                                         <br>Before the start of the PAVER analysis, the user is asked to define the criteria on the basis of which the scenarios are to be compared with each other. Basically, scenarios can be compared on the basis of:
                                         <ul>
@@ -256,16 +256,30 @@
                                         <li>all characteristics contained in the trace file<br/></li>
                                         <li>batch tags optionally assigned by the user for each batch run<br/></li>
                                         <li>Date of creation of a batch run<br/></li>
-                                        <li>Owner. More information on this can be found <a href="management.html#add-1" target="_blank">here</a><br/></li>
+                                        <li>Owner. More information on this can be found <a href="management.html#add-1">here</a><br/></li>
+                                        </ul>                           
+                                        <p><b>Example:</b>
+                                        <br>For the already discussed model pickstock the user can define the scalar compile-time parameters for the maximum number of stocks to select (alias 'MaxStock') and the number of training days (alias 'TrainingDays') as input data. These parameters are therefore comparable input data in PAVER.
+                                        <br>Selectable compile-time parameters and GAMS options for a model run via the WebUI: </p>
+                                        <ul>
+                                        <li>MaxStock<br/></li>
+                                        <li>TrainingDay<br/></li>
                                         </ul>
-                                        <p>For the already discussed model pickstock for example, the user can define the scalar compile-time parameters 'maximum number of stocks to select' and 'number of training days' as input data. These parameters would be therefore comparable input data in PAVER. Next to these,   </p>
+                                        <p>In addition to such input data of the model, scalar output values are also calculated in the GAMS model:  </p>
+                                        <ul>
+                                        <li>last date of training period<br/></li>
+                                        <li>Stock symbol header<br/></li>
+                                        <li>fund header<br/></li>
+                                        </ul>
+                                        <p>All these compile-time parameters, GAMS options and scalar values are used as such in the corresponding GAMS model. More information about using scalars, singleton sets, compile-time parameters and GAMS options via WebUI can be found <a href="start.html#xxx">here</a>. </p>
+                                        <p>The picture below shows the list of attributes to be selected as differentiation criteria for the performance analysis with PAVER. This list results from exactly all those input and output parameters, as well as the additional attributes 'batch tags', 'date of creation' and 'owner'.</p>  
                                         <div class="section-block">
                                               <img class="img-fluid" style="display:block; margin:auto; height:350px;" src="assets/images/batch_img/paver_attributes.png" alt="Selection of attributes to be analyzed by PAVER" />
                                         </div>
+                                        <p>Each attribute selected here is used as a distinguishing criterion in the subsequent analysis performed by PAVER. The results of the analysis then could look like this: </p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/batch_img/batch_paver.png" alt="Scenario analyzing tool" />
                                         </div>
-                                        <p> Some description can be found in:</p> <div style="text-align:center;">Michael R. Bussieck, Steven P. Dirkse, Stefan Vigerske</br>PAVER 2.0: An Open Source Environment for Automated Performance Analysis of Benchmarking Data </br>submitted (2013)</br><a href="http://www.gamsworld.org/performance/paver2/paver2_paper.pdf" target="_blank">http://www.gamsworld.org/performance/paver2/paver2_paper.pdf</a></div>
                                     </div><!--//section-block-->     
                                     <div  id="analyze-4"  class="section-block">
                                         <h3 class="block-title">External Analyses</h3>
