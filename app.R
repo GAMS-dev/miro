@@ -248,9 +248,9 @@ if(is.null(errMsg)){
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
     if(identical(tolower(config$db$type), "sqlite")){
-      requiredPackages <- c("RSQLite")
+      requiredPackages <- c("DBI", "RSQLite")
     }else{
-      requiredPackages <- c("RPostgres")
+      requiredPackages <- c("DBI", "RPostgres")
     }
     source("./R/install_packages.R", local = TRUE)
     
