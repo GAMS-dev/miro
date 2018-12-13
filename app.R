@@ -36,7 +36,7 @@ if(R.version[["major"]] < 3 ||
    R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 5){
   errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run the GAMS WebUI."
 }
-tmpFileDir <- tempdir(TRUE)
+tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # files that require schema file
