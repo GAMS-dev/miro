@@ -384,7 +384,7 @@ lapply(seq_along(modelIn), function(id){
              # has dependencies on other datasets
              
              # retrieve choices for slider
-             getData[[i]] <<- shiny::reactive({
+             getData[[i]] <<- reactive({
                errMsg <- NULL
                dataTmp <- NULL
                sliderData <- lapply(sliderValues[[name]], function(el){

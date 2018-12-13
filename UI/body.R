@@ -188,6 +188,7 @@ body <- dashboardBody({
                                              multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
                                                                      TRUE)) TRUE else FALSE), style = "display:none;"),
                                  tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
+                                          style = "float: left;width: 100%;margin: 20px;", 
                                           lang$nav$inputScreen$noDataDep)
                                )
                              }else{
