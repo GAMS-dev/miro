@@ -120,6 +120,55 @@ Db <- R6Class("Db",
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getTraceConfig        = function() private$traceConfig,
                 getAttachmentConfig   = function() private$attachmentConfig,
+                getOrphanedTables     = function(){
+                  modelName <- gsub("_[^_]+$", "", private$tableNamesScenario[1L])
+                  if(inherits(private$conn, "PqConnection")){
+                    query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
+                                        " WHERE table_schema='public' AND table_type='BASE TABLE'", 
+                                        " AND table_name LIKE ", 
+                                        dbQuoteString(private$conn, modelName %+% "%"), ";"))
+                  }else{
+                    query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
+                                        " AND name LIKE ", 
+                                        dbQuoteString(private$conn, modelName %+% "%"), ";"))
+                  }
+                  tryCatch({
+                    dbTables <- dbGetQuery(private$conn, query)[[1L]]
+                  }, error = function(e){
+                    stop(sprintf("Db: An error occurred while fetching table names from database (Db.getOrphanTables). Error message: '%s'.",
+                                 e), call. = FALSE)
+                  })
+                  return(dbTables[!dbTables %in% private$tableNamesScenario])
+                },
+                getInconsistentTables = function(headers){
+                  errMsg <- NULL
+                  
+                  badTables <- vapply(private$tableNamesScenario, function(tabName){
+                    tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
+                    confHeaders <- headers[[tabNameRaw]]
+                    if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
+                      query <- SQL(paste0("SELECT * FROM ",
+                                          dbQuoteIdentifier(private$conn, tabName), " LIMIT 1;"))
+                      tryCatch({
+                        tabHeaders <- names(dbGetQuery(private$conn, query))[-1]
+                      }, error = function(e){
+                        stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
+                                     tabName, e), call. = FALSE)
+                      })
+                      if(!identical(length(tabHeaders), length(confHeaders)) || 
+                         any(is.na(match(confHeaders, tabHeaders)))){
+                        errMsg <<- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!",
+                                                         paste(tabHeaders, collapse = "', '"),
+                                                         paste(confHeaders, collapse = "', '")))
+                        return(tabNameRaw)
+                      }
+                    }
+                    return(NA_character_)
+                  }, character(1L), USE.NAMES = FALSE)
+                  badTables <- badTables[!is.na(badTables)]
+                  
+                  return(list(names = badTables, errMsg = errMsg))
+                },
                 getMetadata           = function(uid, sname, stime, stag = character(0L), 
                                                  readPerm = character(0L), writePerm = character(0L), 
                                                  uidAlias = private$scenMetaColnames[['uid']], 
@@ -937,7 +986,7 @@ Db <- R6Class("Db",
                                              " FROM ", DBI::dbQuoteIdentifier(private$conn, tableName), 
                                              " ORDER BY ", DBI::dbQuoteIdentifier(private$conn, colName), 
                                              " DESC LIMIT 1;"))
-                    max   <- suppressWarnings(as.integer(DBI::dbGetQuery(private$conn, query)[[1]][1]))
+                    max   <- suppressWarnings(as.integer(dbGetQuery(private$conn, query)[[1]][1]))
                   }, error = function(e){
                     flog.error("Db: An error occurred while querying the database (Db.getMaximum). " %+%
 "Error message: %s.", e)

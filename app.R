@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.7.4"
-webuiRDate   <- "Dec 12 2018"
+webuiVersion <- "0.2.7.5"
+webuiRDate   <- "Dec 13 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -159,10 +159,13 @@ if(is.null(errMsg)){
                                      format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log"))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
-  
+
   if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
+    if(isShinyProxy){
+      config$db <- fromJSON(paste0(configDir, jsonFilesWithSchema[3], ".json"))
+    }
     load(rSaveFilePath, envir = .GlobalEnv)
   }
 }
@@ -303,6 +306,38 @@ if(is.null(errMsg)){
     source("./R/db_batchimport.R")
     source("./R/db_batchload.R")
   }
+}
+if(is.null(errMsg) && developMode){
+  # checking database inconsistencies
+  local({
+    orphanedTables <- NULL
+    tryCatch({
+      orphanedTables <- db$getOrphanedTables()
+    }, error = function(e){
+      flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
+      errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
+                                       conditionMessage(e)), sep = '\n')
+    })
+    if(length(orphanedTables)){
+      flog.warn(sprintf("There are orphaned tables in your database: '%s'.",
+                           paste(orphanedTables, collapse = "', '")))
+    }
+    inconsistentTables <- NULL
+    tryCatch({
+      inconsistentTables <- db$getInconsistentTables(lapply(c(modelIn, modelOut), function(el) return(names(el$headers))))
+    }, error = function(e){
+      flog.error("Problems fetching inconsistent database tables.\nError message: '%s'.", e)
+      errMsg <<- paste(errMsg, sprintf("Problems fetching inconsistent database tables. Error message: '%s'.", 
+                                       conditionMessage(e)), sep = '\n')
+    })
+    if(length(inconsistentTables$names)){
+      flog.error(sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
+                         paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
+      errMsg <<- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
+                                      paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
+                      collapse = "\n")
+    }
+  })
 }
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")

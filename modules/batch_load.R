@@ -348,11 +348,11 @@ output$btBatchDownload <- downloadHandler(
     flog.debug("Button to download batch files clicked.")
     
     if(!length(sidsToLoad)){
-      flog.warning("No scenario IDs to download could be found.")
+      flog.warn("No scenario IDs to download could be found.")
       return(downloadHandlerError(file))
     }
     if(length(sidsToLoad) > batchLoadMaxScen){
-      flog.warning("Maximum number of scenarios to download was exceeded.")
+      flog.warn("Maximum number of scenarios to download was exceeded.")
       return(downloadHandlerError(file))
     }
     wd <- getwd()
