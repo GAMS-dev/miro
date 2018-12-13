@@ -54,7 +54,7 @@ parameters
 $offempty
 
 $if not set GENRUN $set GENRUN allgen
-$log %case%
+
 $onembeddedCode Python:
 import os
 if r'%GENRUN%'.lower() == 'allgen':
@@ -77,7 +77,7 @@ else:
 $offembeddedCode
 
 *==== SECTION: Data read-in from input file
-$GDXIN %case%
+$GDXIN "%case%"
 $LOAD version, baseMVA, total_cost
 
 * If %times% not provided, use default in dataset
