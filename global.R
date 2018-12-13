@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "uc_dc"
+modelName <- "epigrids"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -58,7 +58,7 @@ prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
 # get maximum number of lines to read automatically for lst files
-lstMaxNoLinesToRead <- 1e3
+lstMaxNoLinesToRead <- 5e3
 # Limits on external programs that are allowed to be executed 
 # (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
 gamsExecMode <- 0L

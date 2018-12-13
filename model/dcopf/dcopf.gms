@@ -35,7 +35,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include %MODELPATH%webui_in.gms
+$if set webui $include '%MODELPATH%webui_in.gms'
 
 * Define type of model
 $set modeltype "DC"
@@ -63,7 +63,7 @@ $if not set savesol $set savesol 0
 $if not set wind $set wind 0
 
 *===== SECTION: EXTRACT DATA
-$batinclude %MODELPATH%extract_data.gms modeltype case timeperiod demandbids linelimits genPmin allon
+$batinclude '%MODELPATH%extract_data.gms' modeltype case timeperiod demandbids linelimits genPmin allon
 
 *===== SECTION: DATA MANIPULATION
 * DCOPF assumes reactive power = 0
@@ -145,7 +145,7 @@ c_AngleDifferenceJI(i,j)$isLine(i,j)..
 V_Theta(i)-V_Theta(j) =l= pi/3;
 
 * Objective functions and pwl costs are listed in a separate file
-$batinclude %MODELPATH%cost_objective.gms obj demandbids
+$batinclude '%MODELPATH%cost_objective.gms' obj demandbids
 
 *===== SECTION: VARIABLE BOUNDS
 * Generator power generation limits
@@ -244,10 +244,10 @@ display lines_at_limit;
 *==== SECTION: Solution Save
 $Set out %casename%_DC_base_solution.gdx
 execute_unload 'temp_solution.gdx',  Pg, Vm, Va, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=0 --case=%case% --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
+execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=0 --case="%case%" --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $include '%MODELPATH%webui_out.gms'
 $if set webui $libinclude webui.gms

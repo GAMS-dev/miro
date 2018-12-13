@@ -36,7 +36,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include %MODELPATH%webui_in.gms
+$if set webui $include "%MODELPATH%webui_in.gms"
 * Define type of model
 $set modeltype "AC"
 * Define input case
@@ -320,10 +320,10 @@ display lines_at_limit;
 *==== SECTION: Solution Save
 $SetGlobal out %casename%_AC_base_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --ac=1 --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%';
+execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=1 --case="%case%" --solution=temp_solution.gdx --timeperiod=%timeperiod% --out=%out%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );
 
-$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $include "%MODELPATH%webui_out.gms"
 $if set webui $libinclude webui.gms

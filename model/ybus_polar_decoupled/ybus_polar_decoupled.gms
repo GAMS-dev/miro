@@ -33,7 +33,7 @@ $endif
 * Define filepath, name and extension.
 *$setnames "%gams.i%" filepath filename fileextension
 $set MODELPATH '%gams.idir1%..%system.dirsep%'
-$if set webui $include %MODELPATH%webui_in.gms
+$if set webui $include "%MODELPATH%webui_in.gms"
 * Define type of model
 $set modeltype "AC"
 * Define input case
@@ -283,7 +283,7 @@ shuntB(i) = sum(bus_s, V_shunt.l(i,bus_s)*Bswitched(i,bus_s));
 
 $SetGlobal out %casename%_ybus_solution.gdx
 execute_unload 'temp_solution.gdx' Pg, Qg, Vm, Va, total_cost, LMP, LineSP, shuntB;
-execute 'gams %MODELPATH%save_solution.gms gdxcompress=1 --out=%out% --case=%case% --solution=temp_solution.gdx --timeperiod=%timeperiod%';
+execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --out=%out% --case="%case%" --solution=temp_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 
@@ -296,5 +296,5 @@ lines_at_limit(i,j,c)$(branchstatus(i,j,c) or branchstatus(j,i,c))
 
 display lines_at_limit;
 
-$if set webui $include %MODELPATH%webui_out.gms
+$if set webui $include "%MODELPATH%webui_out.gms"
 $if set webui $libinclude webui.gms
