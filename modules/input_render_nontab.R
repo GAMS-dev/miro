@@ -387,10 +387,24 @@ lapply(seq_along(modelIn), function(id){
              getData[[i]] <<- reactive({
                errMsg <- NULL
                dataTmp <- NULL
-               sliderData <- lapply(sliderValues[[name]], function(el){
+               rv[[paste0("in_", id)]]
+               sliderData <- lapply(seq_along(sliderValues[[name]]), function(valId){
+                 el <- sliderValues[[name]][[valId]]
                  # return numeric data (no external dependency)
                  if(is.numeric(el)){
                    return(el)
+                 }else if(length(modelInputData[[id]][[1]]) && 
+                          names(sliderValues[[name]])[valId] %in% c("def1", "def2") &&
+                          !is.null(rv[[paste0("in_", id)]])){
+                   val <- suppressWarnings(as.numeric(modelInputData[[id]]))
+                   if(any(is.na(val))){
+                     return(NULL)
+                   }
+                   if(names(sliderValues[[name]])[valId] == "def1"){
+                     return(min(val))
+                   }else{
+                     return(max(val))
+                   }
                  }else{
                    # retrieve externally dependent data
                    k <- match(names(el)[1], tolower(names(modelIn)))[1]
@@ -410,13 +424,13 @@ lapply(seq_along(modelIn), function(id){
                                                          !is.null(input[["in_" %+% k]]) || 
                                                          (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
                      if(modelIn[[k]]$type == "hot"){
-                       dataTmp <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]]]])
+                       dataTmp <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]][1]]])
                      }else{
-                       dataTmp <- unique(tableContent[[i]][[el[[1]]]])
+                       dataTmp <- unique(tableContent[[i]][[el[[1]][1]]])
                      } 
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
-                     dataTmp <- unique(modelInputData[[k]][[el[[1]]]])
+                     try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
                    }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
@@ -441,11 +455,11 @@ lapply(seq_along(modelIn), function(id){
                      return(scalarVal)
                    }, error = function(e){
                      flog.warn("Input type for slider: '%s' is not numeric.", name)
-                     errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el[[1]][[1]], name), sep = "\n")
+                     errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderSlider$desc, el[[1]][1], name), sep = "\n")
                    })
                  }
                })
-               
+               names(sliderData) <- names(sliderValues[[name]])
                showErrorMsg(lang$errMsg$renderSlider$title, errMsg)
                
                if(is.numeric(sliderData$def1) && is.numeric(sliderData$def2)){
@@ -479,13 +493,13 @@ lapply(seq_along(modelIn), function(id){
                }
              })
              # update slider default value
-             observe({
-               value <- getSelected[[id]]()
-               if(!is.null(value)){
-                 noCheck[id] <<- TRUE
-                 updateSliderInput(session, inputId = paste0("slider_", id), value = value)
-               }
-             }, priority = -1)
+             #observe({
+             #  value <- getSelected[[id]]()
+             #  if(!is.null(value)){
+             #    noCheck[id] <<- TRUE
+             #    updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+             #  }
+             #}, priority = -1)
            }
          }
   )
