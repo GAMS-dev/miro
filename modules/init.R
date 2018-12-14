@@ -441,7 +441,7 @@ if(is.null(errMsg)){
   # batch mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$batchMode, TRUE)){
-    rSaveFilePath <- gsub(".RData", "_batch.RData", rSaveFilePath, fixed = TRUE)
+    rSaveFilePath <- gsub(".gmsconf", "_batch.gmsconf", rSaveFilePath, fixed = TRUE)
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
           && length(modelIn[[i]]$slider$default) > 1) 

@@ -131,7 +131,7 @@ if(is.null(errMsg)){
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
                           if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "batch")) "_batch",
-                          '.RData')
+                          '.gmsconf')
   # set user ID (user name) and user groups
   if(isShinyProxy){
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
