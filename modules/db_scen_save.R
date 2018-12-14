@@ -288,7 +288,10 @@ if(config$activateModules$attachments){
     errMsg <- NULL
     
     tryCatch({
-      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), fileNames = isolate(input$file_addAttachments$name))
+      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), 
+                                fileNames = isolate(input$file_addAttachments$name),
+                                forbiddenFnames = c(paste0(c(names(modelInTabularData), 
+                                                             names(modelOut)), ".csv"), paste0(modelName, c(".log", ".lst"))))
       idxes <- vector("integer", length(isolate(input$file_addAttachments$name)))
       for(i in seq_along(isolate(input$file_addAttachments$name))){
         idx <- which(is.na(attachmentList[["name"]]))
@@ -322,6 +325,10 @@ if(config$activateModules$attachments){
              duplicateException = {
                flog.info(e)
                showHideEl(session, "#attachDuplicateError", 6000)
+             },
+             forbiddenFnameException = {
+               flog.info(e)
+               showHideEl(session, "#attachForbiddenFnameError", 6000)
              },
              {
                flog.error(e)

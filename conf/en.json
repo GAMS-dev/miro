@@ -140,6 +140,7 @@
       "attachMaxSizeError": "Your attachments exceed the maximum attachment size of %s bytes.",
       "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
       "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
+      "attachForbiddenFnameError": "An attachment you try to upload uses a forbidden filename. Please choose a different filename and try again.",
       "attachUnknownError": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",

@@ -174,23 +174,32 @@ Scenario <- R6Class("Scenario",
                         super$exportScenDataset(private$bindSidCol(traceData), private$traceConfig[["tabName"]])
                         invisible(self)
                       },
-                      addAttachments = function(filePaths, fileNames = NULL){
+                      addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL){
                         # Saves attachments
                         # 
                         # Args:
-                        #   filePaths:   character vector with file paths to read data from
-                        #   fileNames:   names of the files in case custom name should be chosen
+                        #   filePaths:        character vector with file paths to read data from
+                        #   fileNames:        names of the files in case custom name should be chosen
+                        #   forbiddenFnames:  character vector with forbidden file names
                         #
                         # Returns:
                         #   R6 object (reference to itself)
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
+                        if(length(forbiddenFnames)){
+                          stopifnot(is.character(forbiddenFnames), length(forbiddenFnames) >= 1L)
+                        }
                         
                         if(!is.null(fileNames)){
                           stopifnot(is.character(fileNames), length(fileNames) >= 1L)
                         }else{
                           fileNames <- basename(filePaths)
+                        }
+                        
+                        if(length(forbiddenFnames) && 
+                           any(gsub("\\.[^\\.]+$", "", fileNames) %in% forbiddenFnames)){
+                          stop("forbiddenFnameException", call. = FALSE)
                         }
                         
                         fileNamesDb    <- self$fetchAttachmentList()[["name"]]
