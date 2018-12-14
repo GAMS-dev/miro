@@ -415,7 +415,7 @@ if(!is.null(errMsg)){
          inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames,
-         scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, 
+         scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
          modelInGmsString, file = rSaveFilePath)
   }
   
