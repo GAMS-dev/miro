@@ -153,19 +153,22 @@ Db <- R6Class("Db",
                     tabNameRaw  <- tolower(gsub("^[^_]+_", "", tabName))
                     confHeaders <- colNames[[tabNameRaw]]
                     if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
-                      if(inherits(private$conn, "PqConnection")){
-                        query <- SQL(paste0("SELECT name,type FROM information_schema.columns 
-                                            WHERE table_name = ", 
-                                            dbQuoteIdentifier(private$conn, tabName), ");"))
-                        
-                      }else{
-                        query <- SQL(paste0("PRAGMA table_info(", 
-                                            dbQuoteIdentifier(private$conn, tabName), ");"))
-                      }
                       tryCatch({
-                        tabInfo     <- dbGetQuery(private$conn, query)
-                        tabColNames <- tabInfo$name[-1L]
-                        tabColTypes <- tabInfo$type[-1L]
+                        if(inherits(private$conn, "PqConnection")){
+                          query <- SQL(paste0("SELECT column_name,data_type  FROM information_schema.columns 
+                                            WHERE table_name = ", 
+                                              dbQuoteString(private$conn, tabName), ";"))
+                          tabInfo     <- dbGetQuery(private$conn, query)
+                          tabColNames <- tabInfo$column_name[-1L]
+                          tabColTypes <- tabInfo$data_type[-1L]
+                          
+                        }else{
+                          query <- SQL(paste0("PRAGMA table_info(", 
+                                              dbQuoteIdentifier(private$conn, tabName), ");"))
+                          tabInfo     <- dbGetQuery(private$conn, query)
+                          tabColNames <- tabInfo$name[-1L]
+                          tabColTypes <- tabInfo$type[-1L]
+                        }
                       }, error = function(e){
                         stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
                                      tabName, e), call. = FALSE)

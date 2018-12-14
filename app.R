@@ -334,7 +334,7 @@ if(is.null(errMsg) && developMode){
                                                      unlist(lapply(c(modelIn, modelOut), "[[", "colTypes")), 
                                                      strictMode = config$activateModules$strictmode)
     }, error = function(e){
-      flog.error("Problems fetching inconsistent database tables.\nError message: '%s'.", e)
+      flog.error("Problems fetching inconsistent database tables.\nDetails: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching inconsistent database tables. Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })

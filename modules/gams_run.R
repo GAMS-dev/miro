@@ -168,11 +168,11 @@ observeEvent(input$btSolve, {
   }
   prog <- shiny::Progress$new()
   on.exit(suppressWarnings(prog$close()))
-  prog$set(message = lang$nav$progressBar$prepRun$title, value = 0)
+  prog$set(message = lang$progressBar$prepRun$title, value = 0)
   
   updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   
-  prog$inc(amount = 0.5, detail = lang$nav$progressBar$prepRun$sendInput)
+  prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data 
   source("./modules/input_save.R", local = TRUE)
   pfFileContent <- NULL
@@ -237,7 +237,7 @@ observeEvent(input$btSolve, {
     writeLines(c(pfFileContent, gamsArgs), pfFilePath)
     
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      prog$inc(amount = 0, detail = lang$nav$progressBar$prepRun$downloadAttach)
+      prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
       activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
     }
     prog$close()
@@ -342,8 +342,10 @@ observeEvent(input$btSolve, {
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
-                                         modelName = modelName, method = "csv", csvDelim = config$csvDelim, 
-                                         hiddenMarker = config$gamsMetaDelim) 
+                                         modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
+                                         scalarsFileHeaders = scalarsFileHeaders,
+                                         method = "csv", csvDelim = config$csvDelim, 
+                                         hiddenMarker = config$gamsMetaDelim, strictmode = config$activateModules$strictmode) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc

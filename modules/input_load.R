@@ -17,19 +17,20 @@ lapply(datasetsToFetch, function(dataset){
           dataTmp[is.na(dataTmp)] <- 0L
           dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
         }, error = function(e) {
-          flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Error message: %s.", 
+          flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Details: %s.", 
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
           errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
         })
-        if(!config$activateModules$strictmode || 
-           validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
-          names(dataTmp) <- names(modelIn[[i]]$headers)
-        }else{
+        if(!validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
+          if(config$activateModules$strictmode){
+            errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
+          }
           flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
                     dataset, paste(names(dataTmp), collapse = "', '"), 
                     paste(names(modelIn[[i]]$headers), collapse = "', '"))
-          errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
         }
+        names(dataTmp) <- names(modelIn[[i]]$headers)
+        
       }else if(identical(loadMode, "scen")){
         dataTmp <- scenInputData[[dataset]]
       }
@@ -89,20 +90,21 @@ lapply(datasetsToFetch, function(dataset){
             dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = c("text", "text", "text"))
           }, error = function(e) {
             flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 
-                      Error message: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
+                      Details: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
           })
           dataTmp[is.na(dataTmp)] <- 0L
           #set names of scalar sheet to scalar headers
-          if(!config$activateModules$strictmode || 
-             validateHeaders(names(dataTmp), scalarsFileHeaders)){
-            names(dataTmp) <- scalarsFileHeaders
-          }else{
+          if(!validateHeaders(names(dataTmp), scalarsFileHeaders)){
             flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
                       dataset, paste(names(dataTmp), collapse = "', '"), 
                       paste(scalarsFileHeaders, collapse = "', '"))
-            errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
+            if(config$activateModules$strictmode){
+              errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
+            }
           }
+          names(dataTmp) <- scalarsFileHeaders
+          
         }
         if(!is.null(errMsg)){
           return(NULL)

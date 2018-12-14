@@ -250,6 +250,10 @@ BatchImport <- R6Class("BatchImport",
                              progressBar$inc(amount = 0, message = sprintf("Uploading tables to database."))
                            }
                            lapply(seq_along(tables), function(i){
+                             if(!is.null(private$gmsFileHeaders[[tableNamesRaw[[i]]]]) && 
+                                length(tables[[i]])){
+                               names(tables[[i]])[-1L] <- private$gmsFileHeaders[[tableNamesRaw[[i]]]]
+                             }
                              self$exportScenDataset(tables[[i]], tableNames[[i]])
                              if(!is.null(progressBar)){
                                progressBar$inc(amount = 0, message = sprintf("Uploading table %d of %d.",
@@ -388,15 +392,14 @@ BatchImport <- R6Class("BatchImport",
                                  return(TRUE)
                                }
                              }else if(!is.null(private$gmsFileHeaders[[tableName]])){
-                               if(!private$strictmode || 
-                                  validateHeaders(names(scenTables[[tableId]]), 
+                               if(!validateHeaders(names(scenTables[[tableId]]), 
                                                   private$gmsFileHeaders[[tableName]])){
-                                 names(scenTables[[tableId]]) <- private$gmsFileHeaders[[tableName]]
-                               }else{
                                  flog.info("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
                                            tableName, paste(names(scenTables[[tableId]]), collapse = "', '"), 
                                            paste(private$gmsFileHeaders[[tableName]], collapse = "', '"))
-                                 return(TRUE)
+                                 if(private$strictmode){
+                                   return(TRUE)
+                                 }
                                }
                              }
                              return(FALSE)

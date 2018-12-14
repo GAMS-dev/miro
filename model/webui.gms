@@ -41,10 +41,10 @@ def extractSymText(sym, leavehash=0):
    aliasIdentifier = 'Aliased with '
    if text.startswith(aliasIdentifier):
       aliasedSet = text[len(aliasIdentifier):]
-      for s in db:
-         if(db[s].name == aliasedSet):
-            text = db[s].text
-            break
+      try:
+         db[aliasedSet].text
+      except:
+         pass
    input_tag = '%UIInput%'
    uii = len(input_tag)
    output_tag = '%UIOutput%'

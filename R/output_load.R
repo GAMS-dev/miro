@@ -1,9 +1,9 @@
-loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method = "csv", csvDelim = ",", hiddenMarker = "###"){
+loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders,
+                            method = "csv", csvDelim = ",", hiddenMarker = "###", strictmode = TRUE){
   
   if(!(method %in% c("csv"))){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
   }
-  
   ret         <- list(tabular = NULL, scalar = NULL)
   scalarTmp  <- NULL
   # read scalar data in case it exists
@@ -24,15 +24,15 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
   scalarTmp[is.na(scalarTmp)] <- 0L
   scalarTmp <- fixColTypes(scalarTmp,  "ccc")
   #set names of scalar sheet to scalar headers
-  if(!config$activateModules$strictmode ||
-     validateHeaders(names(scalarTmp), scalarsFileHeaders)){
-    names(scalarTmp) <- scalarsFileHeaders
-  }else{
+  if(!validateHeaders(names(scalarTmp), scalarsFileHeaders)){
     flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-              modelOutAlias[i], paste(names(scalarTmp), collapse = "', '"), 
+              scalarsOutName, paste(names(scalarTmp), collapse = "', '"), 
               paste(scalarsFileHeaders, collapse = "', '"))
-    stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, modelOutAlias[i]), call. = FALSE)
+    if(strictmode){
+      stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
+    }
   }
+  names(scalarTmp) <- scalarsFileHeaders
   
   # fetch results from csv files
   lapply(seq_along(modelOut), function(i){
@@ -69,16 +69,16 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, method
       })
       ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
-      
-      if(!config$activateModules$strictmode ||
-         validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
-        names(ret$tabular[[i]]) <- names(modelOut[[i]]$headers)
-      }else{
+
+      if(!validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
         flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-                  modelOutAlias[i], paste(names(ret$tabular[[i]]), collapse = "', '"), 
+                  names(modelOut)[i], paste(names(ret$tabular[[i]]), collapse = "', '"), 
                   paste(names(modelOut[[i]]$headers), collapse = "', '"))
-        stop(sprintf(lang$errMsg$GAMSOutput$badOutputData, modelOutAlias[i]), call. = FALSE)
+        if(strictmode){
+          stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
+        }
       }
+      names(ret$tabular[[i]]) <- names(modelOut[[i]]$headers)
     }
   })
   
