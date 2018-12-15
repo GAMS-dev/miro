@@ -362,12 +362,17 @@ lapply(seq_along(modelIn), function(id){
                return(NULL)
              }
              if(!length(modelInputData[[id]][[1]])){
-               return(isolate(input[[paste0("slider_", id)]]))
+               value <- isolate(input[[paste0("slider_", id)]])
+               modelInputData[[id]] <<- list(NULL, value, FALSE)
              }else{
-               value <- modelInputData[[id]]
-               modelInputData[[id]] <<- list(NULL)
-               return(value)
+               value <- suppressWarnings(as.numeric(modelInputData[[id]]))
+               if(any(is.na(value))){
+                 return(NULL)
+               }
+               value <- sort(value)
+               modelInputData[[id]] <<- list(NULL, value, TRUE)
              }
+             return(value)
            })
            if(is.na(i)){
              # does not have any dependencies on other datasets
@@ -387,24 +392,23 @@ lapply(seq_along(modelIn), function(id){
              getData[[i]] <<- reactive({
                errMsg <- NULL
                dataTmp <- NULL
-               rv[[paste0("in_", id)]]
                sliderData <- lapply(seq_along(sliderValues[[name]]), function(valId){
                  el <- sliderValues[[name]][[valId]]
                  # return numeric data (no external dependency)
                  if(is.numeric(el)){
                    return(el)
-                 }else if(length(modelInputData[[id]][[1]]) && 
-                          names(sliderValues[[name]])[valId] %in% c("def1", "def2") &&
-                          !is.null(rv[[paste0("in_", id)]])){
-                   val <- suppressWarnings(as.numeric(modelInputData[[id]]))
-                   if(any(is.na(val))){
-                     return(NULL)
-                   }
-                   if(names(sliderValues[[name]])[valId] == "def1"){
-                     return(min(val))
+                 }else if(names(sliderValues[[name]])[valId] %in% c("def", "def1", "def2") &&
+                          is.list(modelInputData[[id]]) && length(modelInputData[[id]]) == 3L){
+                   if(modelInputData[[id]][[3L]]){
+                     selected <- modelInputData[[id]][[2L]]
+                     modelInputData[[id]][[3L]] <<- FALSE
                    }else{
-                     return(max(val))
+                     selected <- isolate(input[[paste0("slider_", id)]])
                    }
+                   if(names(sliderValues[[name]])[valId] == "def2"){
+                     return(max(selected))
+                   }
+                   return(min(selected))
                  }else{
                    # retrieve externally dependent data
                    k <- match(names(el)[1], tolower(names(modelIn)))[1]
@@ -493,13 +497,13 @@ lapply(seq_along(modelIn), function(id){
                }
              })
              # update slider default value
-             #observe({
-             #  value <- getSelected[[id]]()
-             #  if(!is.null(value)){
-             #    noCheck[id] <<- TRUE
-             #    updateSliderInput(session, inputId = paste0("slider_", id), value = value)
-             #  }
-             #}, priority = -1)
+             observe({
+               value <- getSelected[[id]]()
+               if(!is.null(value)){
+                 noCheck[id] <<- TRUE
+                 updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+               }
+             }, priority = -1)
            }
          }
   )
