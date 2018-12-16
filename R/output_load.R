@@ -78,10 +78,9 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
           stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
         }
       }
-      names(ret$tabular[[i]]) <- names(modelOut[[i]]$headers)
+      names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
     }
   })
-  
   # if scalar dataset is nonempty, assign it to return value
   if(!is.null(scalarTmp) && nrow(scalarTmp)){
     ret$scalar <- scalarTmp

@@ -60,8 +60,7 @@ lapply(seq_along(modelIn), function(id){
                if(!length(modelInputData[[id]][[1]])){
                  return(isolate(input[["cb_" %+% id]]))
                }else{
-                 if(identical(modelInputData[[id]], TRUE) || 
-                    identical(as.integer(modelInputData[[id]]), 1L)){
+                 if(identical(as.integer(modelInputData[[id]]), 1L)){
                    value <- TRUE
                  }else{
                    value <- FALSE
@@ -73,7 +72,7 @@ lapply(seq_along(modelIn), function(id){
              
              observe({
                noCheck[id] <<- TRUE
-               shiny::updateCheckboxInput(session, "cb_" %+% id, value = getSelected[[id]]())
+               updateCheckboxInput(session, "cb_" %+% id, value = getSelected[[id]]())
              })
            }else{
              # has dependency
@@ -81,9 +80,19 @@ lapply(seq_along(modelIn), function(id){
                k <- modelIn[[id]]$checkbox$sheetId
                value  <- NULL
                errMsg <- NULL
+               noShared <- FALSE
                rv[["in_" %+% k]]
                input[["in_" %+% k]]
-               if(sharedData[k]){
+               rv[["in_" %+% id]]
+               if(length(modelInputData[[id]][[1]])){
+                 value <- suppressWarnings(as.integer(modelInputData[[id]]))
+                 modelInputData[[id]] <<- list(NULL)
+                 noShared <- TRUE
+                 if(is.na(value)){
+                   flog.warn("Bad input value for checkbox returned from database.")
+                   return()
+                 }
+               }else if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
                           input[["dropdown_" %+% k]]
@@ -134,9 +143,9 @@ lapply(seq_along(modelIn), function(id){
                  }
                }
                noCheck[id] <<- TRUE
-               shiny::updateCheckboxInput(session, "cb_" %+% id, value = value)
+               updateCheckboxInput(session, "cb_" %+% id, value = value)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
-                 if(value <= 0.5){
+                 if(value <= 0.5 && !noShared){
                    disableEl(session, "#cb_" %+% id)
                  }else{
                    enableEl(session, "#cb_" %+% id)

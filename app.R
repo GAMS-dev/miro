@@ -338,18 +338,21 @@ if(is.null(errMsg) && developMode){
       errMsg <<- paste(errMsg, sprintf("Problems fetching inconsistent database tables. Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })
-    if(length(inconsistentTables$errMsg)){
+    if(length(inconsistentTables$names)){
       flog.error(sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
       msg <- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
       warning(msg, call. = FALSE)
-      if(config$activateModules$strictmode){
+      if(config$activateModules$strictmode || length(inconsistentTables$errMsg)){
         errMsg <<- paste(errMsg, msg, sep = "\n")
       }else{
         for(i in seq_along(inconsistentTables$headers)){
           tabName <- names(inconsistentTables$headers)[i]
+          if(is.null(inconsistentTables$headers[[i]])){
+            next
+          }
           if(!is.null(names(modelIn[[tabName]]$headers))){
             names(modelIn[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
           }else{

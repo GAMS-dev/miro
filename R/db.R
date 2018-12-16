@@ -173,7 +173,7 @@ Db <- R6Class("Db",
                         stop(sprintf("Db: An error occurred while fetching table headers from database (Db.getInconsistentTables, table: '%s').\nError message: '%s'.",
                                      tabName, e), call. = FALSE)
                       })
-                      errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!",
+                      errMsgTmp <- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nPlease fix the database schema or change your GAMS model!\n",
                                                          paste(tabColNames, collapse = "', '"),
                                                          paste(confHeaders, collapse = "', '")))
                       if(!identical(length(tabColNames), length(confHeaders))){
@@ -204,9 +204,9 @@ Db <- R6Class("Db",
                         }, logical(1L), USE.NAMES = FALSE))){
                           errMsg <<- errMsgTmp
                         }else{
-                          errMsg <<- paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nConfiguration was adjusted accordingly. You might want to turn strict mode on in case you would like the execution to stop in such case instead of seeing this warning.",
+                          warning(paste(errMsg, sprintf("Database table headers ('%s') are different from those in current configuration ('%s').\nConfiguration was adjusted accordingly. You might want to turn strict mode on in case you would like the execution to stop in such case instead of seeing this warning.",
                                                            paste(tabColNames, collapse = "', '"),
-                                                           paste(confHeaders, collapse = "', '")))
+                                                           paste(confHeaders, collapse = "', '"))))
                           headers[[tabNameRaw]] <<- tabColNames
                         }
                         return(tabNameRaw)

@@ -404,7 +404,7 @@ if(is.null(errMsg)){
       }
     }
     if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < 10 && all(modelOut[[i]]$symtypes == "parameter")){
+      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < maxScalarsValBox && all(modelOut[[i]]$symtypes == "parameter")){
         configGraphsOut[[i]]$outType <<- "valuebox"
         configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
       }else{

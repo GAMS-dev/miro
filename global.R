@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "epigrids"
+modelName <- "dcopf"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -23,6 +23,10 @@ snameIdentifier <- "_sname"
 stimeIdentifier <- "_stime"
 slocktimeIdentifier <- "_slocktime"
 stagIdentifier <- "_stag"
+
+# maximum number of scalars to represent as value box
+maxScalarsValBox <- 20L
+
 # define maximum duration a lock is allowed to persist (without being refreshed),
 # before it will be deleted (in seconds)
 slocktimeLimit <- 3600
