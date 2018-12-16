@@ -853,8 +853,10 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "value":{
-                          "title":"initial value",
-                          "type":"boolean",
+                          "title":"default value",
+                          "type":"integer",
+                          "minimum":0,
+                          "maximum":1,
                           "required":false
                         },
                         "class":{
@@ -1412,7 +1414,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                         },
                         "value":{
                           "title":"initial value",
-                          "type":"boolean",
+                          "type":"integer",
+                          "minimum":0,
+                          "maximum":1,
                           "required":false
                         },
                         "class":{

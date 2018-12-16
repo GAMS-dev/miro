@@ -9,7 +9,7 @@
         "eprice": {
             "alias": "Electricity prices",
             "headers": {
-                "Aliased with bus": {
+                "Set of buses": {
                     "type": "set"
                 },
                 "Set of time periods (up to 24 for UC)": {
