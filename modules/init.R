@@ -311,15 +311,15 @@ if(is.null(errMsg)){
   lapply(seq_along(modelIn), function(i){
     tryCatch({
       modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
-      if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$value)){
-        cbValueTmp <- strsplit(modelIn[[i]]$checkbox$value, "\\(|\\$")[[1]]
+      if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$max)){
+        cbValueTmp <- strsplit(modelIn[[i]]$checkbox$max, "\\(|\\$")[[1]]
         if(length(cbValueTmp) %in% c(4L, 5L) && cbValueTmp[[1]] %in% listOfOperators){
           cbValueTmp <- gsub(")", "", cbValueTmp, fixed = TRUE)
           modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
-          modelIn[[i]]$checkbox$value    <<- paste(cbValueTmp[c(-1)], collapse = "$")
+          modelIn[[i]]$checkbox$max    <<- paste(cbValueTmp[c(-1)], collapse = "$")
         }else{
           errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
-                                                      operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
+                                           operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
                                            Currently, the following operators are supported: '%s'.", modelInAlias[i], paste(listOfOperators, collapse = "', '")))
           return(NULL)
         }
@@ -469,14 +469,14 @@ if(is.null(errMsg)){
                checkbox = {
                  modelIn[[i]]$type <<- "dropdown"
                  modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
-                 value <- modelIn[[i]]$checkbox$value
+                 value <- modelIn[[i]]$checkbox$max
                  if(!is.null(value) && !is.na(suppressWarnings(as.integer(value)))){
                    modelIn[[i]]$dropdown$aliases <<- lang$nav$batchMode$checkboxAliases
                    modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
                  }else{
-                   modelIn[[i]]$checkbox$value    <<- paste0("$", modelIn[[i]]$checkbox$value)
+                   modelIn[[i]]$checkbox$max    <<- paste0("$", modelIn[[i]]$checkbox$max)
                    modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
-                   modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$value
+                   modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$max
                  }
                  modelIn[[i]]$dropdown$selected <<- modelIn[[i]]$checkbox$value
                  modelIn[[i]]$dropdown$width <<- modelIn[[i]]$checkbox$width
@@ -692,22 +692,22 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                  errMsg <<- paste(errMsg, paste0("The checkbox: '", modelInAlias[i], 
                                                  "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
                }
-               if(is.character(modelIn[[i]]$checkbox$value)){
+               if(is.character(modelIn[[i]]$checkbox$max)){
                  # checkbox has dependency
                  # BEGIN error checks
-                 if(grepl("\\$+$", modelIn[[i]]$checkbox$value)){
+                 if(grepl("\\$+$", modelIn[[i]]$checkbox$max)){
                    errMsg <<- paste(errMsg,paste0("The checkbox: '", modelInAlias[i], 
                                                   "' has a backward dependency assigned. Currently only forward dependencies are supported for checkboxes."), sep = "\n")
                    return(NULL)
                  }
                  # END error checks
                  
-                 cbValue <- strsplit(modelIn[[i]]$checkbox$value, "\\$")[[1]]
+                 cbValue <- strsplit(modelIn[[i]]$checkbox$max, "\\$")[[1]]
                  idx1    <- match(cbValue[1], names(modelIn))[1]
                  if(!is.na(idx1)){
                    # add forward dependency
                    modelIn[[i]]$checkbox$sheetId <<- idx1
-                   tryCatch(modelIn[[i]]$checkbox$value   <<- getNestedDep(cbValue[c(-1)]), error = function(e){
+                   tryCatch(modelIn[[i]]$checkbox$max   <<- getNestedDep(cbValue[c(-1)]), error = function(e){
                      errMsg <<- paste(errMsg, conditionMessage(e))
                    })
                    

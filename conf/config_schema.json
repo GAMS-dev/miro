@@ -508,19 +508,15 @@
                      "minLength":1
                    },
                    "value":{  
-                     "description":"initial value",
-                     "type":[  
-                       "boolean",
-                       "integer",
-                       "string"
-                     ],
+                     "description":"default value",
+                     "type": "integer",
                      "minimum":0,
-                     "maximum":1,
-                     "minLength":1
+                     "maximum":1
                    },
-                   "disable":{  
-                     "description":"Boolean that specifies whether checkbox should be disabled when value of dependent dataset is 0 (only used if checkbox has dependency)",
-                     "type":"boolean"
+                   "max":{  
+                     "description":"Maximum allowed value",
+                     "type":"string",
+                     "minLength":3
                    },
                    "class":{  
                      "description":"css class",
