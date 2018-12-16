@@ -84,15 +84,8 @@ lapply(seq_along(modelIn), function(id){
                rv[["in_" %+% k]]
                input[["in_" %+% k]]
                rv[["in_" %+% id]]
-               if(length(modelInputData[[id]][[1]])){
-                 value <- suppressWarnings(as.integer(modelInputData[[id]]))
-                 modelInputData[[id]] <<- list(NULL)
-                 noShared <- TRUE
-                 if(is.na(value)){
-                   flog.warn("Bad input value for checkbox returned from database.")
-                   return()
-                 }
-               }else if(sharedData[k]){
+               
+               if(sharedData[k]){
                  switch(modelIn[[k]]$type,
                         dropdown = {
                           input[["dropdown_" %+% k]]
@@ -142,10 +135,25 @@ lapply(seq_along(modelIn), function(id){
                    return()
                  }
                }
+               
+               if(length(modelInputData[[id]][[1]])){
+                 selected <- suppressWarnings(as.integer(modelInputData[[id]]))
+                 if(value < selected){
+                   flog.warn("A checkbox value of 1 was fetched from database, but maximum allowed value is 0. Selected value was set to 0.")
+                   selected <- 0L
+                 }
+                 noShared <- TRUE
+                 if(is.na(value)){
+                   flog.warn("Bad input value for checkbox returned from database.")
+                   return()
+                 }
+               }else{
+                 selected <- value
+               }
                noCheck[id] <<- TRUE
-               updateCheckboxInput(session, "cb_" %+% id, value = value)
+               updateCheckboxInput(session, "cb_" %+% id, value = selected)
                if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
-                 if(value <= 0.5 && !noShared){
+                 if(value <= 0.5){
                    disableEl(session, "#cb_" %+% id)
                  }else{
                    enableEl(session, "#cb_" %+% id)

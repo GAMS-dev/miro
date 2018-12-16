@@ -800,7 +800,7 @@ Db <- R6Class("Db",
                                                DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), " = ?sid;"))
                     query   <- DBI::sqlInterpolate(private$conn, sql, uid = metadata[[private$scenMetaColnames['uid']]],
                                                    sname = metadata[[private$scenMetaColnames['sname']]][[1]], 
-                                                   stime = as.character(metadata[[private$scenMetaColnames['stime']]][[1]]), 
+                                                   stime = as.character(metadata[[private$scenMetaColnames['stime']]][[1]], usetz = TRUE), 
                                                    stag = metadata[[private$scenMetaColnames['stag']]][[1]], 
                                                    accessR = metadata[[private$scenMetaColnames['accessR']]][[1]], 
                                                    accessW = metadata[[private$scenMetaColnames['accessW']]][[1]], 

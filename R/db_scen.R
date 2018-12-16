@@ -214,6 +214,7 @@ Scenario <- R6Class("Scenario",
                         attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], fileNames = fileNames)
                         
                         super$exportScenDataset(private$bindSidCol(attachmentData), private$attachmentConfig[["tabName"]])
+                        self$updateMetadata()
                         invisible(self)
                       },
                       fetchAttachmentList = function(){
@@ -299,6 +300,7 @@ Scenario <- R6Class("Scenario",
                         
                         super$updateRows(private$attachmentConfig[["tabName"]], tibble("fileName", fileName), 
                                          colNames = "execPerm", values = value, subsetSids = private$sid)
+                        self$updateMetadata()
                         invisible(self)
                       },
                       removeAttachments = function(fileNames){
@@ -315,6 +317,7 @@ Scenario <- R6Class("Scenario",
                         
                         super$deleteRows(private$attachmentConfig[["tabName"]], "fileName", fileNames, 
                                          conditionSep = "OR", subsetSids = private$sid)
+                        self$updateMetadata()
                         invisible(self)
                       },
                       delete = function(){

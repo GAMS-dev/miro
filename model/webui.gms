@@ -736,8 +736,13 @@ $ifthen not errorfree
 $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/GMSWebUI/conf/' directory."
 $terminate
 $endif
-$ifthen %WEBUI%=="launch"
+$ifthen.launch %WEBUI%=="launch"
+$ifthen.batch %WEBUIMODE%=="batch"
+$setEnv RUNBATCHMODE yes
+$else.batch
+$setEnv RUNBATCHMODE no
+$endif.batch
 $  hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing the GAMS WebUI. Make sure you have a valid WebUI installation.
-$endif
+$endif.launch
 $terminate
