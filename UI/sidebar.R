@@ -33,7 +33,6 @@ if(!identical(config$activateModules$batchMode, TRUE)){
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 menuItem(lang$nav$sidebarMenu$batch$analyze, tabName="batchAnalyze", icon = icon("pie-chart")),
-                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", class = "btHighlight3 glow-animation", style = "display:block;"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solveBatch, width = "85%", class = "btHighlight2", style = "display:block;"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
                                  actionButton("btLoadScen", class = "btHighlight3", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight2", style = "display:block;")),
