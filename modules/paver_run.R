@@ -28,12 +28,13 @@ gmswebiter <- 0
 observeEvent(input$btPaver, {
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
-  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, 
-                                                       names(rv$fetchedScenarios) %in% c(sidIdentifier,
-                                                                                         paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameIn]], 
-                                                                                              "[[", character(1L), "key", USE.NAMES = FALSE))), 
+  
+  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
                                                        drop = FALSE], 
-                            input$selPaverAttribs, maxSolversPaver)){
+                                   input$selPaverAttribs, maxSolversPaver, 
+                                   c("_uid", "_stime", "_stag", 
+                                     paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
+                                                        "[[", character(1L), "key", USE.NAMES = FALSE))))){
     showEl(session, "#configPaverMaxSolversErr")
     return()
   }else{
@@ -79,11 +80,11 @@ observeEvent(input$btPaver, {
     enableEl(session, "#btPaverInterrupt")
     updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
     switchTab(session, "batchAna")
-
+    
     errMsg <- NULL
     # run paver
     tryCatch({
-      if(identical(tolower(getOS()), "windows")){
+      if(identical(tolower(getOS()[[1L]]), "windows")){
         pyExec <- "python"
       }else{
         pyExec <- "python3"
@@ -116,7 +117,7 @@ observeEvent(input$btPaver, {
                                         style = "overflow: auto; height: 75vh;",
                                         tryCatch(
                                           suppressWarnings(includeHTML(paste0(paverDir, .Platform$file.sep, 
-                                                             paverResultTabs[i], ".html"))),
+                                                                              paverResultTabs[i], ".html"))),
                                           error = function(e){
                                             tags$div(class="errMsg", style="text-align:center;font-size:16px;margin-top:50px;",
                                                      lang$errMsg$paverFileLoad$desc)
