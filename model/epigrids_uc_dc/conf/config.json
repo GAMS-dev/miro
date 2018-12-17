@@ -1,17 +1,10 @@
 {
     "inputWidgets"        : {
-      "GMSPAR_modelname": {
-          "alias": "Modelname",
-          "widgetType":"dropdown",
-          "label": "Select the model to solve",
-          "choices": ["uc_dc"]
-      },
       "GMSPAR_casename": {
           "alias": "Input case",
           "widgetType":"dropdown",
           "label": "Select input case [case]",
           "choices": "casename$filename",
-          "selected":"case14",
           "noBatch": true
       },
       "GMSPAR_times": {
@@ -30,8 +23,9 @@
           "alias": "Initial generator conditions",
           "widgetType":"dropdown",
           "label": "Select the initial conditions of the generators",
-          "choices": "$casename$symName[genRun]$symVal",
-          "aliases": "$casename$symName[genRun]$symDesc"
+          "choices": ["_", "$casename$symName[genRun]$symVal"],
+          "aliases": ["_", "$casename$symName[genRun]$symDesc"],
+          "selected": "_"
       },
       "GMSPAR_allon": {
           "alias": "allon",
@@ -111,8 +105,8 @@
           "alias": "wind",
           "widgetType":"checkbox",
           "label": "Turn off wind turbines? [wind]",
-          "value": "max(casename$symName[wind]$symVal)",
-          "disable": true,
+          "value": 0,
+          "max": "max(casename$symName[wind]$symVal)",
           "class": "checkbox-material"
       },
       "GMSOPT_mip": {

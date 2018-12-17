@@ -303,8 +303,8 @@
       "invalidScenDialog":{
         "title":"Ungültige Szenarien",
         "desc": "%d der Szenarien, die Sie hochladen möchten, sind ungültig (%s). Wollen Sie dennoch fortfahren?",
-        "okButton": "Abbrechen",
-        "cancelButton": "Fortfahren"
+        "okButton": "Fortfahren",
+        "cancelButton": "Abbrechen"
       },
       "duplicatedScenDialog":{
         "title":"Duplizierte Szenarien gefunden",

@@ -1,6 +1,5 @@
-$if not set modelname $set modelname uc_dc
-$ifthen.modelname exist "%gams.idir1%..%system.dirsep%%modelname%%system.dirsep%%modelname%.gms"
-$include "%gams.idir1%..%system.dirsep%%modelname%%system.dirsep%%modelname%.gms"
+$ifthen.modelname exist "%gams.idir1%..%system.dirsep%uc_dc%system.dirsep%uc_dc.gms"
+$include "%gams.idir1%..%system.dirsep%uc_dc%system.dirsep%uc_dc.gms"
 $else.modelname
-$abort "Model %modelname%.gms not found."
+$abort "Model uc_dc.gms not found."
 $endif.modelname

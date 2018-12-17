@@ -106,7 +106,7 @@ BatchLoad <- R6Class("BatchLoad",
                                                  private$scalarColNames[[2]], 
                                                  private$keyTypeList[[innerTable]])
                          }, character(1L), USE.NAMES = FALSE)
-                         innerJoin <- paste0(" INNER JOIN (", innerPivotTables,
+                         innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
                                              ") AS ", dbQuoteIdentifier(private$conn, innerTables),
                                              " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
                                              ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
