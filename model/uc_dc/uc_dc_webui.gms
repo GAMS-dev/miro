@@ -50,6 +50,13 @@ from shlex import quote
 
 def extractSymText(sym, leavehash=0):
    text = sym.text
+   aliasIdentifier = 'Aliased with '
+   if text.startswith(aliasIdentifier):
+      aliasedSet = text[len(aliasIdentifier):]
+      for s in db:
+         if(db[s].name == aliasedSet):
+            text = db[s].text
+            break
    input_tag = 'UIInput:'
    uii = len(input_tag)
    output_tag = 'UIOutput:'

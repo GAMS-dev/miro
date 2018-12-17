@@ -5,6 +5,7 @@
           "widgetType":"dropdown",
           "label": "Select input case [case]",
           "choices": "casename$filename",
+          "selected":"case14",
           "noBatch": true
       },
       "GMSPAR_times": {
@@ -111,8 +112,8 @@
           "alias": "wind",
           "widgetType":"checkbox",
           "label": "Turn off wind turbines? [wind]",
-          "value": "max(casename$symName[wind]$symVal)",
-          "disable": true,
+          "value":0,
+          "max": "max(casename$symName[wind]$symVal)",
           "class": "checkbox-material"
       },
       "GMSOPT_mip": {

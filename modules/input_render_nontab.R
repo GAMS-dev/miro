@@ -91,7 +91,7 @@ lapply(seq_along(modelIn), function(id){
                           input[["dropdown_" %+% k]]
                           if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
                             tryCatch(
-                                value <- filterDf(sharedInputData_filtered[[k]], modelIn[[id]]$checkbox$value)
+                                value <- filterDf(sharedInputData_filtered[[k]], modelIn[[id]]$checkbox$max)
                             , error = function(e){
                               flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
                                            "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -106,7 +106,7 @@ lapply(seq_along(modelIn), function(id){
                         })
                }else{
                  tryCatch({
-                   value <- getInputDataset(k)[[modelIn[[id]]$checkbox$value]]
+                   value <- getInputDataset(k)[[modelIn[[id]]$checkbox$max]]
                  }, error = function(e){
                    flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
                                 "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -148,16 +148,14 @@ lapply(seq_along(modelIn), function(id){
                    return()
                  }
                }else{
-                 selected <- value
+                 selected <- isolate(input[["cb_" %+% id]])
                }
                noCheck[id] <<- TRUE
                updateCheckboxInput(session, "cb_" %+% id, value = selected)
-               if(identical(modelIn[[id]]$checkbox$disable, TRUE)){
-                 if(value <= 0.5){
-                   disableEl(session, "#cb_" %+% id)
-                 }else{
-                   enableEl(session, "#cb_" %+% id)
-                 }
+               if(value <= 0.5){
+                 disableEl(session, "#cb_" %+% id)
+               }else{
+                 enableEl(session, "#cb_" %+% id)
                }
              })
            }
