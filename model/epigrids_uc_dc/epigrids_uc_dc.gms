@@ -1,4 +1,4 @@
-$if not set modelname $set modelname uc_iv
+$if not set modelname $set modelname uc_dc
 $ifthen.modelname exist "%gams.idir1%..%system.dirsep%%modelname%%system.dirsep%%modelname%.gms"
 $include "%gams.idir1%..%system.dirsep%%modelname%%system.dirsep%%modelname%.gms"
 $else.modelname

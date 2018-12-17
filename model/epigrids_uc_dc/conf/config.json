@@ -1,5 +1,11 @@
 {
     "inputWidgets"        : {
+      "GMSPAR_modelname": {
+          "alias": "Modelname",
+          "widgetType":"dropdown",
+          "label": "Select the model to solve",
+          "choices": ["uc_dc"]
+      },
       "GMSPAR_casename": {
           "alias": "Input case",
           "widgetType":"dropdown",
@@ -77,13 +83,6 @@
           ],
           "selected": "given"
       },
-      "GMSPAR_demandbids": {
-         "alias": "demandbids",
-         "widgetType":"checkbox",
-         "label": "Turn on elastic demand bidding? [demandbids]",
-         "value": 0,
-         "class": "checkbox-material"
-      },
       "GMSPAR_ramprates": {
           "alias": "ramprates",
           "widgetType":"dropdown",
@@ -112,8 +111,8 @@
           "alias": "wind",
           "widgetType":"checkbox",
           "label": "Turn off wind turbines? [wind]",
-          "value":0,
-          "max": "max(casename$symName[wind]$symVal)",
+          "value": "max(casename$symName[wind]$symVal)",
+          "disable": true,
           "class": "checkbox-material"
       },
       "GMSOPT_mip": {
