@@ -316,7 +316,7 @@ if(is.null(errMsg)){
         if(length(cbValueTmp) %in% c(4L, 5L) && cbValueTmp[[1]] %in% listOfOperators){
           cbValueTmp <- gsub(")", "", cbValueTmp, fixed = TRUE)
           modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
-          modelIn[[i]]$checkbox$max    <<- paste(cbValueTmp[c(-1)], collapse = "$")
+          modelIn[[i]]$checkbox$max      <<- paste(cbValueTmp[c(-1)], collapse = "$")
         }else{
           errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
                                            operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
@@ -469,12 +469,12 @@ if(is.null(errMsg)){
                checkbox = {
                  modelIn[[i]]$type <<- "dropdown"
                  modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
-                 value <- modelIn[[i]]$checkbox$max
-                 if(!is.null(value) && !is.na(suppressWarnings(as.integer(value)))){
+                 value <- modelIn[[i]]$checkbox$value
+                 if(is.null(modelIn[[i]]$checkbox$max) || !is.na(suppressWarnings(as.integer(modelIn[[i]]$checkbox$max)))){
                    modelIn[[i]]$dropdown$aliases <<- lang$nav$batchMode$checkboxAliases
                    modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
                  }else{
-                   modelIn[[i]]$checkbox$max    <<- paste0("$", modelIn[[i]]$checkbox$max)
+                   modelIn[[i]]$checkbox$max      <<- paste0("$", modelIn[[i]]$checkbox$max)
                    modelIn[[i]]$dropdown$operator <<- modelIn[[i]]$checkbox$operator
                    modelIn[[i]]$dropdown$choices  <<- modelIn[[i]]$checkbox$max
                  }
@@ -888,7 +888,6 @@ modelInAlias[i], " does not match the number of choices with dependencies.
     }
   }
   if(is.null(errMsg)){
-    
     # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
     # scenario data is a concatenated list of outputData and inputData
     scenTableNames    <- c(names(modelOut), inputDsNames)
