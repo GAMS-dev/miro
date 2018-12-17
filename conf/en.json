@@ -303,8 +303,8 @@
       "invalidScenDialog":{
         "title":"Invalid scenarios",
         "desc": "%d of the scenarios you want to upload are invalid (%s). Do you still want to proceed?",
-        "okButton": "Abort",
-        "cancelButton": "Proceed"
+        "okButton": "Proceed",
+        "cancelButton": "Abort"
       },
       "duplicatedScenDialog":{
         "title":"Duplicated Scenarios found",
