@@ -120,7 +120,8 @@ lapply(seq_along(modelIn), function(id){
                tryCatch({
                  value <- getScalarValue(unlist(value, use.names = FALSE), modelIn[[id]]$checkbox$operator)
                }, error = function(e){
-                 flog.warn("Input type for checkbox: '%s' is not numeric. (Operator: '%s')", name, modelIn[[id]]$checkbox$operator)
+                 flog.warn("Input type for checkbox: '%s' is not numeric. (Operator: '%s')", 
+                           name, modelIn[[id]]$checkbox$operator)
                  errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                })
                if(is.null(showErrorMsg(lang$errMsg$dataError$title, errMsg))){
@@ -226,7 +227,7 @@ lapply(seq_along(modelIn), function(id){
              # has dependencies on other datasets
              
              # retrieve choices for dropdown menu
-             getData[[i]] <<- shiny::reactive({
+             getData[[i]] <<- reactive({
                choices <- vector(mode = "list", length = length(ddownDep[[name]]$fw) + 1)
                aliases <- vector(mode = "list", length = length(ddownDep[[name]]$aliases) + 1)
                # retrieve single value data
@@ -243,7 +244,6 @@ lapply(seq_along(modelIn), function(id){
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))){
                    k <- match(dataSheet, names(modelIn))
-                   
                    if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
@@ -267,10 +267,10 @@ lapply(seq_along(modelIn), function(id){
                              errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                            })
                        }
-                       if(!is.null(modelIn[[k]]$dropdown$operator)){
+                       if(!is.null(modelIn[[id]]$dropdown$operator)){
                          # element is checkbox with shared dependency that was transformed to dropdown in batch mode
                          tryCatch({
-                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), modelIn[[k]]$dropdown$operator)
+                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), modelIn[[id]]$dropdown$operator)
                          }, error = function(e){
                            flog.warn("Input type for checkbox: '%s' is not numeric.", modelInAlias[id])
                            errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
@@ -278,7 +278,7 @@ lapply(seq_along(modelIn), function(id){
                          if(!is.null(errMsg)){
                            next
                          }
-                         if(value <= 0.5 && identical(modelIn[[id]]$checkbox$disable, TRUE)){
+                         if(value <= 0.5){
                            choices[[j]] <- c(0L)
                            aliases[[j]] <- lang$nav$batchMode$checkboxAliases[[1]]
                          }else{

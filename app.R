@@ -127,6 +127,7 @@ if(is.null(errMsg)){
 "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
+
 if(is.null(errMsg)){
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
@@ -138,7 +139,7 @@ if(is.null(errMsg)){
     if(is.null(uid) || grepl("^\\s*$", uid)){
       errMsg <- "No user ID specified (shinyproxy)."
     }
-    ugroups <- Sys.getenv("SHINYPROXY_USERGROUPS")
+    ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
     if(is.null(ugroups) || grepl("^\\s*$", ugroups)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
