@@ -83,8 +83,14 @@ observeEvent(input$btPaver, {
     errMsg <- NULL
     # run paver
     tryCatch({
-      paver <<- processx::process$new("python", args = genPaverArgs(traceFiles), windows_hide_window = TRUE,
+      if(identical(tolower(getOS()), "windows")){
+        pyExec <- "python"
+      }else{
+        pyExec <- "python3"
+      }
+      paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles), windows_hide_window = TRUE,
                                       stdout = workDir %+% modelName %+% ".paverlog", stderr = "|")
+      rm(pyExec)
     }, error = function(e) {
       errMsg <<- lang$errMsg$paverExec$desc
       flog.error("Python/Paver did not execute successfully. Error message: %s.", e)

@@ -36,7 +36,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
                return(1L)
              },
              dropdown = {
-               return(length(input[["dropdown_" %+% i]]))
+               return(length(input[["dropdown_" %+% i]][input[["dropdown_" %+% i]] != "_"]))
              },
              date = {
                return(length(input[["date_" %+% i]]))
@@ -48,6 +48,9 @@ if(identical(config$activateModules$batchMode, TRUE)){
                return(length(input[["cb_" %+% i]]))
              })
     }, integer(1L), USE.NAMES = FALSE)
+    if(any(numberScenPerElement == -1L)){
+      return(-1L)
+    }
     return(prod(numberScenPerElement))
   })
   
@@ -88,6 +91,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
              },
              dropdown = {
                value <- input[["dropdown_" %+% i]]
+               value <- value[value != "_"]
              },
              date = {
                value <- input[["date_" %+% i]]
