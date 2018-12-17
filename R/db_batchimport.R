@@ -373,15 +373,14 @@ BatchImport <- R6Class("BatchImport",
                            isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
                              tableName <- tolower(names(scenTables)[tableId])
                              if(identical(tableName, private$scalarsInputName)){
-                               if(any(!scalarInToVerify %in% scenTables[[tableId]][[1]]) ||
-                                  length(scalarInToVerify) != length(scenTables[[tableId]][[1]])){
-                                 flog.info("Missing or additional elements in table: '%s'.", 
-                                           tableName)
+                               if(any(!scenTables[[tableId]][[1]] %in% scalarInToVerify)){
+                                 flog.info("Additional elements in table: '%s': '%s'.", 
+                                           tableName, scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarOutToVerify])
                                  return(TRUE)
                                }
                              }else if(identical(tableName, private$scalarsOutputName)){
-                               if(any(!scalarOutToVerify %in% scenTables[[tableId]][[1]]) || 
-                                  length(scalarOutToVerify) != length(scenTables[[tableId]][[1]])){
+                               if(any(!scenTables[[tableId]][[1]] %in% scalarOutToVerify) || 
+                                  length(scenTables[[tableId]][[1]]) != length(scalarOutToVerify)){
                                  flog.info("Missing or additional elements in table: '%s'.", 
                                            tableName)
                                  return(TRUE)
