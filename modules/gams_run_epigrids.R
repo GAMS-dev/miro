@@ -24,7 +24,9 @@ output$btBatchAll <- downloadHandler(
     writeLines(scenGmsPar, workDirBatch %+% .Platform$file.sep %+% tolower(modelName) %+% ".gmsb")
 
     # Copy files that are needed to solve model
-    file.copy(list.files(paste0(homeDir, .Platform$file.sep, modelDir), full.names = TRUE), workDirBatch, recursive = TRUE)
+    file.copy(paste0(homeDir, .Platform$file.sep, modelDir), workDirBatch, recursive = TRUE)
+    file.copy(paste0(homeDir, .Platform$file.sep, modelDir) %+% "batch_submission.gms", workDirBatch)
+    do.call(file.remove, list(list.files(paste0(homeDir, .Platform$file.sep, modelDir), pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
     zip(file, list.files(recursive = TRUE), compression_level = 6)
@@ -56,7 +58,9 @@ output$btBatchNew <- downloadHandler(
     writeLines(scenGmsPar[idxDiff], workDirBatch %+% .Platform$file.sep %+% tolower(modelName) %+% ".gmsb")
     
     # Copy files that are needed to solve model
-    file.copy(list.files(paste0(homeDir, .Platform$file.sep, modelDir), full.names = TRUE), workDirBatch, recursive = TRUE)
+    file.copy(paste0(homeDir, .Platform$file.sep, modelDir), workDirBatch, recursive = TRUE)
+    file.copy(paste0(homeDir, .Platform$file.sep, modelDir) %+% "batch_submission.gms", workDirBatch)
+    do.call(file.remove, list(list.files(paste0(homeDir, .Platform$file.sep, modelDir), pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
     
     zip(file, list.files(recursive = TRUE), compression_level = 6)

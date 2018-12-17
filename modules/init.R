@@ -445,18 +445,6 @@ if(is.null(errMsg)){
   modelInGmsString <- NULL
   if(identical(config$activateModules$batchMode, TRUE)){
     rSaveFilePath <- gsub(".gmsconf", "_batch.gmsconf", rSaveFilePath, fixed = TRUE)
-    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
-      if((modelIn[[i]]$type == "slider" 
-          && length(modelIn[[i]]$slider$default) > 1) 
-         || (modelIn[[i]]$type %in% c("daterange", "dropdown"))){
-        ""
-      }else{
-        if(names(modelIn)[i] %in% DDPar){
-          return("--" %+% names(modelIn)[i] %+% "=")
-        }
-        names(modelIn)[i] %+% "="
-      }
-    }), use.names = FALSE)
     lapply(seq_along(modelIn), function(i){
       if(!names(modelIn)[i] %in% c(DDPar, GMSOpt)){
         errMsg <<- paste(errMsg, 
@@ -512,6 +500,18 @@ if(is.null(errMsg)){
                })
       }
     })
+    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
+      if((modelIn[[i]]$type == "slider" 
+          && length(modelIn[[i]]$slider$default) > 1) 
+         || (modelIn[[i]]$type %in% c("daterange", "dropdown"))){
+        ""
+      }else{
+        if(names(modelIn)[i] %in% DDPar){
+          return("--" %+% names(modelIn)[i] %+% "=")
+        }
+        names(modelIn)[i] %+% "="
+      }
+    }), use.names = FALSE)
   }
   
   # get datasets whose data source is shared with other models
