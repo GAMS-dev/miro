@@ -76,6 +76,13 @@
           ],
           "selected": "given"
       },
+      "GMSPAR_demandbids": {
+         "alias": "demandbids",
+         "widgetType":"checkbox",
+         "label": "Turn on elastic demand bidding? [demandbids]",
+         "value": 0,
+         "class": "checkbox-material"
+      },
       "GMSPAR_ramprates": {
           "alias": "ramprates",
           "widgetType":"dropdown",
