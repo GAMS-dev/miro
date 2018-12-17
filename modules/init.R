@@ -448,7 +448,7 @@ if(is.null(errMsg)){
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
           && length(modelIn[[i]]$slider$default) > 1) 
-         || (modelIn[[i]]$type == "daterange")){
+         || (modelIn[[i]]$type %in% c("daterange", "dropdown"))){
         ""
       }else{
         if(names(modelIn)[i] %in% DDPar){

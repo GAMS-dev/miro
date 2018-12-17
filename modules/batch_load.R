@@ -275,10 +275,10 @@ observeEvent(input$btSendQuery, {
   })
   colsToFetch <- strsplit(fields[-1], "-", fixed = TRUE)
   colN <- c(sidIdentifier, vapply(colsToFetch, 
-                                   '[[', FUN.VALUE = "characer", 2, 
+                                   '[[', FUN.VALUE = "character", 2, 
                                    USE.NAMES = FALSE))
   names(colN) <- c(scenMetadataTable, vapply(colsToFetch, '[[', 
-                                               FUN.VALUE = "characer", 1,
+                                               FUN.VALUE = "character", 1,
                                                USE.NAMES = FALSE))
   tryCatch({
     rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN, limit = batchLoadMaxScen)

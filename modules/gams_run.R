@@ -36,7 +36,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
                return(1L)
              },
              dropdown = {
-               return(length(input[["dropdown_" %+% i]][input[["dropdown_" %+% i]] != "_"]))
+               return(length(input[["dropdown_" %+% i]]))
              },
              date = {
                return(length(input[["date_" %+% i]]))
@@ -91,7 +91,11 @@ if(identical(config$activateModules$batchMode, TRUE)){
              },
              dropdown = {
                value <- input[["dropdown_" %+% i]]
-               value <- value[value != "_"]
+               if("_" %in% value){
+                 value <- value[value != "_"]
+                 return(c(if(length(value)) paste0("--", names(modelIn)[[i]], "=", value), ""))
+               }
+               return(paste0("--", names(modelIn)[[i]], "=", value))
              },
              date = {
                value <- input[["date_" %+% i]]

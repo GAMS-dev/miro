@@ -145,7 +145,7 @@ BatchLoad <- R6Class("BatchLoad",
                          colIdsAttrib <- match(attribs, names(data))
                          colIdsExclAttrib <- match(exclAttrib, names(data))
                          if(any(is.na(colIdsExclAttrib))){
-                           stop(sprintf("Attribute: '%s' was not found.", colIdsExclAttrib), 
+                           stop(sprintf("Attribute: '%s' was not found.", colIdsExclAttrib[is.na[colIdsExclAttrib]]), 
                                 call. = FALSE)
                          }
                            
@@ -156,6 +156,7 @@ BatchLoad <- R6Class("BatchLoad",
                          private$groupedSids <- lapply(groupedRowIds, function(rowIds){
                            sids[rowIds + 1L]
                          })
+                         
                          if(length(groupedRowIds) > maxNoGroups){
                            return(TRUE)
                          }
@@ -168,7 +169,6 @@ BatchLoad <- R6Class("BatchLoad",
                                    collapse = "\\")
                            }, character(1L), USE.NAMES = FALSE)
                          })
-                         
                          private$groupLabels <- attr(groupedData, "labels")
                          return(FALSE)
                        },

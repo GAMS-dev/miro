@@ -326,7 +326,7 @@ BatchImport <- R6Class("BatchImport",
                              csvPath <- csvPaths[[i]]
                              tryCatch({
                                if(grepl("\\.trc$", csvPath, ignore.case = TRUE)){
-                                 scenData <- readTraceData(csvPath, private$traceColNames)
+                                 scenData <- readTraceData(csvPath, private$traceColNames)[1, ]
                                }else{
                                  colTypes <- NULL
                                  if(!is.na(private$gmsColTypes[scenDataNames[[i]]])){
