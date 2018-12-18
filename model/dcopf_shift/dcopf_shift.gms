@@ -61,7 +61,7 @@ $if not set savesol $set savesol 0
 $batinclude "%MODELPATH%extract_data.gms" modeltype case timeperiod demandbids linelimits genPmin allon
 
 $ifthen not exist '%casepath%%casename%_Shift_Matrix%caseextension%'
-$call 'gams "%MODELPATH%DataUtilities%system.dirsep%calc_S_matrix.gms" --case="%case%"';
+$call 'gams "calc_S_matrix.gms" --case="%case%" idir1="%MODELPATH%DataUtilities"';
 if(errorlevel ne 0, abort "Calculating Shift matrix failed!");
 $endif
 
@@ -252,7 +252,7 @@ display lines_at_limit;
 
 $Set out %casename%_DC_shift_solution.gdx
 execute_unload 'temp_solution.gdx', Pg, Vm, Va, total_cost, LMP_Energy, LMP_Loss, LMP_Congestion, LMP, LineSP;
-execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=0 --decompose_lmp=1 --case="%case%" --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%';
+execute 'gams "save_solution.gms" idir="%MODELPATH%" gdxcompress=1 --ac=0 --decompose_lmp=1 --case="%case%" --solution=temp_solution.gdx --out=%casename%_DC_shift_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );

@@ -463,7 +463,7 @@ display lines_at_limit;
 $SetGlobal out %casename%_AC_UC_solution.gdx
 *added to execute_unload: t
 execute_unload 'temp_solution.gdx', t, Pg, Qg, Vm, Va, shuntB, total_cost, LMP, LineSP, status;
-execute 'gams "%MODELPATH%save_solution_uc.gms" gdxcompress=1 --ac=1 --uc=1 --timeperiod=%timeperiod% --case="%case%" --solution=temp_solution.gdx --out=%out% lo=3';
+execute 'gams "save_solution_uc.gms" idir="%MODELPATH%" gdxcompress=1 --ac=1 --uc=1 --timeperiod=%timeperiod% --case="%case%" --solution=temp_solution.gdx --out=%out% lo=3';
 execute 'rm temp_solution.gdx'
 
 * END IF-loop if(infeas eq 0)

@@ -283,7 +283,7 @@ shuntB(i) = sum(bus_s, V_shunt.l(i,bus_s)*Bswitched(i,bus_s));
 
 $SetGlobal out %casename%_ybus_solution.gdx
 execute_unload 'temp_solution.gdx' Pg, Qg, Vm, Va, total_cost, LMP, LineSP, shuntB;
-execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --out=%out% --case="%case%" --solution=temp_solution.gdx --timeperiod=%timeperiod%';
+execute 'gams "save_solution.gms" idir="%MODELPATH%" gdxcompress=1 --out=%out% --case="%case%" --solution=temp_solution.gdx --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 

@@ -4,7 +4,7 @@ $offtext
 
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
 $if not set casepath $setnames "%case%" casepath casename caseextension
-$call gams "%MODELPATH%ic_polar%sep%ic_xls2gdx.gms" --in="%MODELPATH%ic_polar%sep%sol_%casename%.xlsx"
+$call 'gams "ic_xls2gdx.gms" idir1="%MODELPATH%ic_polar" --in="%MODELPATH%ic_polar%sep%sol_%casename%.xlsx"'
 
 parameters ic_bus, ic_gen;
 

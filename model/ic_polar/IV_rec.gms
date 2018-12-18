@@ -5,7 +5,7 @@ $offtext
 $if not set timeperiod $abort "Time period not chosen, should default in model..."
 
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
-$call gams "%MODELPATH%iv_acopf%system.dirsep%iv_acopf.gms" idir1=%MODELPATH%iv_acopf idir2=%MODELPATH% --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=iv_acopftemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%
+$call 'gams "iv_acopf.gms" idir1="%MODELPATH%iv_acopf" idir2="%MODELPATH%" --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=iv_acopftemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%'
 if(errorlevel ne 0, abort "Failed to find a starting point using IV_rec-ACOPF!");
 
 parameters Pg_in(gen), Qg_in(gen), Vm_in(bus), Va_in(bus), shunt_in(bus,bus_s);

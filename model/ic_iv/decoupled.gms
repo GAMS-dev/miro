@@ -5,7 +5,7 @@ $offtext
 $if not set timeperiod $abort "Time period not chosen, should default in model..."
 
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
-$call gams "%MODELPATH%polar_decoupled%sep%polar_decoupled.gms" idir1=%MODELPATH%polar_decoupled idir2=%MODELPATH% --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=decoupledtemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%
+$call 'gams "polar_decoupled.gms" idir1="%MODELPATH%polar_decoupled" idir2="%MODELPATH%" --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=decoupledtemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%'
 if(errorlevel ne 0, abort "Failed to find a starting point using Decoupled AC!");
 
 variables ic_Pg, ic_Qg, ic_Vm, ic_Va, ic_shunt;

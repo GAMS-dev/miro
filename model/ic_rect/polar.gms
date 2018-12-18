@@ -6,7 +6,7 @@ $if not set timeperiod $abort "Time period not chosen, should default in model..
 
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
 
-$call gams "%MODELPATH%polar_acopf%sep%polar_acopf.gms" idir1=%MODELPATH%polar_acopf idir2=%MODELPATH% --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=polartemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%
+$call 'gams "polar_acopf.gms" idir1="%MODELPATH%polar_acopf" idir2="%MODELPATH%" --genPmin=%genPmin% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=polartemp.gdx lo=3 --timeperiod=%timeperiod% reslim=3600 nlp=ipopth --verbose=%verbose%'
 
 if(errorlevel ne 0, abort "Failed to find a starting point using rec-ACOPF!");
 

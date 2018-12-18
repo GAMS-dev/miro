@@ -5,7 +5,7 @@ $offtext
 $if not set timeperiod $abort "Time period not chosen, should default in model..."
 
 $if not set filepath $setnames "%gams.i%" filepath filename fileextension
-$call gams "%MODELPATH%dcopf%system.dirsep%dcopf.gms" lp=%system.lp% qcp=%system.qcp% --genPmin=%genPmin% idir1=%MODELPATH%dcopf idir2=%MODELPATH% --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=dctemp.gdx lo=3 --timeperiod=%timeperiod% --verbose=%verbose%
+$call 'gams "dcopf.gms" lp=%system.lp% qcp=%system.qcp% --genPmin=%genPmin% idir1="%MODELPATH%dcopf" idir2="%MODELPATH%" --allon=%allon% --linelimits=%linelimits% --case="%case%" --obj=%obj% gdx=dctemp.gdx lo=3 --timeperiod=%timeperiod% --verbose=%verbose%'
 if(errorlevel ne 0, abort "Failed to find a starting point using DCOPF!");
 
 variables ic_Pg, ic_Va;

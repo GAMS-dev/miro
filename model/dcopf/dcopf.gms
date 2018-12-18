@@ -244,7 +244,7 @@ display lines_at_limit;
 *==== SECTION: Solution Save
 $Set out %casename%_DC_base_solution.gdx
 execute_unload 'temp_solution.gdx',  Pg, Vm, Va, total_cost, LMP, LineSP;
-execute 'gams "%MODELPATH%save_solution.gms" gdxcompress=1 --ac=0 --case="%case%" --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
+execute 'gams "save_solution.gms" idir="%MODELPATH%" gdxcompress=1 --ac=0 --case="%case%" --solution=temp_solution.gdx --out=%out% --timeperiod=%timeperiod%';
 if(errorlevel ne 0, abort "Saving solution failed!");
 execute 'rm temp_solution.gdx'
 );

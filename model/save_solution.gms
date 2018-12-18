@@ -103,7 +103,7 @@ execute_unload "%out%temp", version, total_cost, baseMVA, ints, t, bus, gen, cir
                         businfo, geninfo, branchinfo, demandbidinfo, interfaceinfo, fuelinfo
 ;
 
-execute 'gams "%filepath%save_domain_info.gms" --in="%out%temp" gdx="%out%"'
+execute 'gams "save_domain_info.gms" --in="%out%temp" gdx="%out%" idir=%filepath%'
 if(errorlevel ne 0, abort "Saving domain info failed!");
 execute 'rm "%out%temp"';
 

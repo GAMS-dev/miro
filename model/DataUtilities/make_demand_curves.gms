@@ -129,7 +129,7 @@ execute_unload "%out%temp", version, total_cost, baseMVA, ints, t, bus, gen, cir
                         businfo, geninfo, branchinfo, demandbidinfo, interfaceinfo, fuelinfo
 ;
 
-execute 'gams "%filepath%save_domain_info.gms" gdx="%out%" --in="%out%temp"'
+execute 'gams "save_domain_info.gms" idir="%filepath%" gdx="%out%" --in="%out%temp"'
 if(errorlevel ne 0, abort "Save domain info failed!");
 execute 'rm "%out%temp.gdx"'
 if(errorlevel ne 0, abort "Call failed!");
