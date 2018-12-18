@@ -27,7 +27,7 @@ if(length(newPackages)){
                                                     "withr", "BH", "plogr"),
                        "RSQLite" = c("bit64", "blob", "DBI", "memoise", "pkgconfig", "Rcpp", "BH", "plogr"))
   newPackages <- unique(unlist(c(lapply(newPackages, function(package){packageDepDb[[package]]}), newPackages)))
-  if(identical(getOs()[[1L]], "windows")){
+  if(identical(getOS()[[1L]], "windows")){
     binFileExt <- "_.*\\.zip$"
   }else{
     binFileExt <- "_.*\\.tgz$"
