@@ -1,4 +1,4 @@
-Welcome to the installer of the alpha version of GMSWebUI (Version: 0.2.3). 
+Welcome to the installer of the beta version of GAMS WebUI. 
 If you encounter any bugs or have any suggestions for improvement, please contact: support@gams.com.
 
-PLEASE NOTE: The GMSWebUI requires GAMS version 25.1.2 or later. Please install it in your GAMS ROOT directory!
+PLEASE NOTE: The GAMS WebUI requires GAMS version 25.1.2 or later. Please install it in your GAMS ROOT directory!

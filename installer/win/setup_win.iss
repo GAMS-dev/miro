@@ -2,7 +2,7 @@
 #define RMajor 3
 #define RMinor 5
 #define RPatch 1
-#define MyAppPublisher "GAMS Software GmbH"
+#define MyAppPublisher "GAMS Software GmbH/GAMS Development Corp."
 #define MyAppURL "gams.com"
 
 [Setup]
@@ -22,13 +22,12 @@ InfoBeforeFile = infobefore.txt
 InfoAfterFile = infoafter.txt
 Compression = lzma2/ultra64
 SolidCompression = yes
-LicenseFile=LICENSE
+LicenseFile=../../LICENSE
 ArchitecturesInstallIn64BitMode = x64
 DisableProgramGroupPage = yes
 DirExistsWarning = no
 WizardSmallImageFile=gams_small.bmp,gams_small2.bmp
 WizardImageFile=gams_left.bmp,gams_left2.bmp
-Password = "w3bu14lph4"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -39,9 +38,10 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 Name: "program"; Description: "WebUI Files"; Types: full custom; Flags: fixed
 Name: "examples"; Description: "Sample Models"; Types: full
 [Files]
-Source: "LICENSE"; Flags: dontcopy noencryption
+Source: "../../LICENSE"; Flags: dontcopy noencryption
 Source: "default.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
+Source: "../../libraries/windows/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../conf/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../JS/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../modules/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
@@ -72,7 +72,7 @@ Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\GMSW
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "http://doma.in/uri/"; Flags: postinstall shellexec runasoriginaluser shellexec skipifsilent; StatusMsg: "Open documentation"
+Filename: "https://www.gams.com/latest/webui/"; Flags: postinstall shellexec runasoriginaluser shellexec skipifsilent; StatusMsg: "Open documentation"
 
 [Code]
 function needR(): boolean;

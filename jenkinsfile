@@ -22,6 +22,13 @@ pipeline {
                     node('windowsX64') {
                         step([$class: 'WsCleanup'])
                         checkout scm
+                        withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
+                          bat '''
+                            curl -u %NC_UNAME%:%NC_PWD% -X GET https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip --output win-lib.zip
+                            unzip win-lib.zip -d library
+                            rm win-lib.zip
+                          '''
+                        }
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
                                 for /f "tokens=*" %%i in ('findstr /B /C:"webuiVersion <-" app.R') do set WEBUI_VERSION=%%i
@@ -41,6 +48,13 @@ pipeline {
                     node('macos') {
                         step([$class: 'WsCleanup'])
                         checkout scm
+                        withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
+                          bat '''
+                            curl -u $NC_UNAME:$NC_PWD -X GET https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/mac-lib.zip --output mac-lib.zip
+                            unzip mac-lib.zip -d library
+                            rm mac-lib.zip
+                          '''
+                        }
                         sh '''
                             WEBUI_VERSION=$(grep -e "^webuiVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
@@ -58,7 +72,7 @@ pipeline {
                             mkdir $TARGET/GMSWebUI
                             mkdir $TARGET/inclib
 
-                            cp -r app.R conf doc global.R JS LICENSE LICENSE_full modules R resources UI www $TARGET/GMSWebUI
+                            cp -r app.R conf global.R JS LICENSE modules R resources UI www $TARGET/GMSWebUI
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
