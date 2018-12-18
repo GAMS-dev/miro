@@ -24,7 +24,11 @@ pipeline {
                         checkout scm
                         withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
                           bat '''
-                            certutil
+                            bitsadmin /Create ncDL
+                            bitsadmin /SetCredentials ncDL DIGEST BASIC %NC_UNAME% %NC_PWD%
+                            bitsadmin /AddFile ncDL https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip %WORKSPACE%\win-lib.zip
+                            bitsadmin /SetPriority ncDL"FOREGROUND"
+                            bitsadmin /Resume ncDL
                           '''
                           unzip zipFile: 'win-lib.zip'
                         }
