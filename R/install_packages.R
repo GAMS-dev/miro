@@ -27,6 +27,11 @@ if(length(newPackages)){
                                                     "withr", "BH", "plogr"),
                        "RSQLite" = c("bit64", "blob", "DBI", "memoise", "pkgconfig", "Rcpp", "BH", "plogr"))
   newPackages <- unique(unlist(c(lapply(newPackages, function(package){packageDepDb[[package]]}), newPackages)))
+  if(identical(getOs()[[1L]], "windows")){
+    binFileExt <- "_.*\\.zip$"
+  }else{
+    binFileExt <- "_.*\\.tgz$"
+  }
   for(pkg_name in newPackages){
     if(pkg_name %in% installed.packages(lib.loc = RLibPath)[, "Package"]){
       next
@@ -34,7 +39,7 @@ if(length(newPackages)){
     tryCatch({
       if(!is.null(RLibPath)){
         pkg_path <- NULL
-        try(pkg_path <- list.files(RLibPath, paste0("^", pkg_name, "_.*\\.zip$"), 
+        try(pkg_path <- list.files(RLibPath, paste0("^", pkg_name, binFileExt), 
                                    full.names = TRUE, recursive = TRUE))
         if(length(pkg_path)){
           install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
@@ -54,6 +59,7 @@ if(length(newPackages)){
   }
   options(install.packages.check.source = checkSourceDefault)
   rm(checkSourceDefault) 
+  rm(binFileExt)
 }
 
 tryCatch({
