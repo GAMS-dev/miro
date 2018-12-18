@@ -29,6 +29,7 @@ output$btBatchAll <- downloadHandler(
     do.call(file.remove, list(list.files(paste0(homeDir, .Platform$file.sep, modelDir), pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
+    removeModal()
     zip(file, list.files(recursive = TRUE), compression_level = 6)
     # END EPIGRIDS specific
   },
@@ -62,7 +63,7 @@ output$btBatchNew <- downloadHandler(
     file.copy(paste0(homeDir, .Platform$file.sep, modelDir) %+% "batch_submission.gms", workDirBatch)
     do.call(file.remove, list(list.files(paste0(homeDir, .Platform$file.sep, modelDir), pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
-    
+    removeModal()
     zip(file, list.files(recursive = TRUE), compression_level = 6)
     # END EPIGRIDS specific
   },

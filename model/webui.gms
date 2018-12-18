@@ -672,9 +672,9 @@ if(RLibPath == ""){{
 if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
   checkSourceDefault <- getOption("install.packages.check.source")
   options(install.packages.check.source = "no")
-  newPackages <- c("methods", "utils", "grDevices", "httpuv", "mime", 
+  newPackages <- c("httpuv", "mime", 
                    "jsonlite", "xtable", "digest", "htmltools", "R6", 
-                   "sourcetools", "later", "promises", "tools", "crayon", "rlang", "shiny")
+                   "sourcetools", "later", "promises", "crayon", "rlang", "shiny")
   for(pkg_name in newPackages){{
     if(!is.null(RLibPath)){{
       pkg_path <- NULL
