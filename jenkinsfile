@@ -24,10 +24,11 @@ pipeline {
                         checkout scm
                         withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
                           bat '''
-                            curl -u %NC_UNAME%:%NC_PWD% -X GET https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip --output win-lib.zip
+                            wget --user %NC_UNAME% --password %NC_PWD% https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip -OutFile win-lib.zip
                             unzip win-lib.zip -d library
-                            rm win-lib.zip
+                            del win-lib.zip
                           '''
+                          Unzip "win-lib.zip"
                         }
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
@@ -49,7 +50,7 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
-                          bat '''
+                          sh '''
                             curl -u $NC_UNAME:$NC_PWD -X GET https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/mac-lib.zip --output mac-lib.zip
                             unzip mac-lib.zip -d library
                             rm mac-lib.zip
