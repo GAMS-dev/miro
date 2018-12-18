@@ -502,7 +502,7 @@ if(is.null(errMsg)){
     })
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
-          && identical(modelIn[[i]]$slider$single, TRUE)) 
+          && identical(modelIn[[i]]$slider$double, TRUE)) 
          || (modelIn[[i]]$type %in% c("daterange", "dropdown"))){
         ""
       }else{
