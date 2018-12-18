@@ -23,21 +23,21 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout scm
                         withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
-                          bat '''
-                            $user = '%NC_UNAME%'
-                            $pass = '%NC_PWD%'
-                            $pair = "$($user):$($pass)"
-                            
-                            $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
-                            
-                            $basicAuthValue = "Basic $encodedCreds"
-                            
-                            $Headers = @{
-                                Authorization = $basicAuthValue
-                            }
-                            
-                            Invoke-WebRequest -Uri 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip' -Headers $Headers -OutFile win-lib.zip
-                          '''
+                          def stdout = powershell(returnStdout: true, script: '''
+                              $user = '%NC_UNAME%'
+                              $pass = '%NC_PWD%'
+                              $pair = "$($user):$($pass)"
+                              
+                              $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+                              
+                              $basicAuthValue = "Basic $encodedCreds"
+                              
+                              $Headers = @{
+                                  Authorization = $basicAuthValue
+                              }
+                              Invoke-WebRequest -Uri 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip' -Headers $Headers -OutFile win-lib.zip
+                          ''')
+                          println stdout
                           unzip zipFile: 'win-lib.zip'
                         }
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
