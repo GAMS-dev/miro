@@ -675,7 +675,7 @@ if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
   newPackages <- c("httpuv", "mime", 
                    "jsonlite", "xtable", "digest", "htmltools", "R6", 
                    "sourcetools", "later", "promises", "crayon", "rlang", "shiny")
-  if(identical(getOS()[[1L]], "windows")){{
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){{
     binFileExt <- "_.*\\\\.zip$"
   }}else{{
     binFileExt <- "_.*\\\\.tgz$"
