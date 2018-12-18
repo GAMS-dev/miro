@@ -22,16 +22,8 @@ pipeline {
                     node('windowsX64') {
                         step([$class: 'WsCleanup'])
                         checkout scm
-                        withCredentials([usernamePassword(credentialsId: '87aa5869-00f2-4cce-88af-dafe0e29e813', passwordVariable: 'NC_PWD', usernameVariable: 'NC_UNAME')]) {
-                          bat '''
-                            curl 
-                            wget
-                          '''
-                          unzip zipFile: 'win-lib.zip'
-                        }
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
-                                del win-lib.zip
                                 for /f "tokens=*" %%i in ('findstr /B /C:"webuiVersion <-" app.R') do set WEBUI_VERSION=%%i
                                 set WEBUI_VERSION=%WEBUI_VERSION:webuiVersion <- =%
                                 iscc "installer\\win\\setup_win.iss" /DMyAppVersion=%WEBUI_VERSION%
