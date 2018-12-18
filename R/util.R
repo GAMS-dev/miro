@@ -743,13 +743,8 @@ plotlyOutput_spinner <- function(...){
 }
 
 getNoLinesInFile <- function(filePath){
-  if(identical(tolower(getOS()[[1L]]), "windows")){
-    as.integer(strsplit(trimws(system2("find", c("/c", "/v", "$$$$$$$$$$$$$$$$$$$$$$$", filePath), 
-                                stdout = TRUE, stderr = TRUE)[[1]]), " ", fixed = TRUE)[[1]][[1]])
-  }else{
-    as.integer(strsplit(trimws(system2("wc", c("-l", filePath), stdout = TRUE, stderr = TRUE)[[1]]),
-                        " ", fixed = TRUE)[[1]][[1]])
-  }
+  as.integer(strsplit(trimws(system2("wc", c("-l", filePath), stdout = TRUE, stderr = TRUE)[[1]]),
+                      " ", fixed = TRUE)[[1]][[1]])
 }
 downloadHandlerError <- function(file, msg = "Some error occurred trying to download this file."){
   return(writeLines(msg, file))
