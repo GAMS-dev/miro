@@ -26,7 +26,7 @@ pipeline {
                           bat '''
                             bitsadmin /Create ncDL
                             bitsadmin /SetCredentials ncDL DIGEST BASIC %NC_UNAME% %NC_PWD%
-                            bitsadmin /AddFile ncDL https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip %WORKSPACE%\win-lib.zip
+                            bitsadmin /AddFile ncDL https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/win-lib.zip %cd%\win-lib.zip
                             bitsadmin /SetPriority ncDL"FOREGROUND"
                             bitsadmin /Resume ncDL
                           '''
