@@ -65,7 +65,7 @@ pipeline {
                             mkdir $TARGET/GMSWebUI
                             mkdir $TARGET/inclib
 
-                            cp -r app.R conf global.R JS LICENSE modules R resources UI www $TARGET/GMSWebUI
+                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www $TARGET/GMSWebUI
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
