@@ -16,6 +16,7 @@ gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
 gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
   names(el$headers)
 })
+gmsFileHeaders[[scalarsFileName]] <- scalarsFileHeaders
 
 disableEl(session, "#btUploadBatch")
 
