@@ -5,7 +5,7 @@
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
-				"tool"      			: "dygraph",
+				"tool"      			: "dygraphs",
 				"title"     			: "Stock prices over time (year: 2016)",
 				"color"					: "stockSymbol",
 				"dyOptions"				:{
@@ -75,7 +75,7 @@
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
-				"tool"      			: "dygraph",
+				"tool"      			: "dygraphs",
 				"title"     			: "Dow Jones vs. Index Fund",
 				"dyOptions"				:{
 					"includeZero"			: false,

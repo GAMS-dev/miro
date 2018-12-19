@@ -44,10 +44,10 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "DT", "processx", 
+requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
-                      "plotly", "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "dygraphs", "xts", "zip", "tidyr")
+                      "jsonlite", "jsonvalidate", "rpivotTable", 
+                      "futile.logger", "zip", "tidyr")
 
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
@@ -80,7 +80,9 @@ if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "GMSWebUI",
 
 }else{
   RLibPath = paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, "library") 
+  assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
+installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.6, label= "Initialising GAMS WebUI")
@@ -160,7 +162,7 @@ if(is.null(errMsg)){
                                      format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log"))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
-
+  installPackage <- list()
   if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
@@ -174,6 +176,14 @@ if(is.null(errMsg)){
   # load default and custom renderers (output data)
   customRendererDirs <<- paste0(c(modelDir, currentModelDir), customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
+ 
+  requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
+                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs")) 
+  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
+    requiredPackages <- c(requiredPackages, "DT")
+  }
+  source("./R/install_packages.R", local = TRUE)
+  
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
       tryCatch({
@@ -411,6 +421,7 @@ if(!is.null(errMsg)){
   shinyApp(ui = ui_initError, server = server_initError)
   
 }else{
+  rm(installedPackages)
   if(developMode){
     save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
@@ -594,7 +605,7 @@ if(!is.null(errMsg)){
                                    Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>
                                    This program is free software: you can redistribute it and/or modify 
                                    it under the terms of the GNU General Public License as published by
-                                   the Free Software Foundation, either version 3 of the License, or 
+                                   the Free Software Foundation, either version 2 of the License, or 
                                    (at your option) any later version.<br/><br/>
                                    This program is distributed in the hope that it will be useful, 
                                    but WITHOUT ANY WARRANTY; without even the implied warranty of
