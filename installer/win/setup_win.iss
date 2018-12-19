@@ -41,7 +41,7 @@ Name: "examples"; Description: "Sample Models"; Types: full
 Source: "../../LICENSE"; Flags: dontcopy noencryption
 Source: "default.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
-Source: "../../libraries/windows/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
+; Source: "../../library/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../conf/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../JS/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../modules/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
