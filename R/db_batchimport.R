@@ -333,7 +333,7 @@ BatchImport <- R6Class("BatchImport",
                                    colTypes <- private$gmsColTypes[[scenDataNames[[i]]]]
                                  }
                                  scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
-                                                        col_types = cols())
+                                                        col_types = if(is.null(colTypes)) cols() else colTypes)
                                  scenData[is.na(scenData)] <- 0L
                                  
                                  if(!is.null(colTypes)){
