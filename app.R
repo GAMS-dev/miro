@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.7.5"
-webuiRDate   <- "Dec 13 2018"
+webuiVersion <- "0.2.7.6"
+webuiRDate   <- "Dec 20 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -594,7 +594,7 @@ if(!is.null(errMsg)){
                                    Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>
                                    This program is free software: you can redistribute it and/or modify 
                                    it under the terms of the GNU General Public License as published by
-                                   the Free Software Foundation, either version 3 of the License, or 
+                                   the Free Software Foundation, either version 2 of the License, or 
                                    (at your option) any later version.<br/><br/>
                                    This program is distributed in the hope that it will be useful, 
                                    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -602,10 +602,7 @@ if(!is.null(errMsg)){
                                    GNU General Public License for more details.<br/><br/>
                                    You should have received a copy of the GNU General Public License 
                                    along with this program. If not, see 
-                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.<br/><br/>
-                                   The source code of the program can be accessed at 
-                                   <a href=\"https://github.com/GAMS-dev/webui\" target=\"_blank\">
-                                   https://github.com/GAMS-dev/webui/</a>.")),
+                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.")),
                             title = "About GAMS WebUI"))
     })
     

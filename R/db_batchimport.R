@@ -213,7 +213,7 @@ BatchImport <- R6Class("BatchImport",
                            
                            # export metadata to reserve scenario ids
                            numberScen <- length(scenData)
-                           metadataTable <- data.frame(rep.int(uid, numberScen), names(scenData), 
+                           metadataTable <- data.frame(rep.int(private$uid, numberScen), names(scenData), 
                                                        rep.int(1, numberScen), rep.int(batchTags, numberScen), 
                                                        rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
                                                        stringsAsFactors = FALSE)
@@ -333,7 +333,7 @@ BatchImport <- R6Class("BatchImport",
                                    colTypes <- private$gmsColTypes[[scenDataNames[[i]]]]
                                  }
                                  scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
-                                                        col_types = if(is.null(colTypes)) cols() else colTypes)
+                                                        col_types = cols())
                                  scenData[is.na(scenData)] <- 0L
                                  
                                  if(!is.null(colTypes)){

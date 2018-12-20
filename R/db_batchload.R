@@ -193,8 +193,10 @@ BatchLoad <- R6Class("BatchLoad",
                                              "\n*\n* SOLVER,\n* TIMELIMIT,3600\n* NODELIMIT,2100000000\n* GAPLIMIT,0"), con = paverFile)
                            close(paverFile)
                            paverData      <- private$db$importDataset(private$tableNameTrace, 
-                                                                      subsetSids = private$groupedSids[[i]])[-1]
-                           paverData[[1]] <- private$groupedNames[[i]]
+                                                                      subsetSids = private$groupedSids[[i]])
+                           groupedNames   <- private$groupedNames[[i]][private$groupedSids[[i]] %in% paverData[[1]]]
+                           paverData      <- paverData[-1L]
+                           paverData[[1]] <- groupedNames
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
                            if(length(exclTraceCols)){
                              paverData[, exclTraceCols] <- NULL
