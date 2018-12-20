@@ -81,6 +81,8 @@ pipeline {
                             
                             # TODO(AF): Strange error message try to fix
                             #hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
+                            
+                            gzip -9 $DMG_NAME
                         '''
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
                     }
