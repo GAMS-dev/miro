@@ -53,7 +53,8 @@ pipeline {
                             DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
                             echo $DMG_NAME
                             cd installer/macOS
-                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg $DMG_NAME
+                            gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
+                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSWebUI.dmg
                             cd ../..
 
                             DMG_ROOT=volume
@@ -65,7 +66,7 @@ pipeline {
                             mkdir $TARGET/GMSWebUI
                             mkdir $TARGET/inclib
 
-                            cp -r app.R conf global.R JS LICENSE modules R resources UI www $TARGET/GMSWebUI
+                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www $TARGET/GMSWebUI
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
@@ -77,6 +78,9 @@ pipeline {
                             # Probabaly we should update to Mojave or change the DMG fs to '-fs HFS+ -format UDRW'.
                             # If we do the latter we have of better coverage of older macOS versions.
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
+                            
+                            # TODO(AF): Strange error message try to fix
+                            #hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
                         '''
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
                     }
