@@ -53,7 +53,8 @@ pipeline {
                             DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
                             echo $DMG_NAME
                             cd installer/macOS
-                            gzip -d GAMSWebUI.dmg.gz && mv GAMSWebUI.dmg $DMG_NAME
+                            gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
+                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSWebUI.dmg
                             cd ../..
 
                             DMG_ROOT=volume
