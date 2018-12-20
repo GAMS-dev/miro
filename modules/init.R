@@ -663,7 +663,7 @@ modelInAlias[i], " does not match the number of choices with dependencies.
                if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
                   !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
                  warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
-"but has incorrect headers. The headers were adjusted accordingly."))
+"but has incorrect headers. The headers were adjusted accordingly."), call. = FALSE)
                  names(modelIn[[i]]$headers) <- scalarsFileHeaders
                }
                if(identical(modelIn[[i]]$sharedData, TRUE)){

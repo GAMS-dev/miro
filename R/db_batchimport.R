@@ -213,7 +213,7 @@ BatchImport <- R6Class("BatchImport",
                            
                            # export metadata to reserve scenario ids
                            numberScen <- length(scenData)
-                           metadataTable <- data.frame(rep.int(uid, numberScen), names(scenData), 
+                           metadataTable <- data.frame(rep.int(private$uid, numberScen), names(scenData), 
                                                        rep.int(1, numberScen), rep.int(batchTags, numberScen), 
                                                        rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
                                                        stringsAsFactors = FALSE)
