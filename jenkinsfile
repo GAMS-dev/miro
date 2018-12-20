@@ -79,7 +79,7 @@ pipeline {
                             # If we do the latter we have of better coverage of older macOS versions.
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
                             mv $DMG_NAME GAMSWebUI-uc.dmg
-                            hdiutil convert -verbose -format UDBZ -o $DMG_NAME GAMSWebUI-uc.dmg
+                            hdiutil convert -verbose -format UDZO -o $DMG_NAME GAMSWebUI-uc.dmg
                             rm GAMSWebUI-uc.dmg
                         '''
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
