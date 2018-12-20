@@ -87,6 +87,9 @@ animation: none !important;
   margin-bottom: 5px;
   font-weight: 700;
 }
+.control-label{
+  width: 100%;
+}
 .attachment-line .shiny-input-container{
   margin:0;
 }

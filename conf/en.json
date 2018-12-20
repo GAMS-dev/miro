@@ -267,7 +267,7 @@
       },
       "exceedMaxNoDialog":{
         "title": "Maximum number scenarios exceeded",
-        "desc": "You have selected to solve %d scenarios for your batch run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
+        "desc": "You have selected to solve %e scenarios for your batch run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
       },
       "noScenSelectedDialog":{
         "title": "No scenarios selected",
