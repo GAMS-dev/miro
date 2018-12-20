@@ -78,7 +78,9 @@ pipeline {
                             # Probabaly we should update to Mojave or change the DMG fs to '-fs HFS+ -format UDRW'.
                             # If we do the latter we have of better coverage of older macOS versions.
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
-                            hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
+                            
+                            # TODO(AF): Strange error message try to fix
+                            #hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
                         '''
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
                     }
