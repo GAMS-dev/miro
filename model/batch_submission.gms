@@ -127,7 +127,7 @@ if outScript == "gams":
       # scalars.csv file manually filled (needed in webui for data validation)
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + " " + "--webui=1 idir = ..%system.dirsep%..%system.dirsep%model%system.dirsep% ".strip() + modelpath + " " + "idir2 = ..%system.dirsep%..%system.dirsep% ".strip() + datapath + "\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + " " + "--webui=1 idir = \"..%system.dirsep%..%system.dirsep%model%system.dirsep% ".strip() + modelpath + "\" " + "idir2 = \"..%system.dirsep%..%system.dirsep% ".strip() + datapath + "\" lo=3\n"      
       linestmp += "$call cd " + zipname + " \n$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
    

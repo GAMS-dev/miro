@@ -91,7 +91,7 @@ body <- dashboardBody({
                                  if(modelIn[[i]]$type == "hot"){
                                    rHandsontableOutput(paste0("in_", i))
                                  }else{
-                                   DTOutput(paste0("in_", i))
+                                   dataTableOutput(paste0("in_", i))
                                  }
                                }),
                                tags$div(id = paste0("graph-in_", i), class = "render-output", 
@@ -289,7 +289,7 @@ body <- dashboardBody({
                     ),
                     tags$div(id = "loadDiv", class = "loading-input", style = "display:none;", 
                              tags$img(src= "load.gif")),
-                    tags$div(style = "min-height: 80px;", DTOutput("batchLoadResults")),
+                    tags$div(style = "min-height: 80px;", dataTableOutput("batchLoadResults")),
                     tags$div(id = "batchLoadNoData", 
                              style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                              lang$nav$batch_load$noData),

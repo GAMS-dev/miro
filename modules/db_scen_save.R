@@ -19,6 +19,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
     showRemoveExistingOutputDataDialog()
   }else{
     if(saveAsFlag || is.null(isolate(rv$activeSname))){
+      saveAsFlag <<- TRUE
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overrride current scenario data

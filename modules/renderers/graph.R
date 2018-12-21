@@ -78,7 +78,7 @@ renderGraph <- function(data, configData, options, height = NULL){
     
     return(renderPlotly(p))
     
-  }else if(options$tool == 'dygraph'){
+  }else if(options$tool == 'dygraphs'){
     # set defaults
     # time series chart
     p <- NULL
@@ -93,7 +93,7 @@ renderGraph <- function(data, configData, options, height = NULL){
           xts_data <- spread(data, key, value)
           xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
           if(!length(xtsIdx)){
-            stop("No date column could be found in the dataset. If you want to use dygraph make sure you have a date column.", call. = FALSE)
+            stop("No date column could be found in the dataset. If you want to use dygraphs make sure you have a date column.", call. = FALSE)
           }
           xts_idx  <- as.Date(xts_data[[xtsIdx]])
           xts_data <- xts_data[, -c(xtsIdx)]
@@ -157,7 +157,7 @@ renderGraph <- function(data, configData, options, height = NULL){
         p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
       })
     }
-    return(dygraphs::renderDygraph(p))
+    return(renderDygraph(p))
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }

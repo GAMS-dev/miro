@@ -1676,7 +1676,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                           "choice":{
                                             "title": "Choose tool for graph rendering",
                                             "type": "string",
-                                            "enum": ["UsePlotly", "UseDygraph"],
+                                            "enum": ["UsePlotly", "UseDygraphs"],
                                             "required": true
                                          },
                                          "plotly":{
@@ -2039,13 +2039,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                                }
                                             }
                                          },
-                                         "dygraph":{
-                                            "title":"Use Dygraph. Note: Only basic configuration is pre-implemented. For more sophisticated graphic options please refer to https://rstudio.github.io/dygraphs/ and configure the config.json file manually.",
+                                         "dygraphs":{
+                                            "title":"Use Dygraphs. Note: Only basic configuration is pre-implemented. For more sophisticated graphic options please refer to https://rstudio.github.io/dygraphs/ and configure the config.json file manually.",
                                             "type": "object",
                                             "required":false,
                                             "properties":{
                                                "dyOptions":{
-                                                  "title":"dygraph options",
+                                                  "title":"dygraphs options",
                                                   "type": "object",
                                                   "required":false,
                                                   "properties":{
@@ -2310,7 +2310,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                       },
                                       "dependencies": {
                                           "plotly": ["choice"],
-                                          "dygraph": ["choice"]
+                                          "dygraphs": ["choice"]
 
                                 }
                              }
@@ -3161,9 +3161,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                                   "choice": "UsePlotly"
                                                }
                                             },
-                                            "dygraph":{
+                                            "dygraphs":{
                                                 "dependencies":{
-                                                    "choice": "UseDygraph"
+                                                    "choice": "UseDygraphs"
                                                 }
                                             }
 
@@ -3315,11 +3315,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   co.dataRendering[grname].graph.title = co.dataRendering[grname].graphtitle;
                                   delete co.dataRendering[grname].graphtitle;
                                }
-                               //dyGraph
-                               if(co.dataRendering[grname].graph.choice === "UseDygraph"){
-                                  co.dataRendering[grname].graph.tool = "dyGraph";
-                                  $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraph);
-                                  delete co.dataRendering[grname].graph.dygraph;
+                               //dyGraphs
+                               if(co.dataRendering[grname].graph.choice === "UseDygraphs"){
+                                  co.dataRendering[grname].graph.tool = "dyGraphs";
+                                  $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraphs);
+                                  delete co.dataRendering[grname].graph.dygraphs;
                                   //dyEvent object needs a name of GAMS Symbol ("eventdata")
                                   for (var k = 0; k < co.dataRendering[grname].graph.dyEvent.length; k++) {
                                      var eventname = co.dataRendering[grname].graph.dyEvent[k].eventdata;
@@ -3368,8 +3368,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                }
                                delete co.dataRendering[grname].graph.choice;
 
-                               //ydata manipulation for plotly and dygraph: change the name of ydata objects to the "dataname" value
-                               if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraph") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
+                               //ydata manipulation for plotly and dygraphs: change the name of ydata objects to the "dataname" value
+                               if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraphs") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
                                   for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
                                         var yname = co.dataRendering[grname].graph.ydata[j].dataname;
                                         delete co.dataRendering[grname].graph.ydata[j].dataname;
@@ -3766,16 +3766,16 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     dataReqSym.children[j].childrenByPropertyId["dataname"].schema.default = gmsSymHdr[gmsSymName][0];
                     dataReqSym.children[j].refresh();
                   }
-                  let dygraph = graph.children[i].childrenByPropertyId["graph"].childrenByPropertyId["dygraph"];
-                  dataReqSym = dygraph.childrenByPropertyId["color"];
+                  let dygraphs = graph.children[i].childrenByPropertyId["graph"].childrenByPropertyId["dygraphs"];
+                  dataReqSym = dygraphs.childrenByPropertyId["color"];
                   dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
                   dataReqSym.schema.default = gmsSymHdr[gmsSymName][0];
                   dataReqSym.refresh();
-                  dataReqSym = dygraph.childrenByPropertyId["xdata"];
+                  dataReqSym = dygraphs.childrenByPropertyId["xdata"];
                   dataReqSym.schema.enum = dataReqSym.options.optionLabels = gmsSymHdr[gmsSymName];
                   dataReqSym.schema.default = gmsSymHdr[gmsSymName][0];
                   dataReqSym.refresh();
-                  dataReqSym = dygraph.childrenByPropertyId["ydata"];
+                  dataReqSym = dygraphs.childrenByPropertyId["ydata"];
                   dataReqSym.schema.items.properties.dataname.enum = gmsSymHdrIn[gmsSymName];
                   dataReqSym.schema.items.properties.dataname.default = gmsSymHdrIn[gmsSymName][0];
                   for(let j = 0; j < dataReqSym.children.length; j++) {

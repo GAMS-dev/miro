@@ -15,7 +15,7 @@ $offExternalInput
 
 $if not set fileName $set fileName dowjones2016.csv
 $ifthen exist "%gams.wdir%%fileName%"
-$  call csv2gdx "%gams.wdir%%fileName%" output=stockdata.gdx ValueDim=0 id=price Index=(1,2) Value=3 UseHeader=y
+$  call csv2gdx "%gams.wdir%%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $  if errorlevel 1 $abort problems reading CSV data
 $  gdxin stockdata
 $  load date<price.dim1 symbol<price.dim2 price

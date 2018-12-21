@@ -372,24 +372,21 @@ BatchImport <- R6Class("BatchImport",
                          validateTables = function(scenTables, scalarInToVerify, scalarOutToVerify){
                            isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
                              tableName <- tolower(names(scenTables)[tableId])
-                             if(identical(tableName, private$scalarsInputName)){
-                               if(any(!scenTables[[tableId]][[1]] %in% scalarInToVerify)){
-                                 flog.info("Additional elements in table: '%s': '%s'.", 
-                                           tableName, scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarOutToVerify])
+                             if(identical(tableName, private$scalarsInputName) &&
+                                any(!scenTables[[tableId]][[1]] %in% scalarInToVerify)){
+                                 flog.info("Additional elements in input scalar table: '%s'.", 
+                                           scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarOutToVerify])
                                  return(TRUE)
-                               }
-                             }else if(identical(tableName, private$scalarsOutputName)){
-                               if(any(!scenTables[[tableId]][[1]] %in% scalarOutToVerify) || 
-                                  length(scenTables[[tableId]][[1]]) != length(scalarOutToVerify)){
-                                 flog.info("Missing or additional elements in table: '%s'.", 
-                                           tableName)
-                                 return(TRUE)
-                               }
-                             }else if(identical(tableName, private$traceTabName)){
-                               if(length(scenTables[[tableId]]) != length(private$traceColNames)){
-                                 flog.info("Trace file does not have %d columns.", length(private$traceColNames))
-                                 return(TRUE)
-                               }
+                             }else if(identical(tableName, private$scalarsOutputName) &&
+                                      (any(!scenTables[[tableId]][[1]] %in% scalarOutToVerify) || 
+                                      length(scenTables[[tableId]][[1]]) != length(scalarOutToVerify))){
+                               flog.info("Missing or additional elements in output scalar table.")
+                               return(TRUE)
+                             }else if(identical(tableName, private$traceTabName) &&
+                                      length(scenTables[[tableId]]) != length(private$traceColNames)){
+                               flog.info("Trace file does not have %d columns.", 
+                                         length(private$traceColNames))
+                               return(TRUE)
                              }else if(!is.null(private$gmsFileHeaders[[tableName]])){
                                if(!validateHeaders(names(scenTables[[tableId]]), 
                                                   private$gmsFileHeaders[[tableName]])){
