@@ -236,7 +236,7 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
-      if(!is.null(widgetConfig$readonly)){
+      if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig$readonly
         widgetConfig$readonly  <- NULL
       }
@@ -251,6 +251,7 @@ if(is.null(errMsg)){
             break
           }
         }
+        
       }
       config$inputWidgets[[el]] <- NULL
     }

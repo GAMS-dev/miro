@@ -3,6 +3,12 @@
     "aggregateWidgets"    : {
        "title"    : "Parameters"
     },
+    "inputWidgets":{
+      "price":{
+        "widgetType": "table",
+        "readonlyCols": ["date"]
+      }
+    },
     "dataRendering"      : {
 		"price"   	: {
 			"outType"               : "graph",
