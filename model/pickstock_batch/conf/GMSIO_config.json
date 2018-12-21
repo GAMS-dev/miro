@@ -1,0 +1,116 @@
+{
+    "pageTitle": "Stock Selection Optimization",
+    "gamsMetaDelim": "###",
+    "gamsWEBUISwitch": "--WEBUI=1",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "price": {
+            "alias": "Price",
+            "headers": {
+                "date": {
+                    "type": "set"
+                },
+                "stockSymbol": {
+                    "type": "set"
+                },
+                "Price": {
+                    "type": "parameter"
+                }
+            },
+            "readonly": true
+        },
+        "maxstock": {
+            "alias": "maximum number of stocks to select",
+            "slider": {
+                "label": "maximum number of stocks to select",
+                "min": 1,
+                "max": "card(price$stocksymbol)",
+                "default": 5,
+                "step": 1
+            }
+        },
+        "trainingdays": {
+            "alias": "number of days for training",
+            "slider": {
+                "label": "number of days for training",
+                "min": 1,
+                "max": "card(price$date)",
+                "default": 99,
+                "step": 1
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "partofportfolio": {
+            "alias": "what part of the portfolio",
+            "headers": {
+                "stockSymbol": {
+                    "type": "set"
+                },
+                "what part of the portfolio": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "dowvsindex": {
+            "alias": "dow jones vs. index fund",
+            "headers": {
+                "date": {
+                    "type": "set"
+                },
+                "dow jones": {
+                    "type": "parameter"
+                },
+                "index fund": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "abserror": {
+            "alias": "absolute error",
+            "headers": {
+                "date": {
+                    "type": "set"
+                },
+                "absolute error train": {
+                    "type": "parameter"
+                },
+                "absolute error test": {
+                    "type": "parameter"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Output Scalars",
+            "hidden": true,
+            "symnames": [
+                "fHdr",
+                "errHdr",
+                "lastDayTraining"
+            ],
+            "symtext": [
+                "fund header",
+                "stock symbol header",
+                "last date of training period"
+            ],
+            "symtypes": [
+                "set",
+                "set",
+                "set"
+            ],
+            "count": 3,
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
+            }
+        }
+    }
+}
