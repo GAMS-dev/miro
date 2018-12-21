@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.7.6"
-webuiRDate   <- "Dec 20 2018"
+webuiVersion <- "0.2.7.7"
+webuiRDate   <- "Dec 21 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -142,7 +142,7 @@ if(is.null(errMsg)){
       errMsg <- "No user ID specified (shinyproxy)."
     }
     ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
-    if(is.null(ugroups) || grepl("^\\s*$", ugroups)){
+    if(!length(ugroups) || grepl("^\\s*$", ugroups)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
   }else{
@@ -174,7 +174,8 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
-  customRendererDirs <<- paste0(c(modelDir, currentModelDir), customRendererDirName, .Platform$file.sep)
+  customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
+                                  currentModelDir), customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
