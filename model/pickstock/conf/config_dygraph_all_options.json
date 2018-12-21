@@ -5,7 +5,7 @@
 			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
-				"tool"      			: "dygraph",
+				"tool"      			: "dygraphs",
 				"type"      			: "timeseries",
 				"title"     			: "Stock prices over time (year: 2016)",
 				"color"					: "stockSymbol",

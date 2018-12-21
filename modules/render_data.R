@@ -12,19 +12,19 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }
     data <- rpivotTableOutput(ns("pivottable"), height = height)
   }else if(type == "datatable"){
-    data <- DT::dataTableOutput(ns("datatable"))
+    data <- dataTableOutput(ns("datatable"))
   }else if(type == "dtgraph"){
     if(graphTool == "plotly"){
       data <- tagList(
         fluidRow(
-          column(6, DT::dataTableOutput(ns("datatable"), height = height)),
+          column(6, dataTableOutput(ns("datatable"))),
           column(6, plotlyOutput(ns("graph"), height = height))
         )
       )
-    }else if(graphTool == "dygraph"){
+    }else if(graphTool == "dygraphs"){
       data <- tagList(
         fluidRow(
-          column(6, DT::dataTableOutput(ns("datatable"), height = height)),
+          column(6, dataTableOutput(ns("datatable"))),
           column(6, dygraphOutput(ns("graph"), height = height))
         )
       )
@@ -34,7 +34,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   }else if(type == "graph"){
     if(graphTool == "plotly"){
       data <- plotlyOutput(ns("graph"), height = height)
-    }else if(graphTool == "dygraph"){
+    }else if(graphTool == "dygraphs"){
       data <- dygraphOutput(ns("graph"), height = height)
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))

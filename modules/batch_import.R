@@ -13,9 +13,11 @@ if(scalarsOutName %in% names(modelOut)){
 }
 gmsColTypes <- unlist(lapply(c(modelIn, modelOut), "[[", "colTypes"))
 gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
+gmsColTypes[[scalarsFileName]] <- "ccc"
 gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
   names(el$headers)
 })
+gmsFileHeaders[[scalarsFileName]] <- scalarsFileHeaders
 
 disableEl(session, "#btUploadBatch")
 

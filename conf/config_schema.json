@@ -823,7 +823,7 @@
                               "type":"string",
                               "enum":[  
                                  "plotly",
-                                 "dygraph"
+                                 "dygraphs"
                               ],
                               "required":true
                            }

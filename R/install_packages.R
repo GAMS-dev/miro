@@ -1,38 +1,42 @@
-newPackages <- requiredPackages[!(requiredPackages %in% 
-                                    installed.packages(lib.loc = RLibPath)[, "Package"])]
+newPackages <- requiredPackages[!requiredPackages %in% installedPackages]
 if(length(newPackages)){
   checkSourceDefault <- getOption("install.packages.check.source")
   options(install.packages.check.source = "no")
   packageDepDb <- list("R6" = c(), "stringi" = c(),
                        "shiny" = c("httpuv", "mime", 
                                    "jsonlite", "xtable", "digest", "htmltools", "R6", 
-                                   "sourcetools", "later", "promises", "crayon", "rlang"),
+                                   "sourcetools", "later", "promises", "crayon", "rlang", 
+                                   "Rcpp", "BH", "magrittr"),
                        "shinydashboard" = c("shiny", "htmltools", "promises"),
-                       "DT" = c("htmltools", "htmlwidgets", "magrittr", "crosstalk"),
-                       "processx" = c("assertthat", "crayon", "ps", "R6"),
+                       "processx" = c("ps", "R6"),
                        "V8" = c("Rcpp", "jsonlite", "curl"), 
                        "dplyr" = c("assertthat", "bindrcpp", "glue", "magrittr", "pkgconfig",
-                                   "R6", "Rcpp", "rlang", "tibble"), "readr" = c("Rcpp", "tibble", "hms", "R6", "BH"),
-                       "readxl" = c("cellranger", "Rcpp", "tibble"), "writexl" = c(), 
-                       "rhandsontable" = c("jsonlite", "htmlwidgets", "magrittr"),
-                       "plotly" = c("ggplot2", "scales", "httr", "jsonlite", "magrittr", "digest", "viridisLite", "base64enc",
-                                    "htmltools", "htmlwidgets", "tidyr", "hexbin", "RColorBrewer", "dplyr", "tibble", "lazyeval", "rlang",
-                                    "crosstalk", "purrr", "data.table", "promises"),
-                       "jsonlite" = c(), "jsonvalidate" = c("V8"), "rpivotTable" = c("htmlwidgets"),
-                       "futile.logger" = c("lambda.r", "futile.options"), "dygraphs" = c("magrittr", "htmlwidgets", 
-                                                                                         "htmltools", "zoo", "xts"),
-                       "xts" = c("zoo"), "zip" = c(), "tidyr" = c("dplyr", "glue", "magrittr", "purrr", "Rcpp", "rlang", 
-                                                                  "stringi", "tibble", "tidyselect"),
-                       "DBI" = c(), "RPostgres" = c("bit64", "blob", "DBI", "hms", "Rcpp", 
-                                                    "withr", "BH", "plogr"),
-                       "RSQLite" = c("bit64", "blob", "DBI", "memoise", "pkgconfig", "Rcpp", "BH", "plogr"))
-  newPackages <- unique(unlist(c(lapply(newPackages, function(package){packageDepDb[[package]]}), newPackages)))
+                                   "R6", "Rcpp", "rlang", "tibble", "tidyselect", "BH", "plogr",
+                                   "bindr", "cli", "crayon", "pillar", "purrr", "fansi", "utf8"), 
+                       "readr" = c("Rcpp", "tibble", "hms", "R6", "clipr", "BH", "pkgconfig",
+                                   "rlang", "cli", "crayon", "pillar", "assertthat", "fansi",
+                                   "utf8"),
+                       "readxl" = c("cellranger", "Rcpp", "tibble", "rematch", "cli", "crayon",
+                                    "pillar", "rlang", "assertthat", "fansi", "utf8"), 
+                       "writexl" = c(), 
+                       "rhandsontable" = c("jsonlite", "htmlwidgets", "magrittr", "htmltools", "yaml",
+                                           "digest", "Rcpp"),
+                       "jsonlite" = c(), "jsonvalidate" = c("V8", "Rcpp", "jsonlite", "curl"), 
+                       "rpivotTable" = c("htmlwidgets", "jsonlite", "yaml", "digest", "Rcpp"),
+                       "futile.logger" = c("lambda.r", "futile.options", "formatR"),
+                       "zip" = c(), "tidyr" = c("dplyr", "glue", "magrittr", "purrr", "Rcpp", "rlang", 
+                                                "stringi", "tibble", "tidyselect", "assertthat", 
+                                                "bindrcpp", "pkgconfig", "R6", "BH", "plogr", "cli",
+                                                "crayon", "pillar", "bindr", "fansi", "utf8"),
+                       "DBI" = c())
+  newPackages <- unique(unlist(lapply(newPackages, function(package){c(package, packageDepDb[[package]])})))
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
     binFileExt <- "_.*\\.zip$"
   }else{
-    binFileExt <- "_.*\\.tgz$"
+    binFileExt <- "_.*\\.(tgz|tar)$"
   }
   for(pkg_name in newPackages){
+    print(paste0("Installing: ", pkg_name))
     if(pkg_name %in% installed.packages(lib.loc = RLibPath)[, "Package"]){
       next
     }
@@ -48,7 +52,8 @@ if(length(newPackages)){
         }
       }
       
-      install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], repos = CRANMirror, dependencies = TRUE)
+      install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], 
+                       repos = CRANMirror, dependencies = c("Depends", "Imports"))
     }, error = function(e){
       if(exists("flog.fatal")){
         flog.fatal("Problems installing required R packages. Error message: %s.", e)
@@ -65,7 +70,8 @@ if(length(newPackages)){
 tryCatch({
   suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
                           quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath))
-}, error = function(e){
+
+  }, error = function(e){
   if(exists("flog.fatal")){
     flog.fatal("Problems loading required R packages. Error message: %s.", e)
   }
