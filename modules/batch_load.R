@@ -303,11 +303,19 @@ observeEvent(input$btSendQuery, {
   hideEl(session, "#loadDiv")
   enableEl(session, "#btSendQuery")
 })
-output$batchLoadResults <- renderDataTable({
-  if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
-    rv$fetchedScenarios[, -1]
-  }
-}, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE)
+if("DT" %in% (.packages())){
+  output$batchLoadResults <- renderDataTable({
+    if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
+      rv$fetchedScenarios[, -1]
+    }
+  }, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE)
+}else{
+  output$batchLoadResults <- renderDataTable({
+    if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
+      rv$fetchedScenarios[, -1]
+    }
+  }, options = list(filter = "bottom", colnames = names(fields)[-1], rownames = FALSE))
+}
 
 observeEvent(input$batchLoadSelected, {
   flog.debug("Button to load selected scenarios (batch load) clicked.")

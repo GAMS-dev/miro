@@ -16,7 +16,7 @@ output$btBatchAll <- downloadHandler(
     workDirBatch <- workDir %+% "batch"
     unlink(workDirBatch, recursive = TRUE, force = TRUE)
     dir.create(workDirBatch, showWarnings = FALSE, recursive = TRUE)
-    homeDir <- getwd()
+    homeDir <- paste0(currentModelDir, "..", .Platform$file.sep)
     setwd(workDirBatch)
     on.exit(setwd(homeDir), add = TRUE)
     on.exit(unlink(workDirBatch), add = TRUE)
@@ -51,7 +51,7 @@ output$btBatchNew <- downloadHandler(
     workDirBatch <- workDir %+% "batch"
     unlink(workDirBatch, recursive = TRUE, force = TRUE)
     dir.create(workDirBatch, showWarnings = FALSE, recursive = TRUE)
-    homeDir <- getwd()
+    homeDir <- paste0(currentModelDir, "..", .Platform$file.sep)
     setwd(workDirBatch)
     on.exit(setwd(homeDir), add = TRUE)
     on.exit(unlink(workDirBatch), add = TRUE)
