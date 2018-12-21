@@ -47,6 +47,13 @@ from shlex import quote
 
 def extractSymText(sym, leavehash=0):
    text = sym.text
+   aliasIdentifier = 'Aliased with '
+   if text.startswith(aliasIdentifier):
+      aliasedSet = text[len(aliasIdentifier):]
+      try:
+         db[aliasedSet].text
+      except:
+         pass
    input_tag = 'UIInput:'
    uii = len(input_tag)
    output_tag = 'UIOutput:'

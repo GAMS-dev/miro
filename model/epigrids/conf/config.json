@@ -243,7 +243,8 @@
           "widgetType":"dropdown",
           "label": "Choose a method for generating initial conditions, i.e. NLP starting point [ic] (iv_acopf, polar_acopf, rect_acopf, ybus_iv_acopf, ybus_polar_acopf, ybus_rect_acopf)",
           "aliases": ["_","1: Random","2: Flat","3: Random/AC","4: DC/AC","5: DC-/AC","6: Decoupled","7: DCLoss","8: Matpower","9: inputFile"],
-          "choices": ["_",1,2,3,4,5,6,7,8,9]
+          "choices": ["_",1,2,3,4,5,6,7,8,9],
+          "selected": "_"
        },
        "GMSOPT_nlp": {
           "alias": "nlp-Solver",

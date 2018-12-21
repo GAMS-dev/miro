@@ -84,6 +84,29 @@ these components are included below):
 - data.table https://github.com/Rdatatable/data.table or https://cran.r-project.org/web/packages/data.table/index.html
 - zoo https://github.com/cran/zoo or https://cran.r-project.org/web/packages/zoo/index.html
 
+- leaflet https://github.com/rstudio/leaflet or  https://cran.r-project.org/web/packages/leaflet/index.html
+- markdown https://github.com/rstudio/markdown or https://cran.r-project.org/web/packages/markdown/index.html
+- png https://github.com/s-u/png or https://cran.r-project.org/web/packages/png/index.html 
+- raster https://github.com/rspatial/raster or https://cran.r-project.org/web/packages/raster/index.html
+- sp https://github.com/edzer/sp/ or https://cran.r-project.org/web/packages/sp/index.html
+- viridis https://github.com/sjmgarnier/viridis or https://cran.r-project.org/web/packages/viridis/index.html
+- leaflet.minicharts https://github.com/cran/leaflet.minicharts or https://cran.r-project.org/web/packages/leaflet.minicharts/index.html
+- labeling https://github.com/cran/labeling or https://cran.r-project.org/web/packages/labeling/index.html
+- munsell https://github.com/cwickham/munsell/ or https://cran.r-project.org/web/packages/munsell/index.html
+- graphics https://github.com/zenspider/graphics or https://cran.r-project.org/web/packages/RGraphics/index.html
+- stringr, https://github.com/tidyverse/stringr/ or https://cran.r-project.org/web/packages/stringr/index.html
+- reshape2, https://github.com/hadley/reshape/ or https://cran.r-project.org/web/packages/reshape2/index.html
+- Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
+- nlme, https://cran.r-project.org/web/packages/nlme/index.html
+- BH, https://cran.r-project.org/web/packages/BH/index.html
+- colorspace, https://cran.r-project.org/web/packages/colorspace/index.html
+- plyr, https://github.com/hadley/plyr/ or https://cran.r-project.org/web/packages/plyr/index.html
+- mgcv, https://cran.r-project.org/web/packages/mgcv/index.html
+- MASS, https://cran.r-project.org/web/packages/MASS/index.html
+- gtable, https://cran.r-project.org/web/packages/gtable/index.html
+- gridExtra, https://cran.r-project.org/web/packages/gridExtra/index.html
+- lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
+
 -----------------------------------------------------------------------------
                         The MIT License (MIT)
         applies to: 
@@ -125,6 +148,11 @@ these components are included below):
         - scales, Copyright (c) 2010-2016 Hadley Wickham
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
+        - viridis, Copyright (c) 2015 Simon Garnier
+        - labeling, Copyright (c) 2014 Justin Talbot
+        - munsell, Copyright (c) 2016 Charlotte Wickham
+        - reshape2, Copyright (c) 2008-2016 Hadley Wickham
+        - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
 
@@ -181,6 +209,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         - hexbin, Copyright (c) Dan Carr, 
             ported by Nicholas Lewin-Koh and Martin Maechler, 
             contains copies of lattice functions written by Deepayan Sarkar
+        - markdown, Copyright (c) JJ Allaire [aut], Jeffrey Horner [aut], 
+            Yihui Xie ORCID iD [aut, cre], Henrik Bengtsson [ctb], Jim Hester [ctb], 
+            Yixuan Qiu [ctb], Kohske Takahashi [ctb], Adam November [ctb], 
+            Nacho Caballero [ctb], Jeroen Ooms [ctb], Thomas Leeper [ctb], 
+            Joe Cheng [ctb], Andrzej Oles [ctb], Vicent Marti [aut, cph] (The Sundown library), 
+            Natacha Porte [aut, cph] (The Sundown library), RStudio [cph]
+        - stringr, Copyright (c) Hadley Wickham [aut, cre, cph], RStudio [cph, fnd]
+        - gtable, Copyright (c) Hadley Wickham [aut, cre]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -825,6 +861,32 @@ Library.
         - lazyeval, Copyright (c) Hadley Wickham [aut, cre], RStudio [cph]
         - zoo, Copyright (c) Achim Zeileis ORCID [aut, cre], Gabor Grothendieck [aut], 
             Jeffrey A. Ryan [aut], Joshua M. Ulrich [ctb], Felix Andrews [ctb]
+        - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
+            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
+            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
+            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library), 
+            Leaflet contributors [ctb] (Leaflet library), 
+            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), 
+            Brandon Copeland [ctb, cph] (leaflet-measure plugin), 
+            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin), 
+            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin), 
+            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin), 
+            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin), 
+            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin), 
+            Kartena AB [ctb, cph] (Proj4Leaflet plugin), 
+            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin), 
+            Mapbox [ctb, cph] (leaflet-omnivore plugin), Michael Bostock [ctb, cph] (topojson), RStudio [cph]
+        - png, Copyright (c) Simon Urbanek
+        - raster, Copyright (c) Robert J. Hijmans [cre, aut], Jacob van Etten [ctb], Joe Cheng [ctb], Michael Sumner [ctb], Matteo Mattiuzzi [ctb], Jonathan A. Greenberg [ctb], Oscar Perpinan Lamigueiro [ctb], Andrew Bevan [ctb], Roger Bivand [ctb], Lorenzo Busetto [ctb], Mort Canty [ctb], David Forrest [ctb], Aniruddha Ghosh [ctb], Duncan Golicher [ctb], Josh Gray [ctb], Paul Hiemstra [ctb], Institute for Mathematics Applied Geosciences [cph], Charles Karney [ctb], Steven Mosher [ctb], Jakub Nowosad [ctb], Edzer Pebesma [ctb], Etienne B. Racine [ctb], Barry Rowlingson [ctb], Ashton Shortridge [ctb], Bill Venables [ctb], Rafael Wueest [ctb]
+        - sp, Copyright (c) Edzer Pebesma [aut, cre], Roger Bivand [aut], Barry Rowlingson [ctb], Virgilio Gomez-Rubio [ctb], Robert Hijmans [ctb], Michael Sumner [ctb], Don MacQueen [ctb], Jim Lemon [ctb], Josh O'Brien [ctb], Joseph O'Rourke [ctb]
+        - leaflet.minicharts, Copyright (c) Jalal-Edine ZAWAM [aut, cre], Benoit Thieurmel [aut], Francois Guillem [aut], RTE [cph]
+        - RGraphics, Copyright (c) 	Paul Murrell
+        - Matrix, Copyright (c) Douglas Bates [aut], Martin Maechler [aut, cre], Timothy A. Davis [ctb] (SuiteSparse and 'cs' C libraries, notably CHOLMOD, AMD; collaborators listed in dir(pattern = '^[A-Z]+[.]txt$', full.names=TRUE, system.file('doc', 'SuiteSparse', package='Matrix'))), Jens Oehlschlägel [ctb] (initial nearPD()), Jason Riedy [ctb] (condest() and onenormest() for octave, Copyright: Regents of the University of California), R Core Team [ctb] (base R matrix implementation)
+        - nlme, Copyright (c)  José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), R-core [aut, cre]
+        - mgcv, Copyright (c) Simon Wood
+        - MASS, Copyright (c) Brian Ripley [aut, cre, cph], Bill Venables [ctb], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb]
+        - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
+        - lattice, Copyright (c)  Deepayan Sarkar
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -1540,6 +1602,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - yaml, Copyright (C) 2008-2018 
             COPYRIGHT HOLDER: Vanderbilt University Medical Center
             ORGANIZATION: Vanderbilt University Medical Center
+        - colorspace, Copyright (c) 2005-2016
+            COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
+            ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
