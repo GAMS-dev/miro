@@ -60,23 +60,32 @@ if(is.null(errMsg)){
     config$activateModules$sharedScenarios <- FALSE
   }
   if(config$activateModules$scenario && !identical(config$db$type, "sqlite")){
-    if(!length(config$db$username)){
-      pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
-      if(is.na(pg_user)){
+    pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
+    if(is.na(pg_user)){
+      if(!length(config$db$username)){
         errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
-                         sep = "\n")
-      }else{
-        config$db$username <- pg_user
+                        sep = "\n")
       }
+    }else{
+      config$db$username <- pg_user
     }
-    if(!length(config$db$password)){
-      pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
-      if(is.na(pg_pass)){
+    pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
+    if(is.na(pg_pass)){
+      if(!length(config$db$password)){
         errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
-                         sep = "\n")
-      }else{
-        config$db$password <- pg_pass
+                        sep = "\n")
       }
+    }else{
+      config$db$password <- pg_pass
+    }
+    pg_dbname <- Sys.getenv("GMS_PG_DBNAME", unset = NA)
+    if(is.na(pg_dbname)){
+      if(!length(config$db$name)){
+        errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
+                        sep = "\n")
+      }
+    }else{
+      config$db$name <- pg_dbname
     }
   }
   if(!is.null(config$db$name) && nchar(config$db$name) &&
