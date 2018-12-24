@@ -1,22 +1,25 @@
-#define MyAppName "GAMS WebUI"
+; credit to: The RInno package (https://github.com/ficonsulting/RInno/blob/master/LICENSE) (GPL 3 licensed)
+
+#define WebUIName "GAMS WebUI"
 #define RMajor 3
 #define RMinor 5
 #define RPatch 1
-#define MyAppPublisher "GAMS Software GmbH/GAMS Development Corp."
-#define MyAppURL "gams.com"
+#define WebUIPublisher "GAMS Software GmbH/GAMS Development Corp."
+#define WebUIURL "gams.com"
+#define docURL "https://www.gams.com/latest/webui/"
 
 [Setup]
-AppName = GAMS WebUI
+AppName = {#WebUIName}
 AppId = {{R77BWYZ1-KM2Y-WCD5-E8JC-Z7CIVDSLX2Y4}
 DefaultDirName={code:GetDefaultDirName}
 DefaultGroupName = GAMS WebUI
-OutputBaseFilename = GAMS_WebUI-{#MyAppVersion}
+OutputBaseFilename = GAMS_WebUI-{#WebUIVersion}
 SetupIconFile = setup.ico
-AppVersion = {#MyAppVersion}
-AppPublisher = {#MyAppPublisher}
+AppVersion = {#WebUIVersion}
+AppPublisher = {#WebUIPublisher}
 AppPublisherURL = gams.com
 AppSupportURL = gams.com/support
-AppUpdatesURL = {#MyAppURL}
+AppUpdatesURL = {#WebUIURL}
 PrivilegesRequired = lowest
 InfoBeforeFile = infobefore.txt
 InfoAfterFile = infoafter.txt
@@ -38,10 +41,11 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 Name: "program"; Description: "WebUI Files"; Types: full custom; Flags: fixed
 Name: "examples"; Description: "Sample Models"; Types: full
 [Files]
+Source: "../../R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; DestDir: "{tmp}"; Check: installR
 Source: "../../LICENSE"; Flags: dontcopy noencryption
 Source: "default.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
-; Source: "../../library/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../library/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../conf/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../JS/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../modules/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
@@ -69,20 +73,21 @@ Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "
 Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live"; Flags: ignoreversion;Components: examples
 [Icons]
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,{#WebUIName}}"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "https://www.gams.com/latest/webui/"; Flags: postinstall shellexec runasoriginaluser shellexec skipifsilent; StatusMsg: "Open documentation"
+Filename: "{tmp}\R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; Parameters: "/SILENT"; WorkingDir: {tmp}; Check: installR; Flags: skipifdoesntexist; StatusMsg: "Installing R {#RMajor}.{#RMinor}.{#RPatch}"
+Filename: "{#docURL}"; Flags: postinstall shellexec runasoriginaluser shellexec skipifsilent; StatusMsg: "Open documentation"
 
 [Code]
-function needR(): boolean;
+function installR(): boolean;
 var
     major: Integer;
     minor: Integer;
     patch: Integer;
-    Rneeded: boolean;
+    needR: boolean;
 begin
-  Rneeded := true;
+  needR := true;
   for major := {#RMajor} to 10 do
     begin
     for minor := 1 to 20 do
@@ -93,13 +98,13 @@ begin
               if (major = {#RMajor}) and (minor = {#RMinor}) and (patch < {#RPatch}) then Continue;
               if RegKeyExists(HKLM, 'Software\R-Core\R\' + IntToStr(major) + '.' + IntToStr(minor) + '.' + IntToStr(patch)) or RegKeyExists(HKCU, 'Software\R-Core\R\' + IntToStr(major) + '.' + IntToStr(minor) + '.' + IntToStr(patch)) then
               begin
-                Rneeded := false;
+                needR := false;
                 break;
               end;
           end;
       end;
     end;
-  Result := Rneeded;
+  Result := needR;
 end;
 
 function GetDefaultDirName(Param: string): string;
@@ -123,7 +128,7 @@ begin
   Result := True;
   if not RegKeyExists(HKCU, 'gams.location') and not RegKeyExists(HKCR, 'gams.location') then
   begin
-    MsgBox('Please install GAMS first, before installing the WebUI.', mbError, MB_OK);
+    MsgBox('In order to install the GAMS WebUI, a valid installation of GAMS is required. You can download GAMS from: www.gams.com.', mbError, MB_OK);
     Result := False;
   end;
 end;
