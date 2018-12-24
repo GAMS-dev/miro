@@ -36,6 +36,7 @@ tryCatch(
 })
 
 # BEGIN teardown
+Sys.setenv(SHINYPROXY_USERNAME = "", SHINYPROXY_USERGROUPS = "", GMSMODELNAME = "")
 if(!file.remove("conf/db_config.json")){
   stop("Could not remove database config file for tests")
 }
