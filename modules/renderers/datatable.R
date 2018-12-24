@@ -3,7 +3,7 @@ renderDTable <- function(data, options, roundPrecision = 2){
   #
   # Args:
   #   data:                     dataframe that is to be rendered
-  #   options:                  options for datatable
+  #   options:                  list with options for datatable
   #   roundPrecision:           number of decimal places used for rounding
   #
   # Returns:

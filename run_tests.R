@@ -1,7 +1,7 @@
 library(testthat)
 library(shinytest)
 
-Sys.setenv(SHINYPROXY_USERNAME = "test", SHINYPROXY_USERGROUPS = "test", SHINYPROXY_MODELNAME = "pickstock")
+Sys.setenv(SHINYPROXY_USERNAME = "test", SHINYPROXY_USERGROUPS = "test", GMSMODELNAME = "pickstock")
 
 # BEGIN setup
 options(testthat.output_file = "test-out.xml")

@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.7.5"
-webuiRDate   <- "Dec 13 2018"
+webuiVersion <- "0.2.7.7"
+webuiRDate   <- "Dec 21 2018"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -142,7 +142,7 @@ if(is.null(errMsg)){
       errMsg <- "No user ID specified (shinyproxy)."
     }
     ugroups <- csv2Vector(tolower(Sys.getenv("SHINYPROXY_USERGROUPS")))
-    if(is.null(ugroups) || grepl("^\\s*$", ugroups)){
+    if(!length(ugroups) || grepl("^\\s*$", ugroups)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
   }else{
@@ -174,7 +174,8 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
-  customRendererDirs <<- paste0(c(modelDir, currentModelDir), customRendererDirName, .Platform$file.sep)
+  customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
+                                  currentModelDir), customRendererDirName, .Platform$file.sep)
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -613,10 +614,7 @@ if(!is.null(errMsg)){
                                    GNU General Public License for more details.<br/><br/>
                                    You should have received a copy of the GNU General Public License 
                                    along with this program. If not, see 
-                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.<br/><br/>
-                                   The source code of the program can be accessed at 
-                                   <a href=\"https://github.com/GAMS-dev/webui\" target=\"_blank\">
-                                   https://github.com/GAMS-dev/webui/</a>.")),
+                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.")),
                             title = "About GAMS WebUI"))
     })
     

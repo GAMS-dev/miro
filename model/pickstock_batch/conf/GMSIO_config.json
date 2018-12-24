@@ -17,7 +17,8 @@
                 "Price": {
                     "type": "parameter"
                 }
-            }
+            },
+            "readonly": true
         },
         "maxstock": {
             "alias": "maximum number of stocks to select",
