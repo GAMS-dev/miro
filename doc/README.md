@@ -6,7 +6,7 @@ This style guide aims to standardize the structure and style of the documentatio
 1. Use images and gifs to support your examples.
 1. Try to use the trnsport example whenever you can and if not use any of the other example models that come with the WebUI. 
 1. Try to keep the subject of your sentence close to the verb.
-1. Make sure the **message** you want to convey in your sentence is in the *stress position*: it stands right before a colon, semicolon or period. (to learn more, read the articles by [George D. Gopen](https://www.georgegopen.com/the-litigation-articles.html))
+1. Make sure the **message** you want to convey in your sentence is in the *stress position*: it is located right before a colon, semicolon or period. (to learn more, read the articles by [George D. Gopen](https://www.georgegopen.com/the-litigation-articles.html))
 1. Make sure, each sentence is connected to the previous one: your sentences must lead seamlessly forward. Use back references at the beginning of each sentence.
 
 
