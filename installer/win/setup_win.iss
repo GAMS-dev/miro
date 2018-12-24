@@ -80,14 +80,14 @@ Filename: "{tmp}\R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; Parameters: "/SILENT"
 Filename: "{#docURL}"; Flags: postinstall shellexec runasoriginaluser shellexec skipifsilent; StatusMsg: "Open documentation"
 
 [Code]
-function needR(): boolean;
+function installR(): boolean;
 var
     major: Integer;
     minor: Integer;
     patch: Integer;
-    installR: boolean;
+    needR: boolean;
 begin
-  installR := true;
+  needR := true;
   for major := {#RMajor} to 10 do
     begin
     for minor := 1 to 20 do
@@ -98,13 +98,13 @@ begin
               if (major = {#RMajor}) and (minor = {#RMinor}) and (patch < {#RPatch}) then Continue;
               if RegKeyExists(HKLM, 'Software\R-Core\R\' + IntToStr(major) + '.' + IntToStr(minor) + '.' + IntToStr(patch)) or RegKeyExists(HKCU, 'Software\R-Core\R\' + IntToStr(major) + '.' + IntToStr(minor) + '.' + IntToStr(patch)) then
               begin
-                installR := false;
+                needR := false;
                 break;
               end;
           end;
       end;
     end;
-  Result := installR;
+  Result := needR;
 end;
 
 function GetDefaultDirName(Param: string): string;
