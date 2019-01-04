@@ -19,3 +19,4 @@ tmp
 tools/paver/examples
 tools/paver/__pycache__
 tools/paver/results
+packrat/src/
