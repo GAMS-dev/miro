@@ -53,7 +53,7 @@ pipeline {
                         sh '''
                             WEBUI_VERSION=$(grep -e "^webuiVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}_tmp.dmg"
-                            DMG_NAME_RES="GAMS_WebUI-${WEBUI_VERSION}.dmg"
+                            DMG_NAME_FINAL="GAMS_WebUI-${WEBUI_VERSION}.dmg"
                             
                             cd installer/macOS
                             gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
@@ -76,7 +76,7 @@ pipeline {
 
                             cd installer/macOS
 
-                            hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_RES
+                            hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
                             rm $DMG_NAME
                         '''
                         archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
