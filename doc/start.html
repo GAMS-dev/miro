@@ -199,20 +199,20 @@ Besides the model input and output data all temporarily created files of the mod
                 <p>Scalars and singleton sets are by default collected in a separate table in the interface.</p>
             </div><!--//content-->
           </div><!--//callout-block-->
-</div><!--//section-block-->          
-<div  id="create-4"  class="section-block">         
+</div><!--//section-block-->
+<div  id="create-4"  class="section-block">
     <h3 class="block-title">Using scalar values</h3>
     <p>In addition to one- or multidimensional GAMS parameters, 0-dimensional GAMS symbols such as scalars and singleton sets can also be communicated via the WebUI. The handling of these symbols differs from the previously discussed parameters, which will be discussed in more detail here. </p>
-    
+
     <h6>table</h6>
-    Scalars and singleton sets are by default collected in a separate table in the interface. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in the Web interface in a single 'scalars' table. The same also is true for scalar output parameters. These are summarized in the results section in a separate 'scalars_out' table. 
+    Scalars and singleton sets are by default collected in a separate table in the interface. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in the Web interface in a single 'scalars' table. The same also is true for scalar output parameters. These are summarized in the results section in a separate 'scalars_out' table.
     <br>As an example, the pickstock model is used again for illustration purposes:
     <br>Here, the scalars 'maxstock' and 'trainingdays' belong to the model input data. The user can modify these in order to man
     <h6>Slider</h6>
     <h6>Dropdown</h6>
-        
+
         <p>If all input and output symbols for the WebUI have been flagged, in a last step a file <span class="code">webui.gms</span> has to be included by a <img class="img-fluid" style="height:14px;" src="assets/images/incl-webui.png" alt="$libInclude webui" /> <b>at the very end of the GAMS model</b>. With the help of this file all model specific configuration files are created automatically.</p>
-</div><!--//section-block-->  
+</div><!--//section-block-->
 <div id="create-5" class="section-block">
     <h3 class="block-title">Generating model-specific configuration files</h3>
     <p>In the next step the model-specific configuration files for the Web Interface are created.</p>

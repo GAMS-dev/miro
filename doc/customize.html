@@ -60,31 +60,31 @@
                             <section id="intro" class="doc-section">
                                   <h2 class="section-title">Introduction</h2>
                                   <div class="section-block">
-                                      <p>This section deals with the configuration of the GAMS WebUI. With the help of a suitable, customized configuration the WebUI can be adjusted to the individual needs of the user. </br>
-                                      The GAMS Web Interface is configured using JSON files. For a GAMS model used in the WebUI, these files are located in <span class="code">&lt;modeldirectory&gt;/conf</span>. Two JSON files are used: </p>
+                                      <p>This section deals with the customization of the GAMS WebUI. You will notice that there are a multitude of configuration options that allow you to shape the WebUI to fit your particular model.</br>
+                                      The entire configuration of the web interface is done via JSON files. These files are located inside the folder: <span class="code">&lt;modeldirectory&gt;/conf</span>. Two JSON files are used: </p>
                                       <ol class="list">
                                         <li><h6>GMSIO_config.json</h6>
-                                      This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code">--webui=compile</span> or <span class="code"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in the GAMS code with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. This file should not be modified manually.
+                                      This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code">--webui=compile</span> or <span class="code"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in your GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. You won't ever have to modify this file!
                                     </li>
                                     <li>
                                       <h6>config.json</h6>
-                                      All the customization of your WebUI happens via the JSON file: <span class="code">config.json</span>. Here you can configure the language of your WebUI, the general appearance, the functionality and much more. Furthermore, all the graphics and widgets are defined here.
+                                      All the customization of your WebUI happens via the JSON file: <span class="code">config.json</span>. Here you can configure the language of your WebUI, the general appearance, the functionality and much more. Furthermore, all the graphics and widgets are specified here.
                                     </li>
                                   </ol>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom_options.png" alt="Custom visualization options"/>
                                       </div>
-                                    <p>The WebUI offers comprehensive visualization possibilities. Some basic visualization forms are already pre-implemented and only need to be configured by the user, i.e. adapted to her model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
-                                      <p>In case the user would like to use his own, non pre-implemented and more sophisticated graphics, a corresponding API is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                    <p>The WebUI offers comprehensive visualization options. Some basic visualization forms are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
+                                      <p>In case you would like to use his own, non pre-implemented and more sophisticated graphics, an R API is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
                                       </p>
-                                      <p>Before the Web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, an error message is displayed in the default browser.</p>
+                                      <p>Before the web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, an error message is displayed.</p>
                                       </div><!--//section-block-->
                             </section>
                             <section id="input-widgets" class="doc-section">
                                   <h2 class="section-title">Input widgets</h2>
                                   <div class="section-block" id="widgets-general">
                                     <h3 class="block-title">General</h3>
-                                      <p>The GAMS WebUI comes with several options on how users can enter input data for their <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
+                                      <p>The GAMS WebUI comes with several options on how you can enter input data for your <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/editable-table.png" alt="editable table"/>
                                       </div>
