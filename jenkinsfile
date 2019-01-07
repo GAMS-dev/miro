@@ -82,7 +82,7 @@ pipeline {
                             #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
                             
                             # TODO(AF): Strange error message try to fix
-                            #hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
+                            hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME
                             
                             gzip -9 $DMG_NAME
                         '''
