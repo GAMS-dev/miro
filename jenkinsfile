@@ -52,8 +52,9 @@ pipeline {
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         sh '''
                             WEBUI_VERSION=$(grep -e "^webuiVersion" app.R | cut -f3 -d" " | xargs)
-                            DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}.dmg"
-                            echo $DMG_NAME
+                            DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}_tmp.dmg"
+                            DMG_NAME_RES="GAMS_WebUI-${WEBUI_VERSION}.dmg"
+                            
                             cd installer/macOS
                             gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
                             hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSWebUI.dmg
@@ -72,21 +73,13 @@ pipeline {
                             cp model/loadCSV.gms model/webui.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
-                            mount
 
                             cd installer/macOS
 
-                            # TODO (AF): The following command does not work on Jenkins.
-                            # Probabaly we should update to Mojave or change the DMG fs to '-fs HFS+ -format UDRW'.
-                            # If we do the latter we have of better coverage of older macOS versions.
-                            #hdiutil convert -verbose -debug-format UDBZ -o GAMSWebUI-final.dmg GAMSWebUI.dmg
-                            
-                            # TODO(AF): Strange error message try to fix
-                            #hdiutil convert -verbose -format UDRO -o $DMG_NAME $DMG_NAME
-                            
-                            gzip -9 $DMG_NAME
+                            hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_RES
+                            rm $DMG_NAME
                         '''
-                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg.gz', fingerprint: true
+                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.dmg', fingerprint: true
                     }
                 }
             }
