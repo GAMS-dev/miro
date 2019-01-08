@@ -841,11 +841,13 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaBatch = function(batchTags = character(0L), readPerm = private$uid,
+                writeMetaBatch = function(pid, batchTags = character(0L), 
+                                          readPerm = private$uid,
                                           writePerm = private$uid){
                   # adds new entry to batch run metadata table
                   #
                   # Args:
+                  #   pid:               process ID of batch job submission process
                   #   batchTags:         tags to save for batch run (optional)
                   #   readPerm:          read permission for batch run (optional)
                   #   writePerm:         writePerm permission for batch run (optional)
@@ -854,10 +856,11 @@ Db <- R6Class("Db",
                   #   batch Id (integer)
                   
                   stopifnot(is.character(batchTags))
+                  stopifnot(is.integer(pid), length(pid) == 1L)
                   stopifnot(is.character(readPerm), length(readPerm) == 1L)
                   stopifnot(is.character(writePerm), length(writePerm) == 1L)
                   now <- Sys.time()
-                  metadata <- tibble(private$uid, "submitted", 
+                  metadata <- tibble(private$uid, paste0(pid, "_submitted"), 
                                      now, batchTags, readPerm,
                                      writePerm)
                   names(metadata) <- private$scenMetaColnames[-1]
