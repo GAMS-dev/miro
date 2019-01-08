@@ -273,15 +273,15 @@ if(is.null(errMsg)){
     source("./R/db_scen.R")
     tryCatch({
       scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-      db   <- Db$new(uid = uid, host = config$db$host, username = config$db$username, 
-                     password = config$db$password, dbname = config$db$name,
+      db   <- Db$new(uid = uid, dbConf = config$db,
                      uidIdentifier = uidIdentifier, sidIdentifier = sidIdentifier, 
                      snameIdentifier = snameIdentifier, stimeIdentifier = stimeIdentifier,
                      slocktimeIdentifier = slocktimeIdentifier, stagIdentifier = stagIdentifier,
                      accessIdentifier = accessIdentifier, tableNameMetadata = scenMetadataTable, 
+                     tableNameMetaBatch = tableNameMetaBatchPrefix %+% modelName, 
                      tableNameScenLocks = scenLockTablePrefix %+% modelName, 
                      tableNamesScenario = scenTableNames, 
-                     slocktimeLimit = slocktimeLimit, port = config$db$port, type = config$db$type,
+                     slocktimeLimit = slocktimeLimit,
                      tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames,
                      attachmentConfig = if(config$activateModules$attachments) list(tabName = tableNameAttachPrefix %+% modelName,
                                                                                    maxSize = attachMaxFileSize, maxNo = attachMaxNo)

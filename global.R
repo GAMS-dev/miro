@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "dcopf"
+modelName <- "epigrids"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -34,8 +34,9 @@ slocktimeLimit <- 3600
 logFileDir <- paste0("logs", .Platform$file.sep)
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- "INFO"
-# name of table with scenario metadata as well as scenario locks
+# name of table with scenario/batch metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
+tableNameMetaBatchPrefix <- "_sys_batchmeta_"
 scenLockTablePrefix      <- "_sys_scenlocks_"
 # maximum number ofscenarios that can be displayed at the same time 
 # (used in loop for observeEvent remove/save buttons)

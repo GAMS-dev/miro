@@ -1,19 +1,17 @@
 # R6 class for database related functions
 Db <- R6Class("Db",
               public = list(
-                initialize        = function(uid, host, username, password, dbname, uidIdentifier, sidIdentifier, 
+                initialize        = function(uid, dbConf, uidIdentifier, sidIdentifier, 
                                              snameIdentifier, stimeIdentifier, slocktimeIdentifier, stagIdentifier,
-                                             accessIdentifier, tableNameMetadata, tableNameScenLocks, 
-                                             tableNamesScenario, slocktimeLimit, port = NULL, type = "postgres",
+                                             accessIdentifier, tableNameMetadata, tableNameMetaBatch,
+                                             tableNameScenLocks, tableNamesScenario, slocktimeLimit,
                                              tableNameTrace = NULL, traceColNames = NULL, attachmentConfig = NULL){
                   # Initialize database class
                   #
                   # Args:
-                  #   uid:                 user ID
-                  #   host:                host of the database
-                  #   username :           database username
-                  #   password:            password of the specified user
-                  #   dbname:              name of database to connect to
+                  #   dbConf:              list with database connection configuration
+                  #                        includes: type, host, port(optional), username, 
+                  #                        password and name elements
                   #   uidIdentifier:       user ID column name
                   #   sidIdentifier:       scenario ID column name
                   #   snameIdentifier:     column name for scenario namecolumn
@@ -22,12 +20,11 @@ Db <- R6Class("Db",
                   #   stagIdentifier:      column name for scenario tags column
                   #   accessIdentifier:    column name for access information column 
                   #   tableNameMetadata:   name of the database table where scenario metadata is stored
+                  #   tableNameMetaBatch:  name of the database table where batch run metadata is stored
                   #   tableNameScenLocks:  name of the table where scenario locks are saved
                   #   tableNamesScenario:  names of tables where scenario data is saved
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist 
                   #                        (without being refreshed), before it will be deleted (optional)
-                  #   port:                port to connect to (optional)
-                  #   type:                type of database used (optional)
                   #   tableNameTrace:      table name where trace data is saved
                   #   traceColNames:       column names of trace data table
                   #   attachmentConfig:    attachment module configuration
@@ -41,12 +38,13 @@ Db <- R6Class("Db",
                          call. = FALSE)
                   }
                   stopifnot(is.character(uid), length(uid) == 1)
-                  if(type != "sqlite"){
-                    stopifnot(is.character(host), length(host) == 1)
-                    stopifnot(is.character(username), length(username) == 1)
-                    stopifnot(is.character(password), length(password) == 1)
+                  if(!identical(dbConf$type, "sqlite")){
+                    dbConf$type <- "postgres"
+                    stopifnot(is.character(dbConf$host), length(dbConf$host) == 1)
+                    stopifnot(is.character(dbConf$username), length(dbConf$username) == 1)
+                    stopifnot(is.character(dbConf$password), length(dbConf$password) == 1)
                   }
-                  stopifnot(is.character(dbname), length(dbname) == 1)
+                  stopifnot(is.character(dbConf$name), length(dbConf$name) == 1)
                   stopifnot(is.character(uidIdentifier), length(uidIdentifier) == 1)
                   stopifnot(is.character(sidIdentifier), length(sidIdentifier) == 1)
                   stopifnot(is.character(snameIdentifier), length(snameIdentifier) == 1)
@@ -55,13 +53,14 @@ Db <- R6Class("Db",
                   stopifnot(is.character(stagIdentifier), length(stagIdentifier) == 1)
                   stopifnot(is.character(accessIdentifier), length(accessIdentifier) == 1)
                   stopifnot(is.character(tableNameMetadata), length(tableNameMetadata) == 1)
+                  stopifnot(is.character(tableNameMetaBatch), length(tableNameMetaBatch) == 1)
                   stopifnot(is.character(tableNameScenLocks), length(tableNameScenLocks) == 1)
                   stopifnot(is.character(tableNamesScenario), length(tableNamesScenario) >= 1)
                   stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1)
-                  if(!is.null(port)){
-                    stopifnot(is.numeric(port) && length(port) == 1)
+                  if(!is.null(dbConf$port)){
+                    stopifnot(is.numeric(dbConf$port) && length(dbConf$port) == 1)
                   }
-                  stopifnot(is.character(type), length(type) == 1)
+                  stopifnot(is.character(dbConf$type), length(dbConf$type) == 1)
                   if(!is.null(tableNameTrace)){
                     stopifnot(is.character(tableNameTrace), length(tableNameTrace) == 1)
                     stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
@@ -82,6 +81,7 @@ Db <- R6Class("Db",
                   private$scenMetaColnames['accessW'] <- accessIdentifier
                   private$slocktimeIdentifier         <- slocktimeIdentifier
                   private$tableNameMetadata           <- tableNameMetadata
+                  private$tableNameMetaBatch          <- tableNameMetaBatch
                   private$tableNameScenLocks          <- tableNameScenLocks
                   private$tableNamesScenario          <- tableNamesScenario
                   private$slocktimeLimit              <- slocktimeLimit
@@ -89,17 +89,18 @@ Db <- R6Class("Db",
                   private$traceConfig[['colNames']]   <- traceColNames
                   private$attachmentConfig            <- attachmentConfig
                   
-                  if(type == "postgres"){
+                  if(identical(dbConf$type, "postgres")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbname, host = host, 
-                                                     port = port, user = username, password = password)
+                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbConf$name, 
+                                                     host = dbConf$host, port = dbConf$port, 
+                                                     user = dbConf$username, password = dbConf$password)
                     }, error = function(e){
                       stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
                            call. = FALSE)
                     })
-                  }else if(type == "sqlite"){
+                  }else if(identical(dbConf$type, "sqlite")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbname)
+                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name)
                       # turn foreign key usage on
                       dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
                     }, error = function(e){
@@ -108,7 +109,7 @@ Db <- R6Class("Db",
                     })
                   }else{
                     stop(sprintf("Db: A non supported database type (%s) was specified. Could not establish connection.", 
-                                 type), call. = FALSE) 
+                                 dbConf$type), call. = FALSE) 
                   }
                 },
                 getConn               = function() private$conn,
@@ -741,26 +742,36 @@ Db <- R6Class("Db",
                   }
                   invisible(self)
                 },
-                writeMetadata = function(metadata, update = FALSE){
+                writeMetadata = function(metadata, update = FALSE, batchMetadata = FALSE){
                   # Write scenario metadata to database
                   #
                   # Args:
-                  #   metadata:     dataframe containing metadata for one up 
-                  #                 to many scenarios
-                  #   update:       whether existing scenario metadata shall be updated
+                  #   metadata:      dataframe containing metadata for one up 
+                  #                  to many scenarios
+                  #   update:        boolean that specifies whether existing metadata 
+                  #                  shall be updated
+                  #   batchMetadata: boolean that specifies whether metadata is batch run 
+                  #                  metadata or not (scenario metadata)
                   #
                   # Returns:
                   #   reference to itself (Db R6 object)
                   
                   # BEGIN error checks
                   stopifnot(inherits(metadata, "data.frame"))
+                  stopifnot(is.logical(update), length(update) == 1L)
+                  stopifnot(is.logical(batchMetadata), length(batchMetadata) == 1L)
                   # END error checks
+                  if(batchMetadata){
+                    metaTabName <- private$tableNameMetaBatch
+                  }else{
+                    metaTabName <- private$tableNameMetadata
+                  }
                   
                   metadata <- dateColToChar(private$conn, metadata)
-                  if(!DBI::dbExistsTable(private$conn, private$tableNameMetadata)){
+                  if(!DBI::dbExistsTable(private$conn, metaTabName)){
                     tryCatch({
                       query <- paste0("CREATE TABLE ", 
-                                      DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
+                                      DBI::dbQuoteIdentifier(private$conn, metaTabName), 
                                       " (", 
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
                                       if(inherits(private$conn, "PqConnection")) 
@@ -784,11 +795,11 @@ Db <- R6Class("Db",
                                      "Error message: %s.", e), call. = FALSE)
                     })
                     flog.debug("Db: A table named: '%s' did not yet exist (Db.writeMetadata). " %+%
-                                 "Therefore it was created.", private$tableNameMetadata)
+                                 "Therefore it was created.", metaTabName)
                   }
                   if(update){
                     sql     <- DBI::SQL(paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, 
-                                                                                 private$tableNameMetadata), 
+                                                                                 metaTabName), 
                                                " SET (", 
                                                DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), ", ",
                                                DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sname']), ", ",
@@ -808,27 +819,60 @@ Db <- R6Class("Db",
                     tryCatch({
                       DBI::dbExecute(private$conn, query)
                       flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
-                                 private$tableNameMetadata)
+                                 metaTabName)
                     }, error = function(e){
                       stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
         be written to database (Db.writeMetadata). Error message: %s.", 
-                                   private$tableNameMetadata, e), call. = FALSE)
+                                   metaTabName, e), call. = FALSE)
                     })
                   }else{
                     # write new metadata
                     tryCatch({
-                      DBI::dbWriteTable(private$conn, private$tableNameMetadata, 
+                      DBI::dbWriteTable(private$conn, metaTabName, 
                                         metadata, row.names = FALSE, append = TRUE)
                       flog.debug("Db: Metadata (table: '%s') was written to database. (Db.writeMetadata).", 
-                                 private$tableNameMetadata)
+                                 metaTabName)
                     }, error = function(e){
                       stop(sprintf("Db: Metadata (table: '%s') could not " %+% "
         be written to database (Db.writeMetadata). Error message: %s.", 
-                                   private$tableNameMetadata, e), call. = FALSE)
+                                   metaTabName, e), call. = FALSE)
                     })
                   }
                   
                   invisible(self)
+                },
+                writeMetaBatch = function(batchTags = character(0L), readPerm = private$uid,
+                                          writePerm = private$uid){
+                  # adds new entry to batch run metadata table
+                  #
+                  # Args:
+                  #   batchTags:         tags to save for batch run (optional)
+                  #   readPerm:          read permission for batch run (optional)
+                  #   writePerm:         writePerm permission for batch run (optional)
+                  #
+                  # Returns:
+                  #   batch Id (integer)
+                  
+                  stopifnot(is.character(batchTags))
+                  stopifnot(is.character(readPerm), length(readPerm) == 1L)
+                  stopifnot(is.character(writePerm), length(writePerm) == 1L)
+                  now <- Sys.time()
+                  metadata <- tibble(private$uid, "submitted", 
+                                     now, batchTags, readPerm,
+                                     writePerm)
+                  names(metadata) <- private$scenMetaColnames[-1]
+                  
+                  self$writeMetadata(metadata, update = FALSE, batchMetadata = TRUE)
+                  bid <- self$importDataset(private$tableNameMetaBatch, 
+                                            tibble(c(private$scenMetaColnames['uid'], 
+                                                     private$scenMetaColnames['stime']), 
+                                                   c(uid, now)), 
+                                            colNames = private$scenMetaColnames['sid'])
+                  if(length(bid)){
+                    return(bid[[1]][[1]])
+                  }
+                  stop("Batch ID could not be identified. Something went wrong while writing batch metadata to database.", 
+                       call. = FALSE)
                 },
                 fetchScenList = function(noBatch = FALSE){
                   # returns list of scenarios that the current user has access to
@@ -949,6 +993,7 @@ Db <- R6Class("Db",
                 slocktimeIdentifier = character(0L),
                 userAccessGroups    = character(0L),
                 tableNameMetadata   = character(0L),
+                tableNameMetaBatch  = character(0L),
                 tableNameScenLocks  = character(0L),
                 tableNamesScenario  = character(0L),
                 slocktimeLimit      = character(0L),
