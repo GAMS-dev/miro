@@ -72,11 +72,11 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
                            
-                           zipCsvPaths          <- private$getCsvPaths(zipFilePath)
-                           private$scenNames    <- private$fetchScenNames(zipCsvPaths)
+                           csvPaths             <- private$getCsvPaths(zipFilePath)
+                           private$scenNames    <- private$fetchScenNames(csvPaths)
                            # workaround for unzip function as path with trailing slashes is not found
-                           if(length(zipCsvPaths)){
-                             csvPaths <- unzip(zipFilePath, zipCsvPaths,
+                           if(length(csvPaths)){
+                             csvPaths <- unzip(zipFilePath, csvPaths,
                                                 exdir = gsub("/?$", "", private$workDir))
                              
                              if(any(Sys.readlink(csvPaths) != "")){
