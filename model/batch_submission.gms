@@ -17,6 +17,7 @@ $if not set zipname $set zipname "4upload"
 
 $if not set outScript $set outScript "gams"
 
+$if not set exec $set exec "false"
 $onEmbeddedCode Python:
 import os
 
@@ -142,3 +143,7 @@ elif outScript == "hpc":
 else:
    pass
 $offEmbeddedCode
+
+$ifthen %exec% == "true"
+$   include jobsubmission.gms
+$endif

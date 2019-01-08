@@ -54,18 +54,22 @@
                             <section id="batch-introduction-section" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">      
-                                    <p>The web interface allows the user to load input data, manipulate it, start & stop the GAMS run, inspect the results as well as save, manage and compare them as scenarios. </p>
+                                    <p>The web interface allows us to load input data, manipulate it, start and stop the GAMS run, inspect the results as well as save, manage and compare them as scenarios. </p>
                                     <p>Beside this "regular" WebUI there is another interface which allows to configure and evaluate so-called batch runs. A batch run describes the automated execution of a certain number of scenarios that differ with regard to their parameterization.</p>
-                                    <p>Let's take the model "pickstock" as an example. In the regular WebUI, the user determines the maximum number of stocks of the Dow Jones that can be selected for the representative portfolio. He also determines the time up to which the model should be in the "training phase". With a click on solve he starts the GAMS run for this parameterized scenario.</p>
-                                    <p>But what if the user wants to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely?  To avoid having to configure and solve each scenario individually, there is the "batch" module. In this module any number of scenarios can be configured at once. </p>
-                                    <p>Results of such batch runs can be stored in the database and inspected directly in the WebUI. For this purpose, the Automated Performance Analysis & Visualization tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> was integrated. The direct comparison of scenarios in the scenario view (via split screen / tab view) is also available. Of course, the user is free to analyze all the scenarios carried out with the help of external tools as well. </p>
-                                    <p>In short, the module presented here is designed to generate scenarios and analyze them. </p>
-                                    <p>The following sections explain the basic aspects of batch mode, including its functionality and workflow.</p>
+                                    <p>Let's take the model "pickstock" as an example. In the regular WebUI, we determine the maximum number of stocks of the Dow Jones that can be selected for the representative portfolio. We also determine the time up to which the model should be in the "training phase". With a click on solve we start the GAMS run for this parameterized scenario.</p>
+                                    <p>But what if we want to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely?  To avoid having to configure and solve each scenario individually, there is the "batch" module. In this module any number of scenarios can be configured at once. </p>
+                                    <p>Results of such batch runs can be stored in the database and inspected directly in the WebUI. For this purpose, the Automated Performance Analysis & Visualization tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> was integrated. The direct comparison of scenarios in the scenario view (via split screen / tab view) is also available. Of course, one is free to analyze all the scenarios carried out with the help of external tools as well. </p>
+                                    <p>In short, the module presented here is designed to efficiently generate, store and analyze scenarios. </p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="batch-overview-section" class="doc-section">
                                 <h2 class="section-title">Overview</h2>
                                 <div class="section-block">      
+                                    <p>There is little to do to get from the regular WebUI to the batch interface. We just need to set a simple switch called <span style="white-space: nowrap;">--webuimode=batch</span> in addition to the already set --webui=launch when starting the WebUI:</p>
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                    <img class="img-fluid" src="assets/images/batch_img/batch_launch.png" alt="Launch WebUI in batch mode" />
+                                    </div>
+                                    <p>When doing this, all relevant changes in settings regarding appearance and configuration of the WebUI are automatically detected and processed.</p>
                                     <p>Visually, the WebUI for batch mode hardly differs from the regular one. After starting the application, the following familiar start screen appears.</p>
                                     <img class="img-fluid" src="assets/images/batch_img/batch_start.png" alt="start screen in batch mode" />
                                     <p></br>The navigation menu on the left side now consists of the following sections:</p>
@@ -140,9 +144,7 @@
                                           </table>
                                         </div><!--//table-responsive-->
                                         <p>The convention of automatic scenario generation has the following implications: Unless explicitly specified in the WebUI configuration of the model, each parameter of the input data is included in the Cartesian product from all parameter variations. In other words: All combinations are generated from the configuration selected by the user and each individual combination is saved as a single scenario. </p>
-                                        <div class="section-block">
-                                            <img class="img-fluid" src="assets/images/batch_configure.png" alt="Parameterization of batch runs" />
-                                        </div>
+                                        
                                         <img class="img-fluid" style="margin-bottom:15px" src="assets/images/batch_img/regular_batch.png" alt="regular pickstock parameterization" />
                                         <p>In the example, the slider for 'maximum number of stocks to select' was set by the user to a range from 3 to 11 with a step size of 1. 
                                         The slider configured in this way leads to 9 different scenarios.</p>
@@ -180,7 +182,7 @@
                                     <div  id="scengen-4"  class="section-block">
                                         <h3 class="block-title">Compute server</h3>
                                         <p>After the click on "Submit jobs" the generated batch file is available for download. In addition to this file, the ZIP file also contains all files necessary for the scenario calculations. More precisely, all files located in the WebUI folder of the corresponding GAMS model will be added to the ZIP.</p>
-                                        <p>Job submission: <br>If a script that can be executed by GAMS has been created from the batch file (e.g. as described above), it can be called ('Job submission', see picture above). If the model calculations are to be performed on a compute server, this can now be done. 
+                                        <p>Job submission: <br>If a script that can be executed by GAMS has been created from the batch file (e.g. as described above), it can be called ('Job submission', see picture below). If the model calculations are to be performed on a compute server, this can now be done. 
                                         <br>Either way, at the end of the calculations, the results should be available in the form of another ZIP file. As already mentioned, the results have to be isolated according to scenarios. This means that each scenario must be located in a separate directory named after the hash value of the scenario. The results must be available in CSV format and correspond to the GAMS symbols declared in the GAMS model. If a subsequent analysis is to be carried out with the integrated analysis tool PAVER, the trace file (*.trc) must also be available for each scenario in addition to the results in CSV format. As already mentioned above, the GAMS command for the creation of the trace file is already written to the batch file for each scenario. 
                                         <br>The picture below extends the previous schema and shows the workflow from the generated batch file over its conversion to an executable GAMS script, the job submission (local or via compute server) up to the structure of the obtained results.</p>
                                         <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/batch_file_skript.png" alt="schematic of possible workflow" />
