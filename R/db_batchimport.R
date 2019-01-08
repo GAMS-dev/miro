@@ -72,17 +72,16 @@ BatchImport <- R6Class("BatchImport",
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
                            
-                           csvPaths             <- private$getCsvPaths(zipFilePath)
-                           private$scenNames    <- private$fetchScenNames(csvPaths)
+                           zipCsvPaths          <- private$getCsvPaths(zipFilePath)
+                           private$scenNames    <- private$fetchScenNames(zipCsvPaths)
                            # workaround for unzip function as path with trailing slashes is not found
-                           filePaths <- unzip(zipFilePath, 
-                                              exdir = gsub("/?$", "", private$workDir))
-                           validCsvFiles  <- grepl("\\.(csv|trc)$", filePaths, ignore.case = TRUE)
-                           file.remove(filePaths[!validCsvFiles])
-                           csvPaths <- filePaths[validCsvFiles]
-                           
-                           if(any(Sys.readlink(csvPaths) != "")){
-                             stop("zip archive contains symlinks.", call. = FALSE)
+                           if(length(zipCsvPaths)){
+                             csvPaths <- unzip(zipFilePath, zipCsvPaths,
+                                                exdir = gsub("/?$", "", private$workDir))
+                             
+                             if(any(Sys.readlink(csvPaths) != "")){
+                               stop("zip archive contains symlinks.", call. = FALSE)
+                             }
                            }
                            
                            private$csvPaths <- csvPaths
@@ -408,12 +407,12 @@ BatchImport <- R6Class("BatchImport",
                          },
                          getCsvPaths       = function(zipFilePath){
                            if(private$includeTrc){
-                             grepEx <- "\\.(csv|trc)$"
+                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc)$"
                            }else{
-                             grepEx <- "\\.csv$"
+                             grepEx <- "^((?!\\.\\.).)*\\.csv$"
                            }
                            return(grep(grepEx, unzip(zipFilePath, list = TRUE)$Name, 
-                                       ignore.case = TRUE, value = TRUE))
+                                       ignore.case = TRUE, value = TRUE, perl = TRUE))
                          },
                          fetchScenNames      = function(csvPaths){
                            return(unique(dirname(csvPaths)))
