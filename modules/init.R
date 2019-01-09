@@ -518,8 +518,11 @@ if(is.null(errMsg)){
       }else{
         if(names(modelIn)[i] %in% DDPar){
           return("--" %+% names(modelIn)[i] %+% "=")
+        }else if(names(modelIn)[i] %in% GMSOpt){
+          return(names(modelIn)[i] %+% "=")
+        }else{
+         return("-+" %+% names(modelIn)[i] %+% "=")
         }
-        names(modelIn)[i] %+% "="
       }
     }), use.names = FALSE)
   }

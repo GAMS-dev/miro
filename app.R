@@ -158,8 +158,9 @@ if(is.null(errMsg)){
       errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
     })
   }
-  flog.appender(appender.file(file.path(logFileDir, paste0(modelName, "_", uid, "_", 
-                                     format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log"))))
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.false", 
+                        list(file = file.path(logFileDir, paste0(modelName, "_", uid, "_", 
+                                              format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   installPackage <- list()

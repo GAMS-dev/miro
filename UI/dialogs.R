@@ -377,7 +377,59 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
   ))
 }
 ######## BATCH MODE
-
+showBatchSubmitDialog <- function(noIdsToSolve, noIdsExist){
+  showModal(modalDialog(
+    tags$div(class = "gmsalert gmsalert-success", id = "batchSubmitSuccess",
+             lang$nav$dialogBatch$success),
+    tags$div(class = "gmsalert gmsalert-error", id = "batchSubmitWait",
+             lang$nav$dialogBatch$waitTime),
+    tags$div(class = "gmsalert gmsalert-error", id = "batchSubmitUnknownError",
+             lang$nav$dialogBatch$unknownError),
+    tags$div(sprintf(lang$nav$dialogBatch$desc, noIdsToSolve, 
+                     noIdsExist)),
+    conditionalPanel(
+      condition = "input.batchSolve_dl == 0",
+      selectizeInput("newBatchTags", lang$nav$dialogBatch$newTags, c(),
+                     multiple = TRUE, options = list(
+                       'create' = TRUE,
+                       'persist' = FALSE))
+    ),
+    title = lang$nav$dialogBatch$title,
+    footer = tagList(
+      tags$div(style = "text-align:left;", 
+               tags$i(class="fas fa-arrow-down", 
+                      onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
+                      style = "cursor: pointer;"),
+               tags$div(style = "display:none;",
+                        tags$label(class = "cb-label", "for" = "batchSolve_dl", 
+                                   lang$nav$dialogBatch$manualSwitch), 
+                        tags$div(
+                          tags$label(class = "checkbox-material", "for" = "batchSolve_dl", 
+                                     checkboxInput("batchSolve_dl", label = NULL))
+                        )
+               )
+      ),
+      conditionalPanel(
+        condition = "input.batchSolve_dl == 1",
+        tags$a(id="btBatchAll_dl", class='btn btn-default shiny-download-link',
+               href='', target='_blank', download=NA, lang$nav$dialogBatch$processAllButton),
+        if(noIdsExist > 0L){
+          tags$a(id="btBatchNew_dl", class='btn btn-default shiny-download-link btHighlight1',
+                 href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)
+        },
+        modalButton(lang$nav$dialogBatch$cancelButton)
+      ),
+      conditionalPanel(
+        condition = "input.batchSolve_dl == 0",
+        actionButton("btBatchAll", lang$nav$dialogBatch$processAllButton),
+        if(noIdsExist > 0L){
+          actionButton("btBatchNew", lang$nav$dialogBatch$processUnsolvedButton,
+                       class='btHighlight1')
+        },
+        modalButton(lang$nav$dialogBatch$cancelButton)
+      )),
+    fade = TRUE, easyClose = TRUE))
+}
 showBatchLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
                                       maxConcurentLoad = 0L, hasRemovePerm = FALSE){
   showModal(modalDialog(

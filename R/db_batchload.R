@@ -36,7 +36,9 @@ BatchLoad <- R6Class("BatchLoad",
                          private$tableNameTrace     <- db$getTraceConfig()[["tabName"]]
                          private$traceColNames      <- db$getTraceConfig()[["colNames"]]
                          
-                         dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
+                         if(inherits(private$conn, "PqConnection")){
+                           dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
+                         }
                        },
                        fetchValues = function(field, table = NULL){
                          stopifnot(is.character(field), length(field) == 1L)

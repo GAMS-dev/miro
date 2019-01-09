@@ -71,7 +71,7 @@ Db <- R6Class("Db",
                   #END error checks 
                   
                   private$uid                         <- uid
-                  private$userAccessGroups            <- uid
+                  private$userAccessGroups            <- gsub(",", "/comma/", uid, fixed = TRUE)
                   private$scenMetaColnames['sid']     <- sidIdentifier
                   private$scenMetaColnames['uid']     <- uidIdentifier
                   private$scenMetaColnames['sname']   <- snameIdentifier
@@ -494,15 +494,14 @@ Db <- R6Class("Db",
                   #   ...:              row subsetting: dataframes with 3 columns (column, value, operator)
                   #                     these will be handled as a block of AND conditions
                   #                     (if innerSep AND is TRUE) different blocks are concatenated with OR
-                  #   colNames:         column names to select, if NULL all will be selected (optional)
+                  #   colNames:         column names to update
                   #   values:           character vector of new values that colNames should be set to
                   #   innerSepAND:      boolean that specifies whether inner seperator in 
                   #                     substrings should be AND (TRUE) or OR (FALSE)  
                   #   subsetSids:       vector of scenario IDs that query should be filtered on
                   #
                   # Returns:
-                  #   Db object: invisibly returns reference to object in case of success, 
-                  #   throws exception if error
+                  #   integer with number of affected rows
                   
                   dots <- list(...)
                   stopifnot(all(vapply(dots, private$isValidSubsetGroup, logical(1L), 
@@ -545,7 +544,7 @@ Db <- R6Class("Db",
                                    "table: '%s'). Error message: %s.",
                                  tableName, e), call. = FALSE)
                   })
-                  invisible(self)
+                  return(affectedRows)
                 },
                 importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
                                          innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL){
@@ -841,41 +840,80 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaBatch = function(pid, batchTags = character(0L), 
-                                          readPerm = private$uid,
-                                          writePerm = private$uid){
+                writeMetaBatch = function(batchTags = character(0L)){
                   # adds new entry to batch run metadata table
                   #
                   # Args:
-                  #   pid:               process ID of batch job submission process
-                  #   batchTags:         tags to save for batch run (optional)
-                  #   readPerm:          read permission for batch run (optional)
-                  #   writePerm:         writePerm permission for batch run (optional)
+                  #   batchTags:         character vector with tags to save for batch run (optional)
                   #
                   # Returns:
                   #   batch Id (integer)
                   
                   stopifnot(is.character(batchTags))
-                  stopifnot(is.integer(pid), length(pid) == 1L)
-                  stopifnot(is.character(readPerm), length(readPerm) == 1L)
-                  stopifnot(is.character(writePerm), length(writePerm) == 1L)
+                    
                   now <- Sys.time()
-                  metadata <- tibble(private$uid, paste0(pid, "_submitted"), 
-                                     now, batchTags, readPerm,
-                                     writePerm)
+                  
+                  uAccessGroups <- vector2Csv(private$userAccessGroups)
+                  metadata <- tibble(private$uid, "_scheduled", 
+                                     now, vector2Csv(batchTags), permR = uAccessGroups,
+                                     permW = uAccessGroups)
                   names(metadata) <- private$scenMetaColnames[-1]
                   
                   self$writeMetadata(metadata, update = FALSE, batchMetadata = TRUE)
-                  bid <- self$importDataset(private$tableNameMetaBatch, 
-                                            tibble(c(private$scenMetaColnames['uid'], 
-                                                     private$scenMetaColnames['stime']), 
-                                                   c(uid, now)), 
-                                            colNames = private$scenMetaColnames['sid'])
-                  if(length(bid)){
+                  
+                  if(inherits(private$conn, "PqConnection")){
+                    query <- "SELECT lastval();"
+                  }else{
+                    query <- "SELECT last_insert_rowid();"
+                  }
+                  
+                  bid <- DBI::dbGetQuery(private$conn, query)
+                  if(length(bid) && length(bid[[1L]])){
                     return(bid[[1]][[1]])
                   }
                   stop("Batch ID could not be identified. Something went wrong while writing batch metadata to database.", 
                        call. = FALSE)
+                },
+                getMetaBatch = function(bid){
+                  # adds new entry to batch run metadata table
+                  #
+                  # Args:
+                  #   bid:               ID of batch job
+                  #
+                  # Returns:
+                  #   tibble with metadata
+                  stopifnot(is.integer(bid), length(bid) == 1L)
+                  vector <- gsub(",", "/comma/", vector, fixed = TRUE)
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], private$userAccessGroups)
+                  
+                  
+                  batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights, 
+                                                  innerSepAND = FALSE)
+                  
+                  return(batchMeta)
+                },
+                setBatchPid = function(bid, pid){
+                  # set process id for batch job
+                  # 
+                  # Args:
+                  #   bid:           ID of batch job to update
+                  #   pid:           process ID of batch job
+                  #
+                  # Returns:
+                  #   invisibly returns R6 object (reference to Db class)
+                  stopifnot(is.integer(bid), length(bid) == 1L)
+                  stopifnot(is.integer(pid), length(pid) == 1L)
+                  
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessW'], private$userAccessGroups)
+                  noRowsUpdated <- self$updateRows(private$tableNameMetaBatch, accessRights, 
+                                                   colNames = private$scenMetaColnames['sname'], 
+                                                   values = paste0(pid, "_running"), subsetSids = bid, 
+                                                   innerSepAND = FALSE)
+                  if(!noRowsUpdated){
+                    stop("Batch metadata was not updated. Maybe you are missing write permissions?", call. = FALSE)
+                  }
+                  
+                  invisible(self)
                 },
                 fetchScenList = function(noBatch = FALSE){
                   # returns list of scenarios that the current user has access to
@@ -889,8 +927,8 @@ Db <- R6Class("Db",
                   #   as their metadata, throws exception in case of error
                   stopifnot(is.logical(noBatch), length(noBatch) == 1L)
                   
-                  accessRights <- tibble(private$scenMetaColnames['accessR'],
-                                      private$userAccessGroups, "=")
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], private$userAccessGroups)
+                  
                   noBatchRuns <- NULL
                   if(noBatch){
                     if(inherits(private$conn, "PqConnection")){
@@ -972,7 +1010,11 @@ Db <- R6Class("Db",
                   }
                 },
                 escapePattern = function(pattern){
-                  pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
+                  if(inherits(private$conn, "PqConnection")){
+                    pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
+                  }else{
+                    pattern <- gsub("([%_])", "\\1\\1", pattern)
+                  }
                   return(pattern)
                 },
                 finalize = function(){
@@ -1020,6 +1062,13 @@ Db <- R6Class("Db",
                     }
                   }
                   return(FALSE)
+                },
+                getCsvSubsetClause = function(colName, vector){
+                  subsetClause <- tibble(colName,
+                                         c(paste0("%,", self$escapePattern(vector), ",%"),
+                                           paste0(self$escapePattern(vector), ",%"),
+                                           paste0("%,", self$escapePattern(vector))), "LIKE")
+                  return(subsetClause)
                 },
                 buildSQLSubstring = function(dataFrame, sep = " ", SQL = TRUE){
                   if(length(dataFrame) < 3L){

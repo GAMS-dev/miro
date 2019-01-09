@@ -32,8 +32,10 @@ maxScalarsValBox <- 20L
 slocktimeLimit <- 3600
 # log file directory and name
 logFileDir <- paste0("logs", .Platform$file.sep)
+# whether to print log output in console (in additional to file) or not
+logToConsole <- TRUE
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
-loggingLevel <- "INFO"
+loggingLevel <- "TRACE"
 # name of table with scenario/batch metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaBatchPrefix <- "_sys_batchmeta_"
@@ -84,6 +86,8 @@ sharedTablePrefix <- "_shared"
 defaultGroup <- "user"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
+# name of the folder where batch jobs will be executed
+batchDirName <- "batchJobs"
 # maximum number of scenarios that can be solved per batch run
 maxNoBatch <- 10000L
 # maximum number of scenarios to fetch when querying the database

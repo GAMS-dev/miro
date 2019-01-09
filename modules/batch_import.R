@@ -31,6 +31,17 @@ rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
 
+interruptProcess <- function(pid){
+  currentOs <- tolower(getOS()[[1]])
+  if(currentOs == 'windows'){
+    processx::run(command = 'taskkill', args = c("/F", "/PID", pid, "/T"), windows_hide_window = TRUE)
+  }else if (currentOs %in% c('linux', 'osx')){
+    processx::run(command = 'kill', args = c("-SIGKILL", -pid))
+  }else{
+    stop(sprintf("Operating system: '%s' not supported.", currentOs), call. = FALSE)
+  }
+}
+
 ##############
 #      1
 ##############
@@ -162,3 +173,7 @@ observeEvent(input$batchImport, {
   updateSelectInput(session, "batchTags", choices = tag, selected = tag)
   rv$clear <- TRUE
 }, priority = 1000)
+
+observeEvent(input$showActiveJobs, {
+  return()
+})

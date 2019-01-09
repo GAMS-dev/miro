@@ -502,6 +502,7 @@ getOS <- function(){
   }
   tolower(os)
 }
+
 dateColToChar <- function(conn, df){
   # converts date columns to character
   if(inherits(conn, "PqConnection")){
@@ -599,6 +600,9 @@ csv2Vector <- function(csv){
   if(!length(csv)){
     return(character(0L))
   }
+  if(startsWith(csv, ",")){
+    csv <- substring(csv, 2L)
+  }
   csv <- unlist(strsplit(csv, ",", fixed = TRUE), use.names = FALSE)
   gsub("/comma/", ",", csv, fixed = TRUE)
 }
@@ -607,7 +611,7 @@ vector2Csv <- function(vector){
     return("")
   }
   vector <- gsub(",", "/comma/", vector, fixed = TRUE)
-  paste0(vector, collapse = ",")
+  paste0(",", paste0(vector, collapse = ","), ",")
 }
 showEl <- function(session, id){
   session$sendCustomMessage("gms-showEl", id)

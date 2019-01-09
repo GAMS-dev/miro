@@ -1,7 +1,7 @@
 hasBatchRemovePermission <- FALSE
 batchRemoveConfirmed <- FALSE
 
-inputType <- list(text = c("_stag", "_uid"), date = c("_stime"))
+inputType <- list(text = "_uid", date = c("_stime"), csv = "_stag")
 keysRaw   <- NULL
 scalarFields  <- NULL
 scalarTables  <- NULL
@@ -107,6 +107,15 @@ generateLine <- function(i, j, type, label){
                                                      is = "LIKE",
                                                      "is not" = "NOT LIKE"), selected = "LIKE")
                            },
+                           csv = {
+                             selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
+                                         choices = c(contains = "%LIKE%", 
+                                                     "doesn't contain" = "%NOTLIKE%",
+                                                     "starts with" = ",LIKE%",
+                                                     "ends with" = "%LIKE,",
+                                                     is = "%,LIKE,%",
+                                                     "is not" = "%,NOTLIKE,%"), selected = "%,LIKE,%")
+                           },
                            date = {
                              selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
                                          choices = c(between = "%BETWEEN%"))
@@ -117,11 +126,11 @@ generateLine <- function(i, j, type, label){
                            number = {
                              numericInput("val_" %+% i %+% "_" %+% j, label=NULL)
                            },
-                           text = {
-                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
-                           },
                            date = {
                              dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
+                           }, 
+                           {
+                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
                            })
                     
            ),
@@ -193,6 +202,8 @@ lapply(seq_len(maxNumBlocks), function(i){
       ui <- generateLine(i, j, "text", label)
     }else if(field %in% inputType[['date']]){
       ui <- generateLine(i, j, "date", label)
+    }else if(field %in% inputType[['csv']]){
+      ui <- generateLine(i, j, "csv", label)
     }else{
       ui <- generateLine(i, j, "number", label)
     }
@@ -259,6 +270,25 @@ observeEvent(input$btSendQuery, {
                  op[b + 1]  <<- "<"
                  b <<- b + 2L
                  return(NULL)
+               },
+               ",LIKE%" = {
+                 val[b] <<- "," %+% db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
+                 op[b]  <<- "LIKE"
+               },
+               "%LIKE," = {
+                 val[b] <<- "%" %+% 
+                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ","
+                 op[b]  <<- "LIKE"
+               },
+               "%,LIKE,%" = {
+                 val[b] <<- "%," %+% 
+                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
+                 op[b]  <<- "LIKE"
+               },
+               "%,NOTLIKE,%" = {
+                 val[b] <<- "%," %+% 
+                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
+                 op[b]  <<- "NOT LIKE"
                })
       }else{
         val[b] <<- input[["val_" %+% i %+% "_" %+% j]]

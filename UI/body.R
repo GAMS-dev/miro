@@ -8,7 +8,7 @@ body <- dashboardBody({
   tags$head(
     if(config$activateModules$batchMode){
       tagList(
-        tags$script(src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML", 
+        tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML", 
                     type = "application/javascript"),
         tags$script(type = "text/x-mathjax-config", {
           "MathJax.Hub.Config({
@@ -152,9 +152,8 @@ body <- dashboardBody({
                                                        lang$nav$batchMode$sliderAllCombinations), 
                                             tags$div(
                                               tags$label(class = "checkbox-material", "for" = "batchMode_" %+% i, 
-                                                         shiny::checkboxInput("batchMode_" %+% i, label = NULL, 
-                                                                              value = modelIn[[i]]$checkbox$value, 
-                                                                              width = modelIn[[i]]$checkbox$width))
+                                                         checkboxInput("batchMode_" %+% i, label = NULL, 
+                                                                              value = modelIn[[i]]$checkbox$value))
                                             )
                                           )
                                    ),

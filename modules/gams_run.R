@@ -90,12 +90,19 @@ if(identical(config$activateModules$batchMode, TRUE)){
                }
              },
              dropdown = {
+               if(names(modelIn)[i] %in% DDPar){
+                 parPrefix <- "--"
+               }else if(names(modelIn)[i] %in% GMSOpt){
+                 parPrefix <- ""
+               }else{
+                 parPrefix <- "-+"
+               }
                value <- input[["dropdown_" %+% i]]
                if("_" %in% value){
                  value <- value[value != "_"]
-                 return(c(if(length(value)) paste0("--", names(modelIn)[[i]], "=", value), ""))
+                 return(c(if(length(value)) paste0(parPrefix, names(modelIn)[[i]], "=", value), ""))
                }
-               return(paste0("--", names(modelIn)[[i]], "=", value))
+               return(paste0(parPrefix, names(modelIn)[[i]], "=", value))
              },
              date = {
                value <- input[["date_" %+% i]]
@@ -118,10 +125,95 @@ if(identical(config$activateModules$batchMode, TRUE)){
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
     gmsString <- scenIds %+% ": " %+% gmsString 
     if(config$saveTraceFile){
-      gmsString <- gmsString %+% " trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc" %+% " traceopt=3"
+      gmsString <- paste0(gmsString, " trace=", tableNameTracePrefix, modelName, ".trc", " traceopt=3 lo=3 idir1=..", 
+                          .Platform$file.sep, "..", .Platform$file.sep, ".. ", config$gamsWEBUISwitch)
     }
     return(list(ids = scenIds, gmspar = gmsString))
   })
+  
+  prevJobSubmitted <- Sys.time()
+  
+  genBatchJobFolder <- function(fromDir, modelDir, toDir, scenGmsPar){
+    prog <- Progress$new()
+    on.exit(prog$close())
+    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    updateProgress <- function(incAmount, detail = NULL) {
+      prog$inc(amount = incAmount, detail = detail)
+    }
+    writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".gmsb"))
+    # Copy files that are needed to solve model
+    file.copy(fromDir, toDir, recursive = TRUE)
+    file.copy(file.path(modelDir %+% "batch_submission.gms"), toDir)
+    do.call(file.remove, list(list.files(toDir, pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
+    updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
+  }
+  executeBatchJob <- function(scenGmsPar){
+    bid <- as.integer(db$writeMetaBatch(batchTags = isolate(input$newBatchTags)))
+    flog.trace("Metadata for batch job was written to database. Batch ID: '%d' was assigned to job.", bid)
+    batchDir <- file.path(currentModelDir, batchDirName, bid)
+    if(dir.exists(batchDir)){
+      flog.error("Batch directory: '%s' already exists.", batchDir)
+      stop(sprintf("Batch directory: '%s' already exists.", batchDir), call. = FALSE)
+    }
+    dir.create(batchDir, recursive = TRUE)
+    writeLines(scenGmsPar, file.path(batchDir, tolower(modelName) %+% ".gmsb"))
+    
+    flog.trace("New folder for batch job was created: '%s'.", batchDir)
+    # create daemon to execute batch job
+    batchSubmDir <- file.path(getwd(), modelDir, "batch_submission.gms")
+    curDir <- batchDir
+    if(isWindows()){
+      batchSubmDir <- gsub("/", "\\", batchSubmDir, fixed = TRUE)
+      curdir <- gsub("/", "\\", curDir, fixed = TRUE)
+    }
+    p <- process$new(gamsSysDir %+% "gams", 
+                     args = c(batchSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true"),  
+                     cleanup = TRUE, cleanup_tree = FALSE, supervise = FALSE,
+                     windows_hide_window = TRUE)
+    pid <- p$get_pid()
+    flog.trace("Batch job submitted successfuly. Batch job process ID: '%d'.", pid)
+    db$setBatchPid(bid, pid)
+    flog.trace("Process ID: '%d' added to batch job ID: '%d'.", pid, bid)
+  }
+  observeEvent(input$btBatchAll, {
+    flog.trace("Button to schedule all scenarios for batch submission was clicked.")
+    now <- Sys.time()
+    if(now - prevJobSubmitted < 5L){
+      showHideEl(session, "#batchSubmitWait", 6000)
+      flog.info("Batch submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
+      return()
+    }
+    prevJobSubmitted <<- Sys.time()
+    tryCatch({
+      executeBatchJob(scenGmsPar)
+      showHideEl(session, "#batchSubmitSuccess", 3000)
+      hideModal(session, 3L)
+    }, error = function(e){
+      flog.error("Some problem occurred while executing batch job. Error message: '%s'.", e)
+      showHideEl(session, "#batchSubmitUnknownError", 6000)
+    })
+    
+  })
+  
+  observeEvent(input$btBatchNew, {
+    flog.trace("Button to schedule only new scenarios for batch submission was clicked.")
+    now <- Sys.time()
+    if(now - prevJobSubmitted < 5L){
+      showHideEl(session, "#batchSubmitWait", 6000)
+      flog.info("Batch submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
+      return()
+    }
+    prevJobSubmitted <<- Sys.time()
+    tryCatch({
+      executeBatchJob(scenGmsPar[idxDiff])
+      showHideEl(session, "#batchSubmitSuccess", 3000)
+      hideModal(session, 3L)
+    }, error = function(e){
+      flog.error("Some problem occurred while executing batch job. Error message: '%s'.", e)
+      showHideEl(session, "#batchSubmitUnknownError", 6000)
+    })
+  })
+  
   if(file.exists("./modules/gams_run_epigrids.R"))
     source("./modules/gams_run_epigrids.R", local = TRUE)
 }
@@ -157,19 +249,8 @@ observeEvent(input$btSolve, {
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     idxDiff  <<- match(sidsDiff, idsToSolve)
-    showModal(modalDialog(sprintf(lang$nav$dialogBatch$desc, length(idsToSolve), 
-                                  length(idsToSolve) - length(sidsDiff)), 
-                          title = lang$nav$dialogBatch$title,
-                          footer = tagList(
-                            modalButton(lang$nav$dialogBatch$cancelButton),
-                            tags$a(id="btBatchAll", class='btn btn-default shiny-download-link',
-                                   href='', target='_blank', download=NA, lang$nav$dialogBatch$processAllButton),
-                            if(length(idsToSolve) - length(sidsDiff) > 0L){
-                              tags$a(id="btBatchNew", class='btn btn-default shiny-download-link btHighlight1',
-                                     href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)
-                            }
-                            ),
-                          fade = TRUE, easyClose = FALSE))
+    showBatchSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
+  
     enableEl(session, "#btSolve")
     
     return(NULL)
