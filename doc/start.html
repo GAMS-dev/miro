@@ -120,10 +120,37 @@ To start a demo application, you need to run the corresponding GAMS model (e.g. 
     <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" /></div>
 <p>The screen is essentially divided in two:
 <h6>Navigation bar:</h6>
-On the left side you can find the navigation bar. Here you can navigate between the categories <i>"Input"</i>, <i>"Output"</i>, <i>"GAMS interaction"</i> and <i>"Advanced Options"</i>. In addition, the buttons for loading input data and for starting a GAMS run are located here.
+<p><br>On the left side you can find the navigation bar. Here you can navigate between the categories:</p>
+                                        <ol class="fa-ul">
+                                        <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
+                                        Load input data for the next model run. Can be a locally saved Excel spreadsheet or existing data from the database.
+                                        </li>
+                                        <li><span class="fa-li"><i class="fa fa-tachometer-alt"></i></span><b>Output:</b><br/>
+                                        Visualization of calculated output data of a model run.
+                                        </li>
+                                        <li><span class="fa-li"><i class="fas fa-cog"></i></span><b>GAMS interaction:</b><br/>
+                                          While solving a model with GAMS this section shows the Log and Lst files.
+                                        </li>
+                                        <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
+                                        Module for the direct comparison of scenarios in Spit-screeen or Tab mode.
+                                        </li>
+                                        <li><span class="fa-li"><i class="fas fa-ellipsis-h"></i></span><b>Advanced Options:</b><br/>
+                                          Download of temporary files from the working directory.
+                                        </li>
+                                        </ol>
+                                        <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
+                                        <ol class="fa-ul">
+                                        <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
+                                        Load input data for a model run. 
+                                        </li>
+                                        <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
+                                        Solve the GAMS model with the configured input data. This will start GAMS in the background.
+                                        </li>
+                                        </ol>
 </p>
 <h6>Main window:</h6>
 <p>The main window is the heart of the WebUI. Here you can see your data in the form of tables and graphs.</p>
+<p>The workflow for the usage of the GAMS WebUI is intended as follows:</p>
     <ol class="list">
 <li><b>Import data</b><br/>
 To import model input data, click on the <i>"Load data"</i> button and navigate to the folder of the model currently used (e.g. <span class="code">Documents/GMSWebUI_Examples/trnsport/</span>). You should find a <span class="code">trnsport.xlsx</span> file there. After the import, you can adjust the input data.
@@ -282,7 +309,7 @@ Besides the model input and output data all temporarily created files of the mod
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="additional-db" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The WebUI presented here was designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely? To avoid having to configure and solve each scenario individually, there is the "batch" module. In this interface any number of scenarios can be configured and analyzed at once. </p>
+                                  <p>The WebUI presented here was designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely? To avoid having to configure and solve each scenario individually, there is the "Hypercube mode". In this interface a model parameter can be set several times. From this multiple parameterization all possible scenarios are generated, which result from the combination of all set parameters. As a consequence, any number of scenarios can be configured and analyzed at once.</p>
                                   <p>We developed this tool to efficiently generate, store and analyze a multitude of scenarios.
                                   However, this feature is not included in the WebUI version that you have installed. If you are interested in the more advanced features, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
                                 </div>
