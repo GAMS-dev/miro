@@ -840,7 +840,7 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaBatch = function(batchTags = character(0L)){
+                writeMetaBatch = function(batchTags = character(1L)){
                   # adds new entry to batch run metadata table
                   #
                   # Args:
@@ -848,7 +848,9 @@ Db <- R6Class("Db",
                   #
                   # Returns:
                   #   batch Id (integer)
-                  
+                  if(is.null(batchTags)){
+                    batchTags <- character(1L)
+                  }
                   stopifnot(is.character(batchTags))
                     
                   now <- Sys.time()
@@ -874,17 +876,15 @@ Db <- R6Class("Db",
                   stop("Batch ID could not be identified. Something went wrong while writing batch metadata to database.", 
                        call. = FALSE)
                 },
-                getMetaBatch = function(bid){
-                  # adds new entry to batch run metadata table
+                getMetaBatch = function(){
+                  # fetches batch job metadata
                   #
                   # Args:
-                  #   bid:               ID of batch job
                   #
                   # Returns:
                   #   tibble with metadata
-                  stopifnot(is.integer(bid), length(bid) == 1L)
-                  vector <- gsub(",", "/comma/", vector, fixed = TRUE)
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], private$userAccessGroups)
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
+                                                             private$userAccessGroups)
                   
                   
                   batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights, 
@@ -892,25 +892,51 @@ Db <- R6Class("Db",
                   
                   return(batchMeta)
                 },
-                setBatchPid = function(bid, pid){
+                updateHypercubeJob = function(jid, pid = NULL, tags = NULL, status = NULL,
+                                              accessR = NULL, accessW = NULL){
                   # set process id for batch job
                   # 
                   # Args:
-                  #   bid:           ID of batch job to update
+                  #   jid:           ID of Hypercube job to update
                   #   pid:           process ID of batch job
                   #
                   # Returns:
                   #   invisibly returns R6 object (reference to Db class)
-                  stopifnot(is.integer(bid), length(bid) == 1L)
-                  stopifnot(is.integer(pid), length(pid) == 1L)
+                  stopifnot(is.integer(jid), length(jid) == 1L)
                   
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessW'], private$userAccessGroups)
+                  colNames <- NULL
+                  values   <- NULL
+                  if(!is.null(pid)){
+                    stopifnot(is.integer(pid), length(pid) == 1L)
+                    stopifnot(is.null(status))
+                    colNames <- private$scenMetaColnames['sname']
+                    values   <- paste0(pid, "_running")
+                  }
+                  if(!is.null(tags)){
+                    stopifnot(is.character(tags))
+                    colNames <- c(colNames, private$scenMetaColnames['stag'])
+                    values   <- c(values, vector2Csv(tags))
+                  }
+                  if(!is.null(status)){
+                    stopifnot(is.character(status), length(status) == 1L)
+                    if(!startsWith(status, "_")){
+                      status <- paste0("_", status)
+                    }
+                    colNames <- c(colNames, private$scenMetaColnames['sname'])
+                    values   <- c(values, status)
+                  }
+                  if(is.null(colNames)){
+                    stop("No Hypercube metadata was updated as no data was provided.", call. = FALSE)
+                  }
+                  
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessW'], 
+                                                             private$userAccessGroups)
                   noRowsUpdated <- self$updateRows(private$tableNameMetaBatch, accessRights, 
-                                                   colNames = private$scenMetaColnames['sname'], 
-                                                   values = paste0(pid, "_running"), subsetSids = bid, 
+                                                   colNames = colNames, 
+                                                   values = values, subsetSids = jid, 
                                                    innerSepAND = FALSE)
                   if(!noRowsUpdated){
-                    stop("Batch metadata was not updated. Maybe you are missing write permissions?", call. = FALSE)
+                    stop("Batch metadata was not updated. This might be due to insufficient write permissions.", call. = FALSE)
                   }
                   
                   invisible(self)

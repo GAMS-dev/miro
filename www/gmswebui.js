@@ -57,6 +57,15 @@ function changeActiveButtons(tabId){
         $("#btLoadScen").hide();
   }
 }
+function confirmModalShow(title, desc, cancelTxt, confirmTxt, confirmCall){
+  let btData = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button><button type="button" class="btn btn-default" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+  cModal = $('#confirmModal');
+  cModal.find('.modal-title').html(title);
+  cModal.find('.modal-body').html(desc);
+  cModal.find('.modal-footer').html(btData);
+  cModal.modal('show');
+}
+
 let removeButtonCounter = {};
   
 function removeAttachment(elId){
@@ -67,6 +76,17 @@ function removeAttachment(elId){
     removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
   }
   Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
+}
+
+function showHypercubeLog(jID){
+  Shiny.setInputValue("showHypercubeLog", jID, {priority: "event"});
+}
+function importHypercubeJob(jID){
+  Shiny.setInputValue("importHypercubeJob", jID, {priority: "event"});
+}
+
+function discardHypercubeJob(jID){
+  Shiny.setInputValue("discardHypercubeJob", jID, {priority: "event"});
 }
 
 $(document).ready(function () {

@@ -94,9 +94,9 @@
                "required":false
             },
             "batchMode":{  
-               "description":"Solve scenarios in batch mode?",
+               "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "logFile:":{  
@@ -178,7 +178,7 @@
                      "minLength":1
                    },
                    "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
                    "noImport":{  
@@ -248,7 +248,7 @@
                      "minLength":1
                    },
                    "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
                    "noImport":{  
@@ -321,7 +321,7 @@
                      "minLength":1
                    },
                    "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
                    "noImport":{  
@@ -400,7 +400,7 @@
                      "minLength":1
                    },
                    "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
                    "noImport":{  
@@ -495,7 +495,7 @@
                      "minLength":1
                    },
                    "noBatch":{  
-                    "description":"Boolean that specifies whether element should not be used in batch mode",
+                    "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
                    "noImport":{  

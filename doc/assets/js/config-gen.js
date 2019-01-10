@@ -222,7 +222,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "required":false
                     },
                     "batchMode":{
-                       "title":"Solve scenarios in batch mode?",
+                       "title":"Solve multiple scenarios in Hypercube mode?",
                        "type":"boolean",
                        "default":false,
                        "required":false
@@ -497,7 +497,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         },
@@ -658,7 +658,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         },
@@ -736,7 +736,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         },
@@ -831,7 +831,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         },
@@ -872,7 +872,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         },
@@ -1082,7 +1082,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         }
@@ -1233,7 +1233,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         }
@@ -1306,7 +1306,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         }
@@ -1396,7 +1396,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         }
@@ -1432,7 +1432,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "noBatch":{
-                          "title":"Should element be excluded from batch mode (only relevant for batch module)?",
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
                         }

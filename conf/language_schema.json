@@ -388,21 +388,16 @@
               "minLength":1,
               "required":true
             },   
-            "uploadZip":{  
+            "btManualImport":{  
               "type":"string",
               "minLength":1,
               "required":true
-            },   
-            "batchTags":{  
+            },
+            "btShowHistory":{  
               "type":"string",
               "minLength":1,
               "required":true
-            },   
-            "uploadButton":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            }            
+            }
           }
         },
         "batch_load":{
@@ -1182,7 +1177,17 @@
               "minLength":1,
               "required":true
             },
+            "newTags":{
+              "type": "string",
+              "minLength":1,
+              "required":true
+            },
             "cancelButton":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "manualSwitch":{
               "type":"string",
               "minLength":1,
               "required":true
@@ -1193,6 +1198,21 @@
               "required":true
             },
             "processUnsolvedButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "successMsg":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "waitTime":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "unknownError":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1438,6 +1458,178 @@
                   "required":true
                 },
                 "importAllButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "importJobsDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noJobs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                 "discardSuccess":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                 "importSuccess":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "unknownError":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "header":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "owner":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "date":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "tags":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "status":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "action":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "buttons":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "import":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "log":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "discard":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "importConfirm":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "desc":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cancelButton":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "confirmButton":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
+                "discardConfirm":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "title":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "desc":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cancelButton":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "confirmButton":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                }
+              }
+            },
+            "manualJobImportDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "title":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "uploadZip":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "batchTags":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "uploadButton":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancelButton":{
                   "type":"string",
                   "minLength":1,
                   "required":true

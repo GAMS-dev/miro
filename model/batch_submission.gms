@@ -113,31 +113,24 @@ with open(bfname) as f:
 if outScript == "gams":
    # write GAMS $calls into job submission file
    linestmp = ""
-   linestmp += "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
-   linestmp += "$call mkdir " + zipname + "\n" 
    for index, item in enumerate(content):
       dirname = extractDir(item)
       tmpdir = "tmp"+str(index)
       call = extractCall(item)
       fjobsub = open(fJobSubName,"w")
-      linestmp += "$call cd " + zipname + "\n$if dexist " + tmpdir + " $call rm -r " + tmpdir + "\n"
-      linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
+      linestmp += "$if dexist " + tmpdir + " $call rm -r " + tmpdir + "\n"
+      linestmp += "$call mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
       # dummy trace file (to gurantee that a trace file exists for each run)
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
+      linestmp += "$call cd " + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
       # scalars.csv file manually filled (needed in webui for data validation)
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
+      linestmp += "$call cd " + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + " " + "--webui=1 idir = \"..%system.dirsep%..%system.dirsep%model%system.dirsep% ".strip() + modelpath + "\" " + "idir2 = \"..%system.dirsep%..%system.dirsep% ".strip() + datapath + "\" lo=3\n"      
-      linestmp += "$call cd " + zipname + " \n$if dexist " + dirname + " $call rm -r " + dirname + "\n"
-      linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
-   
-   # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
-   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"
-
-   # delete all temporary solution directories
-   fjobsub.write(linestmp + "\n$call rm -r " + zipname)
-
+      linestmp += "$call cd " + tmpdir + " && " + call + "\n"      
+      linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
+      linestmp += "$call mv " + tmpdir + " " + dirname + "\n\n"
+      fjobsub.write(linestmp)
+      
 elif outScript == "hpc":
    pass
 else:

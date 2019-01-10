@@ -7,7 +7,7 @@
       "scen":"Compare Scenarios",
       "advanced":"Advanced Options",
       "batch":{
-        "configureRun": "Configure batch run",
+        "configureRun": "Configure Hypercube job",
         "import": "Import results",
         "load": "Load results",
         "analyze" : "Analyze scenarios"
@@ -16,7 +16,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
-      "solveBatch":"Submit jobs",
+      "solveBatch":"Submit job",
       "load":"Load",
       "splitView":"Switch to split view",
       "tabView":"Switch to tab view",
@@ -85,9 +85,8 @@
     },
     "batch_import":{
       "title":"Import data",
-      "uploadZip":"Upload zip file with results here.",
-      "batchTags":"Batch Tags (separate with comma)",
-      "uploadButton":"Upload"
+      "btManualImport": "Manual import",
+      "btShowHistory": "Show history"
     },
     "batch_load":{
       "title":"Load Scenarios",
@@ -256,18 +255,23 @@
       "cancelButton":"Cancel"
     },
     "dialogBatch":{
-      "title": "Batch configuration",
-      "desc": "You selected %d scenarios to be solved in batch mode. Out of these, %d scenarios have already been solved either by yourself or someone else. Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "title": "Hypercube configuration",
+      "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else. Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "newTags": "Assign one or more tags to your job:",
+      "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",
       "processAllButton": "Process all",
       "processUnsolvedButton": "Process unsolved only",
+      "successMsg": "Your Hypercube job was scheduled successfully. You can retrieve the results as soon as the job finished executing.",
+      "waitTime": "Please wait some seconds before submitting a new job.",
+      "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
       "waitDialog":{
-        "title": "Batch run is being configured",
-        "desc": "Please wait while the batch run is being configured."
+        "title": "Hypercube job is being configured",
+        "desc": "Please wait while the Hypercube job is being configured."
       },
       "exceedMaxNoDialog":{
         "title": "Maximum number scenarios exceeded",
-        "desc": "You have selected to solve %e scenarios for your batch run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
+        "desc": "You have selected to solve %e scenarios for your Hypercube run. This exceeds the maximum allowed number that can be solved per run (%d). Please reduce the number of scenarios and try again."
       },
       "noScenSelectedDialog":{
         "title": "No scenarios selected",
@@ -313,6 +317,44 @@
         "cancelButton":"Abort",
         "importNewButton": "Import only new",
         "importAllButton": "Import all"
+      },
+      "importJobsDialog":{
+        "title": "Currently active Hypercube jobs",
+        "noJobs": "No Hypercube jobs are currently active",
+        "discardSuccess": "Job was discarded",
+        "importSuccess": "Job was imported successfully",
+        "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
+        "header":{
+          "owner": "Owner",
+          "date": "Submission date",
+          "tags": "Job tags",
+          "status": "Status",
+          "action": "Action"
+        },
+        "buttons":{
+          "import": "Import",
+          "log": "Show log",
+          "discard": "Discard"
+        },
+        "importConfirm":{
+          "title": "Confirm import",
+          "desc": "Are you sure you want to import the selected Hypercube job?",
+          "cancelButton": "Cancel",
+          "confirmButton": "Confirm"
+        },
+        "discardConfirm":{
+          "title": "Confirm discard",
+          "desc": "Are you sure you want to discard the selected Hypercube job? Running jobs will be stopped.",
+          "cancelButton": "Cancel",
+          "confirmButton": "Confirm"
+        }
+      },
+      "manualJobImportDialog":{
+        "title": "Manual Hypercube job import",
+        "uploadZip":"Upload zip file with results here",
+        "batchTags":"Job tags (separate with comma)",
+        "uploadButton":"Upload",
+        "cancelButton": "Cancel"
       }
     },
     "dialogPaverInUse":{

@@ -7,7 +7,7 @@
       "scen":"Szenarien vergleichen",
       "advanced":"Erweiterte Optionen",
       "batch":{
-        "configureRun": "Batchlauf konfigurieren",
+        "configureRun": "Hypercube-Job konfigurieren",
         "import": "Ergebnisse importieren",
         "load": "Ergebnisse laden",
         "analyze": "Szenarienanalyse"
@@ -85,9 +85,8 @@
     },
     "batch_import":{
       "title":"Importiere Daten",
-      "uploadZip":"Lade Zip-Datei mit Ergebnissen hoch.",
-      "batchTags":"Batch-Bezeichnungen (Kommasepariert)",
-      "uploadButton":"Hochladen"
+      "btManualImport": "Manueller Import",
+      "btShowHistory": "Verlauf anzeigen"
     },
     "batch_load":{
       "title":"Lade Szenarien",
@@ -131,7 +130,7 @@
     "dialogEditMeta":{
       "title":"Metadaten bearbeiten",
       "newName": "New name",
-      "newTags":"New tags",
+      "newTags":"Neue Tags",
       "attachmentsLabel": "Anhänge",
       "attachmentsAdd": "Anhänge hinzufügen",
       "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
@@ -256,18 +255,23 @@
       "cancelButton":"Abbrechen"
     },
     "dialogBatch":{
-      "title": "Batchkonfiguration",
-      "desc": "Sie haben %d Szenarien zum Lösen im Batchmodus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden. Möchten Sie alle konfigurierten Szenarien lösen oder nur diejenigen, welche zuvor noch nicht gelöst worden sind?",
+      "title": "Hypercube-Konfiguration",
+      "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden. Möchten Sie alle konfigurierten Szenarien lösen oder nur diejenigen, welche zuvor noch nicht gelöst worden sind?",
+      "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
+      "manualSwitch": "Job manuell verarbeiten?",
       "cancelButton":"Abbrechen",
       "processAllButton": "Alle Verarbeiten",
       "processUnsolvedButton": "Nur die ungelösten verarbeiten",
+      "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Auftrag ausgeführt wurde.",
+      "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Auftrag ausführen.",
+      "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "waitDialog":{
-        "title": "Batchlauf wird konfiguriert",
-        "desc": "Bitte warten Sie, während der Batchlauf konfiguriert wird."
+        "title": "Hypercube-Job wird konfiguriert",
+        "desc": "Bitte warten Sie, während der Hypercube-Job konfiguriert wird."
       },
       "exceedMaxNoDialog":{
         "title": "Maximale Anzahl Szenarien überschritten",
-        "desc": "Sie haben %e Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %d Szenarien pro Batchlauf. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
+        "desc": "Sie haben %e Szenarien für ihren Bacthlauf gewählt. Dies überschreitet die maximale Anzahl von %d Szenarien pro Hypercube-Job. Bitte reduzieren Sie die Anzahl Szenarien und versuchen es erneut."
       },
       "noScenSelectedDialog":{
         "title": "Keine Szenarien ausgewählt",
@@ -313,6 +317,44 @@
         "cancelButton":"Abbrechen",
         "importNewButton": "Nur neue importieren",
         "importAllButton": "Alle importieren"
+      },
+      "importJobsDialog":{
+        "title": "Derzeit aktive Hypercube-Jobs",
+        "noJobs": "Zur Zeit sind keine Hypercube-Jobs aktiv.",
+        "discardSuccess": "Job wurde verworfen",
+        "importSuccess": "Job wurde erfolgreich importiert",
+        "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator.",
+        "header":{
+          "owner": "Eigentümer",
+          "date": "Übermittlungsdatum",
+          "tags": "Job Tags",
+          "status": "Status",
+          "action": "Aktion"
+        },
+        "buttons":{
+          "import": "Importieren",
+          "log": "Log anzeigen",
+          "discard": "Verwerfen"
+        },
+        "importConfirm":{
+          "title": "Import bestätigen",
+          "desc": "Sind Sie sicher, dass Sie den ausgewählten Hypercube-Job importieren möchten?",
+          "cancelButton": "Abbrechen",
+          "confirmButton": "Bestätigen"
+        },
+        "discardConfirm":{
+          "title": "Verwerfen bestätigen",
+          "desc": "Sind Sie sicher, dass Sie den ausgewählten Hypercube-Job verwerfen möchten? Laufende Aufträge werden gestoppt.",
+          "cancelButton": "Abbrechen",
+          "confirmButton": "Bestätigen"
+        }
+      },
+      "manualJobImportDialog":{
+        "title": "Manueller Hypercube-Job-Import",
+        "uploadZip":"Laden Sie hier eine Zip-Datei mit den Ergebnissen hoch.",
+        "batchTags":"Job Tags (kommasepariert)",
+        "uploadButton":"Upload",
+        "cancelButton": "Abbrechen"
       }
     },
     "dialogPaverInUse":{

@@ -126,7 +126,7 @@ if(is.null(errMsg)){
 # load model input and output parameters
 if(is.null(errMsg)){
   flog.trace("Language files loaded.")
-  if(identical(tolower(Sys.getenv("RUNBATCHMODE")), "yes")){
+  if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes")){
     config$activateModules$batchMode <- TRUE
   }
   # handsontable options

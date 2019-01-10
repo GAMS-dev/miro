@@ -49,6 +49,20 @@ body <- dashboardBody({
     </div>
 </div>
 </div>')},
+  HTML('<!-- Creates modal dialog for confirm messages -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width:685px;">
+      <div class="modal-header">
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+</div>
+</div>'),
   HTML('<div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
        <div></div><div></div><div></div><div></div></div></div>'),
   tabItems(
@@ -337,21 +351,21 @@ body <- dashboardBody({
       )
     },
     if(config$activateModules$batchMode){
+      
       tabItem(tabName = "importData",
               fluidRow(
-                box(title = lang$nav$batch_import$title, status="primary", style="width:70vh",
-                    solidHeader = TRUE, width = 12,
-                    tags$div(style="width:65vh",
-                             fileInput("batchImport", label = lang$nav$batch_import$uploadZip)
+                box(title = tagList(lang$nav$batch_import$title, 
+                                    tags$div(style = "float: right;", 
+                                             actionButton(inputId = "refreshActiveJobs", 
+                                                          class = "btIcon", icon = icon("refresh"), label = NULL))),
+                    status="primary", solidHeader = TRUE, width = 12,
+                    genSpinner("jImport_load", absolute = FALSE),
+                    uiOutput("jImport_output"),
+                    tags$div(class = "col-sm-6",
+                      actionButton("btManualImport", lang$nav$batch_import$btManualImport)
                     ),
-                    tags$div(style="width:65vh",
-                             selectizeInput("batchTags", 
-                                            lang$nav$batch_import$batchTags, c(),
-                                            multiple = TRUE, options = list(
-                                              'create' = TRUE,
-                                              'persist' = FALSE)
-                             ),
-                             actionButton("btUploadBatch", label = lang$nav$batch_import$uploadButton)
+                    tags$div(class = "col-sm-6", style = "text-align:right;",
+                             actionButton("btShowHistory", lang$nav$batch_import$btShowHistory)
                     )
                 )
               )

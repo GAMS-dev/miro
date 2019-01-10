@@ -444,7 +444,7 @@ if(!is.null(errMsg)){
   server <- function(input, output, session){
     options(shiny.maxRequestSize=100*1024^2) 
     newTab <- vector("list", maxNumberScenarios + 3)
-    flog.info("Session started (model: '%s').", modelName)
+    flog.info("Session started (model: '%s', user: '%s').", modelName, uid)
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
     btSortTime         <- TRUE
@@ -876,7 +876,7 @@ if(!is.null(errMsg)){
       # remove temporary files and folders
       unlink(file.path(workDir), recursive=TRUE)
       suppressWarnings(rm(activeScen))
-      try(flog.info("Session ended (model: '%s').", modelName))
+      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid))
       gc()
       if(!interactive()){
         stopApp()

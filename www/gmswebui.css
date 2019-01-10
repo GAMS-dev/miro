@@ -466,6 +466,27 @@ animation: none !important;
   margin-top: 15px;
   margin-bottom: 25px;
 }
+.cJob-wrapper {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  padding: 10px;
+  align-items: center;
+  max-height:80vh;
+  overflow:auto;
+}
+.cJob-header {
+  font-weight: bold;
+  font-size: 18px;
+  border-bottom: 2px solid #000;
+}
+.cJob-wrapper .form-group {
+  margin: 0;
+}
+.cJob-item {
+  padding: 5px;
+  font-size: 15px;
+  text-align: center;
+}
 /* loading spinner (https://loading.io/css/)*/
 #loading-screen {
     position: fixed;

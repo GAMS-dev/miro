@@ -141,6 +141,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
       prog$inc(amount = incAmount, detail = detail)
     }
     writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".gmsb"))
+    
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
     file.copy(file.path(modelDir %+% "batch_submission.gms"), toDir)
@@ -172,7 +173,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
                      windows_hide_window = TRUE)
     pid <- p$get_pid()
     flog.trace("Batch job submitted successfuly. Batch job process ID: '%d'.", pid)
-    db$setBatchPid(bid, pid)
+    db$updateHypercubeJob(bid, pid = pid)
     flog.trace("Process ID: '%d' added to batch job ID: '%d'.", pid, bid)
   }
   observeEvent(input$btBatchAll, {

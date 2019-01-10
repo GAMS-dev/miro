@@ -11,6 +11,7 @@ scalarOutToVerify <- NULL
 if(scalarsOutName %in% names(modelOut)){
   scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
 }
+
 gmsColTypes <- unlist(lapply(c(modelIn, modelOut), "[[", "colTypes"))
 gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
 gmsColTypes[[scalarsFileName]] <- "ccc"
@@ -18,6 +19,8 @@ gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
   names(el$headers)
 })
 gmsFileHeaders[[scalarsFileName]] <- scalarsFileHeaders
+batchMeta <- "e"
+batchMetaHistory <- "e"
 
 disableEl(session, "#btUploadBatch")
 
@@ -165,8 +168,11 @@ observeEvent(virtualActionButton(rv$btSave), {
   
   # clean up
   rv$clear <- FALSE
+  removeModal()
 })
-
+observeEvent(input$btManualImport, {
+  showManualJobImportDialog()
+})
 observeEvent(input$batchImport, {
   enableEl(session, "#btUploadBatch")
   tag <- gsub("\\..+$", "", input$batchImport$name)
@@ -174,6 +180,104 @@ observeEvent(input$batchImport, {
   rv$clear <- TRUE
 }, priority = 1000)
 
-observeEvent(input$showActiveJobs, {
-  return()
+observeEvent(input$refreshActiveJobs, {
+  showEl(session, "#jImport_load")
+  batchMetaDisplay <- NULL
+  tryCatch({
+    batchMeta_tmp <- db$getMetaBatch()
+    if(length(batchMeta_tmp) && nrow(batchMeta_tmp)){
+      batchMeta <<- filter(batchMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
+      batchMetaHistory <<- dplyr::setdiff(batchMeta_tmp, batchMeta)
+      batchMetaDisplay <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
+    }
+    }, error = function(e){
+      flog.error("Problems fetching batch job metadata. Error message: '%s'.", e)
+    }
+  )
+  output$jImport_output <- renderUI(getActiveBatchJobsTable(batchMetaDisplay))
+  hideEl(session, "#jImport_load")
+}, ignoreNULL = FALSE)
+
+observeEvent(input$showHypercubeLog, {
+  jID <- isolate(input$showHypercubeLog)
+  flog.trace("Show Hypercube log button clicked. Job ID: '%s'.", jID)
+  if(!is.integer(jID) || length(jID) != 1L){
+    flog.error("Invalid job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+  hasReadPerm <- jID %in% batchMeta[[1]]
+  if(!hasReadPerm){
+    flog.error("A Hypercube job that user has no read permissions was attempted to fetch. Job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+})
+
+observeEvent(input$importHypercubeJob, {
+  removeModal()
+  jID <- isolate(input$importHypercubeJob)
+  flog.trace("Import Hypercube job button clicked. Job ID: '%s'.", jID)
+  if(!is.integer(jID) || length(jID) != 1L){
+    flog.error("Invalid job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+  hasReadPerm <- jID %in% batchMeta[[1]]
+  if(!hasReadPerm){
+    flog.error("A Hypercube job that user has no read permissions was attempted to fetch. Job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+  
+  showEl(session, "#jImport_load")
+  batchMetaDisplay           <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
+  output$jImport_output <- renderUI(getActiveBatchJobsTable(batchMetaDisplay))
+  hideEl(session, "#jImport_load")
+  showHideEl(session, "#fetchJobsImported")
+})
+
+observeEvent(input$discardHypercubeJob, {
+  removeModal()
+  jID <- isolate(input$discardHypercubeJob)
+  flog.trace("Discard Hypercube job button clicked. Job ID: '%s'.", jID)
+  if(!is.integer(jID) || length(jID) != 1L){
+    flog.error("Invalid job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+  hasReadPerm <- jID %in% batchMeta[[1]]
+  if(!hasReadPerm){
+    flog.error("A Hypercube job that user has no read permissions was attempted to fetch. Job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  }
+  noErr <- TRUE
+  tryCatch({
+    db$updateHypercubeJob(jID, tags = isolate(input[["jTag_" %+% jID]]), status = "discarded_")
+  }, error = function(e){
+    flog.error("Problems updating Hypercube job with job ID: '%s'. Error message: '%s'.", jID, e)
+    showHideEl(session, "#fetchJobsError")
+    noErr <<- FALSE
+  })
+  if(!noErr)
+    return()
+  rowId                      <- batchMeta[[1]] == jID
+  jobMeta                    <- batchMeta[rowId, ]
+  jobMeta[, snameIdentifier] <- "_discarded_"
+  jobMeta[, stagIdentifier]  <- vector2Csv(isolate(input[["jTag_" %+% jID]]))
+  batchMeta                  <<- batchMeta[!rowId, ]
+  batchMetaHistory           <<- bind_rows(batchMetaHistory, jobMeta)
+
+  showEl(session, "#jImport_load")
+  batchMetaDisplay           <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
+  output$jImport_output <- renderUI(getActiveBatchJobsTable(batchMetaDisplay))
+  hideEl(session, "#jImport_load")
+  showHideEl(session, "#fetchJobsDiscarded")
+})
+observeEvent(input$btShowHistory, {
+  showEl(session, "#jImport_load")
+  batchMetaDisplay           <- arrange(batchMetaHistory, desc(!!as.name(stimeIdentifier)))
+  output$jImport_output <- renderUI(getActiveBatchJobsTable(batchMetaDisplay))
+  hideEl(session, "#jImport_load")
 })

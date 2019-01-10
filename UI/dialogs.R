@@ -512,3 +512,90 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
     fade = TRUE, easyClose = FALSE
   ))
 }
+showManualJobImportDialog <- function(){
+   showModal(modalDialog(
+     title = lang$nav$batchMode$manualJobImportDialog$title,
+     tags$div(
+       tags$div(
+         fileInput("batchImport", label = lang$nav$batchMode$manualJobImportDialog$uploadZip)
+       ),
+       tags$div(
+         selectizeInput("batchTags", 
+                        lang$nav$batchMode$manualJobImportDialog$batchTags, c(),
+                        multiple = TRUE, options = list(
+                          'create' = TRUE,
+                          'persist' = FALSE)
+         )
+       )
+     ),
+     footer = tagList(
+       modalButton(lang$nav$batchMode$manualJobImportDialog$cancelButton),
+       actionButton("btUploadBatch", label = lang$nav$batchMode$manualJobImportDialog$uploadButton, 
+                    class = "btHighlight1")
+     ),
+     fade = TRUE, easyClose = TRUE
+   ))
+ }
+getActiveBatchJobsTable <- function(batchMeta){
+  tags$div(
+    tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
+             lang$nav$batchMode$importJobsDialog$discardSuccess),
+    tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
+             lang$nav$batchMode$importJobsDialog$importSuccess),
+    tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
+             lang$nav$batchMode$importJobsDialog$unknownError),
+    if(!inherits(batchMeta, "data.frame")){
+      tags$div(class = "errMsg", 
+        lang$nav$batchMode$importJobsDialog$unknownError
+      )
+    }else if(length(batchMeta) && nrow(batchMeta)){
+      tags$div(class = "cJob-wrapper",
+               tags$div(class = "cJob-header cJob-item", lang$nav$batchMode$importJobsDialog$header$owner),
+               tags$div(class = "cJob-header cJob-item", lang$nav$batchMode$importJobsDialog$header$date),
+               tags$div(class = "cJob-header cJob-item", lang$nav$batchMode$importJobsDialog$header$tags),
+               tags$div(class = "cJob-header cJob-item", lang$nav$batchMode$importJobsDialog$header$status),
+               tags$div(class = "cJob-header cJob-item", lang$nav$batchMode$importJobsDialog$header$action),
+        do.call("tagList", lapply(seq_len(nrow(batchMeta)), function(i){
+          jStatus <- strsplit(batchMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
+          jID     <- batchMeta[[1]][i]
+          jTags   <- csv2Vector(batchMeta[[5]][i])
+          tagList(
+            tags$div(class = "cJob-item", batchMeta[[2]][i]),
+            tags$div(class = "cJob-item", batchMeta[[4]][i]),
+            tags$div(class = "cJob-item", 
+                     selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
+                                    selected = jTags,
+                                    multiple = TRUE, options = list(
+                                      'create' = TRUE,
+                                      'persist' = FALSE))),
+            tags$div(class = "cJob-item", jStatus),
+            tags$div(class = "cJob-item", 
+                     if(identical(jStatus, "completed")){
+                       tagList(
+                         HTML(paste0('<button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                     lang$nav$batchMode$importJobsDialog$importConfirm$title, '\', \'', 
+                                     lang$nav$batchMode$importJobsDialog$importConfirm$desc, '\', \'', 
+                                     lang$nav$batchMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
+                                     lang$nav$batchMode$importJobsDialog$importConfirm$confirmButton, 
+                                     '\', \'importHypercubeJob(', jID, 
+                                     ')\')">', lang$nav$batchMode$importJobsDialog$buttons$import, '</button>',
+                                     '<button type="button" class="btn btn-default" onclick="showHypercubeLog(', jID, ')">', 
+                                     lang$nav$batchMode$importJobsDialog$buttons$log, '</button>'))
+                       )
+                     },
+                     HTML(paste0('<button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                 lang$nav$batchMode$importJobsDialog$discardConfirm$title, '\', \'', 
+                                 lang$nav$batchMode$importJobsDialog$discardConfirm$desc, '\', \'', 
+                                 lang$nav$batchMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
+                                 lang$nav$batchMode$importJobsDialog$discardConfirm$confirmButton, 
+                                 '\', \'discardHypercubeJob(', jID, 
+                                 ')\')">', lang$nav$batchMode$importJobsDialog$buttons$discard, '</button>'))
+            )
+          )
+        }))
+      )
+    }else{
+      lang$nav$batchMode$importJobsDialog$noJobs
+    }
+  )
+}
