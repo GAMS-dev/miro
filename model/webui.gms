@@ -155,11 +155,21 @@ def writeCSVParam(sym, gdxname='none', max_val_col = 5, isGamsSet = False):
 $offecho
 $if not set WEBUICONF $set WEBUICONF
 $onEmbeddedCode Python:
+import os
+import subprocess
+import json
+
 from sys import path
 from re import search
+from platform import system
+from copy import deepcopy
+
 path.append('.')
 
 from writecsv import *
+
+def install(package):
+    subprocess.call([os.path.join("%sysenv.GMSPYTHONHOME% ".strip(), "python"), "-m", "pip", "install", package])
 
 rmfiles = ['writecsv.py','%fn%_webui.gdx']
 gams.wsWorkingDir = '.'   
@@ -324,7 +334,6 @@ with open(inc, 'w') as f:
    f.closed
 
 # Create example input and output reporting batinclude file
-import os
 s_env = []
 for k, v in os.environ.items():
    if k.startswith('%fn%'.upper()+'_'):
@@ -391,11 +400,7 @@ try:
    from xlsxwriter.workbook import Workbook
 except:
    try:
-      import pip
-      if(hasattr(pip, 'main')):
-         pip.main(['install', 'xlsxwriter'])
-      else:
-         pip._internal.main(['install', 'xlsxwriter'])
+      install("XlsxWriter")
       from xlsxwriter.workbook import Workbook
    except Exception as e:
       print("WARNING: xlsxwriter could not be installed! No Excel file will be written. Error message: " + str(e))
@@ -424,8 +429,6 @@ try:
    workbook.close()
 except:
    pass
-   
-from copy import deepcopy
 
 def dict_merge(a, b):
     '''recursively merges dict's. not just simple a['key'] = b['key'], if
@@ -441,7 +444,6 @@ def dict_merge(a, b):
             result[k] = deepcopy(v)
     return result
     
-import json
 config = { "pageTitle" : "%system.title%",
            "gamsMetaDelim" : "###",
            "gamsWEBUISwitch" : "--WEBUI=1",
@@ -592,9 +594,7 @@ except OSError:
 with open('conf/GMSIO_config.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 db.__del__()
-import os
-from platform import system
-import subprocess
+
 for s in rmfiles:
    os.remove(s.lower())
    
@@ -715,7 +715,7 @@ if %mkApp%>0:
     elif system() == "Darwin":
         from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
-            f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''do shell script "export RUNBATCHMODE='yes';'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")
         subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
@@ -724,9 +724,36 @@ if %mkApp%>0:
         if(len(appLogoPath) > 0 and os.path.isfile(appLogoPath)):
           logoPath = appLogoPath
         else:
-          logoPath = os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "gmslogo.icns")
+          useDefaultIcon = False
+          defaultIconPath = os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "gmslogo.icns")
+          try:
+            from PIL import Image, ImageDraw, ImageFont
+          except:
+            try:
+              install("Pillow")
+              from PIL import Image, ImageDraw, ImageFont
+            except:
+              useDefaultIcon = True
+          if useDefaultIcon:
+            logoPath = defaultIconPath
+          else:
+            try:
+              img = Image.open(os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "default.ico"))
+              img = img.convert("RGB")
+              draw = ImageDraw.Draw(img)
+              draw.rectangle([0,103,254,153],fill=(34,45,50),outline=(243,150,25))
+              fnt = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 30)
+              txtX = 128-len(fn_model)*17/2
+              draw.text((txtX,110), fn_model, font=fnt, fill=(243,150,25))
+              img.save('logo.icns')
+              logoPath = os.path.join(fp_model, 'logo.icns')
+            except:
+              logoPath = defaultIconPath
         subprocess.call(["cp", logoPath, fn_model + ".app/Contents/Resources/"])
-
+        try:
+          os.remove('logo.icns')
+        except:
+          pass
         plistPath = fn_model + ".app/Contents/Info.plist"
         with open(plistPath, "r") as f:
             plist = f.readlines()

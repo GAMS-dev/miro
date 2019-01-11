@@ -8,7 +8,7 @@ This style guide aims to standardize the structure and style of the documentatio
 1. Try to keep the subject of your sentence close to the verb.
 1. Make sure the **message** you want to convey in your sentence is in the *stress position*: it is located right before a colon, semicolon or period. (to learn more, read the articles by [George D. Gopen](https://www.georgegopen.com/the-litigation-articles.html))
 1. Make sure, each sentence is connected to the previous one: your sentences must lead seamlessly forward. Use back references at the beginning of each sentence.
-
+1. Use uniform terms. Especially when it comes to certain features of the WebUI, specific expressions should remain.
 
 
 #### Sources:
