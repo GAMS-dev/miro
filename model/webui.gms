@@ -755,10 +755,10 @@ if %mkApp%>0:
               img = Image.open(os.path.join(r"%WEBUIDIR% ".strip(), "resources", "macos", "default.ico"))
               img = img.convert("RGB")
               draw = ImageDraw.Draw(img)
-              draw.rectangle([0,103,254,153],fill=(34,45,50),outline=(243,150,25))
+              draw.rectangle([0,144,255,192],fill=(34,45,50),outline=(243,150,25))
               fnt = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 30)
               txtX = 128-len(fn_model)*17/2
-              draw.text((txtX,110), fn_model, font=fnt, fill=(243,150,25))
+              draw.text((txtX,150), fn_model, font=fnt, fill=(243,150,25))
               img.save('logo.icns')
               logoPath = os.path.join(fp_model, 'logo.icns')
             except:
