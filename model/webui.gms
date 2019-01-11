@@ -183,7 +183,7 @@ path.append('.')
 from writecsv import *
 
 def install(package):
-    subprocess.call([os.path.join("%sysenv.GMSPYTHONHOME% ".strip(), "python"), "-m", "pip", "install", package])
+    subprocess.call([os.path.join(r"%sysenv.GMSPYTHONHOME% ".strip(), "python"), "-m", "pip", "install", package])
 
 rmfiles = ['writecsv.py','%fn%_webui.gdx']
 gams.wsWorkingDir = '.'   
