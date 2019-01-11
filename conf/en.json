@@ -324,6 +324,7 @@
         "discardSuccess": "Job was discarded",
         "importSuccess": "Job was imported successfully",
         "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
+        "histTitle": "Job history",
         "header":{
           "owner": "Owner",
           "date": "Submission date",

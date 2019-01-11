@@ -876,19 +876,30 @@ Db <- R6Class("Db",
                   stop("Batch ID could not be identified. Something went wrong while writing batch metadata to database.", 
                        call. = FALSE)
                 },
-                getMetaBatch = function(){
+                getMetaBatch = function(onlyActive = FALSE){
                   # fetches batch job metadata
                   #
                   # Args:
+                  #   onlyActive:   logical that specifies whether to fetch all 
+                  #                 or only active jobs
                   #
                   # Returns:
                   #   tibble with metadata
+                  stopifnot(is.logical(onlyActive), length(onlyActive) == 1L)
+                  
                   accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
                                                              private$userAccessGroups)
                   
+                  if(onlyActive){
+                    batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights,
+                                                      tibble(private$scenMetaColnames['sname'],
+                                                             "%_", "NOT LIKE"),
+                                                    innerSepAND = FALSE)
+                  }else{
+                    batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights, 
+                                                    innerSepAND = FALSE)
+                  }
                   
-                  batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights, 
-                                                  innerSepAND = FALSE)
                   
                   return(batchMeta)
                 },

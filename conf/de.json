@@ -324,6 +324,7 @@
         "discardSuccess": "Job wurde verworfen",
         "importSuccess": "Job wurde erfolgreich importiert",
         "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator.",
+        "histTitle": "Jobverlauf",
         "header":{
           "owner": "Eigentümer",
           "date": "Übermittlungsdatum",

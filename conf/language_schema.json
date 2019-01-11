@@ -1494,6 +1494,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "histTitle":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "header":{
                   "type":"object",
                   "additionalProperties":false,
