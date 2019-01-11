@@ -2,7 +2,16 @@
 observeEvent(input$btOverwriteLocal, {
   scenName <- isolate(input$local_newScenName)
   flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
-  activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
+  errMsg <- NULL
+  tryCatch({
+    activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
+  }, error = function(e){
+    flog.error("Problems creating scenario. Error message: '%s'.", e)
+    errMsg <<- lang$errMsg$saveScen$desc
+  })
+  if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
+    return(NULL)
+  }
   rv$activeSname <- scenName
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })

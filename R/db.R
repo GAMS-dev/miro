@@ -71,7 +71,7 @@ Db <- R6Class("Db",
                   #END error checks 
                   
                   private$uid                         <- uid
-                  private$userAccessGroups            <- gsub(",", "/comma/", uid, fixed = TRUE)
+                  private$userAccessGroups            <- uid
                   private$scenMetaColnames['sid']     <- sidIdentifier
                   private$scenMetaColnames['uid']     <- uidIdentifier
                   private$scenMetaColnames['sname']   <- snameIdentifier
@@ -1092,6 +1092,9 @@ Db <- R6Class("Db",
                 getCsvSubsetClause = function(colName, vector){
                   subsetClause <- tibble(colName,
                                          c(paste0("%,", self$escapePattern(vector), ",%"),
+                                           # TODO: all 3 conditions below can be omitted. 
+                                           # Only still here for compatibility reasons
+                                           self$escapePattern(vector),
                                            paste0(self$escapePattern(vector), ",%"),
                                            paste0("%,", self$escapePattern(vector))), "LIKE")
                   return(subsetClause)

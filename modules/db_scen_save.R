@@ -22,7 +22,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
       saveAsFlag <<- TRUE
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
-      # overrride current scenario data
+      # overwrite current scenario data
       rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
     }
   }
@@ -33,7 +33,7 @@ observeEvent(input$btRemoveOutput, {
   if(saveAsFlag || is.null(isolate(rv$activeSname))){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
-    # overrride current scenario data
+    # overwrite current scenario data
     rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
   }
 })
@@ -43,7 +43,7 @@ observeEvent(input$btSaveOutput, {
   if(saveAsFlag || is.null(isolate(rv$activeSname))){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
-    # overrride current scenario data
+    # overwrite current scenario data
     rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1L)
   }
 })

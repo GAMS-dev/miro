@@ -183,7 +183,6 @@ lapply(datasetsToFetch, function(dataset){
 })
 showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
 
-flog.trace("%d new input datasets loaded (load mode: %s, overwrite: %s)", count.new.input, loadMode, overwriteInput)
 if(!is.null(isolate(rv$activeSname))){
   enableEl(session, "#btSave")
 }

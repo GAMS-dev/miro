@@ -24,20 +24,19 @@ Scenario <- R6Class("Scenario",
                           stopifnot(is.character(sname), length(sname) == 1)
                           if(length(tags)){
                             stopifnot(is.character(tags), length(tags) >= 1)
-                            private$tags  <- vector2Csv(unique(tags))
+                          }else{
+                            tags <- character(0L)
                           }
                           # if permissions not explicitly set, restrict read/write access to active user
-                          if(!is.null(readPerm)){
+                          if(length(readPerm)){
                             stopifnot(is.character(readPerm), length(readPerm) >=1)
-                            private$readPerm <- vector2Csv(readPerm)
                           }else{
-                            private$readPerm <- private$uid
+                            readPerm <- private$uid
                           }
-                          if(!is.null(writePerm)){
+                          if(length(writePerm)){
                             stopifnot(is.character(writePerm), length(writePerm) >=1)  
-                            private$writePerm <- vector2Csv(writePerm)
                           }else{
-                            private$writePerm <- private$uid
+                            writePerm <- private$uid
                           }
                         }else{
                           sid <- suppressWarnings(as.integer(sid))
@@ -55,6 +54,9 @@ Scenario <- R6Class("Scenario",
                         private$tableNamesScenario  <- db$getTableNamesScenario()
                         private$traceConfig         <- db$getTraceConfig()
                         private$attachmentConfig    <- db$getAttachmentConfig()
+                        private$tags                <- vector2Csv(unique(tags))
+                        private$readPerm            <- vector2Csv(readPerm)
+                        private$writePerm           <- vector2Csv(writePerm)
                         
                         if(is.null(sid)){
                           tryCatch({
@@ -371,22 +373,13 @@ Scenario <- R6Class("Scenario",
                           private$sname <- newName
                         }
                         if(length(newTags)){
-                          if(length(newTags) > 1L){
-                            newTags <- vector2Csv(newTags)
-                          }
-                          private$tags <- newTags
+                          private$tags <- vector2Csv(newTags)
                         }
                         if(length(newReadPerm)){
-                          if(length(newTags) > 1L){
-                            newReadPerm <- vector2Csv(newReadPerm)
-                          }
-                          private$readPerm <- newReadPerm
+                          private$readPerm <- vector2Csv(newReadPerm)
                         }
                         if(length(newWritePerm)){
-                          if(length(newTags) > 1L){
-                            newWritePerm <- vector2Csv(newWritePerm)
-                          }
-                          private$writePerm <- newWritePerm
+                          private$writePerm <- vector2Csv(newWritePerm)
                         }
                         
                         private$stime <- Sys.time()
@@ -543,6 +536,10 @@ Scenario <- R6Class("Scenario",
                                                            stringsAsFactors = FALSE)
                           colnames(metadata) <- private$scenMetaColnames[-1]
                         }else{
+                          if(private$isReadonly()){
+                            flog.error("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).")
+                            stop("Scenario is readonly. Saving failed.", call. = FALSE)
+                          }
                           self$deleteRows(private$tableNameMetadata, 
                                           private$scenMetaColnames['sid'], 
                                           private$sid)
@@ -665,8 +662,8 @@ Scenario <- R6Class("Scenario",
                         # Args:
                         #
                         # Returns:
-                        #   logical: returns TRUE if scenario is readonly, FALSE otherwise  
-                        if(any(private$userAccessGroups %in% private$writePerm)){
+                        #   logical: returns TRUE if scenario is readonly, FALSE otherwise 
+                        if(any(private$userAccessGroups %in% csv2Vector(private$writePerm))){
                           return(FALSE)
                         }else{
                           return(TRUE)

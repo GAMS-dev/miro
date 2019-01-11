@@ -115,7 +115,9 @@ if(is.null(errMsg)){
     modelName <- modelPath[[3]]
     modelPath <- modelPath[[1]]
   }, error = function(e){
-    errMsg <<- "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve."
+    errMsg <<- paste(errMsg,
+                     "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve.",
+                     sep = "\n")
   })
 }
 
@@ -136,6 +138,7 @@ if(is.null(errMsg)){
                           if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "batch")) "_batch",
                           '.gmsconf')
   # set user ID (user name) and user groups
+  ugroups <- NULL
   if(isShinyProxy){
     uid <- Sys.getenv("SHINYPROXY_USERNAME")
     if(is.null(uid) || grepl("^\\s*$", uid)){
@@ -149,6 +152,14 @@ if(is.null(errMsg)){
     if(length(uid) != 1 || !is.character(uid)){
       errMsg <- "Invalid user ID specified."
     }
+    if(!length(ugroups)){
+      ugroups <- defaultGroup
+    }
+  }
+  if(any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-~]{3,19}$", c(uid, ugroups), perl = TRUE))){
+    errMsg <- paste(errMsg, 
+                    "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 20 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-~}",
+                    sep = "\n")
   }
   #initialise loggers
   if(!dir.exists(logFileDir)){
@@ -324,7 +335,7 @@ if(is.null(errMsg)){
     source("./R/db_batchload.R")
   }
 }
-if(is.null(errMsg) && developMode){
+if(is.null(errMsg) && developMode && config$activateModules$scenario){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL

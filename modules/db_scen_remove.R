@@ -58,7 +58,8 @@ closeScenario <- function(){
     )
     rv[["in_" %+% i]]    <<- NULL
   })
-  flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
+  if(is.R6(activeScen))
+    flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset model output data
   renderOutputData()
   activeScenario    <<- NULL
