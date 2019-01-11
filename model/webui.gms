@@ -19,11 +19,25 @@ $unload
 $gdxout
 
 $if not set appLogoPath $set appLogoPath ""
-$ifthen not set mkApp
+$ifthen.mk not set mkApp
 $   set mkApp 0
-$else
+$else.mk
 $   set mkApp 1
-$endif
+$   ifthen.hcube %WEBUIMODE%=="hcube"
+$      ifthen.host %system.HostPlatform%=="WEX"
+* windows
+$         set SETHCUBEENV "SET LAUNCHHCUBE=yes&&"
+$      elseif.host %system.HostPlatform%=="DEX"
+* mac
+$        set SETHCUBEENV "export LAUNCHHCUBE='yes';"
+* linux
+$      else.host
+$        set SETHCUBEENV ""
+$      endif.host
+$   else.hcube
+$      set SETHCUBEENV ""
+$   endif.hcube
+$endif.mk
 
 $set UIInput  UIInput:
 $set UIOutput UIOutput:
@@ -708,14 +722,14 @@ if %mkApp%>0:
     fe_model = "%fe%"
     fp_model = r"%fp% ".strip()
     gams_sysdir = r"%gams.sysdir% ".strip()
-    
+   
     if system() == "Windows":
         with open(fn_model + ".bat", "w") as f:
-            f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''start /min "" cmd /C "%SETHCUBEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
-            f.write('''do shell script "export RUNBATCHMODE='yes';'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''do shell script "%SETHCUBEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")
         subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
@@ -773,11 +787,11 @@ $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher require
 $terminate
 $endif
 $ifthen.launch %WEBUI%=="launch"
-$ifthen.batch %WEBUIMODE%=="batch"
-$setEnv RUNBATCHMODE yes
-$else.batch
-$setEnv RUNBATCHMODE no
-$endif.batch
+$ifthen.hcube %WEBUIMODE%=="hcube"
+$setEnv LAUNCHHCUBE yes
+$else.hcube
+$setEnv LAUNCHHCUBE no
+$endif.hcube
 $  hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing the GAMS WebUI. Make sure you have a valid WebUI installation.
 $endif.launch
