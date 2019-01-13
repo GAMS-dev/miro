@@ -649,7 +649,7 @@ if(!is.null(errMsg)){
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btOverwriteInput = 0L, 
                          btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
                          btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
+                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L, uploadBatch = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data

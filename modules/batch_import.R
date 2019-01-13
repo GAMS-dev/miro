@@ -33,6 +33,8 @@ batchImport <- BatchImport$new(db, scalarsFileName, scalarsOutName, tableNamesCa
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
+zipFilePath       <- NULL
+manualJobUpload   <- FALSE
 
 interruptProcess <- function(pid){
   currentOs <- tolower(getOS()[[1]])
@@ -49,19 +51,10 @@ interruptProcess <- function(pid){
 ##############
 #      1
 ##############
-observeEvent(input$btUploadBatch, {
-  req(input$batchImport)
-  req(rv$clear)
+observeEvent(rv$uploadBatch, {
+  req(batchImport)
+  req(zipFilePath)
   
-  if(length(input$batchTags)){
-    batchTags <<- vector2Csv(input$batchTags)
-  }else{
-    showErrorMsg("No tags", "Please provide a batch tag")
-    return()
-  }
-  zipFilePath       <- input$batchImport$datapath
-  
-  disableEl(session, "#btUploadBatch")
   prog <- shiny::Progress$new()
   prog$set(message = "Extracting zip file", value = 1/8)
   on.exit(prog$close())
@@ -169,8 +162,15 @@ observeEvent(virtualActionButton(rv$btSave), {
   prog$inc(amount = 1/2, message = "Done!")
   
   # clean up
-  rv$clear <- FALSE
-  removeModal()
+  if(manualJobUpload){
+    rv$clear <- FALSE
+  }else{
+    showEl(session, "#jImport_load")
+    batchMetaDisplay      <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
+    output$jImport_output <- renderUI(getHypercubeJobsTable(batchMetaDisplay))
+    hideEl(session, "#jImport_load")
+    showHideEl(session, "#fetchJobsImported")
+  }
 })
 
 observeEvent(input$btManualImport, {
@@ -182,6 +182,21 @@ observeEvent(input$batchImport, {
   updateSelectInput(session, "batchTags", choices = tag, selected = tag)
   rv$clear <- TRUE
 }, priority = 1000)
+observeEvent(input$btUploadBatch, {
+  req(input$batchImport)
+  req(rv$clear)
+  
+  if(length(input$batchTags)){
+    batchTags <<- vector2Csv(input$batchTags)
+  }else{
+    showErrorMsg("No tags", "Please provide a batch tag")
+    return()
+  }
+  zipFilePath       <<- input$batchImport$datapath
+  manualJobUpload   <<- TRUE
+  disableEl(session, "#btUploadBatch")
+  rv$uploadBatch <- rv$uploadBatch + 1L
+})
 
 observeEvent(input$refreshActiveJobs, {
   showEl(session, "#jImport_load")
@@ -191,7 +206,8 @@ observeEvent(input$refreshActiveJobs, {
   }, error = function(e){
     flog.error("Problems fetching batch job metadata. Error message: '%s'.", e)
   })
-  jobsUpdated <- FALSE
+  jobsCorrupted <- FALSE
+  jobsCompleted <- FALSE
   tryCatch({
     for(jID in batchMeta_tmp[[1L]]){
       jobDir <- file.path(currentModelDir, batchDirName, jID)
@@ -199,12 +215,12 @@ observeEvent(input$refreshActiveJobs, {
       if(dir.exists(jobDir)[1]){
         if(file.exists(file.path(jobDir, "4upload.zip"))){
           db$updateHypercubeJob(jID, status = "_completed_")
-          jobsUpdated <- TRUE
+          jobsCompleted <- TRUE
         }
       }else{
         flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.", jID)
         db$updateHypercubeJob(jID, status = "_corrupted_")
-        jobsUpdated <- TRUE
+        jobsCorrupted <- TRUE
       }
     }
   }, error = function(e){
@@ -214,16 +230,15 @@ observeEvent(input$refreshActiveJobs, {
   if(jobsUpdated){
     tryCatch({
       batchMeta_tmp <- db$getMetaBatch()
-      if(length(batchMeta_tmp) && nrow(batchMeta_tmp)){
-        batchMeta <<- filter(batchMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
-        batchMetaHistory <<- dplyr::setdiff(batchMeta_tmp, batchMeta)
-        batchMetaDisplay <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
-      }
     }, error = function(e){
       flog.error("Problems fetching batch job metadata. Error message: '%s'.", e)
     })
   }
-  
+  if(length(batchMeta_tmp) && nrow(batchMeta_tmp)){
+    batchMeta <<- filter(batchMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
+    batchMetaHistory <<- dplyr::setdiff(batchMeta_tmp, batchMeta)
+    batchMetaDisplay <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
+  }
   output$jImport_output <- renderUI(getHypercubeJobsTable(batchMetaDisplay))
   hideEl(session, "#jImport_load")
 }, ignoreNULL = FALSE)
@@ -242,6 +257,14 @@ observeEvent(input$showHypercubeLog, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
+  jobDir      <- file.path(currentModelDir, batchDirName, jID)
+  logFilePath <- file.path(jobDir, gsub(".gms", ".log", 
+                                        batchSubmissionFile, fixed = TRUE))
+  logContent  <- NULL
+  try(
+    logContent <- readChar(logFilePath, file.info(logFilePath)$size)
+  )
+  showHypercubeLogFileDialog(logContent)
 })
 
 observeEvent(input$importHypercubeJob, {
@@ -259,12 +282,20 @@ observeEvent(input$importHypercubeJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  
-  showEl(session, "#jImport_load")
-  batchMetaDisplay      <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
-  output$jImport_output <- renderUI(getHypercubeJobsTable(batchMetaDisplay))
-  hideEl(session, "#jImport_load")
-  showHideEl(session, "#fetchJobsImported")
+  isCompleted <- grepl("completed", batchMeta[batchMeta[[1]] == jID, snameIdentifier])[[1L]]
+  if(!isCompleted){
+    flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tempered with the UI.", jID)
+    showHideEl(session, "#fetchJobsError")
+  }
+  batchTags   <<- vector2Csv(isolate(input[["jTag_" %+% jID]]))
+  zipFilePath <<- file.path(currentModelDir, batchDirName, jID, "4upload.zip")
+  if(!file.access(zipFilePath)){
+    flog.error("Zip file with Hypercube job results was removed during import process (Job ID: '%s').", jID)
+    showHideEl(session, "#fetchJobsError")
+  }
+  manualJobUpload <<- FALSE
+  disableEl(session, "#jImport_" %+% jID)
+  rv$uploadBatch <- rv$uploadBatch + 1L
 })
 
 observeEvent(input$discardHypercubeJob, {

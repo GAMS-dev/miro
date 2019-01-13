@@ -970,9 +970,11 @@ Db <- R6Class("Db",
                   if(noBatch){
                     if(inherits(private$conn, "PqConnection")){
                       noBatchRuns <- tibble(private$scenMetaColnames['sname'], 
-                                            "[0-9a-z]{64}", "NOT SIMILAR TO")
+                                            "[0-9a-f]{64}", "NOT SIMILAR TO")
                     }else{
                       # TODO: Sqlite alternative!!!
+                      noBatchRuns <- tibble(private$scenMetaColnames['sname'], 
+                                            "________________________________________________________________", "LIKE")
                     }
                   }
                   if(length(noBatchRuns)){

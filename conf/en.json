@@ -356,6 +356,14 @@
         "batchTags":"Job tags (separate with comma)",
         "uploadButton":"Upload",
         "cancelButton": "Cancel"
+      },
+      "showLogFileDialog":{
+        "title": "Hypercube job log file",
+        "noContent": "The log file could not be accessed or does not contain any data."
+      },
+      "jobsCompletedDialog":{
+        "title": "Completed jobs",
+        "desc": "Hypercube jobs were completed and are now ready to be imported."
       }
     },
     "dialogPaverInUse":{

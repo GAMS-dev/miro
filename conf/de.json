@@ -334,7 +334,7 @@
         },
         "buttons":{
           "import": "Importieren",
-          "log": "Log anzeigen",
+          "log": "Log-Datei anzeigen",
           "discard": "Verwerfen"
         },
         "importConfirm":{
@@ -356,6 +356,14 @@
         "batchTags":"Job Tags (kommasepariert)",
         "uploadButton":"Upload",
         "cancelButton": "Abbrechen"
+      },
+      "showLogFileDialog":{
+        "title": "Hypercube-Job Log-Datei",
+        "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten."
+      },
+      "jobsCompletedDialog":{
+        "title": "Erfolgreich abgeschlossene Jobs",
+        "desc": "Hypercube-Jobs wurden erfolgreich abgeschlossen und sind nun bereit für den Import."
       }
     },
     "dialogPaverInUse":{

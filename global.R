@@ -88,6 +88,8 @@ defaultGroup <- "user"
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # name of the folder where batch jobs will be executed
 batchDirName <- "batchJobs"
+# filename of batch submission file (will be called when hypercube jobs are to be launched)
+batchSubmissionFile <- "batch_submission.gms"
 # maximum number of scenarios that can be solved per batch run
 maxNoBatch <- 10000L
 # maximum number of scenarios to fetch when querying the database

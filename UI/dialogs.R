@@ -582,7 +582,7 @@ getHypercubeJobsTable <- function(batchMeta, jobHist = FALSE){
               tags$td(
                        if(identical(jStatus, "completed")){
                          tagList(
-                           HTML(paste0('<button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                           HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
                                        lang$nav$batchMode$importJobsDialog$importConfirm$title, '\', \'', 
                                        lang$nav$batchMode$importJobsDialog$importConfirm$desc, '\', \'', 
                                        lang$nav$batchMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
@@ -612,10 +612,29 @@ getHypercubeJobsTable <- function(batchMeta, jobHist = FALSE){
     }
   )
 }
+showJobsCompletedDialog <- function(){
+  showModal(modalDialog(
+    title = lang$nav$batchMode$jobsCompletedDialog$title,
+    lang$nav$batchMode$jobsCompletedDialog$desc,
+  fade = TRUE, easyClose = TRUE))
+}
 showJobHistoryDialog <- function(jobMeta){
   showModal(modalDialog(
     title = lang$nav$batchMode$importJobsDialog$histTitle,
     getHypercubeJobsTable(jobMeta, jobHist = TRUE),
+    fade = TRUE, easyClose = TRUE
+  ))
+}
+showHypercubeLogFileDialog <- function(logContent){
+  showModal(modalDialog(
+    title = lang$nav$batchMode$showLogFileDialog$title,
+    tags$pre(
+      if(length(logContent) && nchar(logContent)){
+        logContent
+      }else{
+        lang$nav$batchMode$showLogFileDialog$noContent
+      }
+    ),
     fade = TRUE, easyClose = TRUE
   ))
 }

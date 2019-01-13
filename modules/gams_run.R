@@ -144,7 +144,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
     
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
-    file.copy(file.path(modelDir %+% "batch_submission.gms"), toDir)
+    file.copy(file.path(modelDir %+% hypercubeSubmissionFile), toDir)
     do.call(file.remove, list(list.files(toDir, pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
   }
@@ -161,7 +161,7 @@ if(identical(config$activateModules$batchMode, TRUE)){
     
     flog.trace("New folder for batch job was created: '%s'.", batchDir)
     # create daemon to execute batch job
-    batchSubmDir <- file.path(getwd(), modelDir, "batch_submission.gms")
+    batchSubmDir <- file.path(getwd(), modelDir, batchSubmissionFile)
     curDir <- batchDir
     if(isWindows()){
       batchSubmDir <- gsub("/", "\\", batchSubmDir, fixed = TRUE)
