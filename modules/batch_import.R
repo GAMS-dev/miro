@@ -34,7 +34,7 @@ rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 batchTags         <- character(0L)
 zipFilePath       <- NULL
-manualJobUpload   <- FALSE
+currentJobID      <- NULL
 
 interruptProcess <- function(pid){
   currentOs <- tolower(getOS()[[1]])
@@ -162,9 +162,22 @@ observeEvent(virtualActionButton(rv$btSave), {
   prog$inc(amount = 1/2, message = "Done!")
   
   # clean up
-  if(manualJobUpload){
+  if(!length(currentJobID)){
     rv$clear <- FALSE
   }else{
+    rowId                      <- batchMeta[[1]] == currentJobID
+    jobMeta                    <- batchMeta[rowId, ]
+    newStatus                  <- "_imported_"
+    jobMeta[, snameIdentifier] <- newStatus
+    
+    batchMeta                  <<- batchMeta[!rowId, ]
+    batchMetaHistory           <<- bind_rows(batchMetaHistory, jobMeta)
+    tryCatch({
+      db$updateHypercubeJob(currentJobID, status = "_imported_")
+    }, error = function(e){
+      flog.error("Some error occurred while trying to update Hypercube job status (Job ID: '%s'). Error message: '%s'.", currentJobID, e)
+      showHideEl(session, "#fetchJobsError")
+    })
     showEl(session, "#jImport_load")
     batchMetaDisplay      <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
     output$jImport_output <- renderUI(getHypercubeJobsTable(batchMetaDisplay))
@@ -202,24 +215,27 @@ observeEvent(input$refreshActiveJobs, {
   showEl(session, "#jImport_load")
   batchMetaDisplay <- NULL
   tryCatch({
-    batchMeta_tmp <- db$getMetaBatch(onlyActive = TRUE)
+    batchMeta_tmp <- db$getMetaBatch()
+    if(length(batchMeta_tmp) && nrow(batchMeta_tmp)){
+      batchMeta        <<- filter(batchMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
+      batchMetaHistory <<- dplyr::setdiff(batchMeta_tmp, batchMeta)
+    }
   }, error = function(e){
     flog.error("Problems fetching batch job metadata. Error message: '%s'.", e)
   })
-  jobsCorrupted <- FALSE
   jobsCompleted <- FALSE
+  jobsCorrupted <- FALSE
   tryCatch({
-    for(jID in batchMeta_tmp[[1L]]){
+    for(jID in batchMeta[[1L]]){
       jobDir <- file.path(currentModelDir, batchDirName, jID)
-      str(jID)
       if(dir.exists(jobDir)[1]){
         if(file.exists(file.path(jobDir, "4upload.zip"))){
-          db$updateHypercubeJob(jID, status = "_completed_")
+          db$updateHypercubeJob(jID, status = "_completed")
           jobsCompleted <- TRUE
         }
       }else{
         flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.", jID)
-        db$updateHypercubeJob(jID, status = "_corrupted_")
+        db$updateHypercubeJob(jID, status = "_corrupted")
         jobsCorrupted <- TRUE
       }
     }
@@ -227,20 +243,22 @@ observeEvent(input$refreshActiveJobs, {
     flog.error("Problems refreshing Hypercube job statuses. Error message: '%s'.", e)
     showHideEl(session, "#fetchJobsError")
   })
-  if(jobsUpdated){
+  if(jobsCompleted || jobsCorrupted){
     tryCatch({
-      batchMeta_tmp <- db$getMetaBatch()
+      batchMeta <<- db$getMetaBatch()
     }, error = function(e){
       flog.error("Problems fetching batch job metadata. Error message: '%s'.", e)
+      showHideEl(session, "#fetchJobsError")
     })
   }
-  if(length(batchMeta_tmp) && nrow(batchMeta_tmp)){
-    batchMeta <<- filter(batchMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
-    batchMetaHistory <<- dplyr::setdiff(batchMeta_tmp, batchMeta)
+  if(length(nrow(batchMeta))){
     batchMetaDisplay <- arrange(batchMeta, desc(!!as.name(stimeIdentifier)))
   }
   output$jImport_output <- renderUI(getHypercubeJobsTable(batchMetaDisplay))
   hideEl(session, "#jImport_load")
+  if(jobsCompleted){
+    showJobsCompletedDialog()
+  }
 }, ignoreNULL = FALSE)
 
 observeEvent(input$showHypercubeLog, {
