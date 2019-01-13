@@ -83,8 +83,8 @@
               "minLength":1
             }
           },
-          "noBatch":{  
-            "description":"Boolean that specifies whether element should not be used in batch mode",
+          "noHcube":{  
+            "description":"Boolean that specifies whether element should not be used in Hypercube mode",
             "type":"boolean",
             "required":false
           },

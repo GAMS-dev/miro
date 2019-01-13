@@ -11,7 +11,7 @@ observeEvent(input$btPaverInterrupt,{
   })
   showErrorMsg(lang$errMsg$paverTerm$title, errMsg)
   disableEl(session, "#btPaverInterrupt")
-  hideEl(session, "#paver_load")
+  hideEl(session, "#paverLoad")
   showEl(session, "#newPaverRunButton")
 })
 observeEvent(input$btNewPaverRun,{

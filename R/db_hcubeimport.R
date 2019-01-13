@@ -1,11 +1,11 @@
-BatchImport <- R6Class("BatchImport", 
+HcubeImport <- R6Class("HcubeImport", 
                        inherit = Db,
                        public = list(
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
                                                       csvDelim, workDir, gmsColTypes, gmsFileHeaders,
                                                       strictmode = TRUE){
-                           # R6 class to import scenarios in batch mode
+                           # R6 class to import scenarios in hcube mode
                            #
                            # Args:      
                            #   db:                      R6 database object
@@ -96,7 +96,7 @@ BatchImport <- R6Class("BatchImport",
                            # Args:
                            #
                            # Returns:
-                           #   reference to itself (importBatch R6 object)
+                           #   reference to itself (importHcube R6 object)
                            
                            
                            csvNames       <- lapply(private$csvPaths, 
@@ -128,7 +128,7 @@ BatchImport <- R6Class("BatchImport",
                            #                            in order for scenario to be valid (optional)
                            #
                            # Returns:
-                           #   reference to itself (importBatch R6 object)
+                           #   reference to itself (importHcube R6 object)
                            
                            # BEGIN error checks
                            if(!is.null(scalarInToVerify)){
@@ -169,12 +169,12 @@ BatchImport <- R6Class("BatchImport",
                            
                            invisible(self)
                          },
-                         saveScenarios     = function(batchTags, readPerm = private$uid, 
+                         saveScenarios     = function(hcubeTags, readPerm = private$uid, 
                                                       writePerm = private$uid, progressBar = NULL){
                            # Save multiple scenarios to database
                            #
                            # Args:
-                           #   batchTags:    character vector with tags to attach to scenario
+                           #   hcubeTags:    character vector with tags to attach to scenario
                            #   readPerm:     character vector with uids/groups that have 
                            #                 read permissions for scenarios
                            #   writePerm:    character vector with uids/groups that have 
@@ -182,11 +182,11 @@ BatchImport <- R6Class("BatchImport",
                            #   progressBar:  shiny pogress bar R6 object
                            # 
                            # Returns:
-                           #   reference to itself (BatchImport R6 object)
+                           #   reference to itself (HcubeImport R6 object)
                            
                            # BEGIN error checks
                            stopifnot(is.list(private$scenData), length(private$scenData) >= 1)
-                           stopifnot(is.character(batchTags), length(batchTags) >= 1)
+                           stopifnot(is.character(hcubeTags), length(hcubeTags) >= 1)
                            stopifnot(is.character(names(private$scenData)), 
                                      length(private$scenData) >= 1)
                            stopifnot(is.character(readPerm), length(readPerm) >= 1)
@@ -213,7 +213,7 @@ BatchImport <- R6Class("BatchImport",
                            # export metadata to reserve scenario ids
                            numberScen <- length(scenData)
                            metadataTable <- data.frame(rep.int(private$uid, numberScen), names(scenData), 
-                                                       rep.int(1, numberScen), rep.int(batchTags, numberScen), 
+                                                       rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
                                                        rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
                                                        stringsAsFactors = FALSE)
                            metadataTable[[3]] <- Sys.time()

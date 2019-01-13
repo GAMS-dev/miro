@@ -10,7 +10,7 @@ observeEvent(input$btImport, {
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetaDb       <<- db$fetchScenList(noBatch = TRUE)
+      scenMetaDb       <<- db$fetchScenList(noHcube = TRUE)
       dbTagList        <- csv2Vector(scenMetaDb[[stagIdentifier]])
       scenMetaDbSubset <<- scenMetaDb
     }, error = function(e){

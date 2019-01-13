@@ -111,7 +111,7 @@ $(document).ready(function () {
   $("a[data-value='scenarios']").click(function() {
     changeActiveButtons('scenarios');
   });
-  $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='batchAnalyze']").click(function() {
+  $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='hcubeAnalyze']").click(function() {
     changeActiveButtons('default');
   });
   // show/hide buttons after (R triggered) tab switch.
@@ -126,7 +126,7 @@ $(document).ready(function () {
     case "gamsinter":
         changeActiveButtons('gamsinter');
         break;
-    case "batchAna":
+    case "hcubeAna":
         changeActiveButtons('default');
         break;
     case "scenComp":

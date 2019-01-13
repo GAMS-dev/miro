@@ -268,7 +268,7 @@ lapply(seq_along(modelIn), function(id){
                            })
                        }
                        if(!is.null(modelIn[[id]]$dropdown$operator)){
-                         # element is checkbox with shared dependency that was transformed to dropdown in batch mode
+                         # element is checkbox with shared dependency that was transformed to dropdown in Hypercube mode
                          tryCatch({
                            value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), modelIn[[id]]$dropdown$operator)
                          }, error = function(e){
@@ -280,10 +280,10 @@ lapply(seq_along(modelIn), function(id){
                          }
                          if(value <= 0.5){
                            choices[[j]] <- c(0L)
-                           aliases[[j]] <- lang$nav$batchMode$checkboxAliases[[1]]
+                           aliases[[j]] <- lang$nav$hcubeMode$checkboxAliases[[1]]
                          }else{
                            choices[[j]] <- c(0L, 1L)
-                           aliases[[j]] <- lang$nav$batchMode$checkboxAliases
+                           aliases[[j]] <- lang$nav$hcubeMode$checkboxAliases
                          }
                        }
                      }

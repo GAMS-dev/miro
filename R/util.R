@@ -723,7 +723,8 @@ getNestedDep <- function(depStr){
 }
 genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE){
   div(id = id, class = "lds-ellipsis", 
-      style = paste0(if(absolute) "position:absolute;top:50%;left:50%;z-index:1;" else "display:block;", if(hidden) "display:none;"), 
+      style = paste0("top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;", 
+      if(absolute) "display:absolute;" else "display:block;", if(hidden) "display:none;"), 
       div(style = "background:#000;"),
       div(style = "background:#000;"),
       div(style = "background:#000;"),

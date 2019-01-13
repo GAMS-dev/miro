@@ -36,9 +36,9 @@ logFileDir <- paste0("logs", .Platform$file.sep)
 logToConsole <- TRUE
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
 loggingLevel <- "TRACE"
-# name of table with scenario/batch metadata as well as scenario locks
+# name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
-tableNameMetaBatchPrefix <- "_sys_batchmeta_"
+tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
 scenLockTablePrefix      <- "_sys_scenlocks_"
 # maximum number ofscenarios that can be displayed at the same time 
 # (used in loop for observeEvent remove/save buttons)
@@ -86,14 +86,14 @@ sharedTablePrefix <- "_shared"
 defaultGroup <- "user"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
-# name of the folder where batch jobs will be executed
-batchDirName <- "batchJobs"
-# filename of batch submission file (will be called when hypercube jobs are to be launched)
-batchSubmissionFile <- "batch_submission.gms"
-# maximum number of scenarios that can be solved per batch run
-maxNoBatch <- 10000L
+# name of the folder where hcube jobs will be executed
+hcubeDirName <- "hcubeJobs"
+# filename of hcube submission file (will be called when hypercube jobs are to be launched)
+hcubeSubmissionFile <- "hcube_submission.gms"
+# maximum number of scenarios that can be solved per hcube run
+maxNoHcube <- 10000L
 # maximum number of scenarios to fetch when querying the database
-batchLoadMaxScen <- 1000L
+hcubeLoadMaxScen <- 1000L
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L

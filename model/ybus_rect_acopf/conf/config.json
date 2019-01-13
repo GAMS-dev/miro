@@ -5,7 +5,7 @@
          "widgetType":"dropdown",
          "label": "Select input case [case]",
     	 "choices": "casename$filename",
-         "noBatch": true
+         "noHcube": true
       }, 
       "GMSPAR_timeperiod": {
          "alias": "Timeperiod",

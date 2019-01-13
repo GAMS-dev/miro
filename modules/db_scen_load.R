@@ -28,7 +28,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   # only load single scenario as not in comparison mode
   errMsg <- NULL
   tryCatch({
-    scenMetaDb <<- db$fetchScenList(noBatch = TRUE)
+    scenMetaDb <<- db$fetchScenList(noHcube = TRUE)
   }, error = function(e){
     flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
     errMsg <<- lang$errMsg$fetchScenData$desc
@@ -173,8 +173,8 @@ observeEvent(input$btOverwriteScen, {
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 
-observeEvent(input$btBatchLoad, {
-  flog.debug("Load batch scenarios to compare mode button clicked.")
+observeEvent(input$btHcubeLoad, {
+  flog.debug("Load Hypercube job scenarios to compare mode button clicked.")
   isInSolveMode <<- FALSE
   if(isInSplitView){
     rv$btSplitView <<- isolate(rv$btSplitView + 1L)
@@ -300,7 +300,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   # scenario comparison mode
   
-  # in batch mode, sids are vector not list
+  # in Hypercube mode, sids are vector not list
   if(!is.list(sidsToLoad)){
     rowIds         <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
     scenMetaTmp    <- rv$fetchedScenarios[rowIds, ]

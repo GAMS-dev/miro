@@ -1,5 +1,5 @@
 # UI sidebar
-if(!identical(config$activateModules$batchMode, TRUE)){
+if(!identical(config$activateModules$hcubeMode, TRUE)){
   sidebar <- dashboardSidebar(
     sidebarMenu(id="sidebarMenuId",
                 menuItem(lang$nav$sidebarMenu$inputScreen, tabName="inputData", icon = icon("th")),
@@ -27,13 +27,13 @@ if(!identical(config$activateModules$batchMode, TRUE)){
 }else{
   sidebar <- dashboardSidebar(
     sidebarMenu(id="sidebarMenuId",
-                menuItem(lang$nav$sidebarMenu$batch$configureRun, tabName="inputData", icon = icon("th")),
-                menuItem(lang$nav$sidebarMenu$batch$import, tabName="importData", icon = icon("upload")),
-                menuItem(lang$nav$sidebarMenu$batch$load, tabName = "loadResults", icon = icon("folder-open", 
+                menuItem(lang$nav$sidebarMenu$hcube$configureRun, tabName="inputData", icon = icon("th")),
+                menuItem(lang$nav$sidebarMenu$hcube$import, tabName="importData", icon = icon("upload")),
+                menuItem(lang$nav$sidebarMenu$hcube$load, tabName = "loadResults", icon = icon("folder-open", 
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
-                menuItem(lang$nav$sidebarMenu$batch$analyze, tabName="batchAnalyze", icon = icon("pie-chart")),
-                actionButton("btSolve", lang$nav$sidebarButtons$solveBatch, width = "85%", class = "btHighlight2", style = "display:block;"),
+                menuItem(lang$nav$sidebarMenu$hcube$analyze, tabName="hcubeAnalyze", icon = icon("pie-chart")),
+                actionButton("btSolve", lang$nav$sidebarButtons$solveHcube, width = "85%", class = "btHighlight2", style = "display:block;"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
                                  actionButton("btLoadScen", class = "btHighlight3", lang$nav$sidebarButtons$load, width = "85%", class = "btHighlight2", style = "display:block;")),
                 actionButton("btSplitView", class = "btHighlight3", lang$nav$sidebarButtons$tabView, width = "85%", class = "btHighlight2", style = "display:block;"),

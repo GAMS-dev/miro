@@ -93,7 +93,7 @@
                "default":true,
                "required":false
             },
-            "batchMode":{  
+            "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
                "default":true,
@@ -177,7 +177,7 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "noBatch":{  
+                   "noHcube":{  
                     "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
@@ -247,7 +247,7 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "noBatch":{  
+                   "noHcube":{  
                     "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
@@ -320,7 +320,7 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "noBatch":{  
+                   "noHcube":{  
                     "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
@@ -399,7 +399,7 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "noBatch":{  
+                   "noHcube":{  
                     "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },
@@ -494,7 +494,7 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "noBatch":{  
+                   "noHcube":{  
                     "description":"Boolean that specifies whether element should not be used in Hypercube mode",
                     "type":"boolean"
                    },

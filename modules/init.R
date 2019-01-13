@@ -127,7 +127,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   flog.trace("Language files loaded.")
   if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes")){
-    config$activateModules$batchMode <- TRUE
+    config$activateModules$hcubeMode <- TRUE
   }
   # handsontable options
   hotOptions        <- config$handsontable
@@ -165,9 +165,9 @@ if(is.null(errMsg)){
           modelIn[[el_l]]$alias <- widgetConfig$alias
           widgetConfig$alias    <- NULL
         }
-        if(!is.null(widgetConfig$noBatch)){
-          modelIn[[el_l]]$noBatch <- widgetConfig$noBatch
-          widgetConfig$noBatch    <- NULL
+        if(!is.null(widgetConfig$noHcube)){
+          modelIn[[el_l]]$noHcube <- widgetConfig$noHcube
+          widgetConfig$noHcube    <- NULL
         }
         if(!is.null(widgetConfig$noImport)){
           modelIn[[el_l]]$noImport <- widgetConfig$noImport
@@ -190,9 +190,9 @@ if(is.null(errMsg)){
           modelIn[[el]]$alias <- widgetConfig$alias
           widgetConfig$alias <- NULL
         }
-        if(!is.null(widgetConfig$noBatch)){
-          modelIn[[el]]$noBatch <- widgetConfig$noBatch
-          widgetConfig$noBatch <- NULL
+        if(!is.null(widgetConfig$noHcube)){
+          modelIn[[el]]$noHcube <- widgetConfig$noHcube
+          widgetConfig$noHcube <- NULL
         }
         if(!is.null(widgetConfig$noImport)){
           modelIn[[el]]$noImport <- widgetConfig$noImport
@@ -224,9 +224,9 @@ if(is.null(errMsg)){
         modelIn[[i]]$alias <- widgetConfig$alias
         widgetConfig$alias <- NULL
       }
-      if(!is.null(widgetConfig$noBatch)){
-        modelIn[[i]]$noBatch <- widgetConfig$noBatch
-        widgetConfig$noBatch <- NULL
+      if(!is.null(widgetConfig$noHcube)){
+        modelIn[[i]]$noHcube <- widgetConfig$noHcube
+        widgetConfig$noHcube <- NULL
       }
       if(!is.null(widgetConfig$noImport)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
@@ -451,25 +451,25 @@ if(is.null(errMsg)){
       }
     }
   })
-  # batch mode configuration
+  # Hypercube mode configuration
   modelInGmsString <- NULL
-  if(identical(config$activateModules$batchMode, TRUE)){
-    rSaveFilePath <- gsub(".gmsconf", "_batch.gmsconf", rSaveFilePath, fixed = TRUE)
+  if(identical(config$activateModules$hcubeMode, TRUE)){
+    rSaveFilePath <- gsub(".gmsconf", "_hcube.gmsconf", rSaveFilePath, fixed = TRUE)
     lapply(seq_along(modelIn), function(i){
       if(!names(modelIn)[i] %in% c(DDPar, GMSOpt)){
         errMsg <<- paste(errMsg, 
-                         sprintf("Currenty only GAMS command line parameters (double dash parameters or GAMS options) are supported as input elements in batch mode (Element: '%s').", 
+                         sprintf("Currenty only GAMS command line parameters (double dash parameters or GAMS options) are supported as input elements in Hypercube mode (Element: '%s').", 
                                  modelInAlias[i]), sep = "\n")
         return(NULL)
       }
-      if(!identical(modelIn[[i]]$noBatch, TRUE)){
+      if(!identical(modelIn[[i]]$noHcube, TRUE)){
         switch(modelIn[[i]]$type,
                checkbox = {
                  modelIn[[i]]$type <<- "dropdown"
                  modelIn[[i]]$dropdown$label <<- modelIn[[i]]$checkbox$label
                  value <- modelIn[[i]]$checkbox$value
                  if(is.null(modelIn[[i]]$checkbox$max) || !is.na(suppressWarnings(as.integer(modelIn[[i]]$checkbox$max)))){
-                   modelIn[[i]]$dropdown$aliases <<- lang$nav$batchMode$checkboxAliases
+                   modelIn[[i]]$dropdown$aliases <<- lang$nav$hcubeMode$checkboxAliases
                    modelIn[[i]]$dropdown$choices <<- c(0L, 1L)
                  }else{
                    modelIn[[i]]$checkbox$max      <<- paste0("$", modelIn[[i]]$checkbox$max)
@@ -486,7 +486,7 @@ if(is.null(errMsg)){
                  if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
                    errMsg <<- paste(errMsg, 
                                     sprintf("Multi dropdown menus are currently " %+% 
-                                              "not supported in batch mode (Element: '%s').", 
+                                              "not supported in Hypercube mode (Element: '%s').", 
                                             modelInAlias[i]), sep = "\n")
                  }else{
                    # specify that dropdown menu is originally a single select menu

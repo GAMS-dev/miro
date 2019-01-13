@@ -44,8 +44,8 @@
               "minLength":1,
               "required":true
             },
-            "batch":{  
-              "description":"batch mode specific configuration",
+            "hcube":{  
+              "description":"Hypercube mode specific configuration",
               "type":"object",
               "required":true,
               "additionalProperties":false,
@@ -67,7 +67,7 @@
                     "required":true
                   },
                   "analyze":{  
-                    "description":"Batch analyze menu item",
+                    "description":"Hypercube analyze menu item",
                     "type":"string",
                     "minLength":1,
                     "required":true
@@ -91,7 +91,7 @@
               "minLength":1,
               "required":true
             },
-            "solveBatch":{  
+            "solveHcube":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -378,7 +378,7 @@
             }
           }
         },
-        "batch_import":{
+        "hcubeImport":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -400,7 +400,7 @@
             }
           }
         },
-        "batch_load":{
+        "hcubeLoad":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -432,7 +432,7 @@
             }            
           }
         },
-        "batch_analyze":{
+        "hcubeAnalyze":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -1162,7 +1162,7 @@
             }
          }
         },
-        "dialogBatch":{
+        "dialogHcube":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -1287,7 +1287,7 @@
             }
          }
         },
-        "batchMode":{
+        "hcubeMode":{
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -1479,12 +1479,17 @@
                   "minLength":1,
                   "required":true
                 },
-                 "discardSuccess":{
+                "noJobsHist":{
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                 "importSuccess":{
+                "discardSuccess":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "importSuccess":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1624,7 +1629,7 @@
                   "minLength":1,
                   "required":true
                 },
-                "batchTags":{
+                "hcubeTags":{
                   "type":"string",
                   "minLength":1,
                   "required":true

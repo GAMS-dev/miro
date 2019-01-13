@@ -376,107 +376,107 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     fade = TRUE, easyClose = FALSE
   ))
 }
-######## BATCH MODE
-showBatchSubmitDialog <- function(noIdsToSolve, noIdsExist){
+######## HYPERCUBE MODE
+showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
   showModal(modalDialog(
-    tags$div(class = "gmsalert gmsalert-success", id = "batchSubmitSuccess",
-             lang$nav$dialogBatch$success),
-    tags$div(class = "gmsalert gmsalert-error", id = "batchSubmitWait",
-             lang$nav$dialogBatch$waitTime),
-    tags$div(class = "gmsalert gmsalert-error", id = "batchSubmitUnknownError",
-             lang$nav$dialogBatch$unknownError),
-    tags$div(sprintf(lang$nav$dialogBatch$desc, noIdsToSolve, 
+    tags$div(class = "gmsalert gmsalert-success", id = "hcubeSubmitSuccess",
+             lang$nav$dialogHcube$success),
+    tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitWait",
+             lang$nav$dialogHcube$waitTime),
+    tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
+             lang$nav$dialogHcube$unknownError),
+    tags$div(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
                      noIdsExist)),
     conditionalPanel(
-      condition = "input.batchSolve_dl == 0",
-      selectizeInput("newBatchTags", lang$nav$dialogBatch$newTags, c(),
+      condition = "input.hcubeSolve_dl == 0",
+      selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
                      multiple = TRUE, options = list(
                        'create' = TRUE,
                        'persist' = FALSE))
     ),
-    title = lang$nav$dialogBatch$title,
+    title = lang$nav$dialogHcube$title,
     footer = tagList(
       tags$div(style = "text-align:left;", 
                tags$i(class="fas fa-arrow-down", 
                       onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
                       style = "cursor: pointer;"),
                tags$div(style = "display:none;",
-                        tags$label(class = "cb-label", "for" = "batchSolve_dl", 
-                                   lang$nav$dialogBatch$manualSwitch), 
+                        tags$label(class = "cb-label", "for" = "hcubeSolve_dl", 
+                                   lang$nav$dialogHcube$manualSwitch), 
                         tags$div(
-                          tags$label(class = "checkbox-material", "for" = "batchSolve_dl", 
-                                     checkboxInput("batchSolve_dl", label = NULL))
+                          tags$label(class = "checkbox-material", "for" = "hcubeSolve_dl", 
+                                     checkboxInput("hcubeSolve_dl", label = NULL))
                         )
                )
       ),
       conditionalPanel(
-        condition = "input.batchSolve_dl == 1",
-        tags$a(id="btBatchAll_dl", class='btn btn-default shiny-download-link',
-               href='', target='_blank', download=NA, lang$nav$dialogBatch$processAllButton),
+        condition = "input.hcubeSolve_dl == 1",
+        tags$a(id="btHcubeAll_dl", class='btn btn-default shiny-download-link',
+               href='', target='_blank', download=NA, lang$nav$dialogHcube$processAllButton),
         if(noIdsExist > 0L){
-          tags$a(id="btBatchNew_dl", class='btn btn-default shiny-download-link btHighlight1',
-                 href='', target='_blank', download=NA, lang$nav$dialogBatch$processUnsolvedButton)
+          tags$a(id="btHcubeNew_dl", class='btn btn-default shiny-download-link btHighlight1',
+                 href='', target='_blank', download=NA, lang$nav$dialogHcube$processUnsolvedButton)
         },
-        modalButton(lang$nav$dialogBatch$cancelButton)
+        modalButton(lang$nav$dialogHcube$cancelButton)
       ),
       conditionalPanel(
-        condition = "input.batchSolve_dl == 0",
-        actionButton("btBatchAll", lang$nav$dialogBatch$processAllButton),
+        condition = "input.hcubeSolve_dl == 0",
+        actionButton("btHcubeAll", lang$nav$dialogHcube$processAllButton),
         if(noIdsExist > 0L){
-          actionButton("btBatchNew", lang$nav$dialogBatch$processUnsolvedButton,
+          actionButton("btHcubeNew", lang$nav$dialogHcube$processUnsolvedButton,
                        class='btHighlight1')
         },
-        modalButton(lang$nav$dialogBatch$cancelButton)
+        modalButton(lang$nav$dialogHcube$cancelButton)
       )),
     fade = TRUE, easyClose = TRUE))
 }
-showBatchLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
+showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
                                       maxConcurentLoad = 0L, hasRemovePerm = FALSE){
   showModal(modalDialog(
-    title = list(lang$nav$batchMode$configPaverDialog$title, 
+    title = list(lang$nav$hcubeMode$configPaverDialog$title, 
                  HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
     if(hasRemovePerm){
       tagList(
-        tags$div(id = "batchRemoveConfirm", style = "display:none;",
-                 sprintf(lang$nav$batchMode$configPaverDialog$removeConfirm, noScenSelected)
+        tags$div(id = "hcubeRemoveConfirm", style = "display:none;",
+                 sprintf(lang$nav$hcubeMode$configPaverDialog$removeConfirm, noScenSelected)
         ),
-        tags$div(id = "batchRemoveSuccess", style = "display:none",
-                 lang$nav$batchMode$configPaverDialog$removeSuccess),
-        tags$div(id = "batchRemoveError", class = "errMsg", style = "display:none",
-                 lang$nav$batchMode$configPaverDialog$removeError)
+        tags$div(id = "hcubeRemoveSuccess", style = "display:none",
+                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
+        tags$div(id = "hcubeRemoveError", class = "errMsg", style = "display:none",
+                 lang$nav$hcubeMode$configPaverDialog$removeError)
       )
     },
-    tags$div(id="batchLoadMethod",
+    tags$div(id="hcubeLoadMethod",
              if(length(sidsToLoad) <= maxConcurentLoad){
-               lang$nav$batchMode$configPaverDialog$selectMethod
+               lang$nav$hcubeMode$configPaverDialog$selectMethod
              }else{
-               sprintf(lang$nav$batchMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
-               lang$nav$batchMode$configPaverDialog$maxScenWarning2
+               sprintf(lang$nav$hcubeMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
+               lang$nav$hcubeMode$configPaverDialog$maxScenWarning2
              }
     ),
     tags$div(id="configPaver", style = "display:none;",
-            lang$nav$batchMode$configPaverDialog$desc,
+            lang$nav$hcubeMode$configPaverDialog$desc,
             tags$div(id = "configPaverMaxSolversErr", style = "display:none;", class = "errMsg",
-                     sprintf(lang$nav$batchMode$configPaverDialog$tooManySolvers, 
+                     sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
                              maxSolversPaver)),
-            selectInput("selPaverAttribs", lang$nav$batchMode$configPaverDialog$selAttribs, 
+            selectInput("selPaverAttribs", lang$nav$hcubeMode$configPaverDialog$selAttribs, 
                          attribs, multiple = TRUE, width = "100%")
     ),
     tags$div(id="deleteTrace", style = "display:none;",
-                    lang$nav$batchMode$configPaverDialog$delTrace
+                    lang$nav$hcubeMode$configPaverDialog$delTrace
     ),
     footer = tagList(
       if(hasRemovePerm){
-        actionButton("btBatchRemove", lang$nav$batchMode$configPaverDialog$removeButton,
+        actionButton("btHcubeRemove", lang$nav$hcubeMode$configPaverDialog$removeButton,
                      class = "btRemove")
       },
-      tags$a(id="btBatchDownload", class='btn btn-default shiny-download-link',
-             href='', target='_blank', download=NA, lang$nav$batchMode$configPaverDialog$downloadButton),
-      actionButton("btPaverConfig", lang$nav$batchMode$configPaverDialog$paverButton),
-      actionButton("btPaver", lang$nav$batchMode$configPaverDialog$runButton, 
+      tags$a(id="btHcubeDownload", class='btn btn-default shiny-download-link',
+             href='', target='_blank', download=NA, lang$nav$hcubeMode$configPaverDialog$downloadButton),
+      actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
+      actionButton("btPaver", lang$nav$hcubeMode$configPaverDialog$runButton, 
                    class = "btHighlight1", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btBatchLoad", lang$nav$batchMode$configPaverDialog$interactiveButton)
+        actionButton("btHcubeLoad", lang$nav$hcubeMode$configPaverDialog$interactiveButton)
     ),
     fade = TRUE, easyClose = FALSE
   ))
@@ -484,44 +484,44 @@ showBatchLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
 
 showInvalidScenIdsDialog <- function(invalidScenIds){
   showModal(modalDialog(
-    title = lang$nav$batchMode$invalidScenDialog$title,
-    sprintf(lang$nav$batchMode$invalidScenDialog$desc, 
+    title = lang$nav$hcubeMode$invalidScenDialog$title,
+    sprintf(lang$nav$hcubeMode$invalidScenDialog$desc, 
             length(invalidScenIds), paste(invalidScenIds, collapse = ", ")),
     footer = tagList(
-      modalButton(lang$nav$batchMode$invalidScenDialog$cancelButton),
-      actionButton("btBatchImportInvalid", label = lang$nav$batchMode$invalidScenDialog$okButton)
+      modalButton(lang$nav$hcubeMode$invalidScenDialog$cancelButton),
+      actionButton("btHcubeImportInvalid", label = lang$nav$hcubeMode$invalidScenDialog$okButton)
     ),
     fade = TRUE, easyClose = FALSE
   ))
 }
 showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
   showModal(modalDialog(
-    title = lang$nav$batchMode$duplicatedScenDialog$title,
+    title = lang$nav$hcubeMode$duplicatedScenDialog$title,
     if(noScen == noDupScen){
-      sprintf(lang$nav$batchMode$duplicatedScenDialog$allDuplicated, dupScenTags)
+      sprintf(lang$nav$hcubeMode$duplicatedScenDialog$allDuplicated, dupScenTags)
     }else{
-      sprintf(lang$nav$batchMode$duplicatedScenDialog$someDuplicated, noDupScen, dupScenTags)
+      sprintf(lang$nav$hcubeMode$duplicatedScenDialog$someDuplicated, noDupScen, dupScenTags)
     },
     footer = tagList(
-      modalButton(lang$nav$batchMode$duplicatedScenDialog$cancelButton),
+      modalButton(lang$nav$hcubeMode$duplicatedScenDialog$cancelButton),
       if(noScen != noDupScen){
-        actionButton("btBatchImportNew", label = lang$nav$batchMode$duplicatedScenDialog$importNewButton)
+        actionButton("btHcubeImportNew", label = lang$nav$hcubeMode$duplicatedScenDialog$importNewButton)
       },
-      actionButton("btBatchImportAll", label = lang$nav$batchMode$duplicatedScenDialog$importAllButton)
+      actionButton("btHcubeImportAll", label = lang$nav$hcubeMode$duplicatedScenDialog$importAllButton)
     ),
     fade = TRUE, easyClose = FALSE
   ))
 }
 showManualJobImportDialog <- function(){
    showModal(modalDialog(
-     title = lang$nav$batchMode$manualJobImportDialog$title,
+     title = lang$nav$hcubeMode$manualJobImportDialog$title,
      tags$div(
        tags$div(
-         fileInput("batchImport", label = lang$nav$batchMode$manualJobImportDialog$uploadZip)
+         fileInput("hcubeImport", label = lang$nav$hcubeMode$manualJobImportDialog$uploadZip)
        ),
        tags$div(
-         selectizeInput("batchTags", 
-                        lang$nav$batchMode$manualJobImportDialog$batchTags, c(),
+         selectizeInput("hcubeTags", 
+                        lang$nav$hcubeMode$manualJobImportDialog$hcubeTags, c(),
                         multiple = TRUE, options = list(
                           'create' = TRUE,
                           'persist' = FALSE)
@@ -529,47 +529,47 @@ showManualJobImportDialog <- function(){
        )
      ),
      footer = tagList(
-       modalButton(lang$nav$batchMode$manualJobImportDialog$cancelButton),
-       actionButton("btUploadBatch", label = lang$nav$batchMode$manualJobImportDialog$uploadButton, 
+       modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
+       actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
                     class = "btHighlight1")
      ),
      fade = TRUE, easyClose = TRUE
    ))
  }
-getHypercubeJobsTable <- function(batchMeta, jobHist = FALSE){
+getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
   tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
     tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
-             lang$nav$batchMode$importJobsDialog$discardSuccess),
+             lang$nav$hcubeMode$importJobsDialog$discardSuccess),
     tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
-             lang$nav$batchMode$importJobsDialog$importSuccess),
+             lang$nav$hcubeMode$importJobsDialog$importSuccess),
     tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
-             lang$nav$batchMode$importJobsDialog$unknownError),
-    if(!inherits(batchMeta, "data.frame")){
+             lang$nav$hcubeMode$importJobsDialog$unknownError),
+    if(!inherits(hcubeMeta, "data.frame")){
       tags$div(class = "errMsg", 
-        lang$nav$batchMode$importJobsDialog$unknownError
+        lang$nav$hcubeMode$importJobsDialog$unknownError
       )
-    }else if(length(batchMeta) && nrow(batchMeta)){
+    }else if(length(hcubeMeta) && nrow(hcubeMeta)){
       tags$table(class = "cJob-wrapper",
                  tags$tr(
-                   tags$th(lang$nav$batchMode$importJobsDialog$header$owner),
-                   tags$th(lang$nav$batchMode$importJobsDialog$header$date),
-                   tags$th(lang$nav$batchMode$importJobsDialog$header$tags),
-                   tags$th(lang$nav$batchMode$importJobsDialog$header$status),
+                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$owner),
+                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$date),
+                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
+                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$status),
                    if(!jobHist)
-                     tags$th(lang$nav$batchMode$importJobsDialog$header$action)
+                     tags$th(lang$nav$hcubeMode$importJobsDialog$header$action)
                  ),
-        do.call("tagList", lapply(seq_len(nrow(batchMeta)), function(i){
-          jStatus <- strsplit(batchMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
-          jID     <- batchMeta[[1]][i]
+        do.call("tagList", lapply(seq_len(nrow(hcubeMeta)), function(i){
+          jStatus <- strsplit(hcubeMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
+          jID     <- hcubeMeta[[1]][i]
           
           tags$tr(
-            tags$td(batchMeta[[2]][i]),
-            tags$td(batchMeta[[4]][i]),
+            tags$td(hcubeMeta[[2]][i]),
+            tags$td(hcubeMeta[[4]][i]),
             tags$td(
                      if(jobHist){
-                       substr(batchMeta[[5]][i], 2, nchar(batchMeta[[5]][i]) - 1L)
+                       substr(hcubeMeta[[5]][i], 2, nchar(hcubeMeta[[5]][i]) - 1L)
                      }else{
-                       jTags   <- csv2Vector(batchMeta[[5]][i])
+                       jTags   <- csv2Vector(hcubeMeta[[5]][i])
                        selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
                                       selected = jTags,
                                       multiple = TRUE, options = list(
@@ -583,23 +583,23 @@ getHypercubeJobsTable <- function(batchMeta, jobHist = FALSE){
                        if(identical(jStatus, "completed")){
                          tagList(
                            HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
-                                       lang$nav$batchMode$importJobsDialog$importConfirm$title, '\', \'', 
-                                       lang$nav$batchMode$importJobsDialog$importConfirm$desc, '\', \'', 
-                                       lang$nav$batchMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
-                                       lang$nav$batchMode$importJobsDialog$importConfirm$confirmButton, 
+                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$title, '\', \'', 
+                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$desc, '\', \'', 
+                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
+                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$confirmButton, 
                                        '\', \'importHypercubeJob(', jID, 
-                                       ')\')">', lang$nav$batchMode$importJobsDialog$buttons$import, '</button>',
+                                       ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$import, '</button>',
                                        '<button type="button" class="btn btn-default" onclick="showHypercubeLog(', jID, ')">', 
-                                       lang$nav$batchMode$importJobsDialog$buttons$log, '</button>'))
+                                       lang$nav$hcubeMode$importJobsDialog$buttons$log, '</button>'))
                          )
                        },
                        HTML(paste0('<button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
-                                   lang$nav$batchMode$importJobsDialog$discardConfirm$title, '\', \'', 
-                                   lang$nav$batchMode$importJobsDialog$discardConfirm$desc, '\', \'', 
-                                   lang$nav$batchMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
-                                   lang$nav$batchMode$importJobsDialog$discardConfirm$confirmButton, 
+                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$title, '\', \'', 
+                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$desc, '\', \'', 
+                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
+                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$confirmButton, 
                                    '\', \'discardHypercubeJob(', jID, 
-                                   ')\')">', lang$nav$batchMode$importJobsDialog$buttons$discard, '</button>'))
+                                   ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$discard, '</button>'))
               )
             }
           )
@@ -607,32 +607,35 @@ getHypercubeJobsTable <- function(batchMeta, jobHist = FALSE){
       )
     }else{
       tags$div(style = "padding:20px;text-align:center;",
-        lang$nav$batchMode$importJobsDialog$noJobs
+               if(jobHist)
+                 lang$nav$hcubeMode$importJobsDialog$noJobsHist
+               else
+                 lang$nav$hcubeMode$importJobsDialog$noJobs
       )
     }
   )
 }
 showJobsCompletedDialog <- function(){
   showModal(modalDialog(
-    title = lang$nav$batchMode$jobsCompletedDialog$title,
-    lang$nav$batchMode$jobsCompletedDialog$desc,
+    title = lang$nav$hcubeMode$jobsCompletedDialog$title,
+    lang$nav$hcubeMode$jobsCompletedDialog$desc,
   fade = TRUE, easyClose = TRUE))
 }
 showJobHistoryDialog <- function(jobMeta){
   showModal(modalDialog(
-    title = lang$nav$batchMode$importJobsDialog$histTitle,
+    title = lang$nav$hcubeMode$importJobsDialog$histTitle,
     getHypercubeJobsTable(jobMeta, jobHist = TRUE),
     fade = TRUE, easyClose = TRUE
   ))
 }
 showHypercubeLogFileDialog <- function(logContent){
   showModal(modalDialog(
-    title = lang$nav$batchMode$showLogFileDialog$title,
+    title = lang$nav$hcubeMode$showLogFileDialog$title,
     tags$pre(
       if(length(logContent) && nchar(logContent)){
         logContent
       }else{
-        lang$nav$batchMode$showLogFileDialog$noContent
+        lang$nav$hcubeMode$showLogFileDialog$noContent
       }
     ),
     fade = TRUE, easyClose = TRUE

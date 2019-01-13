@@ -383,21 +383,17 @@ animation: none !important;
   display: inline;
   border: 2px solid grey;
 }
-/* batch module */
-.loadDiv{
+/* Hypercube module */
+.centered-div{
   text-align:center;
   font-size:20px;
   margin-top:25%;
 }
-.loadDiv img, button {
+.centered-div button {
    padding : 10px;
    margin-left: auto;
    margin-right: auto;
    display: block;
-}
-.batchLoadSelector{
-  vertical-align:top;
-  display: inline-block;
 }
 .grid-container {
   grid-template-columns: 325px 150px 325px 75px;
