@@ -1,6 +1,6 @@
 {
     "activateModules":{
-        "scenario":false
+        "scenario":true
     },
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"

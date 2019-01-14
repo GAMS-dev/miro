@@ -316,6 +316,7 @@
 		"eprice"   	: {
 			"outType"			: "eprice",
 		    "height"			: 700,
+            "packages"          : ["plotly"],
 		    "options"			: {
 		    }
          }
