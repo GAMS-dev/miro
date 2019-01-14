@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$scenario && !identical(config$activateModules$batchMode, TRUE)){
+  if(config$activateModules$scenario && !identical(config$activateModules$hcubeMode, TRUE)){
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$scenario$title, tags$span(class="caret")),

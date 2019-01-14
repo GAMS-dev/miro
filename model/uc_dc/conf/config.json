@@ -6,7 +6,7 @@
           "label": "Select input case [case]",
           "choices": "casename$filename",
           "selected":"case14",
-          "noBatch": true
+          "noHcube": true
       },
       "GMSPAR_times": {
           "alias": "Time range",

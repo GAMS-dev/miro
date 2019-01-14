@@ -1,8 +1,8 @@
-BatchLoad <- R6Class("BatchLoad", 
+HcubeLoad <- R6Class("HcubeLoad", 
                      public = list(
                        initialize        = function(db, scalarColNames, scalarTables = NULL, 
                                                     scalarKeyTypeList = NULL, tableFieldSep = "-"){
-                         # R6 class to import scenarios in batch mode
+                         # R6 class to import scenarios in hcube mode
                          #
                          # Args:      
                          #   db:                      R6 database object
@@ -96,7 +96,7 @@ BatchLoad <- R6Class("BatchLoad",
                          if(any(!vapply(c(private$tabNameMeta, innerTables), function(table){ 
                            dbExistsTable(private$conn, table)}, logical(1L), USE.NAMES = FALSE))){
                            
-                           flog.error("Db: One of the tables: '%s' does not exist (BatchLoad.fetchResults).", 
+                           flog.error("Db: One of the tables: '%s' does not exist (HcubeLoad.fetchResults).", 
                                       paste(c(private$tabNameMeta, innerTables), collapse = ", "))
                            return(tibble())
                          }
@@ -124,11 +124,11 @@ BatchLoad <- R6Class("BatchLoad",
                                                  DBI::dbQuoteIdentifier(private$conn, private$tabNameMeta),
                                                  paste(innerJoin, collapse = " "), if(length(subsetList)) " WHERE ", 
                                                  subsetRows, " LIMIT ?lim ;"))
-                           flog.debug("Db: Data was imported (BatchLoad.fetchResults).")
+                           flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")
                            query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                          }, error = function(e){
-                           stop(sprintf("Db: An error occurred while querying the database (BatchLoad.fetchResults)." %+%
+                           stop(sprintf("Db: An error occurred while querying the database (HcubeLoad.fetchResults)." %+%
                                           "Error message: '%s'.", e),
                                 call. = FALSE)
                          })

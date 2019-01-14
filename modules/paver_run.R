@@ -14,10 +14,10 @@ genPaverArgs <- function(traceFilenames){
 observeEvent(input$btPaverConfig, {
   showEl(session, "#configPaver")
   showEl(session, "#btPaver")
-  hideEl(session, "#btBatchLoad")
-  hideEl(session, "#batchLoadMethod")
+  hideEl(session, "#btHcubeLoad")
+  hideEl(session, "#hcubeLoadMethod")
   hideEl(session, "#btPaverConfig")
-  hideEl(session, "#btBatchDownload")
+  hideEl(session, "#btHcubeDownload")
   # if already tracefiles in tracefiledir show deletion warning
   if(length(list.files(traceFileDir)) > 0){
     showEl(session, "#deleteTrace")
@@ -29,7 +29,7 @@ observeEvent(input$btPaver, {
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
   
-  if(batchLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
+  if(hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
                                                        drop = FALSE], 
                                    input$selPaverAttribs, maxSolversPaver, 
                                    c("_uid", "_stime", "_stag", 
@@ -58,7 +58,7 @@ observeEvent(input$btPaver, {
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
       return()
     }
-    batchLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+    hcubeLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
     traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = TRUE)
   }
   addResourcePath("paver", paverDir)
@@ -71,15 +71,15 @@ observeEvent(input$btPaver, {
     removeTab("tabs_paver_results", "stat_SolutionQuality")
     removeTab("tabs_paver_results", "solvedata")
     removeTab("tabs_paver_results", "documentation")
-    hideEl(session, "#btLoadBatch")
-    hideEl(session, "#paver_fail")
+    hideEl(session, "#btLoadHcube")
+    hideEl(session, "#paverFail")
     updateTabsetPanel(session, "tabs_paver_results", selected = "index")
     output$paverResults <- renderUI(character())
-    showEl(session, "#paver_load")
+    showEl(session, "#paverLoad")
     hideEl(session, "#newPaverRunButton")
     enableEl(session, "#btPaverInterrupt")
-    updateTabsetPanel(session, "sidebarMenuId", selected = "batchAnalyze")
-    switchTab(session, "batchAna")
+    updateTabsetPanel(session, "sidebarMenuId", selected = "hcubeAnalyze")
+    switchTab(session, "hcubeAna")
     
     errMsg <- NULL
     # run paver
@@ -108,7 +108,7 @@ observeEvent(input$btPaver, {
     output$paverResults <- renderUI(
       if(!is.null(paverStatus())){
         if(paverStatus() == 0){
-          hideEl(session, "#paver_load")
+          hideEl(session, "#paverLoad")
           paverResultTabs <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
           lapply(2:length(paverResultTabs), function(i){
             insertTab("tabs_paver_results", target = paverResultTabs[i-1], position = "after",
@@ -130,8 +130,8 @@ observeEvent(input$btPaver, {
           return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultTabs[1], ".html")))
         }else{
           flog.error("Problems while running paver. Error message: '%s'.", paver$read_all_error())
-          hideEl(session, "#paver_load")
-          showEl(session, "#paver_fail")
+          hideEl(session, "#paverLoad")
+          showEl(session, "#paverFail")
         }
       }
     )

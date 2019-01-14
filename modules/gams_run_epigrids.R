@@ -1,23 +1,23 @@
 
-output$btBatchAll_dl <- downloadHandler(
+output$btHcubeAll_dl <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% ".zip"
   },
   content = function(file) {
-    # solve all scenarios in batch run
+    # solve all scenarios in Hypercube run
     
     # BEGIN EPIGRIDS specific
-    workDirBatch <- workDir %+% "batch"
-    unlink(workDirBatch, recursive = TRUE, force = TRUE)
-    dir.create(workDirBatch, showWarnings = FALSE, recursive = TRUE)
+    workDirHcube <- workDir %+% "hcube"
+    unlink(workDirHcube, recursive = TRUE, force = TRUE)
+    dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
     homeDir <- getwd()
-    setwd(workDirBatch)
+    setwd(workDirHcube)
     on.exit(setwd(homeDir), add = TRUE)
-    on.exit(unlink(workDirBatch), add = TRUE)
+    on.exit(unlink(workDirHcube), add = TRUE)
     
-    genBatchJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
+    genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
                       modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
-                      toDir = workDirBatch, scenGmsPar = scenGmsPar)
+                      toDir = workDirHcube, scenGmsPar = scenGmsPar)
     
     removeModal()
     zip(file, list.files(recursive = TRUE), compression_level = 6)
@@ -25,7 +25,7 @@ output$btBatchAll_dl <- downloadHandler(
   },
   contentType = "application/zip")
 
-output$btBatchNew_dl <- downloadHandler(
+output$btHcubeNew_dl <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% ".zip"
   },
@@ -33,17 +33,17 @@ output$btBatchNew_dl <- downloadHandler(
     # solve only scenarios that do not yet exist
     
     # BEGIN EPIGRIDS specific
-    workDirBatch <- workDir %+% "batch"
-    unlink(workDirBatch, recursive = TRUE, force = TRUE)
-    dir.create(workDirBatch, showWarnings = FALSE, recursive = TRUE)
+    workDirHcube <- workDir %+% "hcube"
+    unlink(workDirHcube, recursive = TRUE, force = TRUE)
+    dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
     homeDir <- getwd()
-    setwd(workDirBatch)
+    setwd(workDirHcube)
     on.exit(setwd(homeDir), add = TRUE)
-    on.exit(unlink(workDirBatch), add = TRUE)
+    on.exit(unlink(workDirHcube), add = TRUE)
     
-    genBatchJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
+    genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
                       modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
-                      toDir = workDirBatch, scenGmsPar = scenGmsPar[idxDiff])
+                      toDir = workDirHcube, scenGmsPar = scenGmsPar[idxDiff])
     
     removeModal()
     zip(file, list.files(recursive = TRUE), compression_level = 6)

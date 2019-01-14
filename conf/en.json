@@ -6,7 +6,7 @@
       "gams":"GAMS interaction",
       "scen":"Compare Scenarios",
       "advanced":"Advanced Options",
-      "batch":{
+      "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import results",
         "load": "Load results",
@@ -16,7 +16,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
-      "solveBatch":"Submit job",
+      "solveHcube":"Submit job",
       "load":"Load",
       "splitView":"Switch to split view",
       "tabView":"Switch to tab view",
@@ -83,19 +83,19 @@
       "downloadTempDesc":"Download temporary files from the working directory",
       "downloadTempButton": "Download files"
     },
-    "batch_import":{
+    "hcubeImport":{
       "title":"Import data",
       "btManualImport": "Manual import",
       "btShowHistory": "Show history"
     },
-    "batch_load":{
+    "hcubeLoad":{
       "title":"Load Scenarios",
       "noData":"No data was returned by your query",
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all"
     },
-    "batch_analyze":{
+    "hcubeAnalyze":{
       "title":"Analyze Scenarios",
       "loadMsg":"Please wait while the results are calculated. This may take a while.",
       "failMsg":"Something went wrong while trying to run paver. If this problem persists, please contact a system administrator.",
@@ -254,7 +254,7 @@
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
     },
-    "dialogBatch":{
+    "dialogHcube":{
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else. Do you want to solve all scenarios again or only those that have not yet been solved?",
       "newTags": "Assign one or more tags to your job:",
@@ -282,7 +282,7 @@
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
       }
     },
-    "batchMode":{
+    "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
       "checkboxAliases":["No", "Yes"],
       "configPaverDialog":{
@@ -321,9 +321,11 @@
       "importJobsDialog":{
         "title": "Currently active Hypercube jobs",
         "noJobs": "No Hypercube jobs are currently active",
+        "noJobsHist": "No discarded or imported Hypercube jobs could be found",
         "discardSuccess": "Job was discarded",
         "importSuccess": "Job was imported successfully",
         "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
+        "histTitle": "Job history",
         "header":{
           "owner": "Owner",
           "date": "Submission date",
@@ -352,9 +354,17 @@
       "manualJobImportDialog":{
         "title": "Manual Hypercube job import",
         "uploadZip":"Upload zip file with results here",
-        "batchTags":"Job tags (separate with comma)",
+        "hcubeTags":"Job tags (separate with comma)",
         "uploadButton":"Upload",
         "cancelButton": "Cancel"
+      },
+      "showLogFileDialog":{
+        "title": "Hypercube job log file",
+        "noContent": "The log file could not be accessed or does not contain any data."
+      },
+      "jobsCompletedDialog":{
+        "title": "Completed jobs",
+        "desc": "Hypercube jobs were completed and are now ready to be imported."
       }
     },
     "dialogPaverInUse":{

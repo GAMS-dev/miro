@@ -3,7 +3,7 @@ Db <- R6Class("Db",
               public = list(
                 initialize        = function(uid, dbConf, uidIdentifier, sidIdentifier, 
                                              snameIdentifier, stimeIdentifier, slocktimeIdentifier, stagIdentifier,
-                                             accessIdentifier, tableNameMetadata, tableNameMetaBatch,
+                                             accessIdentifier, tableNameMetadata, tableNameMetaHcube,
                                              tableNameScenLocks, tableNamesScenario, slocktimeLimit,
                                              tableNameTrace = NULL, traceColNames = NULL, attachmentConfig = NULL){
                   # Initialize database class
@@ -20,7 +20,7 @@ Db <- R6Class("Db",
                   #   stagIdentifier:      column name for scenario tags column
                   #   accessIdentifier:    column name for access information column 
                   #   tableNameMetadata:   name of the database table where scenario metadata is stored
-                  #   tableNameMetaBatch:  name of the database table where batch run metadata is stored
+                  #   tableNameMetaHcube:  name of the database table where hcube run metadata is stored
                   #   tableNameScenLocks:  name of the table where scenario locks are saved
                   #   tableNamesScenario:  names of tables where scenario data is saved
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist 
@@ -53,7 +53,7 @@ Db <- R6Class("Db",
                   stopifnot(is.character(stagIdentifier), length(stagIdentifier) == 1)
                   stopifnot(is.character(accessIdentifier), length(accessIdentifier) == 1)
                   stopifnot(is.character(tableNameMetadata), length(tableNameMetadata) == 1)
-                  stopifnot(is.character(tableNameMetaBatch), length(tableNameMetaBatch) == 1)
+                  stopifnot(is.character(tableNameMetaHcube), length(tableNameMetaHcube) == 1)
                   stopifnot(is.character(tableNameScenLocks), length(tableNameScenLocks) == 1)
                   stopifnot(is.character(tableNamesScenario), length(tableNamesScenario) >= 1)
                   stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1)
@@ -81,7 +81,7 @@ Db <- R6Class("Db",
                   private$scenMetaColnames['accessW'] <- accessIdentifier
                   private$slocktimeIdentifier         <- slocktimeIdentifier
                   private$tableNameMetadata           <- tableNameMetadata
-                  private$tableNameMetaBatch          <- tableNameMetaBatch
+                  private$tableNameMetaHcube          <- tableNameMetaHcube
                   private$tableNameScenLocks          <- tableNameScenLocks
                   private$tableNamesScenario          <- tableNamesScenario
                   private$slocktimeLimit              <- slocktimeLimit
@@ -598,7 +598,7 @@ Db <- R6Class("Db",
                   if(!dbExistsTable(private$conn, tableName)){
                     flog.debug("Db: A table named: '%s' does not exist in the database (Db.importDataset).", 
                                tableName)
-                    return(data.frame())
+                    return(tibble())
                   }else{
                     if(!is.null(colNames)){
                       colNames <- paste(DBI::dbQuoteIdentifier(private$conn, colNames),
@@ -741,7 +741,7 @@ Db <- R6Class("Db",
                   }
                   invisible(self)
                 },
-                writeMetadata = function(metadata, update = FALSE, batchMetadata = FALSE){
+                writeMetadata = function(metadata, update = FALSE, hcubeMetadata = FALSE){
                   # Write scenario metadata to database
                   #
                   # Args:
@@ -749,7 +749,7 @@ Db <- R6Class("Db",
                   #                  to many scenarios
                   #   update:        boolean that specifies whether existing metadata 
                   #                  shall be updated
-                  #   batchMetadata: boolean that specifies whether metadata is batch run 
+                  #   hcubeMetadata: boolean that specifies whether metadata is hcube run 
                   #                  metadata or not (scenario metadata)
                   #
                   # Returns:
@@ -758,10 +758,10 @@ Db <- R6Class("Db",
                   # BEGIN error checks
                   stopifnot(inherits(metadata, "data.frame"))
                   stopifnot(is.logical(update), length(update) == 1L)
-                  stopifnot(is.logical(batchMetadata), length(batchMetadata) == 1L)
+                  stopifnot(is.logical(hcubeMetadata), length(hcubeMetadata) == 1L)
                   # END error checks
-                  if(batchMetadata){
-                    metaTabName <- private$tableNameMetaBatch
+                  if(hcubeMetadata){
+                    metaTabName <- private$tableNameMetaHcube
                   }else{
                     metaTabName <- private$tableNameMetadata
                   }
@@ -840,28 +840,28 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaBatch = function(batchTags = character(1L)){
-                  # adds new entry to batch run metadata table
+                writeMetaHcube = function(hcubeTags = character(1L)){
+                  # adds new entry to hcube run metadata table
                   #
                   # Args:
-                  #   batchTags:         character vector with tags to save for batch run (optional)
+                  #   hcubeTags:         character vector with tags to save for hcube run (optional)
                   #
                   # Returns:
-                  #   batch Id (integer)
-                  if(is.null(batchTags)){
-                    batchTags <- character(1L)
+                  #   hcube Id (integer)
+                  if(is.null(hcubeTags)){
+                    hcubeTags <- character(1L)
                   }
-                  stopifnot(is.character(batchTags))
+                  stopifnot(is.character(hcubeTags))
                     
                   now <- Sys.time()
                   
                   uAccessGroups <- vector2Csv(private$userAccessGroups)
                   metadata <- tibble(private$uid, "_scheduled", 
-                                     now, vector2Csv(batchTags), permR = uAccessGroups,
+                                     now, vector2Csv(hcubeTags), permR = uAccessGroups,
                                      permW = uAccessGroups)
                   names(metadata) <- private$scenMetaColnames[-1]
                   
-                  self$writeMetadata(metadata, update = FALSE, batchMetadata = TRUE)
+                  self$writeMetadata(metadata, update = FALSE, hcubeMetadata = TRUE)
                   
                   if(inherits(private$conn, "PqConnection")){
                     query <- "SELECT lastval();"
@@ -873,32 +873,43 @@ Db <- R6Class("Db",
                   if(length(bid) && length(bid[[1L]])){
                     return(bid[[1]][[1]])
                   }
-                  stop("Batch ID could not be identified. Something went wrong while writing batch metadata to database.", 
+                  stop("Job ID could not be identified. Something went wrong while writing hcube metadata to database.", 
                        call. = FALSE)
                 },
-                getMetaBatch = function(){
-                  # fetches batch job metadata
+                getMetaHcube = function(onlyActive = FALSE){
+                  # fetches hcube job metadata
                   #
                   # Args:
+                  #   onlyActive:   logical that specifies whether to fetch all 
+                  #                 or only active jobs
                   #
                   # Returns:
                   #   tibble with metadata
+                  stopifnot(is.logical(onlyActive), length(onlyActive) == 1L)
+                  
                   accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
                                                              private$userAccessGroups)
                   
+                  if(onlyActive){
+                    hcubeMeta <- self$importDataset(private$tableNameMetaHcube, accessRights,
+                                                      tibble(private$scenMetaColnames['sname'],
+                                                             "%_", "NOT LIKE"),
+                                                    innerSepAND = FALSE)
+                  }else{
+                    hcubeMeta <- self$importDataset(private$tableNameMetaHcube, accessRights, 
+                                                    innerSepAND = FALSE)
+                  }
                   
-                  batchMeta <- self$importDataset(private$tableNameMetaBatch, accessRights, 
-                                                  innerSepAND = FALSE)
                   
-                  return(batchMeta)
+                  return(hcubeMeta)
                 },
                 updateHypercubeJob = function(jid, pid = NULL, tags = NULL, status = NULL,
                                               accessR = NULL, accessW = NULL){
-                  # set process id for batch job
+                  # set process id for hcube job
                   # 
                   # Args:
                   #   jid:           ID of Hypercube job to update
-                  #   pid:           process ID of batch job
+                  #   pid:           process ID of hcube job
                   #
                   # Returns:
                   #   invisibly returns R6 object (reference to Db class)
@@ -931,42 +942,44 @@ Db <- R6Class("Db",
                   
                   accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessW'], 
                                                              private$userAccessGroups)
-                  noRowsUpdated <- self$updateRows(private$tableNameMetaBatch, accessRights, 
+                  noRowsUpdated <- self$updateRows(private$tableNameMetaHcube, accessRights, 
                                                    colNames = colNames, 
                                                    values = values, subsetSids = jid, 
                                                    innerSepAND = FALSE)
                   if(!noRowsUpdated){
-                    stop("Batch metadata was not updated. This might be due to insufficient write permissions.", call. = FALSE)
+                    stop("Job metadata was not updated. This might be due to insufficient write permissions.", call. = FALSE)
                   }
                   
                   invisible(self)
                 },
-                fetchScenList = function(noBatch = FALSE){
+                fetchScenList = function(noHcube = FALSE){
                   # returns list of scenarios that the current user has access to
                   #
                   # Args:
-                  #   noBatch:           boolean that specifies whether to include scenarios that 
-                  #                      have been solved in batch mode or not (optional)
+                  #   noHcube:           boolean that specifies whether to include scenarios that 
+                  #                      have been solved in hcube mode or not (optional)
                   #
                   # Returns:
                   #   tibble: tibble with all scenarios user has access to read as well 
                   #   as their metadata, throws exception in case of error
-                  stopifnot(is.logical(noBatch), length(noBatch) == 1L)
+                  stopifnot(is.logical(noHcube), length(noHcube) == 1L)
                   
                   accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], private$userAccessGroups)
                   
-                  noBatchRuns <- NULL
-                  if(noBatch){
+                  noHcubeRuns <- NULL
+                  if(noHcube){
                     if(inherits(private$conn, "PqConnection")){
-                      noBatchRuns <- tibble(private$scenMetaColnames['sname'], 
-                                            "[0-9a-z]{64}", "NOT SIMILAR TO")
+                      noHcubeRuns <- tibble(private$scenMetaColnames['sname'], 
+                                            "[0-9a-f]{64}", "NOT SIMILAR TO")
                     }else{
                       # TODO: Sqlite alternative!!!
+                      noHcubeRuns <- tibble(private$scenMetaColnames['sname'], 
+                                            "________________________________________________________________", "LIKE")
                     }
                   }
-                  if(length(noBatchRuns)){
+                  if(length(noHcubeRuns)){
                     scenList <- self$importDataset(private$tableNameMetadata, accessRights, 
-                                                   noBatchRuns, innerSepAND = FALSE)
+                                                   noHcubeRuns, innerSepAND = FALSE)
                   }else{
                     scenList <- self$importDataset(private$tableNameMetadata, accessRights, 
                                                    innerSepAND = FALSE)
@@ -1064,7 +1077,7 @@ Db <- R6Class("Db",
                 slocktimeIdentifier = character(0L),
                 userAccessGroups    = character(0L),
                 tableNameMetadata   = character(0L),
-                tableNameMetaBatch  = character(0L),
+                tableNameMetaHcube  = character(0L),
                 tableNameScenLocks  = character(0L),
                 tableNamesScenario  = character(0L),
                 slocktimeLimit      = character(0L),

@@ -1,5 +1,5 @@
-hasBatchRemovePermission <- FALSE
-batchRemoveConfirmed <- FALSE
+hasHcubeRemovePermission <- FALSE
+hcubeRemoveConfirmed <- FALSE
 
 inputType <- list(text = "_uid", date = c("_stime"), csv = "_stag")
 keysRaw   <- NULL
@@ -76,11 +76,11 @@ if(length(modelOut[[scalarsOutName]])){
   scalarTables <- c(scalarTables, scalarsTabNameOut)
 }
 
-batchLoad <- BatchLoad$new(db, scalarsFileHeaders[c(1, 3)],
+hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)],
                            scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "-" %+% metaCols[c("uid", "stime", "stag")])
-names(fields) <- c("", "Owner", "Date of creation", "Batch tags")
+names(fields) <- c("", "Owner", "Date of creation", "Job tags")
 fields <- c(fields, scalarFields)
 
 maxNumBlocks   <- 5L
@@ -88,7 +88,7 @@ activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
 
-hideEl(session, "#batchLoadButtons")
+hideEl(session, "#hcubeLoadButtons")
 
 generateLine <- function(i, j, type, label){
   tags$div(id = "line" %+% i %+% "_" %+% j, class = "itemLine",
@@ -217,7 +217,7 @@ lapply(seq_len(maxNumBlocks), function(i){
 })
 observeEvent(input$btSendQuery, {
   disableEl(session, "#btSendQuery")
-  showEl(session, "#loadDiv")
+  showEl(session, "#hyperQueryLoad")
   a <- 1L
   c <- 1L
   subsetCoditions <- NULL
@@ -311,85 +311,85 @@ observeEvent(input$btSendQuery, {
                                                FUN.VALUE = "character", 1,
                                                USE.NAMES = FALSE))
   tryCatch({
-    rv$fetchedScenarios <- batchLoad$fetchResults(subsetCoditions, colNames = colN, limit = batchLoadMaxScen)
+    rv$fetchedScenarios <- hcubeLoad$fetchResults(subsetCoditions, colNames = colN, limit = hcubeLoadMaxScen)
   }, error = function(e){
     if(identical(conditionMessage(e), "maxNoRowsVio")){
       errMsg <- sprintf("Your query results in too many scenarios to be fetched from the database. The maximum number of scenarios to be fetched is: %d. Please narrow your search.", 
-                        batchLoadMaxScen)
+                        hcubeLoadMaxScen)
     }else{
       errMsg <- "An error occurred while executing the database query. " %+%
         "Please try again or contact the system administrator in case this problem persists."
     }
     showErrorMsg("Error fetching data", errMsg)
-    flog.warn("Problems executing batchLoad query. Error message: %s.", e)
+    flog.warn("Problems executing hcubeLoad query. Error message: %s.", e)
   })
   if(length(isolate(rv$fetchedScenarios)) && nrow(isolate(rv$fetchedScenarios))){
-    showEl(session, "#batchLoadButtons")
-    hideEl(session, "#batchLoadNoData")
+    showEl(session, "#hcubeLoadButtons")
+    hideEl(session, "#hcubeLoadNoData")
   }else{
-    showEl(session, "#batchLoadNoData")
-    hideEl(session, "#batchLoadButtons")
+    showEl(session, "#hcubeLoadNoData")
+    hideEl(session, "#hcubeLoadButtons")
   }
-  hideEl(session, "#loadDiv")
+  hideEl(session, "#hyperQueryLoad")
   enableEl(session, "#btSendQuery")
 })
 if("DT" %in% (.packages())){
-  output$batchLoadResults <- renderDataTable({
+  output$hcubeLoadResults <- renderDataTable({
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
       rv$fetchedScenarios[, -1]
     }
   }, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE)
 }else{
-  output$batchLoadResults <- renderDataTable({
+  output$hcubeLoadResults <- renderDataTable({
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
       rv$fetchedScenarios[, -1]
     }
   }, options = list(filter = "bottom", colnames = names(fields)[-1], rownames = FALSE))
 }
 
-observeEvent(input$batchLoadSelected, {
-  flog.debug("Button to load selected scenarios (batch load) clicked.")
-  if(is.null(input$batchLoadResults_rows_selected)){
+observeEvent(input$hcubeLoadSelected, {
+  flog.debug("Button to load selected scenarios (Hypercube load) clicked.")
+  if(is.null(input$hcubeLoadResults_rows_selected)){
     return(NULL)
   }
-  batchRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_selected])
-  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = hasBatchRemovePermission)
+  hcubeRemoveConfirmed <<- FALSE
+  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_selected])
+  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
+                            hasRemovePerm = hasHcubeRemovePermission)
 })
-observeEvent(input$batchLoadCurrent, {
-  flog.debug("Button to load current page of scenarios (batch load) clicked.")
-  if(is.null(input$batchLoadResults_rows_current)){
+observeEvent(input$hcubeLoadCurrent, {
+  flog.debug("Button to load current page of scenarios (Hypercube load) clicked.")
+  if(is.null(input$hcubeLoadResults_rows_current)){
     return(NULL)
   }
-  batchRemoveConfirmed <<- FALSE
-  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$batchLoadResults_rows_current])
-  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = hasBatchRemovePermission)
+  hcubeRemoveConfirmed <<- FALSE
+  sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_current])
+  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
+                            hasRemovePerm = hasHcubeRemovePermission)
 })
-observeEvent(input$batchLoadAll, {
-  flog.debug("Button to load all scenarios (batch load) clicked.")
+observeEvent(input$hcubeLoadAll, {
+  flog.debug("Button to load all scenarios (Hypercube load) clicked.")
   if(!length(rv$fetchedScenarios) || !nrow(rv$fetchedScenarios)){
     return(NULL)
   }
-  batchRemoveConfirmed <<- FALSE
+  hcubeRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
-  showBatchLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
-                            hasRemovePerm = hasBatchRemovePermission)
+  showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
+                            hasRemovePerm = hasHcubeRemovePermission)
 })
 
-output$btBatchDownload <- downloadHandler(
+output$btHcubeDownload <- downloadHandler(
   filename = function() {
     tolower(modelName) %+% "_data.zip"
   },
   content = function(file) {
-    flog.debug("Button to download batch files clicked.")
+    flog.debug("Button to download Hypercube job files clicked.")
     
     if(!length(sidsToLoad)){
       flog.warn("No scenario IDs to download could be found.")
       return(downloadHandlerError(file))
     }
-    if(length(sidsToLoad) > batchLoadMaxScen){
+    if(length(sidsToLoad) > hcubeLoadMaxScen){
       flog.warn("Maximum number of scenarios to download was exceeded.")
       return(downloadHandlerError(file))
     }
@@ -410,12 +410,12 @@ output$btBatchDownload <- downloadHandler(
     setwd(tmpDir)
     prog <- Progress$new()
     on.exit(prog$close(), add = TRUE)
-    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
     tryCatch({
-      batchLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
+      hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
       return(zip(file, list.files(recursive = TRUE), compression_level = 6))
     }, error = function(e){
       flog.error(e)
@@ -438,28 +438,28 @@ removeBlock <- function(blockId){
   removeUI(selector = "#block" %+% blockId)
 }
 
-observeEvent(input$btBatchRemove, {
-  req(hasBatchRemovePermission)
-  if(batchRemoveConfirmed){
+observeEvent(input$btHcubeRemove, {
+  req(hasHcubeRemovePermission)
+  if(hcubeRemoveConfirmed){
     errMsg <- NULL
-    disableEl(session, "#btBatchRemove")
+    disableEl(session, "#btHcubeRemove")
     tryCatch(db$deleteRows(db$getTableNameMetadata(), subsetSids = sidsToLoad), error = function(e){
-      flog.error("Problems removing batch scenarios. Error message: %s", e)
+      flog.error("Problems removing Hypercube scenarios. Error message: %s", e)
       errMsg <<- TRUE
     })
     if(!is.null(errMsg)){
-      showEl(session, "#batchRemoveError")
+      showEl(session, "#hcubeRemoveError")
       return(NULL)
     }
-    hideEl(session, "#batchRemoveConfirm")
-    showEl(session, "#batchRemoveSuccess")
+    hideEl(session, "#hcubeRemoveConfirm")
+    showEl(session, "#hcubeRemoveSuccess")
     hideModal(session, 1L)
   }else{
-    hideEl(session, "#btBatchLoad")
-    hideEl(session, "#batchLoadMethod")
+    hideEl(session, "#btHcubeLoad")
+    hideEl(session, "#hcubeLoadMethod")
     hideEl(session, "#btPaverConfig")
-    hideEl(session, "#btBatchDownload")
-    showEl(session, "#batchRemoveConfirm")
-    batchRemoveConfirmed <<- TRUE
+    hideEl(session, "#btHcubeDownload")
+    showEl(session, "#hcubeRemoveConfirm")
+    hcubeRemoveConfirmed <<- TRUE
   }
 })

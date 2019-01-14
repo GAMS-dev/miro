@@ -62,6 +62,7 @@ these components are included below):
 - yaml https://github.com/viking/r-yaml/ or https://cran.r-project.org/web/packages/yaml/index.html
 - formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
+- MathJax.js https://www.mathjax.org 
 
 -----------------------------------------------------------------------------
                         The MIT License (MIT)
@@ -1538,6 +1539,7 @@ DEALINGS IN THE SOFTWARE.
         applies to: 
         - utf8, Copyright (c) Patrick O. Perry [aut, cph, cre], 
             Unicode, Inc. [cph, dtc] (Unicode Character Database)
+        - MathJax.js, Copyright (c) 2009-2018 The MathJax Consortium
 -----------------------------------------------------------------------------
 
                                  Apache License

@@ -221,7 +221,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "default":true,
                        "required":false
                     },
-                    "batchMode":{
+                    "hcubeMode":{
                        "title":"Solve multiple scenarios in Hypercube mode?",
                        "type":"boolean",
                        "default":false,
@@ -496,7 +496,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "default":true,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -657,7 +657,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "type":"string",
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -735,7 +735,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -830,7 +830,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "type":"boolean",
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -871,7 +871,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1081,7 +1081,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "default":true,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1232,7 +1232,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "type":"string",
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1305,7 +1305,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1395,7 +1395,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "type":"boolean",
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1431,7 +1431,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "noBatch":{
+                        "noHcube":{
                           "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
                           "type":"boolean",
                           "required":false
@@ -1445,7 +1445,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "date":["widgetType"],
                     "daterange":["widgetType"],
                     "checkbox":["widgetType"],
-                    "noBatch":["widgetType"]
+                    "noHcube":["widgetType"]
                   }
                 }
               },
@@ -3481,8 +3481,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                  if(widget.slider.ticks){
                                    delete widget.slider.ticks;
                                  }
-                                 if(!widget.slider.noBatch){
-                                   delete widget.slider.noBatch;
+                                 if(!widget.slider.noHcube){
+                                   delete widget.slider.noHcube;
                                  }
                                  if(!widget.slider.noImport){
                                    delete widget.slider.noImport;
@@ -3564,8 +3564,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                    delete widget.dropdown.aliases;
                                  }
                                  delete widget.dropdown.choiceMandatory
-                                 if(!widget.dropdown.noBatch){
-                                   delete widget.dropdown.noBatch;
+                                 if(!widget.dropdown.noHcube){
+                                   delete widget.dropdown.noHcube;
                                  }
                                  if(!widget.dropdown.noImport){
                                    delete widget.dropdown.noImport;
@@ -3586,8 +3586,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                  if(widget.date.startview === "month"){
                                    delete widget.date.startview;
                                  }
-                                 if(!widget.date.noBatch){
-                                   delete widget.date.noBatch;
+                                 if(!widget.date.noHcube){
+                                   delete widget.date.noHcube;
                                  }
                                  if(!widget.date.noImport){
                                    delete widget.date.noImport;
@@ -3617,8 +3617,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                  if(widget.daterange.autoclose === false){
                                    delete widget.daterange.autoclose;
                                  }
-                                 if(!widget.daterange.noBatch){
-                                   delete widget.daterange.noBatch;
+                                 if(!widget.daterange.noHcube){
+                                   delete widget.daterange.noHcube;
                                  }
                                  if(!widget.daterange.noImport){
                                    delete widget.daterange.noImport;
@@ -3637,8 +3637,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                  }else{
                                    widget.checkbox.value = 0;
                                  }
-                                 if(!widget.checkbox.noBatch){
-                                   delete widget.checkbox.noBatch;
+                                 if(!widget.checkbox.noHcube){
+                                   delete widget.checkbox.noHcube;
                                  }
                                  if(!widget.checkbox.noImport){
                                    delete widget.checkbox.noImport;

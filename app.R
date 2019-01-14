@@ -24,9 +24,9 @@ webuiRDate   <- "Dec 21 2018"
 # stringi         #BSD-3-clause
 
 # RPostgres       #GPL-2
-# DBI (database)  #LGPL >=2
-# RSQLite(database) #LGPL >=2
-# openssl (batch) #MIT
+# DBI (Scenario mode)  #LGPL >=2
+# RSQLite(Scenario mode) #LGPL >=2
+# openssl (Hypercube mode) #MIT
 
 
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
@@ -135,7 +135,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
-                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "batch")) "_batch",
+                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube")) "_hcube",
                           '.gmsconf')
   # set user ID (user name) and user groups
   ugroups <- NULL
@@ -290,7 +290,7 @@ if(is.null(errMsg)){
                      snameIdentifier = snameIdentifier, stimeIdentifier = stimeIdentifier,
                      slocktimeIdentifier = slocktimeIdentifier, stagIdentifier = stagIdentifier,
                      accessIdentifier = accessIdentifier, tableNameMetadata = scenMetadataTable, 
-                     tableNameMetaBatch = tableNameMetaBatchPrefix %+% modelName, 
+                     tableNameMetaHcube = tableNameMetaHcubePrefix %+% modelName, 
                      tableNameScenLocks = scenLockTablePrefix %+% modelName, 
                      tableNamesScenario = scenTableNames, 
                      slocktimeLimit = slocktimeLimit,
@@ -322,17 +322,12 @@ if(is.null(errMsg)){
       errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
     })
   }
-  if(config$activateModules$batchMode){
+  if(config$activateModules$hcubeMode){
     requiredPackages <- c("openssl")
     source("./R/install_packages.R", local = TRUE)
-    
-    if(!identical(tolower(config$db$type), "postgres")){
-      errMsg <-paste(errMsg, "Database types other than PostgreSQL are currently not supported in batch mode.", sep = '\n')
-    }
-    
-    source("./R/batch.R")
-    source("./R/db_batchimport.R")
-    source("./R/db_batchload.R")
+    source("./R/hcube.R")
+    source("./R/db_hcubeimport.R")
+    source("./R/db_hcubeload.R")
   }
 }
 if(is.null(errMsg) && developMode && config$activateModules$scenario){
@@ -649,7 +644,7 @@ if(!is.null(errMsg)){
                          unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btOverwriteInput = 0L, 
                          btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
                          btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L)
+                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L, uploadHcube = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -677,7 +672,7 @@ if(!is.null(errMsg)){
 
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
-      if((config$activateModules$scenario || config$activateModules$batchMode)
+      if((config$activateModules$scenario || config$activateModules$hcubeMode)
           && input$sidebarMenuId == "scenarios"){
         # reset nest level
         shortcutNest <<- FALSE
@@ -816,11 +811,11 @@ if(!is.null(errMsg)){
     source("./modules/download_tmp.R", local = TRUE)
     
     ####### Paver interaction
-    if(config$activateModules$batchMode){
-      ####### Batch import module
-      source("./modules/batch_import.R", local = TRUE)
-      ####### Batch load module
-      source("./modules/batch_load.R", local = TRUE)
+    if(config$activateModules$hcubeMode){
+      ####### Hcube import module
+      source("./modules/hcube_import.R", local = TRUE)
+      ####### Hcube load module
+      source("./modules/hcube_load.R", local = TRUE)
       # analyze button clicked
       source("./modules/paver_run.R", local = TRUE)
       # Interrupt button clicked

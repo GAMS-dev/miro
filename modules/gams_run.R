@@ -1,6 +1,6 @@
 # run GAMS
 
-if(identical(config$activateModules$batchMode, TRUE)){
+if(identical(config$activateModules$hcubeMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
@@ -11,12 +11,12 @@ if(identical(config$activateModules$batchMode, TRUE)){
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["batchMode_" %+% i]], TRUE)){
-                   # double slider in non batch mode
+                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                   # double slider in single run mode
                    return(1L)
                  }
                  
-                 stepSize <- input[["batchStep_" %+% i]]
+                 stepSize <- input[["hcubeStep_" %+% i]]
                  range <- floor((value[2] - value[1])/stepSize) + 1
                  if(!is.numeric(stepSize) || stepSize <= 0 
                     || is.numeric(modelIn[[i]]$slider$step) 
@@ -62,24 +62,24 @@ if(identical(config$activateModules$batchMode, TRUE)){
   scenToSolve <- reactive({
     prog <- shiny::Progress$new()
     on.exit(prog$close())
-    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
     elementValues <- lapply(seq_along(modelIn), function(i){
-      updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+      updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
       switch(modelIn[[i]]$type,
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
-                    && !identical(input[["batchMode_" %+% i]], TRUE)){
-                   # double slider in non batch mode
+                    && !identical(input[["hcubeMode_" %+% i]], TRUE)){
+                   # double slider in single run mode
                    return(paste0("--", names(modelIn)[[i]], "_lo=", value[1], 
                                  " --", names(modelIn)[[i]], "_up=", value[2]))
                  }
                  
-                 stepSize <- input[["batchStep_" %+% i]]
+                 stepSize <- input[["hcubeStep_" %+% i]]
                  if(identical(modelIn[[i]]$slider$single, TRUE)){
                    return(seq(value[1], value[2], stepSize))
                  }
@@ -120,9 +120,9 @@ if(identical(config$activateModules$batchMode, TRUE)){
     par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
     gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
-    updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+    updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
-    updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogBatch$waitDialog$desc)
+    updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- scenIds %+% ": " %+% gmsString 
     if(config$saveTraceFile){
       gmsString <- paste0(gmsString, " trace=", tableNameTracePrefix, modelName, ".trc", " traceopt=3 lo=3 idir1=..", 
@@ -133,10 +133,10 @@ if(identical(config$activateModules$batchMode, TRUE)){
   
   prevJobSubmitted <- Sys.time()
   
-  genBatchJobFolder <- function(fromDir, modelDir, toDir, scenGmsPar){
+  genHcubeJobFolder <- function(fromDir, modelDir, toDir, scenGmsPar){
     prog <- Progress$new()
     on.exit(prog$close())
-    prog$set(message = lang$nav$dialogBatch$waitDialog$title, value = 0)
+    prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
@@ -144,74 +144,74 @@ if(identical(config$activateModules$batchMode, TRUE)){
     
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
-    file.copy(file.path(modelDir %+% "batch_submission.gms"), toDir)
+    file.copy(file.path(modelDir %+% hypercubeSubmissionFile), toDir)
     do.call(file.remove, list(list.files(toDir, pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
-    updateProgress(incAmount = 1, detail = lang$nav$dialogBatch$waitDialog$desc)
+    updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
-  executeBatchJob <- function(scenGmsPar){
-    bid <- as.integer(db$writeMetaBatch(batchTags = isolate(input$newBatchTags)))
-    flog.trace("Metadata for batch job was written to database. Batch ID: '%d' was assigned to job.", bid)
-    batchDir <- file.path(currentModelDir, batchDirName, bid)
-    if(dir.exists(batchDir)){
-      flog.error("Batch directory: '%s' already exists.", batchDir)
-      stop(sprintf("Batch directory: '%s' already exists.", batchDir), call. = FALSE)
+  executeHcubeJob <- function(scenGmsPar){
+    bid <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
+    flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", bid)
+    hcubeDir <- file.path(currentModelDir, hcubeDirName, bid)
+    if(dir.exists(hcubeDir)){
+      flog.error("Hypercube job directory: '%s' already exists.", hcubeDir)
+      stop(sprintf("Hypercube job directory: '%s' already exists.", hcubeDir), call. = FALSE)
     }
-    dir.create(batchDir, recursive = TRUE)
-    writeLines(scenGmsPar, file.path(batchDir, tolower(modelName) %+% ".gmsb"))
+    dir.create(hcubeDir, recursive = TRUE)
+    writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".gmsb"))
     
-    flog.trace("New folder for batch job was created: '%s'.", batchDir)
-    # create daemon to execute batch job
-    batchSubmDir <- file.path(getwd(), modelDir, "batch_submission.gms")
-    curDir <- batchDir
+    flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
+    # create daemon to execute Hypercube job
+    hcubeSubmDir <- file.path(getwd(), modelDir, hcubeSubmissionFile)
+    curDir <- hcubeDir
     if(isWindows()){
-      batchSubmDir <- gsub("/", "\\", batchSubmDir, fixed = TRUE)
+      hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
       curdir <- gsub("/", "\\", curDir, fixed = TRUE)
     }
     p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(batchSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true"),  
+                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true"),  
                      cleanup = TRUE, cleanup_tree = FALSE, supervise = FALSE,
                      windows_hide_window = TRUE)
     pid <- p$get_pid()
-    flog.trace("Batch job submitted successfuly. Batch job process ID: '%d'.", pid)
+    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
     db$updateHypercubeJob(bid, pid = pid)
-    flog.trace("Process ID: '%d' added to batch job ID: '%d'.", pid, bid)
+    flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, bid)
   }
-  observeEvent(input$btBatchAll, {
-    flog.trace("Button to schedule all scenarios for batch submission was clicked.")
+  observeEvent(input$btHcubeAll, {
+    flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(now - prevJobSubmitted < 5L){
-      showHideEl(session, "#batchSubmitWait", 6000)
-      flog.info("Batch submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
+      showHideEl(session, "#hcubeSubmitWait", 6000)
+      flog.info("Hypercube job submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
       return()
     }
     prevJobSubmitted <<- Sys.time()
     tryCatch({
-      executeBatchJob(scenGmsPar)
-      showHideEl(session, "#batchSubmitSuccess", 3000)
+      executeHcubeJob(scenGmsPar)
+      showHideEl(session, "#hcubeSubmitSuccess", 3000)
       hideModal(session, 3L)
     }, error = function(e){
-      flog.error("Some problem occurred while executing batch job. Error message: '%s'.", e)
-      showHideEl(session, "#batchSubmitUnknownError", 6000)
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
+      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
     })
     
   })
   
-  observeEvent(input$btBatchNew, {
-    flog.trace("Button to schedule only new scenarios for batch submission was clicked.")
+  observeEvent(input$btHcubeNew, {
+    flog.trace("Button to schedule only new scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(now - prevJobSubmitted < 5L){
-      showHideEl(session, "#batchSubmitWait", 6000)
-      flog.info("Batch submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
+      showHideEl(session, "#hcubeSubmitWait", 6000)
+      flog.info("Hypercube job submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
       return()
     }
     prevJobSubmitted <<- Sys.time()
     tryCatch({
-      executeBatchJob(scenGmsPar[idxDiff])
-      showHideEl(session, "#batchSubmitSuccess", 3000)
+      executeHcubeJob(scenGmsPar[idxDiff])
+      showHideEl(session, "#hcubeSubmitSuccess", 3000)
       hideModal(session, 3L)
     }, error = function(e){
-      flog.error("Some problem occurred while executing batch job. Error message: '%s'.", e)
-      showHideEl(session, "#batchSubmitUnknownError", 6000)
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
+      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
     })
   })
   
@@ -223,20 +223,20 @@ if(identical(config$activateModules$batchMode, TRUE)){
 observeEvent(input$btSolve, {
   flog.debug("Solve button clicked (model: '%s').", modelName)
   removeModal()
-  if(identical(config$activateModules$batchMode, TRUE)){
+  if(identical(config$activateModules$hcubeMode, TRUE)){
     numberScenarios <- noScenToSolve()
-    if(numberScenarios > maxNoBatch){
-      showModal(modalDialog(title = lang$nav$dialogBatch$exceedMaxNoDialog$title, 
-                            sprintf(lang$nav$dialogBatch$exceedMaxNoDialog$desc, 
-                                    numberScenarios, maxNoBatch)))
+    if(numberScenarios > maxNoHcube){
+      showModal(modalDialog(title = lang$nav$dialogHcube$exceedMaxNoDialog$title, 
+                            sprintf(lang$nav$dialogHcube$exceedMaxNoDialog$desc, 
+                                    numberScenarios, maxNoHcube)))
       return(NULL)
     }else if(numberScenarios == -1){
-      showModal(modalDialog(title = lang$nav$dialogBatch$badStepSizeDialog$title, 
-                            lang$nav$dialogBatch$badStepSizeDialog$desc))
+      showModal(modalDialog(title = lang$nav$dialogHcube$badStepSizeDialog$title, 
+                            lang$nav$dialogHcube$badStepSizeDialog$desc))
       return(NULL)
     }else if(numberScenarios == 0){
-      showModal(modalDialog(title = lang$nav$dialogBatch$noScenSelectedDialog$title, 
-                            lang$nav$dialogBatch$noScenSelectedDialog$desc))
+      showModal(modalDialog(title = lang$nav$dialogHcube$noScenSelectedDialog$title, 
+                            lang$nav$dialogHcube$noScenSelectedDialog$desc))
       return(NULL)
     }
     disableEl(session, "#btSolve")
@@ -250,7 +250,7 @@ observeEvent(input$btSolve, {
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     idxDiff  <<- match(sidsDiff, idsToSolve)
-    showBatchSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
+    showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
   
     enableEl(session, "#btSolve")
     

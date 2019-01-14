@@ -6,7 +6,7 @@
       "gams":"GAMS Interaktion",
       "scen":"Szenarien vergleichen",
       "advanced":"Erweiterte Optionen",
-      "batch":{
+      "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
         "import": "Ergebnisse importieren",
         "load": "Ergebnisse laden",
@@ -16,7 +16,7 @@
     "sidebarButtons":{  
       "importInput":"Daten laden",
       "solve":"Modell lösen",
-      "solveBatch":"Jobs absenden",
+      "solveHcube":"Jobs absenden",
       "load":"Szenario laden",
       "splitView":"Split Screen Ansicht",
       "tabView":"Tabansicht",
@@ -83,19 +83,19 @@
       "downloadTempDesc":"Download temporärer Dateien aus dem Arbeitsverzeichnis",
       "downloadTempButton": "Dateien laden"
     },
-    "batch_import":{
+    "hcubeImport":{
       "title":"Importiere Daten",
       "btManualImport": "Manueller Import",
       "btShowHistory": "Verlauf anzeigen"
     },
-    "batch_load":{
+    "hcubeLoad":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
       "chooseSelectedButton":"Markierte auswählen",
       "chooseCurrentButton":"Aktuelle Seite auswählen",
       "chooseAllButton":"Wähle alle"
     },
-    "batch_analyze":{
+    "hcubeAnalyze":{
       "title":"Szenarioanalyse",
       "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
       "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
@@ -254,7 +254,7 @@
       "downloadButton":"Datei laden",
       "cancelButton":"Abbrechen"
     },
-    "dialogBatch":{
+    "dialogHcube":{
       "title": "Hypercube-Konfiguration",
       "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden. Möchten Sie alle konfigurierten Szenarien lösen oder nur diejenigen, welche zuvor noch nicht gelöst worden sind?",
       "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
@@ -282,7 +282,7 @@
         "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
       }
     },
-    "batchMode":{
+    "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
       "checkboxAliases":["Nein", "Ja"],
       "configPaverDialog":{
@@ -321,9 +321,11 @@
       "importJobsDialog":{
         "title": "Derzeit aktive Hypercube-Jobs",
         "noJobs": "Zur Zeit sind keine Hypercube-Jobs aktiv.",
+        "noJobsHist": "Es konnten keine verworfenen oder importierten Hypercube-Jobs gefunden werden.",
         "discardSuccess": "Job wurde verworfen",
         "importSuccess": "Job wurde erfolgreich importiert",
         "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator.",
+        "histTitle": "Jobverlauf",
         "header":{
           "owner": "Eigentümer",
           "date": "Übermittlungsdatum",
@@ -333,7 +335,7 @@
         },
         "buttons":{
           "import": "Importieren",
-          "log": "Log anzeigen",
+          "log": "Log-Datei anzeigen",
           "discard": "Verwerfen"
         },
         "importConfirm":{
@@ -352,9 +354,17 @@
       "manualJobImportDialog":{
         "title": "Manueller Hypercube-Job-Import",
         "uploadZip":"Laden Sie hier eine Zip-Datei mit den Ergebnissen hoch.",
-        "batchTags":"Job Tags (kommasepariert)",
+        "hcubeTags":"Job Tags (kommasepariert)",
         "uploadButton":"Upload",
         "cancelButton": "Abbrechen"
+      },
+      "showLogFileDialog":{
+        "title": "Hypercube-Job Log-Datei",
+        "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten."
+      },
+      "jobsCompletedDialog":{
+        "title": "Erfolgreich abgeschlossene Jobs",
+        "desc": "Hypercube-Jobs wurden erfolgreich abgeschlossen und sind nun bereit für den Import."
       }
     },
     "dialogPaverInUse":{
