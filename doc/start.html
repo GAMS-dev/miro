@@ -46,7 +46,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Getting started</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: December 6th, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: Jauary 10th, 2019</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -54,288 +54,285 @@
                             <section id="introduction-section" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
-                                    <p>This chapter gives a first overview of the GAMS WebUI. For using this application a few components have to be installed, see <a href="#installation-section" class="scrollto">Installation</a>. The following sections then deal with the steps necessary to run an existing GAMS model within the WebUI.</p>
+                                    <p>This chapter shows the first steps of how to use the GAMS WebUI and how to deploy your own GAMS models. For using this application a few components have to be installed first, see section <a href="./installation.html" target="_blank">Installation</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
-                            <section id="installation-section" class="doc-section">
-                                <h2 class="section-title">Installation</h2>
-                                <div id="step1"  class="section-block">
-                                    <h3 class="block-title">GAMS Installation</h3>
-                                    <p>To be able to use the GAMS WebUI for your <a href="faqs.html#def-model" target="_blank">model</a>, a current GAMS version (25.1.2 or later) is required.  You can download it from <a href="https://www.gams.com/download/" target="_blank">https://www.gams.com/download/</a>.</p>
-                                </div><!--//section-block-->
-                                <div id="step2"  class="section-block">
-                                    <h3 class="block-title">GAMS WebUI Installation</h3>
-                                    <p>To install the GAMS WebUI and its components, run the GAMS WebUI setup. Since a current R installation is required, the installer for Windows checks for an existing R version (3.5.1 or later) and installs it, if necessary. On Mac and Linux, you currently need to install R manually (download <a href="https://cloud.r-project.org/" target="_blank">here</a>) in case it is not yet installed on your system.
-                                    </p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-
                             <section id="firststep-section" class="doc-section">
-                                <h2 class="section-title">First steps</h2>
-                                <div class="section-block">
-                                    <p>
-                                      To get a feeling for the use of the WebUI, it is recommended to have a look at the demo applications first. After a successful installation, these demo applications are located in <span class="code">C:/Users/&lt;User_Name&gt;/Documents/GMSWebUI_Examples/</span>.
-To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">GMSWebUI_Examples/trnsport/trnsport.gms</span>) with the compile-time parameter <span class="code">--webui=launch</span>. This can be done from within the new GAMS Studio, the GAMSIDE or using the command prompt (Note: To use the command prompt, GAMS must be in the PATH environment variable of your operating system):
-</p><p><kbd>cd path/to/gms_file && gams trnsport.gms --webui=launch</kbd></p><p>
-  <div class="callout-block callout-warning">
-      <div class="icon-holder">
-          <i class="fas fa-info-circle"></i>
-      </div><!--//icon-holder-->
-      <div class="content">
-          <h4 class="callout-title">Note:</h4>
-          <p>If you run a model with <span class="code">--webui=launch</span> all required R packages will be loaded. If you use the WebUI for the first time, the installation of these packages may take a while.</p>
-      </div><!--//content-->
-  </div><!--//callout-block-->
-  <div class="callout-block callout-warning">
+                                <h2 class="section-title">Start the WebUI</h2>
+                                <div  id="start-1"  class="section-block">
+                                    <h3 class="block-title">Demo Applications</h3>
+                                    <p>To get a feeling for the use of the WebUI, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. On windows, the demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\</span>. If you are using MacOS or Linux, you can find those demo applications <a href="" target="_blank">here [missing link]</a>.
+                                    <p>The following demos are available:</p>
+                                    <ul>
+                                    <li>trnsport</li>
+                                    This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
+                                    <li>trnsport_live</li>
+                                    A "live" version of the trnsport model. Enables the specification of locations of suppliers and markets from within the Webui and calculates relevant distances based on geodata.
+                                    <li>pickstock</li>
+                                    Optimization model to pick a small subset of the stocks together with some weights, such that this portfolio has a similar behavior to our overall Dow Jones index.
+                                    <li>pickstock_live</li>
+                                    A "live" version of the pickstock model. Allows to include current Dow Jones stock prices as well as ones from past periods.
+                                    <li>kport</li>
+                                    This problem computes minimal cost solutions satisfying the demand of pre-given product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
+                                    </ul>                                    
+                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code">--webui=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:</p> 
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                        <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
+                                    </div>
+                                    <p>or using the command prompt:</p>
+                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms --webui=launch</kbd></p>
+                                    <p><b>Note</b>: To use the command prompt, GAMS must be in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
+
+                                    <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Note:</h4>
-                                            <p>Some of the example models included in the GAMS WebUI installation require additional Python packages. These packages should get installed automatically once you run the respective model for the first time. However, in case they do not install properly, try installing them manually: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <kbd>cd C:\GAMS\win64\25.1\GMSPython\Scripts</kbd>). To install the respective package, enter: <kbd>pip install &lt;package_name&gt;</kbd>. Below you find a table with the python packages required for the different example models.</p>
-                                            <div class="table-responsive" style="color:#000;">
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Demo Application</th>
-                                                            <th>Python packages</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>Pickstock_live</td>
-                                                            <td>pandas, pandas_datareader</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Trnsport_live</td>
-                                                            <td>geocoder</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div><!--//table-responsive-->
+                                            <p>If you run a model with "<span class="code">--webui=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed first. This may take a while.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-</p><div class="section-block">
-  <p>Once all the packages have been installed, the GAMS WebUI will launch. Below, you see the input screen of the WebUI as it presents itself after you launched it for the trnsport model.</p>
-    <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" /></div>
-<p>The screen is essentially divided in two:
-<h6>Navigation bar:</h6>
-<p><br>On the left side you can find the navigation bar. Here you can navigate between the categories:</p>
-                                        <ol class="fa-ul">
-                                        <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
-                                        Load input data for the next model run. Can be a locally saved Excel spreadsheet or existing data from the database.
-                                        </li>
-                                        <li><span class="fa-li"><i class="fa fa-tachometer-alt"></i></span><b>Output:</b><br/>
-                                        Visualization of calculated output data of a model run.
-                                        </li>
-                                        <li><span class="fa-li"><i class="fas fa-cog"></i></span><b>GAMS interaction:</b><br/>
-                                          While solving a model with GAMS this section shows the Log and Lst files.
-                                        </li>
-                                        <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
-                                        Module for the direct comparison of scenarios in Spit-screeen or Tab mode.
-                                        </li>
-                                        <li><span class="fa-li"><i class="fas fa-ellipsis-h"></i></span><b>Advanced Options:</b><br/>
-                                          Download of temporary files from the working directory.
-                                        </li>
-                                        </ol>
-                                        <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
-                                        <ol class="fa-ul">
-                                        <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. 
-                                        </li>
-                                        <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
-                                        Solve the GAMS model with the configured input data. This will start GAMS in the background.
-                                        </li>
-                                        </ol>
-</p>
-<h6>Main window:</h6>
-<p>The main window is the heart of the WebUI. Here you can see your data in the form of tables and graphs.</p>
-<p>The workflow for the usage of the GAMS WebUI is intended as follows:</p>
-    <ol class="list">
-<li><b>Import data</b><br/>
-To import model input data, click on the <i>"Load data"</i> button and navigate to the folder of the model currently used (e.g. <span class="code">Documents/GMSWebUI_Examples/trnsport/</span>). You should find a <span class="code">trnsport.xlsx</span> file there. After the import, you can adjust the input data.
-  <div class="section-block">
-      <img class="img-fluid" src="assets/images/input-data.png" alt="Input data screen" />
-  </div>
-</li>
-<li><b>Model run</b><br/>
-A click on the <i>"Solve model"</i> button starts the model run. During the calculations, the WebUI switches to the section <i>"GAMS interaction"</i>. There you can see the current GAMS log and lst files. After the run, the view changes to the <i>"Output"</i> section.
-  <div class="section-block">
-      <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
-  </div>
-  <b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>"GAMS interaction"</i> can also be viewed at any time after a model run.
-</li>
-<li><b>Results</b><br/>
-  In the <i>"Output"</i> section the result parameters are visualized in tabular form. With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" alt="Switch to tabular view button" /> button in the upper right corner you can switch between tabular and graphical data visualization. All scalar results are summarized in the tab <i>"Scalars"</i>.
-  </br>The <img class="img-fluid" src="assets/images/export-btn.png" alt="Download data button" /> button enables the user to download the model input and output data.
+                                    <div class="content" id="pip_install">
+                                        <p>Some of the example models included in the GAMS WebUI installation require additional Python packages. These packages should get installed automatically once you run the respective model for the first time. However, in case they do not install properly, try installing them manually: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\25.1\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required for the different example models.</p>
+                                        <div class="table-responsive" style="color:#000;">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Demo Application</th>
+                                                        <th>Python packages</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Pickstock_live</td>
+                                                        <td>pandas, pandas_datareader</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Trnsport_live</td>
+                                                        <td>geocoder</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div><!--//table-responsive-->
+                                    </div><!--//content-->
+                                   </p>
+                                </div><!--//section-block-->
+                                <div  id="start-2"  class="section-block">
+                                    <h3 class="block-title">WebUI Overview</h3>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <p>Let's take the trnsport model as example to get an overview of the functionality of the WebUI. Hierzu starten wir das Modell trnsport.gms mit dem bereits zuvor erwahnten Befehl --webui=launch.</p>
+                                    <p>Once all the packages have been loaded, the GAMS WebUI will launch. Below you see the input mask of the WebUI as it appears after the start of the trnsport model.
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
+                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" />
+                                    </div>
+                                    <p>The screen is essentially divided in two:</p>
+                                    <h6>Navigation bar:</h6>
+                                    <p><br>On the left side you can find the navigation bar. Here you can navigate between the categories:</p>
+                                    <ol class="fa-ul">
+                                    <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
+                                      Visualization & configuration of input data for the next calculations. 
+                                    </li>
+                                    <li><span class="fa-li"><i class="fa fa-tachometer-alt"></i></span><b>Output:</b><br/>
+                                      Visualization of calculated output data.
+                                    </li>
+                                    <li><span class="fa-li"><i class="fas fa-cog"></i></span><b>GAMS interaction:</b><br/>
+                                      While solving a model with GAMS this section shows the Log and Lst files.
+                                    </li>
+                                    <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
+                                      Module for the direct comparison of results / scenarios in a Spit-screeen or a switchable single-scenario view ("tab view").
+                                    </li>
+                                    <li><span class="fa-li"><i class="fas fa-ellipsis-h"></i></span><b>Advanced Options:</b><br/>
+                                      Download of (temporary) files created during the calculations from the working directory.
+                                    </li>
+                                    </ol>
+                                    <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
+                                    <ol class="fa-ul">
+                                    <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
+                                      Load input data for a model run. This can be an Excel spreadsheet or existing data from the database.
+                                    </li>
+                                    <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
+                                      Solve the GAMS model with the configured input data. This will start GAMS in the background.
+                                    </li>
+                                    </ol>
 
-  <div class="section-block">
-      <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
-  </div>
-<li><b>Advanced Options</b><br/>
-Besides the model input and output data all temporarily created files of the model run like the <span class="code">lst</span> and <span class="code">log</span> files can be downloaded separately or as ZIP file in the <span class="code">"Advanced Options"</span> menu.</li>
-</li>
-</ol>
-
+                                    <h6>Main window:</h6>
+                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are evaluated. More about the individual features will be explained now.</p>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->    
+                            <section id="workflow-section" class="doc-section">
+                                <h2 class="section-title">Workflow</h2>
+                                    <div class="section-block">
+                                        <p>The typical workflow is quite simple:</p>
+                                        <ol>
+                                        <li>Import input data</li>
+                                        <li>Adapt the data if desired</li>
+                                        <li>Solve GAMS model</li>
+                                        <li>Inspect the visualized results</li>
+                                        <li>Save the scenario data in the database or discard the results</li>
+                                        </ol>
+                                        <ul>
+                                        <li>Besides that, already stored results can be re-imported from the database and compared with each other at any time.</li>
+                                        </ul>
+                                    </div>
+                                    <div id="workflow-1"  class="section-block">
+                                        <h3 class="block-title">Import data</h3>
+                                        <p>A WebUI usually makes sense if there is data to be visualized, e.g. as tables, diagrams, or other graphics. This applies to output data as well as input data. 
+                                        Input data which should be visualized in the WebUI can be (re-)imported either from existing scenarios in the database or locally via an Excel spreadsheet.
+                                        To import such data, click on the <i>"Load data"</i> button in the navigation bar. The following window pops up:</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                      <img class="img-fluid" src="assets/images/import_3.png" alt="Database import" />
+                                                </div>
+                                                <div class="col-md-6">
+                                                      <img class="img-fluid" src="assets/images/import.png" alt="Local Import" />
+                                                </div>
+                                            </div>
+                                        <p>You can decide whether to import an existing data set from the database or load an existing spreadsheet from your local machine. 
+                                        When the used GAMS model is started for the very first time in the web application, there is no data in the database yet, so loading a local file is the only reasonable option.
+                                        For our trnsport model shown here, there is a suitable Excel spreadsheet in the directory from which the model was started, e.g. in <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.xlsx</span>.</p>
+                                        <div class="callout-block callout-warning" id="create-excel">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <h4 class="callout-title">Note:</h4>
+                                                <p>Every time you start the WebUI for a GAMS model, an Excel spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model. <a href="#step1" class="scrollto">Read more about this topic</a>.</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>To load the desired Excel spreadsheet, click on the button "load data". Under the menu item "Local" click on "browse". Navigate in the opening Explorer now to the directory of the executed model, e.g. 
+                                        <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.xlsx</span>, and select the desired file.
+                                        Now assign a name for the new scenario and confirm the data import with a click on "import". A scenario is now created in the database with the specified name.</p>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <h4 class="callout-title">Tip:</h4>
+                                              <p>Instead of the whole spreadsheet you can <a href="#step1" class="scrollto">load single sheets</a>.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
                                     </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="creating-section" class="doc-section">
-                                <h2 class="section-title">Turn your GAMS model into a WebUI</h2>
-                                <div class="section-block">
-                                    <p>After testing the demo applications, it's time to get started yourself. For a better understanding it is recommended to have a look at the GAMS code of the sample applications for the next steps.
-</p>
-<div class="callout-block callout-success">
-    <div class="icon-holder">
-        <i class="fas fa-thumbs-up"></i>
-    </div><!--//icon-holder-->
-    <div class="content">
-        <h4 class="callout-title">Note:</h4>
-        <p>A GAMS model still can be used in the normal way (via <i>GAMS Studio</i>, <i>GAMSIDE</i> or the console) after the following adjustments</p>
-    </div><!--//content-->
-</div>
-<div  id="create-2"  class="section-block">
-    <h3 class="block-title">Model adjustments</h3>
-    <p>Every GAMS model can be launched inside the WebUI in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by framing the corresponding symbols with the tags <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> for input data and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> for output data. These tags can be used multiple times within a model. Alternatively one can write <span class="code">UIInput:</span> or <span class="code">UIOutput:</span> at the beginning of the explanatory text of a GAMS symbol to include this symbol in the WebUI. Symbols which are not tagged with one of these markers won’t be visible in the Web Interface, but they are used within the model run in the background.
-    </p><p><b>Note:</b> Those symbols which shall be displayed in the WebUI must have an explanatory text in case you are using a GAMS version below 25.2.
-    </p>
-</div><!--//section-block-->
-<div  id="create-3"  class="section-block">
-    <h3 class="block-title">Visualization of parameters as tables</h3>
-    <p>In the default configuration of a GAMS parameter, each <b>index</b> of a Parameter is shown in a separate column. The last column contains the parameter values. With this configuration, each <b>set element</b> of an index will be visible in a separate row. In the example below the Parameter <span class="code">price</span> has two indices <span class="code">date</span> and <span class="code">symbol</span>. Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol).
-    </p>
-    <div class="section-block">
-        <img class="img-fluid" src="assets/images/table-form.png" alt="Visualization of described table" />
-    </div>
-    <p>Sometimes it can be useful to show each set element of an index in a separate column of the table. For the parameter of the example above this would mean to have a column not for the set <span class="code">symbol</span> itself but for all its elements <span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.. To achieve this, a minor change in the declaration of the corresponding set has to be made.</p>
-    <p>One can either:
-      <ul>
-        <li>Change the name of the set so that it ends with the header-keyword: <span class="code">hdr</span> (to avoid renaming the set for the entire GAMS model, you can declare an alias for the set afterwards).
-        <li>Change the explanatory text of the set so that it ends with the keyword <span class="code">hdr</span>. This is shown in the image below.</li>
-      </ul>
-      <div class="section-block">
-          <img class="img-fluid" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
-      </div>
-      <p>Note that a table width in this way quickly increases when the number of set elements of the last index gets higher. A number of for example 30 Stocks to be represented in a table would lead to 30 stock columns. In this case the default configuration for a table as shown first might be better.</p>
-      <p>If a Parameters with <b>multiple value columns</b> has to be displayed within the WebUI, a manual definition of the header is required. In the picture below this is done for the Parameter <span class="code">PData</span>. By defining the Index <span class="code">phdr</span>, the set elements <span class="code">Demand</span> and <span class="code">Production Time</span> are shown as value columns in the WebUI table.
-          <div class="section-block">
-              <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
-          </div>
-          </br>
-          <div class="callout-block callout-success">
-            <div class="icon-holder">
-                <i class="fas fa-thumbs-up"></i>
-            </div><!--//icon-holder-->
-            <div class="content">
-                <h4 class="callout-title">Note:</h4>
-                <p>Scalars and singleton sets are by default collected in a separate table in the interface.</p>
-            </div><!--//content-->
-          </div><!--//callout-block-->
-</div><!--//section-block-->
-<div  id="create-4"  class="section-block">
-    <h3 class="block-title">Using scalar values</h3>
-    <p>In addition to one- or multidimensional GAMS parameters, 0-dimensional GAMS symbols such as scalars and singleton sets can also be communicated via the WebUI. The handling of these symbols differs from the previously discussed parameters, which will be discussed in more detail here. </p>
-
-    <h6>table</h6>
-    Scalars and singleton sets are by default collected in a separate table in the interface. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in the Web interface in a single 'scalars' table. The same also is true for scalar output parameters. These are summarized in the results section in a separate 'scalars_out' table.
-    <br>As an example, the pickstock model is used again for illustration purposes:
-    <br>Here, the scalars 'maxstock' and 'trainingdays' belong to the model input data. The user can modify these in order to man
-    <h6>Slider</h6>
-    <h6>Dropdown</h6>
-
-        <p>If all input and output symbols for the WebUI have been flagged, in a last step a file <span class="code">webui.gms</span> has to be included by a <img class="img-fluid" style="height:14px;" src="assets/images/incl-webui.png" alt="$libInclude webui" /> <b>at the very end of the GAMS model</b>. With the help of this file all model specific configuration files are created automatically.</p>
-</div><!--//section-block-->
-<div id="create-5" class="section-block">
-    <h3 class="block-title">Generating model-specific configuration files</h3>
-    <p>In the next step the model-specific configuration files for the Web Interface are created.</p>
-    <ul>
-      <li>Run the model with the compile time parameter <span class="code">--webui=compile</span>.
-        <div class="section-block">
-            <img class="img-fluid" src="assets/images/webui-compile.png" alt="--webui=compile" />
-        </div>
-        <div class="callout-block callout-warning">
-            <div class="icon-holder">
-                <i class="fas fa-info-circle"></i>
-            </div><!--//icon-holder-->
-            <div class="content">
-                <h4 class="callout-title">Warning:</h4>
-                <p>If you use a GAMS <span class="code">$call</span> inside a model you need to pay attention to the path of external files you might include in this call. This is due to the different working directories depending on whether a GAMS model is run from the WebUI or not. The GAMS WebUI is providing you the path to your model file via the GAMS option <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means that in order to e.g. import an Excel file <span class="code">test.xlsx</span>, the GDXXRW tool needs to be called like this: <kbd>$call gdxxrw i="%gams.idir1%test.xlsx"</kbd>. Alternatively, you may use absolute paths.</p>
-            </div><!--//content-->
-        </div><!--//callout-block-->
-      </li>
-      <li>After the run, a new directory named <i>conf</i> is automatically created. This directory contains the file <span class="code">GMSIO_config.json</span>. In this file you can find the configuration of the input and output symbols in JSON Synax, which were previously defined in the GAMS model with the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> tags.
-        </br>The model folder also contains an Excel file with the same name as your model file. This Excel file contains all the relevant input data that was extracted from your model and can be used to populate your WebUI.
-        <div class="callout-block callout-warning">
-            <div class="icon-holder">
-                <i class="fas fa-info-circle"></i>
-            </div><!--//icon-holder-->
-            <div class="content">
-                <h4 class="callout-title">Note:</h4>
-                <p>In case you don't find an Excel file with the data, please make sure the <span class="code">xlsxwriter</span> Python module was successfully installed (c.f. <a href="#step1" class="scrollto">here</a>).</p>
-            </div><!--//content-->
-        </div><!--//callout-block-->
-      </li>
-      <li>The very basic configuration is now done. You can start the WebUI by running the model again, this time with <span class="code" style="white-space:nowrap">--webui=launch</span>.
-        <div class="section-block">
-            <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
-        </div>
-        The first time this is done, all R packages needed for the WebUI will be automatically installed. This may take a while. When the installation is complete, the WebUI opens with the default browser of the operating system.
-  With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS. When the model run has finished successfully, the results can be examined. In the default configuration, tables and pivot tables are generated.
-</li>
-    </ul>
-</div><!--//section-block-->
-<div  id="create-custom"  class="section-block">
-    <h3 class="block-title">Custom configuration</h3>
-    <p>If required, the web interface of the GAMS model can now be further customized. All the configuration files for your WebUI are JSON files located in the directory: <span class="code">&lt;modeldirectory&gt;/conf</span>. The GAMS WebUI comes with various pre-implemented graphing options: at the moment these are pie charts, bar charts, line charts, scatter plots and histograms. However, an R API is provided so even highly customized graphics can be generated. All this configuration is handled via the file: <span class="code">config.json</span>. To generate this file, we recommend using our <a href="./customize.html#config-gen">Configuration Generator</a>. However, you may also use the JSON schema file which is located in <span class="code">&lt;GAMSroot&gt;/GMSWebUI/conf/</span>. All the configuration files are validated against a schema, so you may use these schemata to learn how your JSON files should be structured.</p>
-    <div class="section-block">
-        <img class="img-fluid" src="assets/images/custom-json.png" alt="Generate customized graphics via JSON file" />
-    </div>
-    <div class="callout-block callout-success">
-        <div class="icon-holder">
-            <i class="fas fa-thumbs-up"></i>
-        </div><!--//icon-holder-->
-        <div class="content">
-            <h4 class="callout-title">Note:</h4>
-            <p>You can generate this JSON file using our <a href="./customize.html#config-gen">Configuration Generator</a></p>
-        </div><!--//content-->
-    </div><!--//callout-block-->
-</div><!--//section-block-->
-<div  id="create-advanced"  class="section-block">
-    <h3 class="block-title">Advanced configuration</h3>
-    <p>If you want to visualize your data in a way that is not yet pre-implemented, there is the possibility to implement it yourself via an R API the WebUI comes with. The R code for these custom graphics must be stored in the directory: <span class="code">&lt;modeldirecory&gt;/customRenderer/</span>. To learn more about this, read the documentation on <a href="./customize.html#custom-renderers">custom renderers</a>.
-</div><!--//section-block-->
-                                </div>
+                                    <div id="workflow-2"  class="section-block">
+                                        <h3 class="block-title">Data manipulation</h3>
+                                        <p>The previously empty tables in the main window are now filled with some data. In the upper part of the main window you can navigate between different tabs to switch between the visualization of declared GAMS symbols. 
+                                        More about the tabular and graphical representation of input data in the WebUI is explained <a href="#creating-section" class="scrollto">here</a>. 
+                                        <br>We can now change the input data. 
+                                        If configured accordingly, individual cells can be edited in tables. In addition to tables, input widgets such as sliders, dropdown menus, checkboxes and date selectors are also available. In the trnsport model shown here, 
+                                        the "Input Options" section for manipulating the data is particularly suitable. 
+                                        <div class="section-block">
+                                            <img class="img-fluid" src="assets/images/input-data.png" alt="Input data screen" />
+                                        </div>
+                                        Click on the tab "Input Options". With the help of sliders and a dropdown menu we can now adjust the freight costs and the model type to be used. If we are satisfied with the settings we can start the GAMS run.
+                                    </div><!--//section-block-->
+                                    <div id="workflow-3"  class="section-block">
+                                        <h3 class="block-title">Solve the model</h3>
+                                        <p>A click on the <i>"Solve model"</i> button starts the model run. In the background GAMS is called and the model trnsport.gms is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the started GAMS model trnsport.gms.
+                                        <br>During the calculations, the WebUI switches to the section <i>"GAMS interaction"</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html?search=gams%20output" target="_blank">GAMS log and lst files</a>.</p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
+                                        </div>
+                                        <p><b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>"GAMS interaction"</i> can also be viewed at any time after a model run.</p>
+                                        <p>As long as the calculations are running in GAMS, the "Stop" button on the left can be clicked. This immediately stops the running GAMS process and thus the model calculations.
+                                        <br>After the run, the view of the WebUI changes to <i>"Output"</i>.</p>
+                                    </div><!--//section-block-->
+                                    <div id="workflow-4"  class="section-block">
+                                        <h3 class="block-title">Inspect results</h3>
+                                        <p>In the <i>"Output"</i> section the results are visualized. 
+                                        As with the input data, a distinction is made between GAMS parameters and scalar values. GAMS parameters are each visualized in a separate tab and scalars are combined in one view.
+                                        <br>If a graphical visualization has been configured for a symbol, it is shown first by default. In the trnsport model a graphic is configured for the only present output parameter in the form of a map, see image below.</p>
+                                        <div class="section-block">
+                                              <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
+                                        </div>
+                                        <p>With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" alt="Switch to tabular view button" /> button in the upper right corner you can switch between graphical and tabular data visualization.</p>
+                                        <p>All scalar results are summarized in <i>"Output Scalars"</i>. The default visualization selected here are tiles. Like before, you can switch between graphical and tabular visualization with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" alt="Switch to tabular view button" /> button.</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                              <img class="img-fluid" style="height:175pt;" src="assets/images/output-data2.png" alt="Output data screen - scalars" />
+                                        </div>
+                                        
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <h4 class="callout-title">Tip:</h4>
+                                              <p>All temporarily created files of the model run like the <span class="code">lst</span> and <span class="code">log</span> files can be downloaded separately or as ZIP file in the <span class="code">"Advanced Options"</span> section of the navigation bar.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        
+                                        
+                                        
+                                        
+                                    </div><!--//section-block-->
+                                    <div id="workflow-5"  class="section-block">
+                                        <h3 class="block-title">Save / delete results</h3>
+                                        <p>When calculating a GAMS model with parameterized input data, we use the term "scenario". 
+                                        A scenario and its results can be stored in the connected database. The interface to the database can be reached in the header of the WebUI by choosing the menu entry "<i>Scenario</i>".</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                              <img class="img-fluid" style="height:175pt;" src="assets/images/output-export.png" alt="Scenario data - database interaction" />
+                                        </div>
+                                        <p>Here, we can choose between the following options:</p>
+                                        <ul>
+                                        <li><b>Save</b>
+                                        <br>Save data of an existing scenario in the database.</li>
+                                        <li><b>Save As</b>
+                                        <br>Save a scenario in the database by specifying a (new) name.
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                              <img class="img-fluid" style="width:350pt;" src="assets/images/scenario_saveas.png" alt="Save scenario in database" />
+                                        </div>
+                                        Optional tags can be added to the scenario. With the help of assigned tags, scenarios can be identified, independent of the scenario name or the input and output data. Tags represent an additional identification feature of a scenario, on the basis of which the database can be searched at a later time.
+                                        This is of particular interest in the context of <a href="./hypercube.html" class="scrollto">hypoercube jobs</a>.
+                                        </li>
+                                        <li><b>Edit metadata</b>
+                                        <br>Allows you to edit scenario metadata, i.e. the scenario name and specified tags.
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                              <img class="img-fluid" style="width:350pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
+                                        </div>
+                                        You can also attach files to a scenario here. These can be files of any format. If a file is attached to a scenario, this file is stored as <a href="https://techterms.com/definition/blob" target="_blank">Binary Large Object (blob)</a> in the database and can be accessed again at any time.
+                                        </li>
+                                        <li><b>Export</b>
+                                        <br>Download of the scenario data in the form of an Excel spreadsheet. The spreadsheet contains all tabular input- and output (results) data of the scenario which is displayed in the WebUI.</li>
+                                        <li><b>Delete</b>
+                                        <br>Delete a scenario from the database.</li>
+                                        </ul>
+                                    </div><!--//section-block-->
+                                    <div id="workflow-6"  class="section-block">
+                                        <h3 class="block-title">Scenario comparison</h3>
+                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. 
+                                        The data that can be compared here correspond to the data that has already been visualized as input and output data the corresponding GAMS model (see section <a href="#workflow-2" class="scrollto">Data manipulation</a> and <a href="#workflow-4" class="scrollto">Inspect results</a>).
+                                        <br>If two scenarios are to be compared, the split-screen display is particularly suitable. In this way, the data can be displayed side by side. </p>
+                                        <div class="section-block" style="text-align:center;">
+                                              <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split screen" />
+                                        </div>
+                                        <p>In addition to the split screen mode, several scenarios can also be compared lying side by side in individual tabs (like tabs in browsers). This makes sense if more than 2 scenarios are to be compared.  You can switch between split screen mode and the representation of the scenarios in tabs via the <i>switch</i>-button in the navigation bar. </p>
+                                        <div class="section-block" style="text-align:center;">
+                                              <img class="img-fluid" src="assets/images/batch_img/tab_view2.png" alt="compare scenarios tab wise" />
+                                        </div>
+                                        <p>The <b>comparison mode</b> makes comparing scenarios much more efficient and convenient. 
+                                        As soon as this option is activated via the <i>Compare mode</i> button in the navigation bar, switching the displayed data within a scenario is also performed for all other open scenarios. 
+                                        This means that if you change the symbol to be displayed in a scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes accordingly for the compared scenario(s).</p>
+                                    </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="additional-features" class="doc-section">
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="additional-db" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
                                   <p>The WebUI presented here was designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other in order to investigate the behavior of the solutions more closely? To avoid having to configure and solve each scenario individually, there is the "Hypercube mode". In this interface a model parameter can be set several times. From this multiple parameterization all possible scenarios are generated, which result from the combination of all set parameters. As a consequence, any number of scenarios can be configured and analyzed at once.</p>
-                                  <p>We developed this tool to efficiently generate, store and analyze a multitude of scenarios.
-                                  However, this feature is not included in the WebUI version that you have installed. If you are interested in the more advanced features, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                  <p>We developed this tool to efficiently generate, store and analyze a multitude of scenarios. Look <a href="./hypercube.html">here</a> for more information.
+                                  
                                 </div>
                                 <div id="additional-server" class="section-block">
                                   <h6>Run the GAMS WebUI on a server</h6>
-                                  <p>You can also run the GAMS WebUI on a server. This adds multi-user and multi-application support as well as many enterprise features such as authorisation via e.g. LDAP, load balancing, rolling updates and much more. Interested? Please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
-</p><div class="section-block">
-    <img class="img-fluid" src="assets/images/webui-server.png" alt="GAMS WebUI on a server with multi-user and multi-application support" />
-</div>
-                                </div>
-                              </section>
-                              <section id="learn-more" class="doc-section">
-                                  <h2 class="section-title">Learn more</h2>
-                                  <div id="additional-db" class="section-block">
-                                    <p>To learn more about the GAMS WebUI, you have several options. This list will grow over time as the software evolves.</p>
-                                    <ul>
-                                      <li>For more advanced topics, see <a href="./customize.html" target="_blank">here</a>.
-                                      <li>Attend one of our webinars taking place on January, 23th 2019: 4 pm CET as well as on January, 24th 2019: 8 am CET. More information including how to sign up will follow shortly.
-                                        <li>Watch the video of our talk at the EURO 2018 in Valencia
-                                        <!-- 16:9 aspect ratio -->
-                                        <div class="embed-responsive embed-responsive-16by9">
-                                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/OqkODv1p8tA?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
-                                        </div></li>
-                                    </ul>
+                                  <p>You can also run the GAMS WebUI on a server. This adds multi-user and multi-application support as well as many enterprise features such as authorisation via e.g. LDAP, load balancing, rolling updates and much more. 
+                                  However, this feature is not included in the WebUI version that you have installed. If you are interested in this features, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/webui-server.png" alt="GAMS WebUI on a server with multi-user and multi-application support" />
                                   </div>
-                                </section>
+                                </div>
+                            </section>
 
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
@@ -344,27 +341,24 @@ Besides the model input and output data all temporarily created files of the mod
 
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                     <a class="nav-link scrollto" href="#introduction-section">Introduction</a>
-	                                <a class="nav-link scrollto" href="#installation-section">Installation</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#step1">GAMS Installation</a>
-                                        <a class="nav-link scrollto" href="#step2">GAMS WebUI Installation</a>
-                                    </nav><!--//nav-->
-	                                <a class="nav-link scrollto" href="#firststep-section">First steps</a>
-	                                <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a WebUI</a>
-                                  <nav class="doc-sub-menu nav flex-column">
-                                      <a class="nav-link scrollto" href="#create-2">Model adjustments</a>
-                                      <a class="nav-link scrollto" href="#create-3">Visualization of Parameters as tables</a>
-                                      <a class="nav-link scrollto" href="#create-4">Using scalar values</a>
-                                      <a class="nav-link scrollto" href="#create-5">Generating model-specific configuration files</a>
-                                      <a class="nav-link scrollto" href="#create-custom">Custom configuration</a>
-                                      <a class="nav-link scrollto" href="#create-advanced">Advanced configuration</a>
-                                  </nav><!--//nav-->
-	                                <a class="nav-link scrollto" href="#additional-features">Additional features</a>
-                                  <nav class="doc-sub-menu nav flex-column">
-                                      <a class="nav-link scrollto" href="#additional-db">Manage multiple scenarios</a>
-                                      <a class="nav-link scrollto" href="#additional-server">Run the GAMS WebUI on a server</a>
-                                  </nav><!--//nav-->
-                                  <a class="nav-link scrollto" href="#learn-more">Learn more</a>
+	                                <a class="nav-link scrollto" href="#firststep-section">Start the WebUI</a>
+                                      <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#start-1">Demo Applications</a>
+                                        <a class="nav-link scrollto" href="#start-2">WebUI Overview</a>
+                                      </nav><!--//nav-->
+                                    <a class="nav-link scrollto" href="#workflow-section">Workflow</a>
+                                      <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#workflow-1">Import data</a>
+                                        <a class="nav-link scrollto" href="#workflow-2">Data manipulation</a>
+                                        <a class="nav-link scrollto" href="#workflow-3">Solve the model</a>
+                                        <a class="nav-link scrollto" href="#workflow-4">Inspect the results</a>
+                                        <a class="nav-link scrollto" href="#workflow-5">Save / delete results</a>
+                                      </nav><!--//nav-->
+                                    <a class="nav-link scrollto" href="#additional-features">Additional features</a>
+                                      <nav class="doc-sub-menu nav flex-column">
+                                        <a class="nav-link scrollto" href="#additional-db">Manage multiple scenarios</a>
+                                        <a class="nav-link scrollto" href="#additional-server">Run the GAMS WebUI on a server</a>
+                                      </nav><!--//nav-->
 	                            </nav><!--//doc-menu-->
 
                         </div>
