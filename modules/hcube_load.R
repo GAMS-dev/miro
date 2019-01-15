@@ -90,84 +90,13 @@ fieldsSelected <- vector("character", maxNumBlocks^2)
 
 hideEl(session, "#hcubeLoadButtons")
 
-generateLine <- function(i, j, type, label){
-  tags$div(id = "line" %+% i %+% "_" %+% j, class = "itemLine",
-           tags$div(class = "itemName", helpText(label)),
-           tags$div(class = "itemScenDrop", switch(type,
-                           number = {
-                             selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                         choices = c('=', '<', '>', '<=', ">=", '!='))
-                           },
-                           text = {
-                             selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                         choices = c(contains = "%LIKE%", 
-                                                     "doesn't contain" = "%NOTLIKE%",
-                                                     "starts with" = "LIKE%",
-                                                     "ends with" = "%LIKE",
-                                                     is = "LIKE",
-                                                     "is not" = "NOT LIKE"), selected = "LIKE")
-                           },
-                           csv = {
-                             selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                         choices = c(contains = "%LIKE%", 
-                                                     "doesn't contain" = "%NOTLIKE%",
-                                                     "starts with" = ",LIKE%",
-                                                     "ends with" = "%LIKE,",
-                                                     is = "%,LIKE,%",
-                                                     "is not" = "%,NOTLIKE,%"), selected = "%,LIKE,%")
-                           },
-                           date = {
-                             selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                         choices = c(between = "%BETWEEN%"))
-                           })
-           ),
-           tags$div(class = "itemSearchCrit",
-                    switch(type,
-                           number = {
-                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL)
-                           },
-                           date = {
-                             dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
-                           }, 
-                           {
-                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
-                           })
-                    
-           ),
-           tags$div(class = "itemDelete",
-             actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-", style = "background-color: #fff;")
-           )
-  )
-}
-
 observeEvent(input$btNewBlock, {
   if(all(activeBlocks)){
     return(NULL)
   }
   i <- which.min(activeBlocks)
   activeBlocks[i] <<- TRUE
-  insertUI(
-    selector = "#selectorsWrapper",
-    where = "beforeEnd",
-    ui = tags$div(id = "block" %+% i,
-                  tags$div(id = "blockContent" %+% i, class = "grid-container",
-                           if(i > 1L){
-                             tags$hr()
-                           }
-                  ),
-                  tags$div(class = "itemAndDrop",
-                     tags$div(class = "itemAND", 
-                              tags$span(style = "display:inline-block; vertical-align:middle; line-height: 70px;", 'AND')),
-                     tags$div(class = "itemDropdown", 
-                              selectInput("newLine_" %+% i, "", choices = fields)
-                              ),
-                     if(i > 1L){
-                       tags$div(class = "itemDelete",
-                                actionButton("btRemoveBlock" %+% i, label = "-", style = "background-color: #fff;"))
-                     }
-                  )
-    )
-  )
+  addHcubeLoadBlock(id = i, choices = fields)
 }, ignoreNULL = FALSE)
 lapply(2:maxNumBlocks, function(i){
   observeEvent(input[["btRemoveBlock" %+% i]], {
@@ -244,21 +173,21 @@ observeEvent(input$btSendQuery, {
         switch(op[b],
                "%LIKE" = {
                  val[b] <<- "%" %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]])
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]])
                  op[b]  <<- "LIKE"
                },
                "LIKE%" = {
-                 val[b] <<- db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
+                 val[b] <<- db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
                  op[b]  <<- "LIKE"
                },
                "%LIKE%" = {
                  val[b] <<- "%" %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
                  op[b]  <<- "LIKE"
                },
                "%NOTLIKE%" = {
                  val[b] <<- "%" %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
                  op[b]  <<- "NOT LIKE"
                },
                "%BETWEEN%" = {
@@ -272,22 +201,30 @@ observeEvent(input$btSendQuery, {
                  return(NULL)
                },
                ",LIKE%" = {
-                 val[b] <<- "," %+% db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
+                 val[b] <<- "," %+% db$escapePatternPivot(gsub(",", "/comma/", 
+                                                          input[["val_" %+% i %+% "_" %+% j]], 
+                                                          fixed = TRUE)) %+% "%"
                  op[b]  <<- "LIKE"
                },
                "%LIKE," = {
                  val[b] <<- "%" %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ","
+                   db$escapePatternPivot(gsub(",", "/comma/", 
+                                         input[["val_" %+% i %+% "_" %+% j]], 
+                                         fixed = TRUE)) %+% ","
                  op[b]  <<- "LIKE"
                },
                "%,LIKE,%" = {
                  val[b] <<- "%," %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
+                   db$escapePatternPivot(gsub(",", "/comma/", 
+                                         input[["val_" %+% i %+% "_" %+% j]], 
+                                         fixed = TRUE)) %+% ",%"
                  op[b]  <<- "LIKE"
                },
                "%,NOTLIKE,%" = {
                  val[b] <<- "%," %+% 
-                   db$escapePattern(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
+                   db$escapePatternPivot(gsub(",", "/comma/", 
+                                         input[["val_" %+% i %+% "_" %+% j]], 
+                                         fixed = TRUE)) %+% ",%"
                  op[b]  <<- "NOT LIKE"
                })
       }else{

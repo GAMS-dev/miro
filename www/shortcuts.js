@@ -9,42 +9,7 @@ $(document).keyup(function(event) {
     if($("#shiny-modal").find(".selectize-input.input-active").length > 0 || $("#shiny-modal").find("*[data-dismiss='modal']").is(":focus")){
       return;
     }
-    if ($("#btLoadLocal").is(":visible") && $("#btLoadLocal").is(":enabled")) {
-        $("#btLoadLocal").click();
-    }
-    if ($("#btLoadScenConfirm").is(":visible")) {
-        $("#btLoadScenConfirm").click();
-    }
-    if ($("#btOverwriteScen").is(":visible")) {
-        $("#btOverwriteScen").click();
-    }
-    if ($("#btRemoveOutput").is(":visible")) {
-        $("#btRemoveOutput").click();
-    }
-    if ($("#btCheckName").is(":visible")) {
-        $("#btCheckName").click();
-    }
-    if ($("#btSaveConfirm").is(":visible")) {
-        $("#btSaveConfirm").click();
-    }
-    if ($("#btRemoveConfirm").is(":visible")) {
-        $("#btRemoveConfirm").click();
-    }
-    if ($("#btOverwriteLocal").is(":visible")) {
-        $("#btOverwriteLocal").click();
-    }
-    if ($("#btDeleteConfirm").is(":visible")) {
-        $("#btDeleteConfirm").click();
-    }
-    if ($("#btUpdateMeta").is(":visible") && $("#btUpdateMeta").is(":enabled")) {
-        $("#btUpdateMeta").click();
-    }
-    for (i = 2; i <= maxNumScen; i++){ 
-      id = '#close_final_' + i;
-      if($(id).is(":visible")){
-        $(id).click();
-      }
-    }
+    $(".bt-gms-confirm:visible:enabled").click();
   }
   // ESC will close modal dialogues
   if(event.keyCode === 27) {

@@ -1,5 +1,5 @@
 #version number
-webuiVersion <- "0.2.7.7"
+webuiVersion <- "0.2.8"
 webuiRDate   <- "Dec 21 2018"
 #####packages:
 # processx        #MIT

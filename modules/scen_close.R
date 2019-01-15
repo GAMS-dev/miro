@@ -17,7 +17,7 @@ observeEvent(input[["btCloseFinal_" %+% i]],{
   rv$scenId                   <<- i
   sidCompOrder                <<- sidCompOrder[-which(sidCompOrder == i)]
   if(!numberScenTabs){
-    showEl(session, "#noScen")
+    showEl(session, "#no-scen")
   }else if(numberScenTabs == 1){
     disableEl(session, "#btCompareScen")
   }

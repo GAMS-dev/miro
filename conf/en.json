@@ -256,7 +256,8 @@
     },
     "dialogHcube":{
       "title": "Hypercube configuration",
-      "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else. Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
+      "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
       "newTags": "Assign one or more tags to your job:",
       "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",
@@ -326,6 +327,12 @@
         "importSuccess": "Job was imported successfully",
         "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
         "histTitle": "Job history",
+        "ttips":{
+          "discardedCorrupted": "The job was corrupted.",
+          "discardedActive": "The job was still active.",
+          "corruptedNoDir": "The working directory of the job could not be located.",
+          "corruptedNoProcess": "The job is terminated, but no results were found."
+        },      
         "header":{
           "owner": "Owner",
           "date": "Submission date",
@@ -355,7 +362,7 @@
         "title": "Manual Hypercube job import",
         "uploadZip":"Upload zip file with results here",
         "hcubeTags":"Job tags (separate with comma)",
-        "uploadButton":"Upload",
+        "uploadButton":"Import",
         "cancelButton": "Cancel"
       },
       "showLogFileDialog":{

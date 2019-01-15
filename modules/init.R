@@ -456,12 +456,6 @@ if(is.null(errMsg)){
   if(identical(config$activateModules$hcubeMode, TRUE)){
     rSaveFilePath <- gsub(".gmsconf", "_hcube.gmsconf", rSaveFilePath, fixed = TRUE)
     lapply(seq_along(modelIn), function(i){
-      if(!names(modelIn)[i] %in% c(DDPar, GMSOpt)){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Currenty only GAMS command line parameters (double dash parameters or GAMS options) are supported as input elements in Hypercube mode (Element: '%s').", 
-                                 modelInAlias[i]), sep = "\n")
-        return(NULL)
-      }
       if(!identical(modelIn[[i]]$noHcube, TRUE)){
         switch(modelIn[[i]]$type,
                checkbox = {
@@ -501,6 +495,9 @@ if(is.null(errMsg)){
                  }else{
                    modelIn[[i]]$slider$double <<- TRUE
                  }
+               },
+               hot = {
+                 
                },
                {
                  errMsg <<- paste(errMsg, 

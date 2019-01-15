@@ -125,8 +125,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- scenIds %+% ": " %+% gmsString 
     if(config$saveTraceFile){
-      gmsString <- paste0(gmsString, " trace=", tableNameTracePrefix, modelName, ".trc", " traceopt=3 lo=3 idir1=..", 
-                          .Platform$file.sep, "..", .Platform$file.sep, ".. ", config$gamsWEBUISwitch)
+      gmsString <- paste0(gmsString, " trace=", tableNameTracePrefix, modelName, ".trc", " traceopt=3")
     }
     return(list(ids = scenIds, gmspar = gmsString))
   })
@@ -144,14 +143,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
-    file.copy(file.path(modelDir %+% hypercubeSubmissionFile), toDir)
+    file.copy(file.path(modelDir, hcubeSubmissionFile %+% ".gms"), toDir)
     do.call(file.remove, list(list.files(toDir, pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   executeHcubeJob <- function(scenGmsPar){
-    bid <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
-    flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", bid)
-    hcubeDir <- file.path(currentModelDir, hcubeDirName, bid)
+    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
+    flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
+    hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
     if(dir.exists(hcubeDir)){
       flog.error("Hypercube job directory: '%s' already exists.", hcubeDir)
       stop(sprintf("Hypercube job directory: '%s' already exists.", hcubeDir), call. = FALSE)
@@ -161,30 +160,44 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
     # create daemon to execute Hypercube job
-    hcubeSubmDir <- file.path(getwd(), modelDir, hcubeSubmissionFile)
+    hcubeSubmDir <- file.path(getwd(), modelDir, hcubeSubmissionFile %+% "_auto.gms")
     curDir <- hcubeDir
     if(isWindows()){
       hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
       curdir <- gsub("/", "\\", curDir, fixed = TRUE)
     }
+    tryCatch({
+      writeChar(file.path(hcubeDir, jID %+% ".log"), paste0("Job ID: ", jID, "\n"))
+    }, error = function(e){
+      flog.error("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
+                 jID %+% ".log", hcubeDir)
+    })
     p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true"),  
-                     cleanup = TRUE, cleanup_tree = FALSE, supervise = FALSE,
+                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true", 
+                              "--jobID=" %+% jID),  
+                     cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
                      windows_hide_window = TRUE)
     pid <- p$get_pid()
+    p <- NULL
     flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
-    db$updateHypercubeJob(bid, pid = pid)
-    flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, bid)
+    db$updateHypercubeJob(jID, pid = pid)
+    flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, jID)
   }
   observeEvent(input$btHcubeAll, {
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
-    if(now - prevJobSubmitted < 5L){
+    if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
+      print(now)
+      print(prevJobSubmitted)
       showHideEl(session, "#hcubeSubmitWait", 6000)
       flog.info("Hypercube job submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
       return()
     }
     prevJobSubmitted <<- Sys.time()
+    if(!length(scenGmsPar)){
+      flog.debug("No scenarios selected to be solved in Hypercube mode.")
+      return()
+    }
     tryCatch({
       executeHcubeJob(scenGmsPar)
       showHideEl(session, "#hcubeSubmitSuccess", 3000)
@@ -199,14 +212,19 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   observeEvent(input$btHcubeNew, {
     flog.trace("Button to schedule only new scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
-    if(now - prevJobSubmitted < 5L){
+    if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
       showHideEl(session, "#hcubeSubmitWait", 6000)
       flog.info("Hypercube job submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
       return()
     }
     prevJobSubmitted <<- Sys.time()
+    hcubeScen <- scenGmsPar[idxDiff]
+    if(!length(hcubeScen)){
+      flog.debug("No scenarios selected to be solved in Hypercube mode.")
+      return()
+    }
     tryCatch({
-      executeHcubeJob(scenGmsPar[idxDiff])
+      executeHcubeJob(hcubeScen)
       showHideEl(session, "#hcubeSubmitSuccess", 3000)
       hideModal(session, 3L)
     }, error = function(e){
@@ -373,7 +391,7 @@ observeEvent(input$btSolve, {
         return(logText)
       }
       if(input$logUpdate){
-        scrollDown(session, "#logStatus")
+        scrollDown(session, "#log-status")
       }
       return(logText)
     })
@@ -397,7 +415,7 @@ observeEvent(input$btSolve, {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > lstMaxNoLinesToRead){
+          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > maxNoLinesToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
             output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))

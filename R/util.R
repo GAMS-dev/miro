@@ -609,9 +609,13 @@ csv2Vector <- function(csv){
 vector2Csv <- function(vector){
   if(!length(vector)){
     return("")
+  }else if(length(vector) > 1L || 
+           !(startsWith(vector, ",") && endsWith(vector, ","))){
+    vector <- gsub(",", "/comma/", vector, fixed = TRUE)
+    return(paste0(",", paste0(vector, collapse = ","), ","))
+  }else{
+    return(vector)
   }
-  vector <- gsub(",", "/comma/", vector, fixed = TRUE)
-  paste0(",", paste0(vector, collapse = ","), ",")
 }
 showEl <- function(session, id){
   session$sendCustomMessage("gms-showEl", id)
@@ -770,3 +774,16 @@ fixColTypes <- function(data, colTypes){
   })
   return(data)
 }
+pidExists <- function(pid){
+  if(isWindows()){
+    grepl("Mem Usage", run("tasklist", c("/FI", paste0("PID eq ", pid)), 
+          windows_hide_window = TRUE)$stdout, fixed = TRUE)
+  }else{
+    pidExists <- TRUE
+    tryCatch(run("ps", c("-p", pid)), error = function(e){
+      pidExists <<- FALSE
+    })
+    return(pidExists)
+  }
+}
+

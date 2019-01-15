@@ -4,7 +4,8 @@ showReadonlyDialog <- function(){
     lang$nav$dialogReadonly$desc,
     footer = tagList(
       modalButton(lang$nav$dialogReadonly$cancelButton),
-      actionButton("btSaveReadonly", label = lang$nav$dialogReadonly$okButton, class = "btHighlight1")),
+      actionButton("btSaveReadonly", label = lang$nav$dialogReadonly$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
     fade = TRUE, easyClose = FALSE
   ))
 }
@@ -20,20 +21,20 @@ showNewScenDialog <- function(tmpScenName){
                               'create' = TRUE,
                               'persist' = FALSE)
              )),
-    tags$div(id = "badScenarioName", class = "errMsg", style = "display:none;", 
+    tags$div(id = "badScenarioName", class = "err-msg", style = "display:none;", 
              lang$nav$dialogNewScen$badName),
-    tags$div(id = "scenarioExits", class = "errMsg", style = "display:none;", 
+    tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
              lang$nav$dialogNewScen$scenExits),
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav$dialogNewScen$cancelButton),
                actionButton("btCheckName", lang$nav$dialogNewScen$okButton, 
-                            class = "btHighlight1")
+                            class = "bt-highlight-1 bt-gms-confirm")
       ),
       tags$div(id = "dialogSaveConfirm", style = "display:none;",
                actionButton("btNewName", lang$nav$dialogNewScen$btNewName),
                actionButton("btSaveConfirm", lang$nav$dialogNewScen$btOverwrite, 
-                            class = "btHighlight1")
+                            class = "bt-highlight-1 bt-gms-confirm")
       )
     ),
     fade = TRUE, easyClose = FALSE))
@@ -45,7 +46,8 @@ showCloseScenDialog <- function(scenId){
     lang$nav$dialogCloseScen$desc,
     footer = tagList(
       modalButton(lang$nav$dialogCloseScen$cancelButton),
-      actionButton("btCloseFinal_" %+% scenId, lang$nav$dialogCloseScen$okButton, class = "btHighlight1")),
+      actionButton("btCloseFinal_" %+% scenId, lang$nav$dialogCloseScen$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
     fade=FALSE, easyClose=FALSE))
 }
 
@@ -55,7 +57,8 @@ showRemoveActiveScenFromUIDialog <- function(){
     lang$nav$dialogRemoveScen$desc,
     footer = tagList(
       modalButton(lang$nav$dialogRemoveScen$cancelButton),
-      actionButton("btRemoveConfirm", label = lang$nav$dialogRemoveScen$okButton, class = "btHighlight1")),
+      actionButton("btRemoveConfirm", label = lang$nav$dialogRemoveScen$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -65,7 +68,9 @@ showRemoveDeletedScenFromUIDialog <- function(){
     lang$nav$dialogDeleteScen$removeFromUI$desc,
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$removeFromUI$cancelButton),
-      actionButton("btRemoveDeletedConfirm", label = lang$nav$dialogDeleteScen$removeFromUI$okButton, class = "btHighlight1")),
+      actionButton("btRemoveDeletedConfirm", 
+                   label = lang$nav$dialogDeleteScen$removeFromUI$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -79,10 +84,11 @@ showDeleteScenDialog <- function(){
              lang$nav$dialogDeleteScen$removeFromUI$desc),
     footer = tagList(
       modalButton(lang$nav$dialogDeleteScen$cancelButton),
-      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, class = "btHighlight1"),
+      actionButton("btDeleteConfirm", lang$nav$dialogDeleteScen$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm"),
       actionButton("btRemoveDeletedConfirm", 
                   label = lang$nav$dialogDeleteScen$removeFromUI$okButton, 
-                  class = "btHighlight1", style = "display:none;")),
+                  class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")),
     fade=TRUE, easyClose=FALSE))
 }
 
@@ -93,7 +99,8 @@ showRemoveExistingOutputDataDialog <- function(){
     footer = tagList(
       modalButton(lang$nav$dialogExistingOutput$cancelButton),
       actionButton("btSaveOutput", label = lang$nav$dialogExistingOutput$saveOutputButton),
-      actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, class = "btHighlight1")),
+      actionButton("btRemoveOutput", label = lang$nav$dialogExistingOutput$discardOutputButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
     fade = TRUE, easyClose = FALSE))
 }
 showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NULL){
@@ -102,7 +109,8 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                    tags$div(id = "loadLocal_content",
                                             fluidRow(
                                               column(12,
-                                                     fileInput("localInput", lang$nav$dialogImport$descLocal, width = "100%",
+                                                     fileInput("localInput", lang$nav$dialogImport$descLocal, 
+                                                               width = "100%",
                                                                multiple = FALSE,
                                                                accept = c("application/vnd.ms-excel", 
                                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
@@ -110,7 +118,7 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                                      if(noDataInUI){
                                                        tagList(
                                                          tags$div(id = "local_badScenName", style = "display:none;", 
-                                                                         class = "errMsg", 
+                                                                         class = "err-msg", 
                                                                          lang$nav$dialogImport$badScenName),
                                                          textInput("local_newScenName", 
                                                                    lang$nav$dialogImport$newScenName)
@@ -142,7 +150,8 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                                        tagAppendAttributes(
                                                          actionButton("btCheckSnameLocal", 
                                                                       lang$nav$dialogImport$okButton, 
-                                                                      class = "btHighlight1"), disabled = ""
+                                                                      class = "bt-highlight-1 bt-gms-confirm"), 
+                                                         disabled = ""
                                                        )
                                               )
                                             )
@@ -150,7 +159,7 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                    if(config$activateModules$scenario){
                                      tags$div(id = "loadLocal_scenNameExists", style = "display:none;",
                                               fluidRow(
-                                                tags$div(class = "errMsg",
+                                                tags$div(class = "err-msg",
                                                          lang$nav$dialogImport$scenNameExists
                                                 )
                                               ),
@@ -160,7 +169,7 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                                                       lang$nav$dialogImport$overwriteButton),
                                                          actionButton("btNewNameLocal", 
                                                                       lang$nav$dialogImport$newNameButton, 
-                                                                      class = "btHighlight1")
+                                                                      class = "bt-highlight-1 bt-gms-confirm")
                                                 )
                                               )
                                      )
@@ -197,7 +206,7 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                            tags$div(style = "text-align: center;",
                                                     actionButton("btLoadScenConfirm", 
                                                                  lang$nav$dialogLoadScen$okButton, 
-                                                                 class = "btHighlight1")
+                                                                 class = "bt-highlight-1 bt-gms-confirm")
                                            )
                                            
                                          )
@@ -222,9 +231,9 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
       tagList(
         modalButton(lang$nav$dialogImport$cancelButton),
         actionButton("btOverwriteInput", label = lang$nav$dialogImport$okButton, 
-                     class = "btHighlight1", style = "display:none;"),
+                     class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
         actionButton("btOverwriteScen", label = lang$nav$dialogImport$okButton, 
-                     class = "btHighlight1", style = "display:none;")
+                     class = "bt-highlight-1 bt-gms-confirm", style = "display:none;")
       )
     }
   ))
@@ -281,7 +290,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     footer = tagList(
       modalButton(lang$nav$dialogLoadScen$cancelButton),
       actionButton("btLoadScenConfirm", lang$nav$dialogLoadScen$okButton, 
-                   class = "btHighlight1")
+                   class = "bt-highlight-1 bt-gms-confirm")
       ),
     fade = TRUE, easyClose = FALSE
   ))
@@ -343,13 +352,13 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
       },
       if(allowAttachments){
         tagList(
-          tags$div(class = "labelClass", lang$nav$dialogEditMeta$attachmentsLabel),
+          tags$div(class = "label-class", lang$nav$dialogEditMeta$attachmentsLabel),
           fileInput("file_addAttachments", lang$nav$dialogEditMeta$attachmentsAdd, multiple = TRUE),
           if(length(attachmentMetadata[["name"]])){
             lapply(seq_along(attachmentMetadata[["name"]]), function(i){
               tags$div(class = "row attachment-line", 
                        column(width = 6, 
-                              HTML(paste0('<button class="btn btn-default btIcon" id="btRemoveAttachment_', i,
+                              HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
                                           '" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
                               downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
                               ),
@@ -371,7 +380,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     footer = tagList(
       modalButton(lang$nav$dialogEditMeta$cancelButton),
       actionButton("btUpdateMeta", lang$nav$dialogEditMeta$okButton, 
-                   class = "btHighlight1")
+                   class = "bt-highlight-1 bt-gms-confirm")
     ),
     fade = TRUE, easyClose = FALSE
   ))
@@ -385,8 +394,10 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
              lang$nav$dialogHcube$waitTime),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
              lang$nav$dialogHcube$unknownError),
-    tags$div(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
-                     noIdsExist)),
+    tags$div(paste0(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
+                     noIdsExist), if(!identical(noIdsExist, noIdsToSolve)) 
+                       lang$nav$dialogHcube$descSolveAgain)),
+    tags$div(class = "small-space"),
     conditionalPanel(
       condition = "input.hcubeSolve_dl == 0",
       selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
@@ -411,77 +422,25 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
       ),
       conditionalPanel(
         condition = "input.hcubeSolve_dl == 1",
+        modalButton(lang$nav$dialogHcube$cancelButton),
         tags$a(id="btHcubeAll_dl", class='btn btn-default shiny-download-link',
                href='', target='_blank', download=NA, lang$nav$dialogHcube$processAllButton),
-        if(noIdsExist > 0L){
-          tags$a(id="btHcubeNew_dl", class='btn btn-default shiny-download-link btHighlight1',
+        if(noIdsExist > 0L && !identical(noIdsExist, noIdsToSolve)){
+          tags$a(id="btHcubeNew_dl", class='btn btn-default shiny-download-link bt-highlight-1',
                  href='', target='_blank', download=NA, lang$nav$dialogHcube$processUnsolvedButton)
-        },
-        modalButton(lang$nav$dialogHcube$cancelButton)
+        }
       ),
       conditionalPanel(
         condition = "input.hcubeSolve_dl == 0",
+        modalButton(lang$nav$dialogHcube$cancelButton),
         actionButton("btHcubeAll", lang$nav$dialogHcube$processAllButton),
-        if(noIdsExist > 0L){
+        if(noIdsExist > 0L && !identical(noIdsExist, noIdsToSolve)){
           actionButton("btHcubeNew", lang$nav$dialogHcube$processUnsolvedButton,
-                       class='btHighlight1')
-        },
-        modalButton(lang$nav$dialogHcube$cancelButton)
+                       class='bt-highlight-1 bt-gms-confirm')
+        }
       )),
     fade = TRUE, easyClose = TRUE))
 }
-showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
-                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE){
-  showModal(modalDialog(
-    title = list(lang$nav$hcubeMode$configPaverDialog$title, 
-                 HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
-    if(hasRemovePerm){
-      tagList(
-        tags$div(id = "hcubeRemoveConfirm", style = "display:none;",
-                 sprintf(lang$nav$hcubeMode$configPaverDialog$removeConfirm, noScenSelected)
-        ),
-        tags$div(id = "hcubeRemoveSuccess", style = "display:none",
-                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
-        tags$div(id = "hcubeRemoveError", class = "errMsg", style = "display:none",
-                 lang$nav$hcubeMode$configPaverDialog$removeError)
-      )
-    },
-    tags$div(id="hcubeLoadMethod",
-             if(length(sidsToLoad) <= maxConcurentLoad){
-               lang$nav$hcubeMode$configPaverDialog$selectMethod
-             }else{
-               sprintf(lang$nav$hcubeMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
-               lang$nav$hcubeMode$configPaverDialog$maxScenWarning2
-             }
-    ),
-    tags$div(id="configPaver", style = "display:none;",
-            lang$nav$hcubeMode$configPaverDialog$desc,
-            tags$div(id = "configPaverMaxSolversErr", style = "display:none;", class = "errMsg",
-                     sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
-                             maxSolversPaver)),
-            selectInput("selPaverAttribs", lang$nav$hcubeMode$configPaverDialog$selAttribs, 
-                         attribs, multiple = TRUE, width = "100%")
-    ),
-    tags$div(id="deleteTrace", style = "display:none;",
-                    lang$nav$hcubeMode$configPaverDialog$delTrace
-    ),
-    footer = tagList(
-      if(hasRemovePerm){
-        actionButton("btHcubeRemove", lang$nav$hcubeMode$configPaverDialog$removeButton,
-                     class = "btRemove")
-      },
-      tags$a(id="btHcubeDownload", class='btn btn-default shiny-download-link',
-             href='', target='_blank', download=NA, lang$nav$hcubeMode$configPaverDialog$downloadButton),
-      actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
-      actionButton("btPaver", lang$nav$hcubeMode$configPaverDialog$runButton, 
-                   class = "btHighlight1", style = "display:none;"),
-      if(length(sidsToLoad) <= maxConcurentLoad)
-        actionButton("btHcubeLoad", lang$nav$hcubeMode$configPaverDialog$interactiveButton)
-    ),
-    fade = TRUE, easyClose = FALSE
-  ))
-}
-
 showInvalidScenIdsDialog <- function(invalidScenIds){
   showModal(modalDialog(
     title = lang$nav$hcubeMode$invalidScenDialog$title,
@@ -512,6 +471,59 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
     fade = TRUE, easyClose = FALSE
   ))
 }
+# Hypercube analyze module
+showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
+                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE){
+  showModal(modalDialog(
+    title = list(lang$nav$hcubeMode$configPaverDialog$title, 
+                 HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
+    if(hasRemovePerm){
+      tagList(
+        tags$div(id = "hcubeRemoveConfirm", style = "display:none;",
+                 sprintf(lang$nav$hcubeMode$configPaverDialog$removeConfirm, noScenSelected)
+        ),
+        tags$div(id = "hcubeRemoveSuccess", style = "display:none",
+                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
+        tags$div(id = "hcubeRemoveError", class = "err-msg", style = "display:none",
+                 lang$nav$hcubeMode$configPaverDialog$removeError)
+      )
+    },
+    tags$div(id="hcubeLoadMethod",
+             if(length(sidsToLoad) <= maxConcurentLoad){
+               lang$nav$hcubeMode$configPaverDialog$selectMethod
+             }else{
+               sprintf(lang$nav$hcubeMode$configPaverDialog$maxScenWarning1, maxConcurentLoad) %+% 
+               lang$nav$hcubeMode$configPaverDialog$maxScenWarning2
+             }
+    ),
+    tags$div(id="configPaver", style = "display:none;",
+            lang$nav$hcubeMode$configPaverDialog$desc,
+            tags$div(id = "configPaverMaxSolversErr", style = "display:none;", class = "err-msg",
+                     sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
+                             maxSolversPaver)),
+            selectInput("selPaverAttribs", lang$nav$hcubeMode$configPaverDialog$selAttribs, 
+                         attribs, multiple = TRUE, width = "100%")
+    ),
+    tags$div(id="deleteTrace", style = "display:none;",
+                    lang$nav$hcubeMode$configPaverDialog$delTrace
+    ),
+    footer = tagList(
+      if(hasRemovePerm){
+        actionButton("btHcubeRemove", lang$nav$hcubeMode$configPaverDialog$removeButton,
+                     class = "bt-remove")
+      },
+      tags$a(id="btHcubeDownload", class='btn btn-default shiny-download-link',
+             href='', target='_blank', download=NA, lang$nav$hcubeMode$configPaverDialog$downloadButton),
+      actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
+      actionButton("btPaver", lang$nav$hcubeMode$configPaverDialog$runButton, 
+                   class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
+      if(length(sidsToLoad) <= maxConcurentLoad)
+        actionButton("btHcubeLoad", lang$nav$hcubeMode$configPaverDialog$interactiveButton)
+    ),
+    fade = TRUE, easyClose = FALSE
+  ))
+}
+# Hypercube job import module
 showManualJobImportDialog <- function(){
    showModal(modalDialog(
      title = lang$nav$hcubeMode$manualJobImportDialog$title,
@@ -531,89 +543,102 @@ showManualJobImportDialog <- function(){
      footer = tagList(
        modalButton(lang$nav$hcubeMode$manualJobImportDialog$cancelButton),
        actionButton("btUploadHcube", label = lang$nav$hcubeMode$manualJobImportDialog$uploadButton, 
-                    class = "btHighlight1")
+                    class = "bt-highlight-1 bt-gms-confirm")
      ),
      fade = TRUE, easyClose = TRUE
    ))
- }
+}
 getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
-  tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
-    tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
-             lang$nav$hcubeMode$importJobsDialog$discardSuccess),
-    tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
-             lang$nav$hcubeMode$importJobsDialog$importSuccess),
-    tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
-             lang$nav$hcubeMode$importJobsDialog$unknownError),
-    if(!inherits(hcubeMeta, "data.frame")){
-      tags$div(class = "errMsg", 
-        lang$nav$hcubeMode$importJobsDialog$unknownError
-      )
-    }else if(length(hcubeMeta) && nrow(hcubeMeta)){
-      tags$table(class = "cJob-wrapper",
-                 tags$tr(
-                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$owner),
-                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$date),
-                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
-                   tags$th(lang$nav$hcubeMode$importJobsDialog$header$status),
-                   if(!jobHist)
-                     tags$th(lang$nav$hcubeMode$importJobsDialog$header$action)
-                 ),
-        do.call("tagList", lapply(seq_len(nrow(hcubeMeta)), function(i){
-          jStatus <- strsplit(hcubeMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
-          jID     <- hcubeMeta[[1]][i]
-          
-          tags$tr(
-            tags$td(hcubeMeta[[2]][i]),
-            tags$td(hcubeMeta[[4]][i]),
-            tags$td(
-                     if(jobHist){
-                       substr(hcubeMeta[[5]][i], 2, nchar(hcubeMeta[[5]][i]) - 1L)
-                     }else{
-                       jTags   <- csv2Vector(hcubeMeta[[5]][i])
-                       selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
-                                      selected = jTags,
-                                      multiple = TRUE, options = list(
-                                        'create' = TRUE,
-                                        'persist' = FALSE))
-                     }
-                     ),
-            tags$td(jStatus),
-            if(!jobHist){
-              tags$td(
-                       if(identical(jStatus, "completed")){
-                         tagList(
-                           HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
-                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$title, '\', \'', 
-                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$desc, '\', \'', 
-                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
-                                       lang$nav$hcubeMode$importJobsDialog$importConfirm$confirmButton, 
-                                       '\', \'importHypercubeJob(', jID, 
-                                       ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$import, '</button>',
-                                       '<button type="button" class="btn btn-default" onclick="showHypercubeLog(', jID, ')">', 
-                                       lang$nav$hcubeMode$importJobsDialog$buttons$log, '</button>'))
-                         )
-                       },
-                       HTML(paste0('<button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
-                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$title, '\', \'', 
-                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$desc, '\', \'', 
-                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
-                                   lang$nav$hcubeMode$importJobsDialog$discardConfirm$confirmButton, 
-                                   '\', \'discardHypercubeJob(', jID, 
-                                   ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$discard, '</button>'))
-              )
-            }
-          )
-        }))
-      )
-    }else{
-      tags$div(style = "padding:20px;text-align:center;",
-               if(jobHist)
-                 lang$nav$hcubeMode$importJobsDialog$noJobsHist
-               else
-                 lang$nav$hcubeMode$importJobsDialog$noJobs
-      )
-    }
-  )
+  if(!inherits(hcubeMeta, "data.frame")){
+    content <- tags$div(class = "err-msg", 
+                        lang$nav$hcubeMode$importJobsDialog$unknownError
+    )
+  }else if(length(hcubeMeta) && nrow(hcubeMeta)){
+    content <- tags$table(class = "cJob-wrapper",
+                          tags$tr(
+                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$owner),
+                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$date),
+                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
+                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$status),
+                            if(!jobHist)
+                              tags$th(lang$nav$hcubeMode$importJobsDialog$header$action)
+                          ),
+                          do.call("tagList", lapply(seq_len(nrow(hcubeMeta)), function(i){
+                            jStatus <- strsplit(hcubeMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
+                            jID     <- hcubeMeta[[1]][i]
+                            
+                            tags$tr(
+                              tags$td(hcubeMeta[[2]][i]),
+                              tags$td(hcubeMeta[[4]][i]),
+                              tags$td(
+                                if(jobHist){
+                                  substr(hcubeMeta[[5]][i], 2, nchar(hcubeMeta[[5]][i]) - 1L)
+                                }else{
+                                  jTags   <- csv2Vector(hcubeMeta[[5]][i])
+                                  selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
+                                                 selected = jTags,
+                                                 multiple = TRUE, options = list(
+                                                   'create' = TRUE,
+                                                   'persist' = FALSE))
+                                }
+                              ),
+                              if(startsWith(jStatus, "corrupted")){
+                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
+                                tags$td(class = "ttip", jStatus[1L], tags$span(
+                                  if(startsWith(jStatus[2L], "noDir")) 
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoDir
+                                  else if(startsWith(jStatus[2L], "noProcess"))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoProcess))
+                              }else if(startsWith(jStatus, "discarded")){
+                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
+                                tags$td(class = "ttip", jStatus[1L], tags$span(
+                                  if(startsWith(jStatus[2L], "corrupted")) 
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedCorrupted
+                                  else if(startsWith(jStatus[2L], "running"))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive))
+                              }else{
+                                tags$td(jStatus)
+                              },
+                              if(!jobHist){
+                                tags$td(
+                                  if(identical(jStatus, "completed")){
+                                    tagList(
+                                      HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$title, '\', \'', 
+                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$desc, '\', \'', 
+                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
+                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$confirmButton, 
+                                                  '\', \'importHypercubeJob(', jID, 
+                                                  ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$import, '</button>'))
+                                    )
+                                  },
+                                  HTML(paste0('<button type="button" class="btn btn-default" onclick="showHypercubeLog(', jID, ')">', 
+                                              lang$nav$hcubeMode$importJobsDialog$buttons$log, '</button>
+                                   <button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$title, '\', \'', 
+                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$desc, '\', \'', 
+                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
+                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$confirmButton, 
+                                              '\', \'discardHypercubeJob(', jID, 
+                                              ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$discard, '</button>'))
+                                )
+                              }
+                            )
+                          }))
+    )
+  }else{
+    content <- tags$div(style = "padding:20px;text-align:center;",
+                        if(jobHist)
+                          lang$nav$hcubeMode$importJobsDialog$noJobsHist
+                        else
+                          lang$nav$hcubeMode$importJobsDialog$noJobs
+    )
+  }
+  if(jobHist){
+    return(getHypercubeJobsTableSkeleton(content = content))
+  }else{
+    return(content)
+  }
 }
 showJobsCompletedDialog <- function(){
   showModal(modalDialog(
@@ -625,13 +650,13 @@ showJobHistoryDialog <- function(jobMeta){
   showModal(modalDialog(
     title = lang$nav$hcubeMode$importJobsDialog$histTitle,
     getHypercubeJobsTable(jobMeta, jobHist = TRUE),
-    fade = TRUE, easyClose = TRUE
+    fade = TRUE, easyClose = TRUE, size = "l"
   ))
 }
 showHypercubeLogFileDialog <- function(logContent){
   showModal(modalDialog(
     title = lang$nav$hcubeMode$showLogFileDialog$title,
-    tags$pre(
+    tags$pre(style = "max-height:500px;max-height:70vh;overflow:auto;",
       if(length(logContent) && nchar(logContent)){
         logContent
       }else{
@@ -640,4 +665,86 @@ showHypercubeLogFileDialog <- function(logContent){
     ),
     fade = TRUE, easyClose = TRUE
   ))
+}
+# Hypercube load module
+generateLine <- function(i, j, type, label){
+  tags$div(id = "line" %+% i %+% "_" %+% j, class = "item-line",
+           tags$div(class = "item-name", helpText(label)),
+           tags$div(class = "item-scen-drop", switch(type,
+                                                     number = {
+                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
+                                                                   choices = c('=', '<', '>', '<=', ">=", '!='))
+                                                     },
+                                                     text = {
+                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
+                                                                   choices = c(contains = "%LIKE%", 
+                                                                               "doesn't contain" = "%NOTLIKE%",
+                                                                               "starts with" = "LIKE%",
+                                                                               "ends with" = "%LIKE",
+                                                                               is = "LIKE",
+                                                                               "is not" = "NOT LIKE"), 
+                                                                   selected = "LIKE")
+                                                     },
+                                                     csv = {
+                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
+                                                                   choices = c(contains = "%LIKE%", 
+                                                                               "doesn't contain" = "%NOTLIKE%",
+                                                                               "starts with" = ",LIKE%",
+                                                                               "ends with" = "%LIKE,",
+                                                                               is = "%,LIKE,%",
+                                                                               "is not" = "%,NOTLIKE,%"), 
+                                                                   selected = "%,LIKE,%")
+                                                     },
+                                                     date = {
+                                                       selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
+                                                                   choices = c(between = "%BETWEEN%"))
+                                                     })
+           ),
+           tags$div(class = "item-search-crit",
+                    switch(type,
+                           number = {
+                             numericInput("val_" %+% i %+% "_" %+% j, label=NULL, 
+                                          value = 0L)
+                           },
+                           date = {
+                             dateRangeInput("val_" %+% i %+% "_" %+% j, label=NULL)
+                           }, 
+                           {
+                             textInput("val_" %+% i %+% "_" %+% j, label=NULL)
+                           })
+                    
+           ),
+           tags$div(class = "item-delete",
+                    actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-", 
+                                 style = "background-color: #fff;")
+           )
+  )
+}
+addHcubeLoadBlock <- function(id, choices){
+  insertUI(
+    selector = "#selectorsWrapper",
+    where = "beforeEnd",
+    ui = tags$div(id = "block" %+% id,
+                  tags$div(id = "blockContent" %+% id, 
+                           class = "grid-container",
+                           if(id > 1L){
+                             tags$hr()
+                           }
+                  ),
+                  tags$div(class = "item-add-block",
+                           tags$div(class = "item-and", 
+                                    tags$span(style = "display:inline-block;vertical-align:middle;line-height: 70px;", 
+                                              'AND')),
+                           tags$div(class = "item-dropdown", 
+                                    selectInput("newLine_" %+% id, "", 
+                                                choices = fields)
+                           ),
+                           if(id > 1L){
+                             tags$div(class = "item-delete",
+                                      actionButton("btRemoveBlock" %+% id, label = "-", 
+                                                   style = "background-color: #fff;"))
+                           }
+                  )
+    )
+  )
 }

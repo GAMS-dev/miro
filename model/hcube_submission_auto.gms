@@ -18,7 +18,6 @@ $if not set zipname $set zipname "4upload"
 $if not set outScript $set outScript "gams"
 
 $if not set exec $set exec "false"
-
 $onEmbeddedCode Python:
 import os
 
@@ -38,7 +37,10 @@ fscalars = "scalars.csv"
 
 # string manipulation (batch file)
 def extractCall(call):
-   call = call[66:]
+   call = (call[66:] +
+           " idir1=..%system.dirsep%..%system.dirsep%..%system.dirsep%..%system.dirsep% " +
+           "lo=3 --WEBUI=1" + ">>\"..%system.dirsep%..%system.dirsep% ".strip() +
+           "%jobID%.log\"")
    return call.strip()
 
 def extractDir(fdir):
@@ -112,6 +114,7 @@ with open(bfname) as f:
    content = [x.strip() for x in content]
 
 if outScript == "gams":
+   fjobsub = open(fJobSubName,"w")
    # write GAMS $calls into job submission file
    linestmp = ""
    linestmp += "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
@@ -120,7 +123,6 @@ if outScript == "gams":
       dirname = extractDir(item)
       tmpdir = "tmp"+str(index)
       call = extractCall(item)
-      fjobsub = open(fJobSubName,"w")
       linestmp += "$call cd " + zipname + "\n$if dexist " + tmpdir + " $call rm -r " + tmpdir + "\n"
       linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
@@ -129,7 +131,7 @@ if outScript == "gams":
       # scalars.csv file manually filled (needed in webui for data validation)
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + " " + "idir2 = \"..%system.dirsep%..%system.dirsep%..%system.dirsep%..%system.dirsep%..%system.dirsep% ".strip() + datapath + "\"\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
       linestmp += "$call cd " + zipname + " \n$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
    

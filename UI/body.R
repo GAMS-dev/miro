@@ -1,5 +1,19 @@
 ## UI body
-
+getHypercubeJobsTableSkeleton <- function(id = NULL, content = NULL){
+  tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
+                    lang$nav$hcubeMode$importJobsDialog$discardSuccess),
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
+                    lang$nav$hcubeMode$importJobsDialog$importSuccess),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
+                    lang$nav$hcubeMode$importJobsDialog$unknownError),
+           if(is.null(id)){
+             content
+           }else{
+             uiOutput(id)
+           }
+  )
+}
 body <- dashboardBody({
   if(dir.exists(paste0(currentModelDir, "static"))){
     addResourcePath("custom", paste0(currentModelDir, "static"))
@@ -72,7 +86,9 @@ body <- dashboardBody({
                 tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                                          icon("exclamation-triangle")),
                 textOutput("inputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemove", class = "btIcon", icon = icon("times"), label = NULL))
+                tags$div(style = "float: right;", actionButton(inputId = "btRemove", 
+                                                               class = "bt-icon", icon = icon("times"), 
+                                                               label = NULL))
               ), status="primary", solidHeader = TRUE, width = 12,
               do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
                 i <- inputTabs[[tabId]][1]
@@ -286,10 +302,11 @@ body <- dashboardBody({
                     tags$div(id = "loadContent",
                              tags$div(id = "selectorsWrapper"
                              ),
-                             tags$div(id = "buttonsWrapper", class = "itemORQuery",
+                             tags$div(id = "buttonsWrapper", class = "item-or-query",
                                       actionButton("btNewBlock", label = "OR")),
-                             tags$div(class = "itemORQuery",
-                                      actionButton("btSendQuery", label = "Query database", class = "btHighlight1")
+                             tags$div(class = "item-or-query",
+                                      actionButton("btSendQuery", label = "Query database", 
+                                                   class = "bt-highlight-1")
                              )
                     ),
                     genSpinner(id = "hyperQueryLoad", hidden = TRUE, absolute = FALSE),
@@ -298,9 +315,12 @@ body <- dashboardBody({
                              style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                              lang$nav$hcubeLoad$noData),
                     tags$div(id = "hcubeLoadButtons", style = "margin:15px;display:none;",
-                             actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , class = "btHighlight1"),
-                             actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , class = "btHighlight1"),
-                             actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, class = "btHighlight1")
+                             actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
+                                          class = "bt-highlight-1"),
+                             actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
+                                          class = "bt-highlight-1"),
+                             actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
+                                          class = "bt-highlight-1")
                     )
                 )
               )
@@ -348,15 +368,18 @@ body <- dashboardBody({
                 box(title = tagList(lang$nav$hcubeImport$title, 
                                     tags$div(style = "float: right;", 
                                              actionButton(inputId = "refreshActiveJobs", 
-                                                          class = "btIcon", icon = icon("refresh"), label = NULL))),
+                                                          class = "bt-icon", 
+                                                          icon = icon("refresh"), label = NULL))),
                     status="primary", solidHeader = TRUE, width = 12,
                     genSpinner("jImport_load", absolute = FALSE),
-                    uiOutput("jImport_output"),
+                    getHypercubeJobsTableSkeleton(id = "jImport_output"),
                     tags$div(class = "col-sm-6",
-                             actionButton("btShowHistory", lang$nav$hcubeImport$btShowHistory)
+                             actionButton("btShowHistory", 
+                                          lang$nav$hcubeImport$btShowHistory)
                     ),
                     tags$div(class = "col-sm-6", style = "text-align:right;",
-                             actionButton("btManualImport", lang$nav$hcubeImport$btManualImport)
+                             actionButton("btManualImport", 
+                                          lang$nav$hcubeImport$btManualImport)
                     )
                 )
               )
@@ -369,7 +392,9 @@ body <- dashboardBody({
                            icon("exclamation-triangle")),
                   textOutput("outputDataTitle", inline = T),
                   tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                                 class = "btIcon", icon = icon("times"), label = NULL))
+                                                                 class = "bt-icon", 
+                                                                 icon = icon("times"), 
+                                                                 label = NULL))
                 ), status="primary", solidHeader = TRUE, width = 12,
                 tags$div(class="scen-header",
                          tags$div(class = "out-buttons-wrapper",
@@ -377,7 +402,8 @@ body <- dashboardBody({
                                                class="scen-button")
                          )
                 ),
-                do.call(tabsetPanel, c(id = "contentCurrent", lapply(modelOutToDisplay, function(sheetName) {
+                do.call(tabsetPanel, c(id = "contentCurrent", 
+                                       lapply(modelOutToDisplay, function(sheetName) {
                   i <- match(sheetName, names(modelOut))[1]
                   tabPanel(
                     title = modelOutAlias[i],
@@ -408,17 +434,19 @@ body <- dashboardBody({
       )
     },
     tabItem(tabName = "scenarios",
-            tags$div(id = "scenTabView", style = "display:none;",
+            tags$div(id = "scen-tab-view", style = "display:none;",
                      tabsetPanel(id="scenTabset"),
-                     tags$div(id = "noScen", lang$nav$scen$noScen)
+                     tags$div(id = "no-scen", lang$nav$scen$noScen)
             ),
             fluidRow(
-              tags$div(id = "scenSplitView",
+              tags$div(id = "scen-split-view",
                        box(width = 6, solidHeader = TRUE, status="primary", title = 
                              tagList(textOutput("title_2", inline = T), 
                                      tags$div(style = "float: right;", 
                                               actionButton(inputId = "btScenSplit1_close", 
-                                                           class = "btIcon", icon = icon("times"), label = NULL))), 
+                                                           class = "bt-icon",
+                                                           icon = icon("times"), 
+                                                           label = NULL))), 
                            tags$div(id = "scenSplit1_content", style = "display:none;", 
                                     generateScenarioTabsetSplit(2)), 
                            tags$div(id = "scenSplit1_open", 
@@ -428,7 +456,7 @@ body <- dashboardBody({
                            title = tagList(textOutput("title_3", inline = T), 
                                            tags$div(style = "float: right;", 
                                                     actionButton(inputId = "btScenSplit2_close", 
-                                                                 class = "btIcon", icon = icon("times"), label = NULL))),
+                                                                 class = "bt-icon", icon = icon("times"), label = NULL))),
                            tags$div(id = "scenSplit2_content", style = "display:none;", generateScenarioTabsetSplit(3)), 
                            tags$div(id = "scenSplit2_open", 
                                     actionButton("btScenSplit2_open", lang$nav$scen$split$load, 
@@ -448,7 +476,7 @@ body <- dashboardBody({
                                                          genSpinner(hidden = TRUE),
                                                          actionButton("btPaverInterrupt", lang$nav$hcubeAnalyze$btCancel)
                                                 ),
-                                                tags$div(id = "paverFail", class = "errMsg", 
+                                                tags$div(id = "paverFail", class = "err-msg", 
                                                          style = "display:none;",
                                                          lang$nav$hcubeAnalyze$failMsg
                                                 ),

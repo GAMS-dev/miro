@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "epigrids"
+modelName <- "pickstock"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -64,8 +64,8 @@ prefixDDPar  <- "GMSPAR_"
 prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
-# get maximum number of lines to read automatically for lst files
-lstMaxNoLinesToRead <- 5e3
+# get maximum number of lines to read for files
+maxNoLinesToRead <- 5e3
 # Limits on external programs that are allowed to be executed 
 # (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
 gamsExecMode <- 0L
@@ -89,7 +89,7 @@ standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # name of the folder where hcube jobs will be executed
 hcubeDirName <- "hcubeJobs"
 # filename of hcube submission file (will be called when hypercube jobs are to be launched)
-hcubeSubmissionFile <- "hcube_submission.gms"
+hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run
 maxNoHcube <- 10000L
 # maximum number of scenarios to fetch when querying the database

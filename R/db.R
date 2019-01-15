@@ -964,7 +964,8 @@ Db <- R6Class("Db",
                   #   as their metadata, throws exception in case of error
                   stopifnot(is.logical(noHcube), length(noHcube) == 1L)
                   
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], private$userAccessGroups)
+                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
+                                                             private$userAccessGroups)
                   
                   noHcubeRuns <- NULL
                   if(noHcube){
@@ -1038,14 +1039,26 @@ Db <- R6Class("Db",
                   brackets <- NULL
                   if(identical(innerSep, " OR "))
                     brackets <- c("(", ")")
-                  query <- paste(brackets[1], vapply(subsetData, private$buildSQLSubstring, 
-                                        character(1L), innerSep, SQL,
-                                        USE.NAMES = FALSE), brackets[2],  
-                                 collapse = outerSep)
                   if(SQL){
+                    query <- paste(brackets[1], vapply(subsetData, private$buildSQLSubsetString, 
+                                                       character(1L), innerSep,
+                                                       USE.NAMES = FALSE), brackets[2],  
+                                   collapse = outerSep)
                     return(DBI::SQL(query))
                   }else{
+                    query <- paste(brackets[1], vapply(subsetData, private$buildRSubsetString, 
+                                                       character(1L), innerSep,
+                                                       USE.NAMES = FALSE), brackets[2],  
+                                   collapse = outerSep)
                     return(query)
+                  }
+                },
+                escapePatternPivot = function(pattern){
+                  if(inherits(private$conn, "PqConnection")){
+                    return(self$escapePattern(pattern))
+                  }else{
+                    return(gsub("([.|()\\^{}+$*?]|\\[|\\])", 
+                                "\\\\\\1", pattern))
                   }
                 },
                 escapePattern = function(pattern){
@@ -1112,28 +1125,50 @@ Db <- R6Class("Db",
                                            paste0("%,", self$escapePattern(vector))), "LIKE")
                   return(subsetClause)
                 },
-                buildSQLSubstring = function(dataFrame, sep = " ", SQL = TRUE){
+                buildRSubsetString = function(dataFrame, sep = " "){
                   if(length(dataFrame) < 3L){
                     dataFrame[[3]] <- "="
                   }
                   fields <- dataFrame[[1]]
                   vals   <- as.character(dataFrame[[2]])
-                  if(SQL){
-                    fields <- DBI::dbQuoteIdentifier(private$conn, fields)
-                    vals   <- DBI::dbQuoteLiteral(private$conn, vals)
-                  }else{
-                    fields <- "`" %+% fields %+% "`"
-                  }
-                  if(identical(length(dataFrame), 4L) && SQL){
-                    fields <- dbQuoteIdentifier(private$conn, dataFrame[[4]]) %+%
-                      "."  %+% fields 
+                  # replace operators that are different in R and SQL
+                  dataFrame[[3]] <- vapply(dataFrame[[3]], function(el){
+                    switch(el,
+                           "=" = {
+                             return("==")
+                           },
+                           "LIKE" = {
+                             return("==")
+                           },
+                           "NOT LIKE" = {
+                             return("!=")
+                           },
+                           {
+                             return(el)
+                           })
+                  }, character(1L), USE.NAMES = FALSE)
+                  if(identical(length(dataFrame), 4L)){
+                    fields <- paste0("`", dataFrame[[4]], ".", fields, "`")
+                    vals   <- paste0('"', vals, '"')
                   }
                   query <- paste(paste(fields, dataFrame[[3]], vals), collapse = sep)
-                  if(SQL){
-                    return(SQL(query))
-                  }else{
-                    return(query)
+                  return(query)
+                },
+                buildSQLSubsetString = function(dataFrame, sep = " "){
+                  if(length(dataFrame) < 3L){
+                    dataFrame[[3]] <- "="
                   }
+                  fields <- dataFrame[[1]]
+                  vals   <- as.character(dataFrame[[2]])
+                  fields <- DBI::dbQuoteIdentifier(private$conn, fields)
+                  vals   <- DBI::dbQuoteLiteral(private$conn, vals)
+                  
+                  if(identical(length(dataFrame), 4L)){
+                    fields <- paste0(dbQuoteIdentifier(private$conn, dataFrame[[4]]),
+                                     ".", fields)
+                  }
+                  query <- paste(paste(fields, dataFrame[[3]], vals), collapse = sep)
+                  return(SQL(query))
                 },
                 getFieldTypes = function(data){
                   # returns vector with field types of data frame and changes integer type to numeric

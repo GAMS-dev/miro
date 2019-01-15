@@ -1177,6 +1177,11 @@
               "minLength":1,
               "required":true
             },
+            "descSolveAgain":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newTags":{
               "type": "string",
               "minLength":1,
@@ -1503,6 +1508,33 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "ttips":{
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{
+                    "discardedCorrupted":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "discardedActive":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "corruptedNoDir":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "corruptedNoProcess":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
                 },
                 "header":{
                   "type":"object",

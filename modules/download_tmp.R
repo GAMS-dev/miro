@@ -14,7 +14,8 @@ observeEvent(input$btDownloadTmpFiles, {
       if(length(fileNames)){
         tagList(
           downloadButton("btDownloadTmpZip", label = lang$nav$dialogDownloadTmp$downloadZipButton),
-          downloadButton("btDownloadTmpConfirm", label = lang$nav$dialogDownloadTmp$downloadButton, class = "btHighlight1")
+          downloadButton("btDownloadTmpConfirm", label = lang$nav$dialogDownloadTmp$downloadButton, 
+                         class = "bt-highlight-1 bt-gms-confirm")
         )
       }
     )

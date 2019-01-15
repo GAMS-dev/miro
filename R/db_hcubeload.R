@@ -73,7 +73,9 @@ HcubeLoad <- R6Class("HcubeLoad",
                          # Executes data from multiple tables and returns result of query
                          #
                          # Args:
-                         #   subsetList:      list with dataframes to subset on
+                         #   subsetList:      list with dataframes to subset on 
+                         #                    data frames must be of the form: 
+                         #                    data.frame(field, val, op, table)
                          #   colNames:        named character vector with column names to select
                          #                    and names being the table to select from
                          #   limit            maximum number of rows to fetch
@@ -92,7 +94,6 @@ HcubeLoad <- R6Class("HcubeLoad",
                          # END error checks
                          innerTables <- private$scalarTables
                          
-                         colNames              <- colNames
                          if(any(!vapply(c(private$tabNameMeta, innerTables), function(table){ 
                            dbExistsTable(private$conn, table)}, logical(1L), USE.NAMES = FALSE))){
                            
@@ -100,43 +101,13 @@ HcubeLoad <- R6Class("HcubeLoad",
                                       paste(c(private$tabNameMeta, innerTables), collapse = ", "))
                            return(tibble())
                          }
-                         colNames <- paste0(DBI::dbQuoteIdentifier(private$conn, names(colNames)),
-                                            ".", DBI::dbQuoteIdentifier(private$conn, colNames),
-                                            collapse = ",")
-                         innerPivotTables <- vapply(innerTables, function(innerTable){
-                           private$genPivotQuery(innerTable, private$scalarColNames[[1]], 
-                                                 private$scalarColNames[[2]], 
-                                                 private$keyTypeList[[innerTable]])
-                         }, character(1L), USE.NAMES = FALSE)
-                         innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
-                                             ") AS ", dbQuoteIdentifier(private$conn, innerTables),
-                                             " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
-                                             ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
-                                             ".", private$sidCol)
-                         # fetch dataframe
-                         tryCatch({
-                           subsetRows <- character(0L)
-                           if(length(subsetList)){
-                             subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " AND ", 
-                                                                             " OR ")
-                           }
-                           sql     <- SQL(paste0("SELECT ", colNames, " FROM ", 
-                                                 DBI::dbQuoteIdentifier(private$conn, private$tabNameMeta),
-                                                 paste(innerJoin, collapse = " "), if(length(subsetList)) " WHERE ", 
-                                                 subsetRows, " LIMIT ?lim ;"))
-                           flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")
-                           query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
-                           dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
-                         }, error = function(e){
-                           stop(sprintf("Db: An error occurred while querying the database (HcubeLoad.fetchResults)." %+%
-                                          "Error message: '%s'.", e),
-                                call. = FALSE)
-                         })
-                         if(nrow(dataset) > limit){
-                           stop("maxNoRowsVio", call. = FALSE)
+                         if(inherits(private$conn, "PqConnection")){
+                           return(private$fetchResultsPG(subsetList = subsetList, 
+                                                  colNames = colNames, limit = limit))
+                         }else{
+                           return(private$fetchResultsR(subsetList = subsetList, 
+                                                        colNames = colNames, limit = limit))
                          }
-                         
-                         return(dataset)
                        },
                        exceedsMaxNoSolvers = function(data, attribs, maxNoGroups, exclAttrib = NULL){
                          stopifnot(inherits(data, "data.frame"))
@@ -301,10 +272,88 @@ HcubeLoad <- R6Class("HcubeLoad",
                        groupLabels             = list(),
                        groupedNames            = list(),
                        groupedSids             = list(),
-                       filterScalars           = function(scalarTable, subsetScalars){
-                         filterCondition <- private$db$buildRowSubsetSubquery(subsetScalars, " & ", 
-                                                                              " | ", SQL = FALSE)
-                         dplyr::filter_(scalarTable, filterCondition)
+                       fetchResultsPG          = function(subsetList, colNames, limit){
+                         innerTables <- private$scalarTables
+                         
+                         colNames <- paste0(DBI::dbQuoteIdentifier(private$conn, names(colNames)),
+                                            ".", DBI::dbQuoteIdentifier(private$conn, colNames),
+                                            collapse = ",")
+                         innerPivotTables <- vapply(innerTables, function(innerTable){
+                           private$genPivotQuery(innerTable, private$scalarColNames[[1]], 
+                                                 private$scalarColNames[[2]], 
+                                                 private$keyTypeList[[innerTable]])
+                         }, character(1L), USE.NAMES = FALSE)
+                         innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
+                                             ") AS ", dbQuoteIdentifier(private$conn, innerTables),
+                                             " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
+                                             ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
+                                             ".", private$sidCol)
+                         # fetch dataframe
+                         tryCatch({
+                           subsetRows <- character(0L)
+                           if(length(subsetList)){
+                             subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " AND ", 
+                                                                             " OR ")
+                           }
+                           sql     <- SQL(paste0("SELECT ", colNames, " FROM ", 
+                                                 DBI::dbQuoteIdentifier(private$conn, private$tabNameMeta),
+                                                 paste(innerJoin, collapse = " "), if(length(subsetList)) " WHERE ", 
+                                                 subsetRows, " LIMIT ?lim ;"))
+                           flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")
+                           query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
+                           dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
+                         }, error = function(e){
+                           stop(sprintf("Db: An error occurred while querying the database (HcubeLoad.fetchResults)." %+%
+                                          "Error message: '%s'.", e),
+                                call. = FALSE)
+                         })
+                         if(nrow(dataset) > limit){
+                           stop("maxNoRowsVio", call. = FALSE)
+                         }
+                         
+                         return(dataset)
+                       },
+                       fetchResultsR           = function(subsetList, colNames, limit){
+                         innerTables <- private$scalarTables
+                         
+                         metaData    <- private$db$fetchScenList()
+                         names(metaData)[-1] <- paste0(private$tabNameMeta, ".", 
+                                                       names(metaData)[-1])
+                         sidsToFetch <- metaData[[1]]
+                         
+                         if(length(sidsToFetch) > limit){
+                           stop("maxNoRowsVio", call. = FALSE)
+                         }
+                         sidColName <- names(metaData)[1]
+                         tabData <- lapply(innerTables, function(innerTable){
+                           data <- private$db$importDataset(innerTable, 
+                                                            colNames = c(sidColName,
+                                                                         private$scalarColNames),
+                                                            limit = limit + 1L, 
+                                                            subsetSids = sidsToFetch)
+                           if(nrow(data) > limit){
+                             stop("maxNoRowsVio", call. = FALSE)
+                           }
+                           data <- spread(data, 2, 3, drop = FALSE)
+                           names(data)[-1] <- paste0(innerTable, "._", names(data)[-1])
+                           return(data)
+                         })
+                         dataset <- purrr::reduce(c(list(metaData), tabData), 
+                                                  full_join, by = sidColName)
+                         names(dataset)[1] <- paste0(private$tabNameMeta, ".", 
+                                                     names(metaData)[1])
+                         if(length(subsetList)){
+                           subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " & ", 
+                                                                           " | ", SQL = FALSE)
+                           subsetRows <- parse_expr(subsetRows)
+                           dataset <- filter(dataset, !!subsetRows)
+                         }
+                         colNames <- paste0(names(colNames), ".", colNames)
+                         colNames <- colNames[colNames %in% names(dataset)]
+                         colNames <- rlang::syms(colNames)
+                         
+                         dataset  <- select(dataset, !!!colNames)
+                         return(dataset)
                        },
                        importScalarValues      = function(table, field){
                          query <- SQL(paste0("SELECT DISTINCT ", 

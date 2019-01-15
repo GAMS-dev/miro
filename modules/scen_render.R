@@ -23,7 +23,7 @@ if(isInSplitView){
   appendTab("scenTabset", newScenTabPanel)
   numberScenTabs <<- numberScenTabs + 1
   if(numberScenTabs == 1){
-    hideEl(session, "#noScen")
+    hideEl(session, "#no-scen")
   }else{
     enableEl(session, "#btCompareScen")
   }

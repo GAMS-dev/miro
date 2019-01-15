@@ -3,15 +3,15 @@ observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
     if(numberScenTabs < 2){
       disableEl(session, "#btCompareScen")
     }
-    showEl(session, "#scenTabView")
-    hideEl(session, "#scenSplitView")
+    showEl(session, "#scen-tab-view")
+    hideEl(session, "#scen-split-view")
     updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$splitView)
     isInSplitView <<- FALSE
   }else{
     # enable scenario comparison button
     enableEl(session, "#btCompareScen")
-    showEl(session, "#scenSplitView")
-    hideEl(session, "#scenTabView")
+    showEl(session, "#scen-split-view")
+    hideEl(session, "#scen-tab-view")
     updateActionButton(session, "btSplitView", label = lang$nav$sidebarButtons$tabView)
     isInSplitView <<- TRUE
   }

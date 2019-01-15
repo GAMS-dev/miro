@@ -58,7 +58,7 @@ function changeActiveButtons(tabId){
   }
 }
 function confirmModalShow(title, desc, cancelTxt, confirmTxt, confirmCall){
-  let btData = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button><button type="button" class="btn btn-default" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+  let btData = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button><button type="button" class="btn btn-default bt-gms-confirm" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
   cModal = $('#confirmModal');
   cModal.find('.modal-title').html(title);
   cModal.find('.modal-body').html(desc);
@@ -90,7 +90,7 @@ function discardHypercubeJob(jID){
 }
 
 $(document).ready(function () {
-  
+  $("body").addClass("fixed");
 // besides these updates, gms-switchTab (see below) has always has to be considered as well
   $("#btImport").show();
   $("#btSolve").show();
@@ -206,7 +206,7 @@ $(document).ready(function () {
       }else{
         checkBoxHTML = '';
       }
-      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default btIcon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML+ '</div>').insertBefore('#endAttachList');
+      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML+ '</div>').insertBefore('#endAttachList');
     }
   });
   
