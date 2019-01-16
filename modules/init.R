@@ -335,7 +335,6 @@ if(is.null(errMsg)){
         }
       }
     }, error = function(e){
-      flog.fatal(errMsgTmp)
       errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
     })
   })
