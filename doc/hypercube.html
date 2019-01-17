@@ -61,7 +61,7 @@
                                     <p>Results of such Hypercube jobs can be stored in the database and inspected directly in the WebUI. For this purpose, the Automated Performance Analysis & Visualization tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> was integrated. The direct comparison of scenarios in the scenario view (via split screen / tab view) is also available. Of course, one is free to analyze all the scenarios carried out with the help of external tools as well. </p>
                                     <p>In short, the module presented here is designed to efficiently generate, store and analyze a multitude of scenarios. </p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="height:200pt;" src="assets/images/batch_img/hcube_ecosystem.png" alt="Hypercube mode ecosystem" />
+                                        <img class="img-fluid" style="max-height:200pt;" src="assets/images/batch_img/hcube_ecosystem.png" alt="Hypercube mode ecosystem" />
                                     </div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
@@ -159,7 +159,7 @@
                                         </div><!--//table-responsive-->
                                         <p>The convention of automatic scenario generation has the following implications: <a href="#nobatch" class="scrollto">Unless explicitly specified</a> in the WebUI configuration of the model, each parameter of the input data is included in the Cartesian product from all parameter variations. In other words: All combinations are generated from the configuration selected by the user and each individual combination is saved as a single scenario. </p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px; height:250pt" src="assets/images/batch_img/regular_batch.png" alt="regular pickstock parameterization" />
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:250pt" src="assets/images/batch_img/regular_batch.png" alt="regular pickstock parameterization" />
                                         </div>
                                         <p>In the example, the slider for 'maximum number of stocks to select' was set by the user to a range from 3 to 11 with a step size of 1.
                                         The slider configured in this way leads to 9 different scenarios.</p>
@@ -180,7 +180,7 @@
                                         </ul>
                                         <p>The previously mentioned Cartesian product of all parameter variations is now used: It is created from the different variants of the two parameters 'maximum number of stocks to select' (9 variations) and 'number of days for training' (19 variations) resulting in 171 individual scenarios. </p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px; height:200pt" src="assets/images/batch_img/carth_prod.png" alt="carthesian product of configured parameters" />
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:200pt" src="assets/images/batch_img/carth_prod.png" alt="carthesian product of configured parameters" />
                                         </div>
                                         <p id="nobatch">It gets clear that the number of scenarios to be considered can increase very quickly with the number of parameters and their selected configuration. Depending on how computing intensive the underlying GAMS model is, it may be advisable to configure the scenarios carefully. 
                                         <br>Individual parameters can be excluded from inclusion in the Cartesian product. These parameters would then remain unchanged for each scenario created. This can be done in the WebUI configuration for the GAMS model (i.e. in the config.json file) using the option <span class="code">"nohcube": "true"</span> or via <a href="./customize.html#config-gen">Configuration Generator</a>. If, for example, the parameter 'number of stocks to select' in the config.json file is configured with <span class="code">"nohcube": "true"</span>, the following situation results: The parameter can still be selected in scenario generation, but only once. Its selection remains identical for each generated scenario.</p>
@@ -191,7 +191,7 @@
                                         <p><b>Note:</b> The maximum number of scenarios that can be configured in one step is limited to 10&thinsp;000.</p>
                                         <p>Let's now have a brief look at the Hypercube file. Each line represents one single scenario of those mentioned above.</p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px; height:300pt;" src="assets/images/batch_img/config_batch_file.png" alt="generated Hypercube file" />
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:300pt;" src="assets/images/batch_img/config_batch_file.png" alt="generated Hypercube file" />
                                         </div>
                                         <p>Example: In the first row of the shown Hypercube file it says <br>
                                         <span class="code">e8cadaf84b70a77a99b900c8547c48d882c294d58b2543348bceed2edbfcce17: gams pickstock.gms --maxstock=5 --trainingdays=50 trace=_sys_trace_pickstock.trc traceopt=3</span>
@@ -200,7 +200,7 @@
                                         <p>Since the strings in the form in which they are now available are not calls that can be interpreted by GAMS due to the hash value at the beginning, the information about the individual calls must be extracted. Probably the easiest way to do this is to take each GAMS call and execute it with the help of a script in a separate folder (which has to be named after the hash value of the scenario in order to be able to identify each scenario), in which the results are also stored. If the scenarios are to be executed on a special compute server, it is a good idea to take all necessary precautions, which have to be considered in the script (e.g. folder structure on computer, login data, etc.). In short, the jobsubmission script must be adapted to the environment in which it will finally be executed. 
                                         <br>The illustration below shows schematically how the conversion of the generated Hypercube file into an executable GAMS script could look like.</p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px; height:400px;" src="assets/images/batch_img/batch_file_conversion.png" alt="conversion of Hypercube file into executable GAMS script" />
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:400px;" src="assets/images/batch_img/batch_file_conversion.png" alt="conversion of Hypercube file into executable GAMS script" />
                                         </div>
                                     </div><!--//section-block-->
                                     <div  id="scengen-4"  class="section-block">
@@ -214,7 +214,7 @@
                                         <ul>
                                         <li>Results have to be separated according to scenarios: <br>Each scenario has a separate folder in the root directory of the ZIP file. This folder must be named after the hash value of the scenario. It contains the calculated result / output data.
                                         <div class="section-block">
-                                            <img class="img-fluid" style="display:block; margin:auto; height:175px;" src="assets/images/batch_img/upload_zip.png" alt="contents of the ZIP file to be uploaded" />
+                                            <img class="img-fluid" style="display:block; margin:auto; max-height:175px;" src="assets/images/batch_img/upload_zip.png" alt="contents of the ZIP file to be uploaded" />
                                         </div>
                                         </ul>
                                         <p>For each scenario there are some files that must exist to be valid, and some that are optional. The mandatory files for every single scenario are:</p>
@@ -256,12 +256,12 @@
                                         <h3 class="block-title">Scenario upload</h3>
                                         <p>Once the desired scenarios have been calculated, the next step is to load the results into the WebUI database. For this purpose the module "import results" is used.</p>
                                         <div class="section-block">
-                                            <img class="img-fluid" style="display:block; margin:auto;" width="500" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
+                                            <img class="img-fluid" style="display:block; margin:auto; max-width="500" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
                                         </div>
                                         <h6>Upload Zip file with results:</h6>
                                         <p>For a trouble-free upload, the scenario data must be available in a zip file. Each calculated scenario is located in a separate folder, which is named after the hash value of the scenario. In addition to the input and output data of the scenario (in the form of CSV files), the trace file of the GAMS run is also located there. </p>
                                         <div class="section-block">
-                                            <img class="img-fluid" style="display:block; margin:auto; height:175px;" src="assets/images/batch_img/upload_zip.png" alt="contents of the ZIP file to be uploaded" />
+                                            <img class="img-fluid" style="display:block; margin:auto; max-height:175px;" src="assets/images/batch_img/upload_zip.png" alt="contents of the ZIP file to be uploaded" />
                                         </div>
                                         <h6>Job tags:</h6>
                                         <p>When uploading the zip file you can optionally specify job tags. With the help of assigned job tags, Hypercube jobs can be uniquely identified, independent of the input and output data of the scenarios. They represent an additional identification feature of a Hypercube job, on the basis of which the database can be searched at a later time. These job tags can also be used to compare different Hypercube jobs with each other with regard to scenario analyses to be carried out. </p>
@@ -282,7 +282,7 @@
                                         <p>If all desired filters are set, the database query is started with a click on 'query database'. The results are then displayed in the lower screen area. There the user can select scenarios for the analysis.
                                         <br>If this is done the user is asked to chose an analysis method:</p>
                                         <div class="section-block" style="text-align:center;">
-                                              <img class="img-fluid" style="display:block; margin:auto; height:150px;" src="assets/images/batch_img/analyzing_method.png" alt="Choose method for analyses" />
+                                              <img class="img-fluid" style="display:block; margin:auto; max-height:150px;" src="assets/images/batch_img/analyzing_method.png" alt="Choose method for analyses" />
                                         </div>
                                         <ul>
                                         <li><b>Interactive mode: </b><br/>
@@ -332,7 +332,7 @@
                                         <p>All these compile-time parameters, GAMS options and scalar values are used as such in the corresponding GAMS model. More information about using scalars, singleton sets, compile-time parameters and GAMS options via WebUI can be found <a href="start.html#xxx">here</a>. </p>
                                         <p>The image below shows the list of attributes to be selected as differentiation criteria for the performance analysis with PAVER. This list results from exactly all those input and output parameters, as well as the additional attributes 'Hypercube tags', 'date of creation' and 'owner'.</p>
                                         <div class="section-block" style="text-align:center;">
-                                              <img class="img-fluid" style="display:block; margin:auto; height:350px;" src="assets/images/batch_img/paver_attributes.png" alt="Selection of attributes to be analyzed by PAVER" />
+                                              <img class="img-fluid" style="display:block; margin:auto; max-height:350px;" src="assets/images/batch_img/paver_attributes.png" alt="Selection of attributes to be analyzed by PAVER" />
                                         </div>
                                         <p>Each attribute selected here is used as a distinguishing criterion in the subsequent analysis performed by PAVER. The results of the analysis then could look like this: </p>
                                         <div class="section-block" style="text-align:center;">

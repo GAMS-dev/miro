@@ -44,154 +44,151 @@
                 </div><!--//branding-->
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Customize</li>
+                    <li class="breadcrumb-item active">Configuration</li>
                 </ol>
             </div><!--//container-->
         </header><!--//header-->
         <div class="doc-wrapper">
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Customize</h1>
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Configuration</h1>
                     <div class="meta"><i class="far fa-clock"></i> Last updated: December 6th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
                             <section id="intro" class="doc-section">
-                                  <h2 class="section-title">Introduction</h2>
-                                  <div class="section-block">
-                                      <p>This section deals with the customization of the GAMS WebUI. You will notice that there are a multitude of configuration options that allow you to shape the WebUI to fit your particular model.</br>
-                                      The entire configuration of the web interface is done via JSON files. These files are located inside the folder: <span class="code">&lt;modeldirectory&gt;/conf</span>. Two JSON files are used: </p>
-                                      <ol class="list">
-                                        <li><h6>GMSIO_config.json</h6>
-                                      This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code">--webui=compile</span> or <span class="code"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in your GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. You won't ever have to modify this file!
-                                    </li>
-                                    <li>
-                                      <h6>config.json</h6>
-                                      All the customization of your WebUI happens via the JSON file: <span class="code">config.json</span>. Here you can configure the language of your WebUI, the general appearance, the functionality and much more. Furthermore, all the graphics and widgets are specified here.
-                                    </li>
-                                  </ol>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom_options.png" alt="Custom visualization options"/>
-                                      </div>
-                                    <p>The WebUI offers comprehensive visualization options. Some basic visualization forms are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
-                                      <p>In case you would like to use his own, non pre-implemented and more sophisticated graphics, an R API is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
-                                      </p>
-                                      <p>Before the web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, an error message is displayed.</p>
-                                      </div><!--//section-block-->
+                                <h2 class="section-title">Introduction</h2>
+                                <div class="section-block">
+                                    <p>This section deals with the customization of the GAMS WebUI. You will notice that there are a multitude of configuration options that allow you to shape the WebUI to fit your particular model.</br>
+                                    The entire configuration of the web interface is done via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> for a GAMS model. Two JSON files are used: </p>
+                                    <ol class="list">
+                                      <li><h6>GMSIO_config.json</h6>
+                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--webui=compile</span> or <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in your GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. You won't ever have to modify this file!
+                                  </li>
+                                  <li>
+                                    <h6>config.json</h6>
+                                    All the customization of your WebUI happens via the JSON file <span class="code">config.json</span>. Here you can configure the general appearance of your WebUI, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
+                                  </li>
+                                </ol>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/gams_webui.png" alt="Custom visualization options"/>
+                                    </div>
+                                  <p>The WebUI offers comprehensive visualization options. Some basic visualization forms are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
+                                    <p>In case you would like to use your own, non pre-implemented and more sophisticated graphics, an R API is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                    </p>
+                                    <p>Before the web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, an error message is displayed.</p>
+                                    </div><!--//section-block-->
                             </section>
                             <section id="input-widgets" class="doc-section">
-                                  <h2 class="section-title">Input widgets</h2>
-                                  <div class="section-block" id="widgets-general">
-                                    <h3 class="block-title">General</h3>
-                                      <p>The GAMS WebUI comes with several options on how you can enter input data for your <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/editable-table.png" alt="editable table"/>
-                                      </div>
-                                      <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you will need to customize your GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">price</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
-                                        <div class="code-block">
-                                            <pre><code class="language-json">{
+                                <h2 class="section-title">Input widgets</h2>
+                                <div class="section-block">
+                                  <p>In the following steps we will extend our demo model Trnsport. We will do this by changing the WebUI configuration of the config.json file. 
+                                  After a first start of the WebUI the configjson file is nearly empty:</p>
+                                  <div class="code-block" id="config-start">
+                                          <pre><code class="language-json">{}</code></pre>
+                                  </div><!--//code-block-->
+                                  <p>Each configuration we make must be captured within the curly braces of this file. We will see what this can look like in detail in this section.</p>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widgets-tables">
+                                  <h3 class="block-title">Tables</h3>
+                                    <p>The GAMS WebUI comes with several options on how you can enter input data for your <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/editable-table.png" alt="editable table"/>
+                                    </div>
+                                    <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
+                                      <div class="code-block" id="table-readonly">
+                                          <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
-    &#x22;price&#x22;: {
+    &#x22;d&#x22;: {
       &#x22;widgetType&#x22;: &#x22;table&#x22;,
       &#x22;readonly&#x22;: true
     }
   }
 }</code></pre>
-                                        </div><!--//code-block-->
-                                         <p>Users will now be able to see the stock prices your model is fed with, but can not edit them.</p>
-                                      <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
-                                              <p>You can use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to customize your input widgets.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-                                      <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (in the following both referred to as "scalar values" or simply "scalars") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called "Scalars". This saves space and also makes adding new scalars easy as all you have to do is add a new row to the "Scalars" table. Thus, it improves compactness and flexibility - especially when the GAMS WebUI is connected to a database.</p>
-                                      <p>Instead of displaying scalars in tabular form, you can use sliders, dropdown menus, checkboxes and more to populate your models.</p>
-                                        <div class="section-block">
-                                            <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets.png" alt="Input widgets for scalar values"/>
-                                        </div>
-                                        <p>To generate input widgets for one or more scalar values, simply add this information to the configuration file. The scalar is then automatically removed from the "Scalars" table and instead rendered as a separate widget.</p>
-                                      <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
-                                              <p>In case you don't want each widget to be displayed on a separate sheet, we added an option to collect all scalar widgets on one sheet. This option can be found in the <span class="code">config.json</span> file and is therefore available in our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
-                                          </div><!--//content-->
-                                      </div><!--//callout-block-->
-                                      <div class="section-block" id="widgets-dependencies">
-                                        <h3 class="block-title">Dependencies between widgets</h3>
-                                      <p>One special feature of the GAMS WebUI is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your GAMS WebUI installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
-                                      <div class="section-block">
-                                          <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
+                                      </div><!--//code-block-->
+                                      <p>There are two ways to accomplish this configuration:</p>
+                                      <ol>
+                                        <li>Manual entering of the configuration in the <i>config.json</i> in json syntax
+                                        <br>If this method is used, care must be taken to ensure that the content matches the predefined schema.</li>
+                                        <li>Use of the <a href="#config-gen" class="scrollto">Configuration Generator</a>
+                                        <br>The Configuration Generator can be used to automatically generate the json code snipped for the desired configuration. This snipped can then be copied into the existing <i>config.json</i> file</li>
+                                      </ol>
+                                      <p>When the configuration shown above has been made, we will now be able to see the distances <span class="code">d</span> our model is fed with, but can not edit them.</p>
+                                    <div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Tip:</h4>
+                                            <p>You can use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to customize your input widgets.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widgets-scalars">
+                                  <h3 class="block-title">Scalars</h3>
+                                  <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (in the following both referred to as "<i>scalar values</i>" or simply "<i>scalars</i>") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called "Scalars". This saves space and also makes adding new scalars easy as all you have to do is add a new row to the "Scalars" table. Thus, it improves compactness and flexibility - especially when the GAMS WebUI is connected to a database.</p>
+                                    <p>Instead of displaying scalars in tabular form, you can use sliders, dropdown menus, checkboxes and more to populate your models.</p>
+                                      <div class="section-block" style="text-align:center;">
+                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
                                       </div>
-                                      <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
-                                      <p>Of course you can configure those dependencies just like you configure everything else via our <a href="#config-gen" class="scrollto">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
-                                      <div class="table-responsive">
-                                          <table class="table table-striped">
-                                              <thead>
-                                                  <tr>
-                                                    <th>Input widget type</th>
-                                                    <th>Forward dependency</th>
-                                                    <th>Backward dependency</th>
-                                                    <th>Example model</th>
-                                                  </tr>
-                                              </thead>
-                                              <tbody>
-                                                  <tr>
-                                                    <td>Dropdown menu</td>
-                                                    <td><i class="fas fa-check"></i></td>
-                                                    <td><i class="fas fa-check"></i></td>
-                                                    <td><span class="code">kport</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                    <td>Slider</td>
-                                                    <td><i class="fas fa-check"></i></td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td><span class="code">pickstock</span></td>
-                                                  </tr>
-                                                  <tr>
-                                                    <td>Checkbox</td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td>-</td>
-                                                  </tr>
-                                                  <tr>
-                                                    <td>Date selector</td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td>-</td>
-                                                  </tr>
-                                                  <tr>
-                                                    <td>Daterange selector</td>
-                                                    <td><i class="fas fa-times"></i></td>
-                                                    <td>(<i class="fas fa-check"></i>)</td>
-                                                    <td><span class="code">pickstock_live</span></td>
-                                                  </tr>
-                                              </tbody>
-                                          </table>
-                                        </div><!--//table-responsive-->
-                                        <div class="callout-block callout-warning">
-                                            <div class="icon-holder">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div><!--//icon-holder-->
-                                            <div class="content">
-                                                <h4 class="callout-title">Note:</h4>
-                                                <p>You need dependency support for a type of widget which is currently not available? Please feel free to contact us at: <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>. You added dependency support for another type of widget yourself? Send us a pull request on <a href="TODO:ADD GITHUB LINK" target="_blank">GitHub</a>!</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                      </div><!--//section-block-->
-                                      <div class="section-block" id="widgets-commandLine">
-                                        <h3 class="block-title">Command line parameters</h3>
-                                           <p>Aside from creating widgets for your GAMS Symbols, you can also generate widgets for GAMS command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtc_DoubleDashParam" target="_blank">double dash parameters</a> as well as <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_ListOfCommandLineParameters" target="_blank">GAMS options</a>). Again: All you have to do is add information on how these command line parameters should be displayed inside the WebUI to your <span class="code">config.json</span> file. In order for the GAMS WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.</p>
-                                           <p>Let's assume you want the WebUI to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd> set to a value between 1 and 14 (since your model allows up to 14 time periods and the minimum number of periods allowed should be 1). You also want the user to be able to select the MIP solver to use. As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">config.json</span> file should look as follows:</p>
-                                             <div class="code-block">
-                                                 <pre><code class="language-json">{
+                                      <p>As with all input widgets, the information about the type of visaization of a GAMS symbol in the WebUI is configured via the <i>config.json</i> file.
+                                      <br>We continue our trnsport example. In the <a href="#table-readonly" class="scrollto">last step</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the config.json file. 
+                                      Now we extend our WebUI configuration with information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i> to set the value:
+                                      </p>
+                                      <div class="code-block" id="scalar-slider">
+                                          <pre><code class="language-json">{
+  &#x22;inputWidgets&#x22;: {
+    &#x22;d&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;table&#x22;,
+      &#x22;readonly&#x22;: true
+    },
+    &#x22;f&#x22;: {
+      &#x22;widgetType&#x22;: &#x22;slider&#x22;,
+      &#x22;alias&#x22;: &#x22;Freight in dollars per case per thousand miles&#x22;,
+      &#x22;label&#x22;: &#x22;Select the freight&#x22;,
+      &#x22;min&#x22;: 1,
+      &#x22;max&#x22;: 500,
+      &#x22;default&#x22;: 90,
+      &#x22;step&#x22;: 1
+    }
+  }
+}</code></pre>
+                                      </div><!--//code-block-->
+                                      <p>Again, this can be done via manual json  coding or the Configuration Generator.</p>
+                                      <p>The scalar is now automatically removed from the "Scalars" table and instead rendered as a separate widget:</p>
+                                      <div class="section-block" style="text-align:center;">
+                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:60pt;" src="assets/images/trnsport-slider.png" alt="Input widgets for scalar values"/>
+                                      </div>
+                                    <div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Tip:</h4>
+                                            <p>In case you don't want each widget to be displayed on a separate sheet, there is an option to collect all scalar widgets on one sheet. This option can be set in the <span class="code">config.json</span> file (<span class="code">"aggregateWidgets"</span>) and is therefore available in our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widgets-commandLine">
+                                  <h3 class="block-title">Command line parameters</h3>
+                                     <p>We have already mentioned the possibility of <a href="./model.html#create-compile">using command line parameters via WebUI</a>. 
+                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" />. 
+                                     To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     </p>
+                                     <div class="callout-block callout-warning">
+                                         <div class="icon-holder">
+                                             <i class="fas fa-info-circle"></i>
+                                         </div><!--//icon-holder-->
+                                         <div class="content">
+                                             <h4 class="callout-title">Note:</h4>
+                                             <p>Command line parameters can not be displayed as table, but only as slider, dropdown menu, checkbox or date selector.
+                                         </div><!--//content-->
+                                     </div><!--//callout-block-->
+                                     <p>Let's assume you want the WebUI to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd> set to a value between 1 and 14. You also want to be able to select the MIP solver to use via WebUI. 
+                                     As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">config.json</span> file could look as follows:</p>
+                                     <div class="code-block">
+                                           <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
     &#x22;GMSPAR_numberPeriods&#x22;: {
       &#x22;widgetType&#x22;: &#x22;slider&#x22;,
@@ -199,7 +196,7 @@
       &#x22;label&#x22;: &#x22;Select the number of time periods to solve&#x22;,
       &#x22;min&#x22;: 1,
       &#x22;max&#x22;: 14,
-      &#x22;default&#x22;: 1,
+      &#x22;default&#x22;: 11,
       &#x22;step&#x22;: 1
     },
     &#x22;GMSOPT_mip&#x22;: {
@@ -216,57 +213,212 @@
     }
   }
 }</code></pre>
-                                             </div><!--//code-block-->
-                                             <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets via our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
-                                             <div class="callout-block callout-warning">
-                                                 <div class="icon-holder">
-                                                     <i class="fas fa-info-circle"></i>
-                                                 </div><!--//icon-holder-->
-                                                 <div class="content">
-                                                     <h4 class="callout-title">Warning:</h4>
-                                                     <p>The following GAMS options are reserved by the GAMS WebUI and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,--WEBUI</span></p>
-                                                 </div><!--//content-->
-                                             </div><!--//callout-block-->
-                                      </div><!--//section-block-->
-                                      <div class="section-block" id="widgets-advanced">
-                                        <h3 class="block-title">Advanced topics</h3>
-                                         <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Now, we will go into the technical details of how the communication between the GAMS WebUI and the GAMS compiler works:</p>
-                                         <p>Whenever a scalar value is set in the GAMS WebUI and GAMS is called, the scalar is read and an environment variable is set. The name of this environment variable is simply the name of the variable prefixed with the filename of your model followed by an underscore. So if your modelfile is called <span class="code">hello.gms</span> and you defined a scalar input called <kbd>myScalar</kbd> that is read from the GAMS WebUI, the environment variable that is created when executing your model from the WebUI is called <kbd>HELLO_MYSCALAR</kbd>. Inside your GAMS model, this environment variable can be be accessed at compile time via: <kbd>%sysenv.HELLO_MYSCALAR%</kbd>. Note that we follow the convention that environment variables are capitalized.</p>
-                                         <p>Knowing that, internally, scalars are imported from the WebUI by setting environment variables comes in handy in certain situations e.g. if you want to access them inside an <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded code</a> section. Thus, you might want to keep this detail in the back of your mind.</p>
-                                         <p>One more important aspect you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets are currently a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set.</p>
-                                      </div><!--//section-block-->
+                                       </div><!--//code-block-->                                    
+                                       <p>Which would the result in the following display in the WebUI:</p>
+                                       <div class="section-block" style="text-align:center;">
+                                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
+                                       </div>
+                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=compile%20time#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
+                                       If we select for the compile time variable <span class="code">numberPeriods</span> e.g. 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within the WebUI, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
+                                       <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
+                                       <div class="callout-block callout-warning">
+                                           <div class="icon-holder">
+                                               <i class="fas fa-info-circle"></i>
+                                           </div><!--//icon-holder-->
+                                           <div class="content">
+                                               <h4 class="callout-title">Warning:</h4>
+                                               <p>The following GAMS options are reserved by the GAMS WebUI and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,--WEBUI</span></p>
+                                           </div><!--//content-->
+                                       </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widgets-dependencies">
+                                  <h3 class="block-title">Dependencies between widgets</h3>
+                                <p>One special feature of the GAMS WebUI is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your GAMS WebUI installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
+                                <div class="section-block">
+                                    <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
+                                </div>
+                                <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
+                                <p>Of course you can configure those dependencies just like you configure everything else via our <a href="#config-gen" class="scrollto">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                              <th>Input widget type</th>
+                                              <th>Forward dependency</th>
+                                              <th>Backward dependency</th>
+                                              <th>Example model</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                              <td>Dropdown menu</td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><span class="code">kport</span></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Slider</td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><span class="code">pickstock</span></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Checkbox</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>-</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Date selector</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>-</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Daterange selector</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>(<i class="fas fa-check"></i>)</td>
+                                              <td><span class="code">pickstock_live</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                  </div><!--//table-responsive-->
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <h4 class="callout-title">Note:</h4>
+                                          <p>You need dependency support for a type of widget which is currently not available? Please feel free to contact us at: <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>. You added dependency support for another type of widget yourself? Send us a pull request on <a href="TODO:ADD GITHUB LINK" target="_blank">GitHub</a>!</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widgets-advanced">
+                                  <h3 class="block-title">Advanced topics</h3>
+                                   <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Now, we will go into the technical details of how the communication between the GAMS WebUI and the GAMS compiler works:</p>
+                                   <p>Whenever a scalar value is set in the GAMS WebUI and GAMS is called, the scalar is read and an environment variable is set. The name of this environment variable is simply the name of the variable prefixed with the filename of your model followed by an underscore. So if your modelfile is called <span class="code">hello.gms</span> and you defined a scalar input called <kbd>myScalar</kbd> that is read from the GAMS WebUI, the environment variable that is created when executing your model from the WebUI is called <kbd>HELLO_MYSCALAR</kbd>. Inside your GAMS model, this environment variable can be be accessed at compile time via: <kbd>%sysenv.HELLO_MYSCALAR%</kbd>. Note that we follow the convention that environment variables are capitalized.</p>
+                                   <p>Knowing that, internally, scalars are imported from the WebUI by setting environment variables comes in handy in certain situations e.g. if you want to access them inside an <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded code</a> section. Thus, you might want to keep this detail in the back of your mind.</p>
+                                   <p>One more important aspect you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets are currently a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set.</p>
+                                </div><!--//section-block-->
                             </section>
                             <section id="config-gen" class="doc-section">
-                                  <h2 class="section-title">Configuration Generator</h2>
-                                  <div class="section-block">
-                                    <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Generator. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>.</p>
-                                    <div class="upload-btn-wrapper" id="gmsioUpload">
-                                      <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                      <button class="upload-btn">Upload your GMSIO_config.json file</button>
-                                      <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
-                                    </div>
-                                    <div id="confGenContent" style="display:none;">
-                                      <div id="selectConfigType" style="display:none;">
-                                        <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new config.json file</button>
-                                        <div class="upload-btn-wrapper" id="configJSONupload" style="overflow:visible;">
-                                          <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                          <button class="upload-btn">Merge with existing config.json file</button>
-                                          <input id="configJSONfile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="mergeExisting()"/><br />
-                                        </div>
+                                <h2 class="section-title">Configuration Generator</h2>
+                                <div class="section-block">
+                                  <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Generator. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>.</p>
+                                  <div class="upload-btn-wrapper" id="gmsioUpload">
+                                    <span id = "errMsg" style="color:red;font-weight:bold;"></span>
+                                    <button class="upload-btn">Upload your GMSIO_config.json file</button>
+                                    <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
+                                  </div>
+                                  <div id="confGenContent" style="display:none;">
+                                    <div id="selectConfigType" style="display:none;">
+                                      <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new config.json file</button>
+                                      <div class="upload-btn-wrapper" id="configJSONupload" style="overflow:visible;">
+                                        <span id = "errMsg" style="color:red;font-weight:bold;"></span>
+                                        <button class="upload-btn">Merge with existing config.json file</button>
+                                        <input id="configJSONfile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="mergeExisting()"/><br />
                                       </div>
-                                      <div id="form1"></div>
-                                      <button id="reset-config-gen" type="button" class="configgen-reset-btn" onclick="if(window.confirm('Are you sure you want to reset the configuration generator?')){
-                                        $('#form1').alpaca('destroy');
-                                        $('#launchConfigGenBt').unbind();
-                                        $('#gmsioUpload').show();
-                                        $('#confGenContent').hide();
-                                        $(window).scrollTo($('#config-gen'));
-                                        $('#errMsg').hide();
-                                      }">Reset</button>
                                     </div>
-                                  </div><!--//section-block-->
+                                    <div id="form1"></div>
+                                    <button id="reset-config-gen" type="button" class="configgen-reset-btn" onclick="if(window.confirm('Are you sure you want to reset the configuration generator?')){
+                                      $('#form1').alpaca('destroy');
+                                      $('#launchConfigGenBt').unbind();
+                                      $('#gmsioUpload').show();
+                                      $('#confGenContent').hide();
+                                      $(window).scrollTo($('#config-gen'));
+                                      $('#errMsg').hide();
+                                    }">Reset</button>
+                                  </div>
+                                </div><!--//section-block-->
                             </section><!--//doc-section-->
+                            <section id="custom-graph" class="doc-section">
+                                <h2 class="section-title">Graphics Configuration</h2>
+                                <div class="section-block">
+                                  <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model Trnsport with a read-only table and a slider widget for a scalar value. Now we want to configure our first "real" graphic, which shows some results of a model run. 
+                                  At first, we want to use a pre-implemented graphic. The following options are currently available for this purpose:</p>  
+                                  <ul>
+                                    <li>datatable</li>
+                                    <li>histogram</li>
+                                    <li>pie chart</li>
+                                    <li>bar chart</li>
+                                    <li>line chart</li>
+                                    <li>scatter plot</li>
+                                    <li>pivot table</li>
+                                  </ul>   
+                                  <p>We could create a bar chart showing how much of the goods are transported from the suppliers to the markets. 
+                                  For this we first need a suitable parameter, on the basis of which such a diagram can be provided. So we extend our GAMS model as follows:</p>
+                                  <pre><code class="language-gams">[...]
 
+Model transport / all /;
+
+solve transport using lp minimizing z;
+display x.l, x.m;
+
+
+*new result parameter and scalar for visualization
+Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
+
+$onExternalOutput
+Scalar    total_cost                'total transportation costs in thousands of dollars';
+
+Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases';
+$offExternalOutput
+
+total_cost                 = z.l;
+schedule(i,j,'cap')        = a(i);
+schedule(i,j,'demand')     = b(j);
+schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
+                                </div><!--//section-block-->
+                                <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model to be used inside the WebUI, we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
+                                New is the <span class="code">schedule</span> parameter which is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. It is then calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable.
+                                <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
+                                There, we upload our <i>GMSIO_conf.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
+                                All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
+                                <pre><code class="language-gams">{
+  "dataRendering"      : {
+    "schedule": {
+      "outType": "dtGraph",
+      "graph": {
+        "title": "Supplies composition",
+        "tool": "plotly",
+        "type": "bar",
+        "barmode": "stack",
+        "color": "canning plants",
+        "margins": {
+          "b": 0,
+          "t": 0,
+          "l": 0,
+          "r": 0,
+          "pad": 0
+        },
+        "xdata": "markets",
+        "ydata": {
+          "quantities":{
+          "label": "canning plants",
+          "mode": "markers"
+          }
+        },
+        "xaxis": {
+          "title": "markets",
+          "showgrid": false,
+          "showticklabels": true
+        },
+        "yaxis": {
+          "title": "quantities",
+          "showgrid": false,
+          "zeroline": true,
+          "showticklabels": true
+        }
+      }
+    }
+}</code></pre> 
+                                <p>If we already have a config.json file in our model folder and there is already something in it, then we simply copy the newly generated code and paste it into the existing file at the appropriate place.</p>
+                                <p>We now start the trnsport.gms file with <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span> again and solve the model. In the results section the following graphic appears:</p>
+                                <div class="section-block">
+                                    <img class="img-fluid" src="assets/images/custom-graphic.png" alt="Result of custom renderer - Map with markers" />
+                                </div>
+                                <p>That's it. Our first graphic is up!</p>
+                            </section><!--//doc-section-->
                             <section id="custom-renderers" class="doc-section">
                                 <h2 class="section-title">Custom Renderers</h2>
                                 <div class="section-block">
@@ -372,8 +524,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <p>The GAMS WebUI comes with the ability to change the preferred language from within the <a href="#config-gen" class="scrollto">configuration file</a>. Setting your preferred language in the configuration results in the WebUI embedding the corresponding language file where all the language specific components are specified via JSON syntax. The WebUI currently ships with two of those language files: English and German. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/en.json</span> and are validated against the <a href="https://json-schema.org/" target="_blank">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by the WebUI.</p>
                                       <p>If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
                                       </div><!--//section-block-->
-                                </section>
-
+                              </section>
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -382,11 +533,14 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                 <a class="nav-link scrollto" href="#intro">Introduction</a>
                                 <a class="nav-link scrollto" href="#input-widgets">Input widgets</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                    <a class="nav-link scrollto" href="#widgets-general">General</a>
+                                    <a class="nav-link scrollto" href="#widgets-tables">Tables</a>
+                                    <a class="nav-link scrollto" href="#widgets-scalars">Scalars</a>
                                     <a class="nav-link scrollto" href="#widgets-commandLine">Command line parameters</a>
+                                    <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies between Widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-advanced">Advanced topics</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#config-gen">Configuration Generator</a>
+                                <a class="nav-link scrollto" href="#custom-graph">Graphics Configuration</a>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom Renderers</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
                             </nav><!--//doc-menu-->
