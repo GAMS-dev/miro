@@ -66,6 +66,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
+    hcubeStaticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
+    if(dir.exists(hcubeStaticFilePath) &&
+       unlink(hcubeStaticFilePath, recursive = TRUE, force = TRUE) == 1L){
+      stop("Problems removing existing directory for static Hypercube job files.", 
+           call. = FALSE)
+    }
+    if(!dir.create(hcubeStaticFilePath, showWarnings = TRUE, recursive = TRUE)[1]){
+      stop("Problems creating directory for static Hypercube job files.", 
+           call. = FALSE)
+    }
     elementValues <- lapply(seq_along(modelIn), function(i){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
       switch(modelIn[[i]]$type,
@@ -105,13 +115,21 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(paste0(parPrefix, names(modelIn)[[i]], "=", value))
              },
              date = {
-               value <- input[["date_" %+% i]]
+               return(input[["date_" %+% i]])
              },
              checkbox = {
-               value <- input[["cb_" %+% i]]
+               return(input[["cb_" %+% i]])
              },
              hot = {
-               value <- NA
+               filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[i]) %+% ".csv")
+               data     <- hot_to_r(input[["in_" %+% i]])
+               if(!inherits(data, "data.frame"))
+                 return(NA)
+               write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
+                         quote_escape = "double")
+               con <- file(filePath, open = "r")
+               on.exit(close(con), add = TRUE)
+               return(as.character(openssl::md5(con)))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
@@ -123,10 +141,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    gmsString <- scenIds %+% ": " %+% gmsString 
-    if(config$saveTraceFile){
-      gmsString <- paste0(gmsString, " trace=", tableNameTracePrefix, modelName, ".trc", " traceopt=3")
-    }
+    gmsString <- paste0(scenIds, ": ", gmsString)
+    
     return(list(ids = scenIds, gmspar = gmsString))
   })
   
@@ -152,10 +168,23 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
     hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
     if(dir.exists(hcubeDir)){
-      flog.error("Hypercube job directory: '%s' already exists.", hcubeDir)
       stop(sprintf("Hypercube job directory: '%s' already exists.", hcubeDir), call. = FALSE)
     }
-    dir.create(hcubeDir, recursive = TRUE)
+    if(!dir.create(hcubeDir, recursive = TRUE, showWarnings = FALSE)){
+      stop(sprintf("Problems creating Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
+    }
+    staticFiles <- list.files(file.path(currentModelDir, hcubeDirName, "static"), 
+                              full.names = TRUE)
+    if(length(staticFiles)){
+      local({
+        staticDir <- file.path(hcubeDir, "static")
+        if(!dir.create(staticDir) || !all(file.copy(staticFiles, staticDir))){
+          stop(sprintf("Problems copying static Hypercube job files from: '%s' to: '%s'.", 
+                       file.path(currentModelDir, hcubeDirName, "static"), 
+                       file.path(hcubeDir, "static")), call. = FALSE)
+        }
+      })
+    }
     writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".gmsb"))
     
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
@@ -169,7 +198,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     tryCatch({
       writeChar(file.path(hcubeDir, jID %+% ".log"), paste0("Job ID: ", jID, "\n"))
     }, error = function(e){
-      flog.error("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
+      flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
                  jID %+% ".log", hcubeDir)
     })
     p <- process$new(gamsSysDir %+% "gams", 
@@ -187,8 +216,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
-      print(now)
-      print(prevJobSubmitted)
       showHideEl(session, "#hcubeSubmitWait", 6000)
       flog.info("Hypercube job submit button was clicked too quickly in a row. Please wait some seconds before submitting a new job.")
       return()
@@ -233,8 +260,58 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     })
   })
   
-  if(file.exists("./modules/gams_run_epigrids.R"))
-    source("./modules/gams_run_epigrids.R", local = TRUE)
+  
+  output$btHcubeAll_dl <- downloadHandler(
+    filename = function() {
+      tolower(modelName) %+% ".zip"
+    },
+    content = function(file) {
+      # solve all scenarios in Hypercube run
+      
+      # BEGIN EPIGRIDS specific
+      workDirHcube <- file.path(tempdir(), "hcube")
+      unlink(workDirHcube, recursive = TRUE, force = TRUE)
+      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
+      homeDir <- getwd()
+      setwd(workDirHcube)
+      on.exit(setwd(homeDir), add = TRUE)
+      on.exit(unlink(workDirHcube), add = TRUE)
+      
+      genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
+                        modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
+                        toDir = workDirHcube, scenGmsPar = scenGmsPar)
+      
+      removeModal()
+      zip(file, list.files(recursive = TRUE), compression_level = 6)
+      # END EPIGRIDS specific
+    },
+    contentType = "application/zip")
+  
+  output$btHcubeNew_dl <- downloadHandler(
+    filename = function() {
+      tolower(modelName) %+% ".zip"
+    },
+    content = function(file) {
+      # solve only scenarios that do not yet exist
+      
+      # BEGIN EPIGRIDS specific
+      workDirHcube <- file.path(tempdir(), "hcube")
+      unlink(workDirHcube, recursive = TRUE, force = TRUE)
+      dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
+      homeDir <- getwd()
+      setwd(workDirHcube)
+      on.exit(setwd(homeDir), add = TRUE)
+      on.exit(unlink(workDirHcube), add = TRUE)
+      
+      genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
+                        modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
+                        toDir = workDirHcube, scenGmsPar = scenGmsPar[idxDiff])
+      
+      removeModal()
+      zip(file, list.files(recursive = TRUE), compression_level = 6)
+      # END EPIGRIDS specific
+    },
+    contentType = "application/zip")
 }
 
 
@@ -262,9 +339,22 @@ observeEvent(input$btSolve, {
     if(length(idsSolved)){
       idsSolved <- unique(idsSolved[[1L]])
     }
-    scenToSolve <- scenToSolve()
+    errMsg <- NULL
+    tryCatch(
+      scenToSolve <- scenToSolve(),
+      error = function(e){
+        flog.error("Problems getting list of scenarios to solve in Hypercube mode. Error message: '%s'.", e)
+        errMsg <<- lang$errMsg$GAMSInput$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+      return(NULL)
+    }
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- scenToSolve$gmspar
+    if(config$saveTraceFile){
+      scenGmsPar <- paste0(scenGmsPar, " trace=", tableNameTracePrefix, modelName, ".trc",
+                           " traceopt=3")
+    }
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     idxDiff  <<- match(sidsDiff, idsToSolve)
@@ -293,7 +383,14 @@ observeEvent(input$btSolve, {
       DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
       GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
       if(nrow(DDParValues) || nrow(GMSOptValues)){
-        pfFileContent <<- '--' %+% DDParValues[[1]] %+% '="' %+% DDParValues[[3]] %+% '"'
+        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
+                                   function(i){
+                                     if(!identical(DDParValues[[3]][i], "_")) 
+                                       paste0('--', DDParValues[[1]][i], '="', DDParValues[[3]][i], '"')
+                                     else
+                                       NA_character_
+                                   }, character(1L), USE.NAMES = FALSE)
+        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
         # do not write '_' in pf file (no selection)
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
@@ -303,7 +400,7 @@ observeEvent(input$btSolve, {
                                     NA_character_
                                 }, character(1L), USE.NAMES = FALSE)
         pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
-        pfFileContent <<- c(pfFileContent, pfGMSOpt)
+        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
         # remove those rows from scalars file that are compile time variables
         csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
       }else{
@@ -334,9 +431,9 @@ observeEvent(input$btSolve, {
     gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", currentModelDir, "..", .Platform$file.sep), 
                   "curdir=" %+% workDir, "logOption=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
     if(config$saveTraceFile){
-      gamsArgs <- c(gamsArgs, "trace=" %+% tableNameTracePrefix %+% modelName %+% ".trc", "traceopt=3")
+      gamsArgs <- c(gamsArgs, paste0("trace=", tableNameTracePrefix, modelName, ".trc"), "traceopt=3")
     }
-    pfFilePath <- workDir %+% tolower(modelName) %+% ".pf"
+    pfFilePath <- paste0(workDir, tolower(modelName), ".pf")
     if(isWindows()){
       gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
       pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
@@ -391,7 +488,7 @@ observeEvent(input$btSolve, {
         return(logText)
       }
       if(input$logUpdate){
-        scrollDown(session, "#log-status")
+        scrollDown(session, "#logStatus")
       }
       return(logText)
     })

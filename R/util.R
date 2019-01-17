@@ -603,15 +603,13 @@ csv2Vector <- function(csv){
   if(startsWith(csv, ",")){
     csv <- substring(csv, 2L)
   }
-  csv <- unlist(strsplit(csv, ",", fixed = TRUE), use.names = FALSE)
-  gsub("/comma/", ",", csv, fixed = TRUE)
+  return(unlist(strsplit(csv, ",", fixed = TRUE), use.names = FALSE))
 }
 vector2Csv <- function(vector){
   if(!length(vector)){
     return("")
   }else if(length(vector) > 1L || 
            !(startsWith(vector, ",") && endsWith(vector, ","))){
-    vector <- gsub(",", "/comma/", vector, fixed = TRUE)
     return(paste0(",", paste0(vector, collapse = ","), ","))
   }else{
     return(vector)

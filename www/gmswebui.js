@@ -57,8 +57,13 @@ function changeActiveButtons(tabId){
         $("#btLoadScen").hide();
   }
 }
-function confirmModalShow(title, desc, cancelTxt, confirmTxt, confirmCall){
-  let btData = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button><button type="button" class="btn btn-default bt-gms-confirm" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null){
+  let btDataDismiss = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button>';
+  let btDataConfirm = '';
+  if(confirmCall !== null){
+    btDataConfirm = '<button type="button" class="btn btn-default bt-gms-confirm" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+  }
+  btData = btDataDismiss + btDataConfirm;
   cModal = $('#confirmModal');
   cModal.find('.modal-title').html(title);
   cModal.find('.modal-body').html(desc);

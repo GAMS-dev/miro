@@ -166,10 +166,10 @@ observeEvent(input$btSendQuery, {
       }
       tableField <- strsplit(fieldsSelected[j + (i - 1) * maxNumBlocks], 
                              "-", fixed = TRUE)[[1]]
-      field[b]  <<- tableField[[2]]
       table[b]  <<- tableField[[1]]
+      field[b]  <<- tableField[[2]]
       op[b]     <<- input[["op_" %+% i %+% "_" %+% j]]
-      if(grepl("%", op[b])[[1]]){
+      if(grepl("%", op[b])[[1]] && inherits(db$getConn(), "PqConnection")){
         switch(op[b],
                "%LIKE" = {
                  val[b] <<- "%" %+% 
@@ -190,43 +190,34 @@ observeEvent(input$btSendQuery, {
                    db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
                  op[b]  <<- "NOT LIKE"
                },
-               "%BETWEEN%" = {
-                 table[b + 1] <<- tableField[[1]]
-                 field[b + 1] <<- tableField[[2]]
-                 val[b]     <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[1]])
-                 val[b + 1] <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[2]] + 1)
-                 op[b]      <<- ">="
-                 op[b + 1]  <<- "<"
-                 b <<- b + 2L
-                 return(NULL)
-               },
                ",LIKE%" = {
-                 val[b] <<- "," %+% db$escapePatternPivot(gsub(",", "/comma/", 
-                                                          input[["val_" %+% i %+% "_" %+% j]], 
-                                                          fixed = TRUE)) %+% "%"
+                 val[b] <<- "%," %+% db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% "%"
                  op[b]  <<- "LIKE"
                },
                "%LIKE," = {
                  val[b] <<- "%" %+% 
-                   db$escapePatternPivot(gsub(",", "/comma/", 
-                                         input[["val_" %+% i %+% "_" %+% j]], 
-                                         fixed = TRUE)) %+% ","
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
                  op[b]  <<- "LIKE"
                },
                "%,LIKE,%" = {
                  val[b] <<- "%," %+% 
-                   db$escapePatternPivot(gsub(",", "/comma/", 
-                                         input[["val_" %+% i %+% "_" %+% j]], 
-                                         fixed = TRUE)) %+% ",%"
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
                  op[b]  <<- "LIKE"
                },
                "%,NOTLIKE,%" = {
                  val[b] <<- "%," %+% 
-                   db$escapePatternPivot(gsub(",", "/comma/", 
-                                         input[["val_" %+% i %+% "_" %+% j]], 
-                                         fixed = TRUE)) %+% ",%"
+                   db$escapePatternPivot(input[["val_" %+% i %+% "_" %+% j]]) %+% ",%"
                  op[b]  <<- "NOT LIKE"
                })
+      }else if(identical(op[b], "BETWEEN")){
+        table[b + 1] <<- tableField[[1]]
+        field[b + 1] <<- tableField[[2]]
+        val[b]     <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[1]])
+        val[b + 1] <<- as.character(input[["val_" %+% i %+% "_" %+% j]][[2]] + 1)
+        op[b]      <<- ">="
+        op[b + 1]  <<- "<"
+        b <<- b + 2L
+        return(NULL)
       }else{
         val[b] <<- input[["val_" %+% i %+% "_" %+% j]]
       }
@@ -235,8 +226,7 @@ observeEvent(input$btSendQuery, {
     if(length(field)){
       subsetCoditions[[a]] <<- tibble(field, val, op, table)
     }else{
-      subsetCoditions[[a]] <<- tibble(field = sidIdentifier, val = 0L, op = ">", 
-                                      table = scenMetadataTable)
+      subsetCoditions[[a]] <<- tibble()
     }
     a <<- a + 1L
   })

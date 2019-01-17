@@ -236,7 +236,7 @@ animation: none !important;
   min-height: 80px;
 }
 /* gams interaction */
-#log-status{
+#logStatus{
   overflow-y:scroll;
   min-height: 400px;
   max-height: 60vh;

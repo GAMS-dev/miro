@@ -20,6 +20,7 @@ $if not set outScript $set outScript "gams"
 $if not set exec $set exec "false"
 $onEmbeddedCode Python:
 import os
+import re
 
 bfdir = r"%bfdir%"
 for file in os.listdir(bfdir):
@@ -41,6 +42,7 @@ def extractCall(call):
            " idir1=..%system.dirsep%..%system.dirsep%..%system.dirsep%..%system.dirsep% " +
            "lo=3 --WEBUI=1" + ">>\"..%system.dirsep%..%system.dirsep% ".strip() +
            "%jobID%.log\"")
+   call = re.sub(r"[-+]+\S*\s", "", call)
    return call.strip()
 
 def extractDir(fdir):
@@ -53,9 +55,15 @@ def getScalars(text):
          text = text.split('.gms ')[1]
       textTmp = text.split()
       scalars = "Scalar,Description,Value" + r"\n"
+      fileNames = []
       for i in textTmp:
          if i.startswith("--"):
             i = i[2:]
+         elif i.startswith("-+"):
+            i = i[2:]
+         elif i.startswith("++"):
+            fileNames.append(i[2:].split("=")[0].lower() + ".csv")
+            continue
          itmp = i.split("=")
          for idx, j in enumerate(itmp):
             if j.startswith("trace"):
@@ -64,7 +72,7 @@ def getScalars(text):
                scalars += j + ",,"
             else:
                scalars += j + r"\n"
-      return scalars
+      return scalars, fileNames
    except:
       pass
 
@@ -118,18 +126,26 @@ if outScript == "gams":
    # write GAMS $calls into job submission file
    linestmp = ""
    linestmp += "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
-   linestmp += "$call mkdir " + zipname + "\n" 
+   linestmp += "$call mkdir " + zipname + "\n"
    for index, item in enumerate(content):
+      scalarsCSV,fileNames = getScalars(item)
       dirname = extractDir(item)
       tmpdir = "tmp"+str(index)
       call = extractCall(item)
+      
       linestmp += "$call cd " + zipname + "\n$if dexist " + tmpdir + " $call rm -r " + tmpdir + "\n"
       linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
       # dummy trace file (to gurantee that a trace file exists for each run)
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
+      if trcName(item) is not None:
+         linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
       # scalars.csv file manually filled (needed in webui for data validation)
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + getScalars(item) + "\" > " + fscalars + "\n"
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + scalarsCSV + "\" > " + fscalars + "\n"
+
+      # copy static csv files
+      if len(fileNames):
+         linestmp += "$call cp -r static " + zipname + "/" + tmpdir + "\n"
+         
       # gams call
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
       linestmp += "$call cd " + zipname + " \n$if dexist " + dirname + " $call rm -r " + dirname + "\n"

@@ -39,6 +39,8 @@ if(!identical(config$activateModules$hcubeMode, TRUE)){
                                                                                                lib = "glyphicon")),
                 menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy")),
                 menuItem(lang$nav$sidebarMenu$hcube$analyze, tabName="hcubeAnalyze", icon = icon("pie-chart")),
+                actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
+                             class = "bt-highlight-3 glow-animation", style = "display:block;"),
                 actionButton("btSolve", lang$nav$sidebarButtons$solveHcube, width = "85%", 
                              class = "bt-highlight-2", style = "display:block;"),
                 conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",

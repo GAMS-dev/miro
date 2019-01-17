@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$scenario && !identical(config$activateModules$hcubeMode, TRUE)){
+  if(config$activateModules$scenario && !identical(config$activateModules$batchMode, TRUE)){
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$scenario$title, tags$span(class="caret")),
@@ -19,5 +19,9 @@ header <- dashboardHeader(
             tags$ul(class = "dropdown-menu", role="menu",
                     tags$li(tags$a(href = "https://www.gams.com/latest/webui/", 
                            target = "_blank", lang$nav$header$help$doc)),
-                    tags$li(actionLink("aboutDialog", lang$nav$header$help$about)))),
+                    tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
+                                        'About GAMS WebUI\', \'', 
+                                        htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
+                                        lang$nav$header$help$about, '</a>')
+                    )))),
   title=config$pageTitle, disable = FALSE)

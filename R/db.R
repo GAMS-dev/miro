@@ -219,6 +219,42 @@ Db <- R6Class("Db",
                   
                   return(list(names = badTables, headers = headers, errMsg = errMsg))
                 },
+                removeTablesModel     = function(){
+                  tableNames <- private$getTableNamesModel()
+                  # bring metadata table to front as others depend on it
+                  if(inherits(private$conn, "PqConnection")){
+                    query <- paste0("DROP TABLE IF EXISTS ",  
+                                    paste(dbQuoteIdentifier(private$conn, tableNames),
+                                          collapse = ", "), " CASCADE;")
+                    dbExecute(private$conn, query)
+                    return(invisible(self))
+                  }
+                  # turn foreign key usage off
+                  dbExecute(private$conn, "PRAGMA foreign_keys = OFF;")
+                  for(tableName in tableNames){
+                    query <- paste0("DROP TABLE IF EXISTS ",  
+                                    dbQuoteIdentifier(private$conn, tableName), " ;")
+                    dbExecute(private$conn, query)
+                  }
+                  # turn foreign key usage on again
+                  dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
+                  return(invisible(self))
+                },
+                dumpTablesModel       = function(tempDir){
+                  stopifnot(is.character(tempDir), length(tempDir) == 1)
+                  limit <- 1e7 + 1L
+                  tableNames <- private$getTableNamesModel()
+                  for(tableName in tableNames){
+                    data <- self$importDataset(tableName, limit = limit)
+                    if(length(nrow(data)) &&  nrow(data) > limit){
+                      stop("maxRowException", call. = FALSE)
+                    }
+                    write_csv(data, file.path(tempDir, tableName %+% ".csv"), 
+                              na = "", append = FALSE, col_names = TRUE,
+                              quote_escape = "double")
+                  }
+                  return(invisible(self))
+                },
                 getMetadata           = function(uid, sname, stime, stag = character(0L), 
                                                  readPerm = character(0L), writePerm = character(0L), 
                                                  uidAlias = private$scenMetaColnames[['uid']], 
@@ -975,7 +1011,7 @@ Db <- R6Class("Db",
                     }else{
                       # TODO: Sqlite alternative!!!
                       noHcubeRuns <- tibble(private$scenMetaColnames['sname'], 
-                                            "________________________________________________________________", "LIKE")
+                                            "________________________________________________________________", "NOT LIKE")
                     }
                   }
                   if(length(noHcubeRuns)){
@@ -1040,15 +1076,13 @@ Db <- R6Class("Db",
                   if(identical(innerSep, " OR "))
                     brackets <- c("(", ")")
                   if(SQL){
-                    query <- paste(brackets[1], vapply(subsetData, private$buildSQLSubsetString, 
-                                                       character(1L), innerSep,
-                                                       USE.NAMES = FALSE), brackets[2],  
+                    query <- paste(brackets[1], unlist(lapply(subsetData, private$buildSQLSubsetString, 
+                                                       innerSep), use.names = FALSE), brackets[2],  
                                    collapse = outerSep)
                     return(DBI::SQL(query))
                   }else{
-                    query <- paste(brackets[1], vapply(subsetData, private$buildRSubsetString, 
-                                                       character(1L), innerSep,
-                                                       USE.NAMES = FALSE), brackets[2],  
+                    query <- paste(brackets[1], unlist(lapply(subsetData, private$buildRSubsetString, 
+                                                       innerSep), use.names = FALSE), brackets[2],  
                                    collapse = outerSep)
                     return(query)
                   }
@@ -1126,36 +1160,70 @@ Db <- R6Class("Db",
                   return(subsetClause)
                 },
                 buildRSubsetString = function(dataFrame, sep = " "){
-                  if(length(dataFrame) < 3L){
+                  if(!length(dataFrame) || !nrow(dataFrame)){
+                    return(NULL)
+                  }else if(length(dataFrame) < 3L){
                     dataFrame[[3]] <- "="
                   }
                   fields <- dataFrame[[1]]
-                  vals   <- as.character(dataFrame[[2]])
+                  vals   <- self$escapePatternPivot(dataFrame[[2]])
+                  if(identical(length(dataFrame), 4L)){
+                    fields <- paste0(dataFrame[[4]], ".", fields)
+                  }
+                  fields <- paste0("`", fields, "`")
                   # replace operators that are different in R and SQL
-                  dataFrame[[3]] <- vapply(dataFrame[[3]], function(el){
-                    switch(el,
+                  cond <- vapply(seq_along(dataFrame[[3]]), function(i){
+                    field <- fields[i]
+                    op    <- dataFrame[[3]][i]
+                    val   <- vals[i]
+                    switch(op,
                            "=" = {
-                             return("==")
+                             return(paste0(field, "=='", val, "'"))
                            },
-                           "LIKE" = {
-                             return("==")
+                           "%LIKE" = {
+                             return(paste0("grepl('", val, "$', ", 
+                                           field, ", perl = TRUE)"))
                            },
-                           "NOT LIKE" = {
-                             return("!=")
+                           "LIKE%" = {
+                             return(paste0("grepl('^", val, "', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           "%LIKE%" = {
+                             return(paste0("grepl('", val, "', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           "%NOTLIKE%" = {
+                             return(paste0("!grepl('", val, "', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           "%LIKE," = {
+                             return(paste0("grepl('", val, ",', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           ",LIKE%" = {
+                             return(paste0("grepl(',", val, "', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           "%,LIKE,%" = {
+                             return(paste0("grepl(',", val, ",', ", 
+                                           field, ", perl = TRUE)"))
+                           },
+                           "%,NOTLIKE,%" = {
+                             return(paste0("!grepl(',", val, ",', ", 
+                                           field, ", perl = TRUE)"))
                            },
                            {
-                             return(el)
+                             return(paste0(field, op, "'", val, "'"))
                            })
                   }, character(1L), USE.NAMES = FALSE)
-                  if(identical(length(dataFrame), 4L)){
-                    fields <- paste0("`", dataFrame[[4]], ".", fields, "`")
-                    vals   <- paste0('"', vals, '"')
-                  }
-                  query <- paste(paste(fields, dataFrame[[3]], vals), collapse = sep)
+                  
+                  query <- paste(cond, collapse = sep)
                   return(query)
                 },
                 buildSQLSubsetString = function(dataFrame, sep = " "){
-                  if(length(dataFrame) < 3L){
+                  if(!length(dataFrame) || !nrow(dataFrame)){
+                    return(NULL)
+                  }else if(length(dataFrame) < 3L){
                     dataFrame[[3]] <- "="
                   }
                   fields <- dataFrame[[1]]
@@ -1222,6 +1290,36 @@ Db <- R6Class("Db",
                   }else{
                     return(0L)
                   }
+                },
+                getTableNamesModel = function(){
+                  if(inherits(private$conn, "PqConnection")){
+                    query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
+                                        " WHERE table_schema='public' AND table_type='BASE TABLE'", 
+                                        " AND (table_name IN (", 
+                                        paste(dbQuoteString(private$conn, c(private$tableNameMetadata,
+                                                                            private$tableNameMetaHcube,
+                                                                            private$tableNameScenLocks,
+                                                                            private$tableNamesScenario,
+                                                                            private$slocktimeLimit,
+                                                                            private$traceConfig[['tabName']])),
+                                              collapse = ", "),
+                                        ") OR table_name LIKE ", 
+                                        dbQuoteString(private$conn, modelName %+% "%"), 
+                                        ");"))
+                  }else{
+                    query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
+                                        " AND (table_name IN (", 
+                                        paste(dbQuoteString(private$conn, c(private$tableNameMetadata,
+                                                                            private$tableNameMetaHcube,
+                                                                            private$tableNameScenLocks,
+                                                                            private$tableNamesScenario,
+                                                                            private$slocktimeLimit,
+                                                                            private$traceConfig[['tabName']])),
+                                              collapse = ", "),
+                                        ") OR name LIKE ", 
+                                        dbQuoteString(private$conn, modelName %+% "%"), ");"))
+                  }
+                  return(dbGetQuery(private$conn, query)[[1L]])
                 }
               )
 )

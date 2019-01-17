@@ -48,7 +48,7 @@ requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "processx",
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "zip", "tidyr")
-
+LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
@@ -386,6 +386,21 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
   close(pb)
 }
+aboutDialogText <- paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
+                          "Release Date: ", webuiRDate, "<br/>", 
+                          "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>",
+                          "Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>",
+                          "This program is free software: you can redistribute it and/or modify ",
+                          "it under the terms of the GNU General Public License as published by ",
+                          "the Free Software Foundation, either version 2 of the License, or ",
+                          "(at your option) any later version.<br/><br/>",
+                          "This program is distributed in the hope that it will be useful,", 
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
+                          "GNU General Public License for more details.<br/><br/>",
+                          "You should have received a copy of the GNU General Public License ",
+                          "along with this program. If not, see ",
+                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.")
 if(!is.null(errMsg)){
   ui_initError <- fluidPage(
     tags$head(
@@ -428,7 +443,12 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
   
+}else if(identical(LAUNCHADMINMODE, TRUE)){
+  source("./admin/server.R", local = TRUE)
+  source("./admin/ui.R", local = TRUE)
+  shinyApp(ui = ui_admin, server = server_admin)
 }else{
+  rm(LAUNCHADMINMODE)
   rm(installedPackages)
   if(developMode){
     save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
@@ -604,25 +624,6 @@ if(!is.null(errMsg)){
         }
         
       }
-    })
-    
-    observeEvent(input$aboutDialog, {
-      showModal(modalDialog(HTML(paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
-                                   "Release Date: ", webuiRDate, "<br/>", 
-                                   "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>
-                                   Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>
-                                   This program is free software: you can redistribute it and/or modify 
-                                   it under the terms of the GNU General Public License as published by
-                                   the Free Software Foundation, either version 2 of the License, or 
-                                   (at your option) any later version.<br/><br/>
-                                   This program is distributed in the hope that it will be useful, 
-                                   but WITHOUT ANY WARRANTY; without even the implied warranty of
-                                   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-                                   GNU General Public License for more details.<br/><br/>
-                                   You should have received a copy of the GNU General Public License 
-                                   along with this program. If not, see 
-                                   <a href=\"http://www.gnu.org/licenses/\" target=\"_blank\">http://www.gnu.org/licenses/</a>.")),
-                            title = "About GAMS WebUI"))
     })
     
     # initially set rounding precision to default

@@ -76,8 +76,8 @@ body <- dashboardBody({
       </div>
     </div>
 </div>
-</div>'),
-  HTML('<div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+</div>
+<div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
        <div></div><div></div><div></div><div></div></div></div>'),
   tabItems(
     tabItem(tabName = "inputData",
@@ -481,7 +481,6 @@ body <- dashboardBody({
                                                          lang$nav$hcubeAnalyze$failMsg
                                                 ),
                                                 tags$div(id = "newPaverRunButton", class = "centered-div",
-                                                                style = "display:none;",
                                                          actionButton("btNewPaverRun", lang$nav$hcubeAnalyze$btNew)
                                                 ),
                                                 htmlOutput("paverResults")

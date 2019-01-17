@@ -23,20 +23,28 @@ $ifthen.mk not set mkApp
 $   set mkApp 0
 $else.mk
 $   set mkApp 1
-$   ifthen.hcube %WEBUIMODE%=="hcube"
+$   ifthen.mode set WEBUIMODE
 $      ifthen.host %system.HostPlatform%=="WEX"
 * windows
-$         set SETHCUBEENV "SET LAUNCHHCUBE=yes&&"
+$         ifthen.modetype %WEBUIMODE%=="hcube"
+$            set SETMODEENV "SET LAUNCHHCUBE=yes&&"
+$         elseif.modetype %WEBUIMODE%=="admin"
+$            set SETMODEENV "SET LAUNCHADMIN=yes&&"
+$         endif.modetype
 $      elseif.host %system.HostPlatform%=="DEX"
 * mac
-$        set SETHCUBEENV "export LAUNCHHCUBE='yes';"
+$         ifthen.modetype %WEBUIMODE%=="hcube"
+$            set SETMODEENV "export LAUNCHHCUBE='yes';"
+$         elseif.modetype %WEBUIMODE%=="admin"
+$            set SETMODEENV "export LAUNCHADMIN='yes';"
+$         endif.modetype
 * linux
 $      else.host
-$        set SETHCUBEENV ""
+$        set SETMODEENV ""
 $      endif.host
-$   else.hcube
-$      set SETHCUBEENV ""
-$   endif.hcube
+$   else.mode
+$      set SETMODEENV ""
+$   endif.mode
 $endif.mk
 
 $set UIInput  UIInput:
@@ -75,8 +83,10 @@ def extractSymText(sym, leavehash=0):
    return text
 
 def expandLastCol(sym, max_val_col):
-   if (sym.domains[-1].name.lower().endswith('hdr') or
-        sym.domains[-1].text.lower().endswith('hdr')):
+   pivotKeywords = ('pivot', 'hdr', 'header')
+   if (sym.domains[-1].name.strip().lower().endswith(pivotKeywords) or
+        sym.domains[-1].text.strip().lower().endswith(pivotKeywords) or
+        sym.text.strip().lower().endswith(pivotKeywords)):
       expand_last_col = True
    else:
       expand_last_col = len(sym.domains[-1]) <= max_val_col
@@ -725,11 +735,11 @@ if %mkApp%>0:
    
     if system() == "Windows":
         with open(fn_model + ".bat", "w") as f:
-            f.write('''start /min "" cmd /C "%SETHCUBEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''start /min "" cmd /C "%SETMODEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
-            f.write('''do shell script "%SETHCUBEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''do shell script "%SETMODEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")
         subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
@@ -787,11 +797,13 @@ $if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher require
 $terminate
 $endif
 $ifthen.launch %WEBUI%=="launch"
-$ifthen.hcube %WEBUIMODE%=="hcube"
+$ifthen.mode %WEBUIMODE%=="hcube"
 $setEnv LAUNCHHCUBE yes
-$else.hcube
+$elseif.mode %WEBUIMODE%=="hcube"
+$setEnv LAUNCHADMIN yes
+$else.mode
 $setEnv LAUNCHHCUBE no
-$endif.hcube
+$endif.mode
 $  hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
 $  if errorlevel 1 $abort Problems executing the GAMS WebUI. Make sure you have a valid WebUI installation.
 $endif.launch

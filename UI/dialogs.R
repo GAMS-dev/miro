@@ -681,9 +681,9 @@ generateLine <- function(i, j, type, label){
                                                                                "doesn't contain" = "%NOTLIKE%",
                                                                                "starts with" = "LIKE%",
                                                                                "ends with" = "%LIKE",
-                                                                               is = "LIKE",
-                                                                               "is not" = "NOT LIKE"), 
-                                                                   selected = "LIKE")
+                                                                               is = "=",
+                                                                               "is not" = "!="), 
+                                                                   selected = "=")
                                                      },
                                                      csv = {
                                                        selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
@@ -697,7 +697,7 @@ generateLine <- function(i, j, type, label){
                                                      },
                                                      date = {
                                                        selectInput("op_" %+% i %+% "_" %+% j, label=NULL, 
-                                                                   choices = c(between = "%BETWEEN%"))
+                                                                   choices = c(between = "BETWEEN"))
                                                      })
            ),
            tags$div(class = "item-search-crit",

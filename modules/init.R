@@ -129,6 +129,9 @@ if(is.null(errMsg)){
   if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes")){
     config$activateModules$hcubeMode <- TRUE
   }
+  if(identical(tolower(Sys.getenv("LAUNCHADMIN")), "yes")){
+    LAUNCHADMINMODE <- TRUE
+  }
   # handsontable options
   hotOptions        <- config$handsontable
   
@@ -335,7 +338,6 @@ if(is.null(errMsg)){
         }
       }
     }, error = function(e){
-      flog.fatal(errMsgTmp)
       errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
     })
   })
@@ -517,8 +519,10 @@ if(is.null(errMsg)){
           return("--" %+% names(modelIn)[i] %+% "=")
         }else if(names(modelIn)[i] %in% GMSOpt){
           return(names(modelIn)[i] %+% "=")
+        }else if(modelIn[[i]]$type %in% c("hot")){
+         return("++" %+% names(modelIn)[i] %+% "=")
         }else{
-         return("-+" %+% names(modelIn)[i] %+% "=")
+          return("-+" %+% names(modelIn)[i] %+% "=")
         }
       }
     }), use.names = FALSE)

@@ -455,7 +455,7 @@
     },
     "GAMSInput":{  
       "title":"Errors occurred writing input files",
-      "desc":"Some errors occurred writing GAMS input files:",
+      "desc":"Some errors occurred writing GAMS input files.",
       "excelRead":"Some error occurred reading the file: '%s'.",
       "badInputData":"The GAMS input dataset: '%s' is not valid. Please check the format of the data you wish to import.",
       "writeCsv":"Some error occurred writing csv file: '%s'."
