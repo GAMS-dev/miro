@@ -5,7 +5,6 @@
       "outputScreen":"Ergebnisse",
       "gams":"GAMS Interaktion",
       "scen":"Szenarien vergleichen",
-      "advanced":"Erweiterte Optionen",
       "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
         "import": "Ergebnisse importieren",
@@ -77,11 +76,6 @@
       "split":{
         "load":"Szenario öffnen"
       }
-    },
-    "advanced":{
-      "titleDownloadTemp":"Download temporärer Dateien",
-      "downloadTempDesc":"Download temporärer Dateien aus dem Arbeitsverzeichnis",
-      "downloadTempButton": "Dateien laden"
     },
     "hcubeImport":{
       "title":"Importiere Daten",

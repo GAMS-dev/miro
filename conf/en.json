@@ -5,7 +5,6 @@
       "outputScreen":"Output",
       "gams":"GAMS interaction",
       "scen":"Compare Scenarios",
-      "advanced":"Advanced Options",
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import results",
@@ -77,11 +76,6 @@
       "split":{
         "load":"Load scenario"
       }
-    },
-    "advanced":{
-      "titleDownloadTemp":"Download temporary files",
-      "downloadTempDesc":"Download temporary files from the working directory",
-      "downloadTempButton": "Download files"
     },
     "hcubeImport":{
       "title":"Import data",
