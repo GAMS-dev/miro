@@ -330,6 +330,8 @@
         "ttips":{
           "discardedCorrupted": "Der Job war korrumpiert.",
           "discardedActive": "Der Job war noch aktiv.",
+          "discardedScheduled": "Der Job wurde eingeplant.",
+          "discardedCompleted": "Der Job war abgeschlossen.",
           "corruptedNoDir": "Das Arbeitsverzeichnis des Jobs konnte nicht gefunden werden.",
           "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden."
         },

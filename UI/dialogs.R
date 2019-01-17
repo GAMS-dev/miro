@@ -595,7 +595,11 @@ getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
                                   if(startsWith(jStatus[2L], "corrupted")) 
                                     lang$nav$hcubeMode$importJobsDialog$ttips$discardedCorrupted
                                   else if(startsWith(jStatus[2L], "running"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive
+                                  else if(startsWith(jStatus[2L], "scheduled"))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedScheduled
+                                  else if(startsWith(jStatus[2L], "completed"))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedCompleted))
                               }else{
                                 tags$td(jStatus)
                               },

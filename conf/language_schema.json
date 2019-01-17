@@ -1524,6 +1524,16 @@
                       "minLength":1,
                       "required":true
                     },
+                    "discardedScheduled":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "discardedCompleted":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "corruptedNoDir":{
                       "type":"string",
                       "minLength":1,

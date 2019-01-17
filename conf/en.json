@@ -330,6 +330,8 @@
         "ttips":{
           "discardedCorrupted": "The job was corrupted.",
           "discardedActive": "The job was still active.",
+          "discardedScheduled": "The job was scheduled.",
+          "discardedCompleted": "The job was completed.",
           "corruptedNoDir": "The working directory of the job could not be located.",
           "corruptedNoProcess": "The job is terminated, but no results were found."
         },      

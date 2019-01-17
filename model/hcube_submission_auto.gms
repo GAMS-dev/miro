@@ -144,7 +144,7 @@ if outScript == "gams":
 
       # copy static csv files
       if len(fileNames):
-         linestmp += "$call cp -r static " + zipname + "/" + tmpdir + "\n"
+         linestmp += "$call cp -r static/. " + zipname + "/" + tmpdir + "\n"
          
       # gams call
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      

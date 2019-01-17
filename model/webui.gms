@@ -773,21 +773,12 @@ if %mkApp%>0:
               logoPath = os.path.join(fp_model, 'logo.icns')
             except:
               logoPath = defaultIconPath
-        subprocess.call(["cp", logoPath, fn_model + ".app/Contents/Resources/"])
+        subprocess.call(["cp", "-f", logoPath, fn_model + ".app/Contents/Resources/applet.icns"])
         try:
           os.remove('logo.icns')
         except:
           pass
-        plistPath = fn_model + ".app/Contents/Info.plist"
-        with open(plistPath, "r") as f:
-            plist = f.readlines()
-
-        idx = len(plist) - 2
         
-        plist.insert(idx, "  <key>CFBundleIconFile</key>\n  <string>" + os.path.basename(logoPath) +"</string>\n")
-        with open(plistPath, "w") as f:
-           plist = "".join(plist)
-           f.write(plist)
     else:
         pass
 $offembeddedCode
