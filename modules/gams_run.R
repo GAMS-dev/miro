@@ -196,7 +196,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       curdir <- gsub("/", "\\", curDir, fixed = TRUE)
     }
     tryCatch({
-      writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"))
+      writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
+                eos = NULL)
     }, error = function(e){
       flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
                  jID %+% ".log", hcubeDir)
