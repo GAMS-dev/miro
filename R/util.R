@@ -600,9 +600,12 @@ csv2Vector <- function(csv){
   if(!length(csv)){
     return(character(0L))
   }
-  if(startsWith(csv, ",")){
-    csv <- substring(csv, 2L)
-  }
+  csv <- vapply(csv, function(el){
+    if(startsWith(el, ",")){
+      return(substring(el, 2L))
+    }
+    return(el)
+  }, character(1L), USE.NAMES = FALSE)
   return(unlist(strsplit(csv, ",", fixed = TRUE), use.names = FALSE))
 }
 vector2Csv <- function(vector){
