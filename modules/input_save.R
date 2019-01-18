@@ -140,6 +140,8 @@ lapply(seq_along(modelIn), function(i){
              value <- isolate(input[[paste0("dropdown_", i)]])
            }else if(!is.null(modelIn[[i]]$dropdown$selected)){
              value <- modelIn[[i]]$dropdown$selected
+           }else if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+             value <- character(0L)
            }else{
              flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
              errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
@@ -207,4 +209,3 @@ lapply(seq_along(modelIn), function(i){
   )
   flog.trace("Dataset: %s saved in dataTmp.", modelIn[[i]])
 })
-showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)

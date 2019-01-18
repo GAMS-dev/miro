@@ -4,6 +4,25 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
+  getHcubeStaticElMd5 <- function(id, data, hcubeStaticFilePath){
+    filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[id]) %+% ".csv")
+    if(!inherits(data, "data.frame"))
+      return(NA)
+    write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
+              quote_escape = "double")
+    con <- file(filePath, open = "r")
+    on.exit(close(con), add = TRUE)
+    return(as.character(openssl::md5(con)))
+  }
+  getHcubeParPrefix <- function(id){
+    if(names(modelIn)[i] %in% GMSOpt){
+      return("")
+    }else if(names(modelIn)[i] %in% DDPar){
+      return("--")
+    }else{
+      return("--HCUBE_SCALAR_")
+    }
+  }
   noScenToSolve <- reactive({
     numberScenPerElement <- vapply(seq_along(modelIn), function(i){
       switch(modelIn[[i]]$type,
@@ -36,13 +55,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(1L)
              },
              dropdown = {
-               return(length(input[["dropdown_" %+% i]]))
+               if(identical(modelIn[[i]]$dropdown$single, TRUE)){
+                 return(length(input[["dropdown_" %+% i]]))
+               }
+               return(1L)
              },
              date = {
-               return(length(input[["date_" %+% i]]))
+               return(1L)
              },
              daterange = {
-               return(length(input[["daterange_" %+% i]]))
+               return(1L)
              },
              checkbox = {
                return(length(input[["cb_" %+% i]]))
@@ -82,11 +104,13 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
+                 parPrefix <- getHcubeParPrefix()
+                   
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
-                   return(paste0("--", names(modelIn)[[i]], "_lo=", value[1], 
-                                 " --", names(modelIn)[[i]], "_up=", value[2]))
+                   return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value[1], 
+                                 " ", parPrefix, names(modelIn)[[i]], "_up=", value[2]))
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
@@ -95,18 +119,17 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0("--", names(modelIn)[[i]], "_lo=", value$min, 
-                               " --", names(modelIn)[[i]], "_up=", value$max))
+                 return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value$min, 
+                               " ", parPrefix, names(modelIn)[[i]], "_up=", value$max))
                }
              },
              dropdown = {
-               if(names(modelIn)[i] %in% DDPar){
-                 parPrefix <- "--"
-               }else if(names(modelIn)[i] %in% GMSOpt){
-                 parPrefix <- ""
-               }else{
-                 parPrefix <- "-+"
+               if(identical(modelIn[[i]]$dropdown$single, FALSE)){
+                 data <- tibble(input[["dropdown_" %+% i]])
+                 names(data) <- tolower(names(modelIn))[i]
+                 return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
                }
+               parPrefix <- getHcubeParPrefix()
                value <- input[["dropdown_" %+% i]]
                if("_" %in% value){
                  value <- value[value != "_"]
@@ -117,19 +140,20 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              date = {
                return(input[["date_" %+% i]])
              },
+             daterange = {
+               value <- as.character(input[["daterange_" %+% i]])
+               parPrefix <- getHcubeParPrefix()
+               
+               return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value[1], 
+                             " ", parPrefix, names(modelIn)[[i]], "_up=", value[2]))
+             },
              checkbox = {
                return(input[["cb_" %+% i]])
              },
+             dt =,
              hot = {
-               filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[i]) %+% ".csv")
-               data     <- hot_to_r(input[["in_" %+% i]])
-               if(!inherits(data, "data.frame"))
-                 return(NA)
-               write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
-                         quote_escape = "double")
-               con <- file(filePath, open = "r")
-               on.exit(close(con), add = TRUE)
-               return(as.character(openssl::md5(con)))
+               data <- getInputDataset(i)
+               return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
@@ -373,6 +397,9 @@ observeEvent(input$btSolve, {
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data 
   source("./modules/input_save.R", local = TRUE)
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
   pfFileContent <- NULL
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset

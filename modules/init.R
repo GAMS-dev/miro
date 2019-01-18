@@ -299,27 +299,27 @@ if(is.null(errMsg)){
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
   modelInMustImport   <- getInputToImport(modelIn, keywordsNoMustImport)
   # declare input and output aliases
-  modelInAlias        <- lapply(seq_along(modelIn), function(i){
+  modelInAlias        <- vapply(seq_along(modelIn), function(i){
     if(is.null(modelIn[[i]]$alias)){
       names(modelIn)[[i]]
     }else{
       modelIn[[i]]$alias
     }
-  })
-  modelInToImportAlias <- lapply(seq_along(modelInToImport), function(i){
+  }, character(1L), USE.NAMES = FALSE)
+  modelInToImportAlias <- vapply(seq_along(modelInToImport), function(i){
     if(is.null(modelInToImport[[i]]$alias)){
       names(modelInToImport)[[i]]
     }else{
       modelInToImport[[i]]$alias
     }
-  })
-  modelOutAlias <- lapply(seq_along(modelOut), function(i){
+  }, character(1L), USE.NAMES = FALSE)
+  modelOutAlias <- vapply(seq_along(modelOut), function(i){
     if(is.null(modelOut[[i]]$alias)){
       names(modelOut)[[i]]
     }else{
       modelOut[[i]]$alias
     }
-  })
+  }, character(1L), USE.NAMES = FALSE)
   # add input type to list
   lapply(seq_along(modelIn), function(i){
     tryCatch({
@@ -479,12 +479,7 @@ if(is.null(errMsg)){
                  modelIn[[i]]$checkbox <<- NULL
                },
                dropdown = {
-                 if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
-                   errMsg <<- paste(errMsg, 
-                                    sprintf("Multi dropdown menus are currently " %+% 
-                                              "not supported in Hypercube mode (Element: '%s').", 
-                                            modelInAlias[i]), sep = "\n")
-                 }else{
+                 if(!identical(modelIn[[i]]$dropdown$multiple, TRUE)){
                    # specify that dropdown menu is originally a single select menu
                    modelIn[[i]]$dropdown$single   <<- TRUE
                    modelIn[[i]]$dropdown$multiple <<- TRUE
@@ -512,17 +507,19 @@ if(is.null(errMsg)){
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
           && identical(modelIn[[i]]$slider$double, TRUE)) 
-         || (modelIn[[i]]$type %in% c("daterange", "dropdown"))){
+         || (modelIn[[i]]$type %in% c("dropdown", "daterange"))){
         ""
       }else{
         if(names(modelIn)[i] %in% DDPar){
           return("--" %+% names(modelIn)[i] %+% "=")
         }else if(names(modelIn)[i] %in% GMSOpt){
           return(names(modelIn)[i] %+% "=")
-        }else if(modelIn[[i]]$type %in% c("hot")){
-         return("++" %+% names(modelIn)[i] %+% "=")
+        }else if(modelIn[[i]]$type %in% c("hot", "dt") ||
+                 (identical(modelIn[[i]]$type, c("dropdown")) &&
+                 identical(modelIn[[i]]$dropdown$single, FALSE))){
+         return("--HCUBE_STATIC_" %+% names(modelIn)[i] %+% "=")
         }else{
-          return("-+" %+% names(modelIn)[i] %+% "=")
+          return("--HCUBE_SCALAR_" %+% names(modelIn)[i] %+% "=")
         }
       }
     }), use.names = FALSE)

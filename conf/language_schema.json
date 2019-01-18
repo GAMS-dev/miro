@@ -744,7 +744,17 @@
               "required":true
             },
             "removeFromUI":{ 
+              "title":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
               "desc":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "cancelButton":{  
                 "type":"string",
                 "minLength":1,
                 "required":true
@@ -2067,6 +2077,16 @@
               "required":true
             },
             "excelRead":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "badColName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noData":{  
               "type":"string",
               "minLength":1,
               "required":true

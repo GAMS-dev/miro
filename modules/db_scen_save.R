@@ -132,7 +132,9 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   }
   
   source("./modules/scen_save.R", local = TRUE)
-  removeModal()
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
   
   # save to database
   scenStr <- "scen_1_"

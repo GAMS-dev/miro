@@ -151,7 +151,9 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ja",
       "removeFromUI":{  
+        "title":"Szenario aus Editor entfernen",
         "desc":"Möchten Sie das Szenario aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "cancelButton": "Abbrechen",
         "okButton":"Szenario schließen"
       }
     },
@@ -457,6 +459,8 @@
       "title":"Fehler beim Schreiben der GAMS Eingabedaten",
       "desc":"Beim Schreiben der GAMS Eingabedaten sind Fehler aufgetreten:",
       "excelRead":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten.",
+      "badColName" : "Die Spalte(n): '%s' konnten im Datensatz : '%s' nicht gefunden werden.",
+      "noData":"Datensatz: '%s' konnte nicht geladen werden. Bitte stellen Sie sicher, dass der Datensatz Daten enthält.",
       "badInputData":"Die GAMS Eingabedaten: '%s' sind ungültig. Bitte überprüfen Sie das Format der Daten, die Sie importieren möchten.",
       "writeCsv":"Beim Schreiben der csv-Datei: '%s' ist ein Fehler aufgetreten."
     },

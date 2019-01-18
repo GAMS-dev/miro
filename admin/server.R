@@ -5,9 +5,9 @@ server_admin <- function(input, output, session){
       modelName, " by typing \"confirm\" in the text field below."),
       textInput("removeDbConfirmTxt", NULL),
       footer = tagList(
-          modalButton("Cancel"),
-          actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1")
-        ),
+        modalButton("Cancel"),
+        actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1")
+      ),
       title = "Remove database tables"))
   })
   observeEvent(input$removeDbTablesConfirm, {
@@ -29,7 +29,7 @@ server_admin <- function(input, output, session){
     content = function(file) {
       tryCatch({
         prog <- Progress$new()
-        on.exit(prog$close())
+        on.exit(prog$close(), add = TRUE)
         prog$set(message = "Database is being dumped...", value = 0.2)
         tempDir <- file.path(tempdir(), "db_dump")
         dir.create(tempDir, showWarnings = FALSE, recursive = TRUE)
@@ -52,13 +52,66 @@ server_admin <- function(input, output, session){
                })
       })
     },
-    contentType = "application/zip")
-  observeEvent(input$fillDb, {
+    contentType = "application/zip"
+  )
+  observeEvent(input$restoreDb, {
     req(input$dbBackupZip)
     
+    tryCatch({
+      prog <- Progress$new()
+      on.exit(prog$close(), add = TRUE)
+      prog$set(message = "Data is being uploaded...", value = 0.2)
+      tempDir <- file.path(tempdir(), "db_restore")
+      if(dir.exists(tempDir) && 
+         unlink(tempDir, recursive = TRUE, force = TRUE) == 1){
+        stop(sprinft("Can't remove existing directory: '%s'.", tempDir), 
+             call. = FALSE)
+      }
+      if(!all(dir.create(tempDir, showWarnings = FALSE, recursive = TRUE))){
+        stop(sprinft("Can't create directory: '%s'.", tempDir), 
+             call. = FALSE)
+      }
+      on.exit(unlink(tempDir, recursive = TRUE, force = TRUE), add = TRUE)
+      grepEx <- "^((?!\\.\\.).)*\\.csv$"
+      prog$inc(amount = 0.2, detail = "Decompressing files...")
+      filesToUnzip <- grep(grepEx, unzip(zipFilePath, list = TRUE)$Name, 
+                           ignore.case = TRUE, value = TRUE, perl = TRUE)
+      if(!length(filesToUnzip)){
+        stop("noData", call. = FALSE)
+      }
+      unzip(zipFilePath, filesToUnzip,
+            exdir = gsub("/?$", "", tempDir))
+      unzippedFiles <- list.files(tempDir, pattern = "\\.csv$", full.names = TRUE)
+      tableNames <- tolower(gsub(".csv", "", 
+                                basename(unzippedFiles), fixed = TRUE))
+      if(!all(tableName %in% scenTableNames)){
+        stop("valErr", call. = FALSE)
+      }
+      lapply(seq_along(unzippedFiles), function(i){
+        # TODO: validation of headers/types!!
+        db$exportScenDataset()
+      })
+      
+      prog$inc(amount = 0.2, detail = "Uploading files...")
+      
+    }, error = function(e){
+      switch(conditionMessage(e),
+             noData = {
+               flog.error("No data found in archive. Nothing was restored.")
+               showHideEl(session, "#restoreNoData", 6000L)
+             },
+             valErr = {
+               flog.error("At least one of the tables is invalid. Nothing was restored.")
+               showHideEl(session, "#restoreInvalidData", 6000L)
+             },
+             {
+               flog.error("Unexpected error: '%s'. Please contact GAMS if this error persists.", e)
+               showHideEl(session, "#unknownError", 6000L)
+             })
+    })
   })
-    hideEl(session, "#loading-screen")
-    session$onSessionEnded(function() {
+  hideEl(session, "#loading-screen")
+  session$onSessionEnded(function() {
     if(!interactive()){
       stopApp()
       q("no")

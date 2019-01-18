@@ -529,7 +529,12 @@ showManualJobImportDialog <- function(){
      title = lang$nav$hcubeMode$manualJobImportDialog$title,
      tags$div(
        tags$div(
-         fileInput("hcubeImport", label = lang$nav$hcubeMode$manualJobImportDialog$uploadZip)
+         fileInput("hcubeImport", 
+                   label = lang$nav$hcubeMode$manualJobImportDialog$uploadZip,
+                   accept = c(".zip", "application/zip", 
+                              "application/octet-stream", 
+                              "application/x-zip-compressed", 
+                              "multipart/x-zip"))
        ),
        tags$div(
          selectizeInput("hcubeTags", 
