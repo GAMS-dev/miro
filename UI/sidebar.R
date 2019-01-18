@@ -8,7 +8,6 @@ if(!identical(config$activateModules$hcubeMode, TRUE)){
                 if(config$activateModules$scenario){
                   menuItem(lang$nav$sidebarMenu$scen, tabName = "scenarios", icon = icon("copy"))
                 },
-                menuItem(lang$nav$sidebarMenu$advanced, tabName="advanced", icon = icon("ellipsis-h")),
                 actionButton("btImport", lang$nav$sidebarButtons$importInput, width = "85%", 
                              class = "bt-highlight-3 glow-animation", style = "display:block;"),
                 tagAppendAttributes(actionButton("btSolve", lang$nav$sidebarButtons$solve, 

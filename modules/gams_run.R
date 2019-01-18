@@ -214,13 +214,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
     # create daemon to execute Hypercube job
     hcubeSubmDir <- file.path(getwd(), modelDir, hcubeSubmissionFile %+% "_auto.gms")
-    curDir <- hcubeDir
+    curdir <- hcubeDir
     if(isWindows()){
       hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
       curdir <- gsub("/", "\\", curDir, fixed = TRUE)
     }
     tryCatch({
-      writeChar(file.path(hcubeDir, jID %+% ".log"), paste0("Job ID: ", jID, "\n"))
+      writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
+                eos = NULL)
     }, error = function(e){
       flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
                  jID %+% ".log", hcubeDir)

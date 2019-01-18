@@ -60,6 +60,9 @@ updateJobMetadata <- function(jID, status = NULL, tags = NULL){
       })
     }
     status <- paste0("_discarded(", currentStatus, ")_")
+    if(unlink(file.path(currentModelDir, hcubeDirName, jID), recursive = TRUE)){
+      flog.warn("Could not delete working directory for Hypercube job: '%s'. Please remove manually!", jID)
+    }
   }else if(identical(status, "imported")){
     if(unlink(file.path(currentModelDir, hcubeDirName, jID), recursive = TRUE)){
       flog.warn("Could not delete working directory for Hypercube job: '%s'. Please remove manually!", jID)

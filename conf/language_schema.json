@@ -38,12 +38,6 @@
               "minLength":1,
               "required":true
             },
-            "advanced":{  
-              "description":"Advanced options menu item",
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "hcube":{  
               "description":"Hypercube mode specific configuration",
               "type":"object",
@@ -353,28 +347,6 @@
                   "required":true
                 }
               }
-            }
-          }
-        },
-        "advanced":{
-          "type":"object",
-          "additionalProperties":false,
-          "required":true,
-          "properties":{  
-            "titleDownloadTemp":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "downloadTempDesc":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "downloadTempButton":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
             }
           }
         },
@@ -1530,6 +1502,16 @@
                       "required":true
                     },
                     "discardedActive":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "discardedScheduled":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "discardedCompleted":{
                       "type":"string",
                       "minLength":1,
                       "required":true

@@ -22,6 +22,7 @@ body{
 }
 .ttip {
     position: relative;
+    text-decoration: underline;
     text-decoration: underline dotted #000;
 }
 .ttip span {
