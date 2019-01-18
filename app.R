@@ -323,7 +323,7 @@ if(is.null(errMsg)){
     })
   }
   if(config$activateModules$hcubeMode){
-    requiredPackages <- c("openssl")
+    requiredPackages <- c("openssl", "DT")
     source("./R/install_packages.R", local = TRUE)
     source("./R/hcube.R")
     source("./R/db_hcubeimport.R")
