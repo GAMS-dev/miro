@@ -56,9 +56,12 @@ def getScalars(text):
       scalars = "Scalar,Description,Value" + r"\n"
       fileNames = []
       for i in textTmp:
-         if i.startswith(("--HCUBE_SCALAR_", "--HCUBE_STATIC_")):
+         if i.startswith("--HCUBE_SCALAR_"):
             i = i[15:]
             fileNames.append(i[2:].split("=")[0].lower() + ".csv")
+         elif i.startswith("--HCUBE_STATIC_"):
+            fileNames.append(i[2:].split("=")[0].lower() + ".csv")
+            continue
          elif i.startswith("--"):
             i = i[2:]
          itmp = i.split("=")
