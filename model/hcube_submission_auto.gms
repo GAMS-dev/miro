@@ -40,9 +40,8 @@ fscalars = "scalars.csv"
 def extractCall(call):
    call = (call[66:] +
            " idir1=..%system.dirsep%..%system.dirsep%..%system.dirsep%..%system.dirsep% " +
-           "lo=3 --WEBUI=1" + ">>\"..%system.dirsep%..%system.dirsep% ".strip() +
+           "lo=3 --WEBUI=1 " + ">>\"..%system.dirsep%..%system.dirsep% ".strip() +
            "%jobID%.log\"")
-   call = re.sub(r"[-+]+\S*\s", "", call)
    return call.strip()
 
 def extractDir(fdir):
@@ -57,13 +56,11 @@ def getScalars(text):
       scalars = "Scalar,Description,Value" + r"\n"
       fileNames = []
       for i in textTmp:
-         if i.startswith("--"):
-            i = i[2:]
-         elif i.startswith("-+"):
-            i = i[2:]
-         elif i.startswith("++"):
+         if i.startswith(("--HCUBE_SCALAR_", "--HCUBE_STATIC_")):
+            i = i[15:]
             fileNames.append(i[2:].split("=")[0].lower() + ".csv")
-            continue
+         elif i.startswith("--"):
+            i = i[2:]
          itmp = i.split("=")
          for idx, j in enumerate(itmp):
             if j.startswith("trace"):

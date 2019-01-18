@@ -217,7 +217,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     curdir <- hcubeDir
     if(isWindows()){
       hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
-      curdir <- gsub("/", "\\", curDir, fixed = TRUE)
+      curdir <- gsub("/", "\\", curdir, fixed = TRUE)
     }
     tryCatch({
       writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
