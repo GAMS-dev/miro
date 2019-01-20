@@ -6,9 +6,7 @@ function changeTab(object, idActive, idRefer) {
     tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
 }
 function isInputEl(id){
-  if(id.startsWith("#slider_") || id.startsWith("#dropdown_") ||
-  id.startsWith("#dropdowne_") || id.startsWith("#date_") ||
-  id.startsWith("#daterange_") || id.startsWith("#cb_")){
+  if($(id).parents(".form-group").length){
     return true;
   }else{
     return false;
@@ -61,7 +59,7 @@ function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall
   let btDataDismiss = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button>';
   let btDataConfirm = '';
   if(confirmCall !== null){
-    btDataConfirm = '<button type="button" class="btn btn-default bt-gms-confirm" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+    btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
   }
   btData = btDataDismiss + btDataConfirm;
   cModal = $('#confirmModal');
@@ -92,6 +90,10 @@ function importHypercubeJob(jID){
 
 function discardHypercubeJob(jID){
   Shiny.setInputValue("discardHypercubeJob", jID, {priority: "event"});
+}
+
+function renderMathJax() {
+  MathJax.Hub.Queue(["Typeset", MathJax.Hub, "wrapper-documentation"]);
 }
 
 $(document).ready(function () {
@@ -142,8 +144,8 @@ $(document).ready(function () {
   // hide pivot filter boxes when clicked outside of box
   $(document).click(function(e) {
   var target = e.target;
-  if (!$(target).is('.pvtAttr') && !$(target).parents().is('.pvtAttr')
-      && !$(target).is('.pvtFilterBox') && !$(target).parents().is('.pvtFilterBox')) {
+  if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length
+      && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length){
     $('.pvtFilterBox').hide();
   }
   });
@@ -216,7 +218,3 @@ $(document).ready(function () {
   });
   
 });
-
-function renderMathJax() {
-  MathJax.Hub.Queue(["Typeset", MathJax.Hub, "wrapper-documentation"]);
-}
