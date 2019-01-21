@@ -157,6 +157,12 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "default":"black",
                  "required":true
               },
+              "includeParentDir":{
+                "description":"Include parent directory of the curren model folder in your model runs (e.g. because several models share files)?",
+                 "type":"boolean",
+                 "default":false,
+                 "required":false
+              },
               "excelIncludeMeta":{
                  "title":"Include a metadata sheet in the Excel file (export a scenario)?",
                  "type":"boolean",
@@ -213,18 +219,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "title":"Activate local data upload module?",
                        "type":"boolean",
                        "default":true,
-                       "required":false
-                    },
-                    "sharedScenarios":{
-                       "title":"Enable scenario sharing between different users?",
-                       "type":"boolean",
-                       "default":true,
-                       "required":false
-                    },
-                    "hcubeMode":{
-                       "title":"Solve multiple scenarios in Hypercube mode?",
-                       "type":"boolean",
-                       "default":false,
                        "required":false
                     },
                     "logFile:":{

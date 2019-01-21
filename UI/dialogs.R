@@ -51,17 +51,6 @@ showCloseScenDialog <- function(scenId){
     fade=FALSE, easyClose=FALSE))
 }
 
-showRemoveActiveScenFromUIDialog <- function(){
-  showModal(modalDialog(
-    title = lang$nav$dialogRemoveScen$title,
-    lang$nav$dialogRemoveScen$desc,
-    footer = tagList(
-      modalButton(lang$nav$dialogRemoveScen$cancelButton),
-      actionButton("btRemoveConfirm", label = lang$nav$dialogRemoveScen$okButton, 
-                   class = "bt-highlight-1 bt-gms-confirm")),
-    fade=TRUE, easyClose=FALSE))
-}
-
 showRemoveDeletedScenFromUIDialog <- function(){
   showModal(modalDialog(
     title = lang$nav$dialogDeleteScen$removeFromUI$title,
@@ -320,7 +309,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     tags$div(class = "gmsalert gmsalert-error", id = "attachForbiddenFnameError", 
              lang$nav$dialogEditMeta$attachForbiddenFnameError),
     tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
-             lang$nav$dialogEditMeta$attachUnknownError),
+             lang$errMsg$unknownError),
     tags$div(class = "space"),
     tags$div(id = "editMetaSuccess", style = "display:none;", 
              lang$nav$dialogEditMeta$success),
@@ -393,7 +382,7 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitWait",
              lang$nav$dialogHcube$waitTime),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
-             lang$nav$dialogHcube$unknownError),
+             lang$errMsg$unknownError),
     tags$div(paste0(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
                      noIdsExist), if(!identical(noIdsExist, noIdsToSolve)) 
                        lang$nav$dialogHcube$descSolveAgain)),
@@ -477,15 +466,22 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
   showModal(modalDialog(
     title = list(lang$nav$hcubeMode$configPaverDialog$title, 
                  HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
+    tags$div(class = "gmsalert gmsalert-error", id = "paverRunNoTrc", 
+             lang$nav$hcubeMode$configPaverDialog$noTrc),
+    tags$div(class = "gmsalert gmsalert-error", id = "paverRunUnknownError", 
+             lang$errMsg$unknownError),
+    tags$div(class = "gmsalert gmsalert-error", id = "configPaverMaxSolversErr", 
+             sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
+                     maxSolversPaver)),
     if(hasRemovePerm){
       tagList(
+        tags$div(class = "gmsalert gmsalert-success", id = "hcubeRemoveSuccess",
+                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
+        tags$div(class = "gmsalert gmsalert-error", id = "hcubeRemoveError",
+                 lang$errMsg$unknownError),
         tags$div(id = "hcubeRemoveConfirm", style = "display:none;",
                  sprintf(lang$nav$hcubeMode$configPaverDialog$removeConfirm, noScenSelected)
-        ),
-        tags$div(id = "hcubeRemoveSuccess", style = "display:none",
-                 lang$nav$hcubeMode$configPaverDialog$removeSuccess),
-        tags$div(id = "hcubeRemoveError", class = "err-msg", style = "display:none",
-                 lang$nav$hcubeMode$configPaverDialog$removeError)
+        )
       )
     },
     tags$div(id="hcubeLoadMethod",
@@ -498,9 +494,6 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
     ),
     tags$div(id="configPaver", style = "display:none;",
             lang$nav$hcubeMode$configPaverDialog$desc,
-            tags$div(id = "configPaverMaxSolversErr", style = "display:none;", class = "err-msg",
-                     sprintf(lang$nav$hcubeMode$configPaverDialog$tooManySolvers, 
-                             maxSolversPaver)),
             selectInput("selPaverAttribs", lang$nav$hcubeMode$configPaverDialog$selAttribs, 
                          attribs, multiple = TRUE, width = "100%")
     ),
@@ -556,7 +549,7 @@ showManualJobImportDialog <- function(){
 getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
   if(!inherits(hcubeMeta, "data.frame")){
     content <- tags$div(class = "err-msg", 
-                        lang$nav$hcubeMode$importJobsDialog$unknownError
+                        lang$errMsg$unknownError
     )
   }else if(length(hcubeMeta) && nrow(hcubeMeta)){
     content <- tags$table(class = "cJob-wrapper",

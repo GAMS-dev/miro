@@ -33,8 +33,9 @@ HcubeLoad <- R6Class("HcubeLoad",
                          private$scalarTables       <- scalarTables
                          private$keyTypeList        <- scalarKeyTypeList
                          private$tableFieldSep      <- tableFieldSep
-                         private$tableNameTrace     <- db$getTraceConfig()[["tabName"]]
-                         private$traceColNames      <- db$getTraceConfig()[["colNames"]]
+                         private$dbSchema           <- db$getDbSchema()
+                         private$tableNameTrace     <- private$dbSchema$tabName[["_scenTrc"]]
+                         private$traceColNames      <- private$dbSchema$colNames[["_scenTrc"]]
                          
                          if(inherits(private$conn, "PqConnection")){
                            dbExecute(private$conn, "CREATE EXTENSION IF NOT EXISTS tablefunc")
@@ -164,7 +165,11 @@ HcubeLoad <- R6Class("HcubeLoad",
                            close(paverFile)
                            paverData      <- private$db$importDataset(private$tableNameTrace, 
                                                                       subsetSids = private$groupedSids[[i]])
-                           groupedNames   <- private$groupedNames[[i]][private$groupedSids[[i]] %in% paverData[[1]]]
+                           if(!length(paverData) || 
+                              nrow(paverData) != length(private$groupedSids[[i]])){
+                             stop("noTrc", call. = FALSE)
+                           }
+                           groupedNames   <- private$groupedNames[[i]]
                            paverData      <- paverData[-1L]
                            paverData[[1]] <- groupedNames
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
@@ -181,7 +186,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(length(scenIds) >= 1L)
                          stopifnot(is.character(tmpDir), length(tmpDir) == 1L)
                          
-                         scenTableNames <- c(private$db$getTableNameMetadata(), private$db$getTableNamesScenario(), private$tableNameTrace)
+                         scenTableNames <- c(private$db$getTableNameMetadata(), private$db$getTableNamesScenario(), 
+                                             private$tableNameTrace)
                          noScenTables   <- length(scenTableNames)
                          colScenName <- private$db$getScenMetaColnames()['sname']
                          
@@ -259,6 +265,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        scalarColNames          = character(0L),
                        sidCol                  = character(0L),
                        tabNameMeta             = character(0L),
+                       dbSchema                = vector("list", 3L),
                        scalarTables            = character(0L),
                        tableNameTrace          = character(0L),
                        traceColNames           = character(0L),

@@ -46,6 +46,10 @@ body_admin <- dashboardBody({
       tabItem(tabName = "db_management",
               fluidRow(
                 box(title = "Database management", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
+                             "Database tables removed successfully"),
+                    tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success",
+                             "Data restored successfully"),
                     tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error",
                              "No csv files found in the archive provided. Nothing was restored."),
                     tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error",
@@ -53,37 +57,31 @@ body_admin <- dashboardBody({
                     tags$div(id = "maxRowError", class = "gmsalert gmsalert-error",
                              "The maximum number of rows to export was exceeded for atleast 1 table. Please back up the database manually!"),
                     tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. Please contact GAMS if this error persists!"),
-                    fluidRow(
-                      column(6,
-                             tags$div("You want to create a backup of the database? Click the button below to get a zip archive with all the database tables dumped into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!"),
-                             downloadButton("dbDumpAll", label = "Dump database tables")
-                             
-                      ),
-                      column(6,
-                             tags$div("You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
-                                      fileInput("dbBackupZip", "Select a backup zip file", 
-                                                accept = c(".zip", "application/zip", 
-                                                           "application/octet-stream", 
-                                                           "application/x-zip-compressed", 
-                                                           "multipart/x-zip")),
-                                      actionButton("restoreDb", "Restore")
-                             )
-                      )
+                             "An unexpected error occurred. Maybe your database is not empty?"),
+                    tags$div(class = "space"),
+                    tags$div("You want to create a backup of the database? Click the button below to get a zip archive with all the database tables dumped into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!"),
+                    downloadButton("dbDumpAll", label = "Dump database tables"),
+                    tags$div(class = "space"),
+                    tags$hr(),
+                    tags$div(class = "space"),
+                    tags$div("You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
+                             fileInput("dbBackupZip", "Select a backup zip file", 
+                                       accept = c(".zip", "application/zip", 
+                                                  "application/octet-stream", 
+                                                  "application/x-zip-compressed", 
+                                                  "multipart/x-zip")),
+                             actionButton("restoreDb", "Restore")
                     ),
-                    fluidRow(
-                      column(6,
-                             tags$div("You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
-                                      HTML(paste0('<button type="button" class="btn btn-default"', 
-                                                  ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
-                                                  'This can not be undone! You might want to dump the database first before proceeding.\', \'Cancel\', ',
-                                                  '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
-                                      ))
-                             )
-                      )
+                    tags$div(class = "space"),
+                    tags$hr(),
+                    tags$div(class = "space"),
+                    tags$div("You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
+                             HTML(paste0('<button type="button" class="btn btn-default bt-gms-confirm"', 
+                                         ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
+                                         'This can not be undone! You might want to dump the database first before proceeding.\', \'Cancel\', ',
+                                         '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
+                             ))
                     )
-                    
-                    
                 )
               )
       )

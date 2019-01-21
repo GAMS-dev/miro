@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.2.8"
-webuiRDate   <- "Dec 21 2018"
+webuiVersion <- "0.3.0"
+webuiRDate   <- "Jan 21 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -285,18 +285,10 @@ if(is.null(errMsg)){
     source("./R/db_scen.R")
     tryCatch({
       scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-      db   <- Db$new(uid = uid, dbConf = config$db,
-                     uidIdentifier = uidIdentifier, sidIdentifier = sidIdentifier, 
-                     snameIdentifier = snameIdentifier, stimeIdentifier = stimeIdentifier,
-                     slocktimeIdentifier = slocktimeIdentifier, stagIdentifier = stagIdentifier,
-                     accessIdentifier = accessIdentifier, tableNameMetadata = scenMetadataTable, 
-                     tableNameMetaHcube = tableNameMetaHcubePrefix %+% modelName, 
-                     tableNameScenLocks = scenLockTablePrefix %+% modelName, 
-                     tableNamesScenario = scenTableNames, 
+      db   <- Db$new(uid = uid, dbConf = config$db, dbSchema = dbSchema,
                      slocktimeLimit = slocktimeLimit,
-                     tableNameTrace = tableNameTracePrefix %+% modelName, traceColNames = traceColNames,
-                     attachmentConfig = if(config$activateModules$attachments) list(tabName = tableNameAttachPrefix %+% modelName,
-                                                                                   maxSize = attachMaxFileSize, maxNo = attachMaxNo)
+                     attachmentConfig = if(config$activateModules$attachments) 
+                       list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
                      else NULL)
       conn <- db$getConn()
       flog.debug("Database connection established.")
@@ -342,25 +334,28 @@ if(is.null(errMsg) && developMode && config$activateModules$scenario){
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(orphanedTables)){
-      msg <- sprintf("There are orphaned tables in your database: '%s'.",
+      msg <- sprintf("There are orphaned tables in your database: '%s'.\n
+This could be cause either because you used a different database schema in the past (e.g. due to different inputs and/or outputs) or because you saved scenarios in Hypercube mode (in which case you can ignore this warning).\n
+Please note, however, that scenarios saved in Hypercube mode are not compatible with the standard mode.",
                      paste(orphanedTables, collapse = "', '"))
       warning(msg, call. = FALSE)
       flog.warn(msg)
     }
     inconsistentTables <- NULL
+    
     tryCatch({
-      inconsistentTables <- db$getInconsistentTables(lapply(c(modelIn, modelOut), function(el) return(names(el$headers))),
-                                                     unlist(lapply(c(modelIn, modelOut), "[[", "colTypes")), 
-                                                     strictMode = config$activateModules$strictmode)
+      inconsistentTables <- db$getInconsistentTables(strictMode = config$activateModules$strictmode)
     }, error = function(e){
-      flog.error("Problems fetching inconsistent database tables.\nDetails: '%s'.", e)
-      errMsg <<- paste(errMsg, sprintf("Problems fetching inconsistent database tables. Error message: '%s'.", 
+      flog.error("Problems fetching database tables (for inconsistency checks).\nDetails: '%s'.", e)
+      errMsg <<- paste(errMsg, sprintf("Problems fetching database tables (for inconsistency checks). Error message: '%s'.", 
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(inconsistentTables$names)){
-      flog.error(sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
+      flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
+Those tables are: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
-      msg <- paste(errMsg, sprintf("There are inconsistent tables in your database: '%s'.\nError message: '%s'.",
+      msg <- paste(errMsg, sprintf("There are tables in your database that do not match the current database schema of your model.\n
+Those tables are: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
       warning(msg, call. = FALSE)
@@ -459,7 +454,7 @@ if(!is.null(errMsg)){
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, file = rSaveFilePath)
+         modelInGmsString, dbSchema, file = rSaveFilePath)
   }
   
   #______________________________________________________
@@ -702,6 +697,9 @@ if(!is.null(errMsg)){
                slider = {
                  input[["slider_" %+% i]]
                },
+               textinput ={
+                 input[["text_" %+% i]]
+               }, 
                dropdown = {
                  input[["dropdown_" %+% i]]
                },

@@ -134,7 +134,6 @@
       "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
       "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
       "attachForbiddenFnameError": "An attachment you try to upload uses a forbidden filename. Please choose a different filename and try again.",
-      "attachUnknownError": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
       "errMsg": "Prolems updating scenario metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
@@ -261,7 +260,6 @@
       "processUnsolvedButton": "Process unsolved only",
       "successMsg": "Your Hypercube job was scheduled successfully. You can retrieve the results as soon as the job finished executing.",
       "waitTime": "Please wait some seconds before submitting a new job.",
-      "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
       "waitDialog":{
         "title": "Hypercube job is being configured",
         "desc": "Please wait while the Hypercube job is being configured."
@@ -292,9 +290,9 @@
         "desc":"Please select the attributes you want to compare.",
         "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
+        "noTrc":"No trace data could be found for at least one of the selected scenarios.",
         "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
         "removeSuccess": "The selected scenarios were removed successfully.",
-        "removeError": "Some error occurred while trying to remove the selected scenarios. If this problem persists, please contact a system administrator.",
         "selAttribs":"Attributes to select:",
         "runButton":"Start Paver",
         "interactiveButton":"Interactive mode",
@@ -321,7 +319,6 @@
         "noJobsHist": "No discarded or imported Hypercube jobs could be found",
         "discardSuccess": "Job was discarded",
         "importSuccess": "Job was imported successfully",
-        "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
         "histTitle": "Job history",
         "ttips":{
           "discardedCorrupted": "The job was corrupted.",
@@ -406,6 +403,7 @@
     }
   },
   "errMsg":{  
+    "unknownError": "An unexpected error occurred. If this problem persists, please contact a system administrator.",
     "fileRead":{  
       "title":"Error reading file",
       "desc":"Some error occurred reading file: '%s'."
@@ -413,9 +411,6 @@
     "fileWrite":{  
       "title":"Error writing file",
       "desc":"Some error occurred writing file: '%s'."
-    },
-    "downloadHandler":{
-      "msg" : "Some error occurred trying to download the file. If this error persists, please contact the system administrator."
     },
     "initErrors":{  
       "title":"Some errors occurred",

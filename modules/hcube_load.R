@@ -36,7 +36,7 @@ for(j in seq_along(modelIn)){
   }else if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
     k <- k + 1L
-  }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange")){
+  }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "daterange", "textinput")){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "string", alias = modelInAlias[[i]])
     k <- k + 1L
   }
@@ -375,12 +375,11 @@ observeEvent(input$btHcubeRemove, {
       errMsg <<- TRUE
     })
     if(!is.null(errMsg)){
-      showEl(session, "#hcubeRemoveError")
+      showHideEl(session, "#hcubeRemoveError", 4000L)
       return(NULL)
     }
-    hideEl(session, "#hcubeRemoveConfirm")
-    showEl(session, "#hcubeRemoveSuccess")
-    hideModal(session, 1L)
+    showHideEl(session, "#hcubeRemoveSuccess", 2000L)
+    hideModal(session, 2L)
   }else{
     hideEl(session, "#btHcubeLoad")
     hideEl(session, "#hcubeLoadMethod")

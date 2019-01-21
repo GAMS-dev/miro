@@ -17,7 +17,7 @@ header <- dashboardHeader(
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$help$title, tags$span(class="caret")),
             tags$ul(class = "dropdown-menu", role="menu",
-                    tags$li(tags$a(href = "https://www.gams.com/latest/webui/", 
+                    tags$li(tags$a(href = "https://www.gams.com/webui/", 
                            target = "_blank", lang$nav$header$help$doc)),
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
                                         'About GAMS WebUI\', \'', 

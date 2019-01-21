@@ -43,9 +43,8 @@ lapply(datasetsToFetch, function(dataset){
         
         if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
           if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
-            # remove those rows from scalar dataset that are represented as a slider or dropdown menu
             scalarDataset <<- dataTmp 
-            modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = F]
+            modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
             inputVerified <- TRUE
           }
         }else{
@@ -66,9 +65,10 @@ lapply(datasetsToFetch, function(dataset){
         }
       }else{
         # empty dataset
-        modelInputData[[i]] <<- modelInTemplate[[i]]
+        if(length(modelInTemplate[[i]]))
+          modelInputData[[i]] <<- modelInTemplate[[i]]
         isEmptyInput[[i]]   <<- TRUE
-        inputVerified         <- TRUE
+        inputVerified       <- TRUE
       }
       
     }else{
