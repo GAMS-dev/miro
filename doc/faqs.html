@@ -81,7 +81,7 @@
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my WebUI?</h3>
                                     <div class="answer">
-                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">config.json<span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/config.json</span>. In order to generate the <span class="code">config.json</span> file you can use our <a href="./config-gen.html" target="_blank">Configuration Generator</a>.</p>
+                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">config.json<span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/config.json</span>. In order to generate the <span class="code">config.json</span> file you can use our <a href="./configgen.html">Configuration Generator</a>.</p>
                                     </div><!--//anwser-->
 
                                     <div class="section-block">
@@ -94,6 +94,13 @@
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I also write my own custom functions to generate input data?</h3>
                                         <div class="answer">No. This is currently not supported, but might be added in later development stages depending on the demand for this feature.</div>
+                                    </div><!--//section-block-->
+                                    
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I use an own Excel spreadsheet for the input data or do I need to use the generated one?</h3>
+                                        <div class="answer">
+                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the tabs and header line of a symbol). 
+                                            </div>
                                     </div><!--//section-block-->
 
                                 </div><!--//section-block-->
@@ -111,6 +118,31 @@
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of the GAMS WebUI?</h3>
                                         <div class="answer">
                                             <p>We call the collection of input and output datasets that result from a particular model run a scenario.</p>
+                                            </div>
+                                    </div><!--//section-block-->
+                                    <div id="def-job" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Job</b> mean in the context of the GAMS WebUI?</h3>
+                                        <div class="answer">
+                                            <p>A <i>Job</i> describes the submission of one or more GAMS runs.</p>
+                                            </div>
+                                    </div><!--//section-block-->
+                                    <div id="def-hypercube" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of the GAMS WebUI?</h3>
+                                        <div class="answer">
+                                            <p><i>Hypercube</i> stands for a series of scenarios that result from the parameterization of a model in which the same parameter can be set several times. All possible scenarios that result from the combination of all set parameters are generated from this multiple parameterization.
+                                            <br>This can be better shown by an example with 2 parameters: For each of the two parameters different parameterizations are set. The Hypercube now describes, as we look at two dimensions, the Cartesian product of the set parameter variations (see also <a href="./hypercube.html#hcube-example">here</a>).</p>
+                                            </div>
+                                    </div><!--//section-block-->
+                                    <div id="def-hypercube-job" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of the GAMS WebUI?</h3>
+                                        <div class="answer">
+                                            <p>A <i>Hypercube Job</i> describes the placement of a GAMS run that consists of a <a href="#def-hypercube" class="scrollto">hypercube</a>.</p>
+                                            </div>
+                                    </div><!--//section-block-->
+                                    <div id="def-job-tag" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>tag</b> or <b>job tag</b>?</h3>
+                                        <div class="answer">
+                                            <p>A <i>tag</i> or <i>job tag</i> is an identifyer for a submitted <a href="#def-hypercube-job" class="scrollto">hypercube job</a>. With the help of job tags, Hypercube jobs can be uniquely identified, independent of the input and output data of the scenarios. Scenarios can be found in the database using the assigned tag. They can also be useful for scenario analysis.</p>
                                             </div>
                                     </div><!--//section-block-->
 

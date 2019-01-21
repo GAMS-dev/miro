@@ -111,7 +111,7 @@
                                       <ol>
                                         <li>Manual entering of the configuration in the <i>config.json</i> in json syntax
                                         <br>If this method is used, care must be taken to ensure that the content matches the predefined schema.</li>
-                                        <li>Use of the <a href="#config-gen" class="scrollto">Configuration Generator</a>
+                                        <li>Use of the <a href="./configgen.html">Configuration Generator</a>
                                         <br>The Configuration Generator can be used to automatically generate the json code snipped for the desired configuration. This snipped can then be copied into the existing <i>config.json</i> file</li>
                                       </ol>
                                       <p>When the configuration shown above has been made, we will now be able to see the distances <span class="code">d</span> our model is fed with, but can not edit them.</p>
@@ -121,7 +121,7 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Tip:</h4>
-                                            <p>You can use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to customize your input widgets.</p>
+                                            <p>You can use our <a href="./configgen.html">Configuration Generator</a> to customize your input widgets.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -166,7 +166,7 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Tip:</h4>
-                                            <p>In case you don't want each widget to be displayed on a separate sheet, there is an option to collect all scalar widgets on one sheet. This option can be set in the <span class="code">config.json</span> file (<span class="code">"aggregateWidgets"</span>) and is therefore available in our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
+                                            <p>In case you don't want each widget to be displayed on a separate sheet, there is an option to collect all scalar widgets on one sheet. This option can be set in the <span class="code">config.json</span> file (<span class="code">"aggregateWidgets"</span>) and is therefore available in our <a href="./configgen.html">Configuration Generator</a>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -220,7 +220,7 @@
                                        </div>
                                        <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=compile%20time#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
                                        If we select for the compile time variable <span class="code">numberPeriods</span> e.g. 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within the WebUI, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
-                                       <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="#config-gen" class="scrollto">Configuration Generator</a>.</p>
+                                       <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
                                        <div class="callout-block callout-warning">
                                            <div class="icon-holder">
                                                <i class="fas fa-info-circle"></i>
@@ -238,7 +238,7 @@
                                     <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
                                 </div>
                                 <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
-                                <p>Of course you can configure those dependencies just like you configure everything else via our <a href="#config-gen" class="scrollto">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
+                                <p>Of course you can configure those dependencies just like you configure everything else via our <a href="./configgen.html">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
                                 <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
@@ -301,40 +301,10 @@
                                    <p>One more important aspect you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets are currently a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set.</p>
                                 </div><!--//section-block-->
                             </section>
-                            <section id="config-gen" class="doc-section">
-                                <h2 class="section-title">Configuration Generator</h2>
-                                <div class="section-block">
-                                  <p>In order for you to be able to customize your WebUI to its full potential, we have developed this Configuration Generator. Here you can customize your WebUI and graphics. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf</span>.</p>
-                                  <div class="upload-btn-wrapper" id="gmsioUpload">
-                                    <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                    <button class="upload-btn">Upload your GMSIO_config.json file</button>
-                                    <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
-                                  </div>
-                                  <div id="confGenContent" style="display:none;">
-                                    <div id="selectConfigType" style="display:none;">
-                                      <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new config.json file</button>
-                                      <div class="upload-btn-wrapper" id="configJSONupload" style="overflow:visible;">
-                                        <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                        <button class="upload-btn">Merge with existing config.json file</button>
-                                        <input id="configJSONfile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="mergeExisting()"/><br />
-                                      </div>
-                                    </div>
-                                    <div id="form1"></div>
-                                    <button id="reset-config-gen" type="button" class="configgen-reset-btn" onclick="if(window.confirm('Are you sure you want to reset the configuration generator?')){
-                                      $('#form1').alpaca('destroy');
-                                      $('#launchConfigGenBt').unbind();
-                                      $('#gmsioUpload').show();
-                                      $('#confGenContent').hide();
-                                      $(window).scrollTo($('#config-gen'));
-                                      $('#errMsg').hide();
-                                    }">Reset</button>
-                                  </div>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
                             <section id="custom-graph" class="doc-section">
                                 <h2 class="section-title">Graphics Configuration</h2>
                                 <div class="section-block">
-                                  <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model Trnsport with a read-only table and a slider widget for a scalar value. Now we want to configure our first "real" graphic, which shows some results of a model run. 
+                                  <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model Trnsport with a read-only table and a slider widget for a scalar value. Now we want to configure our first graphic to visualize some results of a model run. 
                                   At first, we want to use a pre-implemented graphic. The following options are currently available for this purpose:</p>  
                                   <ul>
                                     <li>datatable</li>
@@ -369,10 +339,10 @@ schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
                                 </div><!--//section-block-->
-                                <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model to be used inside the WebUI, we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
-                                New is the <span class="code">schedule</span> parameter which is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. It is then calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable.
+                                <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
+                                Now we have another parameter <span class="code">schedule</span> which is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. It is then calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable.
                                 <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
-                                There, we upload our <i>GMSIO_conf.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
+                                There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
                                 All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
                                 <pre><code class="language-gams">{
   "dataRendering"      : {
@@ -417,7 +387,11 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                 <div class="section-block">
                                     <img class="img-fluid" src="assets/images/custom-graphic.png" alt="Result of custom renderer - Map with markers" />
                                 </div>
-                                <p>That's it. Our first graphic is up!</p>
+                                <p><font size=4>That's it. Our first graphic is up!</font></p>
+                                <p>In the next section we will show you how to create really sophisticated graphics like the one of the demo trnsport model:</p>
+                                <div class="section-block">
+                                    <img class="img-fluid" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
+                                </div>
                             </section><!--//doc-section-->
                             <section id="custom-renderers" class="doc-section">
                                 <h2 class="section-title">Custom Renderers</h2>
@@ -481,7 +455,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
    }
 }</code></pre>
                                         </div><!--//code-block-->
-                                        <p>You can also use our <a href="#config-gen" class="scrollto">Configuration Generator</a> to generate the configuration file.
+                                        <p>You can also use our <a href="./configgen.html">Configuration Generator</a> to generate the configuration file.
                                       </p><p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
                                       <p>If we decided to run our WebUI now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
                                         <div class="code-block">
@@ -521,7 +495,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                               <section id="language-files" class="doc-section">
                                   <h2 class="section-title">Language Files</h2>
                                   <div class="section-block">
-                                      <p>The GAMS WebUI comes with the ability to change the preferred language from within the <a href="#config-gen" class="scrollto">configuration file</a>. Setting your preferred language in the configuration results in the WebUI embedding the corresponding language file where all the language specific components are specified via JSON syntax. The WebUI currently ships with two of those language files: English and German. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/en.json</span> and are validated against the <a href="https://json-schema.org/" target="_blank">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by the WebUI.</p>
+                                      <p>The GAMS WebUI comes with the ability to change the preferred language from within the <a href="./configgen.html">configuration file</a>. Setting your preferred language in the configuration results in the WebUI embedding the corresponding language file where all the language specific components are specified via JSON syntax. The WebUI currently ships with two of those language files: English and German. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/en.json</span> and are validated against the <a href="https://json-schema.org/" target="_blank">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/GMSWebUI/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by the WebUI.</p>
                                       <p>If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
                                       </div><!--//section-block-->
                               </section>
@@ -539,7 +513,6 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies between Widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-advanced">Advanced topics</a>
                                 </nav>
-                                <a class="nav-link scrollto" href="#config-gen">Configuration Generator</a>
                                 <a class="nav-link scrollto" href="#custom-graph">Graphics Configuration</a>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom Renderers</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
