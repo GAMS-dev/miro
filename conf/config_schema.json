@@ -96,7 +96,7 @@
             "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":true,
+               "default":false,
                "required":false
             },
             "logFile:":{  
@@ -154,7 +154,7 @@
       "saveTraceFile":{  
          "description":"Boolean which specifies whether trace file should be saved",
          "type":"boolean",
-         "default":false,
+         "default":true,
          "required":false
       },
       "inputWidgets":{

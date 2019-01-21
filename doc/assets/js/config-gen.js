@@ -1765,16 +1765,36 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                                         "title":"Use Chart",
                                                         "type":"object",
                                                         "properties":{
-                                                           "type":{
-                                                              "title":"chart type",
-                                                              "type":"string",
-                                                              "enum":[
-                                                                 "scatter",
-                                                                 "line",
-                                                                 "bar"
-                                                              ],
-                                                              "default":"scatter",
-                                                              "required":true
+                                                           "charttype":{
+                                                              "title":"chart type:",
+                                                              "type":"object",
+                                                              "properties":{
+                                                                 "choice":{
+                                                                   "title": "Choose tool for graph rendering",
+                                                                   "type": "string",
+                                                                   "enum": ["Scatter", "Line", "Bar"],
+                                                                   "required": true
+                                                                 },
+                                                                 "bar":{
+                                                                    "title":"Use Bar Plot",
+                                                                    "type":"object",
+                                                                    "properties":{
+                                                                       "barmode":{
+                                                                          "title":"select barmode",
+                                                                          "type":"string",
+                                                                          "enum":[
+                                                                             "group",
+                                                                             "stack"
+                                                                          ],
+                                                                          "default":"group",
+                                                                          "required":true
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              },
+                                                              "dependencies": {
+                                                                  "bar": ["choice"]
+                                                              }
                                                            },
                                                            "color":{
                                                               "title":"Symbol that is used to select different colors.",
@@ -3134,7 +3154,18 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                                         "chart":{
                                                            "dependencies":{
                                                               "choice": "Chart"
-                                                           }
+                                                           },
+                                                           "fields":{
+                                                              "charttype":{
+                                                                 "fields":{
+                                                                    "bar":{
+                                                                       "dependencies":{
+                                                                          "choice": "Bar"
+                                                                       }
+                                                                    }
+                                                                 }
+                                                              }
+                                                           }    
                                                         },
                                                         "histogram":{
                                                            "dependencies":{
@@ -3241,6 +3272,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "title":"Download JSON",
                     "click":function(){
                        co = this.getValue();
+                       console.log(co);
                        function makeKey(oldKey, newKey, outType = null){
                          if(typeof co.dataRendering[oldKey] !== 'undefined'){
                            for (var i = 0; i < co.dataRendering[oldKey].length; i++) {
@@ -3308,7 +3340,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      co.dataRendering[grname].outType = "graph";
                                }
                                if(co.dataRendering[grname].outType === "split view"){
-                                  co.dataRendering[grname].outType = "dtgraph";
+                                  co.dataRendering[grname].outType = "dtGraph";
                                }
                                //move object graph title to match the json schema
                                if(co.dataRendering[grname].hasOwnProperty("graphtitle")){
@@ -3343,7 +3375,10 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      co.dataRendering[grname].graph.type = "hist";
                                   }
                                   else if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Chart"){
-                                     co.dataRendering[grname].graph.type = co.dataRendering[grname].graph.plotly.graphtype.chart.type;
+                                     co.dataRendering[grname].graph.type = co.dataRendering[grname].graph.plotly.graphtype.chart.charttype.choice.toLowerCase();
+                                     if(co.dataRendering[grname].graph.type  === "bar"){
+                                        $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.plotly.graphtype.chart.charttype.bar);
+                                     }
                                   }
                                   else if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Pie"){
                                      co.dataRendering[grname].graph.type = "pie";
@@ -3354,6 +3389,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.plotly.graphtype[chosen.toLowerCase()]);
                                   delete co.dataRendering[grname].graph.plotly;
                                   delete co.dataRendering[grname].graph.graphtype;
+                                  delete co.dataRendering[grname].graph.charttype;
 
                                   //in a histogram the data is defined for the x axis, not for the y axis
                                   if(co.dataRendering[grname].graph.type === "hist"){
@@ -3367,7 +3403,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
 
                                }
                                delete co.dataRendering[grname].graph.choice;
-
                                //ydata manipulation for plotly and dygraphs: change the name of ydata objects to the "dataname" value
                                if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraphs") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
                                   for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {

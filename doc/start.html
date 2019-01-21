@@ -75,7 +75,7 @@
                                     <li>kport</li>
                                     This problem computes minimal cost solutions satisfying the demand of pre-given product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
                                     </ul>                                    
-                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code">--webui=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:</p> 
+                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code" style="white-space:nowrap">--webui=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:</p> 
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
                                     </div>
@@ -119,13 +119,8 @@
                                 </div><!--//section-block-->
                                 <div  id="start-2"  class="section-block">
                                     <h3 class="block-title">WebUI Overview</h3>
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    <p>Let's take the trnsport model as example to get an overview of the functionality of the WebUI. Hierzu starten wir das Modell trnsport.gms mit dem bereits zuvor erwahnten Befehl --webui=launch.</p>
-                                    <p>Once all the packages have been loaded, the GAMS WebUI will launch. Below you see the input mask of the WebUI as it appears after the start of the trnsport model.
+                                    <p>Let's take the trnsport model as example to get an overview of the functionality of the WebUI. For this purpose, we we run the model trnsport.gms with the already mentioned compile-time variable <span class="code" style="white-space:nowrap">--webui=launch</span>.</p>
+                                    <p>Once all the packages have been loaded, the GAMS WebUI will start. Below you see the input mask of the WebUI as it appears after the launch of the trnsport model.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
                                         <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" />
                                     </div>
@@ -191,7 +186,7 @@
                                                       <img class="img-fluid" src="assets/images/import.png" alt="Local Import" />
                                                 </div>
                                             </div>
-                                        <p>You can decide whether to import an existing data set from the database or load an existing spreadsheet from your local machine. 
+                                        <p><br>You can decide whether to import an existing data set from the database or load an existing spreadsheet from your local machine. 
                                         When the used GAMS model is started for the very first time in the web application, there is no data in the database yet, so loading a local file is the only reasonable option.
                                         For our trnsport model shown here, there is a suitable Excel spreadsheet in the directory from which the model was started, e.g. in <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.xlsx</span>.</p>
                                         <div class="callout-block callout-warning" id="create-excel">
@@ -301,7 +296,7 @@
                                     </div><!--//section-block-->
                                     <div id="workflow-6"  class="section-block">
                                         <h3 class="block-title">Scenario comparison</h3>
-                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. 
+                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios from the database. 
                                         The data that can be compared here correspond to the data that has already been visualized as input and output data the corresponding GAMS model (see section <a href="#workflow-2" class="scrollto">Data manipulation</a> and <a href="#workflow-4" class="scrollto">Inspect results</a>).
                                         <br>If two scenarios are to be compared, the split-screen display is particularly suitable. In this way, the data can be displayed side by side. </p>
                                         <div class="section-block" style="text-align:center;">
@@ -314,6 +309,7 @@
                                         <p>The <b>comparison mode</b> makes comparing scenarios much more efficient and convenient. 
                                         As soon as this option is activated via the <i>Compare mode</i> button in the navigation bar, switching the displayed data within a scenario is also performed for all other open scenarios. 
                                         This means that if you change the symbol to be displayed in a scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes accordingly for the compared scenario(s).</p>
+                                        <p>By the way: For many operations in the WebUI there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. <a href="./shortcuts.html">Here [missing link]</a> you can see which shortcuts are available</p>
                                     </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="additional-features" class="doc-section">
@@ -353,6 +349,7 @@
                                         <a class="nav-link scrollto" href="#workflow-3">Solve the model</a>
                                         <a class="nav-link scrollto" href="#workflow-4">Inspect the results</a>
                                         <a class="nav-link scrollto" href="#workflow-5">Save / delete results</a>
+                                        <a class="nav-link scrollto" href="#workflow-6">Scenario comparison</a>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#additional-features">Additional features</a>
                                       <nav class="doc-sub-menu nav flex-column">

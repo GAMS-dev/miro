@@ -180,7 +180,7 @@ total_cost = z.l;
 
 $libInclude webui
 </code></pre> 
-                                        <p><b>Note</b>: The file webui.gms is copied into the <i> GAMS library include directory</i> (by default, this is the directory <i>inclib</i> in the GAMS system directory) during the GAMS installation and can be included with a <span class="code"><a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARlibinclude" target="_blank">$libinclude</a></span>.</p>
+                                        <p><b>Note</b>: The file webui.gms is copied into the <i> GAMS library include directory</i> (by default, this is the directory <i>inclib</i> in the GAMS system directory) during the WebUI installation and can be included with a <span class="code"><a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARlibinclude" target="_blank">$libinclude</a></span>.</p>
                                         <p>That's it. The model is now ready in a first version for use with the WebUI.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -228,10 +228,15 @@ $libInclude webui
                                                 <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
                                             </div>
                                             The first time this is done, all R packages needed for the WebUI will be automatically installed. This may take a while. When the installation is complete, the WebUI opens with the default browser of the operating system.
-                                            With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS. When the model run has finished successfully, the results can be examined. In the default configuration, tables and pivot tables are generated.
                                           </li>
                                         </ul>
                                         <p><br>Congratulations! A first version of your new WebUI is now up and running!</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
+                                            <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" />
+                                        </div>
+                                        <p>With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS. When the model run has finished successfully, the results can be examined. 
+                                        In the default configuration, tables and pivot tables are generated.
+                                        Since the WebUI is connected to a database, you can store results there, reload data and compare scenarios.</p>
                                     </div><!--//section-block-->    
                             </section><!--//doc-section-->
                             <section id="conventions-section" class="doc-section">
@@ -240,7 +245,7 @@ $libInclude webui
                                     <p>There are a few conventions for the representation of symbols in the WebUI, which are explained in this section.</p>
                                 </div><!--//section-block--> 
                                 <div  id="create-3"  class="section-block">
-                                    <h3 class="block-title">Visualization of parameters</h3>
+                                    <h3 class="block-title">Visualization of parameters - tables</h3>
                                     <p>For the examples below we use the demo model Pickstock. In this model the following input data has been marked for use within the WebUI:</p>
                                     <pre><code class="language-gams">$onExternalInput
 Set date   'date'
@@ -255,34 +260,86 @@ $offExternalInput
                                     <p>Here, the parameter <span class="code">price</span> as well as the scalars <span class="code">maxstock</span> and <span class="code">trainingdays</span> are declared between the mentioned tags <span class="code">$onExternalInput</span> and <span class="code">$offExternalInput</span>.</p>
                                     <p>When starting the WebUI via <span class="code">--webui=launch</span> and loading the <a href="./start.html#create-excel">newly created excel spreadsheet</a> into the WebUI, the following input screen appears:</p>
                                     
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="width:75%;" src="assets/images/deploy_pickstock4.png" alt="Pickstock: imput symbols displayed in the WebUI" />
+                                    <div class="section-block" style="text-align:center;" id="no-header">
+                                        <img class="img-fluid" style="max-height:300pt;" src="assets/images/deploy_pickstock4.png" alt="Pickstock: imput symbols displayed in the WebUI" />
                                     </div>
                                     
                                     
                                     <p>In the default WebUI configuration, each <i>index</i> of a GAMS Parameter is shown in a separate column. The last column contains the parameter <i>values</i>. With this configuration, each <i>set element</i> of an index will be visible in a separate row. In the given example the Parameter <span class="code">price</span> has two indices <span class="code">date</span> and <span class="code">symbol</span>. Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol).
                                     </p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="width:75%;" src="assets/images/deploy_pickstock2_b.png" alt="Visualization of described table" />
+                                        <img class="img-fluid" style="max-height:125pt;" src="assets/images/deploy_pickstock2_b.png" alt="Visualization of described table" />
                                     </div>
-                                    <p>Sometimes it can be useful to show each set element of an index in a separate column of the table. For the parameter of the example above this would mean to have a column not for the set <span class="code">symbol</span> ("<span class="code">stockSymbol</span>") itself but for all its elements <span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc. To achieve this, a minor change in the declaration of the corresponding set has to be made.</p>
-                                    <p>One can either:
+                                    <p>Sometimes it can be useful to show each set element of an index in a separate column of the table. For the parameter of the example above this would mean to have a column not for the set <span class="code">symbol</span> ("<span class="code">stockSymbol</span>") itself but for all its elements <span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc. 
+                                    <br>In order to achieve this type of pivot functionality, a minor change must be made to the declaration of the corresponding symbol, namely a keyword must be included.</p>
+                                    <p>Keywords are: <span class="code">header</span>, <span class="code">hdr</span> and <span class="code">pivot</span></p>
+                                    <p>One can either:</p>
                                       <ul>
-                                        <li>Change the name of the set so that it ends with the header-keyword: <span class="code">hdr</span> (to avoid renaming the set for the entire GAMS model, you can declare an alias for the set afterwards).
-                                        <li>Change the explanatory text of the set so that it ends with the keyword <span class="code">hdr</span>. This is shown in the image below.</li>
+                                        <li><b>Change the name of the set</b> which should be displayed as header so that it ends with a header-keyword. To avoid renaming the set for the entire GAMS model, you can declare an alias for the set afterwards.
+                                        <br>In the example this is done with <span class="code">symbol</span> which is changed to <span class="code">symbol_header</span>.
+                                        <pre><code class="language-gams">$onExternalInput
+Set date   'date'
+    symbol_header 'stockSymbol';
+    
+Parameter price(date,symbol_header) 'Price';
+
+Scalar maxstock        'maximum number of stocks to select'  / 2  /
+       trainingdays    'number of days for training'  / 99  /;
+$offExternalInput
+Alias(symbol_header,symbol);
+</pre></code></li>
+                                        <br><li><b>Change the explanatory text of the set</b> which should be displayed as header so that it ends with a header-keyword.
+                                        <pre><code class="language-gams">$onExternalInput
+Set date   'date'
+    symbol 'stockSymbol hdr';
+    
+Parameter price(date,symbol) 'Price';
+
+Scalar maxstock        'maximum number of stocks to select'  / 2  /
+       trainingdays    'number of days for training'  / 99  /;
+$offExternalInput
+</pre></code></li>
+                                        <br><li><b>Change the explanatory text of the parameter</b> which should have a header so that it ends with one of the header-keywords. When doing this, the elements of the last parameter index will be displayed in the header. (In the example this is done with <span class="code">price</span>).
+                                        <pre><code class="language-gams">$onExternalInput
+Set date   'date'
+    symbol 'stockSymbol';
+    
+Parameter price(date,symbol) 'Price pivot';
+
+Scalar maxstock        'maximum number of stocks to select'  / 2  /
+       trainingdays    'number of days for training'  / 99  /;
+$offExternalInput
+</pre></code></li>
                                       </ul>
-                                      <div class="section-block">
+                                      <p>The result of all these alternatives is shown in the example below.</p>
+                                      <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
                                       </div>
-                                      <p>The Set <span class="code">symbol</span> is defined as the last index of parameter <span class="code">price</span>. We have changed the explanatory text of the Set <span class="code">symbol</span> so that it ends with <span class="code">hdr</span>.
-                                      The result of this is that each element of <span class="code">symbol</span> (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) is now represented in its own column.</p>
-                                      <p>Note that a table width in this way quickly increases when the number of set elements of the last index gets higher. A number of for example 30 Stocks to be represented in a table would lead to 30 stock columns. In this case the default configuration for a table as shown first might be better.</p>
-                                      <p>If a Parameters with <b>multiple value columns</b> has to be displayed within the WebUI, a manual definition of the header is required. This is done in the demo model <span class="code">kport</span> for the Parameter <span class="code">PData</span>. By defining the Index <span class="code">phdr</span> as last index of <span class="code">PData</span>, the set elements <span class="code">Demand</span> and <span class="code">Production Time</span> are shown as value columns in the WebUI table.
-                                          <div class="section-block" style="text-align:center;">
-                                              <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
-                                          </div>
-                                      <div style="text-align:center; margin-left:auto; margin-right:auto; width:75%;"><p><br><i>"A table is fine, but actually I want to see beautiful and meaningful graphics in a WebUI."</i></p></div>
-                                      <p>Of course this is also possible. In this section it's only about getting a functional WebUI. More about visualization and custom graphics can be found <a href="./customize.html">here</a>.</p>
+                                      <p>Each element of <span class="code">symbol</span> (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) is now represented in its own column.
+                                      <br><b>Note</b>: By renaming the the set <span class="code">symbol</span> to e.g. <span class="code">symbol_header</span> or change its explanatory text, we achieve the same thing.
+                                      In both variants it would be used as header in every parameter in which it is defined. If you only want to specify the header of one single parameter, independent of others, you need to use the header keyword at the end of the explanatory text of exactly this parameter (in this case the explanatory text of parameter <span class="code">price</span>).</p>
+                                      <p>A table width quickly increases when the number of set elements of the header index gets higher. A number of, for example, 30 Stocks to be represented in a table would lead to 30 stock columns. In this case the default configuration for a table as shown <a href="#no-header" class="scrollto">first</a> might be better.</p>
+                                      <p>If a Parameters with <b>multiple value columns</b> has to be displayed within the WebUI, a manual definition of the header is <b>mandatory</b>. This is done in the demo model <span class="code">kport</span> for the Parameter <span class="code">PData</span>. By defining the Index <span class="code">phdr</span> as last index of <span class="code">PData</span>, the set elements <span class="code">Demand</span> and <span class="code">Production Time</span> are shown as value columns in the WebUI table.</p>
+                                      <pre><code class="language-gams">$onExternalInput
+Set 
+   phdr   'Product data headers' / Demand, 'Production Time' /
+   s      'Scenario'             / s1,s2  /
+   pP     'Product'              / L1*L37 /;
+    
+Parameter PData(pP,s,phdr) 'Product data';
+$offExternalInput
+</pre></code>    
+                                       <p><br>Resulting in the following table:</p>
+                                       <div class="section-block" style="text-align:center;">
+                                           <img class="img-fluid" src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
+                                       </div>
+                                       <div style="text-align:center; margin-left:auto; margin-right:auto; width:75%;"><p><br><i>"A table is fine, but actually I want to see beautiful and meaningful graphics in a WebUI."</i></p></div>
+                                       <p>Of course this is also possible. In this section it's only about getting a functional WebUI. More about visualization and custom graphics can be found <a href="./customize.html">here</a>.</p>
+                                </div><!--//section-block-->
+                                <div  id="create-pivot"  class="section-block">
+                                    <h3 class="block-title">Visualization of parameters - Pivot tables</h3>
+                                    <p>Pivot tables:</p>
+                                    <p>in hypercube.html ist #create-3 href - aendern in create-3a, wenn untermenue ok.</p>
                                 </div><!--//section-block-->
                                 <div  id="create-4"  class="section-block">
                                     <h3 class="block-title">Visualization of scalar values</h3>
@@ -336,6 +393,10 @@ $offExternalInput
                                 <a class="nav-link scrollto" href="#conventions-section">Visualization conventions</a>
                                   <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#create-3">Visualization of parameters</a>
+                                    <nav class="doc-sub-menu nav flex-column">
+                                      <a class="nav-link scrollto" href="#create-3a">tables</a>
+                                      <a class="nav-link scrollto" href="#create-3b">pivot tables</a>
+                                    </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#create-4">Visualization of scalar values</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#create-compile">Command line Parameters</a>
