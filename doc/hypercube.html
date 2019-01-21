@@ -263,28 +263,53 @@
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:300pt;" src="assets/images/batch_img/config_batch_file.png" alt="generated Hypercube file" />
                                         </div>
                                          <p>Example: In the first row of the shown Hypercube file it says <br>
-                                        <span class="code">e8cadaf84b70a77a99b900c8547c48d882c294d58b2543348bceed2edbfcce17: gams pickstock.gms --maxstock=5 --trainingdays=50 trace=_sys_trace_pickstock.trc traceopt=3</span>
-                                        <br> 
+                                         <kbd><span class="code">6a2aa365dc5bf73ce3338cd777c8f580c4f84d2b231775b9e5ebf3f5b9d5200b: gams trnsport.gms</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_b=903a590a1d292065f2b59feec1cc0952</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_d=5aa0ca4b0dd82eb9c966c36e48bc245a</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_mins=100</span> 
+                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_beta=0.95</span> 
+                                         <span class="code" style="white-space:nowrap">--type=lp</span>
+                                         <span class="code" style="white-space:nowrap">trace=_sys_trace_trnsport.trc traceopt=3</span></kbd>
+                                        <br>  
                                         <p>The following information is included:</p>
                                         <ul>
                                           <li>Hash value:
                                           <br>Each line begins with an individual, so-called <i>hash value</i> which is used to uniquely identify a scenario. Those values are calculated / hashed using the sha256 algorithm based on the respective line of the Hypercube file.</li>
                                           <li>GAMS call:
-                                          <br>After the hash, the GAMS call <span class="code" style="white-space:nowrap">gams trnsport.gms</span> follows. </li>
+                                          <br>After the hash, the GAMS call (in this example: <span class="code" style="white-space:nowrap">gams trnsport.gms</span>) follows. </li>
                                           <li>Scenario input data:
                                           <br>A scenario is calculated using scenario-specific input data. This input data consists of the parameterization of scalars, parameters, command-line parameters, and so on, which have been configured in the WebUI.
-                                          From the previously discussed Cartesian product, exactly one parameterization is used per scenario.</li>
+                                          A detailed description of the input data handling is explained <a href="#scengen-manual-input" class="scrollto">below</a>.
                                           <li>Trace file command:
-                                          <br>Unless otherwise set, the trace file should be created for each scenario. This provides the integrated analysis tool PAVER with important information for performance analysis. </li>
-                                          <li></li>
-                                          <li></li>
+                                          <br>The trace file should be created for each scenario. This provides the integrated analysis tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> with important information for performance analysis. 
+                                          Unless otherwise set, the GAMS command for creating this trace file is included for each scenario in the Hypercube file (here:
+                                          <span class="code" style="white-space:nowrap">trace=_sys_trace_pickstock.trc traceopt=3</span>)</li>
                                         </ul>
-                                       
                                         
-                                        Here, the parameters selected in the WebUI are passed as compile-time variables (double-dash parameters). This must be considered in the GAMS model to be executed: Each parameter, 
-                                        which is represented as widget (slider, dropdown, checkbox, date selector) in the WebUI and therefore is to define an individual senario, must be addressed within the GAMS model as compile-time variable or GAMS option.
-                                        <br>The image above does not show that the expected GAMS call will be followed by further details. In these, for example, the creation of a trace file is defined, which is necessary for the internal analysis using <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a>. </p>
-                                        <p>Since the strings in the form in which they are now available are not calls that can be interpreted by GAMS due to the hash value at the beginning, the information about the individual calls must be extracted. 
+                                    </div><!--//section-block-->
+                                    <div  id="scengen-manual-input"  class="section-block">
+                                        <p><b>Input data format</b>:
+                                        <br>All input data coming from the WebUI is contained in the Hypercube file in some way.
+                                        <ul>
+                                          <li>Command line parameters:
+                                          <br>GAMS compile-time variables and GAMS options are already in the correct format for a GAMS call. 
+                                          Examples: <br><span class="code" style="white-space:nowrap">--type=lp</span> for a compile-time variable "<span class="code" style="white-space:nowrap">type</span>" set to "<span class="code" style="white-space:nowrap">lp</span>" or <br><span class="code" style="white-space:nowrap">lp=CPLEX</span> for the GAMS option "<span class="code" style="white-space:nowrap">lp</span>" to select a LP solver (in this case <span class="code" style="white-space:nowrap">CPLEX</span>).</li>
+                                          <li>Scalars:
+                                          <br>Scalars can usually not be defined via a GAMS call, but are set in the model itself. In order to be able to set scalars via WebUI, the following happens:
+                                          <br>If a scalar is set, this is recorded in the Hypercube file as 
+                                          <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_&lt;scalar-name&gt;=&lt;scalar-value&gt;</span>, e.g. <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span> for scalar <span class="code" style="white-space:nowrap">f</span> and a value of 90. 
+                                          To continue this example, if the GAMS model is now called with <span class="code" style="white-space:nowrap">--webui=1</span> and the compile-time variable <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span>, a scalar <span class="code" style="white-space:nowrap">f</span> is searched in the symbol declarations of the underlying GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90.</li>
+                                          <li>Static scenario input data such as parameters are used as fixed files for all scenarios of a Hypercube job. In the Hypercube file such static files are specified with the keyword <span class="code" style="white-space:nowrap">--HCUBE_STATIC_&lt;parameter-name&gt;=</span> and a hash value of the corresponding parameter. Example: 
+                                          In the trnsport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, in the corresponding file it says "<span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>".                                        
+                                          In the automatic execution of Hypercube jobs this information is used internally. In manual execution, the string can be ignored. However, it must be ensured that the static files are correctly named and located in the right directory.</p>
+                                          </li>
+                                        </ul>
+                                    </div><!--//section-block-->
+                                    <div  id="scengen-string-conversion"  class="section-block">
+                                        <p><b>String converison</b>:
+                                        <br>Since the strings in the form in which they are available in the Hypercube file are not calls that can be interpreted by GAMS due to the hash value at the beginning, the information about the individual calls must be extracted. 
                                         Probably the easiest way to do this is to take each GAMS call and execute it with the help of a script in a separate folder (which has to be named after the hash value of the scenario in order to be able to identify each scenario), in which the results are also stored. 
                                         If the scenarios are to be executed on a special compute server, it is a good idea to take all necessary precautions, which have to be considered in the script (e.g. folder structure on computer, login data, etc.). In short, the jobsubmission script must be adapted to the environment in which it will finally be executed. 
                                         <br>The illustration below shows schematically how the conversion of the generated Hypercube file into an executable GAMS script could look like.</p>
@@ -293,13 +318,12 @@
                                         </div>
                                     </div><!--//section-block-->
                                     <div  id="scengen-4"  class="section-block">
-                                        <h3 class="block-title">Compute server</h3>
-                                        <p>After the click on "Submit jobs" the generated Hypercube file is available for download. In addition to this file, the ZIP file also contains all files necessary for the scenario calculations. More precisely, all files located in the WebUI folder of the corresponding GAMS model will be added to the ZIP.</p>
-                                        <p>Job submission: <br>If a script that can be executed by GAMS has been created from the Hypercube file (e.g. as described above), it can be called ('Job submission', see image below). If the model calculations are to be performed on a compute server, this can now be done.</p>
+                                        <p><b>Compute server</b>:
+                                        <br>If a script that can be inerpreted by GAMS has been created from the Hypercube file (e.g. as described above), it can be executed. If the model calculations are to be performed on a compute server, this can now be done.</p>
                                     </div><!--//section-block-->
                                     <div  id="scengen-5"  class="section-block">    
-                                        <h3 class="block-title">Import Results</h3>
-                                        <p>Either way, at the end of the calculations, the results should be available in the form of another ZIP file. There are rules for the upload of such a zip file, which have to be followed to be accepted by the WebUI as valid scenario data.</p>
+                                        <p><b>Import results</b>:
+                                        <br>At the end of the calculations, the results should be available in the form of another ZIP file. There are rules for the upload of such a zip file, which have to be followed to be accepted by the WebUI as valid scenario data.</p>
                                         <ul>
                                         <li>Results have to be separated according to scenarios: <br>Each scenario has a separate folder in the root directory of the ZIP file. This folder must be named after the hash value of the scenario. It contains the calculated result / output data.
                                         <div class="section-block">
@@ -323,18 +347,17 @@
                                         <li>The results must be available in CSV format.</li>
                                         <li>CSV files must be named after the parameters declared in the GAMS model between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. Each output parameter declared there must be stored in a separate CSV file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
                                         <li>It is mandatory that the header line of a CSV file is identical to the corresponding parameter declared in GAMS.
-                                        <br>Example: In the Pickstock model, the output parameter <span class="code" style="white-space:nowrap">partOfPortfolio</span> is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. The resulting <i>partofportfolio.csv</i> contains the header row "<span class="code" style="white-space:nowrap">StockSymbol,what part of the portfolio</span>", which corresponds to the texts of the indexes <span class="code" style="white-space:nowrap">symbol</span> and <span class="code" style="white-space:nowrap">partOfPortfolio</span>.
+                                        <br>Example: In the trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. 
+                                        The resulting <i>schedule.csv</i> contains the header row "<span class="code" style="white-space:nowrap">canning plants,markets,cap,demand,quantities</span>", 
+                                        which corresponds to the explanatory texts of the indexes <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
+                                        The conventions concerning the selection of the headers can be found <a href="./model.html#create-3" target="_blank">here</a>.</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="display:block; margin:auto;" src="assets/images/batch_img/pickstock_output_symbols.png" alt="CSV file header row" />
                                         </div>
-                                        <br>Another parameter declared is <span class="code" style="white-space:nowrap">dowVSindex</span>. Here, the <i>dowvsindex.csv</i> has the header row "<span class="code" style="white-space:nowrap">date,dow jones,index fund</span>", which results from the explanatory text of the symbol <span class="code" style="white-space:nowrap">date</span> and the text of the declared header <span class="code" style="white-space:nowrap">fHdr</span>.
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="display:block; margin:auto;" src="assets/images/batch_img/pickstock_output_symbols2.png" alt="CSV file with declared header row" />
-                                        </div>
-                                        The conventions concerning the selection of the headers can be found <a href="./model.html#create-3" target="_blank">here</a>.
+                                        
                                         </li>
                                         </ul>
-                                        <p>As already mentioned, these CSV files are usually generated automatically. However, optional files can be deleted manually so that they are not included in the database.</p>
+                                        <p>As already mentioned, CSV files are usually generated automatically. However, optional files can be deleted manually so that they are not included in the database.</p>
 
                                         <p>The picture below extends the previous schema and shows the workflow from the generated Hypercube file over its conversion to an executable GAMS script, the job submission (local or via compute server) up to the structure of the obtained results.</p>
                                         <div class="section-block" style="text-align:center;">
@@ -342,11 +365,11 @@
                                         </div>
                                     </div><!--//section-block-->
                                     <div  id="scengen-6"  class="section-block">
-                                        <h3 class="block-title">Scenario upload</h3>
-                                        <p>Once the desired scenarios have been calculated, the next step is to load the results into the WebUI database. For this purpose the module "import results" is used.
+                                        <p><b>Scenario upload</b>:
+                                        <br>Once the desired scenarios have been calculated, the next step is to load the results into the WebUI database. For this purpose the module "import results" is used.
                                         In the overview, which shows the automated generation and loading of results, click on <i>Manual import</i> at the bottom right. </p>
                                         <div class="section-block">
-                                            <img class="img-fluid" style="display:block; margin:auto; max-width="500" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
+                                            <img class="img-fluid" style="display:block; margin:auto; max-width:325pt" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
                                         </div>
                                         <h6>Upload Zip file with results:</h6>
                                         <p>For a trouble-free upload, the scenario data must be available in a zip file. Each calculated scenario is located in a separate folder, which is named after the hash value of the scenario. In addition to the input and output data of the scenario (in the form of CSV files), the trace file of the GAMS run is also located there. </p>
@@ -447,9 +470,6 @@
                                       <a class="nav-link scrollto" href="#scengen-2">Parameterization</a>
                                       <a class="nav-link scrollto" href="#scengen-3">Automated job submission</a>
                                       <a class="nav-link scrollto" href="#scengen-manual">Manual job submission</a>
-                                      <a class="nav-link scrollto" href="#scengen-4">Compute server</a>
-                                      <a class="nav-link scrollto" href="#scengen-5">Import Results</a>
-                                      <a class="nav-link scrollto" href="#scengen-6">Scenario upload</a>
                                     </nav><!--//nav-->
 	                                <a class="nav-link scrollto" href="#analyses-section">Scenario Analyses</a>
                                     <nav class="doc-sub-menu nav flex-column">
