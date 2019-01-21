@@ -1,8 +1,8 @@
-let gmsSymIn  = new Object();
-let gmsSymOut  = new Object();
-let gmsSymHdrIn = new Object();
-let gmsSymNumHdrIn = new Object();
-let gmsSymHdr = new Object();
+let gmsSymIn  = {};
+let gmsSymOut  = {};
+let gmsSymHdrIn = {};
+let gmsSymNumHdrIn = {};
+let gmsSymHdr = {};
 let scalarSyms = [];
 let scalars = [];
 
@@ -21,8 +21,8 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
         var gmsData = JSON.parse(e.target.result);
         gmsSymIn  = Object.keys(gmsData.gamsInputFiles);
         gmsSymOut  = Object.keys(gmsData.gamsOutputFiles);
-        var gmsSymHdrOut = new Object();
-        var gmsSymNumHdrOut = new Object();
+        var gmsSymHdrOut = {};
+        var gmsSymNumHdrOut = {};
         var i = 0;
 
         while (i < gmsSymIn.length) {
@@ -87,9 +87,9 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
           $("#errMsg").show();
           return;
       }
-    }
+    };
   fr.readAsText(files.item(0));
-};
+}
 
 function mergeExisting(){
   let configFile = $("#configJSONfile")[0].files;
@@ -109,9 +109,9 @@ function mergeExisting(){
         $("#errMsg").show();
         return;
     }
-  }
+  };
   configFR.readAsText(configFile.item(0));
-};
+}
 
 function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr, scalars, scalarSyms, existingConfig = null){
     let gmsSymHeaders = [];
@@ -301,7 +301,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "widgetType":{
                       "title":"What type of input widget do you want?",
                       "type":"string",
-                      "enum":["slider","dropdown","date selector","date range selector","checkbox"],
+                      "enum":["slider","dropdown","date selector","date range selector","checkbox", "textinput"],
                       "default":"slider",
                       "required":true
                     },
@@ -882,6 +882,47 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         }
                       }
+                    },
+                    "textinput":{
+                      "type":"object",
+                      "additionalProperties":false,
+                      "properties":{
+                        "label":{
+                          "title":"Descriptive text for textinput",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "value":{
+                          "title":"default value",
+                          "type":"integer",
+                          "minimum":0,
+                          "maximum":1,
+                          "required":false
+                        },
+                        "placeholder":{
+                          "title":"placeholder when nothing is entered (can be used e.g. to give more information on what kind of input is expected from user)",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "width":{
+                          "title":"width of the input",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "noHcube":{
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
+                          "type":"boolean",
+                          "required":false
+                        },
+                        "noImport":{
+                          "title":"Should data NOT be imported from an external source (e.g. spreadsheet)?",
+                          "type":"boolean",
+                          "required":false
+                        }
+                      }
                     }
                   },
                   "dependencies":{
@@ -891,7 +932,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "slider":["widgetType"],
                     "date":["widgetType"],
                     "daterange":["widgetType"],
-                    "checkbox":["widgetType"]
+                    "checkbox":["widgetType"],
+                    "textinput":["widgetType"]
                   }
                 }
               },
@@ -918,7 +960,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "widgetType":{
                       "title":"What type of input widget do you want?",
                       "type":"string",
-                      "enum":["slider","dropdown","date selector","date range selector","checkbox"],
+                      "enum":["slider","dropdown","date selector","date range selector","checkbox", "textinput"],
                       "default":"slider",
                       "required":true
                     },
@@ -1437,6 +1479,47 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         }
                       }
+                    },
+                    "textinput":{
+                      "type":"object",
+                      "additionalProperties":false,
+                      "properties":{
+                        "label":{
+                          "title":"Descriptive text for textinput",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "value":{
+                          "title":"default value",
+                          "type":"integer",
+                          "minimum":0,
+                          "maximum":1,
+                          "required":false
+                        },
+                        "placeholder":{
+                          "title":"placeholder when nothing is entered (can be used e.g. to give more information on what kind of input is expected from user)",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "width":{
+                          "title":"width of the input",
+                          "type":"string",
+                          "minLength":1,
+                          "required":false
+                        },
+                        "noHcube":{
+                          "title":"Should element be excluded from Hypercube mode (only relevant in Hypercube module)?",
+                          "type":"boolean",
+                          "required":false
+                        },
+                        "noImport":{
+                          "title":"Should data NOT be imported from an external source (e.g. spreadsheet)?",
+                          "type":"boolean",
+                          "required":false
+                        }
+                      }
                     }
                   },
                   "dependencies":{
@@ -1445,6 +1528,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "date":["widgetType"],
                     "daterange":["widgetType"],
                     "checkbox":["widgetType"],
+                    "textinput":["widgetType"],
                     "noHcube":["widgetType"]
                   }
                 }
@@ -2778,7 +2862,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                      },
                       "table":{
                         "dependencies":{
-                           "gmsParam": gmsSymIn
+                           "gmsParam": gmsSymIn,
+                           "widgetType": "table"
                         }
                       },
                       "dropdown":{
@@ -2935,9 +3020,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            "widgetType": "checkbox"
                         }
                       },
-                      "table":{
+                      "textinput":{
                         "dependencies":{
-                           "widgetType": "table"
+                           "widgetType": "textinput"
                         }
                       }
                    }
@@ -3100,6 +3185,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                      "checkbox":{
                        "dependencies":{
                           "widgetType": "checkbox"
+                       }
+                     },
+                     "textinput":{
+                       "dependencies":{
+                          "widgetType": "textinput"
                        }
                      }
                    }
@@ -3649,6 +3739,21 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                    widget.checkbox.alias = widget.alias;
                                    widget.checkbox.widgetType = widget.widgetType;
                                    widget = widget.checkbox;
+                                 }
+                               break;
+                               case "textinput":
+                                 if(!widget.textinput.noHcube){
+                                   delete widget.textinput.noHcube;
+                                 }
+                                 if(!widget.textinput.noImport){
+                                   delete widget.textinput.noImport;
+                                 }
+                                 if($.isEmptyObject(widget.textinput)){
+                                   delete widget.textinput;
+                                 }else{
+                                   widget.textinput.alias = widget.alias;
+                                   widget.textinput.widgetType = widget.widgetType;
+                                   widget = widget.textinput;
                                  }
                                break;
                                default:
