@@ -118,6 +118,9 @@ lapply(seq_along(modelIn), function(i){
              errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
              return(NULL)
            }
+           if(names(modelIn)[i] %in% c(DDPar, GMSOpt)){
+             value <- escapeGAMSCL(value)
+           }
            # add name and description fields
            scalar      <- names(modelIn)[[i]]
            description <- modelInAlias[i]

@@ -154,7 +154,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(input[["cb_" %+% i]])
              },
              textinput = {
-               return(escapeGAMSCL(input[["text_" %+% i]]))
+               value <- input[["text_" %+% i]]
+               if(names(modelIn)[i] %in% c(DDPar, GMSOpt)){
+                 value <- escapeGAMSCL(value)
+               }
+               return(value)
              },
              dt =,
              hot = {
