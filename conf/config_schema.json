@@ -567,9 +567,8 @@
                    },
                    "value":{  
                      "description":"default value",
-                     "type": "integer",
-                     "minimum":0,
-                     "maximum":1
+                     "type": "string",
+                     "minLength":1
                    },
                    "placeholder":{  
                      "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",

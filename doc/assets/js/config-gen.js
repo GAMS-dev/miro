@@ -887,12 +887,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "value":{
-                          "title":"default value",
-                          "type":"integer",
-                          "minimum":0,
-                          "maximum":1,
-                          "required":false
+                           "value":{  
+                           "description":"default value",
+                           "type": "string",
+                           "minLength":1,
+                           "required":false
                         },
                         "placeholder":{
                           "title":"placeholder when nothing is entered (can be used e.g. to give more information on what kind of input is expected from user)",
@@ -1484,12 +1483,10 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "value":{
-                          "title":"default value",
-                          "type":"integer",
-                          "minimum":0,
-                          "maximum":1,
-                          "required":false
+                        "value":{  
+                           "description":"default value",
+                           "type": "string",
+                           "minLength":1
                         },
                         "placeholder":{
                           "title":"placeholder when nothing is entered (can be used e.g. to give more information on what kind of input is expected from user)",
