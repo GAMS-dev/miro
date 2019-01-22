@@ -154,11 +154,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(input[["cb_" %+% i]])
              },
              textinput = {
-               value <- input[["text_" %+% i]]
-               if(names(modelIn)[i] %in% c(DDPar, GMSOpt)){
-                 value <- escapeGAMSCL(value)
-               }
-               return(value)
+               return(input[["text_" %+% i]])
              },
              dt =,
              hot = {
@@ -171,7 +167,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              })
     })
     par <- modelInGmsString[!is.na(elementValues)]
-    elementValues <- elementValues[!is.na(elementValues)]
+    elementValues <- escapeGAMSCL(elementValues[!is.na(elementValues)])
     gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
@@ -446,7 +442,7 @@ observeEvent(input$btSolve, {
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                    function(i){
                                      if(!identical(DDParValues[[3]][i], "_")) 
-                                       paste0('--', DDParValues[[1]][i], '="', DDParValues[[3]][i], '"')
+                                       paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
                                      else
                                        NA_character_
                                    }, character(1L), USE.NAMES = FALSE)
@@ -455,7 +451,7 @@ observeEvent(input$btSolve, {
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
                                   if(!identical(GMSOptValues[[3]][i], "_")) 
-                                    GMSOptValues[[1]][i] %+% '="' %+% GMSOptValues[[3]][i] %+% '"'
+                                    paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
                                   else
                                     NA_character_
                                 }, character(1L), USE.NAMES = FALSE)
