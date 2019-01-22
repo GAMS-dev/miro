@@ -1,7 +1,7 @@
 # R6 class for database related functions
 Db <- R6Class("Db",
               public = list(
-                initialize        = function(uid, dbConf, dbSchema, slocktimeLimit,
+                initialize        = function(uid, dbConf, dbSchema, slocktimeLimit, modelName,
                                              traceColNames = NULL, attachmentConfig = NULL){
                   # Initialize database class
                   #
@@ -10,39 +10,42 @@ Db <- R6Class("Db",
                   #                        includes: type, host, port(optional), username, 
                   #                        password and name elements
                   #   dbSchema:            database schema
+                  #   modelName:           name of the current model
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist 
                   #   attachmentConfig:    attachment module configuration
                   
                   #BEGIN error checks 
                   if(is.null(private$info$isInitialized)){
-                    private$info$isInitialized <- 1
+                    private$info$isInitialized <- 1L
                   }else{
                     flog.error("Db: Tried to create more than one Db object.")
                     stop("An Object of class Db has already been initialized. Only one Db object allowed.", 
                          call. = FALSE)
                   }
-                  stopifnot(is.character(uid), length(uid) == 1)
+                  stopifnot(is.character(uid), length(uid) == 1L)
                   if(!identical(dbConf$type, "sqlite")){
                     dbConf$type <- "postgres"
-                    stopifnot(is.character(dbConf$host), length(dbConf$host) == 1)
-                    stopifnot(is.character(dbConf$username), length(dbConf$username) == 1)
-                    stopifnot(is.character(dbConf$password), length(dbConf$password) == 1)
+                    stopifnot(is.character(dbConf$host), length(dbConf$host) == 1L)
+                    stopifnot(is.character(dbConf$username), length(dbConf$username) == 1L)
+                    stopifnot(is.character(dbConf$password), length(dbConf$password) == 1L)
                   }
-                  stopifnot(is.character(dbConf$name), length(dbConf$name) == 1)
-                  stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1)
+                  stopifnot(is.character(dbConf$name), length(dbConf$name) == 1L)
+                  stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1L)
                   if(!is.null(dbConf$port)){
-                    stopifnot(is.numeric(dbConf$port) && length(dbConf$port) == 1)
+                    stopifnot(is.numeric(dbConf$port) && length(dbConf$port) == 1L)
                   }
-                  stopifnot(is.character(dbConf$type), length(dbConf$type) == 1)
+                  stopifnot(is.character(dbConf$type), length(dbConf$type) == 1L)
                   stopifnot(is.list(dbSchema), !is.null(dbSchema$tabName), !is.null(dbSchema$colNames),
                             !is.null(dbSchema$colTypes))
                   if(!is.null(attachmentConfig)){
                     stopifnot(is.list(attachmentConfig), length(attachmentConfig) >= 1L)
                   }
+                  stopifnot(is.character(modelName), length(modelName) == 1L)
                   #END error checks 
                   
                   private$uid                         <- uid
                   private$userAccessGroups            <- uid
+                  private$modelName                   <- modelName
                   private$dbSchema                    <- dbSchema
                   private$scenMetaColnames            <- dbSchema$colNames[['_scenMeta']]
                   private$slocktimeIdentifier         <- dbSchema$colNames[['_scenLock']][['lock']]
@@ -87,16 +90,15 @@ Db <- R6Class("Db",
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getAttachmentConfig   = function() private$attachmentConfig,
                 getOrphanedTables     = function(){
-                  modelName <- gsub("_[^_]+$", "", private$tableNamesScenario[1L])
                   if(inherits(private$conn, "PqConnection")){
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND table_name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "%"), ";"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
                                         " AND name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "%"), ";"))
                   }
                   tryCatch({
                     dbTables <- dbGetQuery(private$conn, query)[[1L]]
@@ -1084,16 +1086,17 @@ Db <- R6Class("Db",
               ),
               private = list(
                 conn                = NULL,
-                uid                 = character(0L),
+                uid                 = character(1L),
+                modelName           = character(1L),
                 dbSchema            = vector("list", 3L),
-                scenMetaColnames    = character(0L),
-                slocktimeIdentifier = character(0L),
-                userAccessGroups    = character(0L),
-                tableNameMetadata   = character(0L),
-                tableNameMetaHcube  = character(0L),
-                tableNameScenLocks  = character(0L),
-                tableNamesScenario  = character(0L),
-                slocktimeLimit      = character(0L),
+                scenMetaColnames    = character(1L),
+                slocktimeIdentifier = character(1L),
+                userAccessGroups    = character(1L),
+                tableNameMetadata   = character(1L),
+                tableNameMetaHcube  = character(1L),
+                tableNameScenLocks  = character(1L),
+                tableNamesScenario  = character(1L),
+                slocktimeLimit      = character(1L),
                 info                = new.env(),
                 attachmentConfig    = vector("list", 2L),
                 isValidSubsetGroup  = function(dataFrame){

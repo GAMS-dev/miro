@@ -286,7 +286,7 @@ if(is.null(errMsg)){
     tryCatch({
       scenMetadataTable <- scenMetadataTablePrefix %+% modelName
       db   <- Db$new(uid = uid, dbConf = config$db, dbSchema = dbSchema,
-                     slocktimeLimit = slocktimeLimit,
+                     slocktimeLimit = slocktimeLimit, modelName = modelName,
                      attachmentConfig = if(config$activateModules$attachments) 
                        list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
                      else NULL)
