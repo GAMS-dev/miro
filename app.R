@@ -327,7 +327,10 @@ if(is.null(errMsg) && developMode && config$activateModules$scenario){
   local({
     orphanedTables <- NULL
     tryCatch({
-      orphanedTables <- db$getOrphanedTables()
+      orphanedTables <- db$getOrphanedTables(hcubeScalars = names(modelIn)[vapply(seq_along(modelIn), 
+                                                                                  function(i) 
+                                                                                    identical(modelIn[[i]]$type, "dropdown"), 
+                                                                                 logical(1L), USE.NAMES = FALSE)])
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -335,8 +338,7 @@ if(is.null(errMsg) && developMode && config$activateModules$scenario){
     })
     if(length(orphanedTables)){
       msg <- sprintf("There are orphaned tables in your database: '%s'.\n
-This could be cause either because you used a different database schema in the past (e.g. due to different inputs and/or outputs) or because you saved scenarios in Hypercube mode (in which case you can ignore this warning).\n
-Please note, however, that scenarios saved in Hypercube mode are not compatible with the standard mode.",
+This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs).",
                      paste(orphanedTables, collapse = "', '"))
       warning(msg, call. = FALSE)
       flog.warn(msg)

@@ -89,7 +89,16 @@ Db <- R6Class("Db",
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getAttachmentConfig   = function() private$attachmentConfig,
-                getOrphanedTables     = function(){
+                getOrphanedTables     = function(hcubeScalars = NULL){
+                  # find orphaned database tables 
+                  #
+                  # Args:
+                  #   hcubeScalars:        name of scalars that are transferred to 
+                  #                        tables in Hypercube mode
+                  #
+                  # Returns:
+                  #   list with names of orphaned database tables
+                  
                   if(inherits(private$conn, "PqConnection")){
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
@@ -100,14 +109,21 @@ Db <- R6Class("Db",
                                         " AND name LIKE ", 
                                         dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\';"))
                   }
-                  print(query)
+                  
                   tryCatch({
                     dbTables <- dbGetQuery(private$conn, query)[[1L]]
                   }, error = function(e){
                     stop(sprintf("Db: An error occurred while fetching table names from database (Db.getOrphanTables). Error message: '%s'.",
                                  e), call. = FALSE)
                   })
-                  return(dbTables[!dbTables %in% private$tableNamesScenario])
+                  orphanedTables <- dbTables[!dbTables %in% private$tableNamesScenario]
+                  if(!is.null(hcubeScalars)){
+                    hcubeOrphans <- endsWith(orphanedTables, hcubeScalars)
+                    if(length(hcubeOrphans))
+                      message("You saved scenarios in Hypercube mode. Please note that scenarios saved in Hypercube mode are not compatible with the standard mode.")
+                    orphanedTables <- orphanedTables[!hcubeOrphans]
+                  }
+                  return(orphanedTables)
                 },
                 getInconsistentTables = function(strictMode = TRUE){
                   errMsg  <- NULL
@@ -186,8 +202,7 @@ Db <- R6Class("Db",
                     return(NA_character_)
                   }, character(1L), USE.NAMES = FALSE)
                   badTables <- badTables[!is.na(badTables)]
-                  
-                  return(list(names = badTables, headers = headers, errMsg = errMsg))
+                  return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
                 },
                 removeTablesModel     = function(){
                   tableNames <- private$getTableNamesModel()
