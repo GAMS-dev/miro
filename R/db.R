@@ -94,12 +94,13 @@ Db <- R6Class("Db",
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND table_name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "_%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), ";"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
                                         " AND name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "_%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\';"))
                   }
+                  print(query)
                   tryCatch({
                     dbTables <- dbGetQuery(private$conn, query)[[1L]]
                   }, error = function(e){
@@ -1271,7 +1272,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR table_name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "_%"), 
+                                        dbQuoteString(private$conn, modelName %+% "\\_%"), 
                                         ");"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -1283,7 +1284,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "_%"), ");"))
+                                        dbQuoteString(private$conn, modelName %+% "\\_%"), ") ESCAPE '\\';"))
                   }
                   return(dbGetQuery(private$conn, query)[[1L]])
                 }
