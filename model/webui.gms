@@ -790,7 +790,7 @@ $endif
 $ifthen.launch %WEBUI%=="launch"
 $ifthen.mode %WEBUIMODE%=="hcube"
 $setEnv LAUNCHHCUBE yes
-$elseif.mode %WEBUIMODE%=="hcube"
+$elseif.mode %WEBUIMODE%=="admin"
 $setEnv LAUNCHADMIN yes
 $else.mode
 $setEnv LAUNCHHCUBE no

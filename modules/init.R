@@ -93,8 +93,7 @@ if(is.null(errMsg)){
     if(identical(gamsSysDir, "")){
       config$db$name <- paste0(getwd(), .Platform$file.sep, config$db$name, ".sqlite3")
     }else{
-      config$db$name <- paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, 
-                               config$db$name, ".sqlite3")
+      config$db$name <- file.path(getwd(), config$db$name %+% ".sqlite3")
     }
   }
 }
