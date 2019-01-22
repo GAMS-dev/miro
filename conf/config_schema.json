@@ -29,6 +29,12 @@
          "default":"black",
          "required":false
       },
+      "includeParentDir":{
+        "description":"Boolean which specifies whether to include the parent directory of the curren model folder (e.g. because several models share files)",
+         "type":"boolean",
+         "default":false,
+         "required":false
+      },
       "excelIncludeMeta":{  
          "description":"Boolean which specifies whether to include a metadata sheet in the Excel file (exporting a scenario)",
          "type":"boolean",
@@ -520,6 +526,52 @@
                    },
                    "class":{  
                      "description":"css class",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "width":{  
+                     "description":"width of the input",
+                     "type":[  
+                       "string",
+                       "integer"
+                     ],
+                     "minLength":1
+                   }
+                 },
+                 "additionalProperties":false,
+                 "required":[  
+                    "widgetType"
+                 ]
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "textinput"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"display label for the textinput",
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "value":{  
+                     "description":"default value",
+                     "type": "string",
+                     "minLength":1
+                   },
+                   "placeholder":{  
+                     "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",
                      "type":"string",
                      "minLength":1
                    },

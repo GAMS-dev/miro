@@ -609,11 +609,6 @@
               "minLength":1,
               "required":true
             },
-            "attachUnknownError":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "success":{  
               "type":"string",
               "minLength":1,
@@ -1199,11 +1194,6 @@
               "minLength":1,
               "required":true
             },
-            "unknownError":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "waitDialog":{
               "type":"object",
               "additionalProperties":false,
@@ -1345,6 +1335,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "noTrc":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "selAttribs":{
                   "type":"string",
                   "minLength":1,
@@ -1356,11 +1351,6 @@
                   "required":true
                 },
                 "removeSuccess":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "removeError":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1477,11 +1467,6 @@
                   "required":true
                 },
                 "importSuccess":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "unknownError":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -1851,6 +1836,11 @@
       "required":true,
       "additionalProperties":false,
       "properties":{  
+        "unknownError":{  
+          "type":"string",
+          "minLength":1,
+          "required":true
+        },
         "fileRead":{  
           "type":"object",
           "additionalProperties":false,
@@ -1879,18 +1869,6 @@
               "required":true
             },
             "desc":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            }
-          }
-        },
-        "downloadHandler":{  
-          "type":"object",
-          "additionalProperties":false,
-          "required":true,
-          "properties":{  
-            "msg":{  
               "type":"string",
               "minLength":1,
               "required":true

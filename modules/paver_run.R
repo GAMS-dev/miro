@@ -35,7 +35,7 @@ observeEvent(input$btPaver, {
                                    c("_uid", "_stime", "_stag", 
                                      paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
                                                         "[[", character(1L), "key", USE.NAMES = FALSE))))){
-    showEl(session, "#configPaverMaxSolversErr")
+    showHideEl(session, "#configPaverMaxSolversErr", 4000L)
     return()
   }else{
     errMsg <- NULL
@@ -58,7 +58,21 @@ observeEvent(input$btPaver, {
     if(is.null(showErrorMsg(lang$errMsg$fileWrite$title, errMsg))){
       return()
     }
-    hcubeLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+    noErr <- TRUE
+    tryCatch(
+      hcubeLoad$genPaverTraceFiles(traceFileDir, exclTraceCols)
+      ,error = function(e){
+        noErr <<- FALSE
+        switch(conditionMessage(e),
+               noTrc = {
+                 showHideEl(session, "#paverRunNoTrc", 6000L)
+               },
+               {
+                 showHideEl(session, "#paverRunUnknownError", 6000L)
+               })
+      })
+    if(!noErr)
+      return(invisible())
     traceFiles <- list.files(traceFileDir, pattern=".trc", full.names = TRUE)
   }
   addResourcePath("paver", paverDir)

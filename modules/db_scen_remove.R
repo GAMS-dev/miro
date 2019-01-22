@@ -54,6 +54,9 @@ closeScenario <- function(){
            },
            checkbox = {
              shiny::updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+           },
+           textinput = {
+             shiny::updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
            }
     )
     rv[["in_" %+% i]]    <<- NULL
@@ -109,11 +112,6 @@ observeEvent(input$btDeleteConfirm, {
   activeScen <<- NULL
 })
 
-# remove scenario from UI
-observeEvent(virtualActionButton(input$btRemove, input$btRemoveO), {
-  flog.debug("Remove scenario data from UI button clicked.")
-  showRemoveActiveScenFromUIDialog()
-})
 # button changes from NULL to 0 when initialised (modalDialog opens)
 # so code needs to be duplicated here
 observeEvent(input$btRemoveDeletedConfirm, {

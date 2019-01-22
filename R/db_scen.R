@@ -45,6 +45,7 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.logical(overwrite), length(overwrite) == 1)
                         #END error checks 
                         
+                        private$dbSchema            <- db$getDbSchema()
                         private$slocktimeLimit      <- db$getSlocktimeLimit
                         private$scenMetaColnames    <- db$getScenMetaColnames()
                         private$slocktimeIdentifier <- db$getSlocktimeIdentifier()
@@ -52,7 +53,6 @@ Scenario <- R6Class("Scenario",
                         private$tableNameMetadata   <- db$getTableNameMetadata()
                         private$tableNameScenLocks  <- db$getTableNameScenLocks()
                         private$tableNamesScenario  <- db$getTableNamesScenario()
-                        private$traceConfig         <- db$getTraceConfig()
                         private$attachmentConfig    <- db$getAttachmentConfig()
                         private$tags                <- vector2Csv(unique(tags))
                         private$readPerm            <- vector2Csv(readPerm)
@@ -131,7 +131,7 @@ Scenario <- R6Class("Scenario",
                         }
                         stopifnot(!is.null(private$sid))
                         stopifnot(length(private$tableNamesScenario) >= 1)
-                        stopifnot(is.list(datasets), length(datasets) == length(private$tableNamesScenario))
+                        stopifnot(is.list(datasets), identical(length(datasets), length(private$tableNamesScenario)))
                         stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
                         stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
                         #END error checks 
@@ -173,7 +173,7 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         
-                        super$exportScenDataset(private$bindSidCol(traceData), private$traceConfig[["tabName"]])
+                        super$exportScenDataset(private$bindSidCol(traceData), private$dbSchema$tabName[["_scenTrc"]])
                         invisible(self)
                       },
                       addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL){
@@ -215,7 +215,7 @@ Scenario <- R6Class("Scenario",
                         
                         attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], fileNames = fileNames)
                         
-                        super$exportScenDataset(private$bindSidCol(attachmentData), private$attachmentConfig[["tabName"]])
+                        super$exportScenDataset(private$bindSidCol(attachmentData), private$dbSchema$tabName[["_scenAttach"]])
                         self$updateMetadata()
                         invisible(self)
                       },
@@ -229,7 +229,7 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         
-                        attachments <- dplyr::arrange(super$importDataset(private$attachmentConfig[["tabName"]], 
+                        attachments <- dplyr::arrange(super$importDataset(private$dbSchema$tabName[["_scenAttach"]], 
                                                            colNames = c("fileName", "execPerm"), 
                                                            subsetSids = private$sid), fileName)
                         if(length(attachments)){
@@ -269,7 +269,7 @@ Scenario <- R6Class("Scenario",
                           stopifnot(is.character(fileNames), length(fileNames) >= 1L)
                         }
                         
-                        data <- super$importDataset(private$attachmentConfig[["tabName"]],
+                        data <- super$importDataset(private$dbSchema$tabName[["_scenAttach"]],
                                                     if(allExecPerm) 
                                                       tibble("execPerm", TRUE) 
                                                     else 
@@ -300,7 +300,7 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.logical(value), length(value) == 1L)
                         
                         
-                        super$updateRows(private$attachmentConfig[["tabName"]], tibble("fileName", fileName), 
+                        super$updateRows(private$dbSchema$tabName[["_scenAttach"]], tibble("fileName", fileName), 
                                          colNames = "execPerm", values = value, subsetSids = private$sid)
                         self$updateMetadata()
                         invisible(self)
@@ -317,7 +317,7 @@ Scenario <- R6Class("Scenario",
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(fileNames), length(fileNames) > 0L)
                         
-                        super$deleteRows(private$attachmentConfig[["tabName"]], "fileName", fileNames, 
+                        super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", fileNames, 
                                          conditionSep = "OR", subsetSids = private$sid)
                         self$updateMetadata()
                         invisible(self)
@@ -429,6 +429,7 @@ Scenario <- R6Class("Scenario",
                       tags                = character(1L),
                       readPerm            = character(0L),
                       writePerm           = character(0L),
+                      dbSchema            = vector("list", 3L),
                       fetchMetadata       = function(sid = NULL, sname = NULL, uid = NULL){
                         # fetches scenario metadata from database
                         #

@@ -133,7 +133,6 @@
       "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
       "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
       "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
-      "attachUnknownError": "Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "success": "Metadaten wurden erfolgreich aktualisiert.",
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
@@ -261,7 +260,6 @@
       "processUnsolvedButton": "Nur die ungelösten verarbeiten",
       "successMsg": "Ihr Hypercube-Job wurde erfolgreich übermittelt. Sie können die Ergebnisse abrufen, sobald der Auftrag ausgeführt wurde.",
       "waitTime": "Bitte warten Sie einige Sekunden bevor Sie einen neuen Auftrag ausführen.",
-      "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "waitDialog":{
         "title": "Hypercube-Job wird konfiguriert",
         "desc": "Bitte warten Sie, während der Hypercube-Job konfiguriert wird."
@@ -292,9 +290,9 @@
         "desc":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten.",
         "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
+        "noTrc": "Für mindestens eines der ausgewählten Szenarien konnten keine Trace-Daten gefunden werden.",
         "removeConfirm": "Sind Sie sicher, dass Sie die %s ausgewählten Szenarien löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
         "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
-        "removeError": "Beim Löschen der Szenarien ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
         "selAttribs":"Attribute:",
         "runButton": "Paver starten",
         "interactiveButton":"Interaktiver Modus",
@@ -321,7 +319,6 @@
         "noJobsHist": "Es konnten keine verworfenen oder importierten Hypercube-Jobs gefunden werden.",
         "discardSuccess": "Job wurde verworfen",
         "importSuccess": "Job wurde erfolgreich importiert",
-        "unknownError": "Es ist ein unerwarteter Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an einen Systemadministrator.",
         "histTitle": "Jobverlauf",
         "ttips":{
           "discardedCorrupted": "Der Job war korrumpiert.",
@@ -406,6 +403,7 @@
     }
   },
   "errMsg":{  
+    "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
     "fileRead":{  
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
@@ -413,9 +411,6 @@
     "fileWrite":{  
       "title":"Fehler beim Schreiben von Datei",
       "desc":"Beim Schreiben der Datei: '%s' ist ein Fehler aufgetreten."
-    },
-    "downloadHandler":{
-      "msg" : "Beim Versuch die angefragte Datei herunterzuladen ist ein Fehler aufgetreten. Falls dieses Problem bestehen bleibt, kontaktieren Sie bitte den Administrator."
     },
     "initErrors":{  
       "title":"Es sind Fehler aufgetreten",

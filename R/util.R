@@ -120,7 +120,7 @@ getInputType <- function(data, keywordsType){
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
   
-  for(i in 1:length(keywordsType)){
+  for(i in seq_along(keywordsType)){
     if(keywordsType[[i]] %in% names(data)){
       return(names(keywordsType)[[i]])
     }
@@ -759,9 +759,38 @@ getNoLinesInFile <- function(filePath){
 downloadHandlerError <- function(file, msg = "Some error occurred trying to download this file."){
   return(writeLines(msg, file))
 }
-validateHeaders <- function(headersData, headersConfig){
-  return(identical(length(headersData), length(headersConfig)) && 
-    all(!is.na(match(tolower(headersData), tolower(headersConfig)))))
+validateHeaders <- function(headersData, headersConfig, headerTypes = NULL){
+  headerNames <- headersData
+  if(!is.null(headerTypes)){
+    headerNames <- names(headersData)
+  }
+  validNames <- identical(length(headerNames), length(headersConfig)) && 
+    all(!is.na(match(tolower(headerNames), tolower(headersConfig))))
+  if(!validNames){
+    return(FALSE)
+  }
+  if(is.null(headerTypes)){
+    return(TRUE)
+  }
+  stopifnot(inherits(headersData, "data.frame"))
+  return(any(vapply(seq_along(headersData), function(i){
+    if(any(class(headersData[[i]]) == "numeric")){
+      return(identical(substr(headerTypes, i, i), "d") ||
+               (identical(substr(headerTypes, i, i), "i") &&
+               all(!is.na(as.integer(headersData[[i]])))))
+    }else if(any(class(headersData[[i]]) == "integer")){
+      return(substr(headerTypes, i, i) %in% c("i", "d"))
+    }else if(any(class(headersData[[i]]) == "POSIXt")){
+      return(substr(headerTypes, i, i) %in% c("T", "c"))
+    }else if(any(class(headersData[[i]]) == "logical")){
+      return(identical(substr(headerTypes, i, i), "l"))
+    }else if(any(class(headersData[[i]]) == "raw")){
+      return(identical(substr(headerTypes, i, i), "b"))
+    }else{
+      return(identical(substr(headerTypes, i, i), "c"))
+    }
+  }, logical(1L), USE.NAMES = FALSE)))
+  
 }
 fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
@@ -787,4 +816,6 @@ pidExists <- function(pid){
     return(pidExists)
   }
 }
-
+escapeGAMSCL <- function(input){
+  return(shQuote(input))
+}

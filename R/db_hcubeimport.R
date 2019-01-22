@@ -41,16 +41,16 @@ HcubeImport <- R6Class("HcubeImport",
                            private$tableNamesScenario <- db$getTableNamesScenario()
                            private$tableNameMetadata  <- db$getTableNameMetadata()
                            private$scenMetaColnames   <- db$getScenMetaColnames()
-                           traceConfig                <- db$getTraceConfig()
-                           private$traceTabName       <- traceConfig[['tabName']]
-                           private$traceColNames      <- traceConfig[['colNames']]
+                           private$dbSchema           <- db$getDbSchema()
+                           private$traceTabName       <- private$dbSchema$tabName[['_scenTrc']]
+                           private$traceColNames      <- private$dbSchema$colNames[['_scenTrc']]
                            private$scalarsInputName   <- tolower(scalarsInputName)
                            private$scalarsOutputName  <- tolower(scalarsOutputName)
                            private$tableNamesMustHave <- tableNamesMustHave
                            private$tableNamesToVerify <- c(tableNamesCanHave, tableNamesMustHave)
                            private$csvDelim           <- csvDelim
                            private$workDir            <- workDir
-                           private$includeTrc         <- traceConfig[['tabName']] %in% private$tableNamesToVerify
+                           private$includeTrc         <- private$traceTabName %in% private$tableNamesToVerify
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
                            private$strictmode         <- strictmode
@@ -295,6 +295,7 @@ HcubeImport <- R6Class("HcubeImport",
                          conn                    = NULL,
                          scenData                = NULL,
                          uid                     = character(0L),
+                         dbSchema                = vector("list", 3L),
                          tableNamesScenario      = character(0L),
                          tableNameMetadata       = character(0L),
                          scenMetaColnames        = character(0L),

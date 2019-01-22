@@ -324,6 +324,11 @@ if(is.null(errMsg)){
   lapply(seq_along(modelIn), function(i){
     tryCatch({
       modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
+      if(names(modelIn)[[i]] %in% c(DDPar, GMSOpt) && 
+         modelIn[[i]]$type %in% c("hot", "dt")){
+        stop(sprintf("Tables are not supported for GAMS command line parameters ('%s'). 
+Please specify another widget type.", modelInAlias[i]))
+      }
       if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$max)){
         cbValueTmp <- strsplit(modelIn[[i]]$checkbox$max, "\\(|\\$")[[1]]
         if(length(cbValueTmp) %in% c(4L, 5L) && cbValueTmp[[1]] %in% listOfOperators){
@@ -331,10 +336,10 @@ if(is.null(errMsg)){
           modelIn[[i]]$checkbox$operator <<- cbValueTmp[[1]]
           modelIn[[i]]$checkbox$max      <<- paste(cbValueTmp[c(-1)], collapse = "$")
         }else{
-          errMsg <<- paste(errMsg, sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
-                                           operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
-                                           Currently, the following operators are supported: '%s'.", modelInAlias[i], paste(listOfOperators, collapse = "', '")))
-          return(NULL)
+          stop(sprintf("The checkbox: '%s' has a bad dependency format. Format for checkboxes dependent on other datasets should be:
+                       operator(dataset$column) or operator(dataset$keyColumn[key]$valueColumn). 
+                       Currently, the following operators are supported: '%s'.", modelInAlias[i], 
+                       paste(listOfOperators, collapse = "', '")))
         }
       }
     }, error = function(e){
@@ -351,7 +356,7 @@ if(is.null(errMsg)){
   }else{
     # aggregate input widgets on a single tab
     widgetIds <- lapply(seq_along(modelIn), function(i){
-      if(identical(modelIn[[i]]$type, "hot")){
+      if(modelIn[[i]]$type %in% c("hot", "dt")){
         return(NULL)
       }else{
         return(i)
@@ -365,7 +370,7 @@ if(is.null(errMsg)){
     inputTabTitles<- vector("list", length(modelIn))
     
     lapply(seq_along(modelIn), function(i){
-      if(identical(modelIn[[i]]$type, "hot")){
+      if(modelIn[[i]]$type %in% c("hot", "dt")){
         inputTabs[[i]] <<- i
         inputTabTitles[[i]]<<- modelInAlias[[i]]
       }else{
@@ -493,14 +498,11 @@ if(is.null(errMsg)){
                    modelIn[[i]]$slider$double <<- TRUE
                  }
                },
-               hot = {
-                 
-               },
-               {
-                 errMsg <<- paste(errMsg, 
-                                  sprintf("Elements other than sliders, checkboxes and single " %+% 
-                                            "dropdown menus are currently not supported (Element: '%s').", 
-                                          modelInAlias[i]), sep = "\n")
+               date =,
+               daterange = {
+                 flog.warn(sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
+                           Thus, it will not be transformed and stays static.", 
+                                                  names(modelIn)[i]))
                })
       }
     })
@@ -621,9 +623,8 @@ if(is.null(errMsg)){
              if(length(choices$fw)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
-             if(identical(modelIn[[i]]$dropdown$multiple, TRUE)
-                && !identical(modelIn[[i]]$dropdown$single, TRUE)
-                && !identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
+             if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
+               modelIn[[i]]$headers[[names(modelIn)[i]]] <<- list(type = "set")
                return(name)
              }else{
                return(NULL)
@@ -696,6 +697,13 @@ if(is.null(errMsg)){
                                                "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
              }
              # TODO : support dependency
+             return(NULL)
+           },
+           textinput = {
+             if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+               errMsg <<- paste(errMsg, paste0("The textInput: '", modelInAlias[i], 
+                                               "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
+             }
              return(NULL)
            },
            checkbox = {
@@ -843,10 +851,9 @@ if(is.null(errMsg)){
                "scalar" = character())
       })
       names(headers) <- names(modelIn[[i]]$headers)
-      modelInTemplate[[i]] <<- tibble::tibble(!!!headers)
+      modelInTemplate[[i]] <<- tibble(!!!headers)
     }
   })
-  
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))
   lapply(modelOutToDisplay, function(outputSheet){
     outputSheetIdx <- match(outputSheet, names(modelOut))
@@ -916,6 +923,42 @@ if(is.null(errMsg)){
                                         function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
                                         logical(1L), USE.NAMES = FALSE))
   
+  dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
+                               '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,
+                               '_scenLock' = scenLockTablePrefix %+% modelName,
+                               '_scenTrc' = tableNameTracePrefix %+% modelName,
+                               '_scenAttach' = tableNameAttachPrefix %+% modelName),
+                   colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
+                                                stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
+                                                accessW = accessIdentifier),
+                                   '_hcubeMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
+                                                 stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
+                                                 accessW = accessIdentifier),
+                                   '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
+                                   '_scenTrc' = traceColNames,
+                                   '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
+                                                     fExt = "fileExt", 
+                                                     execPerm = "execPerm",
+                                                     content = "fileContent")),
+                   colTypes = c('_scenMeta' = "iccTccc", '_hcubeMeta' = "iccTccc", 
+                                '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
+                                '_scenAttach' = "icclb"))
+  
+  dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
+  scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
+  scenColTypesTmp   <- lapply(c(modelOut, modelIn), "[[", "colTypes")
+  dsIsNoTable       <- vapply(scenColNamesTmp, is.null, logical(1L), USE.NAMES = FALSE)
+  if(any(dsIsNoTable)){
+    scenColNamesTmp[dsIsNoTable]       <- NULL
+    scenColTypesTmp[dsIsNoTable]       <- NULL
+    if(!scalarsFileName %in% names(modelIn)){
+      scenColNamesTmp[[scalarsFileName]] <- scalarsFileHeaders
+      scenColTypesTmp[scalarsFileName]   <- "ccc"
+    }
+  }
+  dbSchema$colNames  <- c(dbSchema$colNames, scenColNamesTmp)
+  dbSchema$colTypes  <- c(dbSchema$colTypes, unlist(scenColTypesTmp))
+  rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
   # generate GAMS return code map
   GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
                          '1' = "Solver is to be called, the system should never return this number", 

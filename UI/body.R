@@ -6,7 +6,7 @@ getHypercubeJobsTableSkeleton <- function(id = NULL, content = NULL){
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
                     lang$nav$hcubeMode$importJobsDialog$importSuccess),
            tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
-                    lang$nav$hcubeMode$importJobsDialog$unknownError),
+                    lang$errMsg$unknownError),
            if(is.null(id)){
              content
            }else{
@@ -20,11 +20,18 @@ tabItemList <- list(
             box(title = list(
               tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                        icon("exclamation-triangle")),
-              textOutput("inputDataTitle", inline = T),
-              tags$div(style = "float: right;", actionButton(inputId = "btRemove", 
-                                                             class = "bt-icon", icon = icon("times"), 
-                                                             label = NULL))
-            ), status="primary", solidHeader = TRUE, width = 12,
+              textOutput("inputDataTitle", inline = TRUE),
+              tags$div(style = "float: right;", 
+                       HTML(paste0('<button type="button" class="btn btn-default bt-icon" 
+                                   onclick="confirmModalShow(\'', 
+                                   lang$nav$dialogRemoveScen$title, '\', \'', 
+                                   lang$nav$dialogRemoveScen$desc, '\', \'', 
+                                   lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
+                                   lang$nav$dialogRemoveScen$okButton, 
+                                   '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
+                            <i class="fa fa-times"></i></button>'))
+                       )
+            ), status="primary", solidHeader = TRUE, width = 12L,
             do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
               i <- inputTabs[[tabId]][1]
               tabPanel(
@@ -77,25 +84,27 @@ tabItemList <- list(
                          },
                          slider = {
                            if(hasDependency){
-                             slider <- sliderInput(paste0("slider_", i),
-                                                   label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
-                                                   value = if(length(modelIn[[i]]$slider$default) > 1) 
-                                                     numeric(2L) else numeric(1L), step = 1, 
-                                                   width = modelIn[[i]]$slider$width, 
-                                                   ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
-                             slider <- tagList(tagAppendAttributes(slider, style = "display:none;"), tags$div(
-                               id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                               lang$nav$inputScreen$noDataDep))
+                             sliderStepSize <- 1L
+                             slider         <- sliderInput(paste0("slider_", i),
+                                                           label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
+                                                           value = if(length(modelIn[[i]]$slider$default) > 1) 
+                                                             numeric(2L) else numeric(1L), step = sliderStepSize, 
+                                                           width = modelIn[[i]]$slider$width, 
+                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                             slider         <- tagList(tagAppendAttributes(slider, style = "display:none;"), 
+                                                       tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                                                lang$nav$inputScreen$noDataDep))
                            }else{
-                             sliderName <- tolower(names(modelIn)[[i]])
-                             slider      <- sliderInput(paste0("slider_", i), 
-                                                        label = modelIn[[i]]$slider$label, 
-                                                        min = sliderValues[[sliderName]]$min, 
-                                                        max = sliderValues[[sliderName]]$max, 
-                                                        value = sliderValues[[sliderName]]$def, 
-                                                        step = sliderValues[[sliderName]]$step, 
-                                                        width = modelIn[[i]]$slider$width, 
-                                                        ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                             sliderName     <- tolower(names(modelIn)[[i]])
+                             sliderStepSize <- sliderValues[[sliderName]]$step
+                             slider         <- sliderInput(paste0("slider_", i), 
+                                                           label = modelIn[[i]]$slider$label, 
+                                                           min = sliderValues[[sliderName]]$min, 
+                                                           max = sliderValues[[sliderName]]$max, 
+                                                           value = sliderValues[[sliderName]]$def, 
+                                                           step = sliderValues[[sliderName]]$step, 
+                                                           width = modelIn[[i]]$slider$width, 
+                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
                            }
                            if(config$activateModules$hcubeMode){
                              if(identical(modelIn[[i]]$slider$double, TRUE)){
@@ -116,7 +125,8 @@ tabItemList <- list(
                                  ),
                                  conditionalPanel("input.hcubeMode_" %+% i, 
                                                   column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                         numericInput("hcubeStep_" %+% i, "Step size", 1, min = 0)
+                                                         numericInput("hcubeStep_" %+% i, "Step size", 
+                                                                      sliderStepSize, min = 0)
                                                   )
                                  )
                                  
@@ -127,7 +137,8 @@ tabItemList <- list(
                                         slider
                                  ),
                                  column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                        numericInput("hcubeStep_" %+% i, "Step size", 1, min = 0)
+                                        numericInput("hcubeStep_" %+% i, "Step size", 
+                                                     sliderStepSize, min = 0)
                                  )
                                )
                              }
@@ -220,6 +231,12 @@ tabItemList <- list(
                                )
                              )
                            }
+                         },
+                         textinput = {
+                           textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
+                                     value = modelIn[[i]]$textinput$value,
+                                     width = modelIn[[i]]$textinput$width,
+                                     placeholder = modelIn[[i]]$textinput$placeholder)
                          }
                   )
                 }),
@@ -380,10 +397,16 @@ if(config$activateModules$hcubeMode){
                 tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
                          icon("exclamation-triangle")),
                 textOutput("outputDataTitle", inline = T),
-                tags$div(style = "float: right;", actionButton(inputId = "btRemoveO", 
-                                                               class = "bt-icon", 
-                                                               icon = icon("times"), 
-                                                               label = NULL))
+                tags$div(style = "float: right;", 
+                         HTML(paste0('<button type="button" class="btn btn-default bt-icon" 
+                                   onclick="confirmModalShow(\'', 
+                                     lang$nav$dialogRemoveScen$title, '\', \'', 
+                                     lang$nav$dialogRemoveScen$desc, '\', \'', 
+                                     lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
+                                     lang$nav$dialogRemoveScen$okButton, 
+                                     '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
+                            <i class="fa fa-times"></i></button>'))
+                         )
               ), status="primary", solidHeader = TRUE, width = 12,
               tags$div(class="scen-header",
                        tags$div(class = "out-buttons-wrapper",

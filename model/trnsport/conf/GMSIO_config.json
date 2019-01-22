@@ -41,50 +41,33 @@
                 }
             }
         },
-        "f": {
-            "alias": "freight in dollars per case per thousand miles",
-            "slider": {
-                "label": "freight in dollars per case per thousand miles",
-                "min": 1,
-                "max": 500,
-                "default": 90,
-                "step": 1
-            }
-        },
-        "mins": {
-            "alias": "minimum shipment (MIP- and MINLP-only)",
-            "slider": {
-                "label": "minimum shipment (MIP- and MINLP-only)",
-                "min": 0,
-                "max": 500,
-                "default": 100,
-                "step": 1
-            }
-        },
-        "beta": {
-            "alias": "beta (MINLP-only)",
-            "slider": {
-                "label": "beta (MINLP-only)",
-                "min": 0,
-                "max": 1,
-                "default": 0.95,
-                "step": 0.01
-            }
-        },
-        "GMSPAR_type": {
-            "alias": "Model Type",
-            "dropdown": {
-                "label": "Select model type",
-                "aliases": [
-                    "LP",
-                    "MIP",
-                    "MINLP"
-                ],
-                "choices": [
-                    "lp",
-                    "mip",
-                    "minlp"
-                ]
+        "scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "f",
+                "mins",
+                "beta"
+            ],
+            "symtext": [
+                "freight in dollars per case per thousand miles",
+                "minimum shipment (MIP- and MINLP-only)",
+                "beta (MINLP-only)"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "Scalar": {
+                    "type": "set"
+                },
+                "Description": {
+                    "type": "acronym"
+                },
+                "Value": {
+                    "type": "acronym"
+                }
             }
         }
     },

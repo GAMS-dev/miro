@@ -68,6 +68,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              },
              checkbox = {
                return(length(input[["cb_" %+% i]]))
+             },
+             textinput = {
+               return(1L)
              })
     }, integer(1L), USE.NAMES = FALSE)
     if(any(numberScenPerElement == -1L)){
@@ -150,8 +153,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              checkbox = {
                return(input[["cb_" %+% i]])
              },
+             textinput = {
+               value <- input[["text_" %+% i]]
+               if(names(modelIn)[i] %in% c(DDPar, GMSOpt)){
+                 value <- escapeGAMSCL(value)
+               }
+               return(value)
+             },
              dt =,
              hot = {
+               input[['in_' %+% i]]
                data <- getInputDataset(i)
                return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
              },
@@ -172,19 +183,33 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   
   prevJobSubmitted <- Sys.time()
   
-  genHcubeJobFolder <- function(fromDir, modelDir, toDir, scenGmsPar){
+  genHcubeJobFolder <- function(fromDir, submFileDir, toDir, scenGmsPar){
     prog <- Progress$new()
     on.exit(prog$close())
     prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
-    writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".gmsb"))
+    
+    if(config$includeParentDir){
+      parentDirName <- basename(dirname(fromDir))
+      scenGmsPar    <- paste0(scenGmsPar, ' idir1="', 
+                              file.path("..", "..", parentDirName, basename(fromDir)),
+                              '" idir2="', file.path("..", "..", parentDirName, '"'))
+      fromDir <- dirname(fromDir)
+    }else{
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', file.path("..", "..", 
+                                                             basename(fromDir)), '"')
+    }
+    
+    writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".hcube"))
     
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
-    file.copy(file.path(modelDir, hcubeSubmissionFile %+% ".gms"), toDir)
-    do.call(file.remove, list(list.files(toDir, pattern = "\\.gmsconf$", full.names = TRUE, recursive = TRUE)))
+    staticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
+    file.copy(staticFilePath, toDir, recursive = TRUE)
+    unlink(staticFilePath, recursive = TRUE, force = TRUE)
+    file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   executeHcubeJob <- function(scenGmsPar){
@@ -209,11 +234,17 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
         }
       })
     }
-    writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".gmsb"))
+    if(config$includeParentDir){
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', currentModelDir,
+                           '" idir2="', dirname(currentModelDir), '"')
+    }else{
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', currentModelDir, '"')
+    }
+    writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".hcube"))
     
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
     # create daemon to execute Hypercube job
-    hcubeSubmDir <- file.path(getwd(), modelDir, hcubeSubmissionFile %+% "_auto.gms")
+    hcubeSubmDir <- file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms")
     curdir <- hcubeDir
     if(isWindows()){
       hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
@@ -227,8 +258,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  jID %+% ".log", hcubeDir)
     })
     p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=2", "--exec=true", 
-                              "--jobID=" %+% jID),  
+                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=3", "--exec=true", 
+                              "--jobID=" %+% jID),
                      cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
                      windows_hide_window = TRUE)
     pid <- p$get_pid()
@@ -300,10 +331,10 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       homeDir <- getwd()
       setwd(workDirHcube)
       on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube), add = TRUE)
+      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
       
-      genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
-                        modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
+      genHcubeJobFolder(fromDir = currentModelDir, 
+                        submFileDir = file.path(homeDir, "resources"),
                         toDir = workDirHcube, scenGmsPar = scenGmsPar)
       
       removeModal()
@@ -326,10 +357,10 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       homeDir <- getwd()
       setwd(workDirHcube)
       on.exit(setwd(homeDir), add = TRUE)
-      on.exit(unlink(workDirHcube), add = TRUE)
+      on.exit(unlink(workDirHcube, recursive = TRUE, force = TRUE), add = TRUE)
       
-      genHcubeJobFolder(fromDir = paste0(currentModelDir, "..", .Platform$file.sep), 
-                        modelDir = paste0(currentModelDir, "..", .Platform$file.sep),
+      genHcubeJobFolder(fromDir = currentModelDir, 
+                        submFileDir = file.path(homeDir, "resources"),
                         toDir = workDirHcube, scenGmsPar = scenGmsPar[idxDiff])
       
       removeModal()
@@ -375,9 +406,10 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     idsToSolve <<- scenToSolve$ids
-    scenGmsPar <<- scenToSolve$gmspar
+    scenGmsPar <<- paste(scenToSolve$gmspar, config$gamsWEBUISwitch, 
+                         "execMode=" %+% gamsExecMode, "lo=3")
     if(config$saveTraceFile){
-      scenGmsPar <- paste0(scenGmsPar, " trace=", tableNameTracePrefix, modelName, ".trc",
+      scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
                            " traceopt=3")
     }
     
@@ -434,8 +466,7 @@ observeEvent(input$btSolve, {
       }else{
         csvData <- dataTmp[[i]]
       }
-      rm(GMSOptValues)
-      rm(DDParValues)
+      rm(GMSOptValues, DDParValues)
     }else{
       csvData <- dataTmp[[i]]
     }
@@ -456,10 +487,11 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c("idir1=" %+% currentModelDir, paste0("idir2=", currentModelDir, "..", .Platform$file.sep), 
-                  "curdir=" %+% workDir, "logOption=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
+    gamsArgs <- c(paste0('idir1="', currentModelDir, '"'), if(config$includeParentDir)
+      paste0('idir2="', dirname(currentModelDir), '"'), paste0('curdir="', workDir, '"'),
+      "lo=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
     if(config$saveTraceFile){
-      gamsArgs <- c(gamsArgs, paste0("trace=", tableNameTracePrefix, modelName, ".trc"), "traceopt=3")
+      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
     }
     pfFilePath <- paste0(workDir, tolower(modelName), ".pf")
     if(isWindows()){

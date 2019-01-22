@@ -135,7 +135,7 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
   }
-  
+  removeModal()
   # save to database
   scenStr <- "scen_1_"
   tryCatch({

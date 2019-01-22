@@ -32,13 +32,6 @@ New-York   40.730610  -73.935242
 Chicago    41.881832  -87.623177
 Topeka     39.056198  -95.695312;
 
-*configuration of WebUI input
-$ifthen set gmswebui
-$onecho > webuiconf.json
-{ "GMSPAR_type": {"alias": "Model Type", "dropdown": {"label": "Select model type", "aliases": ["LP", "MIP", "MINLP"], "choices": ["lp", "mip", "minlp"]}}}
-$offecho
-$endif
-
 $onExternalInput
 Parameter
    a(i) 'capacity of plant i in cases'
@@ -55,9 +48,9 @@ Table d(i,j) 'distance in thousands of miles'
 Seattle         2.5       1.7     1.8
 San-Diego       2.5       1.8     1.4;
 
-Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
-       minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /
-       beta 'beta (MINLP-only) ### { "slider":{"min":0, "max":1, "default":0.95,  "step":0.01 }}' / 0.95 /;
+Scalar f 'freight in dollars per case per thousand miles' / 90 /
+       minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
+       beta 'beta (MINLP-only)' / 0.95 /;
 $offExternalInput
 
 Parameter

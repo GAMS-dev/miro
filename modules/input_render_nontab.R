@@ -161,6 +161,24 @@ lapply(seq_along(modelIn), function(id){
              })
            }
          },
+         textinput = {
+           getSelected[[id]] <<- shiny::reactive({
+             if(is.null(rv[["in_" %+% id]])){
+               return(NULL)
+             }
+             if(!length(modelInputData[[id]][[1]])){
+               return(isolate(input[["text_" %+% id]]))
+             }else{
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               return(value)
+             }
+           })
+           observe({
+             noCheck[id] <<- TRUE
+             shiny::updateTextInput(session, "text_" %+% id, value = getSelected[[id]]())
+           })
+         },
          date = {
            getSelected[[id]] <<- shiny::reactive({
              if(is.null(rv[["in_" %+% id]])){
@@ -210,7 +228,7 @@ lapply(seq_along(modelIn), function(id){
              if(!length(modelInputData[[id]][[1]])){
                return(isolate(input[["dropdown_" %+% id]]))
              }else{
-               value <- modelInputData[[id]]
+               value <- modelInputData[[id]][[1]]
                modelInputData[[id]] <<- list(NULL)
                return(value)
              }

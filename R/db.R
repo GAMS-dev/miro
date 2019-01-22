@@ -1,32 +1,16 @@
 # R6 class for database related functions
 Db <- R6Class("Db",
               public = list(
-                initialize        = function(uid, dbConf, uidIdentifier, sidIdentifier, 
-                                             snameIdentifier, stimeIdentifier, slocktimeIdentifier, stagIdentifier,
-                                             accessIdentifier, tableNameMetadata, tableNameMetaHcube,
-                                             tableNameScenLocks, tableNamesScenario, slocktimeLimit,
-                                             tableNameTrace = NULL, traceColNames = NULL, attachmentConfig = NULL){
+                initialize        = function(uid, dbConf, dbSchema, slocktimeLimit,
+                                             traceColNames = NULL, attachmentConfig = NULL){
                   # Initialize database class
                   #
                   # Args:
                   #   dbConf:              list with database connection configuration
                   #                        includes: type, host, port(optional), username, 
                   #                        password and name elements
-                  #   uidIdentifier:       user ID column name
-                  #   sidIdentifier:       scenario ID column name
-                  #   snameIdentifier:     column name for scenario namecolumn
-                  #   stimeIdentifier:     column name for scenario time column
-                  #   slocktimeIdentifier: column name for scenario locktime column
-                  #   stagIdentifier:      column name for scenario tags column
-                  #   accessIdentifier:    column name for access information column 
-                  #   tableNameMetadata:   name of the database table where scenario metadata is stored
-                  #   tableNameMetaHcube:  name of the database table where hcube run metadata is stored
-                  #   tableNameScenLocks:  name of the table where scenario locks are saved
-                  #   tableNamesScenario:  names of tables where scenario data is saved
+                  #   dbSchema:            database schema
                   #   slocktimeLimit:      maximum duration a lock is allowed to persist 
-                  #                        (without being refreshed), before it will be deleted (optional)
-                  #   tableNameTrace:      table name where trace data is saved
-                  #   traceColNames:       column names of trace data table
                   #   attachmentConfig:    attachment module configuration
                   
                   #BEGIN error checks 
@@ -45,26 +29,13 @@ Db <- R6Class("Db",
                     stopifnot(is.character(dbConf$password), length(dbConf$password) == 1)
                   }
                   stopifnot(is.character(dbConf$name), length(dbConf$name) == 1)
-                  stopifnot(is.character(uidIdentifier), length(uidIdentifier) == 1)
-                  stopifnot(is.character(sidIdentifier), length(sidIdentifier) == 1)
-                  stopifnot(is.character(snameIdentifier), length(snameIdentifier) == 1)
-                  stopifnot(is.character(stimeIdentifier), length(stimeIdentifier) == 1)
-                  stopifnot(is.character(slocktimeIdentifier), length(slocktimeIdentifier) == 1)
-                  stopifnot(is.character(stagIdentifier), length(stagIdentifier) == 1)
-                  stopifnot(is.character(accessIdentifier), length(accessIdentifier) == 1)
-                  stopifnot(is.character(tableNameMetadata), length(tableNameMetadata) == 1)
-                  stopifnot(is.character(tableNameMetaHcube), length(tableNameMetaHcube) == 1)
-                  stopifnot(is.character(tableNameScenLocks), length(tableNameScenLocks) == 1)
-                  stopifnot(is.character(tableNamesScenario), length(tableNamesScenario) >= 1)
                   stopifnot(is.numeric(slocktimeLimit), length(slocktimeLimit) >= 1)
                   if(!is.null(dbConf$port)){
                     stopifnot(is.numeric(dbConf$port) && length(dbConf$port) == 1)
                   }
                   stopifnot(is.character(dbConf$type), length(dbConf$type) == 1)
-                  if(!is.null(tableNameTrace)){
-                    stopifnot(is.character(tableNameTrace), length(tableNameTrace) == 1)
-                    stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
-                  }
+                  stopifnot(is.list(dbSchema), !is.null(dbSchema$tabName), !is.null(dbSchema$colNames),
+                            !is.null(dbSchema$colTypes))
                   if(!is.null(attachmentConfig)){
                     stopifnot(is.list(attachmentConfig), length(attachmentConfig) >= 1L)
                   }
@@ -72,21 +43,14 @@ Db <- R6Class("Db",
                   
                   private$uid                         <- uid
                   private$userAccessGroups            <- uid
-                  private$scenMetaColnames['sid']     <- sidIdentifier
-                  private$scenMetaColnames['uid']     <- uidIdentifier
-                  private$scenMetaColnames['sname']   <- snameIdentifier
-                  private$scenMetaColnames['stime']   <- stimeIdentifier
-                  private$scenMetaColnames['stag']    <- stagIdentifier
-                  private$scenMetaColnames['accessR'] <- accessIdentifier %+% "r"
-                  private$scenMetaColnames['accessW'] <- accessIdentifier
-                  private$slocktimeIdentifier         <- slocktimeIdentifier
-                  private$tableNameMetadata           <- tableNameMetadata
-                  private$tableNameMetaHcube          <- tableNameMetaHcube
-                  private$tableNameScenLocks          <- tableNameScenLocks
-                  private$tableNamesScenario          <- tableNamesScenario
+                  private$dbSchema                    <- dbSchema
+                  private$scenMetaColnames            <- dbSchema$colNames[['_scenMeta']]
+                  private$slocktimeIdentifier         <- dbSchema$colNames[['_scenLock']][['lock']]
+                  private$tableNameMetadata           <- dbSchema$tabName[['_scenMeta']]
+                  private$tableNameMetaHcube          <- dbSchema$tabName[['_hcubeMeta']]
+                  private$tableNameScenLocks          <- dbSchema$tabName[['_scenLock']]
+                  private$tableNamesScenario          <- dbSchema$tabName[!startsWith(dbSchema$tabName, "_")]
                   private$slocktimeLimit              <- slocktimeLimit
-                  private$traceConfig[['tabName']]    <- tableNameTrace
-                  private$traceConfig[['colNames']]   <- traceColNames
                   private$attachmentConfig            <- attachmentConfig
                   
                   if(identical(dbConf$type, "postgres")){
@@ -114,12 +78,13 @@ Db <- R6Class("Db",
                 },
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
+                getDbSchema           = function() private$dbSchema,
                 getScenMetaColnames   = function() private$scenMetaColnames,
                 getSlocktimeIdentifier= function() private$slocktimeIdentifier,
                 getTableNameMetadata  = function() private$tableNameMetadata,
+                getTableNameMetaHcube = function() private$tableNameMetaHcube,
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
-                getTraceConfig        = function() private$traceConfig,
                 getAttachmentConfig   = function() private$attachmentConfig,
                 getOrphanedTables     = function(){
                   modelName <- gsub("_[^_]+$", "", private$tableNamesScenario[1L])
@@ -141,8 +106,10 @@ Db <- R6Class("Db",
                   })
                   return(dbTables[!dbTables %in% private$tableNamesScenario])
                 },
-                getInconsistentTables = function(colNames, colTypes, strictMode = TRUE){
+                getInconsistentTables = function(strictMode = TRUE){
                   errMsg  <- NULL
+                  colNames <- private$dbSchema$colNames
+                  colTypes <- private$dbSchema$colTypes
                   headers <- colNames
                   numericTypes <- c("float", "real", 
                                     "numeric", "double",
@@ -227,6 +194,7 @@ Db <- R6Class("Db",
                                     paste(dbQuoteIdentifier(private$conn, tableNames),
                                           collapse = ", "), " CASCADE;")
                     dbExecute(private$conn, query)
+                    flog.info("Database tables: '%s' deleted.", paste(tableNames, "', '"))
                     return(invisible(self))
                   }
                   # turn foreign key usage off
@@ -688,12 +656,14 @@ Db <- R6Class("Db",
                   }
                   return(dataset)
                 },
-                exportScenDataset       = function(dataset, tableName){
+                exportScenDataset       = function(dataset, tableName, addForeignKey = TRUE){
                   # Saves scenario dataset to database
                   #
                   # Args:
                   #   dataset:             dataframe to save
                   #   tableName:           name of the table to export dataframe to
+                  #   addForeignKey:       boolean that specifies whether a foreign key 
+                  #                        should be added to table
                   #
                   # Returns:
                   #   Db object: invisibly returns reference to object in case of success, throws Exception if error
@@ -725,48 +695,43 @@ Db <- R6Class("Db",
                   }else if(!is.null(dataset)){
                     tryCatch({
                       fieldTypes <- private$getFieldTypes(dataset)
+                      foreignKeyQuery <- ""
+                      if(addForeignKey){
+                        foreignKeyQuery <- paste0(", CONSTRAINT foreign_key FOREIGN KEY (", 
+                                                  DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                                  ") REFERENCES ",
+                                                  DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
+                                                  "(",
+                                                  DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
+                                                  ") ON DELETE CASCADE")
+                      }
                       query <- paste0("CREATE TABLE ", 
                                       DBI::dbQuoteIdentifier(private$conn, tableName), 
                                       " (", paste(vapply(seq_along(dataset), function(i){
                                         paste(DBI::dbQuoteIdentifier(private$conn, names(dataset)[[i]]), 
                                               fieldTypes[[i]])
                                       }, character(1L), USE.NAMES = FALSE), collapse = ", "),
-                                      ", CONSTRAINT foreign_key FOREIGN KEY (", 
-                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                      ") REFERENCES ",
-                                      DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
-                                      "(",
-                                      DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                      ") ON DELETE CASCADE);")
+                                      foreignKeyQuery, ");")
                       DBI::dbExecute(private$conn, query)
                     }, error = function(e){
                       stop(sprintf("Table: '%s' could not be created (Db.exportScenDataset). " %+%
                                      "Error message: %s.", tableName, e), call. = FALSE)
                     })
-                    tryCatch({
-                      query <- paste0("CREATE INDEX ", DBI::dbQuoteIdentifier(private$conn, "sid_index_" %+% tableName), " ON ", 
-                                      DBI::dbQuoteIdentifier(private$conn, tableName), 
-                                      " (", DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ");")
-                      DBI::dbExecute(private$conn, query)
-                    }, error = function(e){
-                      stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset). " %+%
-                                     "Error message: %s.", tableName, e), call. = FALSE)
-                    })
+                    if(addForeignKey){
+                      tryCatch({
+                        query <- paste0("CREATE INDEX ", DBI::dbQuoteIdentifier(private$conn, "sid_index_" %+% tableName), " ON ", 
+                                        DBI::dbQuoteIdentifier(private$conn, tableName), 
+                                        " (", DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), ");")
+                        DBI::dbExecute(private$conn, query)
+                      }, error = function(e){
+                        stop(sprintf("Index on table: '%s' could not be created (Db.exportScenDataset). " %+%
+                                       "Error message: %s.", tableName, e), call. = FALSE)
+                      })
+                    }
                     flog.debug("Db: A database table named: '%s' did not yet exist. 
         Therefore it was created (Db.exportScenDataset).", tableName)
                     tryCatch({
                       DBI::dbWriteTable(private$conn, tableName, dataset, row.names = FALSE, append = TRUE)
-                      #DBI::dbWriteTable(private$conn, tableName, dataset, row.names = FALSE, append = FALSE, 
-                      #                  field.types = private$getFieldTypes(dataset))
-                      #query    <- paste0("ALTER TABLE ", DBI::dbQuoteIdentifier(private$conn, tableName), 
-                      #                   " ADD CONSTRAINT foreign_key FOREIGN KEY (", 
-                      #                   DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                      #                   ") REFERENCES ",
-                      #                   DBI::dbQuoteIdentifier(private$conn, private$tableNameMetadata), 
-                      #                   "(",
-                      #                   DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                      #                   ") ON DELETE CASCADE;")
-                      #DBI::dbExecute(private$conn, query)
                       flog.info("Db: First data was written to table: '%s' (Db.exportScenDataset).", tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred writing to database (Db.exportScenDataset, table: '%s'). 
@@ -1120,6 +1085,7 @@ Db <- R6Class("Db",
               private = list(
                 conn                = NULL,
                 uid                 = character(0L),
+                dbSchema            = vector("list", 3L),
                 scenMetaColnames    = character(0L),
                 slocktimeIdentifier = character(0L),
                 userAccessGroups    = character(0L),
@@ -1128,9 +1094,8 @@ Db <- R6Class("Db",
                 tableNameScenLocks  = character(0L),
                 tableNamesScenario  = character(0L),
                 slocktimeLimit      = character(0L),
-                traceConfig         = vector("list", 2L),
                 info                = new.env(),
-                attachmentConfig    = vector("list", 3L),
+                attachmentConfig    = vector("list", 2L),
                 isValidSubsetGroup  = function(dataFrame){
                   if(inherits(dataFrame, "data.frame") 
                      && length(dataFrame) <= 3L
@@ -1300,11 +1265,10 @@ Db <- R6Class("Db",
                                                                             private$tableNameMetaHcube,
                                                                             private$tableNameScenLocks,
                                                                             private$tableNamesScenario,
-                                                                            private$slocktimeLimit,
-                                                                            private$traceConfig[['tabName']])),
+                                                                            private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR table_name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "%"), 
+                                        dbQuoteString(private$conn, modelName %+% "_%"), 
                                         ");"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -1313,11 +1277,10 @@ Db <- R6Class("Db",
                                                                             private$tableNameMetaHcube,
                                                                             private$tableNameScenLocks,
                                                                             private$tableNamesScenario,
-                                                                            private$slocktimeLimit,
-                                                                            private$traceConfig[['tabName']])),
+                                                                            private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "%"), ");"))
+                                        dbQuoteString(private$conn, modelName %+% "_%"), ");"))
                   }
                   return(dbGetQuery(private$conn, query)[[1L]])
                 }
