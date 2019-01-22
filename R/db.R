@@ -94,11 +94,11 @@ Db <- R6Class("Db",
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND table_name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "_%"), ";"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
                                         " AND name LIKE ", 
-                                        dbQuoteString(private$conn, private$modelName %+% "%"), ";"))
+                                        dbQuoteString(private$conn, private$modelName %+% "_%"), ";"))
                   }
                   tryCatch({
                     dbTables <- dbGetQuery(private$conn, query)[[1L]]
