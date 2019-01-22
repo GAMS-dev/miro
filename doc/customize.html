@@ -94,7 +94,7 @@
                                   <h3 class="block-title">Tables</h3>
                                     <p>The GAMS WebUI comes with several options on how you can enter input data for your <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/editable-table.png" alt="editable table"/>
+                                        <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/editable-table.png" alt="editable table"/>
                                     </div>
                                     <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
