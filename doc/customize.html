@@ -64,7 +64,12 @@
                                     The entire configuration of the web interface is done via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> for a GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
                                       <li><h6>GMSIO_config.json</h6>
-                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--webui=compile</span> or <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span>. It lists those GAMS symbols which were previously marked in your GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. You won't ever have to modify this file!
+                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--webui=build</span> or <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span>. 
+                                    It lists those GAMS symbols which were previously marked in your GAMS model with the <code class="language-gams">$onExternalInput
+                                    </code> / <code class="language-gams">$offExternalInput
+                                    </code> and <code class="language-gams">$onExternalOutput
+                                    </code> / <code class="language-gams">$offExternalOutput
+                                    </code> tags. You won't ever have to modify this file!
                                   </li>
                                   <li>
                                     <h6>config.json</h6>
@@ -96,7 +101,7 @@
                                     <div class="section-block">
                                         <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/editable-table.png" alt="editable table"/>
                                     </div>
-                                    <p>The corresponding GAMS parameter looks like this: <img class="img-fluid" style="height:14px;" src="assets/images/input-widgets-parameter.png" alt="Parameter price(date,symbol) 'Price';" />. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
+                                    <p>The corresponding GAMS parameter looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
                                           <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
@@ -173,8 +178,9 @@
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
                                      <p>We have already mentioned the possibility of <a href="./model.html#create-compile">using command line parameters via WebUI</a>. 
-                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" />. 
-                                     To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
+                                     </code> / <code class="language-gams">$offExternalInput
+                                     </code>. To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
                                      </p>
                                      <div class="callout-block callout-warning">
                                          <div class="icon-holder">
@@ -211,6 +217,9 @@
       &#x22;multiple&#x22;: false,
       &#x22;selected&#x22;: &#x22;CPLEX&#x22;
     }
+  },
+  &#x22;aggregateWidgets&#x22;    : {
+    &#x22;title": &#x22;Input Options&#x22;
   }
 }</code></pre>
                                        </div><!--//code-block-->                                    
@@ -218,7 +227,7 @@
                                        <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
-                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=compile%20time#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
+                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
                                        If we select for the compile time variable <span class="code">numberPeriods</span> e.g. 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within the WebUI, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
                                        <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
                                        <div class="callout-block callout-warning">
@@ -340,11 +349,14 @@ schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
                                 </div><!--//section-block-->
                                 <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
-                                Now we have another parameter <span class="code">schedule</span> which is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. It is then calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable.
+                                Now we have another parameter <span class="code">schedule</span> which is declared between the <code class="language-gams">$onExternalOutput
+                                </code> / <code class="language-gams">$offExternalOutput
+                                </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable ('<span class="code">quantities</span>').
+                                The latter is relevant for our desired graphic, the other two serve here only as additional information.
                                 <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
                                 There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
                                 All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
-                                <pre><code class="language-gams">{
+                                <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
       "outType": "dtGraph",
@@ -394,7 +406,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                 </div>
                             </section><!--//doc-section-->
                             <section id="custom-renderers" class="doc-section">
-                                <h2 class="section-title">Custom Renderers</h2>
+                                <h2 class="section-title">Custom Graphics</h2>
                                 <div class="section-block">
                                     <p>The GAMS WebUI allows you to use your own custom renderers for your datasets. Currently we only support the visualization of data, not the generation. We may add this feature at a later stage depending on the demand.</p>
                                     <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that the GAMS WebUI is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">Shiny Modules</a> to realize the interface between the GAMS WebUI and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
@@ -514,7 +526,12 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#widgets-advanced">Advanced topics</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#custom-graph">Graphics Configuration</a>
-                                <a class="nav-link scrollto" href="#custom-renderers">Custom Renderers</a>
+                                <nav class="doc-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#create-charts">Charts</a>
+                                    <a class="nav-link scrollto" href="#create-histogram">Histograms</a>
+                                    <a class="nav-link scrollto" href="#create-pivot">Pivot tables</a>
+                                </nav>
+                                <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
                             </nav><!--//doc-menu-->
                         </div>
@@ -528,7 +545,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     <footer id="footer" class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
-            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+            
 
         </div><!--//container-->
     </footer><!--//footer-->

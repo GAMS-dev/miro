@@ -169,7 +169,7 @@
                                               </tbody>
                                           </table>
                                         </div><!--//table-responsive-->
-                                        <p>The convention of automatic scenario generation has the following implications: <a href="#nobatch" class="scrollto">Unless explicitly specified</a> in the WebUI configuration of the model, each parameter of the input data is included in the Cartesian product from all parameter variations. In other words: All combinations are generated from the configuration selected by the user and each individual combination is saved as a single scenario. </p>
+                                        <p>The convention of automatic scenario generation has the following implications: <a href="#nobatch" class="scrollto">Unless explicitly specified</a> in the WebUI configuration of the model, each symbol of the input data is included in the Cartesian product from all parameter variations. In other words: All combinations are generated from the configuration selected by the user and each individual combination is saved as a single scenario. </p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:225pt" src="assets/images/batch_img/trnsport_batch.png" alt="regular trnsport parameterization" />
                                         </div>
@@ -182,7 +182,7 @@
                                         [...]
                                         <li>Scenario 16: 'freight' = 150</li>
                                         </ul>
-                                        <P id="stepsize">For the parameter 'minimum shipment' the slider was set to a range between 20 and 200 with a step size of 20. The resulting scenarios would therefore be:</P>
+                                        <P id="stepsize">For the scalar 'minimum shipment' the slider was set to a range between 20 and 200 with a step size of 20. The resulting scenarios would therefore be:</P>
                                         <ul>
                                         <li>Scenario 1: 'number of days for training' = 20</li>
                                         <li>Scenario 2: 'number of days for training' = 40</li>
@@ -191,13 +191,27 @@
                                         <li>Scenario 10: 'number of days for training' = 200</li>
                                         </ul>
                                         <p>In the last widget, a multi dropdown menu, we define only the <span class="code">MIP</span> version of our model to be used. The scalar <span class="code">beta</span> is therefore irrelevant for our scenarios, as it is only used for the MINLP model.</p>
-                                        <p>The previously mentioned Cartesian product of all parameter variations is now used: It is created from the different variants of the parameters 'freight in dollars per case per thousand miles' (16), 'minimum shipment' (10), 'beta' (1) and 'Select model type' (1) resulting in 16 x 10 x 1 x 1 = 160 individual scenarios. </p>
+                                        <p>The previously mentioned Cartesian product of all input data variations is now used: It is created from the different variants of the symbols 'freight in dollars per case per thousand miles' (16), 'minimum shipment' (10), 'beta' (1) and 'Select model type' (1) resulting in 16 x 10 x 1 x 1 = 160 individual scenarios. </p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:150pt" src="assets/images/batch_img/carth_prod.png" alt="carthesian product of configured parameters" />
                                         </div>
                                         <p id="nobatch">It gets clear that the number of scenarios to be considered can increase very quickly with the number of parameters and their selected configuration. Depending on how computing intensive the underlying GAMS model is, it may be advisable to configure the scenarios carefully. 
-                                        <br>Individual parameters can be excluded from inclusion in the Cartesian product. These parameters would then remain unchanged for each scenario created. This can be done in the WebUI configuration for the GAMS model (i.e. in the config.json file) using the option <span class="code">"nohcube": "true"</span> or via <a href="./configgen.html">Configuration Generator</a>. 
-                                        If, for example, the parameter 'minimum shipment' in the config.json file is configured with <span class="code">"nohcube": "true"</span>, the following situation results: The parameter can still be selected in scenario generation, but the double slider is now a single slider again, so it can be selected only once. Its selection remains identical for each generated scenario.</p>
+                                        <br>Individual symbols can be excluded from inclusion in the Cartesian product. These symbols would then remain unchanged for each scenario created. This can be done in the WebUI configuration for the GAMS model (i.e. in the config.json file) using the option <code class="language-json">"noHcube": "true"</code> or via <a href="./configgen.html">Configuration Generator</a>. 
+                                        Example: The scalar 'minimum shipment' in the config.json file is configured like this: <pre><code class="language-json">"mins": {                                      
+   &#x22;widgetType&#x22;: &#x22;slider&#x22;,
+   &#x22;alias&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
+   &#x22;label&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
+   &#x22;min&#x22;: 0,
+   &#x22;max&#x22;: 500,
+   &#x22;default&#x22;: 100,
+   &#x22;step&#x22;: 1,
+   &#x22;noHcube&#x22;: true
+}</code></pre>
+                                    This confuguration now has the consequence that the scalar can still be selected in the scenario generation, but the double slider is now a single slider again, so it can be assigned only once. Its selection remains identical for each generated scenario.</p>
+                                    <b>Multidimensional Symbols</b>:
+                                    <br><p>Unlike scalar values, multidimensional symbols such as sets, parameters and multidimensional singleton sets cannot be varied within a job. They remain identical in every created scenario of a job. 
+                                    For example, if a parameter is part of the input data, the parameter table can be adjusted for a Hypercube job. However, there are no multiple assignments possible for a table, e.g. for a double slider or multidropdown menu. 
+                                    The parameter will therefore be the same for all scenarios of the Hypercube job.</p>
                                     </div><!--//section-block-->
                                     <div  id="scengen-3"  class="section-block">
                                         <h3 class="block-title">Automated job submission</h3>
@@ -275,7 +289,7 @@
                                          <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_mins=100</span> 
                                          <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_beta=0.95</span> 
                                          <span class="code" style="white-space:nowrap">--type=lp</span>
-                                         <span class="code" style="white-space:nowrap">--webui=1</span>
+                                         <span class="code" style="white-space:nowrap">--webui=run</span>
                                          <span class="code" style="white-space:nowrap">trace=_sys_trace_trnsport.trc traceopt=3</span></kbd>
                                         <br>  
                                         <p>The following information is included:</p>
@@ -293,7 +307,7 @@
                                           <br>The trace file should be created for each scenario. This provides the integrated analysis tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> with important information for performance analysis. 
                                           Unless otherwise set, the GAMS command for creating this trace file is included for each scenario in the Hypercube file (here:
                                           <span class="code" style="white-space:nowrap">trace=_sys_trace_trnsport.trc traceopt=3</span>)</li>
-                                          <li>When calculating Hyperube jobs, a GAMS call must be initiated with the compile-time variable <span class="code" style="white-space:nowrap">--webui=1</span>. This leads to the inclusion of a webui.gms file, which is especially essential for the input data handling of a scenario.</li>
+                                          <li>When calculating Hyperube jobs, a GAMS call must be initiated with the compile-time variable <span class="code" style="white-space:nowrap">--webui=run</span>. This leads to the inclusion of a webui.gms file, which is especially essential for the input data handling of a scenario.</li>
                                         </ul>
                                         <p>Now we need to prepare the information given in such a way that a scenario can be calculated with it. An important part of this is the handling of input data, see below.</p>
                                     </div><!--//section-block-->
@@ -308,7 +322,7 @@
                                           <br>Scalars can usually not be defined via a GAMS call, but are set in the model itself. In order to be able to set scalars via the WebUI, the following happens:
                                           <br>If a scalar is set, this is recorded in the Hypercube file as 
                                           <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_&lt;scalar-name&gt;=&lt;scalar-value&gt;</span>, e.g. <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span> for scalar <span class="code" style="white-space:nowrap">f</span> and a value of 90. 
-                                          To continue this example, if the GAMS model is now called with <span class="code" style="white-space:nowrap">--webui=1</span> and the compile-time variable <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span>, a scalar <span class="code" style="white-space:nowrap">f</span> is searched in the symbol declarations of the underlying GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90.</li>
+                                          To continue this example, if the GAMS model is now called with <span class="code" style="white-space:nowrap">--webui=run</span> and the compile-time variable <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span>, a scalar <span class="code" style="white-space:nowrap">f</span> is searched in the symbol declarations of the underlying GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90.</li>
                                           <li>Static scenario input data such as parameters are used as fixed files for all scenarios of a Hypercube job. In the Hypercube file such static files are specified with the keyword <span class="code" style="white-space:nowrap">--HCUBE_STATIC_&lt;parameter-name&gt;=</span> and a hash value of the corresponding parameter. Example: 
                                           In the trnsport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, in the corresponding file it says "<span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>".                                        
                                           In the automatic execution of Hypercube jobs this information is used internally. In manual execution, the string can be ignored. However, it must be ensured that the static files are correctly named and located in the right directory.</p>
@@ -340,22 +354,32 @@
                                         </ul>
                                         <p>For each scenario there are some files that must exist to be valid, and some that are optional. The mandatory files for every single scenario are:</p>
                                         <ul>
-                                        <li id="csv-scalars">scalars.csv<br>This file is generated automatically when running a model with <span class="code" style="white-space:nowrap">--webui=1</span>. The <span class="code" style="white-space:nowrap">--webui=1</span> is always set for a scenario in the downloaded <i>&lt;modelname&gt;.hcube</i> Hypercube file. The scalars.csv file contains all scalar values which are declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> tags in the underlying GAMS model (and therefore are adjustable input data in the webui).
+                                        <li id="csv-scalars">scalars.csv<br>This file is generated automatically when running a model with <span class="code" style="white-space:nowrap">--webui=run</span>. The <span class="code" style="white-space:nowrap">--webui=run</span> is always set for a scenario in the downloaded <i>&lt;modelname&gt;.hcube</i> Hypercube file. The scalars.csv file contains all scalar values which are declared between the <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> tags in the underlying GAMS model (and therefore are adjustable input data in the webui).
                                         <br>The header line of the scalars.csv file always must be <span class="code" style="white-space:nowrap">"Scalar,Description,Value"</span> where <span class="code" style="white-space:nowrap">Scalar</span> stands for the GAMS Symbol name, <span class="code" style="white-space:nowrap">Description</span> for the optional explanatory text and <span class="code" style="white-space:nowrap">Value</span> contains the value set by the user from within the WebUI.</li>
-                                        <li>scalars_out.csv<br>This file contains all scalar output values specified between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. Like the scalars.csv file it is generated automatically after a successful model run. So this is the counterpart to the scalar input values in scalars.csv.
+                                        <li>scalars_out.csv<br>This file contains all scalar output values specified between the <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code>  tags. Like the scalars.csv file it is generated automatically after a successful model run. So this is the counterpart to the scalar input values in scalars.csv.
                                         <br><b>Note:</b> If, for whatever reason, a model calculation is aborted for a scenario, then this file scalars_out.csv is not created. However, since the file is mandatory, all scenarios whose calculations are aborted (intentionally or unintentionally) are ignored during a database upload.</li>
                                         <li>_sys_trace_&lt;modelname&gt;.trc<br><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOtraceopt" target="_blank">Trace file</a> of the scenario run. This file contains numerous run statistics which are used for the the integrated performance analysis tool PAVER. The downloadable Hypercube script already contains the GAMS command for the creation of the trace file for each scenario. More information on the trace file can also be found <a href="http://www.gamsworld.org/performance/trace.htm" target="_blank">here</a>.</li>
                                         </ul>
-                                        <p>These three files are usually generated automatically when solving a scenario with the compile-time parameter <span class="code" style="white-space:nowrap">--webui=1</span>. Their format is internally defined by the WebUI and should not be changed. If scenario data does not contain all mandatory files, the data for this scenario is not stored in the database.</p>
+                                        <p>These three files are usually generated automatically when solving a scenario with the compile-time parameter <span class="code" style="white-space:nowrap">--webui=run</span>. Their format is internally defined by the WebUI and should not be changed. If scenario data does not contain all mandatory files, the data for this scenario is not stored in the database.</p>
                                         
-                                        <p>In addition to the mandatory files mentioned above, there may be other files in the result folder of a scenario. If <span class="code" style="white-space:nowrap">--webui=1</span> is set, a CSV file with results is created for each output parameter declared in the GAMS model between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. For example, when the Parameters <span class="code" style="white-space:nowrap">results</span> and <span class="code" style="white-space:nowrap">performance</span> are declared between those tags, the CSV files <i>results.csv</i> and <i>performance.csv</i> are generated after the model calculations.
+                                        <p>In addition to the mandatory files mentioned above, there may be other files in the result folder of a scenario. If <span class="code" style="white-space:nowrap">--webui=run</span> is set, a CSV file with results is created for each output parameter declared in the GAMS model between the <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags. For example, when the Parameters <span class="code" style="white-space:nowrap">results</span> and <span class="code" style="white-space:nowrap">performance</span> are declared between those tags, the CSV files <i>results.csv</i> and <i>performance.csv</i> are generated after the model calculations.
                                         For these files the following rules apply:</p>
                                         <ul>
                                         <li>Result files of output parameters are not mandatory, but optional for the upload into the database.</li>
                                         <li>The results must be available in CSV format.</li>
-                                        <li>CSV files must be named after the parameters declared in the GAMS model between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. Each output parameter declared there must be stored in a separate CSV file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
+                                        <li>CSV files must be named after the parameters declared in the GAMS model between the <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags. Each output parameter declared there must be stored in a separate CSV file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
                                         <li>It is mandatory that the header line of a CSV file is identical to the corresponding parameter declared in GAMS.
-                                        <br>Example: In the trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. 
+                                        <br>Example: In the trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared between the <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags. 
                                         The resulting <i>schedule.csv</i> contains the header row "<span class="code" style="white-space:nowrap">canning plants,markets,cap,demand,quantities</span>", 
                                         which corresponds to the explanatory texts of the indexes <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
                                         The conventions concerning the selection of the headers can be found <a href="./model.html#create-3" target="_blank">here</a>.</p>
@@ -395,7 +419,16 @@
                                     <p></p>
                                     <div  id="analyze-2"  class="section-block">
                                         <h3 class="block-title">Scenario selection</h3>
-                                        <p>Scenarios that have been imported into the database can be loaded at a later time for subsequent analyses. For this purpose the module "load scenarios" is used, which represents a graphical representation of a database query. If not all available scenarios are to be displayed, the query can be strongly individualized. All scalar input parameters that can be set by the user to uniquely identify a scenario can be selected as filters. Next to those scenario specific filters, the optionally defined job tags of a Hypercube job and the date of creation can be used in a database query as well. Database queries can be combined with the help of the Boolean Operators AND and/or OR.</p>
+                                        <p>Scenarios that have been imported into the database can be loaded at a later time for subsequent analyses. For this purpose the module "load scenarios" is used, which represents a graphical representation of a database query. If not all available scenarios are to be displayed, the query can be strongly individualized. All scalar input values that can be set by the user to uniquely identify a scenario can be selected as filters. 
+                                        </p><p>Example: 
+                                        <br>In the following example from the demo model trnsport 3 scalar input values are integrated into the WebUI:</p>
+                                        <pre><code class="language-gams">$onExternalInput 
+Scalar f    'freight in dollars per case per thousand miles' / 90 /
+       minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
+       beta 'beta (MINLP-only)' / 0.95 /;
+$offExternalInput
+</pre></code>                           <p>In the database query, you can search for exactly these scalar data of a scenario.
+                                        <br>Next to those scenario specific filters, the optionally defined job tags of a Hypercube job and the date of creation can be used in a database query as well. Database queries can be combined with the help of the Boolean Operators AND and/or OR.</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/batch_img/batch_db_query.png" alt="Filtered database search" />
                                         </div>
@@ -421,7 +454,11 @@
                                         <h3 class="block-title">Internal Analyses</h3>
 
                                         <h6>Scenario comparison:</h6>
-                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. The data which is displayed here corresponds to those GAMS Symbols which were marked within the corresponding GAMS model with the <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" /> and <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags, i.e. those symbols which were marked for inclusion into the WebUI. Conversely, this means that all parameters and scalar values which shall be compared in the WebUI must be marked in the GAMS model accordingly. More information about these tags can be found <a href="model.html#create-2">here</a>.
+                                        <p>The scenario comparison module is used to directly compare the input and output data of a small number of scenarios. The data which is displayed here corresponds to those GAMS Symbols which were marked within the corresponding GAMS model with the <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> and <code class="language-gams">$nExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags, i.e. those symbols which were marked for inclusion into the WebUI. Conversely, this means that all parameters and scalar values which shall be compared in the WebUI must be marked in the GAMS model accordingly. More information about these tags can be found <a href="model.html#create-2">here</a>.
                                         <br>The internal scenario comparison module has already been explained <a href="start.html#workflow-6">here</a>.
                                         <h6>PAVER:</h6>
                                         <p><a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is an Open Source Environment for Automated Performance Analysis of Benchmarking Data. This tools is meant to simplify the task of solver performance data comparison and visualization by providing a variety of performance measurement tools with convenient and easy ways to represent (e.g. objective values, solution times, and result codes from multiple runs in order to summarize, gain insight, or detect inconsistencies) [Bussieck, Michael R., Steven P. Dirkse, and Stefan Vigerske. "PAVER 2.0: an open source environment for automated performance analysis of benchmarking data." Journal of Global Optimization 59.2-3 (2014): 259-275, <a href="http://www.gamsworld.org/performance/paver2/paver2_paper.pdf" target="_blank">link</a>].</p>
@@ -498,7 +535,7 @@
     <footer id="footer" class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
-            <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+            
 
         </div><!--//container-->
     </footer><!--//footer-->
@@ -509,6 +546,7 @@
     <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
 
 </body>

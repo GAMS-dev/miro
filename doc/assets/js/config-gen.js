@@ -295,7 +295,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "widgetType":{
                       "title":"What type of input widget do you want?",
                       "type":"string",
-                      "enum":["slider","dropdown","date selector","date range selector","checkbox", "textinput"],
+                      "enum":["slider","dropdown","date","daterange","checkbox", "textinput"],
                       "default":"slider",
                       "required":true
                     },
@@ -953,7 +953,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "widgetType":{
                       "title":"What type of input widget do you want?",
                       "type":"string",
-                      "enum":["slider","dropdown","date selector","date range selector","checkbox", "textinput"],
+                      "enum":["slider","dropdown","date","daterange","checkbox", "textinput"],
                       "default":"slider",
                       "required":true
                     },
@@ -2979,7 +2979,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                       },
                       "date":{
                         "dependencies":{
-                           "widgetType": "date selector"
+                           "widgetType": "date"
                         },
                         "fields":{
                           "value":{
@@ -3001,7 +3001,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                       },
                       "daterange":{
                         "dependencies":{
-                           "widgetType": "date range selector"
+                           "widgetType": "daterange"
                         },
                         "fields":{
                           "start":{
@@ -3146,7 +3146,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                      },
                      "date":{
                        "dependencies":{
-                          "widgetType": "date selector"
+                          "widgetType": "date"
                        },
                        "fields":{
                          "value":{
@@ -3168,7 +3168,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                      },
                      "daterange":{
                        "dependencies":{
-                          "widgetType": "date range selector"
+                          "widgetType": "daterange"
                        },
                        "fields":{
                          "start":{
@@ -3338,13 +3338,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "description": "Basic Information"
                 }, {
                     "title": "Input widgets",
-                    "description": "Generate widgets for model input data"
+                    "description": "Widgets for model input data"
                 }, {
                     "title": "Graphs",
                     "description": "Configure graphs"
                 }, {
                     "title": "Tables",
-                    "description": "Customize the table layout"
+                    "description": "Customize table layout"
                 }],
                 "showProgressBar": false,
                 "markAllStepsVisited":true,
@@ -3694,7 +3694,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                    widget = widget.dropdown;
                                  }
                                break;
-                               case "date selector":
+                               case "date":
                                  // get rid of default values as this makes JSON string shorter
                                  if(widget.date.format === "yyyy-mm-dd"){
                                    delete widget.date.format;
@@ -3716,7 +3716,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                    widget = widget.date;
                                  }
                                break;
-                               case "date range selector":
+                               case "daterange":
                                  // get rid of default values as this makes JSON string shorter
                                  if(widget.daterange.format === "yyyy-mm-dd"){
                                    delete widget.daterange.format;
