@@ -85,14 +85,21 @@
     "hcubeLoad":{
       "title":"Lade Szenarien",
       "noData":"Für die von Ihnen abgesetzte Datenbankabfrage konnten keine Daten gefunden werden.",
+      "showHashButton": "Hash anzeigen",
+      "msgOnlyOneHash": "Bitte wählen Sie nur ein Szenario aus.",
       "chooseSelectedButton":"Markierte auswählen",
       "chooseCurrentButton":"Aktuelle Seite auswählen",
-      "chooseAllButton":"Wähle alle"
+      "chooseAllButton":"Wähle alle",
+      "showHashDialog":{
+        "title": "Szenario Hash",
+        "desc": "Das ausgewählte Szenario hat den folgenden Hash. Damit können Sie es im Basismodus importieren."
+      }
     },
     "hcubeAnalyze":{
       "title":"Szenarioanalyse",
       "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
       "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "duplicatesMsg": "Paver hat eine doppelte Instanz gefunden: '%s'. Achten Sie darauf, dass Sie keine Duplikate auswählen.",
 	    "btCancel": "Abbrechen",
 	    "btNew": "Szenarien auswählen"
     },
@@ -321,12 +328,14 @@
         "importSuccess": "Job wurde erfolgreich importiert",
         "histTitle": "Jobverlauf",
         "ttips":{
+          "importedManual": "Der Job wurde manuell importiert.",
           "discardedCorrupted": "Der Job war korrumpiert.",
           "discardedActive": "Der Job war noch aktiv.",
           "discardedScheduled": "Der Job wurde eingeplant.",
           "discardedCompleted": "Der Job war abgeschlossen.",
           "corruptedNoDir": "Das Arbeitsverzeichnis des Jobs konnte nicht gefunden werden.",
-          "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden."
+          "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden.",
+          "corruptedManual": "Der manuelle Import ist fehlgeschlagen."
         },
         "header":{
           "owner": "Eigentümer",
@@ -376,10 +385,6 @@
     }
   },
   "progressBar":{  
-    "saveInputDb":{  
-      "title":"Modelleingabedaten werden in Datenbank gespeichert",
-      "progress":"Speichere Datensatz "
-    },
     "renderOutput":{  
       "title":"Rendern der Grafiken",
       "progress":"Rendern von Grafik "
@@ -397,13 +402,20 @@
       "title":"Speichern von Szenariodaten in der Datenbank ",
       "progress":"Speichern von Datensatz "
     },
-    "deleteScenDb":{  
-      "title":"Löschen von Szenario aus Datenbank",
-      "progress":"Löschen von Datensatz "
+    "hcubeImport":{
+      "title": "Hypercube-Job wird importiert",
+      "unzip": "Extrahieren des Archivs",
+      "zipValidation": "Validierung des Archivs",
+      "scenValidation": "Validierung der Szenariodaten",
+      "duplicateCheck": "Prüfung auf doppelte Szenarien",
+      "scenRead": "Lesen der Szenariodaten",
+      "dbUpload": "Hochladen der Szenarien in die Datenbank",
+      "success": "Import erfolgreich"
     }
   },
   "errMsg":{  
     "unknownError": "Ein unerwarteter Fehler ist aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich an einen Systemadministrator.",
+    "permErr": "Die Operation ist fehlgeschlagen, weil Sie nicht über ausreichende Berechtigungen verfügen.",
     "fileRead":{  
       "title":"Fehler beim Lesen von Datei",
       "desc":"Beim Lesen der Datei: '%s' ist ein Fehler aufgetreten."
@@ -508,6 +520,32 @@
       "title":"Fehler beim Setzen/Löschen der Szenarienperre",
       "desc":"Beim Setzen oder Löschen der Szenarienperre ist ein Fehler aufgetreten."
     },
+    "hcubeImport":{
+      "extract":{
+        "title": "Fehler beim Extrahieren des Archivs",
+        "desc": "Probleme beim Extrahieren des Archivs. Bitte stellen Sie sicher, dass Sie eine gültige Zip-Datei hochladen."
+      },
+      "scenRead":{
+        "title": "Fehler beim Lesen von Dateien",
+        "desc": "Probleme beim Lesen von Szenariodaten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+      },
+      "invalidJob":{
+        "title": "Ungültiger Hypercube-Job",
+        "desc": "Es gibt keine gültigen Szenarien in Ihrem Archiv. Bitte laden Sie gültige Hypercube-Jobdaten hoch."
+      },
+      "duplicateFetch":{
+        "title": "Datenbankfehler",
+        "desc" : "Probleme beim Abrufen existierender Szenarien aus der Datenbank. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+      },
+      "dbUpload":{
+        "title": "Datenbankfehler",
+        "desc": "Probleme beim Hochladen der Szenarien in die Datenbank. Bitte versuchen Sie es später noch einmal."
+      }
+    },
+    "hcubeLaunch":{
+      "hcubeRunning": "Der Hypercube-Modus läuft bereits.",
+      "launchError": "Beim Versuch, den Hypercube-Modus zu starten, ist ein Fehler aufgetreten. Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an den Systemadministrator."
+    },
     "paverFileLoad":{  
       "desc":"Daten für diese Kategorie konnten nicht geladen werden."
     },
@@ -518,6 +556,11 @@
     "paverTerm":{  
       "title":"Fehler beim Beenden von Python",
       "desc":"Bei dem Beenden von Python ist ein Fehler aufgetreten."
+    },
+    "saveGAMSLog":{
+      "title": "Fehler beim Speichern von GAMS log/lst-Dateien",
+      "noFileAccess": "Auf eine oder mehrere GAMS-Ausgabedateien (.log/.lst) konnte nicht zugegriffen werden.",
+      "fileSizeExceeded": "Eine oder mehrere GAMS-Ausgabedateien (.log/.lst) überschreiten die maximal zulässige Dateigröße."
     }
   }
 }

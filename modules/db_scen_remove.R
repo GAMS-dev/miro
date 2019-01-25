@@ -22,7 +22,7 @@ closeScenario <- function(){
            },
            slider = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               shiny::updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
+               updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
              }else{
                showEl(session, "#no_data_dep_" %+% i)
                hideEl(session, "#slider_" %+% i)
@@ -41,22 +41,22 @@ closeScenario <- function(){
            },
            date = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               shiny::updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
+               updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
              }
              previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
            },
            daterange = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               shiny::updateDateRangeInput(session, "daterange_" %+% i, 
+               updateDateRangeInput(session, "daterange_" %+% i, 
                                            start = modelIn[[i]]$daterange$start, 
                                            end = modelIn[[i]]$daterange$end)
              }
            },
            checkbox = {
-             shiny::updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+             updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
            },
            textinput = {
-             shiny::updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
+             updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
            }
     )
     rv[["in_" %+% i]]    <<- NULL

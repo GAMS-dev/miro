@@ -62,7 +62,7 @@ def getScalars(text):
             i = i[2:]
          itmp = i.split("=")
          for idx, j in enumerate(itmp):
-            if j.startswith(("trace", "lo", "idir", "execMode")):
+            if j.lower().startswith(("trace", "lo", "idir", "execmode", "webui", "hcube")):
                break
             if idx == 0:
                scalars += j + ",,"

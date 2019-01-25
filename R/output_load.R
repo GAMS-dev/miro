@@ -1,5 +1,5 @@
-loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders,
-                            method = "csv", csvDelim = ",", hiddenMarker = "###", strictmode = TRUE){
+loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
+                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenMarker = "###"){
   
   if(!(method %in% c("csv"))){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
@@ -12,7 +12,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
            csv = {
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
                scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
-                                       csvDelim, col_types = cols())
+                                       csvDelim, col_types = cols(), 
+                                       col_names = FALSE)
                
              }
            })
@@ -21,18 +22,24 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
     stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
                  scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
   })
-  scalarTmp[is.na(scalarTmp)] <- 0L
-  scalarTmp <- fixColTypes(scalarTmp,  "ccc")
-  #set names of scalar sheet to scalar headers
-  if(!validateHeaders(names(scalarTmp), scalarsFileHeaders)){
-    flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-              scalarsOutName, paste(names(scalarTmp), collapse = "', '"), 
-              paste(scalarsFileHeaders, collapse = "', '"))
-    if(strictmode){
+  if(length(scalarTmp)){
+    if(!identical(length(scalarTmp), 3L)){
+      flog.warn("Invalid scalar output data attempted to be read (number of headers of table does not match 3).")
       stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
     }
+    scalarTmp[is.na(scalarTmp)] <- 0L
+    scalarTmp <- fixColTypes(scalarTmp,  "ccc")
+    #set names of scalar sheet to scalar headers
+    if(!hasValidHeaderTypes(scalarTmp, colTypes[[scalarsOutName]])){
+      flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
+                scalarsOutName, paste(vapply(scalarTmp, function(el) return(class(el)[[1L]]), 
+                                                 character(1L), USE.NAMES = FALSE), collapse = "', '"), 
+                colTypes[[scalarsOutName]])
+      stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
+    }
+    names(scalarTmp) <- scalarsFileHeaders
+    attr(scalarTmp, "aliases") <- scalarsFileHeaders
   }
-  names(scalarTmp) <- scalarsFileHeaders
   
   # fetch results from csv files
   lapply(seq_along(modelOut), function(i){
@@ -58,27 +65,34 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                csv = {
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
                    ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
-                                                   csvDelim, col_types = cols())
+                                                   csvDelim, col_types = cols(), 
+                                                   col_names = FALSE)
                  }else{
-                   stop(sprintf("Data for output dataset: '%s' could not be found.", names(modelOut)[[i]]), call. = FALSE)
+                   ret$tabular[[i]] <<- modelOutTemplate[[i]]
+                   return()
                  }
                })
       }, error = function(e) {
         stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
                      names(modelOut)[[i]] %+% ".csv", modelName, e), call. = FALSE)
       })
+      if(!identical(length(ret$tabular[[i]]), length(modelOut[[i]]$headers))){
+        flog.warn("Invalid output data attempted to be read (number of headers of table does not match GMSIO__config schema).")
+        stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
+      }
       ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
-
-      if(!validateHeaders(names(ret$tabular[[i]]), names(modelOut[[i]]$headers))){
-        flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-                  names(modelOut)[i], paste(names(ret$tabular[[i]]), collapse = "', '"), 
-                  paste(names(modelOut[[i]]$headers), collapse = "', '"))
-        if(strictmode){
-          stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
-        }
-      }
+      
       names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
+      attr(ret$tabular[[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
+      
+      if(!hasValidHeaderTypes(ret$tabular[[i]], colTypes[[names(modelOut)[i]]])){
+        flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
+                  names(modelOut)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
+                                                   character(1L), USE.NAMES = FALSE), collapse = "', '"), 
+                  colTypes[[names(modelOut)[i]]])
+        stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
+      }
     }
   })
   # if scalar dataset is nonempty, assign it to return value

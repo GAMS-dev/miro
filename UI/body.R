@@ -284,6 +284,10 @@ if(config$activateModules$hcubeMode){
             fluidRow(
               box(title = lang$nav$hcubeLoad$title, status="primary", 
                   solidHeader = TRUE, width = 12, style="overflow-x: auto",
+                  tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error",
+                           lang$nav$hcubeLoad$msgOnlyOneHash),
+                  tags$div(id = "showHashError", class = "gmsalert gmsalert-error",
+                           lang$errMsg$unknownError),
                   tags$div(id = "loadContent",
                            tags$div(id = "selectorsWrapper"
                            ),
@@ -299,13 +303,21 @@ if(config$activateModules$hcubeMode){
                   tags$div(id = "hcubeLoadNoData", 
                            style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                            lang$nav$hcubeLoad$noData),
-                  tags$div(id = "hcubeLoadButtons", style = "margin:15px;display:none;",
-                           actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
-                                        class = "bt-highlight-1"),
-                           actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
-                                        class = "bt-highlight-1"),
-                           actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
-                                        class = "bt-highlight-1")
+                  tags$div(id = "hcubeLoadButtons", style = "display:none;padding:30px 0 50px 0;",
+                    tags$div(class = "col-sm-6",
+                             tags$div(
+                                      actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
+                                                   class = "bt-highlight-1"),
+                                      actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
+                                                   class = "bt-highlight-1")
+                             )
+                    ),
+                    tags$div(class = "col-sm-6", style = "text-align:right;",
+                             actionButton("btShowHash", 
+                                          lang$nav$hcubeLoad$showHashButton)
+                    )
                   )
               )
             )
@@ -342,8 +354,7 @@ if(config$activateModules$hcubeMode){
                                                        genSpinner(hidden = TRUE),
                                                        actionButton("btPaverInterrupt", lang$nav$hcubeAnalyze$btCancel)
                                               ),
-                                              tags$div(id = "paverFail", class = "err-msg", 
-                                                       style = "display:none;",
+                                              tags$div(id = "paverFail", class = "gmsalert gmsalert-error", 
                                                        lang$nav$hcubeAnalyze$failMsg
                                               ),
                                               tags$div(id = "newPaverRunButton", class = "centered-div",
@@ -456,7 +467,7 @@ body <- dashboardBody({
   tags$head(
     if(config$activateModules$hcubeMode){
       tagList(
-        tags$script(src = "MathJax-2-7-5.min.js", 
+        tags$script(src = "MathJax.js?config=default", 
                     type = "application/javascript"),
         tags$script(type = "text/x-mathjax-config", {
           "MathJax.Hub.Config({
@@ -497,7 +508,7 @@ body <- dashboardBody({
     </div>
 </div>
 </div>')},
-  HTML('<!-- Creates modal dialog for confirm messages -->
+  HTML(paste0('<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -512,6 +523,8 @@ body <- dashboardBody({
 </div>
 </div>
 <div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
-       <div></div><div></div><div></div><div></div></div></div>'),
+       <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
+              lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
+              lang$errMsg$hcubeLaunch$launchError, '</div>')),
   do.call(tabItems, tabItemList)
 )})

@@ -78,7 +78,7 @@ observeEvent(input$btCheckName, {
   flog.debug("Name for new scenario entered: %s.", scenName)
   
   if(isBadScenName(scenName)){
-    showEl(session, "#badScenarioName")
+    showHideEl(session, "#badScenarioName", 4000L)
     return()
   }else{
     errMsg <- NULL
@@ -226,9 +226,10 @@ observeEvent(input$btUpdateMeta, {
     }
     newReadPerm  <- character(0L)
     newWritePerm <- character(0L)
+    newExecPerm  <- character(0L)
     tryCatch({
       activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
-                                newReadPerm, newWritePerm)
+                                newReadPerm, newWritePerm, newExecPerm)
       rv$activeSname <- scenName
       scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
       hideEl(session, "#editMetaUI")
@@ -318,20 +319,24 @@ if(config$activateModules$attachments){
       errMsg <<- character(1L)
       switch(conditionMessage(e),
              maxSizeException = {
-               flog.info(e)
+               flog.info("Attachment wasn't added because the size is too large.")
                showHideEl(session, "#attachMaxSizeError", 6000)
              },
              maxNoException = {
-               flog.info(e)
+               flog.info("Attachment wasn't added because the maximum number of attachment is reached.")
                showHideEl(session, "#attachMaxNoError", 6000)
              },
              duplicateException = {
-               flog.info(e)
+               flog.info("Attachment wasn't added because the filename already exists.")
                showHideEl(session, "#attachDuplicateError", 6000)
              },
              forbiddenFnameException = {
-               flog.info(e)
+               flog.info("Attachment wasn't added because the filename is forbidden.")
                showHideEl(session, "#attachForbiddenFnameError", 6000)
+             },
+             roException = {
+               flog.info("Attachment wasn't added because scenario is readonly.")
+               showHideEl(session, "#attachRO", 6000)
              },
              {
                flog.error(e)

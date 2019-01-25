@@ -1,7 +1,7 @@
 HcubeLoad <- R6Class("HcubeLoad", 
                      public = list(
                        initialize        = function(db, scalarColNames, scalarTables = NULL, 
-                                                    scalarKeyTypeList = NULL, tableFieldSep = "-"){
+                                                    scalarKeyTypeList = NULL, tableFieldSep = "."){
                          # R6 class to import scenarios in hcube mode
                          #
                          # Args:      
@@ -111,12 +111,24 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(inherits(data, "data.frame"))
                          stopifnot(is.character("attribs"), length(attribs) > 0L)
                          
-                         attribs <- gsub("^.+-", "", attribs)
-                         sids <- as.integer(data[[1]])
-                         colIdsAttrib <- match(attribs, names(data))
+                         if(!inherits(private$conn, "PqConnection")){
+                           names(data) <- gsub("^.+\\.", "", names(data))
+                         }
+                         attribs          <- gsub("^.+\\.", "", attribs)
+                         sids             <- as.integer(data[[1]])
+                         colIdsAttrib     <- match(attribs, names(data))
                          colIdsExclAttrib <- match(exclAttrib, names(data))
+                         
+                         if(any(is.na(colIdsAttrib))){
+                           stop(sprintf("Attributes: '%s' not found in data.",
+                                        paste(attribs[is.na(colIdsAttrib)], 
+                                              collapse = "', '")), 
+                                call. = FALSE)
+                         }
                          if(any(is.na(colIdsExclAttrib))){
-                           stop(sprintf("Attribute: '%s' was not found.", colIdsExclAttrib[is.na[colIdsExclAttrib]]), 
+                           stop(sprintf("Attributes: '%s' not found in data.",
+                                        paste(exclAttrib[is.na(colIdsExclAttrib)], 
+                                              collapse = "', '")), 
                                 call. = FALSE)
                          }
                            
@@ -295,15 +307,18 @@ HcubeLoad <- R6Class("HcubeLoad",
                          # fetch dataframe
                          tryCatch({
                            subsetRows <- ""
+                           subsetSids <- private$db$fetchScenList(scode = c(0L, 1L))[[1L]]
                            if(length(subsetList) > 1L || length(subsetList[[1L]])){
                              subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " AND ", 
                                                                              " OR ")
                            }
                            sql     <- SQL(paste0("SELECT ", colNamesSQL, " FROM ", 
-                                                 DBI::dbQuoteIdentifier(private$conn, private$tabNameMeta),
-                                                 paste(innerJoin, collapse = " "), 
+                                                 dbQuoteIdentifier(private$conn, private$tabNameMeta),
+                                                 paste(innerJoin, collapse = " "), " INNER JOIN (VALUES ",
+                                                 paste("(" %+% subsetSids, collapse = "), "), ")) vals(_v) ON ",
+                                                 private$sidCol, "=_v",
                                                  if(nchar(trimws(subsetRows))) " WHERE ", 
-                                                 subsetRows, " LIMIT ?lim ;"))
+                                                 subsetRows, "LIMIT ?lim ;"))
                            flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")
                            query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
@@ -322,7 +337,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        fetchResultsR           = function(subsetList, colNames, limit){
                          innerTables <- private$scalarTables
                          
-                         metaData    <- private$db$fetchScenList()
+                         metaData    <- private$db$fetchScenList(scode = c(0L, 1L))
                          names(metaData)[-1] <- paste0(private$tabNameMeta, ".", 
                                                        names(metaData)[-1])
                          sidsToFetch <- metaData[[1]]
@@ -352,8 +367,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                            subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " & ", 
                                                                            " | ", SQL = FALSE)
                            if(nchar(trimws(subsetRows))){
-                             subsetRows <- parse_expr(subsetRows)
-                             dataset <- filter(dataset, !!subsetRows)
+                             subsetRows <- rlang::parse_expr(subsetRows)
+                             dataset    <- filter(dataset, !!subsetRows)
                            }
                          }
                          colNames     <- paste0(names(colNames), ".", colNames)

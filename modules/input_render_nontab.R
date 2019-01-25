@@ -162,7 +162,7 @@ lapply(seq_along(modelIn), function(id){
            }
          },
          textinput = {
-           getSelected[[id]] <<- shiny::reactive({
+           getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -176,11 +176,11 @@ lapply(seq_along(modelIn), function(id){
            })
            observe({
              noCheck[id] <<- TRUE
-             shiny::updateTextInput(session, "text_" %+% id, value = getSelected[[id]]())
+             updateTextInput(session, "text_" %+% id, value = getSelected[[id]]())
            })
          },
          date = {
-           getSelected[[id]] <<- shiny::reactive({
+           getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -195,11 +195,11 @@ lapply(seq_along(modelIn), function(id){
            # TODO: support dependency
            observe({
              noCheck[id] <<- TRUE
-             shiny::updateDateInput(session, "date_" %+% id, value = getSelected[[id]]())
+             updateDateInput(session, "date_" %+% id, value = getSelected[[id]]())
            })
          },
          daterange = {
-           getSelected[[id]] <<- shiny::reactive({
+           getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){
                return(NULL)
              }
@@ -215,7 +215,7 @@ lapply(seq_along(modelIn), function(id){
            
            observe({
              noCheck[id] <<- TRUE
-             shiny::updateDateRangeInput(session, "daterange_" %+% id, 
+             updateDateRangeInput(session, "daterange_" %+% id, 
                                          start = getSelected[[id]]()[[1]], end = getSelected[[id]]()[[2]])
            })
          },

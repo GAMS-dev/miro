@@ -1,6 +1,6 @@
 # rendering output tables and graphs
 renderOutputData <- function(){
-  progress <- shiny::Progress$new()
+  progress <- Progress$new()
   on.exit(progress$close())
   progress$set(message = lang$progressBar$renderOutput$title, value = 0)
   errMsg <- NULL

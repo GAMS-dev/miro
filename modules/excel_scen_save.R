@@ -15,7 +15,7 @@ output[["export_" %+% i]] <- downloadHandler(
         return(modelName %+% "_" %+% isolate(rv$activeSname) %+% ".xlsx")
       }
     }
-    fileName <- modelName %+% "_" %+% scenMetaData[["scen_" %+% i %+% "_"]][[2]][1] %+% ".xlsx"
+    fileName <- paste0(modelName, "_", scenMetaData[["scen_" %+% i %+% "_"]][[3]][1], ".xlsx")
     flog.debug("File: '%s' was downloaded.", fileName)
     return(fileName)
   },
@@ -42,7 +42,7 @@ output[["export_" %+% i]] <- downloadHandler(
     
     # include metadata sheet in Excel file
     if(config$activateModules$scenario && config$excelIncludeMeta && !is.null(scenMetaData[[scenIdLong]])){
-      metadata <- list(scenMetaData[[scenIdLong]])
+      metadata <- list(scenMetaData[[scenIdLong]][, -1, drop = FALSE])
       names(metadata) <- lang$nav$excelExport$metadataSheet$title
       data <- c(metadata, data)
     }

@@ -12,6 +12,20 @@ function isInputEl(id){
     return false;
   }
 }
+let spinnerActive = {};
+function showSpinnerIcon(el, delay = 3000){
+  if(spinnerActive[$(el).prop('id')]){
+    return;
+  }
+  spinnerActive[$(el).prop('id')] = true;
+  let content = $(el).html();
+  $(el).html('<i class="fa fa-refresh fa-spin"></i>');
+  setTimeout(function(){
+    $(el).html(content);
+    spinnerActive[$(el).prop('id')] = false;
+  }, delay);
+  
+}
 function changeActiveButtons(tabId){
   switch(tabId) {
     case 'inputData':
@@ -161,6 +175,9 @@ $(document).ready(function () {
     }else{
       $(id).show();
     }
+  });
+  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', function(data) {
+    $(data.id).text(data.txt).show();
   });
   Shiny.addCustomMessageHandler('gms-hideEl', function(id) {
     if(isInputEl(id)){

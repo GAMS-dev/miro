@@ -21,7 +21,7 @@ showNewScenDialog <- function(tmpScenName){
                               'create' = TRUE,
                               'persist' = FALSE)
              )),
-    tags$div(id = "badScenarioName", class = "err-msg", style = "display:none;", 
+    tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav$dialogNewScen$badName),
     tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
              lang$nav$dialogNewScen$scenExits),
@@ -106,9 +106,9 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                                                           ".xlsx")),
                                                      if(noDataInUI){
                                                        tagList(
-                                                         tags$div(id = "local_badScenName", style = "display:none;", 
-                                                                         class = "err-msg", 
-                                                                         lang$nav$dialogImport$badScenName),
+                                                         tags$div(id = "local_badScenName",
+                                                                  class = "gmsalert gmsalert-error", 
+                                                                  lang$nav$dialogImport$badScenName),
                                                          textInput("local_newScenName", 
                                                                    lang$nav$dialogImport$newScenName)
                                                        )
@@ -239,7 +239,7 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
                                        multiple = FALSE, width = "100%")
     )
   }
-  if(!noDBPanel){
+  if(!noDBPanel && length(dbScenList)){
     tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB, icon = icon("database"),
                            value = "loadScenDb",
                            tags$div(class = "space"),
@@ -308,6 +308,8 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
              lang$nav$dialogEditMeta$attachDuplicateError),
     tags$div(class = "gmsalert gmsalert-error", id = "attachForbiddenFnameError", 
              lang$nav$dialogEditMeta$attachForbiddenFnameError),
+    tags$div(class = "gmsalert gmsalert-error", id = "attachRO", 
+             lang$errMsg$permErr),
     tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
              lang$errMsg$unknownError),
     tags$div(class = "space"),
@@ -520,6 +522,8 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
 showManualJobImportDialog <- function(){
    showModal(modalDialog(
      title = lang$nav$hcubeMode$manualJobImportDialog$title,
+     tags$div(class = "gmsalert gmsalert-error", id = "manHcubeImportUnknownError", 
+              lang$errMsg$unknownError),
      tags$div(
        tags$div(
          fileInput("hcubeImport", 
@@ -586,18 +590,31 @@ getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
                                   if(startsWith(jStatus[2L], "noDir")) 
                                     lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoDir
                                   else if(startsWith(jStatus[2L], "noProcess"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoProcess))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoProcess
+                                  else if(startsWith(jStatus[2L], "man"))
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedManual))
                               }else if(startsWith(jStatus, "discarded")){
                                 jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
-                                tags$td(class = "ttip", jStatus[1L], tags$span(
-                                  if(startsWith(jStatus[2L], "corrupted")) 
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedCorrupted
-                                  else if(startsWith(jStatus[2L], "running"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive
-                                  else if(startsWith(jStatus[2L], "scheduled"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedScheduled
-                                  else if(startsWith(jStatus[2L], "completed"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$discardedCompleted))
+                                if(length(jStatus) < 2L){
+                                  tags$td(jStatus)
+                                }else{
+                                  tags$td(class = "ttip", jStatus[1L], tags$span(
+                                    if(startsWith(jStatus[2L], "corrupted")) 
+                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedCorrupted
+                                    else if(startsWith(jStatus[2L], "running"))
+                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive
+                                    else if(startsWith(jStatus[2L], "scheduled"))
+                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedScheduled
+                                    else if(startsWith(jStatus[2L], "completed"))
+                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedCompleted))
+                                }
+                              }else if(startsWith(jStatus, "imported")){
+                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
+                                if(identical(length(jStatus), 2L) && startsWith(jStatus[2L], "man"))
+                                  tags$td(class = "ttip", jStatus[1L], tags$span(
+                                    lang$nav$hcubeMode$importJobsDialog$ttips$importedManual))
+                                else
+                                  tags$td(jStatus)
                               }else{
                                 tags$td(jStatus)
                               },
@@ -749,4 +766,17 @@ addHcubeLoadBlock <- function(id, choices){
                   )
     )
   )
+}
+showHashDialog <- function(hash){
+  showModal(modalDialog(
+    title = lang$nav$hcubeLoad$showHashDialog$title,
+    tags$div(
+      lang$nav$hcubeLoad$showHashDialog$desc,
+      tags$div(
+        HTML(paste0('<input onClick="this.setSelectionRange(0, this.value.length)" value="', 
+                    htmltools::htmlEscape(hash), '" style = "width:500px;" />'))
+      )
+    ),
+    fade = TRUE, easyClose = TRUE
+  ))
 }

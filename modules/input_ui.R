@@ -10,7 +10,7 @@ observeEvent(input$btImport, {
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetaDb       <<- db$fetchScenList(noHcube = TRUE)
+      scenMetaDb       <<- db$fetchScenList(scode = if(config$activateModules$hcubeMode) 2L else 0L)
       dbTagList        <- csv2Vector(scenMetaDb[[stagIdentifier]])
       scenMetaDbSubset <<- scenMetaDb
     }, error = function(e){

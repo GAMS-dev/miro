@@ -382,7 +382,17 @@
               "minLength":1,
               "required":true
             },   
+            "showHashButton":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "noData":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "msgOnlyOneHash":{
               "type":"string",
               "minLength":1,
               "required":true
@@ -401,7 +411,24 @@
               "type":"string",
               "minLength":1,
               "required":true
-            }            
+            },
+            "showHashDialog":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+    			      "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
           }
         },
         "hcubeAnalyze":{
@@ -420,6 +447,11 @@
               "required":true
             },
             "failMsg":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "duplicatesMsg":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1481,6 +1513,11 @@
                   "additionalProperties":false,
                   "required":true,
                   "properties":{
+                    "importedManual":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "discardedCorrupted":{
                       "type":"string",
                       "minLength":1,
@@ -1507,6 +1544,11 @@
                       "required":true
                     },
                     "corruptedNoProcess":{
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "corruptedManual":{
                       "type":"string",
                       "minLength":1,
                       "required":true
@@ -1721,23 +1763,6 @@
       "required":true,
       "additionalProperties":false,
       "properties":{  
-        "saveInputDb":{  
-          "type":"object",
-          "additionalProperties":false,
-          "required":true,
-          "properties":{  
-            "title":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "progress":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            }
-          }
-        },
         "renderOutput":{  
           "type":"object",
           "additionalProperties":false,
@@ -1811,7 +1836,7 @@
             }
           }
         },
-        "deleteScenDb":{  
+        "hcubeImport":{  
           "type":"object",
           "additionalProperties":false,
           "required":true,
@@ -1821,7 +1846,37 @@
               "minLength":1,
               "required":true
             },
-            "progress":{  
+            "unzip":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "zipValidation":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "scenValidation":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "scenRead":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "duplicateCheck":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "dbUpload":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "success":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1837,6 +1892,11 @@
       "additionalProperties":false,
       "properties":{  
         "unknownError":{  
+          "type":"string",
+          "minLength":1,
+          "required":true
+        },
+        "permErr":{  
           "type":"string",
           "minLength":1,
           "required":true
@@ -2272,6 +2332,115 @@
             }
           }
         },
+        "hcubeImport":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "extract":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "scenRead":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "invalidJob":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "duplicateFetch":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "dbUpload":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "title":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+          }
+        },
+        "hcubeLaunch":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "hcubeRunning":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "launchError":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "lockScen":{  
           "type":"object",
           "additionalProperties":false,
@@ -2329,6 +2498,28 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "saveGAMSLog":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noFileAccess":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "fileSizeExceeded":{  
               "type":"string",
               "minLength":1,
               "required":true

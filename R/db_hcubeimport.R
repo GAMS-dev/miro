@@ -88,6 +88,7 @@ HcubeImport <- R6Class("HcubeImport",
                            private$csvPaths <- lapply(private$scenNames, 
                                                       private$getScenFilePaths, csvPaths)
                            names(private$csvPaths) <- private$scenNames
+                           flog.trace("%s files unzipped in: '%s'.", length(private$csvPaths), private$workDir)
                            invisible(self)
                          },
                          validateScenFiles = function(){
@@ -170,7 +171,8 @@ HcubeImport <- R6Class("HcubeImport",
                            invisible(self)
                          },
                          saveScenarios     = function(hcubeTags, readPerm = private$uid, 
-                                                      writePerm = private$uid, progressBar = NULL){
+                                                      writePerm = private$uid, execPerm = private$uid,
+                                                      progressBar = NULL){
                            # Save multiple scenarios to database
                            #
                            # Args:
@@ -179,6 +181,8 @@ HcubeImport <- R6Class("HcubeImport",
                            #                 read permissions for scenarios
                            #   writePerm:    character vector with uids/groups that have 
                            #                 write permissions for scenarios
+                           #   execPerm:     character vector with uids/groups that have 
+                           #                 execute permissions for scenarios
                            #   progressBar:  shiny pogress bar R6 object
                            # 
                            # Returns:
@@ -206,19 +210,20 @@ HcubeImport <- R6Class("HcubeImport",
                            scenMetaColnames <- private$scenMetaColnames
                            readPerm         <- vector2Csv(readPerm)
                            writePerm        <- vector2Csv(writePerm)
+                           execPerm         <- vector2Csv(execPerm)
                            tableNamesRaw    <- gsub("^[^_]+_", "", tableNames)
                            tablesTmp        <- vector("list", length(tableNames) + saveTraceFile)
                            tables           <- vector("list", length(tableNames) + saveTraceFile)
                            
                            # export metadata to reserve scenario ids
                            numberScen <- length(scenData)
-                           metadataTable <- data.frame(rep.int(private$uid, numberScen), names(scenData), 
-                                                       rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
-                                                       rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
-                                                       stringsAsFactors = FALSE)
+                           metadataTable <- tibble(rep.int(private$uid, numberScen), names(scenData), 
+                                                   rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
+                                                   rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
+                                                   rep.int(execPerm, numberScen), rep.int(1L, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            names(metadataTable) <- scenMetaColnames[-1]
-                           firstScenId <- self$getNextSid() + 1L
+                           firstScenId <- self$getLatestSid() + 1L
                            self$writeMetadata(metadataTable)
                            
                            # concatenate to single table first and then do bulk export to database
@@ -359,10 +364,14 @@ HcubeImport <- R6Class("HcubeImport",
                                                  ignore.case = TRUE)
                            verifiedIds   <- match(private$tableNamesMustHave, csvNames)
                            if(any(is.na(verifiedIds))){
+                             flog.info("The scenario misses some tables that must be included: '%s'.", 
+                                       paste(private$tableNamesMustHave[is.na(verifiedIds)], collapse = "', '"))
                              return(NULL)
                            }else{
                              verifiedIds   <- match(csvNames, private$tableNamesToVerify)
                              if(any(is.na(verifiedIds))){
+                               flog.info("The scenario includes invalid datasets: '%s'.", 
+                                         paste(csvNames[is.na(verifiedIds)], collapse = "', '"))
                                return(NULL)
                              }else{
                                return(csvNames)
@@ -375,7 +384,7 @@ HcubeImport <- R6Class("HcubeImport",
                              if(identical(tableName, private$scalarsInputName) &&
                                 any(!scenTables[[tableId]][[1]] %in% scalarInToVerify)){
                                  flog.info("Additional elements in input scalar table: '%s'.", 
-                                           scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarOutToVerify])
+                                           scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarInToVerify])
                                  return(TRUE)
                              }else if(identical(tableName, private$scalarsOutputName) &&
                                       (any(!scenTables[[tableId]][[1]] %in% scalarOutToVerify) || 

@@ -29,22 +29,24 @@ if(isInSplitView){
   }
 }
 # generate title and date
-output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scenIdLong]][[2]][1])
-output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[3]][1]))
+output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scenIdLong]][[3]][1])
+output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[4]][1]))
 eMsg <- NULL
-for(sheetName in scenTableNamesToDisplay){
-  # get sheet configuration information
-  tabData <- getScenTabData(sheetName)
+lapply(scenTableNamesToDisplay, function(sheetName){
   # call render functions
   tryCatch({
+    # get sheet configuration information
+    tabData      <- getScenTabData(sheetName)
+    dataToRender <- scenData[[scenIdLong]][[tabData$scenTableId]]
+    attr(dataToRender, "aliases") <- tabData$headerAliases
     callModule(renderData, "tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = tabData$graphConfig$outType, 
-               data = scenData[[scenIdLong]][[tabData$scenTableId]], configData = scalarData[[scenIdLong]], 
+               data = dataToRender, configData = scalarData[[scenIdLong]], 
                dtOptions = config$datatable, graphOptions = tabData$graphConfig$graph, 
                pivotOptions = tabData$graphConfig$pivottable, 
                customOptions = tabData$graphConfig$options,
                roundPrecision = roundPrecision, modelDir = modelDir)
     callModule(renderData, "table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable", 
-               data = scenData[[scenIdLong]][[tabData$scenTableId]], 
+               data = dataToRender, 
                dtOptions = config$datatable, roundPrecision = roundPrecision)
   }, error = function(e) {
     flog.error("Problem rendering graphs for dataset: '%s'. Error message: %s.", sheetName, e)
@@ -53,10 +55,10 @@ for(sheetName in scenTableNamesToDisplay){
   # show graph view per default
   showEl(session, "#scenGraph_" %+% scenId %+% "_" %+% tabData$tabId)
   hideEl(session, "#scenTable_" %+% scenId %+% "_" %+% tabData$tabId)
-}
+})
 
 if(!is.null(eMsg)){
   stop(eMsg, call. = F)
 }
-flog.trace("New scenario tab added in scenario comparison mode: %s.", scenMetaData[[scenIdLong]][[2]][1])
+flog.trace("New scenario tab added in scenario comparison mode: %s.", scenMetaData[[scenIdLong]][[3]][1])
 

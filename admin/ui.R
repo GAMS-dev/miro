@@ -76,7 +76,7 @@ body_admin <- dashboardBody({
                     tags$hr(),
                     tags$div(class = "space"),
                     tags$div("You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
-                             HTML(paste0('<button type="button" class="btn btn-default bt-gms-confirm"', 
+                             HTML(paste0('<button type="button" class="btn btn-default"', 
                                          ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
                                          'This can not be undone! You might want to dump the database first before proceeding.\', \'Cancel\', ',
                                          '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'

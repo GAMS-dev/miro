@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.3.0"
-webuiRDate   <- "Jan 21 2019"
+webuiVersion <- "0.3.2"
+webuiRDate   <- "Jan 25 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -289,7 +289,8 @@ if(is.null(errMsg)){
                      slocktimeLimit = slocktimeLimit, modelName = modelName,
                      attachmentConfig = if(config$activateModules$attachments) 
                        list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
-                     else NULL)
+                     else NULL,
+                     hcubeActive = config$activateModules$hcubeMode)
       conn <- db$getConn()
       flog.debug("Database connection established.")
     }, error = function(e){
@@ -521,7 +522,7 @@ if(!is.null(errMsg)){
       # save the scenario ids loaded in UI
       scenCounterMultiComp <- 4L
       sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
-      sidsInSplitComp  <- vector("integer", length = 2)
+      sidsInSplitComp  <- vector("integer", length = 2L)
       # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
       # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
@@ -637,12 +638,10 @@ if(!is.null(errMsg)){
     }
     
     # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, datasetsImported = vector(mode = "logical", 
-                                                                length = length(modelInMustImport)), 
-                         unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btOverwriteInput = 0L, 
-                         btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, btLoadLocal = 0L, 
-                         btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, btPaver = 0L, noInvalidData = 0L, uploadHcube = 0L)
+    rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
+                         btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
+                         btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
+                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -855,7 +854,8 @@ if(!is.null(errMsg)){
           j <- strsplit(input[[paste0("contentScen_", i)]], "_")[[1]][3]
           
           if(i < maxNumberScenarios + 2){
-            lapply(isolate(names(scenData)), function(scen){
+            lapply(names(scenData), function(scen){
+              scen <- names(scenData)[i]
               k <- strsplit(scen, "_")[[1]][2]
               updateTabsetPanel(session, paste0("contentScen_", k),
                                 paste0(paste0("contentScen_", k, "_", j)))
@@ -872,6 +872,29 @@ if(!is.null(errMsg)){
       
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
+      
+      if(!isShinyProxy){
+        # switch to Hypercube mode
+        hcubeProcess <- NULL
+        observeEvent(input$switchToHcube, {
+          flog.debug("Switch to Hypercube mode button clicked.")
+          if(!is.null(hcubeProcess)){
+            if(hcubeProcess$is_alive()){
+              flog.debug("Hypercube mode already running.")
+              showHideEl(session, "#hcubeRunning", 4000L)
+              return()
+            }
+            if(!identical(hcubeProcess$get_exit_status(), 0L)){
+              flog.debug("Problems launching Hypercube mode. Error message: '%s'.", 
+                         hcubeProcess$read_error())
+              showHideEl(session, "#hcubeLaunchError", 4000L)
+              return()
+            }
+          }
+          hcubeProcess <<- process$new("RScript", c("--vanilla", file.path(currentModelDir, "runApp.R"), 
+                                                    "LAUNCHHCUBE"), stderr = "|")
+        })
+      }
     }else{
       id <- 1
       # export output data to Excel spreadsheet
@@ -884,6 +907,11 @@ if(!is.null(errMsg)){
       unlink(file.path(workDir), recursive=TRUE)
       suppressWarnings(rm(activeScen))
       try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid))
+      if(config$activateModules$attachments && 
+         config$storeLogFilesDuration > 0L){
+        db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
+                                    config$storeLogFilesDuration)
+      }
       gc()
       if(!interactive()){
         stopApp()

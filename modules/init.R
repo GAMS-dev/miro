@@ -125,7 +125,8 @@ if(is.null(errMsg)){
 # load model input and output parameters
 if(is.null(errMsg)){
   flog.trace("Language files loaded.")
-  if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes")){
+  if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes") || 
+     "LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
   if(identical(tolower(Sys.getenv("LAUNCHADMIN")), "yes")){
@@ -136,13 +137,6 @@ if(is.null(errMsg)){
   
   modelOut          <- config$gamsOutputFiles
   names(modelOut)   <- tolower(names(modelOut))
-  # declare set of output sheets that should be displayed in webUI
-  modelOutToDisplay <- lapply(seq_along(modelOut), function(i){
-    if(identical(modelOut[[i]]$hidden, TRUE)) 
-      NA 
-    else 
-      names(modelOut)[[i]]})
-  modelOutToDisplay   <- unlist(modelOutToDisplay[!is.na(modelOutToDisplay)], use.names = FALSE)
   
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
@@ -834,7 +828,6 @@ if(is.null(errMsg)){
       }), use.names = FALSE)
     }
   }
-  
   # initialize data frames for model input data
   modelInTemplate <- vector(mode = "list", length = length(modelIn))
   lapply(modelInTabularData, function(el){
@@ -851,25 +844,40 @@ if(is.null(errMsg)){
       })
       names(headers) <- names(modelIn[[i]]$headers)
       modelInTemplate[[i]] <<- tibble(!!!headers)
+      attr(modelInTemplate[[i]], "aliases") <<- vapply(seq_along(modelIn[[i]]$headers), function(j){
+        alias <- modelIn[[i]]$headers[[j]]$alias
+        if(!length(alias)){
+          return(names(modelIn[[i]]$headers)[j])
+        }
+        return(alias)
+      }, character(1L), USE.NAMES = FALSE)
     }
   })
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))
-  lapply(modelOutToDisplay, function(outputSheet){
-    outputSheetIdx <- match(outputSheet, names(modelOut))
-    if(!is.null(modelOut[[outputSheetIdx]]$headers)){
-      headers   <- vector(mode = "numeric", length = length(modelOut[[outputSheetIdx]]$headers))
-      headers   <- lapply(modelOut[[outputSheetIdx]]$headers, function(header){
-        switch(header$type,
-               "set" = character(),
-               "parameter" = numeric(),
-               "acronym" = character(),
-               "string" = character(),
-               "scalar" = character())
-      })
-      names(headers) <- names(modelOut[[outputSheetIdx]]$headers)
-      modelOutTemplate[[outputSheetIdx]] <<- tibble::tibble(!!!headers)
-    }
-  })
+  # declare set of output sheets that should be displayed in webUI
+  modelOutToDisplay <- names(modelOut)[vapply(seq_along(modelOut), function(i){
+    if(identical(modelOut[[i]]$hidden, TRUE))
+      return(FALSE)
+    headers   <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
+    headers   <- lapply(modelOut[[i]]$headers, function(header){
+      switch(header$type,
+             "set" = character(),
+             "parameter" = numeric(),
+             "acronym" = character(),
+             "string" = character(),
+             "scalar" = character())
+    })
+    names(headers) <- names(modelOut[[i]]$headers)
+    modelOutTemplate[[i]] <<- tibble::tibble(!!!headers)
+    attr(modelOutTemplate[[i]], "aliases") <<- vapply(seq_along(modelOut[[i]]$headers), function(j){
+      alias <- modelOut[[i]]$headers[[j]]$alias
+      if(!length(alias)){
+        return(names(modelOut[[i]]$headers)[j])
+      }
+      return(alias)
+    }, character(1L), USE.NAMES = FALSE)
+    return(TRUE)
+  }, logical(1L), USE.NAMES = FALSE)]
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
   scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
   
@@ -910,7 +918,11 @@ if(is.null(errMsg)){
   scenTableNames    <- c(names(modelOut), inputDsNames)
   scenTableNames    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scenTableNames
   # define scenario tables to display in interface
-  scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames)
+  scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames[vapply(inputDsNames, function(el){
+    if(identical(modelIn[[el]]$dropdown$single, TRUE) || 
+       identical(modelIn[[el]]$dropdown$checkbox, TRUE)) 
+      return(FALSE) 
+    return(TRUE)}, logical(1L), USE.NAMES = FALSE)])
   # get the operating system that shiny is running on
   serverOS          <- getOS()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
@@ -929,19 +941,22 @@ if(is.null(errMsg)){
                                '_scenAttach' = tableNameAttachPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
                                                 stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                accessW = accessIdentifier),
+                                                accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
+                                                scode = scodeIdentifier),
                                    '_hcubeMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
                                                  stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                 accessW = accessIdentifier),
+                                                 accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
+                                                 scode = scodeIdentifier),
                                    '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
                                    '_scenTrc' = traceColNames,
                                    '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
                                                      fExt = "fileExt", 
                                                      execPerm = "execPerm",
-                                                     content = "fileContent")),
-                   colTypes = c('_scenMeta' = "iccTccc", '_hcubeMeta' = "iccTccc", 
+                                                     content = "fileContent",
+                                                     time = "timestamp")),
+                   colTypes = c('_scenMeta' = "iccTcccci", '_hcubeMeta' = "iccTcccci", 
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclb"))
+                                '_scenAttach' = "icclbT"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))

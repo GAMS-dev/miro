@@ -29,14 +29,13 @@ lapply(datasetsToFetch, function(dataset){
                     dataset, paste(names(dataTmp), collapse = "', '"), 
                     paste(names(modelIn[[i]]$headers), collapse = "', '"))
         }
-        names(dataTmp) <- names(modelIn[[i]]$headers)
-        
       }else if(identical(loadMode, "scen")){
         dataTmp <- scenInputData[[dataset]]
       }
       if(!is.null(errMsg)){
         return(NULL)
       }
+      
       # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
       # rather than setting them to NULL
       if(nrow(dataTmp)){
@@ -44,6 +43,7 @@ lapply(datasetsToFetch, function(dataset){
         if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
           if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
             scalarDataset <<- dataTmp 
+            attr(dataTmp, "aliases")  <- scalarsFileHeaders
             modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
             inputVerified <- TRUE
           }
@@ -59,6 +59,7 @@ lapply(datasetsToFetch, function(dataset){
               }
             }, logical(1L), USE.NAMES = FALSE)
             dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
+            attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
             modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE
           }
@@ -75,7 +76,7 @@ lapply(datasetsToFetch, function(dataset){
       # single dropdown, slider or date
       
       # get row names that need to be extracted from scalar table
-      row.name <- tolower(names(modelIn)[[i]])
+      rowName <- tolower(names(modelIn)[[i]])
       # get column name of ID and value column
       colId    <- scalarsFileHeaders[1]
       colValue <- scalarsFileHeaders[3]
@@ -103,8 +104,8 @@ lapply(datasetsToFetch, function(dataset){
               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
             }
           }
-          names(dataTmp) <- scalarsFileHeaders
-          
+          names(dataTmp)           <- scalarsFileHeaders
+          attr(dataTmp, "aliases") <- scalarsFileHeaders
         }
         if(!is.null(errMsg)){
           return(NULL)
@@ -118,14 +119,14 @@ lapply(datasetsToFetch, function(dataset){
       if(!is.null(scalarDataset) && nrow(scalarDataset)){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || (modelIn[[i]]$type == "daterange")){
-          row.name <- paste0(row.name, c("_lo", "_up"))
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% row.name, colValue, drop = FALSE], use.names = FALSE)
+          rowName <- paste0(rowName, c("_lo", "_up"))
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) %in% rowName, colValue, drop = FALSE], use.names = FALSE)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp
             inputVerified <- TRUE
           }
         }else{
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == row.name, 
+          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
                                             colValue, drop = FALSE], use.names = FALSE)
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]] <<- dataTmp

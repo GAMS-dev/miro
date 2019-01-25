@@ -26,7 +26,7 @@ observeEvent(input$btCheckSnameLocal, {
     scenNameTmp <- isolate(input$local_newScenName)
     if(isBadScenName(scenNameTmp)){
       flog.debug("Scenario name is not valid.")
-      showEl(session, "#local_badScenName")
+      showHideEl(session, "#local_badScenName", 4000L)
       return()
     }else{
       if(identical(config$activateModules$scenario, TRUE)){
@@ -34,7 +34,6 @@ observeEvent(input$btCheckSnameLocal, {
         if(db$checkSnameExists(scenNameTmp)){
           showEl(session, "#loadLocal_scenNameExists")
           hideEl(session, "#loadLocal_content")
-          hideEl(session, "#local_badScenName")
           return()
         }
         activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
