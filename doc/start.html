@@ -128,31 +128,45 @@
                                     <h6>Navigation bar:</h6>
                                     <p><br>On the left side you can find the navigation bar. Here you can navigate between the categories:</p>
                                     <ol class="fa-ul">
-                                    <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
-                                      Visualization & configuration of input data for the next calculations. 
-                                    </li>
-                                    <li><span class="fa-li"><i class="fa fa-tachometer-alt"></i></span><b>Output:</b><br/>
-                                      Visualization of calculated output data.
-                                    </li>
-                                    <li><span class="fa-li"><i class="fas fa-cog"></i></span><b>GAMS interaction:</b><br/>
-                                      While solving a model with GAMS this section shows the Log and Lst files.
-                                    </li>
-                                    <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
-                                      Module for the direct comparison of results / scenarios in a Spit-screeen or a switchable single-scenario view ("tab view").
-                                    </li>
+                                      <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
+                                        Visualization & configuration of input data for the next calculations. 
+                                      </li>
+                                      <li><span class="fa-li"><i class="fa fa-tachometer-alt"></i></span><b>Output:</b><br/>
+                                        Visualization of calculated output data.
+                                      </li>
+                                      <li><span class="fa-li"><i class="fas fa-cog"></i></span><b>GAMS interaction:</b><br/>
+                                        While solving a model with GAMS this section shows the Log and Lst files.
+                                      </li>
+                                      <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
+                                        Module for the direct comparison of results / scenarios in a Spit-screeen or a switchable single-scenario view ("tab view").
+                                      </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
-                                    <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                      Load input data for a model run. This can be an Excel spreadsheet or existing data from the database.
-                                    </li>
-                                    <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
-                                      Solve the GAMS model with the configured input data. This will start GAMS in the background.
-                                    </li>
+                                      <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
+                                        Load input data for a model run. This can be an Excel spreadsheet or existing data from the database.
+                                      </li>
+                                      <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
+                                        Solve the GAMS model with the configured input data. This will start GAMS in the background.
+                                      </li>
                                     </ol>
 
                                     <h6>Main window:</h6>
                                     <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are evaluated. More about the individual features will be explained now.</p>
+                                    <p>Besides navigation bar and main window the page header of the application adds the following functionality:</p>
+                                    <ul class="fa-ul">
+                                      <li><span class="fa-li"><i class="fa fa-cube"></i><i class="fa fa-arrow-right"></i></span><b>&nbsp;Mode switch: </b><br/>
+                                        &nbsp;Switch from the regular WebUI to the <a href="./hypercube.html">Hypercube mode</a>.
+                                      </li>
+                                    </ul>
+                                    <ul>
+                                      <li><b>Scenario:</b><br/>
+                                        Database scenario management - save, edit, delete and export scenario data.
+                                      </li>
+                                      <li><b>Help:</b><br/>
+                                        Link to the WebUI documentation.
+                                      </li>
+                                    </ul>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->    
                             <section id="workflow-section" class="doc-section">
@@ -223,7 +237,7 @@
                                     <div id="workflow-3"  class="section-block">
                                         <h3 class="block-title">Solve the model</h3>
                                         <p>A click on the <i>"Solve model"</i> button starts the model run. In the background GAMS is called and the model trnsport.gms is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the started GAMS model trnsport.gms.
-                                        <br>During the calculations, the WebUI switches to the section <i>"GAMS interaction"</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html?search=gams%20output" target="_blank">GAMS log and lst files</a>.</p>
+                                        <br>During the calculations, the WebUI switches to the section <i>"GAMS interaction"</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
                                         </div>

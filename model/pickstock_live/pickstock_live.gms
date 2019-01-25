@@ -4,9 +4,8 @@ $title Stock Selection Optimization with live data from the web
 * overall Dow Jones index.
 
 $onExternalInput
-Scalar maxstock      'maximum number of stocks to select ### { "slider":{"min":1, "max":29, "default":5, "step":1 }}'  / 2  /
-       trainingdays  'number of days for training        ### { "slider":{"min":1, "max":"card(tw)", "default":99, "step":1 }}'  / 99  /;
-$set WEBUICONF '{ "GMSPAR_TW":{"alias": "time window","daterange":{"label":"time window","start": "2018-01-01","startview": "year"}} }'
+Scalar maxstock      'maximum number of stocks to select '  / 2  /
+       trainingdays  'number of days for training '  / 99  /;
 $offExternalInput
 
 Set date   'date'
@@ -15,10 +14,10 @@ Set date   'date'
 Parameter
     price(date,symbol)        'UIOutput: stock price';
 
-$if not set TW_LO $set TW_LO "2016-02-01"
-$if not set TW_UP $set TW_UP "2016-03-31"
+$if not set TW_lo $set TW_lo "2016-02-01"
+$if not set TW_up $set TW_up "2016-03-31"
 
-$ifthen %GMSWEBUI% == 1
+$ifthen %WEBUI% == 1
 $onEmbeddedCode Python:
 try:
    import pandas as pd
@@ -48,8 +47,8 @@ from datetime import datetime
 # stockSymbols in DowJones index
 djSymbols  = ["MMM", "AXP", "AAPL", "BA", "CAT", "CVX", "CSCO", "KO", "DIS", "DWDP", "XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
 
-start = datetime.strptime("%TW_LO%", '%Y-%m-%d')
-end   = datetime.strptime("%TW_UP%", '%Y-%m-%d')
+start = datetime.strptime("%TW_lo%", '%Y-%m-%d')
+end   = datetime.strptime("%TW_up%", '%Y-%m-%d')
 price = []
 for sym in djSymbols:
    price_sym = web.DataReader(sym, 'iex', start, end)[['close']]

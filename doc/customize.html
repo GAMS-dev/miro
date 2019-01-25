@@ -178,8 +178,9 @@
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
                                      <p>We have already mentioned the possibility of <a href="./model.html#create-compile">using command line parameters via WebUI</a>. 
-                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=GAMS%20Options#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <img class="img-fluid" style="height:14px;" src="assets/images/onexternal.png" alt="$onExternalInput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternal.png" alt="$offExternalInput" />. 
-                                     To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
+                                     </code> / <code class="language-gams">$offExternalInput
+                                     </code>. To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
                                      </p>
                                      <div class="callout-block callout-warning">
                                          <div class="icon-holder">
@@ -216,6 +217,9 @@
       &#x22;multiple&#x22;: false,
       &#x22;selected&#x22;: &#x22;CPLEX&#x22;
     }
+  },
+  &#x22;aggregateWidgets&#x22;    : {
+    &#x22;title": &#x22;Input Options&#x22;
   }
 }</code></pre>
                                        </div><!--//code-block-->                                    
@@ -223,7 +227,7 @@
                                        <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
-                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html?search=compile%20time#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
+                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
                                        If we select for the compile time variable <span class="code">numberPeriods</span> e.g. 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within the WebUI, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
                                        <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
                                        <div class="callout-block callout-warning">
@@ -345,12 +349,14 @@ schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
                                 </div><!--//section-block-->
                                 <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
-                                Now we have another parameter <span class="code">schedule</span> which is declared between the <img class="img-fluid" style="height:14px;" src="assets/images/onexternalout.png" alt="$onExternalOutput" /> / <img class="img-fluid" style="height:14px;" src="assets/images/offexternalout.png" alt="$offExternalOutput" /> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable ('<span class="code">quantities</span>').
+                                Now we have another parameter <span class="code">schedule</span> which is declared between the <code class="language-gams">$onExternalOutput
+                                </code> / <code class="language-gams">$offExternalOutput
+                                </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable ('<span class="code">quantities</span>').
                                 The latter is relevant for our desired graphic, the other two serve here only as additional information.
                                 <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
                                 There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
                                 All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
-                                <pre><code class="language-gams">{
+                                <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
       "outType": "dtGraph",
