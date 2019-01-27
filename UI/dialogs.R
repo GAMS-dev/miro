@@ -136,12 +136,9 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                                             ),
                                             fluidRow(
                                               tags$div(style = "text-align: center;",
-                                                       tagAppendAttributes(
-                                                         actionButton("btCheckSnameLocal", 
-                                                                      lang$nav$dialogImport$okButton, 
-                                                                      class = "bt-highlight-1 bt-gms-confirm"), 
-                                                         disabled = ""
-                                                       )
+                                                       HTML(paste0('<button id="btCheckSnameLocal" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
+type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav$dialogImport$okButton), 
+                                                                   '</button>'))
                                               )
                                             )
                                    ),
@@ -204,12 +201,45 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
                               ),
                               icon = icon("database")
     )
+    if(!config$activateModules$hcubeMode){
+      tabLoadFromHcube <- tabPanel(lang$nav$dialogImport$tabHcube, value = "tb_importData_hcube",
+                                fluidRow(
+                                  column(12,
+                                         tags$div(class = "space"),
+                                         tags$div(
+                                           lang$nav$dialogImport$hcubeHashDesc,
+                                           HTML(paste0('<div style="margin:10px;">
+<input class="form-control" id="hcHashLookup" style="width:490px;font-size:10pt;"/></div>
+                                                       <div>
+                                                       <button class="btn btn-default" type="button" 
+                                                                 onclick="validateHcubeHash()">',
+                                                       htmltools::htmlEscape(lang$nav$dialogImport$hcubeHashButton), 
+                                                       '</button></div>')),
+                                           genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
+                                           tags$div(style = "max-height: 500px;overflow:auto;",
+                                                      uiOutput("hcHashLookupResults")
+                                           )
+                                         )
+                                  )
+                                ),
+                                icon = icon("cube")
+      )
+    }
   }
   showModal(modalDialog(
     title = lang$nav$dialogImport$title,
+    tags$div(id = "importScenMaxNoScen", class = "gmsalert gmsalert-error", 
+             lang$nav$dialogLoadScen$maxNoScenExceeded),
+    tags$div(id = "importScenNoHcubeScen", class = "gmsalert gmsalert-error", 
+             lang$nav$dialogImport$hcubeHashNoMatch),
+    tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
+             lang$errMsg$unknownError),
     tags$div(id = "importDataTabset",
              if(config$activateModules$scenario){
-               tabBox(width = 12, id = "tb_importData", tabLoadFromDb, tabLoadFromLocalFile)
+               if(config$activateModules$hcubeMode)
+                 tabBox(width = 12, id = "tb_importData", tabLoadFromDb, tabLoadFromLocalFile)
+               else
+                 tabBox(width = 12, id = "tb_importData", tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromHcube)
              }else{
                tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
              }
@@ -227,7 +257,29 @@ showLoadDataDialog <- function(scenMetadata, noDataInUI = FALSE, dbTagList = NUL
     }
   ))
 }
-showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE, dbTagList = NULL){
+getHcubeHashLookupTable <- function(hashLookupResults){
+  if(!inherits(hashLookupResults, "data.frame")){
+    tags$div(class = "err-msg", 
+             lang$errMsg$unknownError
+    )
+  }else{
+    tags$table(class = "cJob-wrapper",
+               tags$tr(
+                 tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
+                 tags$th(lang$nav$hcubeMode$importJobsDialog$header$date)
+               ),
+               do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i){
+                 tags$tr(onclick = paste0("hcHashImport(", hashLookupResults[[1]][i], ")"),
+                         tags$td(hashLookupResults[[2]][i]),
+                         tags$td(substr(hashLookupResults[[3]][i], 2, 
+                                        nchar(hashLookupResults[[3]][i]) - 1L))
+                 )
+               }))
+    )
+  }
+}
+showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel = FALSE, 
+                               dbTagList = NULL){
   tabPanelUI <- NULL
   tabPanelDB <- NULL
   if(isInSplitView && length(uiScenList)){
@@ -263,6 +315,8 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
   }
   showModal(modalDialog(
     title = lang$nav$dialogLoadScen$title,
+    tags$div(id = "importScenMaxNoScen", class = "gmsalert gmsalert-error", 
+             lang$nav$dialogLoadScen$maxNoScenExceeded),
     if(is.null(tabPanelUI)){
       tabsetPanel(id = "tabsetLoadScen",
                   tabPanelDB
@@ -297,7 +351,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaBadName", 
              lang$nav$dialogNewScen$badName),
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
-             lang$nav$dialogNewScen$scenExits),
+             lang$nav$dialogEditMeta$scenExits),
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
              lang$nav$dialogEditMeta$errMsg),
     tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
@@ -464,7 +518,7 @@ showDuplicatedScenDialog <- function(noDupScen, dupScenTags, noScen){
 }
 # Hypercube analyze module
 showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolversPaver = "", 
-                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE){
+                                      maxConcurentLoad = 0L, hasRemovePerm = FALSE, exclAttribChoices = NULL){
   showModal(modalDialog(
     title = list(lang$nav$hcubeMode$configPaverDialog$title, 
                  HTML('<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>')),
@@ -503,13 +557,26 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                     lang$nav$hcubeMode$configPaverDialog$delTrace
     ),
     footer = tagList(
+      tags$div(style = "text-align:left;display:none;", id = "paverExclAttribContainer",
+               tags$i(class="fas fa-arrow-down", 
+                      onclick = "$(this).next().slideToggle();$(this).toggleClass('fa-arrow-up');$(this).toggleClass('fa-arrow-down');", 
+                      style = "cursor: pointer;"),
+               tags$div(style = "display:none;",
+                        selectInput("paverExclAttrib", label = lang$nav$hcubeMode$configPaverDialog$selIgnoreAttribs, 
+                                    choices = exclAttribChoices, selected = exclAttribChoices, multiple = TRUE)
+               )
+      ),
       if(hasRemovePerm){
-        actionButton("btHcubeRemove", lang$nav$hcubeMode$configPaverDialog$removeButton,
+        actionButton("btHcubeRemove", 
+                     lang$nav$hcubeMode$configPaverDialog$removeButton,
                      class = "bt-remove")
       },
       tags$a(id="btHcubeDownload", class='btn btn-default shiny-download-link',
              href='', target='_blank', download=NA, lang$nav$hcubeMode$configPaverDialog$downloadButton),
-      actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
+      tagAppendAttributes(actionButton("btPaverConfig", lang$nav$hcubeMode$configPaverDialog$paverButton),
+                          onclick = "$('#paverExclAttribContainer').show();$('#configPaver').show();
+$('#btPaver').show();$('#btHcubeLoad').hide();$('#hcubeLoadMethod').hide();$('#btPaverConfig').hide();
+                          $('#btHcubeDownload').hide();$('#btHcubeRemove').hide();"),
       actionButton("btPaver", lang$nav$hcubeMode$configPaverDialog$runButton, 
                    class = "bt-highlight-1 bt-gms-confirm", style = "display:none;"),
       if(length(sidsToLoad) <= maxConcurentLoad)
@@ -774,7 +841,7 @@ showHashDialog <- function(hash){
       lang$nav$hcubeLoad$showHashDialog$desc,
       tags$div(
         HTML(paste0('<input onClick="this.setSelectionRange(0, this.value.length)" value="', 
-                    htmltools::htmlEscape(hash), '" style = "width:500px;" />'))
+                    htmltools::htmlEscape(hash), '" class="form-control" style="width:490px;font-size:10pt;"/>'))
       )
     ),
     fade = TRUE, easyClose = TRUE

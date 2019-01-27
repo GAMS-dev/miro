@@ -15,7 +15,7 @@ observeEvent(input$btOverwriteLocal, {
   rv$activeSname <- scenName
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })
-observeEvent(input$btCheckSnameLocal, {
+observeEvent(input$btCheckSnameLocalConfirm, {
   if(length(isolate(rv$activeSname))){
     rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
   }

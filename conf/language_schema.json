@@ -601,6 +601,11 @@
               "minLength":1,
               "required":true
             },
+            "scenExits":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "attachmentsLabel":{  
               "type":"string",
               "minLength":1,
@@ -845,6 +850,26 @@
               "minLength":1,
               "required":true
             },
+            "tabHcube":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "hcubeHashDesc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "hcubeHashButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "hcubeHashNoMatch":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "selInputData":{  
               "type":"string",
               "minLength":1,
@@ -953,6 +978,11 @@
               "required":true
             },
             "descDataError":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "maxNoScenExceeded":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1373,6 +1403,11 @@
                   "required":true
                 },
                 "selAttribs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selIgnoreAttribs":{
                   "type":"string",
                   "minLength":1,
                   "required":true

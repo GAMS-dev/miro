@@ -657,7 +657,7 @@ updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = 
                                                          allowExec = allowExec))
 }
 isBadScenName <- function(scenName){
-  grepl("^\\s*$", scenName)
+  grepl("^\\s*$", scenName)[[1L]] || grepl("^[A-Fa-f0-9]{64}$", scenName)[[1L]]
 }
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
@@ -823,7 +823,13 @@ pidExists <- function(pid){
   }
 }
 escapeGAMSCL <- function(input){
-  return(shQuote(input))
+  if(isWindows()){
+    ret <- shQuote(input, type = "cmd")
+  }else{
+    ret <- shQuote(input)
+    ret <- gsub("^'|'$", "\"", ret)
+  }
+  return(ret)
 }
 gmsFilePath <- function(path){
   if(isWindows()){

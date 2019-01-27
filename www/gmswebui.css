@@ -78,6 +78,9 @@ body{
 .gmsalert-error{
   background-color: #F39619;
 }
+.invalidInput{
+  border: 2px solid #F39619;
+}
 /* title field in boxes */
 .box-title{
   width: 100%;

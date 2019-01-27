@@ -1,4 +1,3 @@
-hasHcubeRemovePermission <- FALSE
 hcubeRemoveConfirmed <- FALSE
 
 inputType <- list(text = "_uid", date = c("_stime"), csv = "_stag")
@@ -85,14 +84,21 @@ hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)],
                            scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
-names(fields) <- c("", "Owner", "Date of creation", "Job tags")
+names(fields) <- c("", lang$nav$excelExport$metadataSheet$uid, 
+                   lang$nav$excelExport$metadataSheet$stime,
+                   lang$nav$excelExport$metadataSheet$stag)
 fields <- c(fields, scalarFields)
 
 maxNumBlocks   <- 5L
 activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
-
+exclAttribChoices <- c("_uid", "_stime", "_stag", 
+                       paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
+                                          "[[", character(1L), "key", USE.NAMES = FALSE)))
+names(exclAttribChoices)[1:3] <- names(fields)[2:4]
+names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
+                                                                "[[", character(1L), "alias", USE.NAMES = FALSE)
 hideEl(session, "#hcubeLoadButtons")
 
 observeEvent(input$btNewBlock, {
@@ -311,7 +317,7 @@ observeEvent(input$hcubeLoadSelected, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_selected])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = hasHcubeRemovePermission)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
 })
 observeEvent(input$hcubeLoadCurrent, {
   flog.debug("Button to load current page of scenarios (Hypercube load) clicked.")
@@ -321,7 +327,7 @@ observeEvent(input$hcubeLoadCurrent, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad <<- as.integer(rv$fetchedScenarios[[1]][input$hcubeLoadResults_rows_current])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad,
-                            hasRemovePerm = hasHcubeRemovePermission)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
 })
 observeEvent(input$hcubeLoadAll, {
   flog.debug("Button to load all scenarios (Hypercube load) clicked.")
@@ -331,7 +337,7 @@ observeEvent(input$hcubeLoadAll, {
   hcubeRemoveConfirmed <<- FALSE
   sidsToLoad     <<- as.integer(rv$fetchedScenarios[[1]])
   showHcubeLoadMethodDialog(length(sidsToLoad), fields, maxSolversPaver, maxConcurentLoad, 
-                            hasRemovePerm = hasHcubeRemovePermission)
+                            hasRemovePerm = TRUE, exclAttribChoices = exclAttribChoices)
 })
 
 output$btHcubeDownload <- downloadHandler(
@@ -395,15 +401,16 @@ removeBlock <- function(blockId){
 }
 
 observeEvent(input$btHcubeRemove, {
-  req(hasHcubeRemovePermission)
   if(hcubeRemoveConfirmed){
     errMsg <- NULL
     disableEl(session, "#btHcubeRemove")
-    tryCatch(db$deleteRows(db$getTableNameMetadata(), subsetSids = sidsToLoad), error = function(e){
+    affectedRows <- 0L
+    tryCatch(affectedRows <- db$deleteRows(db$getTableNameMetadata(), subsetSids = sidsToLoad), 
+             error = function(e){
       flog.error("Problems removing Hypercube scenarios. Error message: %s", e)
       errMsg <<- TRUE
     })
-    if(!is.null(errMsg)){
+    if(!is.null(errMsg) || affectedRows < sidsToLoad){
       showHideEl(session, "#hcubeRemoveError", 4000L)
       return(NULL)
     }

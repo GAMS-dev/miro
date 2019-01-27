@@ -45,6 +45,8 @@ scenLockTablePrefix      <- "_sys_scenlocks_"
 # maximum number ofscenarios that can be displayed at the same time 
 # (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
+# maximum number of scenarios that can be displayed in dropdown menu
+maxNoScenToShow <- 2e2
 # local user ID (single user)
 uid <- "user"
 # define the default type for output format

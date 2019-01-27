@@ -12,8 +12,6 @@ genPaverArgs <- function(traceFilenames){
 }
 
 observeEvent(input$btPaverConfig, {
-  showEl(session, "#configPaver")
-  showEl(session, "#btPaver")
   hideEl(session, "#btHcubeLoad")
   hideEl(session, "#hcubeLoadMethod")
   hideEl(session, "#btPaverConfig")
@@ -31,12 +29,10 @@ observeEvent(input$btPaver, {
   req(input$selPaverAttribs)
   noErr <- TRUE
   tryCatch({
+    exclAttrib <- isolate(input$paverExclAttrib)
     exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
                                                                              drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver, 
-                                                         c("_uid", "_stime", "_stag", 
-                                                           paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
-                                                                              "[[", character(1L), "key", USE.NAMES = FALSE))))
+                                                         input$selPaverAttribs, maxSolversPaver, exclAttrib)
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
@@ -160,10 +156,11 @@ observeEvent(input$btPaver, {
           paverError <- paver$read_all_error()
           flog.error("Problems while running paver. Error message: '%s'.", paverError)
           hideEl(session, "#paverLoad")
-          duplicatedInstances <- regmatches(paverError, regexpr('on instance [^\']*$', paverError))
+          duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))
           if(length(duplicatedInstances))
             showElReplaceTxt(session, "#paverFail", sprintf(lang$nav$hcubeAnalyze$duplicatesMsg, 
-                                                            substr(duplicatedInstances, 13, nchar(duplicatedInstances) - 3L)))
+                                                            substr(duplicatedInstances, 13, 
+                                                                   nchar(duplicatedInstances) - 3L)))
           else
             showEl(session, "#paverFail")
         }

@@ -68,7 +68,6 @@ Scenario <- R6Class("Scenario",
                           private$scode <- 2L
                         else
                           private$scode <- 0L
-                        
                         if(is.null(sid)){
                           tryCatch({
                             private$fetchMetadata(sname = sname, uid = private$uid)
@@ -445,7 +444,7 @@ Scenario <- R6Class("Scenario",
                           private$unlock()
                           if(private$newScen && !private$scenSaved){
                             flog.debug("Scenario was not saved. Thus, it will be removed.")
-                            private$delete()
+                            self$delete()
                           }
                         }
                       }
@@ -503,21 +502,22 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(!is.null(sid)){
-                          accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'],
-                                                                     private$userAccessGroups)
                           metadata     <- self$importDataset(private$tableNameMetadata, 
-                                                             accessRights,
                                                              subsetSids = sid, innerSepAND = FALSE)
                           if(!nrow(metadata)){
-                            stop(sprintf("A scenario with ID: '%s' could not be found (Maybe you don't have read permissions?).", 
+                            stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the user tampering with the app!", 
                                          sid), call. = FALSE)
                           }
                           
                           if(metadata[[private$scenMetaColnames['scode']]][1] != private$scode){
                             flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
-                            private$sname   <- metadata[[private$scenMetaColnames['sname']]][1]
-                            private$suid    <- private$uid
-                            private$stime   <- Sys.time()
+                            private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                            private$suid      <- private$uid
+                            private$stime     <- Sys.time()
+                            private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                            private$readPerm  <- vector2Csv(private$uid)
+                            private$writePerm <- vector2Csv(private$uid)
+                            private$execPerm  <- vector2Csv(private$uid)
                             private$writeMetadata()
                           }else{
                             private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
@@ -526,6 +526,7 @@ Scenario <- R6Class("Scenario",
                             private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
                             private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
                             private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
+                            private$execPerm  <- metadata[[private$scenMetaColnames['accessX']]][1]
                             private$sid       <- as.integer(sid)
                           }
                         }else{
@@ -625,7 +626,7 @@ Scenario <- R6Class("Scenario",
                         }
                         super$writeMetadata(metadata)
                         flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
-                                   private$tableNameMetadata, private$sid, private$suid)
+                                   private$tableNameMetadata, private$sname)
                         if(!length(private$sid))
                           private$fetchMetadata(sname = private$sname, uid = private$suid)
                         invisible(self)

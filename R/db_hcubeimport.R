@@ -38,6 +38,7 @@ HcubeImport <- R6Class("HcubeImport",
                            
                            private$conn               <- db$getConn()
                            private$uid                <- db$getUid()
+                           private$userAccessGroups   <- db$getUserAccessGroups()
                            private$tableNamesScenario <- db$getTableNamesScenario()
                            private$tableNameMetadata  <- db$getTableNameMetadata()
                            private$scenMetaColnames   <- db$getScenMetaColnames()

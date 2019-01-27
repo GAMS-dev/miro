@@ -10,7 +10,7 @@ header <- dashboardHeader(
                        icon("arrow-right"),
                        onclick = "showSpinnerIcon(this, 5000)"))
   },
-  if(config$activateModules$scenario && !identical(config$activateModules$hcubeMode, TRUE)){
+  if(config$activateModules$scenario){
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$scenario$title, tags$span(class="caret")),

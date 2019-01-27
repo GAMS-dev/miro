@@ -85,6 +85,7 @@ Db <- R6Class("Db",
                 },
                 getConn               = function() private$conn,
                 getUid                = function() private$uid,
+                getUserAccessGroups   = function() private$userAccessGroups,
                 getDbSchema           = function() private$dbSchema,
                 getScenMetaColnames   = function() private$scenMetaColnames,
                 getSlocktimeIdentifier= function() private$slocktimeIdentifier,
@@ -467,8 +468,7 @@ Db <- R6Class("Db",
                   #   subsetSids:       vector of scenario IDs that query should be filtered on (optional)
                   #
                   # Returns:
-                  #   Db object: invisibly returns reference to object in case of success, 
-                  #   throws exception if error
+                  #   integer: number of rows deleted
                   
                   #BEGIN error checks 
                   stopifnot(is.character(tableName), length(tableName) == 1)
@@ -521,14 +521,14 @@ Db <- R6Class("Db",
                     tryCatch({
                       query <- paste0("DELETE FROM ", DBI::dbQuoteIdentifier(private$conn, tableName),
                                       " WHERE ", subsetRows, subsetWritePerm)
-                      affectedRows <- DBI::dbExecute(private$conn, query)
+                      affectedRows <- as.integer(DBI::dbExecute(private$conn, query))
                       flog.debug("Db: %s rows in table: '%s' were deleted. (Db.deleteRows)", affectedRows, tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while deleting rows from the database (Db.deleteRows, " %+% 
                                      "table: '%s'). Error message: %s.", tableName, e), call. = FALSE)
                     })
                   }
-                  invisible(self)
+                  return(affectedRows)
                 },
                 updateRows = function(tableName, ..., colNames, values, innerSepAND = TRUE, subsetSids = NULL){
                   # Update records in database table based on subset conditions
@@ -679,10 +679,22 @@ Db <- R6Class("Db",
                         }
                       }
                     }
+                    subsetReadPerm <- NULL
+                    if(identical(tableName, private$tableNameMetadata)){
+                      subsetReadPerm <- private$buildSQLSubsetString(
+                        private$getCsvSubsetClause(private$scenMetaColnames['accessR'],
+                                                   private$userAccessGroups), " OR ")
+                      if(length(subsetRows)){
+                        subsetRows <- paste0(subsetRows, " AND (", subsetReadPerm, ")")
+                      }else{
+                        subsetRows <- paste0(" (", subsetReadPerm, ")")
+                      }
+                    }
                     tryCatch({
                       sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
                                                  DBI::dbQuoteIdentifier(private$conn, tableName),
-                                                 innerJoin, if(length(subsetRows)) paste0(" WHERE ", subsetRows),
+                                                 innerJoin, 
+                                                 if(length(subsetRows)) " WHERE ", subsetRows,
                                                  " LIMIT ?lim ;"))
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
@@ -1015,14 +1027,11 @@ Db <- R6Class("Db",
                   #   tibble: tibble with all scenarios user has access to read as well 
                   #   as their metadata, throws exception in case of error
                   stopifnot(is.integer(scode))
-                  
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
-                                                             private$userAccessGroups)
-                  
-      
-                  scenList <- self$importDataset(private$tableNameMetadata, accessRights, 
+
+                  scenList <- self$importDataset(private$tableNameMetadata, 
                                                  tibble(private$scenMetaColnames['scode'], 
                                                         scode), innerSepAND = FALSE)
+                
                   
                   return(scenList)
                   
