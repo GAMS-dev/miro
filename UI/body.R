@@ -467,7 +467,7 @@ body <- dashboardBody({
   tags$head(
     if(config$activateModules$hcubeMode){
       tagList(
-        tags$script(src = "MathJax.js?config=default", 
+        tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
                     type = "application/javascript"),
         tags$script(type = "text/x-mathjax-config", {
           "MathJax.Hub.Config({
