@@ -211,7 +211,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   executeHcubeJob <- function(scenGmsPar){
-    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
+    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags), 
+                                        noScen = length(scenGmsPar)))
     flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
     hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
     if(dir.exists(hcubeDir)){

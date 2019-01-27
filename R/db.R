@@ -899,12 +899,13 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaHcube = function(hcubeTags = character(1L), manual = FALSE){
+                writeMetaHcube = function(hcubeTags = character(1L), manual = FALSE, noScen = 0L){
                   # adds new entry to hcube run metadata table
                   #
                   # Args:
                   #   hcubeTags:         character vector with tags to save for hcube run (optional)
                   #   manual:            boolean that specifies whether Hypercube job is manually imported
+                  #   noScen:            integer: number of scenarios that are part of Hypercube job
                   #
                   # Returns:
                   #   hcube job Id (integer)
@@ -913,6 +914,7 @@ Db <- R6Class("Db",
                   }
                   stopifnot(is.character(hcubeTags))
                   stopifnot(is.logical(manual), length(manual) == 1L)
+                  stopifnot(is.integer(noScen), length(noScen) == 1L)
                     
                   now <- Sys.time()
                   if(manual){
@@ -923,7 +925,8 @@ Db <- R6Class("Db",
                   uAccessGroups <- vector2Csv(private$userAccessGroups)
                   metadata <- tibble(private$uid, statusCode, 
                                      now, vector2Csv(hcubeTags), permR = uAccessGroups,
-                                     permW = uAccessGroups, permX = uAccessGroups, scode = 1L)
+                                     permW = uAccessGroups, permX = uAccessGroups, 
+                                     scode = noScen)
                   names(metadata) <- private$scenMetaColnames[-1]
                   
                   self$writeMetadata(metadata, update = FALSE, hcubeMetadata = TRUE)
