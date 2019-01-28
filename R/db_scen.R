@@ -23,33 +23,34 @@ Scenario <- R6Class("Scenario",
                         private$uid  <- db$getUid()
                         if(is.null(sid)){
                           stopifnot(is.character(sname), length(sname) == 1)
-                          if(length(tags)){
-                            stopifnot(is.character(tags), length(tags) >= 1)
-                          }else{
-                            tags <- character(0L)
-                          }
-                          # if permissions not explicitly set, restrict read/write access to active user
-                          if(length(readPerm)){
-                            stopifnot(is.character(readPerm), length(readPerm) >=1)
-                          }else{
-                            readPerm <- private$uid
-                          }
-                          if(length(writePerm)){
-                            stopifnot(is.character(writePerm), length(writePerm) >=1)  
-                          }else{
-                            writePerm <- private$uid
-                          }
-                          if(length(execPerm)){
-                            stopifnot(is.character(execPerm), length(execPerm) >=1)  
-                          }else{
-                            execPerm <- private$uid
-                          }
                         }else{
                           sid <- suppressWarnings(as.integer(sid))
                           stopifnot(!is.na(sid), length(sid) == 1)
                         }
                         stopifnot(is.logical(overwrite), length(overwrite) == 1)
                         #END error checks 
+                        
+                        if(length(tags)){
+                          stopifnot(is.character(tags), length(tags) >= 1)
+                        }else{
+                          tags <- character(0L)
+                        }
+                        # if permissions not explicitly set, restrict read/write access to active user
+                        if(length(readPerm)){
+                          stopifnot(is.character(readPerm), length(readPerm) >=1)
+                        }else{
+                          readPerm <- private$uid
+                        }
+                        if(length(writePerm)){
+                          stopifnot(is.character(writePerm), length(writePerm) >=1)  
+                        }else{
+                          writePerm <- private$uid
+                        }
+                        if(length(execPerm)){
+                          stopifnot(is.character(execPerm), length(execPerm) >=1)  
+                        }else{
+                          execPerm <- private$uid
+                        }
                         
                         private$dbSchema            <- db$getDbSchema()
                         private$slocktimeLimit      <- db$getSlocktimeLimit
@@ -515,9 +516,6 @@ Scenario <- R6Class("Scenario",
                             private$suid      <- private$uid
                             private$stime     <- Sys.time()
                             private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                            private$readPerm  <- vector2Csv(private$uid)
-                            private$writePerm <- vector2Csv(private$uid)
-                            private$execPerm  <- vector2Csv(private$uid)
                             private$writeMetadata()
                           }else{
                             private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]

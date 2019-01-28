@@ -59,8 +59,8 @@ body_admin <- dashboardBody({
                     tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. Maybe your database is not empty?"),
                     tags$div(class = "space"),
-                    tags$div("You want to create a backup of the database? Click the button below to get a zip archive with all the database tables dumped into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!"),
-                    downloadButton("dbDumpAll", label = "Dump database tables"),
+                    tags$div("You want to create a backup of the database? Click the button below to get a zip archive with all the database tables saved into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!"),
+                    downloadButton("dbSaveAll", label = "Save database tables"),
                     tags$div(class = "space"),
                     tags$hr(),
                     tags$div(class = "space"),
@@ -78,7 +78,7 @@ body_admin <- dashboardBody({
                     tags$div("You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
                              HTML(paste0('<button type="button" class="btn btn-default"', 
                                          ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
-                                         'This can not be undone! You might want to dump the database first before proceeding.\', \'Cancel\', ',
+                                         'This can not be undone! You might want to save the database first before proceeding.\', \'Cancel\', ',
                                          '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
                              ))
                     )
