@@ -19,7 +19,6 @@ $abort "Unknown setting --MIRO=%MIRO%. Available are --MIRO=LAUNCH|BUILD|RUN."
 * and after execution write the content of the output symbols as CSV files.
 $label MIRO_L1
 $setNames "%gams.input%" fp fn fe
-*$set MIRO_DEBUG on
 $include "%fp%%fn%_miro.gms"
 $exit
 
@@ -152,22 +151,82 @@ if pivot_gdx:
    savegdxfn = gdxfn
    gdxfn = r'%fn%_ccmiro_outdb.gdx'   
    db.export(gdxfn)
+
+def keyname(dname,domdict):
+   if dname in domdict:
+      key = dname + '_' + str(domdict[dname])
+      domdict[dname] = domdict[dname]+1
+   else:
+      key = dname
+      domdict[dname] = 1
+   return key.lower(), domdict
+
+def headerList(s):
+   headers = []
+   domdict = {}
+   if s[1]=="pp":
+      dlist = s[0].domains_as_strings[:-1]
+   else:
+      dlist = s[0].domains_as_strings
+   for d in dlist:
+      if d=='*':
+         dname = 'uni'
+      else:
+         dname = d.lower()
+      key, domdict = keyname(dname,domdict)
+      if d=='*':
+         headers.append((key,'set','Universal set'))
+      else:
+         headers.append((key,'set',extractSymText(db[d],2)))
+
+   if s[1][0]=="s":
+      key, domdict = keyname('text',domdict)
+      headers.append((key,'set','Set text ' + extractSymText(s[0],2)))
    
+   if s[1]=="pr":
+      key, domdict = keyname('value',domdict)
+      headers.append((key,'parameter',extractSymText(s[0],2)))
+
+   if s[1]=="vr" or s[1]=="er":
+      key, domdict = keyname('level',domdict)
+      headers.append((key,'parameter','Level')) 
+      key, domdict = keyname('marginal',domdict)
+      headers.append((key,'parameter','Marginal')) 
+      key, domdict = keyname('lower',domdict)
+      headers.append((key,'parameter','Lower'))
+      key, domdict = keyname('upper',domdict)
+      headers.append((key,'parameter','Upper'))
+      key, domdict = keyname('scale',domdict)
+      headers.append((key,'parameter','Scale'))
+      
+   if s[1]=="pp":
+      for r in s[0].domains[-1]:
+         key, domdict = keyname(r.key(0),domdict)
+         if r.text=='':
+            headers.append((key,'parameter', r.key(0)))
+         else:
+            headers.append((key,'parameter',r.text))
+   return headers
+
 # Now write model specific MIRO driver
 with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('$ifi %' + 'MIRO%==run $goto MIRO_RUN\n')
    f.write('\n')
    f.write('* Create csv files of existing data for Excel file creation\n')
    for s in i_sym:
+      if (s[1]=='ps') or (s[1]=='ss'): # skip scalars
+         continue
       sym = s[0]
       stype = s[1]
-      if (stype=='ps') or (stype=='ss'): # skip scalars
-         continue
+      symHeader = headerList(s)
+      htext = symHeader[0][0]
+      for h in symHeader[1:]:
+         htext = htext + ',' + h[0]
       f.write('$ife card(' + sym.name + ')=0 $abort Need data for ' + sym.name + '\n')
       if stype=='pp': # pivot
-         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 format=csv > ' + sym.name.lower() + '.csv\n')
+         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 header="' + htext + '" format=csv > ' + sym.name.lower() + '.csv\n')
       else:
-         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields format=csv > ' + sym.name.lower() + '.csv\n')
+         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields header="' + htext + '"  format=csv > ' + sym.name.lower() + '.csv\n')
       f.write('$if errorlevel 1 $abort Problems creating ' + sym.name.lower() + '.csv\n')
    f.write('\n')
    f.write('* Create scalars.csv (if necessary) and produce xlsx file\n')
@@ -183,7 +242,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       f.write('     return str(default)\n')
       f.write('\n')    
       f.write('with open("scalars.csv", "w") as f:\n')
-      f.write('   f.write("Scalar,Description,Value\\n")\n')
+      f.write('   f.write("scalar,description,value\\n")\n')
       for s in i_sym:
          if s[1]=='ss':
             f.write('   f.write("' + s[0].name + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '","") + "\\n")\n')
@@ -224,24 +283,25 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('          worksheet.write(r, c, col)\n')
    f.write('workbook.close()\n')
    f.write('$offembeddedCode\n')
-   f.write('$if not set MIRO_DEBUG rm -f ' + gdxfn + ' ' + savegdxfn)
+   f.write('$if not set MIRO_DEBUG $hiddencall rm -f ' + gdxfn + ' ' + savegdxfn)
    if have_i_scalar:
       f.write(' scalars.csv')
    for s in i_sym:
       if not (s[1]=='ss' or s[1]=='ps'):
          f.write(' '+s[0].name.lower()+'.csv')
    f.write('\n')
-   f.write('$terminate\n')
+   f.write('$exit\n')
 
    # Now the run part
    f.write('\n')
    f.write('$label MIRO_RUN\n')
    f.write('$ifthen set HCUBE\n')
-   f.write(r'$ set csvHome ..%system.dirsep%..%system.dirsep%static%system.dirsep% ' + '\n')
+   f.write('$ set csvHome ..%' + 'system.dirsep%..%' + 'system.dirsep%static%' + 'system.dirsep% ' + '\n')
    f.write('$else\n')
-   f.write(r'$ set csvHome .%system.dirsep% ' + '\n')
+   f.write('$ set csvHome .%' + 'system.dirsep% ' + '\n')
    f.write('$endif\n')
    f.write('$onmultiR\n')
+   rm_list = []
    for s in i_sym:
       if not (s[1]=='ss' or s[1]=='ps'):
          symname = s[0].name.lower()
@@ -256,8 +316,12 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('$gdxin ' + symname + '\n')
          f.write('$loadDCR ' + symname +'\n')
          f.write('$gdxin\n')
+         rm_list.append(symname)
    f.write('$offmulti\n')
-   f.write('\n')
+   f.write('$if not set MIRO_DEBUG rm -f ')
+   for gdxfn in rm_list:
+      f.write(gdxfn+'.gdx ')
+   f.write('\n\n')
    f.write('$ifthen exist %csvHome%scalars.csv\n')
    f.write('$onembeddedCode Python:\n')
    f.write('import csv\n')
@@ -331,6 +395,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       f.write('execute$card(' + symname + ') ')
       f.write('"gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' format=csv csvsettext csvallfields > ' + symname + '.csv";\n')
       f.write('abort$errorlevel "problems writing ' + symname + '.csv";\n')
+   f.write('$if not set MIRO_DEBUG execute "rm -rf ' + fn + '";\n')
 
    f.write('\n')
    if have_o_scalar or have_o_vescalar:
@@ -383,54 +448,9 @@ for s in i_sym:
    if s[1]=="ss" or s[1]=="ps":
       continue
    headers = {}
-   domdict = {}
-   if s[1]=="pp":
-      dlist = s[0].domains_as_strings[:-1]
-   else:
-      dlist = s[0].domains_as_strings
-   for d in dlist:
-      if d=='*':
-         dname = 'uni'
-      else:
-         dname = d.lower()
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-
-      if d=='*':
-         headers[key] = { 'type':'set', 'alias':'Universal set' }
-      else:
-         headers[key] = { 'type':'set', 'alias':extractSymText(db[d],2) }
-
-   if s[1][0]=="s":
-      dname = 'text'
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-      headers[key] = { 'type':'set', 'alias':'Set text ' + extractSymText(s[0],2) }
-   
-   if s[1]=="pr":
-      dname = 'value'
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-      headers[key] = { 'type':'parameter', 'alias':extractSymText(s[0],2) }
-
-   if s[1]=="pp":
-      for r in s[0].domains[-1]:
-         if r.text=='':
-            headers[r.key(0)] = { 'type':'parameter', 'alias':r.key(0) }
-         else:
-            headers[r.key(0)] = { 'type':'parameter', 'alias':r.text }
+   symHeader = headerList(s)
+   for h in symHeader:
+      headers[h[0]] = { 'type':h[1], 'alias':h[2] }
    
    io_dict[s[0].name.lower()] = { 'alias':extractSymText(s[0],2), 'headers':headers }
 if have_i_scalar:
@@ -459,62 +479,9 @@ for s in o_sym:
    if s[1]=="ss" or s[1]=="ps" or s[1]=='vs' or s[1]=='es' :
       continue
    headers = {}
-   domdict = {}
-   if s[1]=="pp":
-      dlist = s[0].domains_as_strings[:-1]
-   else:
-      dlist = s[0].domains_as_strings
-   for d in dlist:
-      if d=='*':
-         dname = 'uni'
-      else:
-         dname = d.lower()
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-
-      if d=='*':
-         headers[key] = { 'type':'set', 'alias':'Universal set' }
-      else:
-         headers[key] = { 'type':'set', 'alias':extractSymText(db[d],2) }
-
-   if s[1][0]=="s":
-      dname = 'text'
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-      headers[key] = { 'type':'set', 'alias':'Set text ' + extractSymText(s[0],2) }
-   
-   if s[1]=="pr":
-      dname = 'value'
-      if dname in domdict:
-         key = dname + '_' + str(domdict[dname])
-         domdict[dname] = domdict[dname]+1
-      else:
-         key = dname
-         domdict[dname] = 1
-      headers[key] = { 'type':'parameter', 'alias':extractSymText(s[0],2) }
-
-   if s[1]=="vr" or s[1]=="er":
-      headers['level'] = { 'type':'parameter', 'alias':'Level' }
-      headers['marginal'] = { 'type':'parameter', 'alias':'Marginal' }
-      headers['lower'] = { 'type':'parameter', 'alias':'Lower' }
-      headers['upper'] = { 'type':'parameter', 'alias':'Upper' }
-      headers['scale'] = { 'type':'parameter', 'alias':'Scale' }
-
-   if s[1]=="pp":
-      for r in s[0].domains[-1]:
-         if r.text=='':
-            headers[r.key(0)] = { 'type':'parameter', 'alias':r.key(0) }
-         else:
-            headers[r.key(0)] = { 'type':'parameter', 'alias':r.text }
-   
+   symHeader = headerList(s)
+   for h in symHeader:
+      headers[h[0]] = { 'type':h[1], 'alias':h[2] }
    io_dict[s[0].name.lower()] = { 'alias':extractSymText(s[0],2), 'headers':headers }
    
 if have_o_scalar:
@@ -522,11 +489,14 @@ if have_o_scalar:
    st = []
    sty = []
    headers = {}
+   hiddenCnt = 0
    for s in o_sym:
       if not (s[1]=="ss" or s[1]=="ps"):
          continue
       sn.append(s[0].name)
       st.append(extractSymText(s[0],1))
+      if hidden_marker in st[-1]:
+         hiddenCnt = hiddenCnt+1
       if s[1]=="ss":
          sty.append("set")
       else:
@@ -534,7 +504,7 @@ if have_o_scalar:
    headers['scalar'] = { 'type':'set', 'alias':'Scalar Name' }
    headers['description'] = { 'type':'set', 'alias':'Scalar Description' }
    headers['value'] = { 'type':'set', 'alias':'Scalar Value' }
-   io_dict['scalars_out'] = { 'alias':'Output Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
+   io_dict['scalars_out'] = { 'alias':'Output Scalars', 'hidden':hiddenCnt==len(sn), 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
 
 if have_o_vescalar:
    headers = {}   
@@ -556,7 +526,222 @@ with open(confdir + '/GMSIO_config.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 $offembeddedCode
    
-$set MIRO_DEBUG on
 $include "%fp%%fn%_miro.gms"
 $ifi %MIRO%==BUILD $terminate
+
+$if not set appLogoPath $set appLogoPath ""
+$ifthen.mk not set mkApp
+$   set mkApp 0
+$else.mk
+$   set mkApp 1
+$   ifthen.mode set MIROMODE
+$      ifthen.host %system.HostPlatform%=="WEX"
+* windows
+$         iftheni.modetype %MIROMODE%==HCUBE
+$            set SETMODEENV "SET LAUNCHHCUBE=yes&&"
+$         elseif.modetype %MIROMODE%==ADMIN
+$            set SETMODEENV "SET LAUNCHADMIN=yes&&"
+$         endif.modetype
+$      elseif.host %system.HostPlatform%=="DEX"
+* mac
+$         ifthen.modetype %MIROMODE%==HCUBE
+$            set SETMODEENV "export LAUNCHHCUBE='yes';"
+$         elseif.modetype %MIROMODE%==ADMIN
+$            set SETMODEENV "export LAUNCHADMIN='yes';"
+$         endif.modetype
+* linux
+$      else.host
+$        set SETMODEENV ""
+$      endif.host
+$   else.mode
+$      set SETMODEENV ""
+$   endif.mode
+$endif.mk
+$ifthen dExist %gams.sysdir%MIRO
+$  set MIRODIR %gams.sysdir%MIRO
+$else
+$  set MIRODIR %fp%..%system.dirsep%..
+$endif
+
+$onEmbeddedCode Python:
+from platform import system
+from re import search
+import os
+
+def get_r_path():
+    try:
+        with open(os.path.join(r"%gams.sysdir% ".strip(), 'MIRO', 'conf', 'rpath.conf')) as f:
+            RPath = f.readline().strip()
+            return RPath
+    except:
+        pass
+    def major_minor_micro(version):
+        RverTmp = search('(\d+)\.(\d+)\.(\d+)', version)
+        if RverTmp is None:
+           major, minor, micro = (0,0,0)
+        else:
+           major, minor, micro = RverTmp.groups()
+        return int(major), int(minor), int(micro)
+    def major_minor(version):
+        RverTmp = search('(\d+)\.(\d+)', version)
+        if RverTmp is None:
+           major, minor = (0,0)
+        else:
+           major, minor = RverTmp.groups()
+        return int(major), int(minor)
+    if system() == "Windows":
+        import winreg
+        try:
+            aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+            aKey = winreg.OpenKey(aReg, r"SOFTWARE\R-Core\R")
+        except FileNotFoundError:
+            return ""
+        paths = []
+        for i in range(20):
+            try:
+                asubkey_name = winreg.EnumKey(aKey,i)
+                asubkey = winreg.OpenKey(aKey,asubkey_name)
+                paths.append(winreg.QueryValueEx(asubkey, "InstallPath")[0])
+            except EnvironmentError:
+                break
+        if len(paths) == 0:
+           return ""
+        latestRPath = max(paths, key=major_minor_micro)
+        latestR = major_minor_micro(latestRPath)
+        latestRPath = latestRPath + os.sep + "bin" + os.sep
+    elif system() == "Darwin":
+        RPath = r"/Library/Frameworks/R.framework/Versions"
+        RVers = os.listdir(RPath)
+        latestRPath = max(RVers, key=major_minor)
+        latestR = major_minor(latestRPath)
+        latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+    else:
+        RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
+        if not len(RPath):
+           latestR = (0, 0)
+        else:
+           RPath = RPath.decode('utf-8').strip().strip('Rscript')
+
+    #if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
+    #  os.environ["PYEXCEPT"] = "RVERSIONERROR"
+    #  raise FileNotFoundError('Bad R version')
+    return latestRPath
+RPath = get_r_path()
+
+os.environ["RPATH"] = RPath
+if os.path.exists(r"%gams.sysdir%MIRO%system.dirsep%library"):
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "MIRO/library"
+else:
+    sysdir = ""
+with open("runapp.R", "w") as f: 
+   f.write("RLibPath <- '"+sysdir+"'\n")
+   f.write("""
+if(RLibPath == ""){{
+   RLibPath <- NULL
+}}else{{
+   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
+}}
+if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
+  checkSourceDefault <- getOption("install.packages.check.source")
+  options(install.packages.check.source = "no")
+  newPackages <- c("httpuv", "mime", 
+                   "jsonlite", "xtable", "digest", "htmltools", "R6", 
+                   "sourcetools", "later", "promises", "crayon", "rlang", 
+                   "Rcpp", "BH", "magrittr", "shiny")
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){{
+    binFileExt <- "_.*\\\\.zip$"
+  }}else{{
+    binFileExt <- "_.*\\\\.tgz$"
+  }}
+  for(pkg_name in newPackages){{
+    print(paste0("Installing: ", pkg_name))
+    if(!is.null(RLibPath)){{
+      pkg_path <- NULL
+      try(pkg_path <- list.files(RLibPath, paste0("^", pkg_name, binFileExt), 
+                                 full.names = TRUE, recursive = TRUE))
+      if(length(pkg_path)){{
+        install.packages(pkg_path[[1]], lib = RLibPath, repos = NULL, 
+                         type="binary", dependencies = FALSE)
+        next
+      }}
+    }}
+    install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], repos = 'https://cloud.r-project.org', dependencies = TRUE)
+  }}
+  options(install.packages.check.source = checkSourceDefault)
+  rm(checkSourceDefault)
+}}
+library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
+shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)""".format(r"%MIRODIR% ".strip().replace("\\","/")))
+
+if %mkApp%>0:
+    fn_model = "%fn%"
+    fe_model = "%fe%"
+    fp_model = r"%fp% ".strip()
+    gams_sysdir = r"%gams.sysdir% ".strip()
+   
+    if system() == "Windows":
+        with open(fn_model + ".bat", "w") as f:
+            f.write('''start /min "" cmd /C "%SETMODEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+    elif system() == "Darwin":
+        from shutil import rmtree
+        with open(fn_model + ".applescript", "w") as f:
+            f.write('''do shell script "%SETMODEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+        if os.path.isdir(fn_model + ".app"):
+           rmtree(fn_model + ".app")
+        subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
+        os.remove(fn_model + ".applescript")
+        appLogoPath = r"%appLogoPath% ".strip()
+        if(len(appLogoPath) > 0 and os.path.isfile(appLogoPath)):
+          logoPath = appLogoPath
+        else:
+          useDefaultIcon = False
+          defaultIconPath = os.path.join(r"%MIRODIR% ".strip(), "resources", "macos", "gmslogo.icns")
+          try:
+            from PIL import Image, ImageDraw, ImageFont
+          except:
+            try:
+              install("Pillow")
+              from PIL import Image, ImageDraw, ImageFont
+            except:
+              useDefaultIcon = True
+          if useDefaultIcon:
+            logoPath = defaultIconPath
+          else:
+            try:
+              img = Image.open(os.path.join(r"%MIRODIR% ".strip(), "resources", "macos", "default.ico"))
+              img = img.convert("RGB")
+              draw = ImageDraw.Draw(img)
+              draw.rectangle([0,144,255,192],fill=(34,45,50),outline=(243,150,25))
+              fnt = ImageFont.truetype('/Library/Fonts/Verdana.ttf', 30)
+              txtX = 128-len(fn_model)*17/2
+              draw.text((txtX,150), fn_model, font=fnt, fill=(243,150,25))
+              img.save('logo.icns')
+              logoPath = os.path.join(fp_model, 'logo.icns')
+            except:
+              logoPath = defaultIconPath
+        subprocess.call(["cp", "-f", logoPath, fn_model + ".app/Contents/Resources/applet.icns"])
+        try:
+          os.remove('logo.icns')
+        except:
+          pass
+        
+    else:
+        pass
+$offembeddedCode
+$hiddencall rm -rf __pycache__
+
+$ifthen not errorfree
+$ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/GMSWebUI/conf/' directory."
+$ terminate
+$endif
+
+$iftheni.mode %MIROMODE%==HCUBE
+$  setEnv LAUNCHHCUBE yes
+$elseifi.mode %MIROMODE%==ADMIN
+$  setEnv LAUNCHADMIN yes
+$else.mode
+$  setEnv LAUNCHHCUBE no
+$endif.mode
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%"
+$if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
