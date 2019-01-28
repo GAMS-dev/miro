@@ -1,12 +1,12 @@
 ; credit to: The RInno package (https://github.com/ficonsulting/RInno/blob/master/LICENSE) (GPL 3 licensed)
 
-#define WebUIName "GAMS WebUI"
+#define WebUIName "GAMS MIRO"
 #define RMajor 3
 #define RMinor 5
 #define RPatch 1
 #define WebUIPublisher "GAMS Software GmbH/GAMS Development Corp."
 #define WebUIURL "gams.com"
-#define docURL "https://www.gams.com/latest/webui/"
+#define docURL "https://www.gams.com/webui/"
 
 [Setup]
 AppName = {#WebUIName}
@@ -54,8 +54,7 @@ Source: "../../UI/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Co
 Source: "../../www/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../www/*"; DestDir: "{app}\app.R"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../www/*"; DestDir: "{app}\global.R"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../model/loadCSV.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
-Source: "../../model/webui.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
+Source: "../../model/miro.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
 
 Source: "../../model/kport/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\kport\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/kport/kport.gms"; DestDir: "{userdocs}\GMSWebUI\examples\kport"; Flags: ignoreversion;Components: examples
@@ -128,7 +127,7 @@ begin
   Result := True;
   if not RegKeyExists(HKCU, 'gams.location') and not RegKeyExists(HKCR, 'gams.location') then
   begin
-    MsgBox('In order to install the GAMS WebUI, a valid installation of GAMS is required. You can download GAMS from: www.gams.com.', mbError, MB_OK);
+    MsgBox('In order to install GAMS MIRO, a valid installation of GAMS is required. You can download GAMS from: www.gams.com.', mbError, MB_OK);
     Result := False;
   end;
 end;
