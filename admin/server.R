@@ -172,7 +172,34 @@ server_admin <- function(input, output, session){
       return()
     showHideEl(session, "#restoreSuccess", 3000L)
   })
-  
+  configGenData <- config[!names(config) %in% c("pageTitle", 
+                                                "MIROSwitch", 
+                                                "gamsMetaDelim", 
+                                                "fileExchange", 
+                                                "csvDelim", "db")]
+  session$sendCustomMessage("parseConfig", 
+                            list(config = configGenData[!names(configGenData) %in% c("gamsInputFiles",
+                                                                                    "gamsOutputFiles")],
+                                 gmsio = configGenData[c("gamsInputFiles", "gamsOutputFiles")]))
+  observe({
+    data <- input$updatedConfig
+    if(!length(data))
+      return()
+    noErr <- TRUE
+    tryCatch({
+      confFilePath <- file.path(currentModelDir, configDir, "config.json")
+      if(file.exists(confFilePath)[1])
+        unlink(confFilePath, force = TRUE)
+      jsonlite::write_json(data, confFilePath)
+    }, error = function(e){
+      flog.error("Problems writing config.json file. Error message: '%s'.", e)
+      showHideEl(session, "#updateConfigError", 4000L)
+      noErr <<- FALSE
+    })
+    if(!noErr)
+      return()
+    showHideEl(session, "#updateConfigSuccess", 4000L)
+  })
   hideEl(session, "#loading-screen")
   session$onSessionEnded(function() {
     if(!interactive()){
