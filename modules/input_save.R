@@ -22,6 +22,8 @@ if(!is.na(scalarId)){
 }
 addScalarVal <- function(scalar, description, value){
   value <- as.character(value)
+  if(!length(value) || !nchar(value))
+    value <- "system.empty"
   # generate data frame
   if(is.null(dataTmp[[length(modelInFileNames)]])){
     # no scalar data was written yet, so add headers
@@ -136,7 +138,7 @@ lapply(seq_along(modelIn), function(i){
                                               modelInAlias[i]), sep = "\n")
              return(NULL)
            }
-           
+           value <- value[value != "_"]
            if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
              # generate data frame (multi dropdown menu)
              dataTmp[[j]]        <<- tibble(value)

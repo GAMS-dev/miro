@@ -231,7 +231,7 @@ Db <- R6Class("Db",
                   dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
                   return(invisible(self))
                 },
-                dumpTablesModel       = function(tempDir){
+                saveTablesModel       = function(tempDir){
                   stopifnot(is.character(tempDir), length(tempDir) == 1)
                   limit <- 1e7 + 1L
                   tableNames <- private$getTableNamesModel()
@@ -851,7 +851,7 @@ Db <- R6Class("Db",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessX']), 
                                       " text NOT NULL,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['scode']), 
-                                      if(inherits(private$conn, "PqConnection")) " smallint);)" else " integer);")
+                                      if(inherits(private$conn, "PqConnection")) " smallint);" else " integer);")
                       DBI::dbExecute(private$conn, query)
                     }, error = function(e){
                       stop(sprintf("Metadata table could not be created (Db.writeMetadata). " %+%

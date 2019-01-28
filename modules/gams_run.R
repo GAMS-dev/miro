@@ -155,7 +155,12 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(input[["cb_" %+% i]])
              },
              textinput = {
-               return(escapeGAMSCL(input[["text_" %+% i]]))
+               val <- input[["text_" %+% i]]
+               if(!length(val) || !nchar(val))
+                 val <- NA
+               else 
+                 val <- escapeGAMSCL(val)
+               return(val)
              },
              dt =,
              hot = {
@@ -442,7 +447,7 @@ observeEvent(input$btSolve, {
       if(nrow(DDParValues) || nrow(GMSOptValues)){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                    function(i){
-                                     if(!identical(DDParValues[[3]][i], "_")) 
+                                     if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
                                        paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
                                      else
                                        NA_character_
@@ -451,7 +456,7 @@ observeEvent(input$btSolve, {
         # do not write '_' in pf file (no selection)
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
-                                  if(!identical(GMSOptValues[[3]][i], "_")) 
+                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
                                     paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
                                   else
                                     NA_character_
