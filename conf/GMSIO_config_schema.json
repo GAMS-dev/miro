@@ -11,8 +11,8 @@
       "default":"GAMS WebUI",
       "required":false
     },
-    "gamsWEBUISwitch":{  
-      "description":"GAMS command line option to trigger the model to work under Web UI",
+    "MIROSwitch":{  
+      "description":"GAMS command line option to trigger the model to work under MIRO",
       "type":"string",
       "minLength":5,
       "required":true

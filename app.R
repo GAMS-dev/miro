@@ -399,7 +399,11 @@ aboutDialogText <- paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
                           "You should have received a copy of the GNU General Public License ",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.")
-if(!is.null(errMsg)){
+if(identical(LAUNCHADMINMODE, TRUE)){
+  source("./admin/server.R", local = TRUE)
+  source("./admin/ui.R", local = TRUE)
+  shinyApp(ui = ui_admin, server = server_admin)
+}else if(!is.null(errMsg)){
   ui_initError <- fluidPage(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "webui.css")
@@ -440,11 +444,6 @@ if(!is.null(errMsg)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
-  
-}else if(identical(LAUNCHADMINMODE, TRUE)){
-  source("./admin/server.R", local = TRUE)
-  source("./admin/ui.R", local = TRUE)
-  shinyApp(ui = ui_admin, server = server_admin)
 }else{
   rm(LAUNCHADMINMODE)
   rm(installedPackages)

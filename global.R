@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "trnsport"
+modelName <- "pickstock"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -60,7 +60,7 @@ customRendererDirName <- "customRenderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
-scalarsFileHeaders <- c("Scalar", "Description", "Value")
+scalarsFileHeaders <- c("scalar", "description", "value")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"
 # prefix used for identifying compile time variables

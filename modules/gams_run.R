@@ -408,7 +408,7 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     idsToSolve <<- scenToSolve$ids
-    scenGmsPar <<- paste(scenToSolve$gmspar, config$gamsWEBUISwitch, 
+    scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
                          "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
@@ -499,7 +499,7 @@ observeEvent(input$btSolve, {
   tryCatch({
     gamsArgs <- c(paste0('idir1="', gmsFilePath(currentModelDir), '"'), if(config$includeParentDir)
       paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), paste0('curdir="', workDir, '"'),
-      "lo=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
+      "lo=3", "execMode=" %+% gamsExecMode, config$MIROSwitch)
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
     }
