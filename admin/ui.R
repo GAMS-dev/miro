@@ -4,7 +4,7 @@ header_admin <- dashboardHeader(
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  "Help", tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
-                  tags$li(tags$a(href = "https://www.gams.com/latest/webui/", 
+                  tags$li(tags$a(href = "https://www.gams.com/webui/", 
                                  target = "_blank", "Documentation")),
                   tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
                                       'About GAMS WebUI\', \'', 
@@ -13,18 +13,30 @@ header_admin <- dashboardHeader(
   title=paste0("GAMS WebUI admin panel (", modelName, ")"), disable = FALSE)
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
+              menuItem("Configuration generator", tabName="config_gen", icon = icon("gear")),
               menuItem("Database management", tabName="db_management", icon = icon("database"))
   )
 )
 body_admin <- dashboardBody({
+  addResourcePath("admin", "admin/resources")
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "admin/spectrum.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "admin/bootstrap-datetimepicker.min.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "admin/alpaca.min.css"),
       tags$script(src = "shortcuts.js", type = "application/javascript"),
       tags$script(src = "gmswebui.js", type = "application/javascript"),
+      tags$script(src = "admin/spectrum.js", type = "application/javascript"),
+      tags$script(src = "admin/moment.min.js", type = "application/javascript"),
+      tags$script(src = "admin/bootstrap-datetimepicker.min.js", type = "application/javascript"),
+      tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js", type = "application/javascript"),
+      tags$script(src = "admin/alpaca.min.js", type = "application/javascript"),
+      tags$script(src = "admin/config-gen.js", type = "application/javascript"),
+      
       tags$style(HTML(paste0('
 .main-header .logo {
-                             background-image: url("', if(dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
+                             background-image: url("gams_logo.png");
 }')))),
     HTML('<!-- Creates modal dialog for confirm messages -->
        <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -82,6 +94,21 @@ body_admin <- dashboardBody({
                                          '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
                              ))
                     )
+                )
+              )
+      ),
+      tabItem(tabName = "config_gen",
+              fluidRow(
+                box(title = "Configuration generator", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "updateConfigSuccess", class = "gmsalert gmsalert-success",
+                             "The configuration was updated successfully"),
+                    tags$div(id = "updateConfigError", class = "gmsalert gmsalert-success",
+                             "An unexpected error occurred while updating your configuration. If this problem persists, please contact the system administrator."),
+                    tags$div(class = "space"),
+                    tags$div(id = "configGenForm", ""),
+                    tagAppendAttributes(actionButton("btConfigGenNew", "Update config"),
+                                        style = "display:none;", 
+                                        onclick = "$('#configGenForm').show();$(this).hide();")
                 )
               )
       )

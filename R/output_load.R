@@ -56,8 +56,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         })
       }else{
         # scalar output file does not exist, but is in modelOut vector
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
-                     scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
+        stop(sprintf("Model output file: '%s' could not be read (model: '%s').", 
+                     scalarsOutName %+% ".csv", modelName), call. = FALSE)
       }
     }else{
       tryCatch({

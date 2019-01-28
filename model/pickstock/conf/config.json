@@ -16,7 +16,7 @@
 			"graph"                 : {
 				"tool"      			: "dygraphs",
 				"title"     			: "Stock prices over time (year: 2016)",
-				"color"					: "stockSymbol",
+				"color"					: "symbol",
 				"dyOptions"				:{
 					"includeZero"			: true,
 					"logscale"				: false,
@@ -47,7 +47,7 @@
 				"xdata"     			:"date",
 				"ydata" 				: {
 					"Price":{
-						"label"					: "stockSymbol"
+						"label"					: "symbol"
 					}
 				},
 				"xaxis"     :{
@@ -55,7 +55,7 @@
                     "showgrid"              : true
 				},		
 				"yaxis"     :{		
-					"title"         		: "price",
+					"title"         		: "value",
                     "showgrid"              : true
 				}
 			}
@@ -67,8 +67,8 @@
                 "type"                  : "pie",
 				"showlegend"			: true,
                 "title"                 : "Part of the portfolio",
-                "labels"                : "stockSymbol",
-                "values"                : "what part of the portfolio",
+                "labels"                : "symbol",
+                "values"                : "value",
                 "xaxis"                 : {
                     "showgrid"              : false,
                     "zeroline"              : false,
@@ -122,7 +122,7 @@
 				},				
 				"xdata"     			: "date",
 				"ydata" 				: {
-					"dow jones"    			: {
+					"dj"    			: {
 						"label"					: "Dow Jones index",
 						"stepPlot"      		: false,
 						"stemPlot"      		: false,

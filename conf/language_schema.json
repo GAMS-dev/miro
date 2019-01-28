@@ -428,6 +428,28 @@
                   "required":true
                 }
               }
+            },
+            "metaColAliases":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "uid":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "stime":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "stag":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             }
           }
         },

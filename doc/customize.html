@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>GAMS WebUI Documentation</title>
+    <title>GAMS MIRO Documentation</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -38,7 +38,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
-                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -52,7 +52,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Configuration</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: December 6th, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: January 28th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -60,12 +60,12 @@
                             <section id="intro" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>This section deals with the customization of the GAMS WebUI. You will notice that there are a multitude of configuration options that allow you to shape the WebUI to fit your particular model.</br>
-                                    The entire configuration of the web interface is done via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> for a GAMS model. Two JSON files are used: </p>
+                                    <p>In this section you will learn how to customize GAMS MIRO. As you saw previously when creating your first app, MIRO works without any further configuration. However, you will notice that there are a multitude of configuration options that allow you to shape MIRO to fit your particular model.</br>
+                                    The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
                                       <li><h6>GMSIO_config.json</h6>
-                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--webui=build</span> or <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span>. 
-                                    It lists those GAMS symbols which were previously marked in your GAMS model with the <code class="language-gams">$onExternalInput
+                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>--miro=launch</nobr></span>. 
+                                    It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> and <code class="language-gams">$onExternalOutput
                                     </code> / <code class="language-gams">$offExternalOutput
@@ -73,35 +73,35 @@
                                   </li>
                                   <li>
                                     <h6>config.json</h6>
-                                    All the customization of your WebUI happens via the JSON file <span class="code">config.json</span>. Here you can configure the general appearance of your WebUI, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
+                                    All the customization of MIRO happens via the other JSON file <span class="code">config.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
                                   </li>
                                 </ol>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/gams_webui.png" alt="Custom visualization options"/>
                                     </div>
-                                  <p>The WebUI offers comprehensive visualization options. Some basic visualization forms are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
-                                    <p>In case you would like to use your own, non pre-implemented and more sophisticated graphics, an R API is available. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                  <p>GAMS MIRO offers comprehensive visualization options. Some basic diagram types are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
+                                    <p>To create graphics that are perfectly tailored to your data, you can use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
                                     </p>
-                                    <p>Before the web interface is started, both JSON files are validated in the background against a stored schema. If a schema is violated by one of these files, an error message is displayed.</p>
+                                    <p>Before MIRO is started, both JSON files are validated in the background against a schema. If this schema is violated by either one of these files, an error message is displayed.</p>
                                     </div><!--//section-block-->
                             </section>
                             <section id="input-widgets" class="doc-section">
                                 <h2 class="section-title">Input widgets</h2>
                                 <div class="section-block">
-                                  <p>In the following steps we will extend our demo model Trnsport. We will do this by changing the WebUI configuration of the config.json file. 
-                                  After a first start of the WebUI the configjson file is nearly empty:</p>
+                                  <p>Let's get back and extend our demo model <i>trnsport</i>. We will do this by adjusting the file <span class="code">config.json</span> in order to to adapt MIRO to our needs.
+                                  When you first launch MIRO for a new model, the <span class="code">config.json</span> file is almost empty:</p>
                                   <div class="code-block" id="config-start">
                                           <pre><code class="language-json">{}</code></pre>
                                   </div><!--//code-block-->
-                                  <p>Each configuration we make must be captured within the curly braces of this file. We will see what this can look like in detail in this section.</p>
+                                  <p>Each adjustment we want to make must be captured within the curly braces of this file. How this can look in detail, we will see in this section.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-tables">
                                   <h3 class="block-title">Tables</h3>
-                                    <p>The GAMS WebUI comes with several options on how you can enter input data for your <a href="faqs.html#def-model" target="_blank">model</a> runs. The default option is an editable table: </p>
+                                    <p>GAMS MIRO comes with several options on how you can feed your <a href="faqs.html#def-model" target="_blank">model</a> with input data. By default, GAMS input parameters, sets and scalars are displayed in an editable table: </p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/editable-table.png" alt="editable table"/>
                                     </div>
-                                    <p>The corresponding GAMS parameter looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
+                                    <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
                                           <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
@@ -112,14 +112,14 @@
   }
 }</code></pre>
                                       </div><!--//code-block-->
-                                      <p>There are two ways to accomplish this configuration:</p>
+                                      <p>There are two ways to get to this block of JSON data:</p>
                                       <ol>
-                                        <li>Manual entering of the configuration in the <i>config.json</i> in json syntax
-                                        <br>If this method is used, care must be taken to ensure that the content matches the predefined schema.</li>
+                                        <li>By manually editing the <i>config.json</i> file
+                                        <br>If you decide to use this method, you need to be careful that the content you add matches the schema.</li>
                                         <li>Use of the <a href="./configgen.html">Configuration Generator</a>
-                                        <br>The Configuration Generator can be used to automatically generate the json code snipped for the desired configuration. This snipped can then be copied into the existing <i>config.json</i> file</li>
+                                        <br>The Configuration Generator can be used to automatically generate the JSON code for the desired configuration. You can simply replace the file <i>config.json</i> created by the configuration generator with your existing one; or copy code excerpts and merge them with your current configuration.</li>
                                       </ol>
-                                      <p>When the configuration shown above has been made, we will now be able to see the distances <span class="code">d</span> our model is fed with, but can not edit them.</p>
+                                      <p>When we add the configuration shown above, we will be able to see our model's distance matrix <span class="code">d</span>, but can not edit it.</p>
                                     <div class="callout-block callout-success">
                                         <div class="icon-holder">
                                             <i class="fas fa-thumbs-up"></i>
@@ -132,14 +132,14 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-scalars">
                                   <h3 class="block-title">Scalars</h3>
-                                  <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (in the following both referred to as "<i>scalar values</i>" or simply "<i>scalars</i>") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called "Scalars". This saves space and also makes adding new scalars easy as all you have to do is add a new row to the "Scalars" table. Thus, it improves compactness and flexibility - especially when the GAMS WebUI is connected to a database.</p>
+                                  <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> (in the following both referred to as "<i>scalar values</i>" or simply "<i>scalars</i>") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called <span class="code">scalars</span>. This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the <span class="code">scalars</span> table. Thus, it improves compactness and flexibility - especially when MIRO is connected to a database as the schema stays fixed even when you add or remove certain scalars.</p>
                                     <p>Instead of displaying scalars in tabular form, you can use sliders, dropdown menus, checkboxes and more to populate your models.</p>
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
                                       </div>
-                                      <p>As with all input widgets, the information about the type of visaization of a GAMS symbol in the WebUI is configured via the <i>config.json</i> file.
-                                      <br>We continue our trnsport example. In the <a href="#table-readonly" class="scrollto">last step</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the config.json file. 
-                                      Now we extend our WebUI configuration with information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i> to set the value:
+                                      <p>As with all MIRO customizations, the information about the type of visualization of a GAMS scalar is configured via the file <span class="code">config.json</span>.
+                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">config.json</span> file. 
+                                      Now we extend the configuration of our app further by adding information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i>:
                                       </p>
                                       <div class="code-block" id="scalar-slider">
                                           <pre><code class="language-json">{
@@ -151,7 +151,7 @@
     &#x22;f&#x22;: {
       &#x22;widgetType&#x22;: &#x22;slider&#x22;,
       &#x22;alias&#x22;: &#x22;Freight in dollars per case per thousand miles&#x22;,
-      &#x22;label&#x22;: &#x22;Select the freight&#x22;,
+      &#x22;label&#x22;: &#x22;Select the freight costs&#x22;,
       &#x22;min&#x22;: 1,
       &#x22;max&#x22;: 500,
       &#x22;default&#x22;: 90,
@@ -160,8 +160,8 @@
   }
 }</code></pre>
                                       </div><!--//code-block-->
-                                      <p>Again, this can be done via manual json  coding or the Configuration Generator.</p>
-                                      <p>The scalar is now automatically removed from the "Scalars" table and instead rendered as a separate widget:</p>
+                                      <p>Again, this can be done either by manually editing the JSON file or via the Configuration Generator.</p>
+                                      <p>When we restart our app, the scalar is now automatically removed from the "Scalars" table and instead rendered as a separate widget:</p>
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:60pt;" src="assets/images/trnsport-slider.png" alt="Input widgets for scalar values"/>
                                       </div>
@@ -171,16 +171,16 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Tip:</h4>
-                                            <p>In case you don't want each widget to be displayed on a separate sheet, there is an option to collect all scalar widgets on one sheet. This option can be set in the <span class="code">config.json</span> file (<span class="code">"aggregateWidgets"</span>) and is therefore available in our <a href="./configgen.html">Configuration Generator</a>.</p>
+                                            <p>In case you don't want each widget to be displayed on a separate sheet, there is an option to collect all scalar widgets on one sheet. This option: <span class="code">"aggregateWidgets"</span> can be set in the <span class="code">config.json</span> file.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
-                                     <p>We have already mentioned the possibility of <a href="./model.html#create-compile">using command line parameters via WebUI</a>. 
-                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Compile-time Variables</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
+                                     <p>We have already mentioned the possibility of <a href="./model.html#create-compile">setting GAMS command line parameters via MIRO</a>. 
+                                     Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
-                                     </code>. To be able to use them in the WebUI, they must be specified in the config.json file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     </code>. To be able to set them from MIRO, they must be specified in the <span class="code">config.json</span> file. In order for the WebUI to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
                                      </p>
                                      <div class="callout-block callout-warning">
                                          <div class="icon-holder">
@@ -188,10 +188,10 @@
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <h4 class="callout-title">Note:</h4>
-                                             <p>Command line parameters can not be displayed as table, but only as slider, dropdown menu, checkbox or date selector.
+                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector or textinput.
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
-                                     <p>Let's assume you want the WebUI to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd> set to a value between 1 and 14. You also want to be able to select the MIP solver to use via WebUI. 
+                                     <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use. 
                                      As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">config.json</span> file could look as follows:</p>
                                      <div class="code-block">
                                            <pre><code class="language-json">{
@@ -223,7 +223,7 @@
   }
 }</code></pre>
                                        </div><!--//code-block-->                                    
-                                       <p>Which would the result in the following display in the WebUI:</p>
+                                       <p>The resulting interface in MIRO now looks as follows:</p>
                                        <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
@@ -246,7 +246,7 @@
                                   <div class="section-block">
                                       <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
                                   </div>
-                                  <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
+                                  <p>Similar dependencies can also be considered for sliders. An example is the <i>pickstock</i> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
                                   <p>Of course you can configure those dependencies just like you configure everything else via our <a href="./configgen.html">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
                                   <div class="table-responsive">
                                     <table class="table table-striped">
@@ -313,7 +313,7 @@
                             <section id="custom-graph" class="doc-section">
                                 <h2 class="section-title">Graphics Configuration</h2>
                                 <div class="section-block"  id="graphics-intro">
-                                  <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model Trnsport with a read-only table and a slider widget for a scalar value. Now we want to configure our first graphic to visualize some results of a model run. 
+                                  <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graphic to visualize some results of a model run. 
                                   At first, we want to use a pre-implemented graphic. The following options are currently available for this purpose:</p>  
                                   <ul>
                                     <li>datatable</li>
@@ -410,7 +410,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/pivot-pickstock.png" alt="Pivot" />
                                   </div>
-                                  <p>In the next section we will show you how to create really sophisticated graphics like the one of the demo trnsport model:</p>
+                                  <p>In the next section we will show you how to create really sophisticated graphics like the one of the demo <i>trnsport</i> model:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
@@ -511,7 +511,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <div class="section-block">
                                           <img class="img-fluid" src="assets/images/custom-renderer-map.png" alt="Result of custom renderer - Map with markers" />
                                       </div>
-                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <span class="code">trnsport</span> model that comes with your GAMS WebUI installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
+                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <i>trnsport</i> model that comes with your GAMS WebUI installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
                                       </p>
                                 </div><!--//section-block-->
                               </section>

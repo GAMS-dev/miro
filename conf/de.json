@@ -93,6 +93,11 @@
       "showHashDialog":{
         "title": "Szenario Hash",
         "desc": "Das ausgewählte Szenario hat den folgenden Hash. Damit können Sie es im Basismodus importieren."
+      },
+      "metaColAliases":{
+        "uid":"Eigentümer",
+        "stime":"Erstellungsdatum",
+        "stag": "Job-Tags"
       }
     },
     "hcubeAnalyze":{

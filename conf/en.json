@@ -4,7 +4,7 @@
       "inputScreen":"Input",
       "outputScreen":"Output",
       "gams":"GAMS interaction",
-      "scen":"Compare Scenarios",
+      "scen":"Compare scenarios",
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import results",
@@ -93,6 +93,11 @@
       "showHashDialog":{
         "title": "Scenario hash",
         "desc": "The selected scenario has the following hash. You may use this to import it in the base mode."
+      },
+      "metaColAliases":{
+        "uid":"Owner",
+        "stime":"Time created",
+        "stag": "Job tags"
       }
     },
     "hcubeAnalyze":{

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>GAMS WebUI documentations</title>
+    <title>GAMS MIRO documentations</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,7 +33,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
-                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -47,7 +47,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><span aria-hidden="true" class="icon icon_lifesaver"></span> FAQs</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: October 30th, 2018</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: January 28th, 2018</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -55,43 +55,43 @@
                             <section id="general" class="doc-section">
                                 <h2 class="section-title">General</h2>
                                 <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> What GAMS version is required to run the WebUI?</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What GAMS version is required to run MIRO</h3>
                                     <div class="answer">In order to automatically generate the required configuration files via the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> as well as <code class="language-gams">$onExternalOutput
                                     </code> / <code class="language-gams">$offExternalOutput
-                                    </code> tags, GAMS version 25.1.2 or later is required.</div>
+                                    </code> tags, GAMS version 26.0.2 or later is required.</div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Which operating systems are supported?</h3>
-                                    <div class="answer">The local version of the WebUI runs on Windows, MacOS as well as Linux.</div>
+                                    <div class="answer">The local version of MIRO runs on Windows, MacOS as well as Linux.</div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> Does all the data for my model need to come from the WebUI?</h3>
-                                    <div class="answer">No. You can read external data from any data source supported by GAMS just as you did before. For example, you can place an Excel file in your model folder and import the data from this file into GAMS using the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/><b>Note</b> however, that the WebUI is running your GAMS model from a temporary working directory. This means that any <span class="code">$call</span> or <span class="code">execute</span> commands need to be executed with absolute paths instead of relative ones. The GAMS WebUI is providing you the path to your model via <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means, in order to import e.g. an Excel file <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>. Alternatively, you may use absolute paths.</div>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Does all the data for my model need to come from MIRO?</h3>
+                                    <div class="answer">No. You can read external data from any data source supported by GAMS just as you did before. For example, you can place an Excel file in your model folder and import the data from this file into GAMS using the <a href="https://www.gams.com/latest/docs/T_GDXXRW.html" target="_blank">GDXXRW</a> utility. <br/><b>Note</b> however, that MIRO is running your GAMS model from a temporary working directory. This means that any <span class="code">$call</span> or <span class="code">execute</span> commands need to be executed with absolute paths instead of relative ones. GAMS MIRO is providing you the path to your model via <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means, in order to import e.g. an Excel file <span class="code">test.xlsx</span>, GDXXRW needs to be called like this: <kbd>$call gdxxrw i=%gams.idir1%test.xlsx</kbd>. Alternatively, you may use absolute paths.</div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> What languages are supported?</h3>
-                                    <div class="answer">Currently the GAMS WebUI ships with language files for English and German. If you would like to add another language, we are more than happy to add more languages to this list. For more information about how to generate language files see the section on <a href="./customize.html#language-files">Language Files</a> </div>
+                                    <div class="answer">Currently GAMS MIRO ships with language files for English and German. If you would like to add another language, we are more than happy to add more languages to this list. For more information about how to generate language files see the section on <a href="./customize.html#language-files">Language Files</a> </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I contribute to improve the GAMS WebUI?</h3>
-                                    <div class="answer">Yes, absolutely! If you find bugs or have ideas about how to improve the WebUI, you are more than welcome to share those with us! Additionally, you can contribute by supplying new <a href="./customize.html#language-files" target="_blank">language files</a> or <a href="./customize.html#custom-renderers" target="_blank">custom renderers</a>! We also welcome any prototypes/PoCs which you think that can help others to get started, to improve and/or to come up with new ideas of what can be done with the GAMS WebUI and optimization in general. In any case, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>!</div>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I contribute to improve GAMS MIRO?</h3>
+                                    <div class="answer">Yes, absolutely! If you find bugs or have ideas about how to improve MIRO, you are more than welcome to share those with us! Additionally, you can contribute by supplying new <a href="./customize.html#language-files" target="_blank">language files</a> or <a href="./customize.html#custom-renderers" target="_blank">custom renderers</a>! We also welcome any prototypes/PoCs which you think that can help others to get started, to improve and/or to come up with new ideas of what can be done with GAMS MIRO and optimization in general. In any case, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>!</div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
                             <section id="features" class="doc-section">
                                 <h2 class="section-title">Features</h2>
                                 <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my WebUI?</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my MIRO app?</h3>
                                     <div class="answer">
                                         <p>Graphics, tables as well as other customization options are specified via the <span class="code">config.json<span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/config.json</span>. In order to generate the <span class="code">config.json</span> file you can use our <a href="./configgen.html">Configuration Generator</a>.</p>
                                     </div><!--//anwser-->
 
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> Do I have visualization options other than those shipping with the GAMS WebUI?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Do I have visualization options other than those shipping with GAMS MIRO?</h3>
                                         <div class="answer">
-                                            Yes. You can write your own <a href="./customize.html#custom-renderers">Custom Renderers</a> in R.
+                                            Yes. You can write your own <a href="./customize.html#custom-renderers">Custom Renderers</a> in R using MIRO's R API.
                                             </div>
                                     </div><!--//section-block-->
 
@@ -101,9 +101,9 @@
                                     </div><!--//section-block-->
                                     
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I use an own Excel spreadsheet for the input data or do I need to use the generated one?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I use my own Excel spreadsheet for the input data or do I need to use the automatically generated one?</h3>
                                         <div class="answer">
-                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the tabs and header line of a symbol). 
+                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the sheet names and header lines of a symbol). 
                                             </div>
                                     </div><!--//section-block-->
 
@@ -113,40 +113,41 @@
                             <section id="definitions" class="doc-section">
                                 <h2 class="section-title">Definitions</h2>
                                 <div id="def-model" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of the GAMS WebUI?</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of GAMS MIRO?</h3>
                                     <div class="answer">
-                                        We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">--webui</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program you wrote before using the GAMS WebUI.
+                                        We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">--miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
                                     </div><!--//anwser-->
 
                                     <div id="def-scenario" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of the GAMS WebUI?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of GAMS MIRO?</h3>
                                         <div class="answer">
                                             <p>We call the collection of input and output datasets that result from a particular model run a scenario.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-job" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Job</b> mean in the context of the GAMS WebUI?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Job</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
                                             <p>A <i>Job</i> describes the submission of one or more GAMS runs.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-hypercube" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of the GAMS WebUI?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p><i>Hypercube</i> stands for a series of scenarios that result from the parameterization of a model in which the same parameter can be set several times. All possible scenarios that result from the combination of all set parameters are generated from this multiple parameterization.
-                                            <br>This can be better shown by an example with 2 parameters: For each of the two parameters different parameterizations are set. The Hypercube now describes, as we look at two dimensions, the Cartesian product of the set parameter variations (see also <a href="./hypercube.html#hcube-example">here</a>).</p>
+                                            <p><i>Hypercube</i> mode is a mode in GAMS MIRO that automatically generates scenarios. Input widgets you defined for your scalars are automatically expanded (e.g. a slider is expanded to a slider range and a single-dropdown menu is expanded to a multi-dropdown menu etc.). This now lets you configure multiple scenarios at once. MIRO will now automatically compute the cartesian product (or, as we call it, the Hypercube) over scalars you expanded. The results can then be filtered, analyzed, downloaded etc. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-hypercube-job" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of the GAMS WebUI?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What does <b>Hypercube Job</b> mean in the context of GAMS MIRO?</h3>
                                         <div class="answer">
-                                            <p>A <i>Hypercube Job</i> describes the placement of a GAMS run that consists of a <a href="#def-hypercube" class="scrollto">hypercube</a>.</p>
+                                            <p>A <i>Hypercube Job</i> describes a set of scenarios for a particular model which MIRO generated automatically by expanding the cartesian product over all selected scalars. For more information see the section about the MIRO <a href="./hypercube.html#hcube-example">Hypercube mode</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-job-tag" class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>tag</b> or <b>job tag</b>?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is a (Hypercube) <b>job tag</b>?</h3>
                                         <div class="answer">
-                                            <p>A <i>tag</i> or <i>job tag</i> is an identifyer for a submitted <a href="#def-hypercube-job" class="scrollto">hypercube job</a>. With the help of job tags, Hypercube jobs can be uniquely identified, independent of the input and output data of the scenarios. Scenarios can be found in the database using the assigned tag. They can also be useful for scenario analysis.</p>
+                                            <p>A Hypercube <i>job tag</i> is an identifier attached to all scenarios of a <a href="#def-hypercube-job" class="scrollto">Hypercube job</a>. Job tags can help you find scenarios of a particular Hypercube job. They can also be useful for scenario analysis. 
+                                                In case a model run is characterized by data that is not part of the input data specified via MIRO, job tags are important to distinguish different runs with the same input data. Suppose you are interested in finding out how sensitive your model is with regard to computing power. Thus, you run the same set of scenarios once on a high performance computing cluster and once on your local machine. As both times you used the exact same set of scenarios, MIRO can't distinguish both runs. However, you can attach different tags to the two jobs. This lets you discriminate a scenario that ran on the cluster from one that ran on your local machine. 
+                                                The same can be applied in case you use different <a href="https://www.gams.com/latest/docs/UG_SolverUsage.html#BASIC_USAGE_SOLVER_OPTION_FILE" target="_blank">solver option files</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
 
