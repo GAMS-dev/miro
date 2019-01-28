@@ -242,13 +242,13 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-dependencies">
                                   <h3 class="block-title">Dependencies between widgets</h3>
-                                <p>One special feature of the GAMS WebUI is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your GAMS WebUI installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
-                                <div class="section-block">
-                                    <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
-                                </div>
-                                <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
-                                <p>Of course you can configure those dependencies just like you configure everything else via our <a href="./configgen.html">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
-                                <div class="table-responsive">
+                                  <p>One special feature of the GAMS WebUI is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your GAMS WebUI installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
+                                  </div>
+                                  <p>Similar dependencies can also be considered for sliders. An example is the <span class="code">pickstock</span> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
+                                  <p>Of course you can configure those dependencies just like you configure everything else via our <a href="./configgen.html">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
+                                  <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -312,7 +312,7 @@
                             </section>
                             <section id="custom-graph" class="doc-section">
                                 <h2 class="section-title">Graphics Configuration</h2>
-                                <div class="section-block">
+                                <div class="section-block"  id="graphics-intro">
                                   <p>In section <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended the demo model Trnsport with a read-only table and a slider widget for a scalar value. Now we want to configure our first graphic to visualize some results of a model run. 
                                   At first, we want to use a pre-implemented graphic. The following options are currently available for this purpose:</p>  
                                   <ul>
@@ -323,7 +323,10 @@
                                     <li>line chart</li>
                                     <li>scatter plot</li>
                                     <li>pivot table</li>
-                                  </ul>   
+                                    </ul>   
+                                </div><!--//section-block-->
+                                <div class="section-block" id="graphics-charts">
+                                  <h3 class="block-title">Charts</h3>
                                   <p>We could create a bar chart showing how much of the goods are transported from the suppliers to the markets. 
                                   For this we first need a suitable parameter, on the basis of which such a diagram can be provided. So we extend our GAMS model as follows:</p>
                                   <pre><code class="language-gams">[...]
@@ -347,16 +350,15 @@ total_cost                 = z.l;
 schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
-                                </div><!--//section-block-->
-                                <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
-                                Now we have another parameter <span class="code">schedule</span> which is declared between the <code class="language-gams">$onExternalOutput
-                                </code> / <code class="language-gams">$offExternalOutput
-                                </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable ('<span class="code">quantities</span>').
-                                The latter is relevant for our desired graphic, the other two serve here only as additional information.
-                                <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
-                                There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
-                                All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
-                                <pre><code class="language-json">{
+                                  <p>In the first <a href="./model.html#trnsport-scalar-out">adjustments</a> of our model we already defined the output scalar <span class="code">total_cost = z.l;</span> to see the objective function value as a result in the WebUI.
+                                  Now we have another parameter <span class="code">schedule</span> which is declared between the <code class="language-gams">$onExternalOutput
+                                  </code> / <code class="language-gams">$offExternalOutput
+                                  </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the <span class="code">x</span> variable ('<span class="code">quantities</span>').
+                                  The latter is relevant for our desired graphic, the other two serve here only as additional information.
+                                  <br>With this result parameter we can now generate a graphic. For a pre-implemented visualization option we can use the configuration generator. 
+                                  There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Afterwards we click together the desired configuration for the parameter <span class="code">schedule</span>.
+                                  All other configurations are left as they are. Click on "next" and then on "Download json". The resulting <i>config.json</i> file looks like this:</p>
+                                  <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
       "outType": "dtGraph",
@@ -394,16 +396,25 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
       }
     }
 }</code></pre> 
-                                <p>If we already have a config.json file in our model folder and there is already something in it, then we simply copy the newly generated code and paste it into the existing file at the appropriate place.</p>
-                                <p>We now start the trnsport.gms file with <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span> again and solve the model. In the results section the following graphic appears:</p>
-                                <div class="section-block">
-                                    <img class="img-fluid" src="assets/images/custom-graphic.png" alt="Result of custom renderer - Map with markers" />
-                                </div>
-                                <p><font size=4>That's it. Our first graphic is up!</font></p>
-                                <p>In the next section we will show you how to create really sophisticated graphics like the one of the demo trnsport model:</p>
-                                <div class="section-block">
-                                    <img class="img-fluid" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
-                                </div>
+                                  <p>If we already have a config.json file in our model folder and there is already something in it, then we simply copy the newly generated code and paste it into the existing file at the appropriate place.</p>
+                                  <p>We now start the trnsport.gms file with <span class="code" style="white-space:nowrap;"><nobr>--webui=launch</nobr></span> again and solve the model. In the results section the following graphic appears:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/custom-graphic.png" alt="Result of custom renderer - Map with markers" />
+                                  </div>
+                                  <p><font size=4>That's it. Our first graphic is up!</font></p>
+                                  <p>Neben Bar charts </p>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="graphics-pivot">
+                                  <h3 class="block-title">Pivot Tables</h3>
+                                  <p>With the integrated Pivot tool you can easily create and interactively process a variety of graphics.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/pivot-pickstock.png" alt="Pivot" />
+                                  </div>
+                                  <p>In the next section we will show you how to create really sophisticated graphics like the one of the demo trnsport model:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
+                                  </div>
+                                </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="custom-renderers" class="doc-section">
                                 <h2 class="section-title">Custom Graphics</h2>
@@ -527,9 +538,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                 </nav>
                                 <a class="nav-link scrollto" href="#custom-graph">Graphics Configuration</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                    <a class="nav-link scrollto" href="#create-charts">Charts</a>
-                                    <a class="nav-link scrollto" href="#create-histogram">Histograms</a>
-                                    <a class="nav-link scrollto" href="#create-pivot">Pivot tables</a>
+                                    <a class="nav-link scrollto" href="#graphics-charts">Charts</a>
+                                    <a class="nav-link scrollto" href="#graphics-pivot">Pivot tables</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
