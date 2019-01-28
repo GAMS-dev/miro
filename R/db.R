@@ -576,11 +576,18 @@ Db <- R6Class("Db",
                                                           collapse = ","), ") ")
                     subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
                   }
+                  subsetWritePerm <- NULL
+                  if(identical(tableName, private$tableNameMetadata)){
+                    subsetWritePerm <- paste0(" AND (", 
+                                              private$buildSQLSubsetString(
+                                                private$getCsvSubsetClause(private$scenMetaColnames['accessW'],
+                                                                           private$userAccessGroups), " OR "), ")")
+                  }
                   tryCatch({
                     query <- SQL(paste0("UPDATE ", DBI::dbQuoteIdentifier(private$conn, tableName), " SET ",
                                       paste(paste(DBI::dbQuoteIdentifier(private$conn, colNames), 
                                                   DBI::dbQuoteLiteral(private$conn, values), sep = " = "), 
-                                            collapse = ", "), " WHERE ", subsetRows, ";"))
+                                            collapse = ", "), " WHERE ", subsetRows, subsetWritePerm, ";"))
                     affectedRows <- DBI::dbExecute(private$conn, query)
                     flog.debug("Db: %s rows in table: '%s' were updated (Db.updateRows)", affectedRows, tableName)
                   }, error = function(e){
@@ -972,12 +979,19 @@ Db <- R6Class("Db",
                   return(hcubeMeta)
                 },
                 updateHypercubeJob = function(jid, pid = NULL, tags = NULL, status = NULL,
-                                              accessR = NULL, accessW = NULL){
+                                              accessR = NULL, accessW = NULL, accessX = NULL, 
+                                              scode = NULL){
                   # set process id for hcube job
                   # 
                   # Args:
                   #   jid:           ID of Hypercube job to update
                   #   pid:           process ID of hcube job
+                  #   tags:          new tags for Hypercube job
+                  #   status:        new status for Hypercube job
+                  #   accessR:       new read permissions
+                  #   accessW:       new write permissions
+                  #   accessX:       new execute permissions
+                  #   scode:         new status code
                   #
                   # Returns:
                   #   invisibly returns R6 object (reference to Db class)
@@ -1007,10 +1021,29 @@ Db <- R6Class("Db",
                   if(is.null(colNames)){
                     stop("No Hypercube metadata was updated as no data was provided.", call. = FALSE)
                   }
+                  if(!is.null(accessR)){
+                    stopifnot(is.character(accessR), length(accessR) > 0L)
+                    colNames <- c(colNames, private$scenMetaColnames['accessR'])
+                    values   <- c(values, vector2Csv(accessR))
+                  }
+                  if(!is.null(accessW)){
+                    stopifnot(is.character(accessW), length(accessW) > 0L)
+                    colNames <- c(colNames, private$scenMetaColnames['accessW'])
+                    values   <- c(values, vector2Csv(accessW))
+                  }
+                  if(!is.null(accessX)){
+                    stopifnot(is.character(accessX), length(accessX) > 0L)
+                    colNames <- c(colNames, private$scenMetaColnames['accessX'])
+                    values   <- c(values, vector2Csv(accessX))
+                  }
+                  if(!is.null(scode)){
+                    scode <- suppressWarnings(as.integer(scode))
+                    stopifnot(!is.na(scode), length(scode) == 1L)
+                    colNames <- c(colNames, private$scenMetaColnames['scode'])
+                    values   <- c(values, scode)
+                  }
                   
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessW'], 
-                                                             private$userAccessGroups)
-                  noRowsUpdated <- self$updateRows(private$tableNameMetaHcube, accessRights, 
+                  noRowsUpdated <- self$updateRows(private$tableNameMetaHcube, 
                                                    colNames = colNames, 
                                                    values = values, subsetSids = jid, 
                                                    innerSepAND = FALSE)

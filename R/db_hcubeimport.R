@@ -55,9 +55,11 @@ HcubeImport <- R6Class("HcubeImport",
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
                            private$strictmode         <- strictmode
+                           private$noScen             <- NA_integer_
                          },
                          getScenNames      = function() private$scenNames,
                          getInvalidScenIds = function() private$invalidScenIds,
+                         getNoScen         = function() private$noScen,
                          unzipScenData     = function(zipFilePath, extractDir){
                            # Unzips a zip archive into the extractDir folder
                            #
@@ -217,11 +219,12 @@ HcubeImport <- R6Class("HcubeImport",
                            tables           <- vector("list", length(tableNames) + saveTraceFile)
                            
                            # export metadata to reserve scenario ids
-                           numberScen <- length(scenData)
-                           metadataTable <- tibble(rep.int(private$uid, numberScen), names(scenData), 
-                                                   rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
-                                                   rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
-                                                   rep.int(execPerm, numberScen), rep.int(1L, numberScen))
+                           numberScen     <- length(scenData)
+                           private$noScen <- numberScen
+                           metadataTable  <- tibble(rep.int(private$uid, numberScen), names(scenData), 
+                                                    rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
+                                                    rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
+                                                    rep.int(execPerm, numberScen), rep.int(1L, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            names(metadataTable) <- scenMetaColnames[-1]
                            firstScenId <- self$getLatestSid() + 1L
@@ -321,6 +324,7 @@ HcubeImport <- R6Class("HcubeImport",
                          traceTabName            = character(0L),
                          strictmode              = logical(1L),
                          includeTrc              = logical(0L),
+                         noScen                  = integer(1L),
                          getScenFilePaths  = function(scenName, paths){
                            csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
                            return(paths[csvIdx])

@@ -49,7 +49,7 @@ interruptProcess <- function(pid){
     stop(sprintf("Operating system: '%s' not supported.", currentOs), call. = FALSE)
   }
 }
-updateJobMetadata <- function(jID, status = NULL, tags = NULL){
+updateJobMetadata <- function(jID, status = NULL, tags = NULL, scode = NULL){
   rowId                      <- hcubeMeta[[1]] == jID
   jobMeta                    <- hcubeMeta[rowId, ]
   if(identical(status, "discard")){
@@ -82,7 +82,7 @@ updateJobMetadata <- function(jID, status = NULL, tags = NULL){
     hcubeMeta[rowId, ]         <<- jobMeta
   }
   tryCatch({
-    db$updateHypercubeJob(jID, tags = tags, status = status)
+    db$updateHypercubeJob(jID, tags = tags, status = status, scode = scode)
   }, error = function(e){
     stop(sprintf("Problems updating Hypercube job with job ID: '%s'. Error message: '%s'.", jID, e), 
          call. = FALSE)
@@ -210,7 +210,7 @@ observeEvent(virtualActionButton(rv$btSave), {
     statusCode <- "imported"
   }
   tryCatch(updateJobMetadata(currentJobID, status = statusCode, 
-                             tags = hcubeTags),
+                             tags = hcubeTags, scode = hcubeImport$getNoScen()),
            error = function(e){
              flog.error(e)
              showHideEl(session, "#fetchJobsError")
