@@ -74,7 +74,7 @@ equation
     oe19(is1,isx,sy,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1,is1) 'equation twenty' / s1Elem.sxElem.syElem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.s1Elem.L 20 /;
 
 $offExternalOutput
-$set MIRO_DEBUG true
+*$set MIRO_DEBUG true
 $set MIRO run
-$set MIRO build
+$set MIRO launch
 $include miro
