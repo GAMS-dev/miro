@@ -105,7 +105,10 @@ body_admin <- dashboardBody({
                     tags$div(id = "updateConfigError", class = "gmsalert gmsalert-success",
                              "An unexpected error occurred while updating your configuration. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
-                    tags$div(id = "form1", "")
+                    tags$div(id = "configGenForm", ""),
+                    tagAppendAttributes(actionButton("btConfigGenNew", "Update config"),
+                                        style = "display:none;", 
+                                        onclick = "$('#configGenForm').show();$(this).hide();")
                 )
               )
       )

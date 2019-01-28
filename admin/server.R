@@ -187,10 +187,17 @@ server_admin <- function(input, output, session){
       return()
     noErr <- TRUE
     tryCatch({
-      confFilePath <- file.path(currentModelDir, configDir, "config.json")
-      if(file.exists(confFilePath)[1])
+      confFilePath    <- file.path(currentModelDir, configDir, "config.json")
+      confFilePathOld <- file.path(currentModelDir, configDir, "config_old.json")
+      if(file.exists(confFilePath)[1]){
+        file.copy(confFilePath, confFilePathOld, overwrite = TRUE)
         unlink(confFilePath, force = TRUE)
-      jsonlite::write_json(data, confFilePath)
+      }
+      if(!length(data$datatable$options$columnDefs[[1]])){
+        data$datatable$options$columnDefs <- NULL
+      }
+      jsonlite::write_json(data, confFilePath, pretty = TRUE, auto_unbox = TRUE,
+                           null = "null")
     }, error = function(e){
       flog.error("Problems writing config.json file. Error message: '%s'.", e)
       showHideEl(session, "#updateConfigError", 4000L)
@@ -198,6 +205,8 @@ server_admin <- function(input, output, session){
     })
     if(!noErr)
       return()
+    hideEl(session, "#configGenForm")
+    showEl(session, "#btConfigGenNew")
     showHideEl(session, "#updateConfigSuccess", 4000L)
   })
   hideEl(session, "#loading-screen")

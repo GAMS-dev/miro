@@ -86,7 +86,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
     gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]]
   }
   Alpaca.defaultToolbarSticky = true;
-    $("#form1").alpaca({
+    $("#configGenForm").alpaca({
         "schema": {
            "$schema":"http://json-schema.org/draft-07/schema#",
            "title":"",
@@ -3313,7 +3313,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "title":"Update configuration",
                     "click":function(){
                        co = this.getValue();
-                       console.log(co);
                        function makeKey(oldKey, newKey, outType = null){
                          if(typeof co.dataRendering[oldKey] !== 'undefined'){
                            for (var i = 0; i < co.dataRendering[oldKey].length; i++) {
@@ -3781,6 +3780,19 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        if(existingConfig !== null){
                          $.extend(co, existingConfig);
                        }
+                       (function filter(obj) {
+                          $.each(obj, function(key, value){
+                              if (value === "" || value === null || (typeof(value) === "object" && $.isEmptyObject(value)) || value.length === 0){
+                                  delete obj[key];
+                              } else if (Object.prototype.toString.call(value) === '[object Object]') {
+                                  filter(value);
+                              } else if ($.isArray(value)) {
+                                console.log(filter(value));
+                                  $.each(value, function (k,v) { filter(v);});
+                              }
+                          });
+                      })(co);
+                       console.log(co)
                        Shiny.setInputValue("updatedConfig", co, {priority: "event"});
                     }
                  }
