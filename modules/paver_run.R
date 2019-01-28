@@ -12,8 +12,6 @@ genPaverArgs <- function(traceFilenames){
 }
 
 observeEvent(input$btPaverConfig, {
-  showEl(session, "#configPaver")
-  showEl(session, "#btPaver")
   hideEl(session, "#btHcubeLoad")
   hideEl(session, "#hcubeLoadMethod")
   hideEl(session, "#btPaverConfig")
@@ -26,20 +24,29 @@ observeEvent(input$btPaverConfig, {
 
 gmswebiter <- 0
 observeEvent(input$btPaver, {
+  flog.debug("Run paver button clicked.")
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
+  noErr <- TRUE
+  tryCatch({
+    exclAttrib <- isolate(input$paverExclAttrib)
+    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
+                                                                             drop = FALSE], 
+                                                         input$selPaverAttribs, maxSolversPaver, exclAttrib)
+  }, error = function(e){
+      noErr <<- FALSE
+      flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
+      showHideEl(session, "#paverRunUnknownError", 6000L)
+  })
+  if(!noErr)
+    return()
   
-  if(hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
-                                                       drop = FALSE], 
-                                   input$selPaverAttribs, maxSolversPaver, 
-                                   c("_uid", "_stime", "_stag", 
-                                     paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
-                                                        "[[", character(1L), "key", USE.NAMES = FALSE))))){
+  if(exceedsMaxNoSolvers){
     showHideEl(session, "#configPaverMaxSolversErr", 4000L)
     return()
   }else{
     errMsg <- NULL
-    paverDir <- workDir %+% "paver" %+% .Platform$file.sep
+    paverDir <- paste0(workDir, "paver", .Platform$file.sep)
     tryCatch({
       if(dir.exists(traceFileDir)){
         unlink(file.path(traceFileDir,"*"), recursive = TRUE, force = TRUE)
@@ -80,11 +87,14 @@ observeEvent(input$btPaver, {
   removeModal()
   if(!is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")
-    removeTab("tabs_paver_results", "stat_Status")
-    removeTab("tabs_paver_results", "stat_Efficiency")
-    removeTab("tabs_paver_results", "stat_SolutionQuality")
-    removeTab("tabs_paver_results", "solvedata")
-    removeTab("tabs_paver_results", "documentation")
+    if(gmswebiter > 0){
+      removeTab("tabs_paver_results", "stat_Status")
+      removeTab("tabs_paver_results", "stat_Efficiency")
+      removeTab("tabs_paver_results", "stat_SolutionQuality")
+      removeTab("tabs_paver_results", "solvedata")
+      removeTab("tabs_paver_results", "documentation")
+    }
+    
     hideEl(session, "#btLoadHcube")
     hideEl(session, "#paverFail")
     updateTabsetPanel(session, "tabs_paver_results", selected = "index")
@@ -108,7 +118,7 @@ observeEvent(input$btPaver, {
       rm(pyExec)
     }, error = function(e) {
       errMsg <<- lang$errMsg$paverExec$desc
-      flog.error("Python/Paver did not execute successfully. Error message: %s.", e)
+      flog.error("Paver did not execute successfully. Error message: %s.", e)
     })
     if(is.null(showErrorMsg(lang$errMsg$paverExec$title, errMsg))){
       return(NULL)
@@ -125,7 +135,7 @@ observeEvent(input$btPaver, {
           hideEl(session, "#paverLoad")
           paverResultTabs <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
           lapply(2:length(paverResultTabs), function(i){
-            insertTab("tabs_paver_results", target = paverResultTabs[i-1], position = "after",
+            insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
                       tabPanel(paverResultTabs[i], value = paverResultTabs[i],
                                tags$div(id = "wrapper-" %+% paverResultTabs[i], 
                                         style = "overflow: auto; height: 75vh;",
@@ -143,9 +153,16 @@ observeEvent(input$btPaver, {
           })
           return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultTabs[1], ".html")))
         }else{
-          flog.error("Problems while running paver. Error message: '%s'.", paver$read_all_error())
+          paverError <- paver$read_all_error()
+          flog.error("Problems while running paver. Error message: '%s'.", paverError)
           hideEl(session, "#paverLoad")
-          showEl(session, "#paverFail")
+          duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))
+          if(length(duplicatedInstances))
+            showElReplaceTxt(session, "#paverFail", sprintf(lang$nav$hcubeAnalyze$duplicatesMsg, 
+                                                            substr(duplicatedInstances, 13, 
+                                                                   nchar(duplicatedInstances) - 3L)))
+          else
+            showEl(session, "#paverFail")
         }
       }
     )

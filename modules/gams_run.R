@@ -10,6 +10,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return(NA)
     write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
               quote_escape = "double")
+    flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
     con <- file(filePath, open = "r")
     on.exit(close(con), add = TRUE)
     return(as.character(openssl::md5(con)))
@@ -85,7 +86,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   }
   
   scenToSolve <- reactive({
-    prog <- shiny::Progress$new()
+    prog <- Progress$new()
     on.exit(prog$close())
     prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
     updateProgress <- function(incAmount, detail = NULL) {
@@ -136,9 +137,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                value <- input[["dropdown_" %+% i]]
                if("_" %in% value){
                  value <- value[value != "_"]
-                 return(c(if(length(value)) paste0(parPrefix, names(modelIn)[[i]], "=", value), ""))
+                 return(c(if(length(value)) paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)), ""))
                }
-               return(paste0(parPrefix, names(modelIn)[[i]], "=", value))
+               return(paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)))
              },
              date = {
                return(input[["date_" %+% i]])
@@ -147,14 +148,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                value <- as.character(input[["daterange_" %+% i]])
                parPrefix <- getHcubeParPrefix()
                
-               return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value[1], 
-                             " ", parPrefix, names(modelIn)[[i]], "_up=", value[2]))
+               return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", escapeGAMSCL(value[1]), 
+                             " ", parPrefix, names(modelIn)[[i]], "_up=", escapeGAMSCL(value[2])))
              },
              checkbox = {
                return(input[["cb_" %+% i]])
              },
              textinput = {
-               return(input[["text_" %+% i]])
+               return(escapeGAMSCL(input[["text_" %+% i]]))
              },
              dt =,
              hot = {
@@ -167,7 +168,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              })
     })
     par <- modelInGmsString[!is.na(elementValues)]
-    elementValues <- escapeGAMSCL(elementValues[!is.na(elementValues)])
+    elementValues <- elementValues[!is.na(elementValues)]
     gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
@@ -190,12 +191,12 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     if(config$includeParentDir){
       parentDirName <- basename(dirname(fromDir))
       scenGmsPar    <- paste0(scenGmsPar, ' idir1="', 
-                              file.path("..", "..", parentDirName, basename(fromDir)),
-                              '" idir2="', file.path("..", "..", parentDirName, '"'))
+                              gmsFilePath(file.path("..", "..", parentDirName, basename(fromDir))),
+                              '" idir2="', gmsFilePath(file.path("..", "..", parentDirName, '"')))
       fromDir <- dirname(fromDir)
     }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', file.path("..", "..", 
-                                                             basename(fromDir)), '"')
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(file.path("..", "..", 
+                                                             basename(fromDir))), '"')
     }
     
     writeLines(scenGmsPar, file.path(toDir, tolower(modelName) %+% ".hcube"))
@@ -203,13 +204,15 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     # Copy files that are needed to solve model
     file.copy(fromDir, toDir, recursive = TRUE)
     staticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
+    if(dir.exists(staticFilePath))
     file.copy(staticFilePath, toDir, recursive = TRUE)
     unlink(staticFilePath, recursive = TRUE, force = TRUE)
     file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   executeHcubeJob <- function(scenGmsPar){
-    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
+    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags), 
+                                        noScen = length(scenGmsPar)))
     flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
     hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
     if(dir.exists(hcubeDir)){
@@ -231,21 +234,18 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       })
     }
     if(config$includeParentDir){
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', currentModelDir,
-                           '" idir2="', dirname(currentModelDir), '"')
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir),
+                           '" idir2="', gmsFilePath(dirname(currentModelDir)), '"')
     }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', currentModelDir, '"')
+      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir), '"')
     }
     writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".hcube"))
     
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
     # create daemon to execute Hypercube job
-    hcubeSubmDir <- file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms")
-    curdir <- hcubeDir
-    if(isWindows()){
-      hcubeSubmDir <- gsub("/", "\\", hcubeSubmDir, fixed = TRUE)
-      curdir <- gsub("/", "\\", curdir, fixed = TRUE)
-    }
+    hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
+    curdir       <- gmsFilePath(hcubeDir)
+    
     tryCatch({
       writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
                 eos = NULL)
@@ -263,6 +263,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
     db$updateHypercubeJob(jID, pid = pid)
     flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, jID)
+    rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
   }
   observeEvent(input$btHcubeAll, {
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
@@ -387,7 +388,8 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     disableEl(session, "#btSolve")
-    idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier)
+    idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
+                                  tibble(scodeIdentifier, 1L))
     if(length(idsSolved)){
       idsSolved <- unique(idsSolved[[1L]])
     }
@@ -403,7 +405,7 @@ observeEvent(input$btSolve, {
     }
     idsToSolve <<- scenToSolve$ids
     scenGmsPar <<- paste(scenToSolve$gmspar, config$gamsWEBUISwitch, 
-                         "execMode=" %+% gamsExecMode, "lo=3")
+                         "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
                            " traceopt=3")
@@ -417,7 +419,7 @@ observeEvent(input$btSolve, {
     
     return(NULL)
   }
-  prog <- shiny::Progress$new()
+  prog <- Progress$new()
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
   
@@ -463,6 +465,14 @@ observeEvent(input$btSolve, {
         csvData <- dataTmp[[i]]
       }
       rm(GMSOptValues, DDParValues)
+    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
+      # append alias column
+      choiceIdx         <- match(dataTmp[[i]][[1L]], 
+                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
+      csvData           <- dataTmp[[i]]
+      aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
+      aliasCol[is.na(aliasCol)] <- ""
+      csvData[["text"]] <- aliasCol
     }else{
       csvData <- dataTmp[[i]]
     }
@@ -483,8 +493,8 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c(paste0('idir1="', currentModelDir, '"'), if(config$includeParentDir)
-      paste0('idir2="', dirname(currentModelDir), '"'), paste0('curdir="', workDir, '"'),
+    gamsArgs <- c(paste0('idir1="', gmsFilePath(currentModelDir), '"'), if(config$includeParentDir)
+      paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), paste0('curdir="', workDir, '"'),
       "lo=3", "execMode=" %+% gamsExecMode, config$gamsWEBUISwitch)
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
@@ -518,7 +528,8 @@ observeEvent(input$btSolve, {
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader2(300, session, workDir %+% modelName %+% ".log", readLines, warn = FALSE)
+      logfile <- reactiveFileReader2(300, session, file.path(workDir, modelName %+% ".log"), 
+                                     readLines, warn = FALSE)
       logfileObs <- logfile$obs
       logfile <- logfile$re
     }, error = function(e) {
@@ -568,7 +579,10 @@ observeEvent(input$btSolve, {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          if(getNoLinesInFile(workDir %+% modelName %+% ".lst") > maxNoLinesToRead){
+          fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
+          if(is.na(fileSize))
+            stop("Could not access listing file.", call. = FALSE)
+          if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
             output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
@@ -590,7 +604,47 @@ observeEvent(input$btSolve, {
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
       }else{
         # run terminated successfully
-        
+        # check whether GAMS output files shall be stored
+        if(config$activateModules$attachments && 
+           config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+          tryCatch({
+            filesToStore  <- c(file.path(workDir, paste0(modelName, c(".log", ".lst"))))
+            filesNoAccess <- file.access(filesToStore) == -1L
+            errMsg <- NULL
+            if(any(filesNoAccess)){
+              if(all(filesNoAccess))
+                stop("fileAccessException", call. = FALSE)
+              flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
+                        paste(filesToStore[filesNoAccess], collapse = "', '"))
+              errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+            }
+            filesToStore <- filesToStore[!filesNoAccess]
+            filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
+            if(any(filesTooLarge)){
+              if(all(filesTooLarge))
+                stop("fileSizeException", call. = FALSE)
+              flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
+                        paste(filesToStore[filesTooLarge], collapse = "', '"))
+              errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
+            }
+            activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE)
+          }, error = function(e){
+            switch(conditionMessage(e),
+                   fileAccessException = {
+                     flog.info("No GAMS output files could not be accessed. Check file permissions.")
+                     errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+                   },
+                   fileSizeException = {
+                     flog.info("All GAMS output files are too large to be saved.")
+                     errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
+                   },
+                   {
+                     flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
+                     errMsg <<- lang$errMsg$unknownError
+                   })
+          })
+          showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
+        }
         #select first tab in current run tabset
         statusText <- lang$nav$gamsModelStatus$success
         updateTabsetPanel(session, "sidebarMenuId",
@@ -603,9 +657,9 @@ observeEvent(input$btSolve, {
         tryCatch({
           GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
                                          modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
-                                         scalarsFileHeaders = scalarsFileHeaders,
-                                         method = "csv", csvDelim = config$csvDelim, 
-                                         hiddenMarker = config$gamsMetaDelim, strictmode = config$activateModules$strictmode) 
+                                         scalarsFileHeaders = scalarsFileHeaders, colTypes = db$getDbSchema()$colTypes,
+                                         modelOutTemplate = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
+                                         hiddenMarker = config$gamsMetaDelim) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc

@@ -20,7 +20,7 @@ observeEvent(virtualActionButton(input$btSplitView, rv$btSplitView), {
   }
 })
 observeEvent(input$btScenSplit1_open, {
-  flog.debug("%s: Load Scenario button clicked (left box in split view).", uid)
+  flog.debug("Load Scenario button clicked (left box in split view).")
   loadInLeftBoxSplit <<- TRUE
   
   updateTabsetPanel(session, "contentScen_2", "contentScen_2_1")
@@ -31,7 +31,7 @@ observeEvent(input$btScenSplit1_open, {
   }
 })
 observeEvent(input$btScenSplit2_open, {
-  flog.debug("%s: Load Scenario button clicked (right box in split view).", uid)
+  flog.debug("Load Scenario button clicked (right box in split view).")
   loadInLeftBoxSplit <<- FALSE
   
   updateTabsetPanel(session, "contentScen_3", "contentScen_3_1")

@@ -132,6 +132,7 @@ lapply(modelInTabularData, function(sheet){
            output[[paste0("in_", i)]] <- renderRHandsontable({
              noCheck[i] <<- TRUE
              ht <- rhandsontable(dataModelIn[[i]](), height = hotOptions$height, 
+                                 colHeaders = attr(modelInTemplate[[i]], "aliases"),
                                  width = hotOptions$width, search = hotOptions$search, 
                                  readOnly = modelIn[[i]]$readonly, selectCallback = TRUE)
              ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
@@ -232,7 +233,8 @@ lapply(modelInTabularData, function(sheet){
                dt <- do.call(datatable, c(list(dataModelIn[[i]](), 
                                                editable = if(identical(modelIn[[i]]$readonly, 
                                                                        TRUE))
-                                                 FALSE else TRUE),
+                                                 FALSE else TRUE,
+                                               colnames = attr(modelInTemplate[[i]], "aliases")),
                                           config$datatable)) %>%
                  formatRound(seq_along(data), roundPrecision)
              }, error = function(e){

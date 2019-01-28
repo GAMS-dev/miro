@@ -7,18 +7,19 @@ scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTab
     return(el)
   }
 }), use.names = FALSE)
+additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
+  return(identical(modelIn[[el]]$dropdown$single, TRUE) || 
+           identical(modelIn[[el]]$dropdown$checkbox, TRUE))
+}, logical(1L), USE.NAMES = FALSE)]
+scalarInToVerify <- c(scalarInToVerify, additionalInputScalars)
 scalarOutToVerify <- NULL
 if(scalarsOutName %in% names(modelOut)){
   scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
 }
 
-gmsColTypes <- unlist(lapply(c(modelIn, modelOut), "[[", "colTypes"))
-gmsColTypes <- gmsColTypes[!is.null(gmsColTypes)]
-gmsColTypes[[scalarsFileName]] <- "ccc"
-gmsFileHeaders <- lapply(c(modelIn, modelOut), function(el){
-  names(el$headers)
-})
-gmsFileHeaders[[scalarsFileName]] <- scalarsFileHeaders
+gmsColTypes <- db$getDbSchema()$colTypes
+gmsFileHeaders <- db$getDbSchema()$colNames
+
 hcubeMeta <- "e"
 hcubeMetaHistory <- "e"
 
@@ -26,7 +27,8 @@ disableEl(session, "#btUploadHcube")
 
 # initialise hcube import class
 hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
-                               tableNamesMustHave = c(inputDsNames, if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
+                               tableNamesMustHave = c(setdiff(inputDsNames, additionalInputScalars), 
+                                                      if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
                                strictmode = config$activateModules$strictmode)
@@ -69,9 +71,9 @@ updateJobMetadata <- function(jID, status = NULL, tags = NULL){
     }
     status <- "_imported_"
   }
-  jobMeta[, snameIdentifier] <- status
+  jobMeta[, snameIdentifier]   <- status
   if(length(tags)){
-    jobMeta[, stagIdentifier] <- vector2Csv(tags)
+    jobMeta[, stagIdentifier]  <- vector2Csv(tags)
   }
   if(endsWith(status, "_")){
     hcubeMeta                  <<- hcubeMeta[!rowId, ]
@@ -94,23 +96,24 @@ updateJobMetadata <- function(jID, status = NULL, tags = NULL){
 observeEvent(rv$uploadHcube, {
   req(hcubeImport)
   req(zipFilePath)
-  
-  prog <- shiny::Progress$new()
-  prog$set(message = "Extracting zip file", value = 1/8)
+  zipFilePathTmp <- zipFilePath
+  zipFilePath    <<- NULL
+  prog           <- Progress$new()
+  prog$set(message = lang$progressBar$hcubeImport$title, 
+           detail = lang$progressBar$hcubeImport$zipExtract, value = 1/8)
   on.exit(prog$close())
 
   errMsg            <- NULL
-  
   tryCatch({
-    hcubeImport$unzipScenData(zipFilePath, extractDir = workDir)
+    hcubeImport$unzipScenData(zipFilePathTmp, extractDir = workDir)
   }, error = function(e){
     flog.error("Problems unzipping the file. Error message: %s.", e)
-    errMsg <<- "Problems unzipping the file. Please make sure you upload a valid zip file."
+    errMsg <<- lang$errMsg$hcubeImport$extract$desc
   })
-  if(is.null(showErrorMsg("Problems uploading scenarios", errMsg))){
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$extract$title, errMsg))){
     return(NULL)
   }
-  prog$set(message = "Validating zip file", value = 1/6)
+  prog$set(detail = lang$progressBar$hcubeImport$zipValidation, value = 1/6)
   # validate here so only valid scenarios will be read
   hcubeImport$validateScenFiles()
   
@@ -118,18 +121,19 @@ observeEvent(rv$uploadHcube, {
     hcubeImport$readAllScenData()
   }, error = function(e){
     flog.error("Problems reading scenario data. Error message: %s.", e)
-    errMsg <<- "Problems reading scenario data. If this problem persists, please contact the system administrator."
+    errMsg <<- lang$errMsg$hcubeImport$scenRead$desc
   })
-  if(is.null(showErrorMsg("Problems reading files", errMsg))){
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$scenRead$title, errMsg))){
     return(NULL)
   }
   
-  prog$inc(amount = 0, message = "Validating scenario data")
+  prog$inc(amount = 0, detail = lang$progressBar$hcubeImport$scenValidation)
   
   hcubeImport$validateScenTables(scalarInToVerify, scalarOutToVerify)
   invalidScenIds <- hcubeImport$getInvalidScenIds()
   if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
-    showErrorMsg("No valid scenarios", "There are no valid scenarios in your zip file. Please upload valid data.")
+    showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
+                 lang$errMsg$hcubeImport$invalidJob$desc)
     return(NULL)
   }else if(length(invalidScenIds) >= 1){
     showInvalidScenIdsDialog(invalidScenIds)
@@ -145,13 +149,13 @@ observeEvent(input$btHcubeImportInvalid,
              rv$noInvalidData <- isolate(rv$noInvalidData + 1L)
              )
 observeEvent(virtualActionButton(rv$noInvalidData), {
-  prog <- shiny::Progress$new()
-  prog$set(message = "Reading scenario data", value = 2/6)
+  prog <- Progress$new()
+  prog$set(message = lang$progressBar$hcubeImport$scenRead, value = 2/6)
   on.exit(prog$close())
   errMsg <- NULL
   removeModal()
   
-  prog$inc(amount = 1/6, message = "Checking for duplicated scenarios")
+  prog$inc(amount = 1/6, detail = lang$progressBar$hcubeImport$duplicateCheck)
   tryCatch({
     duplicatedScen    <- hcubeImport$getScenDuplicates()
     duplicatedScenIds <<- duplicatedScen[[snameIdentifier]]
@@ -164,9 +168,9 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
     }
   }, error = function(e){
     flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.", e)
-    errMsg <<- "Problems fetching duplicated Scenarios from database."
+    errMsg <<- lang$errMsg$hcubeImport$duplicateFetch$desc
   })
-  if(is.null(showErrorMsg("Invalid data", errMsg))){
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$duplicateFetch$title, errMsg))){
     return(NULL)
   }
 })
@@ -183,68 +187,74 @@ observeEvent(input$btHcubeImportAll,
 #      3
 ##############
 observeEvent(virtualActionButton(rv$btSave), {
-  prog <- shiny::Progress$new()
-  prog$set(message = "Uploading scenarios to database", value = 1/2)
+  prog <- Progress$new()
+  prog$set(message = lang$progressBar$hcubeImport$dbUpload, value = 1/2)
   on.exit(prog$close())
   errMsg <- NULL
   removeModal()
   tryCatch({
     hcubeImport$saveScenarios(hcubeTags, readPerm = uid, 
-                              writePerm = uid, progressBar = prog)
+                              writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
     flog.error("Problems exporting scenarios. Error message: %s.", e)
-    errMsg <<- "Problems uploading the scenarios. Please try again later." %+%
-      " If this problem persists, please contact the system administrator."
+    errMsg <<- lang$errMsg$hcubeImport$dbUpload$desc
   })
-  if(is.null(showErrorMsg("Problems uploading scenarios", errMsg))){
+  if(is.null(showErrorMsg(lang$errMsg$hcubeImport$dbUpload$title, errMsg))){
     return(NULL)
   }
-  prog$inc(amount = 1/2, message = "Done!")
-  
+  prog$inc(amount = 1/2, detail = lang$progressBar$hcubeImport$success)
   # clean up
-  if(!length(currentJobID)){
-    rv$clear <- FALSE
+  if(manualJobImport){
+    statusCode <- "_imported(man)_"
   }else{
-    tryCatch(updateJobMetadata(currentJobID, status = "imported", 
-                               tags = hcubeTags),
-             error = function(e){
-               flog.error(e)
-               showHideEl(session, "#fetchJobsError")
-             })
-    showEl(session, "#jImport_load")
-    hcubeMetaDisplay      <- arrange(hcubeMeta, desc(!!as.name(stimeIdentifier)))
-    output$jImport_output <- renderUI(getHypercubeJobsTable(hcubeMetaDisplay))
-    hideEl(session, "#jImport_load")
-    showHideEl(session, "#fetchJobsImported")
+    statusCode <- "imported"
   }
+  tryCatch(updateJobMetadata(currentJobID, status = statusCode, 
+                             tags = hcubeTags),
+           error = function(e){
+             flog.error(e)
+             showHideEl(session, "#fetchJobsError")
+           })
+  showEl(session, "#jImport_load")
+  hcubeMetaDisplay      <- arrange(hcubeMeta, desc(!!as.name(stimeIdentifier)))
+  output$jImport_output <- renderUI(getHypercubeJobsTable(hcubeMetaDisplay))
+  hideEl(session, "#jImport_load")
+  showHideEl(session, "#fetchJobsImported")
 })
 
 observeEvent(input$btManualImport, {
+  flog.trace("Import manual Hypercube job button clicked.")
   showManualJobImportDialog()
 })
 observeEvent(input$hcubeImport, {
   enableEl(session, "#btUploadHcube")
   tag <- gsub("\\..+$", "", input$hcubeImport$name)
   updateSelectInput(session, "hcubeTags", choices = tag, selected = tag)
-  rv$clear <- TRUE
 }, priority = 1000)
 observeEvent(input$btUploadHcube, {
   req(input$hcubeImport)
-  req(rv$clear)
-  
-  if(length(input$hcubeTags)){
-    hcubeTags <<- vector2Csv(input$hcubeTags)
-  }else{
-    showErrorMsg("No tags", "Please provide a job tag")
-    return()
-  }
+  flog.trace("Upload manual Hypercube job button clicked.")
+
+  hcubeTags         <<- vector2Csv(input$hcubeTags)
   zipFilePath       <<- input$hcubeImport$datapath
-  currentJobID      <<- NULL
-  disableEl(session, "#btUploadHcube")
+  noErr <- TRUE
+  tryCatch({
+    currentJobID    <<- db$writeMetaHcube(hcubeTags, manual = TRUE)
+  }, error = function(e){
+    showHideEl(session, "#manHcubeImportUnknownError")
+    flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.", e)
+    noErr <<- FALSE
+  })
+  if(!noErr)
+    return()
+  rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
+  manualJobImport <<- TRUE
+  removeModal()
   rv$uploadHcube <- rv$uploadHcube + 1L
 })
 
-observeEvent(input$refreshActiveJobs, {
+observeEvent(virtualActionButton(input$refreshActiveJobs, rv$refreshActiveJobs), {
+  flog.trace("Refresh active jobs button clicked.")
   showEl(session, "#jImport_load")
   hcubeMetaDisplay <- NULL
   tryCatch({
@@ -312,7 +322,7 @@ observeEvent(input$showHypercubeLog, {
   logContent  <- NULL
   if(file.access(logFilePath, 4L) != -1L){
     try(
-      if(getNoLinesInFile(logFilePath) > maxNoLinesToRead){
+      if(file.size(logFilePath) > maxSizeToRead){
         logContent <- lang$errMsg$readLst$fileSize
       }else{
         logContent <- readChar(logFilePath, file.info(logFilePath)$size)
@@ -324,7 +334,6 @@ observeEvent(input$showHypercubeLog, {
 })
 
 observeEvent(input$importHypercubeJob, {
-  removeModal()
   jID <- isolate(input$importHypercubeJob)
   flog.trace("Import Hypercube job button clicked. Job ID: '%s'.", jID)
   if(!is.integer(jID) || length(jID) != 1L){
@@ -350,6 +359,7 @@ observeEvent(input$importHypercubeJob, {
     flog.error("Zip file with Hypercube job results was removed during import process (Job ID: '%s').", jID)
     showHideEl(session, "#fetchJobsError")
   }
+  manualJobImport <<- FALSE
   disableEl(session, "#jImport_" %+% jID)
   rv$uploadHcube <- rv$uploadHcube + 1L
 })

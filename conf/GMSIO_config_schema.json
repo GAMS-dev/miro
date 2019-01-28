@@ -89,14 +89,12 @@
             "minProperties":1,
             "additionalProperties":{  
               "type":"object",
-              "properties":{  
-                "readonly":{  
-                  "description":"headers can be set as readonly to prevent the user from making changes",
-                  "type":[  
-                    "boolean",
-                    "null"
-                  ],
-                  "required":false
+              "properties":{
+                "alias":{  
+                  "description":"Explanatory text of the header symbol",
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 },
                 "type":{  
                   "description":"GAMS input type",

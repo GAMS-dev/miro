@@ -3,7 +3,7 @@ Scenario <- R6Class("Scenario",
                     inherit = Db,
                     public = list(
                       initialize                    = function(db, sid = NULL, sname = NULL,
-                                                               readPerm = NULL, writePerm = NULL,
+                                                               readPerm = NULL, writePerm = NULL, execPerm = NULL,
                                                                tags = NULL, overwrite = FALSE){
                         # Initialize scenario class
                         #
@@ -13,6 +13,7 @@ Scenario <- R6Class("Scenario",
                         #   sname:             scenario name (optional)
                         #   readPerm:          users/groups that have read permissions (optional)
                         #   writePerm:         users/groups that have write permissions (optional)
+                        #   execPerm:          users/groups that have execute permissions (optional)
                         #   tags:              vector of tags that can be specified (optional)
                         #   overwrite:         logical that specifies whether data should be overwritten or appended
                         
@@ -38,6 +39,11 @@ Scenario <- R6Class("Scenario",
                           }else{
                             writePerm <- private$uid
                           }
+                          if(length(execPerm)){
+                            stopifnot(is.character(execPerm), length(execPerm) >=1)  
+                          }else{
+                            execPerm <- private$uid
+                          }
                         }else{
                           sid <- suppressWarnings(as.integer(sid))
                           stopifnot(!is.na(sid), length(sid) == 1)
@@ -57,7 +63,11 @@ Scenario <- R6Class("Scenario",
                         private$tags                <- vector2Csv(unique(tags))
                         private$readPerm            <- vector2Csv(readPerm)
                         private$writePerm           <- vector2Csv(writePerm)
-                        
+                        private$execPerm            <- vector2Csv(execPerm)
+                        if(db$getHcubeActive())
+                          private$scode <- 2L
+                        else
+                          private$scode <- 0L
                         if(is.null(sid)){
                           tryCatch({
                             private$fetchMetadata(sname = sname, uid = private$uid)
@@ -71,7 +81,6 @@ Scenario <- R6Class("Scenario",
                                      private$suid      <- private$uid
                                      private$sname     <- sname
                                      private$writeMetadata()
-                                     private$fetchMetadata(sname = sname, uid = private$uid)
                                    })
                         }else{
                           private$fetchMetadata(sid = sid)
@@ -108,8 +117,9 @@ Scenario <- R6Class("Scenario",
                         if(!noPermFields){
                           writePerm <- private$writePerm
                         }
-                        super$getMetadata(uid = private$suid, sname = private$sname, stime = private$stime,
-                                          stag = private$tags, readPerm = readPerm, writePerm = writePerm,
+                        super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
+                                          stime = private$stime, stag = private$tags, readPerm = readPerm, 
+                                          writePerm = writePerm,
                                           uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
                                           stimeAlias = aliases[["stime"]],
                                           stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
@@ -127,7 +137,7 @@ Scenario <- R6Class("Scenario",
                         
                         #BEGIN error checks
                         if(private$isReadonly()){
-                          stop("Scenario is readonly. Saving failed.", call. = FALSE)
+                          stop("Scenario is readonly. Saving failed (Scenario.save).", call. = FALSE)
                         }
                         stopifnot(!is.null(private$sid))
                         stopifnot(length(private$tableNamesScenario) >= 1)
@@ -137,7 +147,7 @@ Scenario <- R6Class("Scenario",
                         #END error checks 
                         
                         # initialize progress bar
-                        prog <- shiny::Progress$new()
+                        prog <- Progress$new()
                         on.exit(prog$close())
                         prog$set(message = msgProgress$title, value = 0)
                         updateProgress <- NULL
@@ -156,7 +166,7 @@ Scenario <- R6Class("Scenario",
                           # increment progress bar
                           updateProgress(detail = msgProgress$progress)
                         }, datasets, private$tableNamesScenario)
-                        
+                        private$scenSaved <- TRUE
                         # refresh lock for scenario
                         private$lock()
                         
@@ -172,23 +182,32 @@ Scenario <- R6Class("Scenario",
                         #   R6 object (reference to itself)
                         
                         stopifnot(!is.null(private$sid))
-                        
+                        if(private$isReadonly()){
+                          stop("Scenario is readonly. Saving trace data failed (Scenario.saveTraceData).", call. = FALSE)
+                        }
                         super$exportScenDataset(private$bindSidCol(traceData), private$dbSchema$tabName[["_scenTrc"]])
+                        private$scenSaved <- TRUE
                         invisible(self)
                       },
-                      addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL){
+                      addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL, 
+                                                overwrite = FALSE){
                         # Saves attachments
                         # 
                         # Args:
                         #   filePaths:        character vector with file paths to read data from
                         #   fileNames:        names of the files in case custom name should be chosen
                         #   forbiddenFnames:  character vector with forbidden file names
+                        #   overwrite:        boolean that specifies whether existing files should 
+                        #                     be overwritten
                         #
                         # Returns:
                         #   R6 object (reference to itself)
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
+                        if(private$isReadonly()){
+                          stop("roException", call. = FALSE)
+                        }
                         if(length(forbiddenFnames)){
                           stopifnot(is.character(forbiddenFnames), length(forbiddenFnames) >= 1L)
                         }
@@ -203,19 +222,27 @@ Scenario <- R6Class("Scenario",
                            any(gsub("\\.[^\\.]+$", "", fileNames) %in% forbiddenFnames)){
                           stop("forbiddenFnameException", call. = FALSE)
                         }
+                        stopifnot(is.logical(overwrite), length(overwrite) == 1L)
                         
                         fileNamesDb    <- self$fetchAttachmentList()[["name"]]
                         
                         if(any(fileNames %in% fileNamesDb)){
-                          stop("duplicateException", call. = FALSE)
+                          if(!overwrite)
+                            stop("duplicateException", call. = FALSE)
+                          fnToOverwrite <- fileNames %in% fileNamesDb
+                          fileNamesDb   <- fileNamesDb[!fnToOverwrite]
+                          self$removeAttachments(fileNames[fnToOverwrite])
                         }
                         if(length(fileNamesDb) + length(filePaths) > private$attachmentConfig[["maxNo"]]){
                           stop("maxNoException", call. = FALSE)
                         }
                         
-                        attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], fileNames = fileNames)
+                        attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], 
+                                                           fileNames = fileNames)
                         
-                        super$exportScenDataset(private$bindSidCol(attachmentData), private$dbSchema$tabName[["_scenAttach"]])
+                        super$exportScenDataset(private$bindSidCol(attachmentData), 
+                                                private$dbSchema$tabName[["_scenAttach"]])
+                        private$scenSaved <- TRUE
                         self$updateMetadata()
                         invisible(self)
                       },
@@ -299,7 +326,10 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.character(fileName), length(fileName) == 1L)
                         stopifnot(is.logical(value), length(value) == 1L)
                         
-                        
+                        if(private$isReadonly()){
+                          stop("Scenario is readonly. Updating attachment data failed. (Scenario.setAttachmentExecPerm).", 
+                               call. = FALSE)
+                        }
                         super$updateRows(private$dbSchema$tabName[["_scenAttach"]], tibble("fileName", fileName), 
                                          colNames = "execPerm", values = value, subsetSids = private$sid)
                         self$updateMetadata()
@@ -316,7 +346,9 @@ Scenario <- R6Class("Scenario",
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(fileNames), length(fileNames) > 0L)
-                        
+                        if(private$isReadonly()){
+                          stop("Attachment could not be removed as scenario is readonly (Scenario.removeAttachments).", call. = FALSE)
+                        }
                         super$deleteRows(private$dbSchema$tabName[["_scenAttach"]], "fileName", fileNames, 
                                          conditionSep = "OR", subsetSids = private$sid)
                         self$updateMetadata()
@@ -334,6 +366,9 @@ Scenario <- R6Class("Scenario",
                         #BEGIN error checks 
                         stopifnot(!is.null(private$sid))
                         #END error checks 
+                        if(private$isReadonly()){
+                          stop("Scenario could not be removed as it is readonly (Scenario.delete).", call. = FALSE)
+                        }
                         noErr <- TRUE
                         self$deleteRows(private$tableNameMetadata, 
                                         private$scenMetaColnames['sid'], 
@@ -347,7 +382,8 @@ Scenario <- R6Class("Scenario",
                         invisible(self)
                       },
                       updateMetadata = function(newName = character(0L), newTags = character(0L), 
-                                                newReadPerm = character(0L), newWritePerm = character(0L)){
+                                                newReadPerm = character(0L), newWritePerm = character(0L),
+                                                newExecPerm = character(0L)){
                         # Edit scenario metadata (wrapper around db.writeMetadata method)
                         #
                         # Args:
@@ -355,6 +391,7 @@ Scenario <- R6Class("Scenario",
                         #   newTags:      updated scenario tags (optional)
                         #   newReadPerm:  updated scenario read permissions (optional)
                         #   newWritePerm: updated scenario write permissions (optional)
+                        #   newWritePerm: updated scenario execute permissions (optional)
                         
                         # Returns:
                         #   R6 object: reference to itself,
@@ -367,8 +404,12 @@ Scenario <- R6Class("Scenario",
                         }
                         stopifnot(is.character(newReadPerm))
                         stopifnot(is.character(newWritePerm))
+                        stopifnot(is.character(newExecPerm))
                         #END error checks 
-                        
+                        if(private$isReadonly()){
+                          stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.updateMetadata).", 
+                               call. = FALSE)
+                        }
                         if(length(newName)){
                           private$sname <- newName
                         }
@@ -381,11 +422,14 @@ Scenario <- R6Class("Scenario",
                         if(length(newWritePerm)){
                           private$writePerm <- vector2Csv(newWritePerm)
                         }
+                        if(length(newExecPerm)){
+                          private$execPerm <- vector2Csv(newExecPerm)
+                        }
                         
                         private$stime <- Sys.time()
                         metadata <- tibble(private$sid, private$suid, private$sname, 
                                            private$stime, private$tags, private$readPerm,
-                                           private$writePerm)
+                                           private$writePerm, private$execPerm, private$scode)
                         names(metadata) <- private$scenMetaColnames
                         super$writeMetadata(metadata, update = TRUE)
                         
@@ -398,6 +442,10 @@ Scenario <- R6Class("Scenario",
                         if(length(private$sid)){
                           flog.debug("Scenario: '%s' unlocked.", private$sid)
                           private$unlock()
+                          if(private$newScen && !private$scenSaved){
+                            flog.debug("Scenario was not saved. Thus, it will be removed.")
+                            self$delete()
+                          }
                         }
                       }
                     ),
@@ -429,7 +477,11 @@ Scenario <- R6Class("Scenario",
                       tags                = character(1L),
                       readPerm            = character(0L),
                       writePerm           = character(0L),
+                      execPerm            = character(0L),
                       dbSchema            = vector("list", 3L),
+                      scode               = integer(1L),
+                      scenSaved           = logical(1L),
+                      newScen             = logical(1L),
                       fetchMetadata       = function(sid = NULL, sname = NULL, uid = NULL){
                         # fetches scenario metadata from database
                         #
@@ -450,17 +502,33 @@ Scenario <- R6Class("Scenario",
                         #END error checks
                         
                         if(!is.null(sid)){
-                          metadata <- self$importDataset(private$tableNameMetadata, 
-                                                         subsetSids = sid)
+                          metadata     <- self$importDataset(private$tableNameMetadata, 
+                                                             subsetSids = sid, innerSepAND = FALSE)
                           if(!nrow(metadata)){
-                            stop(sprintf("A scenario with ID: '%s' could not be found.", sid), call. = FALSE)
+                            stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the user tampering with the app!", 
+                                         sid), call. = FALSE)
                           }
-                          private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
-                          private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
-                          private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
-                          private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
-                          private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
-                          private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
+                          
+                          if(metadata[[private$scenMetaColnames['scode']]][1] != private$scode){
+                            flog.debug("The scenario loaded was generated from a different mode. A copy will be created (Scen.fetchMetadata)")
+                            private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                            private$suid      <- private$uid
+                            private$stime     <- Sys.time()
+                            private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                            private$readPerm  <- vector2Csv(private$uid)
+                            private$writePerm <- vector2Csv(private$uid)
+                            private$execPerm  <- vector2Csv(private$uid)
+                            private$writeMetadata()
+                          }else{
+                            private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
+                            private$sname     <- metadata[[private$scenMetaColnames['sname']]][1]
+                            private$stime     <- metadata[[private$scenMetaColnames['stime']]][1]
+                            private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                            private$readPerm  <- metadata[[private$scenMetaColnames['accessR']]][1]
+                            private$writePerm <- metadata[[private$scenMetaColnames['accessW']]][1]
+                            private$execPerm  <- metadata[[private$scenMetaColnames['accessX']]][1]
+                            private$sid       <- as.integer(sid)
+                          }
                         }else{
                           metadata <- self$importDataset(private$tableNameMetadata, 
                                                          tibble(c(private$scenMetaColnames['uid'],
@@ -470,11 +538,16 @@ Scenario <- R6Class("Scenario",
                             stop(sprintf("A scenario with name: '%s' could not be found for user: '%s'.", 
                                          sname, uid), call. = FALSE)
                           }
+                          scenFromOtherMode <- metadata[[private$scenMetaColnames['scode']]] != private$scode
+                          if(all(scenFromOtherMode))
+                            stop("No scenario with this name exists in the current mode.",
+                                 call. = FALSE)
+                            
                           private$suid      <- uid
                           private$sname     <- sname
                           private$stime     <- Sys.time()
+                          private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode][1])
                         }
-                        private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][1])
                         
                         invisible(self)
                       },
@@ -531,28 +604,31 @@ Scenario <- R6Class("Scenario",
                         #   throws exception in case of error
                         if(!length(private$sid)){
                           # new scenario
-                          metadata           <- data.frame(private$suid, private$sname,
-                                                           private$stime, private$tags, 
-                                                           private$readPerm, private$writePerm,
-                                                           stringsAsFactors = FALSE)
+                          private$newScen    <- TRUE
+                          metadata           <- tibble(private$suid, private$sname,
+                                                       private$stime, private$tags, 
+                                                       private$readPerm, private$writePerm,
+                                                       private$execPerm, private$scode)
                           colnames(metadata) <- private$scenMetaColnames[-1]
                         }else{
                           if(private$isReadonly()){
-                            flog.error("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).")
-                            stop("Scenario is readonly. Saving failed.", call. = FALSE)
+                            stop("Db: Metadata could not be overwritten as scenario is readonly (Scenario.writeMetadata).", 
+                                 call. = FALSE)
                           }
                           self$deleteRows(private$tableNameMetadata, 
                                           private$scenMetaColnames['sid'], 
                                           private$sid)
-                          metadata           <- data.frame(private$sid, private$suid, private$sname,
-                                                           private$stime, private$tags, 
-                                                           private$readPerm, private$writePerm,
-                                                           stringsAsFactors = FALSE)
+                          metadata           <- tibble(private$sid, private$suid, private$sname,
+                                                       private$stime, private$tags, 
+                                                       private$readPerm, private$writePerm,
+                                                       private$execPerm, private$scode)
                           colnames(metadata) <- private$scenMetaColnames
                         }
                         super$writeMetadata(metadata)
                         flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
-                                   private$tableNameMetadata, private$sid, private$suid)
+                                   private$tableNameMetadata, private$sname)
+                        if(!length(private$sid))
+                          private$fetchMetadata(sname = private$sname, uid = private$suid)
                         invisible(self)
                       },
                       lock = function(){
@@ -566,7 +642,10 @@ Scenario <- R6Class("Scenario",
                         #BEGIN error checks 
                         stopifnot(!is.null(private$sid))
                         #END error checks
-                        
+                        if(private$isReadonly()){
+                          flog.debug("Db: Scenario wasn't locked as it is readonly (Scenario.lock).")
+                          return(invisible(self))
+                        }
                         if(!DBI::dbExistsTable(private$conn, private$tableNameScenLocks)){
                           # in case table does not yet exist, create it
                           tryCatch({
@@ -699,7 +778,8 @@ Scenario <- R6Class("Scenario",
                         content <- blob::new_blob(lapply(seq_along(filePaths), 
                                                          function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
                         return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
-                                      execPerm = rep.int(TRUE, length(filePaths)), fileContent = content))
+                                      execPerm = rep.int(TRUE, length(filePaths)), 
+                                      fileContent = content, timestamp = as.character(Sys.time(), usetz = TRUE, tz = "GMT")))
                       }
                     )
 )

@@ -8,6 +8,7 @@ renderDTable <- function(data, options, roundPrecision = 2){
   #
   # Returns:
   #   DT object or renderDT object with data and options specified
+  names(data) <- attr(data, "aliases")
   if("DT" %in% (.packages())){
     dt <- do.call(datatable, c(list(data), options)) %>%
       formatRound(seq_along(data)[vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)], 

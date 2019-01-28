@@ -12,6 +12,7 @@ getScenTabData <- function(sheetName){
       tabData$sheetName     <- modelOutAlias[i]
       tabData$tooltip       <- lang$nav$scen$tooltips$outputSheet
       tabData$graphConfig   <- configGraphsOut[[i]]
+      tabData$headerAliases <- attr(names(modelOutTemplate[[i]]), "aliases")
     }
   }else{
     # sheet is input sheet
@@ -19,9 +20,9 @@ getScenTabData <- function(sheetName){
       configGraphsIn[[i]]$outType <- "pivot"
       # prepopulate scalar table
       if(inputDsNames[i] == scalarsFileName && !length(configGraphsIn[[i]]$pivottable)){
-        configGraphsIn[[i]]$pivottable$rows = c("Scalar")
-        configGraphsIn[[i]]$pivottable$aggregatorName = "Sum"
-        configGraphsIn[[i]]$pivottable$vals = "Value"
+        configGraphsIn[[i]]$pivottable$rows <- c("Scalar")
+        configGraphsIn[[i]]$pivottable$aggregatorName <- "Sum"
+        configGraphsIn[[i]]$pivottable$vals <- "Value"
       }
     }
     tabData$graphConfig   <- configGraphsIn[[i]]
@@ -29,8 +30,10 @@ getScenTabData <- function(sheetName){
     
     if(inputDsNames[i] == scalarsFileName){
       tabData$sheetName <- config$scalarAliases$inputScalars
+      tabData$headerAliases <- scalarsFileHeaders
     }else{
       tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
+      tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
     }
   }
   # get data index

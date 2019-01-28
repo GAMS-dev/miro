@@ -16,16 +16,16 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   }else if(type == "dtgraph"){
     if(graphTool == "plotly"){
       data <- tagList(
-        fluidRow(
-          column(6, dataTableOutput(ns("datatable"))),
-          column(6, plotlyOutput(ns("graph"), height = height))
+        tags$div(style = "overflow-x:hidden;",
+          column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
+          column(6, plotlyOutput(ns("graph"), height = height), style = "overflow-x:auto;")
         )
       )
     }else if(graphTool == "dygraphs"){
       data <- tagList(
-        fluidRow(
-          column(6, dataTableOutput(ns("datatable"))),
-          column(6, dygraphOutput(ns("graph"), height = height))
+        tags$div(style = "overflow-x:hidden;",
+          column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
+          column(6, dygraphOutput(ns("graph")), height = height, style = "overflow-x:auto;")
         )
       )
     }else{

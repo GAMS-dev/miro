@@ -12,6 +12,20 @@ function isInputEl(id){
     return false;
   }
 }
+let spinnerActive = {};
+function showSpinnerIcon(el, delay = 3000){
+  if(spinnerActive[$(el).prop('id')]){
+    return;
+  }
+  spinnerActive[$(el).prop('id')] = true;
+  let content = $(el).html();
+  $(el).html('<i class="fa fa-refresh fa-spin"></i>');
+  setTimeout(function(){
+    $(el).html(content);
+    spinnerActive[$(el).prop('id')] = false;
+  }, delay);
+  
+}
 function changeActiveButtons(tabId){
   switch(tabId) {
     case 'inputData':
@@ -95,7 +109,30 @@ function discardHypercubeJob(jID){
 function renderMathJax() {
   MathJax.Hub.Queue(["Typeset", MathJax.Hub, "wrapper-documentation"]);
 }
-
+function validateSname(el){
+  if(/^[a-f0-9]{64}$/i.test($(el).value) !== true && /^\s*$/.test($(el).value) !== true){
+    $(el).removeClass('invalidInput');
+    Shiny.setInputValue("btCheckSnameLocalConfirm", 1, {priority: "event"});
+    return;
+  }else{
+    $(el).addClass('invalidInput');
+  }
+}
+function validateHcubeHash(){
+  const hashVal = $('#hcHashLookup').val();
+  if(/^[a-f0-9]{64}$/i.test(hashVal) === true){
+    $('#hcHashLookup').removeClass('invalidInput');
+    Shiny.setInputValue("hcHashLookup", hashVal, {priority: "event"});
+    return;
+  }
+  $('#hcHashLookup').addClass('invalidInput');
+}
+function hcHashImport(sid){
+  Shiny.setInputValue("loadHcubeHashSid", sid, {priority: "event"});
+}
+function showHideEl(el, delay){
+  $(el).show().delay(delay).fadeOut();
+}
 $(document).ready(function () {
   $("body").addClass("fixed");
 // besides these updates, gms-switchTab (see below) has always has to be considered as well
@@ -162,6 +199,9 @@ $(document).ready(function () {
       $(id).show();
     }
   });
+  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', function(data) {
+    $(data.id).text(data.txt).show();
+  });
   Shiny.addCustomMessageHandler('gms-hideEl', function(id) {
     if(isInputEl(id)){
       $(id).closest(".shiny-input-container").hide();
@@ -170,8 +210,7 @@ $(document).ready(function () {
     }
   });
   Shiny.addCustomMessageHandler('gms-showHideEl', function(data) {
-    el = $(data.id);
-    el.show().delay(data.delay).fadeOut();
+    showHideEl(data.id, data.delay);
   });
   Shiny.addCustomMessageHandler('gms-enableEl', function(id) {
     $(id).prop( "disabled", false);
@@ -216,5 +255,4 @@ $(document).ready(function () {
       $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML+ '</div>').insertBefore('#endAttachList');
     }
   });
-  
 });

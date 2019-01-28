@@ -5,14 +5,14 @@ observeEvent(input$btImport, {
   removeClassEl(session, "#btImport", "glow-animation")
   isInSolveMode <<- TRUE
   dbTagList     <- NULL
+  maxNoScenExceeded <- FALSE
   if(config$activateModules$scenario){
     # fetch list of saved scenarios
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetaDb       <<- db$fetchScenList(noHcube = TRUE)
+      scenMetaDb       <<- db$fetchScenList(scode = if(config$activateModules$hcubeMode) 2L else 0L)
       dbTagList        <- csv2Vector(scenMetaDb[[stagIdentifier]])
-      scenMetaDbSubset <<- scenMetaDb
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)
       errMsg <<- sprintf(lang$errMsg$fetchScenData$desc, modelInAlias[i])
@@ -20,9 +20,19 @@ observeEvent(input$btImport, {
     if(is.null(showErrorMsg(lang$errMsg$fetchScenData$title, errMsg))){
       return(NULL)
     }
+    if(length(scenMetaDb) && nrow(scenMetaDb) > maxNoScenToShow){
+      scenMetaDbSubset <<- scenMetaDb[order(scenMetaDb[[stimeIdentifier]], 
+                                            decreasing = TRUE), ][seq_len(maxNoScenToShow), ]
+      maxNoScenExceeded <- TRUE
+    }else{
+      scenMetaDbSubset <<- scenMetaDb
+      maxNoScenExceeded <- FALSE
+    }
   }
-  showLoadDataDialog(scenMetadata = scenMetaDb, 
+  showLoadDataDialog(scenMetadata = scenMetaDbSubset, 
                      noDataInUI = is.null(isolate(rv$activeSname)), dbTagList = dbTagList)
+  if(maxNoScenExceeded)
+    showHideEl(session, "#importScenMaxNoScen", 4000L)
   
   if(config$activateModules$scenario){
     if(identical(nrow(scenMetaDb), 0L)){

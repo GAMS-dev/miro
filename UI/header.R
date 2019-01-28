@@ -1,6 +1,16 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$scenario && !identical(config$activateModules$batchMode, TRUE)){
+  if(config$activateModules$hcubeMode || isShinyProxy){
+    tags$li(class = "dropdown")
+  }else{
+    tags$li(class = "dropdown", 
+            actionLink(inputId = "switchToHcube",  
+                       label = NULL,
+                       icon("cube"),
+                       icon("arrow-right"),
+                       onclick = "showSpinnerIcon(this, 5000)"))
+  },
+  if(config$activateModules$scenario){
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$scenario$title, tags$span(class="caret")),

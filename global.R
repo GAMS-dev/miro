@@ -24,6 +24,7 @@ snameIdentifier <- "_sname"
 stimeIdentifier <- "_stime"
 slocktimeIdentifier <- "_slocktime"
 stagIdentifier <- "_stag"
+scodeIdentifier <- "_scode"
 
 # maximum number of scalars to represent as value box
 maxScalarsValBox <- 20L
@@ -44,6 +45,8 @@ scenLockTablePrefix      <- "_sys_scenlocks_"
 # maximum number ofscenarios that can be displayed at the same time 
 # (used in loop for observeEvent remove/save buttons)
 maxNumberScenarios <- 50
+# maximum number of scenarios that can be displayed in dropdown menu
+maxNoScenToShow <- 2e2
 # local user ID (single user)
 uid <- "user"
 # define the default type for output format
@@ -66,7 +69,7 @@ prefixGMSOpt <- "GMSOPT_"
 # language schema name
 languageSchemaName <- "language_schema.json"
 # get maximum number of lines to read for files
-maxNoLinesToRead <- 5e3
+maxSizeToRead <- 5e5
 # Limits on external programs that are allowed to be executed 
 # (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
 gamsExecMode <- 0L

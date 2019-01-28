@@ -618,8 +618,11 @@ vector2Csv <- function(vector){
     return(vector)
   }
 }
-showEl <- function(session, id){
+showEl <- function(session, id, text = NULL){
   session$sendCustomMessage("gms-showEl", id)
+}
+showElReplaceTxt <- function(session, id, txt){
+  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = txt))
 }
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
@@ -654,7 +657,7 @@ updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = 
                                                          allowExec = allowExec))
 }
 isBadScenName <- function(scenName){
-  grepl("^\\s*$", scenName)
+  grepl("^\\s*$", scenName)[[1L]] || grepl("^[A-Fa-f0-9]{64}$", scenName)[[1L]]
 }
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
@@ -772,12 +775,16 @@ validateHeaders <- function(headersData, headersConfig, headerTypes = NULL){
   if(is.null(headerTypes)){
     return(TRUE)
   }
+  return(hasValidHeaderTypes(headersData, headerTypes))
+  
+}
+hasValidHeaderTypes <- function(headersData, headerTypes){
   stopifnot(inherits(headersData, "data.frame"))
-  return(any(vapply(seq_along(headersData), function(i){
+  return(all(vapply(seq_along(headersData), function(i){
     if(any(class(headersData[[i]]) == "numeric")){
       return(identical(substr(headerTypes, i, i), "d") ||
                (identical(substr(headerTypes, i, i), "i") &&
-               all(!is.na(as.integer(headersData[[i]])))))
+                  all(!is.na(as.integer(headersData[[i]])))))
     }else if(any(class(headersData[[i]]) == "integer")){
       return(substr(headerTypes, i, i) %in% c("i", "d"))
     }else if(any(class(headersData[[i]]) == "POSIXt")){
@@ -790,8 +797,7 @@ validateHeaders <- function(headersData, headersConfig, headerTypes = NULL){
       return(identical(substr(headerTypes, i, i), "c"))
     }
   }, logical(1L), USE.NAMES = FALSE)))
-  
-}
+} 
 fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
 
@@ -817,5 +823,17 @@ pidExists <- function(pid){
   }
 }
 escapeGAMSCL <- function(input){
-  return(shQuote(input))
+  if(isWindows()){
+    ret <- shQuote(input, type = "cmd")
+  }else{
+    ret <- shQuote(input)
+    ret <- gsub("^'|'$", "\"", ret)
+  }
+  return(ret)
+}
+gmsFilePath <- function(path){
+  if(isWindows()){
+    return(gsub("/", "\\", path, fixed = TRUE))
+  }
+  return(path)
 }

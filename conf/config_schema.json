@@ -60,6 +60,13 @@
          "default":true,
          "required":false
       },
+      "storeLogFilesDuration":{
+        "description":"duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when attachment module is not active. Not that this is currently only supported in the base mode.",
+        "type":"integer",
+        "minimum":0,
+        "maximum":999,
+        "default": 7
+      },
       "defCompMode":{  
          "description":"Specifies the default scenario comparison mode (the one that is loaded on startup).",
          "type":"string",
