@@ -1,3 +1,6 @@
+// credit for function to remove zero-length elemtns
+// from JSON recursively to: Alexis King
+// https://stackoverflow.com/questions/23774231/how-do-i-remove-all-null-and-empty-string-values-from-a-json-object
 let gmsSymIn  = {};
 let gmsSymOut  = {};
 let gmsSymHdrIn = {};
