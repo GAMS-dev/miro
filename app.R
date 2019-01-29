@@ -871,7 +871,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
-      
       if(!isShinyProxy){
         # switch to Hypercube mode
         hcubeProcess <- NULL
@@ -890,8 +889,9 @@ if(identical(LAUNCHADMINMODE, TRUE)){
               return()
             }
           }
+         
           hcubeProcess <<- process$new("RScript", c("--vanilla", file.path(currentModelDir, "runApp.R"), 
-                                                    "LAUNCHHCUBE"), stderr = "|")
+                                                    "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
         })
       }
     }else{
