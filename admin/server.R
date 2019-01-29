@@ -1,3 +1,4 @@
+appDisconnected <- FALSE
 server_admin <- function(input, output, session){
   observeEvent(input$removeDbTables, {
     showModal(modalDialog(paste0(
@@ -182,6 +183,9 @@ server_admin <- function(input, output, session){
   #                                                                                  "gamsOutputFiles")],
   #                               gmsio = configGenData[c("gamsInputFiles", "gamsOutputFiles")]))
   #observe({
+  #  if(appDisconnected){
+  #    stop("Please don't refresh the page via the browser as the JSON does not refresh.")
+  #  }
   #  data <- input$updatedConfig
   #  if(!length(data))
   #    return()
@@ -211,6 +215,7 @@ server_admin <- function(input, output, session){
   #})
   hideEl(session, "#loading-screen")
   session$onSessionEnded(function() {
+    appDisconnected <<- TRUE
     if(!interactive()){
       stopApp()
       q("no")

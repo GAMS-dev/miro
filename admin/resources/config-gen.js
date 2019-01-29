@@ -88,9 +88,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
   }else{
     gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]]
   }
-  Alpaca.defaultToolbarSticky = true;
-    $("#configGenForm").alpaca({
-        "schema": {
+  const configSchema = {
            "$schema":"http://json-schema.org/draft-07/schema#",
            "title":"",
            "type":"object",
@@ -117,32 +115,32 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "red",
                     "yellow"
                  ],
-                 "default":"black",
+                 "default":existingConfig.pageSkin,
                  "required":true
               },
               "includeParentDir":{
                 "description":"Include parent directory of the curren model folder in your model runs (e.g. because several models share files)?",
                  "type":"boolean",
-                 "default":false,
+                 "default":existingConfig.includeParentDir,
                  "required":false
               },
               "excelIncludeMeta":{
                  "title":"Include a metadata sheet in the Excel file (export a scenario)?",
                  "type":"boolean",
-                 "default":true,
+                 "default":existingConfig.excelIncludeMeta,
                  "required":false
               },
               "excelIncludeEmptySheets":{
                  "title":"Include empty sheets in the Excel file?",
                  "type":"boolean",
-                 "default":true,
+                 "default":existingConfig.excelIncludeEmptySheets,
                  "required":false
               },
               "UILogo":{
                  "title":"Name of the logo to use. Must be located in the static folder of current model directory.",
                  "type":"string",
                  "minLength":1,
-                 "default":"gams_logo.png",
+                 "default":existingConfig.UILogo,
                  "required":false
               },
               "autoGenInputGraphs":{
@@ -2822,7 +2820,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
            "dependencies": {
              "aggregateWidgetsTitle": "aggregateWidgetsTmp"
            }
-        },
+  }
+  console.log(existingConfig.language)
+  Alpaca.defaultToolbarSticky = true;
+    $("#configGenForm").alpaca({
+        "schema": configSchema,
         "options":{
            "fields":{
              "inputWidgets":{
@@ -3780,8 +3782,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            }
                          }
                        }
+                       console.log(co)
                        if(existingConfig !== null){
-                         $.extend(co, existingConfig);
+                         $.extend(true, existingConfig, co);
                        }
                        (function filter(obj) {
                           $.each(obj, function(key, value){
