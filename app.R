@@ -1,6 +1,6 @@
 #version number
 webuiVersion <- "0.3.3"
-webuiRDate   <- "Jan 28 2019"
+webuiRDate   <- "Jan 29 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -384,7 +384,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
   close(pb)
 }
-aboutDialogText <- paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
+aboutDialogText <- paste0("<b>GAMS MIRO v.", webuiVersion, "</b><br/><br/>",
                           "Release Date: ", webuiRDate, "<br/>", 
                           "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>",
                           "Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>",

@@ -569,12 +569,15 @@ Db <- R6Class("Db",
                   
                   subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
                   stopifnot(length(subsetRows) >= 0L)
-                  
                   if(!is.null(subsetSids) && length(subsetSids) >= 1L){
                     subsetSidSQL <- paste0(DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
                                            " IN (", paste(DBI::dbQuoteLiteral(private$conn, subsetSids), 
                                                           collapse = ","), ") ")
-                    subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
+                    if(length(subsetRows)){
+                      subsetRows <- DBI::SQL(paste(subsetRows, subsetSidSQL, sep = " AND "))
+                    }else{
+                      subsetRows <- DBI::SQL(subsetSidSQL)
+                    }
                   }
                   subsetWritePerm <- NULL
                   if(identical(tableName, private$tableNameMetadata)){
@@ -1123,9 +1126,13 @@ Db <- R6Class("Db",
                   if(identical(innerSep, " OR "))
                     brackets <- c("(", ")")
                   if(SQL){
-                    query <- paste(brackets[1], unlist(lapply(subsetData, private$buildSQLSubsetString, 
-                                                       innerSep), use.names = FALSE), brackets[2],  
-                                   collapse = outerSep)
+                    query <- unlist(lapply(subsetData, private$buildSQLSubsetString, 
+                                           innerSep), use.names = FALSE)
+                    if(length(query))
+                      query <- paste(brackets[1], query, brackets[2],  
+                                     collapse = outerSep)
+                    else
+                      return(character(0L))
                     return(DBI::SQL(query))
                   }else{
                     query <- paste(brackets[1], unlist(lapply(subsetData, private$buildRSubsetString, 

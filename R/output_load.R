@@ -48,7 +48,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
-          removeRows       <- grepl(hiddenMarker, scalarTmp[[2]])
+          removeRows       <- grepl(hiddenMarker, scalarTmp[[2]], fixed = TRUE)
           ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
           scalarTmp        <<- scalarTmp[removeRows, ]
         }, error = function(e){

@@ -22,8 +22,11 @@ if(!is.na(scalarId)){
 }
 addScalarVal <- function(scalar, description, value){
   value <- as.character(value)
-  if(!length(value) || !nchar(value))
-    value <- "system.empty"
+  if(!saveInputDb){
+    if(!length(value) || !nchar(value))
+      value <- "system.empty"
+  }
+  
   # generate data frame
   if(is.null(dataTmp[[length(modelInFileNames)]])){
     # no scalar data was written yet, so add headers
