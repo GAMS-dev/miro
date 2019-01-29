@@ -84,9 +84,9 @@ hcubeLoad <- HcubeLoad$new(db, scalarsFileHeaders[c(1, 3)],
                            scalarTables, scalarKeyTypeList)
 metaCols <- db$getScenMetaColnames()
 fields <- c("", scenMetadataTable %+% "." %+% metaCols[c("uid", "stime", "stag")])
-names(fields) <- c("", lang$nav$excelExport$metadataSheet$uid, 
-                   lang$nav$excelExport$metadataSheet$stime,
-                   lang$nav$excelExport$metadataSheet$stag)
+names(fields) <- c("", lang$nav$hcubeLoad$metaColAliases$uid, 
+                   lang$nav$hcubeLoad$metaColAliases$stime,
+                   lang$nav$hcubeLoad$metaColAliases$stag)
 fields <- c(fields, scalarFields)
 
 maxNumBlocks   <- 5L

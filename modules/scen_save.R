@@ -31,6 +31,7 @@ if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
 }
 
 # save input data 
+saveInputDb <- TRUE
 source("./modules/input_save.R", local = TRUE)
 lapply(seq_along(dataTmp), function(i){
   scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]

@@ -1,6 +1,6 @@
 #version number
 webuiVersion <- "0.3.3"
-webuiRDate   <- "Jan 28 2019"
+webuiRDate   <- "Jan 29 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -372,7 +372,7 @@ Those tables are: '%s'.\nError message: '%s'.",
           }
           if(!is.null(names(modelIn[[tabName]]$headers))){
             names(modelIn[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
-          }else{
+          }else if(!identical(tabName, scalarsFileName)){
             names(modelOut[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
           }
         }
@@ -384,7 +384,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
   close(pb)
 }
-aboutDialogText <- paste0("<b>GAMS WebUI v.", webuiVersion, "</b><br/><br/>",
+aboutDialogText <- paste0("<b>GAMS MIRO v.", webuiVersion, "</b><br/><br/>",
                           "Release Date: ", webuiRDate, "<br/>", 
                           "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>",
                           "Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>",
@@ -871,7 +871,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
-      
       if(!isShinyProxy){
         # switch to Hypercube mode
         hcubeProcess <- NULL
@@ -890,8 +889,9 @@ if(identical(LAUNCHADMINMODE, TRUE)){
               return()
             }
           }
+         
           hcubeProcess <<- process$new("RScript", c("--vanilla", file.path(currentModelDir, "runApp.R"), 
-                                                    "LAUNCHHCUBE"), stderr = "|")
+                                                    "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
         })
       }
     }else{

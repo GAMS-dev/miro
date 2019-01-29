@@ -431,6 +431,7 @@ observeEvent(input$btSolve, {
   
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data 
+  saveInputDb <- FALSE
   source("./modules/input_save.R", local = TRUE)
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)

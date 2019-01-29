@@ -13,7 +13,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
                scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
                                        csvDelim, col_types = cols(), 
-                                       col_names = FALSE)
+                                       col_names = TRUE)
                
              }
            })
@@ -48,7 +48,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
-          removeRows       <- grepl(hiddenMarker, scalarTmp[[2]])
+          removeRows       <- grepl(hiddenMarker, scalarTmp[[2]], fixed = TRUE)
           ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
           scalarTmp        <<- scalarTmp[removeRows, ]
         }, error = function(e){
@@ -66,7 +66,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
                    ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
                                                    csvDelim, col_types = cols(), 
-                                                   col_names = FALSE)
+                                                   col_names = TRUE)
                  }else{
                    ret$tabular[[i]] <<- modelOutTemplate[[i]]
                    return()

@@ -121,7 +121,7 @@ scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
 'latM', 'cap', 'demand', 'quantities' /;
 $onExternalOutput
 Parameter
-schedule(i,j,scheduleHdr) 'shipment quantities in cases';
+schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:pivot]';
 
 Scalar
 total_cost 'total transportation costs in thousands of dollars';
@@ -139,4 +139,4 @@ schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif
 
-$libInclude webui
+$libInclude miro
