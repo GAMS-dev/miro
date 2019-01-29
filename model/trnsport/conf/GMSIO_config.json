@@ -1,43 +1,50 @@
 {
     "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
-    "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--WEBUI=1",
+    "gamsMetaDelim": "[MIRO:hidden]",
+    "MIROSwitch": "--MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
         "a": {
             "alias": "capacity of plant i in cases",
             "headers": {
-                "canning plants": {
-                    "type": "set"
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
                 },
-                "capacity of plant i in cases": {
-                    "type": "parameter"
+                "value": {
+                    "type": "parameter",
+                    "alias": "capacity of plant i in cases"
                 }
             }
         },
         "b": {
             "alias": "demand at market j in cases",
             "headers": {
-                "markets": {
-                    "type": "set"
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
                 },
-                "demand at market j in cases": {
-                    "type": "parameter"
+                "value": {
+                    "type": "parameter",
+                    "alias": "demand at market j in cases"
                 }
             }
         },
         "d": {
             "alias": "distance in thousands of miles",
             "headers": {
-                "canning plants": {
-                    "type": "set"
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
                 },
-                "markets": {
-                    "type": "set"
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
                 },
-                "distance in thousands of miles": {
-                    "type": "parameter"
+                "value": {
+                    "type": "parameter",
+                    "alias": "distance in thousands of miles"
                 }
             }
         },
@@ -45,7 +52,7 @@
             "alias": "Input Scalars",
             "symnames": [
                 "f",
-                "mins",
+                "minS",
                 "beta"
             ],
             "symtext": [
@@ -59,14 +66,17 @@
                 "parameter"
             ],
             "headers": {
-                "Scalar": {
-                    "type": "set"
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
                 },
-                "Description": {
-                    "type": "acronym"
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
                 },
-                "Value": {
-                    "type": "acronym"
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
                 }
             }
         }
@@ -75,37 +85,47 @@
         "schedule": {
             "alias": "shipment quantities in cases",
             "headers": {
-                "canning plants": {
-                    "type": "set"
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
                 },
-                "markets": {
-                    "type": "set"
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
                 },
                 "lngp": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "lngP"
                 },
                 "latp": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "latP"
                 },
                 "lngm": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "lngM"
                 },
                 "latm": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "latM"
                 },
                 "cap": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "cap"
                 },
                 "demand": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "demand"
                 },
                 "quantities": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "quantities"
                 }
             }
         },
         "scalars_out": {
             "alias": "Output Scalars",
+            "hidden": false,
             "symnames": [
                 "total_cost"
             ],
@@ -117,14 +137,17 @@
             ],
             "count": 1,
             "headers": {
-                "Scalar": {
-                    "type": "set"
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
                 },
-                "Description": {
-                    "type": "acronym"
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
                 },
-                "Value": {
-                    "type": "acronym"
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
                 }
             }
         }
