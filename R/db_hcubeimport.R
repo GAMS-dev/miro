@@ -135,10 +135,10 @@ HcubeImport <- R6Class("HcubeImport",
                            #   reference to itself (importHcube R6 object)
                            
                            # BEGIN error checks
-                           if(!is.null(scalarInToVerify)){
+                           if(length(scalarInToVerify)){
                              stopifnot(is.character(scalarInToVerify), length(scalarInToVerify) >= 1)
                            }
-                           if(!is.null(scalarOutToVerify)){
+                           if(length(scalarOutToVerify)){
                              stopifnot(is.character(scalarOutToVerify), length(scalarOutToVerify) >= 1)
                            }
                            # END error checks
@@ -373,7 +373,7 @@ HcubeImport <- R6Class("HcubeImport",
                                        paste(private$tableNamesMustHave[is.na(verifiedIds)], collapse = "', '"))
                              return(NULL)
                            }else{
-                             verifiedIds   <- match(csvNames, private$tableNamesToVerify)
+                             verifiedIds   <- match(tolower(csvNames), private$tableNamesToVerify)
                              if(any(is.na(verifiedIds))){
                                flog.info("The scenario includes invalid datasets: '%s'.", 
                                          paste(csvNames[is.na(verifiedIds)], collapse = "', '"))

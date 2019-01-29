@@ -13,7 +13,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
              if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
                scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
                                        csvDelim, col_types = cols(), 
-                                       col_names = FALSE)
+                                       col_names = TRUE)
                
              }
            })
@@ -66,7 +66,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                  if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
                    ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
                                                    csvDelim, col_types = cols(), 
-                                                   col_names = FALSE)
+                                                   col_names = TRUE)
                  }else{
                    ret$tabular[[i]] <<- modelOutTemplate[[i]]
                    return()
