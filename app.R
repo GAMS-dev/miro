@@ -44,7 +44,8 @@ jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
-requiredPackages <- c("R6", "stringi", "shiny", "shinydashboard", "processx", 
+library(R6)
+requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "zip", "tidyr")
@@ -890,7 +891,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
             }
           }
          
-          hcubeProcess <<- process$new("RScript", c("--vanilla", file.path(currentModelDir, "runApp.R"), 
+          hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), c("--vanilla", file.path(currentModelDir, "runApp.R"), 
                                                     "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
         })
       }
