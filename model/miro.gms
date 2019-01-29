@@ -385,15 +385,20 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('execute_unload "' + fn + '";\n')
    f.write('\n')
    for s in o_sym:
-      if s[1]=='ss' or s[1]=='ps':
+      if s[1]=='ss' or s[1]=='ps' or s[1]=='vs' or s[1]=='es':
          continue
       if s[1]=='pp':
          extra = ' cdim=1'
       else:
          extra = ''
       symname = s[0].name
+      symHeader = headerList(s)
+      htext = symHeader[0][0]
+      
+      for h in symHeader[1:]:
+         htext = htext + ',' + h[0]
       f.write('execute$card(' + symname + ') ')
-      f.write('"gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' format=csv csvsettext csvallfields > ' + symname + '.csv";\n')
+      f.write('\'gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';\n')
       f.write('abort$errorlevel "problems writing ' + symname + '.csv";\n')
    f.write('$if not set MIRO_DEBUG execute "rm -rf ' + fn + '";\n')
 
@@ -411,6 +416,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('     return str(default)\n')
          f.write('\n')
          f.write('with open("scalars_out.csv", "w") as f:\n')
+         f.write('   f.write("scalar,description,value\\n")\n')
          for s in o_sym:
             if s[1]=='ps':
                f.write('   f.write(\'' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + getval("' + s[0].name + '",0) + \'\\n\')\n')
@@ -427,6 +433,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('    return "0.0,0.0,-inf,+inf,1.0"\n')
          f.write('\n')
          f.write('with open("scalarsve_out.csv", "w") as f:\n')
+         f.write('   f.write("type,scalar,description,level,marginal,lower,upper,scale\\n")\n')
          for s in o_sym:
             if s[1]=='vs':
                f.write('   f.write(\'var,' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + veValues("' + s[0].name + '") + \'\\n\')\n')
