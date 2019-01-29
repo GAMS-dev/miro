@@ -108,11 +108,7 @@ observeEvent(input$btPaver, {
     errMsg <- NULL
     # run paver
     tryCatch({
-      if(identical(tolower(getOS()[[1L]]), "windows")){
-        pyExec <- "python"
-      }else{
-        pyExec <- "python3"
-      }
+      pyExec <- file.path(gamsSysDir, "GMSPython", "python")
       paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles), windows_hide_window = TRUE,
                                       stdout = workDir %+% modelName %+% ".paverlog", stderr = "|")
       rm(pyExec)

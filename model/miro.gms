@@ -32,6 +32,7 @@ $gdxout
 
 $onEmbeddedCode Python:
 import json
+import subprocess
 import os
 from copy import deepcopy
 
