@@ -318,7 +318,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('$gdxin\n')
          rm_list.append(symname)
    f.write('$offmulti\n')
-   f.write('$if not set MIRO_DEBUG rm -f ')
+   f.write('$if not set MIRO_DEBUG $hiddencall rm -f ')
    for gdxfn in rm_list:
       f.write(gdxfn+'.gdx ')
    f.write('\n\n')

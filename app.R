@@ -372,7 +372,7 @@ Those tables are: '%s'.\nError message: '%s'.",
           }
           if(!is.null(names(modelIn[[tabName]]$headers))){
             names(modelIn[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
-          }else{
+          }else if(!identical(tabName, scalarsFileName)){
             names(modelOut[[tabName]]$headers) <<- inconsistentTables$headers[[tabName]]
           }
         }
