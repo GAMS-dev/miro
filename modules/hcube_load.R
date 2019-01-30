@@ -352,12 +352,12 @@ output$btHcubeDownload <- downloadHandler(
       return(downloadHandlerError(file))
     }
     if(length(sidsToLoad) > hcubeLoadMaxScen){
-      flog.warn("Maximum number of scenarios to download was exceeded.")
+      flog.warn("Maximum number of scenarios to download is exceeded.")
       return(downloadHandlerError(file))
     }
     wd <- getwd()
     on.exit(setwd(wd), add = TRUE)
-    tmpDir      <- tempdir() %+% .Platform$file.sep %+% "scenDL"
+    tmpDir      <- file.path(tempdir(), "scenDL")
     on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
     if(dir.exists(tmpDir)){
       unlink(tmpDir, recursive = TRUE, force = TRUE)

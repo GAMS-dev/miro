@@ -203,12 +203,12 @@ HcubeLoad <- R6Class("HcubeLoad",
                          noScenTables   <- length(scenTableNames)
                          colScenName <- private$db$getScenMetaColnames()['sname']
                          
-                         sameNameCounter  <- NULL
-                         scenIdDirNameMap <- list()
+                         scenIdDirNameMap <- vector("list", length(scenIds))
                          
                          if(!is.null(progressBar)){
                            noProgressSteps <- (noScenTables * 2L + 1L)
                          }
+                         sameNameCounter   <- list()
                          for(tabId in seq_along(scenTableNames)){
                            if(identical(tabId, 1L)){
                              tableName <- "_metadata_"
@@ -242,23 +242,25 @@ HcubeLoad <- R6Class("HcubeLoad",
                              scenId   <- tableTmp[[i]][[1L]][[1L]]
                              
                              if(identical(tabId, 1L)){
-                               sameNameCounter   <<- vector("list", length(tableTmp))
                                
                                scenName <- tableTmp[[i]][[colScenName]][[1L]]
                                
-                               dirNameScen <- tmpDir %+% .Platform$file.sep %+% scenName
+                               dirNameScen <- file.path(tmpDir, scenName)
                                
-                               if(!is.null(sameNameCounter[[i]])){
-                                 dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[i]])
+                               if(!is.null(sameNameCounter[[scenName]])){
+                                 dirNameScen <- paste0(dirNameScen, "_", sameNameCounter[[scenName]])
+                                 sameNameCounter[[scenName]] <<- sameNameCounter[[scenName]] + 1L
+                               }else{
+                                 sameNameCounter[[scenName]] <<- 1L
                                }
                                scenIdDirNameMap[[scenId]] <<- dirNameScen
                                if(!dir.create(dirNameScen)){
                                  stop(sprintf("Temporary folder: '%s' could not be created.", 
                                               dirNameScen), call. = FALSE)
                                }
-                               sameNameCounter[[i]] <<- sameNameCounter[[i]] + 1L
                              }
-                             write_csv(tableTmp[[i]][-1L], paste0(scenIdDirNameMap[[scenId]], .Platform$file.sep, tableName, ".csv"))
+                             write_csv(tableTmp[[i]][-1L], paste0(scenIdDirNameMap[[scenId]], 
+                                                                  .Platform$file.sep, tableName, ".csv"))
                            })
                          }
                          if(!is.null(progressBar)){
@@ -308,15 +310,22 @@ HcubeLoad <- R6Class("HcubeLoad",
                          tryCatch({
                            subsetRows <- ""
                            subsetSids <- private$db$fetchScenList(scode = c(0L, 1L))[[1L]]
+                           subsetSidSQL <- NULL
+                           if(length(subsetSids)){
+                             subsetSidSQL <- paste0(" INNER JOIN (VALUES ",
+                                                    paste("(" %+% subsetSids, 
+                                                          collapse = "), "), ")) vals(_v) ON ",
+                                                    dbQuoteIdentifier(private$conn, 
+                                                                      private$tabNameMeta),
+                                                    ".", private$sidCol, "=_v")
+                           }
                            if(length(subsetList) > 1L || length(subsetList[[1L]])){
                              subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " AND ", 
                                                                              " OR ")
                            }
                            sql     <- SQL(paste0("SELECT ", colNamesSQL, " FROM ", 
                                                  dbQuoteIdentifier(private$conn, private$tabNameMeta),
-                                                 paste(innerJoin, collapse = " "), " INNER JOIN (VALUES ",
-                                                 paste("(" %+% subsetSids, collapse = "), "), ")) vals(_v) ON ",
-                                                 private$sidCol, "=_v",
+                                                 paste(innerJoin, collapse = " "), subsetSidSQL,
                                                  if(nchar(trimws(subsetRows))) " WHERE ", 
                                                  subsetRows, "LIMIT ?lim ;"))
                            flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")

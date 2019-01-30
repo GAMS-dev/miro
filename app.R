@@ -891,8 +891,10 @@ if(identical(LAUNCHADMINMODE, TRUE)){
             }
           }
          
-          hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), c("--vanilla", file.path(currentModelDir, "runApp.R"), 
-                                                    "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
+          hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), 
+                                       c("--vanilla", file.path(currentModelDir, "runApp.R"), 
+                                         "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|",
+                                       cleanup_tree = TRUE, supervise = TRUE)
         })
       }
     }else{
