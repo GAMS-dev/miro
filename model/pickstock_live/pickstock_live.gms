@@ -3,21 +3,21 @@ $title Stock Selection Optimization with live data from the web
 * some weights, such that this portfolio has a similar behavior to our
 * overall Dow Jones index.
 
+Set date   'date'
+    symbol 'stockSymbol';
+    
 $onExternalInput
 Scalar maxstock      'maximum number of stocks to select '  / 2  /
        trainingdays  'number of days for training '  / 99  /;
 $offExternalInput
 
-Set date   'date'
-    symbol 'stockSymbol';
-
 Parameter
     price(date,symbol)        'UIOutput: stock price';
 
-$if not set TW_lo $set TW_lo "2016-02-01"
-$if not set TW_up $set TW_up "2016-03-31"
+$if not set TW_lo $set TW_lo "2017-01-01"
+$if not set TW_up $set TW_up "2017-12-31"
 
-$ifthen %WEBUI% == 1
+$ifthen %MIRO% == "RUN"
 $onEmbeddedCode Python:
 try:
    import pandas as pd
@@ -117,15 +117,16 @@ solve pickStock min obj using mip;
 fund(d) = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
 
-$onExternalOutput
 Set 
     fHdr      'fund header'            / 'dow jones','index fund' /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
+
+$onExternalOutput
 Parameter
     partOfPortfolio(symbol)            'what part of the portfolio'
-    dowVSindex(date,fHdr)              'dow jones vs. index fund'
-    abserror(date,errHdr)              'absolute error';
-Singleton Set lastDayTraining(date)    'last date of training period ### vertical marker in chart' ;
+    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:pivot]'
+    abserror(date,errHdr)              'absolute error [MIRO:pivot]';
+Singleton Set lastDayTraining(date)    'last date of training period [MIRO:hidden]' ;
 $offExternalOutput
 
 partOfPortfolio(s)                   = w.l(s);
@@ -135,4 +136,4 @@ abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
 
-$libInclude webui
+$libInclude miro
