@@ -148,7 +148,7 @@ if outScript == "gams":
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
-   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"
+   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.log* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"
 
    # delete all temporary solution directories
    fjobsub.write(linestmp + "\n$call rm -r " + zipname)
