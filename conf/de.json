@@ -383,7 +383,8 @@
       },
       "showLogFileDialog":{
         "title": "Hypercube-Job Log-Datei",
-        "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten."
+        "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten.",
+        "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden."
       },
       "jobsCompletedDialog":{
         "title": "Erfolgreich abgeschlossene Jobs",
@@ -535,7 +536,8 @@
     "hcubeImport":{
       "extract":{
         "title": "Fehler beim Extrahieren des Archivs",
-        "desc": "Probleme beim Extrahieren des Archivs. Bitte stellen Sie sicher, dass Sie eine gültige Zip-Datei hochladen."
+        "desc": "Probleme beim Extrahieren des Archivs. Bitte stellen Sie sicher, dass Sie eine gültige Zip-Datei hochladen.",
+        "invalidFiles": "Das Archiv, das Sie zu importieren versuchen, enthält ungültige Dateien. Nur Trace- und CSV-Dateien erlaubt!"
       },
       "scenRead":{
         "title": "Fehler beim Lesen von Dateien",

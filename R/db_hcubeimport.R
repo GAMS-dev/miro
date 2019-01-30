@@ -76,12 +76,13 @@ HcubeImport <- R6Class("HcubeImport",
                            # END error checks
                            
                            csvPaths             <- private$getCsvPaths(zipFilePath)
+                           print('a')
                            private$scenNames    <- private$fetchScenNames(csvPaths)
+                           print('b')
                            # workaround for unzip function as path with trailing slashes is not found
                            if(length(csvPaths)){
-                             csvPaths <- unzip(zipFilePath, csvPaths,
-                                                exdir = gsub("/?$", "", private$workDir))
-                             
+                             csvPaths <- unzip(zipFilePath, exdir = gsub("/?$", "", private$workDir))
+                             print('c')
                              if(any(Sys.readlink(csvPaths) != "")){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
@@ -422,12 +423,18 @@ HcubeImport <- R6Class("HcubeImport",
                          },
                          getCsvPaths       = function(zipFilePath){
                            if(private$includeTrc){
-                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc)$"
+                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc|log|lst)$"
                            }else{
-                             grepEx <- "^((?!\\.\\.).)*\\.csv$"
+                             grepEx <- "^((?!\\.\\.).)*\\.(csv|log|lst)$"
                            }
-                           return(grep(grepEx, unzip(zipFilePath, list = TRUE)$Name, 
-                                       ignore.case = TRUE, value = TRUE, perl = TRUE))
+                           fileNamesZip   <- unzip(zipFilePath, list = TRUE)$Name
+                           validFileNames <- grep(grepEx, fileNamesZip, 
+                                                  ignore.case = TRUE, value = TRUE, perl = TRUE)
+                           if(!identical(length(fileNamesZip), length(validFileNames))){
+                             stop("invalidFiles", call. = FALSE)
+                           }
+                           
+                           return(validFileNames)
                          },
                          fetchScenNames      = function(csvPaths){
                            return(unique(dirname(csvPaths)))

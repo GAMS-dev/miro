@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "trnsport"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -97,7 +97,7 @@ hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run
 maxNoHcube <- 10000L
 # maximum number of scenarios to fetch when querying the database
-hcubeLoadMaxScen <- 1000L
+hcubeLoadMaxScen <- 3e7
 # maximum number of scenarios that can be loaded to scenario
 # comparison mode at the same time
 maxConcurentLoad <- 10L

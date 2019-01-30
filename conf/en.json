@@ -383,7 +383,8 @@
       },
       "showLogFileDialog":{
         "title": "Hypercube job log file",
-        "noContent": "The log file could not be accessed or does not contain any data."
+        "noContent": "The log file could not be accessed or does not contain any data.",
+        "fileSize": "The log file contains too much data to be displayed."
       },
       "jobsCompletedDialog":{
         "title": "Completed jobs",
@@ -535,7 +536,8 @@
     "hcubeImport":{
       "extract":{
         "title": "Error extracting archive",
-        "desc": "Problems extracting the archive. Please make sure you upload a valid zip file."
+        "desc": "Problems extracting the archive. Please make sure you upload a valid zip file.",
+        "invalidFiles": "The archive you are trying to import contains invalid files. Only trace and csv files allowed!"
       },
       "scenRead":{
         "title": "Error reading files",

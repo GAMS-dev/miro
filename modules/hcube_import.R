@@ -107,8 +107,13 @@ observeEvent(rv$uploadHcube, {
   tryCatch({
     hcubeImport$unzipScenData(zipFilePathTmp, extractDir = workDir)
   }, error = function(e){
-    flog.error("Problems unzipping the file. Error message: %s.", e)
-    errMsg <<- lang$errMsg$hcubeImport$extract$desc
+    if(identical(e, "invalidFiles")){
+      flog.error("The zip file you are trying to upload contains invalid files. Only trace and CSV files allowed! No path traversals!")
+      errMsg <<- lang$errMsg$hcubeImport$extract$invalidFiles
+    }else{
+      flog.error("Problems unzipping the file. Error message: %s.", e)
+      errMsg <<- lang$errMsg$hcubeImport$extract$desc
+    }
   })
   if(is.null(showErrorMsg(lang$errMsg$hcubeImport$extract$title, errMsg))){
     return(NULL)
@@ -323,7 +328,7 @@ observeEvent(input$showHypercubeLog, {
   if(file.access(logFilePath, 4L) != -1L){
     try(
       if(file.size(logFilePath) > maxSizeToRead){
-        logContent <- lang$errMsg$readLst$fileSize
+        logContent <- lang$nav$hcubeMode$showLogFileDialog$fileSize
       }else{
         logContent <- readChar(logFilePath, file.info(logFilePath)$size)
       }

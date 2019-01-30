@@ -361,7 +361,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                                                                          private$scalarColNames),
                                                             limit = limit + 1L, 
                                                             subsetSids = sidsToFetch)
-                           if(nrow(data) > limit){
+                           if(length(data) && nrow(data) > limit){
                              stop("maxNoRowsVio", call. = FALSE)
                            }
                            data <- spread(data, 2, 3, drop = FALSE)

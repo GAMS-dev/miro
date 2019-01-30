@@ -227,16 +227,16 @@
                                        <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
-                                       <p>If a GAMS option or a compile-time variable is set via the WebUI, a click on "Solve" corresponds to a respective entry in the command line. The set values are therefore passed at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a> to the GAMS model.
-                                       If we select for the compile time variable <span class="code">numberPeriods</span> e.g. 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within the WebUI, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
-                                       <p>You can generate the configuration for GAMS command line parameters the same way as the scalar widgets manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
+                                       <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. Those values are therefore available to the GAMS model at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.
+                                       If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
+                                       <p>You can generate the configuration for GAMS command line parameters the same way as scalar widgets for GAMS symbols manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
                                        <div class="callout-block callout-warning">
                                            <div class="icon-holder">
                                                <i class="fas fa-info-circle"></i>
                                            </div><!--//icon-holder-->
                                            <div class="content">
                                                <h4 class="callout-title">Warning:</h4>
-                                               <p>The following GAMS options are reserved by the GAMS WebUI and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,--WEBUI</span></p>
+                                               <p>The following GAMS options are reserved by GAMS MIRO and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,--MIRO</span></p>
                                            </div><!--//content-->
                                        </div><!--//callout-block-->
                                 </div><!--//section-block-->
