@@ -76,17 +76,13 @@ HcubeImport <- R6Class("HcubeImport",
                            # END error checks
                            
                            csvPaths             <- private$getCsvPaths(zipFilePath)
-                           print('a')
                            private$scenNames    <- private$fetchScenNames(csvPaths)
-                           print('b')
                            # workaround for unzip function as path with trailing slashes is not found
                            if(length(csvPaths)){
                              csvPaths <- unzip(zipFilePath, exdir = gsub("/?$", "", private$workDir))
-                             print('c')
                              if(any(Sys.readlink(csvPaths) != "")){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
-                             print('d')
                            }
                            
                            private$csvPaths <- csvPaths
