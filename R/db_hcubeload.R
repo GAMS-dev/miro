@@ -327,7 +327,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                                                  dbQuoteIdentifier(private$conn, private$tabNameMeta),
                                                  paste(innerJoin, collapse = " "), subsetSidSQL,
                                                  if(nchar(trimws(subsetRows))) " WHERE ", 
-                                                 subsetRows, "LIMIT ?lim ;"))
+                                                 subsetRows, " LIMIT ?lim ;"))
                            flog.debug("Db: Data was imported (HcubeLoad.fetchResults).")
                            query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit + 1L)
                            dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
