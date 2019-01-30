@@ -632,7 +632,7 @@ observeEvent(input$btSolve, {
                         paste(filesToStore[filesTooLarge], collapse = "', '"))
               errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
             }
-            activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE)
+            activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, noSave = TRUE)
           }, error = function(e){
             switch(conditionMessage(e),
                    fileAccessException = {

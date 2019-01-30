@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>GAMS WebUI documentation</title>
+    <title>GAMS MIRO documentation</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -32,7 +32,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
-                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -46,7 +46,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fa fa-paper-plane"></i> Getting started</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: Jauary 10th, 2019</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: Jauary 30th, 2019</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -54,34 +54,34 @@
                             <section id="introduction-section" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
-                                    <p>This chapter shows the first steps of how to use the GAMS WebUI and how to deploy your own GAMS models. For using this application a few components have to be installed first, see section <a href="./installation.html" target="_blank">Installation</a>.</p>
+                                    <p>This chapter shows the first steps of how to use GAMS MIRO and how to deploy your own GAMS models. For using this application a few components have to be installed first, see section <a href="./installation.html" target="_blank">Installation</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="firststep-section" class="doc-section">
-                                <h2 class="section-title">Start the WebUI</h2>
+                                <h2 class="section-title">Start MIRO</h2>
                                 <div  id="start-1"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of the WebUI, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. On windows, the demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\</span>. If you are using MacOS or Linux, you can find those demo applications <a href="" target="_blank">here [missing link]</a>.
+                                    <p>To get a feeling for the use of MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. On windows, the demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\</span>. If you are using MacOS or Linux, you can find those demo applications <a href="" target="_blank">here [missing link]</a>.
                                     <p>The following demos are available:</p>
                                     <ul>
                                     <li>trnsport</li>
-                                    This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
+                                    This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
                                     <li>trnsport_live</li>
-                                    A "live" version of the trnsport model. Enables the specification of locations of suppliers and markets from within the Webui and calculates relevant distances based on geodata.
+                                    A "live" version of the trnsport model. Enables the specification of locations of suppliers and markets from within MIRO and calculates relevant distances based on geographical data.
                                     <li>pickstock</li>
-                                    Optimization model to pick a small subset of the stocks together with some weights, such that this portfolio has a similar behavior to our overall Dow Jones index.
+                                    Optimization model to pick a small subset of the stocks together with some weights, such that this portfolio has a similar behavior to the overall Dow Jones index.
                                     <li>pickstock_live</li>
                                     A "live" version of the pickstock model. Allows to include current Dow Jones stock prices as well as ones from past periods.
                                     <li>kport</li>
-                                    This problem computes minimal cost solutions satisfying the demand of pre-given product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
+                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
                                     </ul>                                    
-                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code" style="white-space:nowrap">--webui=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:</p> 
+                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\GMSWebUI\examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code" style="white-space:nowrap">--miro=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:</p> 
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/webui-launch.png" alt="--webui=launch" />
+                                        <img class="img-fluid" src="assets/images/webui-launch.png" alt="--miro=launch" />
                                     </div>
                                     <p>or using the command prompt:</p>
-                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms --webui=launch</kbd></p>
-                                    <p><b>Note</b>: To use the command prompt, GAMS must be in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
+                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms --miro=launch</kbd></p>
+                                    <p><b>Note</b>: To use the command prompt, GAMS must be included in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
 
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -89,11 +89,11 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Note:</h4>
-                                            <p>If you run a model with "<span class="code">--webui=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed first. This may take a while.</p>
+                                            <p>If you run a model with "<span class="code">--miro=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed first. This may take a while.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <div class="content" id="pip_install">
-                                        <p>Some of the example models included in the GAMS WebUI installation require additional Python packages. These packages should get installed automatically once you run the respective model for the first time. However, in case they do not install properly, try installing them manually: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\25.1\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required for the different example models.</p>
+                                        <p>Some of the example models included in the MIRO installation require additional Python packages. These packages should get installed automatically once you run the respective model for the first time. However, in case they do not install properly, try installing them manually: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\25.1\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required by the different example models.</p>
                                         <div class="table-responsive" style="color:#000;">
                                             <table class="table table-striped">
                                                 <thead>
@@ -118,15 +118,16 @@
                                    </p>
                                 </div><!--//section-block-->
                                 <div  id="start-2"  class="section-block">
-                                    <h3 class="block-title">WebUI Overview</h3>
-                                    <p>Let's take the trnsport model as example to get an overview of the functionality of the WebUI. For this purpose, we we run the model trnsport.gms with the already mentioned compile-time variable <span class="code" style="white-space:nowrap">--webui=launch</span>.</p>
-                                    <p>Once all the packages have been loaded, the GAMS WebUI will start. Below you see the input mask of the WebUI as it appears after the launch of the trnsport model.
+                                    <h3 class="block-title">MIRO - Overview</h3>
+                                    <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us throgh this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
+                                    In order to launch the MIRO app for this model, we open the <span class="code">trnsport.gms</span> file in GAMS Studio and run it with the double dash parameter <span class="code" style="white-space:nowrap">--miro=launch</span>.</p>
+                                    <p>Once all the packages have been loaded, the MIRO app will start. Below you see the input mask of MIRO as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
-                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial WebUI screen" />
+                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial MIRO screen" />
                                     </div>
                                     <p>The screen is essentially divided in two:</p>
                                     <h6>Navigation bar:</h6>
-                                    <p><br>On the left side you can find the navigation bar. Here you can navigate between the categories:</p>
+                                    <p><br>On the left side you can find the navigation bar. Here you can navigate between the different views:</p>
                                     <ol class="fa-ul">
                                       <li><span class="fa-li"><i class="fas fa-th"></i></span><b>Input: </b><br/>
                                         Visualization & configuration of input data for the next calculations. 
@@ -138,55 +139,55 @@
                                         While solving a model with GAMS this section shows the Log and Lst files.
                                       </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
-                                        Module for the direct comparison of results / scenarios in a Spit-screeen or a switchable single-scenario view ("tab view").
+                                        Module for the comparison of results / scenarios in a split screen mode or a multi-scenario comparison mode ("tab view").
                                       </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
                                       <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. This can be an Excel spreadsheet or existing data from the database.
+                                        Load input data for a model run. This can be an Excel spreadsheet, existing data from the database or scenarios coming from the <a href="./hypercube.html" target="_blank">Hypercube mode</a>.
                                       </li>
                                       <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
-                                        Solve the GAMS model with the configured input data. This will start GAMS in the background.
+                                        Solve the GAMS model with the configured input data. This will run your GAMS model and collect the results when it finished executing.
                                       </li>
                                     </ol>
 
                                     <h6>Main window:</h6>
-                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are evaluated. More about the individual features will be explained now.</p>
-                                    <p>Besides navigation bar and main window the page header of the application adds the following functionality:</p>
+                                    <p>The main window always displays the content of the section selected by the user in the navigation bar. Here, for example, data is visualized, scenarios are compared and analyses are performed.</p>
+                                    <p>Besides navigation bar and main window, some important functions are accessible via the header:</p>
                                     <ul class="fa-ul">
-                                      <li><span class="fa-li"><i class="fa fa-cube"></i><i class="fa fa-arrow-right"></i></span><b>&nbsp;Mode switch: </b><br/>
-                                        &nbsp;Switch from the regular WebUI to the <a href="./hypercube.html">Hypercube mode</a>.
+                                      <li><span class="fa-li"><i class="fa fa-cube"></i><i class="fa fa-arrow-right"></i></span><b>&nbsp;Launch Hypercube: </b><br/>
+                                        &nbsp;Launches the <a href="./hypercube.html">Hypercube mode</a>.
                                       </li>
                                     </ul>
                                     <ul>
                                       <li><b>Scenario:</b><br/>
-                                        Database scenario management - save, edit, delete and export scenario data.
+                                        Database scenario management - load, save, edit, delete and export scenario data.
                                       </li>
                                       <li><b>Help:</b><br/>
-                                        Link to the WebUI documentation.
+                                        Link to this documentation.
                                       </li>
                                     </ul>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->    
                             <section id="workflow-section" class="doc-section">
-                                <h2 class="section-title">Workflow</h2>
+                                <h2 class="section-title">Typical workflow</h2>
                                     <div class="section-block">
-                                        <p>The typical workflow is quite simple:</p>
+                                        <p>There are several ways you can use MIRO. A typical workflow looks as follows:</p>
                                         <ol>
                                         <li>Import input data</li>
-                                        <li>Adapt the data if desired</li>
+                                        <li>Modify the data if desired</li>
                                         <li>Solve GAMS model</li>
-                                        <li>Inspect the visualized results</li>
+                                        <li>Inspect the results (in the form of tables and/or charts)</li>
                                         <li>Save the scenario data in the database or discard the results</li>
                                         </ol>
                                         <ul>
-                                        <li>Besides that, already stored results can be re-imported from the database and compared with each other at any time.</li>
+                                        <li>Besides that, results stored in the database can be re-imported and compared with each other at any time.</li>
                                         </ul>
                                     </div>
                                     <div id="workflow-1"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
-                                        <p>A WebUI usually makes sense if there is data to be visualized, e.g. as tables, diagrams, or other graphics. This applies to output data as well as input data. 
+                                        <p>A MIRO app usually makes sense if there is data to be visualized, e.g. as tables, diagrams, or other graphics. This applies to output data as well as input data. 
                                         Input data which should be visualized in the WebUI can be (re-)imported either from existing scenarios in the database or locally via an Excel spreadsheet.
                                         To import such data, click on the <i>"Load data"</i> button in the navigation bar. The following window pops up:</p>
                                             <div class="row">

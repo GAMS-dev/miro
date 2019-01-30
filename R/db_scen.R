@@ -191,7 +191,7 @@ Scenario <- R6Class("Scenario",
                         invisible(self)
                       },
                       addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL, 
-                                                overwrite = FALSE){
+                                                overwrite = FALSE, noSave = FALSE){
                         # Saves attachments
                         # 
                         # Args:
@@ -200,12 +200,14 @@ Scenario <- R6Class("Scenario",
                         #   forbiddenFnames:  character vector with forbidden file names
                         #   overwrite:        boolean that specifies whether existing files should 
                         #                     be overwritten
+                        #   noSave:           boolean that specifies whether to mark scenario as saved or not
                         #
                         # Returns:
                         #   R6 object (reference to itself)
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
+                        stopifnot(is.logical(noSave), length(noSave) == 1L)
                         if(private$isReadonly()){
                           stop("roException", call. = FALSE)
                         }
@@ -243,7 +245,8 @@ Scenario <- R6Class("Scenario",
                         
                         super$exportScenDataset(private$bindSidCol(attachmentData), 
                                                 private$dbSchema$tabName[["_scenAttach"]])
-                        private$scenSaved <- TRUE
+                        if(!noSave)
+                          private$scenSaved <- TRUE
                         self$updateMetadata()
                         invisible(self)
                       },

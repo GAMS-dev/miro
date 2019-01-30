@@ -93,12 +93,15 @@ maxNumBlocks   <- 5L
 activeBlocks   <- vector("logical", maxNumBlocks)
 activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
+tmpOutputKeys  <- vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
+                         "[[", character(1L), "key", USE.NAMES = FALSE)
 exclAttribChoices <- c("_uid", "_stime", "_stag", 
-                       paste0("_", vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
-                                          "[[", character(1L), "key", USE.NAMES = FALSE)))
+                       if(length(tmpOutputKeys)) paste0("_", tmpOutputKeys))
 names(exclAttribChoices)[1:3] <- names(fields)[2:4]
-names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
-                                                                "[[", character(1L), "alias", USE.NAMES = FALSE)
+if(length(tmpOutputKeys))
+  names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
+                                                                  "[[", character(1L), "alias", USE.NAMES = FALSE)
+rm(tmpOutputKeys)
 hideEl(session, "#hcubeLoadButtons")
 
 observeEvent(input$btNewBlock, {
@@ -288,9 +291,7 @@ if("DT" %in% (.packages())){
 observeEvent(input$btShowHash, {
   flog.debug("Button to show hash of selected scenario (Hypercube load) clicked.")
   selectedRows <- isolate(input$hcubeLoadResults_rows_selected)
-  if(!length(selectedRows)){
-    return()
-  }else if(length(selectedRows) > 1L){
+  if(!length(selectedRows) || length(selectedRows) > 1L){
     showHideEl(session, "#showHashOnlyOne", 4000L)
     return()
   }

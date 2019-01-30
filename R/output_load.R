@@ -38,7 +38,6 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
       stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
     }
     names(scalarTmp) <- scalarsFileHeaders
-    attr(scalarTmp, "aliases") <- scalarsFileHeaders
   }
   
   # fetch results from csv files
@@ -84,8 +83,6 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
       
       names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
-      attr(ret$tabular[[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
-      
       if(!hasValidHeaderTypes(ret$tabular[[i]], colTypes[[names(modelOut)[i]]])){
         flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
                   names(modelOut)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
@@ -94,6 +91,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
       }
     }
+    attr(ret$tabular[[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
   })
   # if scalar dataset is nonempty, assign it to return value
   if(!is.null(scalarTmp) && nrow(scalarTmp)){

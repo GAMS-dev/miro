@@ -7,7 +7,7 @@ server_admin <- function(input, output, session){
       textInput("removeDbConfirmTxt", NULL),
       footer = tagList(
         modalButton("Cancel"),
-        actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1")
+        actionButton("removeDbTablesConfirm", "Confirm", class = "bt-highlight-1 bt-gms-confirm")
       ),
       title = "Remove database tables"))
   })

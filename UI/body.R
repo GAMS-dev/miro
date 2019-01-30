@@ -284,10 +284,6 @@ if(config$activateModules$hcubeMode){
             fluidRow(
               box(title = lang$nav$hcubeLoad$title, status="primary", 
                   solidHeader = TRUE, width = 12, style="overflow-x: auto",
-                  tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error",
-                           lang$nav$hcubeLoad$msgOnlyOneHash),
-                  tags$div(id = "showHashError", class = "gmsalert gmsalert-error",
-                           lang$errMsg$unknownError),
                   tags$div(id = "loadContent",
                            tags$div(id = "selectorsWrapper"
                            ),
@@ -315,6 +311,10 @@ if(config$activateModules$hcubeMode){
                              )
                     ),
                     tags$div(class = "col-sm-6", style = "text-align:right;",
+                             tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                      lang$nav$hcubeLoad$msgOnlyOneHash),
+                             tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                      lang$errMsg$unknownError),
                              actionButton("btShowHash", 
                                           lang$nav$hcubeLoad$showHashButton)
                     )

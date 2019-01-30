@@ -197,6 +197,7 @@ if(is.null(errMsg)){
     requiredPackages <- c(requiredPackages, "DT")
   }
   source("./R/install_packages.R", local = TRUE)
+  options("DT.TOJSON_ARGS" = list(na = "string"))
   
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
