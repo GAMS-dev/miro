@@ -240,8 +240,8 @@ animation: none !important;
   min-height: 80px;
 }
 /* gams interaction */
-#logStatus{
-  overflow-y:scroll;
+#logStatus, #listFile{
+  overflow:auto;
   min-height: 400px;
   max-height: 60vh;
 }

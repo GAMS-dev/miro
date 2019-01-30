@@ -834,8 +834,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       source("./modules/db_scen_save.R", local = TRUE)
       # scenario split screen mode
       source("./modules/scen_split.R", local = TRUE)
-
-      lapply(seq_len(maxNumberScenarios + 3), function(i){
+      skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
+      lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
         # table view
         source("./modules/scen_table_view.R", local = TRUE)
@@ -848,24 +848,30 @@ if(identical(LAUNCHADMINMODE, TRUE)){
         
         # compare scenarios
         obsCompare[[i]] <<- observe({
-          if(is.null(input[[paste0("contentScen_", i)]])){
+          if(is.null(input[[paste0("contentScen_", i)]]) || 
+             skipScenCompObserve[i]){
+            skipScenCompObserve[i] <<- FALSE
             return(NULL)
           }
-          j <- strsplit(input[[paste0("contentScen_", i)]], "_")[[1]][3]
-          
-          if(i < maxNumberScenarios + 2){
+          print(i)
+          j <- strsplit(isolate(input[[paste0("contentScen_", i)]]), "_")[[1]][3]
+          if(identical(i, 2L)){
+            skipScenCompObserve[i + 1L] <<- TRUE
+            updateTabsetPanel(session, paste0("contentScen_", i + 1),
+                              paste0(paste0("contentScen_", i + 1, "_", j)))
+            
+          }else if(identical(i, 3L)){
+            skipScenCompObserve[i - 1L] <<- TRUE
+            updateTabsetPanel(session, paste0("contentScen_", i - 1),
+                              paste0(paste0("contentScen_", i - 1, "_", j)))
+          }else{
             lapply(names(scenData), function(scen){
               scen <- names(scenData)[i]
               k <- strsplit(scen, "_")[[1]][2]
+              skipScenCompObserve[k] <<- TRUE
               updateTabsetPanel(session, paste0("contentScen_", k),
                                 paste0(paste0("contentScen_", k, "_", j)))
             })
-          }else if(i == maxNumberScenarios + 2){
-            updateTabsetPanel(session, paste0("contentScen_", i + 1),
-                              paste0(paste0("contentScen_", i + 1, "_", j)))
-          }else{
-            updateTabsetPanel(session, paste0("contentScen_", i - 1),
-                              paste0(paste0("contentScen_", i - 1, "_", j)))
           }
         }, suspended = TRUE)
       })

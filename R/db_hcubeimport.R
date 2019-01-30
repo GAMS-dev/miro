@@ -365,7 +365,7 @@ HcubeImport <- R6Class("HcubeImport",
                            if(private$includeTrc){
                              grepEx <- "\\.(csv|trc)$"
                            }else{
-                             grepEx <- "\\.csv"
+                             grepEx <- "\\.csv$"
                            }
                            csvNames      <- gsub(grepEx, "", basename(csvPaths), 
                                                  ignore.case = TRUE)
