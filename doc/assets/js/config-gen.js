@@ -41,7 +41,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
           }
         }
 
-        for (let i in gmsSymIn){
+        for (i in gmsSymIn){
           gmsSymHdrIn[gmsSymIn[i]] = Object.keys(gmsData.gamsInputFiles[gmsSymIn[i]].headers);
           gmsSymNumHdrIn[gmsSymIn[i]] = [];
           for(let j in gmsSymHdrIn[gmsSymIn[i]]){
@@ -50,7 +50,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
             }
           }
         }
-        for (let i in gmsSymOut){
+        for (i in gmsSymOut){
           if(gmsSymOut[i] === "scalars_out"){
             scalars.push("scalars_out");
             gmsSymNumHdrOut[gmsSymOut[i]] = ["Value"];
@@ -121,9 +121,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
       }
     }
   if(typeof(gmsSymHdrIn[gmsSymIn[0]]) == 'undefined'){
-    gmsSymHdrIngmsSymIn0 = []
+    gmsSymHdrIngmsSymIn0 = [];
   }else{
-    gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]]
+    gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]];
   }
   Alpaca.defaultToolbarSticky = true;
     $("#form1").alpaca({
@@ -245,12 +245,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "title":"Aggregate all input widgets on a single tab?",
                  "type":"boolean",
                  "required":false,
-                 "default":false
+                 "default":true
               },
               "aggregateWidgetsTitle":{
                 "title":"Title of the tab where input widgets are aggregated",
                 "type":"string",
                 "minLength":"1",
+                "default": "Widgets",
                 "required":true
               },
               "scalarAliases":{
@@ -3384,11 +3385,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        removeDefaults(co, this);
                        // change object "tabtitle" to "title" (to match schema)
                        if(co.aggregateWidgetsTmp){
-                          co.aggregateWidgets = new Object();
+                          co.aggregateWidgets = {};
                           co.aggregateWidgets.title = co.aggregateWidgetsTitle;
                           delete co.aggregateWidgetsTitle;
                        }
-                       delete co.aggregateWidgetsTmp
+                       delete co.aggregateWidgetsTmp;
                        //restructuring of "dataRendering" for all output elements
                        if(typeof co.dataRendering !== 'undefined'){
                          makeKey("Format: datatable", "Parameter", "datatable");
@@ -3398,7 +3399,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            for (let i = 0; i < co.dataRendering["Format: custom"].length; i++) {
                               let cuname = co.dataRendering["Format: custom"][i].Parameter;
                               let cuTmp = co.dataRendering["Format: custom"][i];
-                              var cuOpt = new Object();
+                              var cuOpt = {};
                               for(let j = 0; j < cuTmp.optionsTmp.length; j++) {
                                 cuOpt[cuTmp.optionsTmp[j].key] = cuTmp.optionsTmp[j].value;
                               }
@@ -3441,7 +3442,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      delete co.dataRendering[grname].graph.dyEvent[k];
                                   }
                                   //ydata object needs name of GAMS Symbol ("dataname")
-                                  for (var k = 0; k < co.dataRendering[grname].graph.ydata.length; k++) {
+                                  for (k = 0; k < co.dataRendering[grname].graph.ydata.length; k++) {
                                      var yname = co.dataRendering[grname].graph.ydata[k].dataname;
                                      delete co.dataRendering[grname].graph.ydata[k].dataname;
                                      co.dataRendering[grname].graph.ydata[yname] = co.dataRendering[grname].graph.ydata[k];

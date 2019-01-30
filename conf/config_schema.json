@@ -109,7 +109,7 @@
             "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "logFile:":{  
@@ -141,6 +141,7 @@
                "description":"Title of the tab",
                "type":"string",
                "minLength":"1",
+               "default": "Widgets",
                "required":false
             }
          }
