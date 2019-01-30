@@ -86,6 +86,7 @@ HcubeImport <- R6Class("HcubeImport",
                              if(any(Sys.readlink(csvPaths) != "")){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
+                             print('d')
                            }
                            
                            private$csvPaths <- csvPaths
@@ -364,7 +365,7 @@ HcubeImport <- R6Class("HcubeImport",
                            if(private$includeTrc){
                              grepEx <- "\\.(csv|trc)$"
                            }else{
-                             grepEx <- "\\.csv"
+                             grepEx <- "\\.csv$"
                            }
                            csvNames      <- gsub(grepEx, "", basename(csvPaths), 
                                                  ignore.case = TRUE)
@@ -423,9 +424,9 @@ HcubeImport <- R6Class("HcubeImport",
                          },
                          getCsvPaths       = function(zipFilePath){
                            if(private$includeTrc){
-                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc|log|lst)$"
+                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc)$"
                            }else{
-                             grepEx <- "^((?!\\.\\.).)*\\.(csv|log|lst)$"
+                             grepEx <- "^((?!\\.\\.).)*\\.csv$"
                            }
                            fileNamesZip   <- unzip(zipFilePath, list = TRUE)
                            fileNamesZip   <- fileNamesZip[fileNamesZip$Length > 0, ]$Name

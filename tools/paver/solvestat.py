@@ -434,7 +434,7 @@ class StatisticsGenerator():
         # print f.name, f.count();
         
         # apply filter
-        fdf = df[f].copy();
+        fdf = df[f].dropna(how = 'all');
         
         if len(fdf.index) == 0 :
             print('No data left to evaluate attribute', metric.attribute, 'after applying filter "' + f.name + '". Skipping profiles.');
