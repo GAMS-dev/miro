@@ -741,7 +741,7 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 
 $ifthen not errorfree
-$ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/GMSWebUI/conf/' directory."
+$ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/MIRO/conf/' directory."
 $ terminate
 $endif
 

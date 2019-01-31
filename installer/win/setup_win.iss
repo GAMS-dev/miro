@@ -6,14 +6,14 @@
 #define RPatch 1
 #define WebUIPublisher "GAMS Software GmbH/GAMS Development Corp."
 #define WebUIURL "gams.com"
-#define docURL "https://www.gams.com/webui/"
+#define docURL "https://www.gams.com/miro/"
 
 [Setup]
 AppName = {#WebUIName}
 AppId = {{R77BWYZ1-KM2Y-WCD5-E8JC-Z7CIVDSLX2Y4}
 DefaultDirName={code:GetDefaultDirName}
-DefaultGroupName = GAMS WebUI
-OutputBaseFilename = GAMS_WebUI-{#WebUIVersion}
+DefaultGroupName = GAMS MIRO
+OutputBaseFilename = GAMS_MIRO-{#WebUIVersion}
 SetupIconFile = setup.ico
 AppVersion = {#WebUIVersion}
 AppPublisher = {#WebUIPublisher}
@@ -45,32 +45,37 @@ Source: "../../R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; DestDir: "{tmp}"; Check
 Source: "../../LICENSE"; Flags: dontcopy noencryption
 Source: "default.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
-Source: "../../library/*"; DestDir: "{app}\library\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../conf/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../JS/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../modules/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../R/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../UI/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../www/*"; DestDir: "{app}\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../www/*"; DestDir: "{app}\app.R"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../www/*"; DestDir: "{app}\global.R"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../app.R"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
+Source: "../../global.R"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
+Source: "../../LICENSE"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
+Source: "../../admin/server.R"; DestDir: "{app}\MIRO\admin"; Flags: ignoreversion;Components: program
+Source: "../../admin/ui.R"; DestDir: "{app}\MIRO\admin"; Flags: ignoreversion;Components: program
+Source: "../../library/*"; DestDir: "{app}\MIRO\library\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../conf/*"; DestDir: "{app}\MIRO\conf\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../JS/*"; DestDir: "{app}\MIRO\JS\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../modules/*"; DestDir: "{app}\MIRO\modules\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../R/*"; DestDir: "{app}\MIRO\R\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../UI/*"; DestDir: "{app}\MIRO\UI\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../www/*"; DestDir: "{app}\MIRO\www\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../tools/*"; DestDir: "{app}\MIRO\tools\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../resources/hcube_submission.gms"; DestDir: "{app}\resources"; Flags: ignoreversion;Components: program
 Source: "../../model/miro.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
 
-Source: "../../model/kport/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\kport\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/kport/kport.gms"; DestDir: "{userdocs}\GMSWebUI\examples\kport"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\pickstock\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock/dowjones2016.csv"; DestDir: "{userdocs}\GMSWebUI\examples\pickstock"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock/pickstock.gms"; DestDir: "{userdocs}\GMSWebUI\examples\pickstock"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock_live/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock_live/pickstock_live.gms"; DestDir: "{userdocs}\GMSWebUI\examples\pickstock_live"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/trnsport.gms"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/conf/config.json"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\GMSWebUI\examples\trnsport_live"; Flags: ignoreversion;Components: examples
+Source: "../../model/kport/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\kport\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/kport/kport.gms"; DestDir: "{userdocs}\MIRO_examples\kport"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\pickstock\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock/dowjones2016.csv"; DestDir: "{userdocs}\MIRO_examples\pickstock"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock/pickstock.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock_live/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock_live/pickstock_live.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock_live"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\trnsport\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport/trnsport.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport_live/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport_live"; Flags: ignoreversion;Components: examples
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#WebUIName}}"; Filename: "{uninstallexe}"
 

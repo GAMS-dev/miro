@@ -1,6 +1,6 @@
 #version number
-webuiVersion <- "0.3.3"
-webuiRDate   <- "Jan 29 2019"
+MIROVersion <- "0.3.4"
+MIRORDate   <- "Jan 31 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -74,13 +74,13 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
-if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "GMSWebUI", 
+if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "MIRO", 
                                                    .Platform$file.sep, "library"))){
 
   RLibPath = NULL
 
 }else{
-  RLibPath = paste0(gamsSysDir, "GMSWebUI", .Platform$file.sep, "library") 
+  RLibPath = paste0(gamsSysDir, "MIRO", .Platform$file.sep, "library") 
   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
@@ -135,7 +135,7 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){
   # name of the R save file
-  rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
+  rSaveFilePath <- paste0(currentModelDir, modelName, '_', MIROVersion, 
                           if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube")) "_hcube",
                           '.miroconf')
   # set user ID (user name) and user groups
@@ -386,21 +386,48 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
   close(pb)
 }
-aboutDialogText <- paste0("<b>GAMS MIRO v.", webuiVersion, "</b><br/><br/>",
-                          "Release Date: ", webuiRDate, "<br/>", 
-                          "Copyright (c) 2018 GAMS Software GmbH <support@gams.com><br/>",
-                          "Copyright (c) 2018 GAMS Development Corp. <support@gams.com><br/><br/>",
+MIROVersionLatest <- NULL
+if(!isShinyProxy){
+  try(
+    local({
+      MIROVersionLatestTmp <- suppressWarnings(read.csv(
+        url("https://gams.com/webui/latest.ver"), 
+        header = FALSE))
+      currentMIROVersion <- strsplit(MIROVersion, ".", fixed = TRUE)[[1]]
+      if(MIROVersionLatestTmp[[1]][1] > currentMIROVersion[1] ||
+         (MIROVersionLatestTmp[[1]][1] == currentMIROVersion[1] && 
+          MIROVersionLatestTmp[[2]][1] > currentMIROVersion[2]) ||
+         (MIROVersionLatestTmp[[1]][1] == currentMIROVersion[1] && 
+          MIROVersionLatestTmp[[2]][1] == currentMIROVersion[2] && 
+          MIROVersionLatestTmp[[3]][1] > currentMIROVersion[3])){
+        MIROVersionLatest <<- paste0("<br/><br/><b style=\\'color:#f90;\\'>A new version of GAMS MIRO is available! The latest version is: v.",
+                                    MIROVersionLatestTmp[[1]][1], ".",
+                                    MIROVersionLatestTmp[[2]][1], ".",
+                                    MIROVersionLatestTmp[[3]][1], 
+                                    "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
+        
+        
+      }
+    })
+  )
+}
+
+aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
+                          "Release Date: ", MIRORDate, "<br/>", 
+                          "Copyright (c) 2019 GAMS Software GmbH <support@gams.com><br/>",
+                          "Copyright (c) 2019 GAMS Development Corp. <support@gams.com><br/><br/>",
                           "This program is free software: you can redistribute it and/or modify ",
                           "it under the terms of the GNU General Public License as published by ",
                           "the Free Software Foundation, either version 2 of the License, or ",
                           "(at your option) any later version.<br/><br/>",
-                          "This program is distributed in the hope that it will be useful,", 
-                          "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+                          "This program is distributed in the hope that it will be useful, ", 
+                          "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
                           "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
                           "GNU General Public License for more details.<br/><br/>",
                           "You should have received a copy of the GNU General Public License ",
                           "along with this program. If not, see ",
-                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.")
+                          "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
+                          MIROVersionLatest)
 if(identical(LAUNCHADMINMODE, TRUE)){
   source("./admin/server.R", local = TRUE)
   source("./admin/ui.R", local = TRUE)

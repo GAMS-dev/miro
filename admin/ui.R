@@ -21,12 +21,12 @@ body_admin <- dashboardBody({
   addResourcePath("admin", "admin/resources")
   tagList(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "gmswebui.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
 #      tags$link(type = "text/css", rel = "stylesheet", href = "admin/spectrum.css"),
 #      tags$link(type = "text/css", rel = "stylesheet", href = "admin/bootstrap-datetimepicker.min.css"),
 #      tags$link(type = "text/css", rel = "stylesheet", href = "admin/alpaca.min.css"),
-      tags$script(src = "shortcuts.js", type = "application/javascript"),
-      tags$script(src = "gmswebui.js", type = "application/javascript"),
+      tags$script(src = "mirosc.js", type = "application/javascript"),
+      tags$script(src = "miro.js", type = "application/javascript"),
 #      tags$script(src = "admin/spectrum.js", type = "application/javascript"),
 #      tags$script(src = "admin/moment.min.js", type = "application/javascript"),
 #      tags$script(src = "admin/bootstrap-datetimepicker.min.js", type = "application/javascript"),
