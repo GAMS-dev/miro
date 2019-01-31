@@ -1,36 +1,37 @@
 {
     "pageTitle": "Stock Selection Optimization with live data from the web",
-    "gamsMetaDelim": "###",
-    "gamsWEBUISwitch": "--WEBUI=1",
+    "gamsMetaDelim": "[MIRO:hidden]",
+    "MIROSwitch": "--MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "maxstock": {
-            "alias": "maximum number of stocks to select",
-            "slider": {
-                "label": "maximum number of stocks to select",
-                "min": 1,
-                "max": 29,
-                "default": 5,
-                "step": 1
-            }
-        },
-        "trainingdays": {
-            "alias": "number of days for training",
-            "slider": {
-                "label": "number of days for training",
-                "min": 1,
-                "max": "card(tw)",
-                "default": 99,
-                "step": 1
-            }
-        },
-        "GMSPAR_TW": {
-            "alias": "time window",
-            "daterange": {
-                "label": "time window",
-                "start": "2018-01-01",
-                "startview": "year"
+        "scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "maxstock",
+                "trainingdays"
+            ],
+            "symtext": [
+                "maximum number of stocks to select",
+                "number of days for training"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
+                }
             }
         }
     },
@@ -39,24 +40,29 @@
             "alias": "stock price",
             "headers": {
                 "date": {
-                    "type": "set"
+                    "type": "set",
+                    "alias": "date"
                 },
-                "stockSymbol": {
-                    "type": "set"
+                "symbol": {
+                    "type": "set",
+                    "alias": "stockSymbol"
                 },
-                "stock price": {
-                    "type": "parameter"
+                "value": {
+                    "type": "parameter",
+                    "alias": "stock price"
                 }
             }
         },
         "partofportfolio": {
             "alias": "what part of the portfolio",
             "headers": {
-                "what part of the portfolio": {
-                    "type": "set"
+                "symbol": {
+                    "type": "set",
+                    "alias": "stockSymbol"
                 },
-                "partOfPortfolio": {
-                    "type": "parameter"
+                "value": {
+                    "type": "parameter",
+                    "alias": "what part of the portfolio"
                 }
             }
         },
@@ -64,13 +70,16 @@
             "alias": "dow jones vs. index fund",
             "headers": {
                 "date": {
-                    "type": "set"
+                    "type": "set",
+                    "alias": "date"
                 },
-                "dow jones": {
-                    "type": "parameter"
+                "dj": {
+                    "type": "parameter",
+                    "alias": "dow jones"
                 },
                 "index fund": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "index fund"
                 }
             }
         },
@@ -78,13 +87,16 @@
             "alias": "absolute error",
             "headers": {
                 "date": {
-                    "type": "set"
+                    "type": "set",
+                    "alias": "date"
                 },
                 "absolute error train": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "absolute error train"
                 },
                 "absolute error test": {
-                    "type": "parameter"
+                    "type": "parameter",
+                    "alias": "absolute error test"
                 }
             }
         },
@@ -92,30 +104,64 @@
             "alias": "Output Scalars",
             "hidden": true,
             "symnames": [
-                "fHdr",
-                "errHdr",
                 "lastDayTraining"
             ],
             "symtext": [
-                "fund header",
-                "stock symbol header",
-                "last date of training period"
+                "last date of training period [MIRO:hidden]"
             ],
             "symtypes": [
-                "set",
-                "set",
                 "set"
             ],
-            "count": 3,
+            "count": 1,
             "headers": {
-                "Scalar": {
-                    "type": "set"
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
                 },
-                "Description": {
-                    "type": "acronym"
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
                 },
-                "Value": {
-                    "type": "acronym"
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
+                }
+            }
+        },
+        "scalarsve_out": {
+            "alias": "Output Variable/Equation Scalars",
+            "headers": {
+                "type": {
+                    "type": "set",
+                    "alias": "Type"
+                },
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "level": {
+                    "type": "parameter",
+                    "alias": "Level"
+                },
+                "marginal": {
+                    "type": "parameter",
+                    "alias": "Marginal"
+                },
+                "lower": {
+                    "type": "parameter",
+                    "alias": "Lower"
+                },
+                "upper": {
+                    "type": "parameter",
+                    "alias": "Upper"
+                },
+                "scale": {
+                    "type": "parameter",
+                    "alias": "Scale"
                 }
             }
         }

@@ -1,47 +1,117 @@
 {
+	"UILogo": "kport.jpg",
+    "activateModules":{
+        "scenario":true
+    },
 	"aggregateWidgets"    : {
 		"title"				: "Input Options"
     },
-    "UILogo"    : "kport.jpg",
+    "inputWidgets":{
+      "actScen":{
+          "widgetType": "dropdown",
+          "alias": "Acvtive scenario",
+          "label": "Select scenario",
+          "choices": ["$s$", "_"]
+       },
+       "WHRS": {
+         "label": "Select period length",
+         "min": 1,
+         "max": 672,
+         "default": 168,
+         "step": 1,
+         "alias": "Length of considered period [hours]",
+         "widgetType": "slider"
+       },
+       "CSTI": {
+         "label": "Select depreciation cost",
+         "min": 0.01,
+         "max": 2.5,
+         "default": 0.97,
+         "step": 0.01,
+         "alias": "Depreciation cost per m^3 reactor and period [kEuro]",
+         "widgetType": "slider"
+       },
+       "CSTF": {
+         "label": "Select fixed cost",
+         "min": 1.5,
+         "max": 5,
+         "default": 2.45,
+         "step": 0.05,
+         "alias": "Fixed cost per week and reactor [kEuro]",
+         "widgetType": "slider"
+       },
+       "ESF": {
+         "label": "Select EOS",
+         "min": 0,
+         "max": 1,
+         "default": 0.5,
+         "step": 0.05,
+         "alias": "Economies of scale factor",
+         "widgetType": "slider"
+       }
+    },
     "dataRendering"      : {
-				"rdata": {
-					"pivottable": {
-						"rows": [
-							"Scenario"
-						],
-						"cols": [
-							"Reactor"
-						],
-						"aggregatorName": "Sum",
-						"vals": "VMIN",
-						"rendererName": "Table",
-						"locale": "en",
-						"subtotals": false
-					},
-					"outType": "pivot"
-				},
-        "cost"              : {
-            "outType"               : "dtGraph",
-            "graph"                 : {
-                "tool"                  : "plotly",
-                "type"                  : "pie",
-                "title"                 : "Overall costs",
-                "labels"                : "Cost Header",
-                "values"                : "Cost report"
+		"rdata": {
+          "pivottable": {
+            "rows": [
+              "s"
+            ],
+            "cols": [
+              "rr"
+            ],
+            "aggregatorName": "Sum",
+            "vals": "value",
+            "rendererName": "Table",
+            "locale": "en",
+            "subtotals": false
+          },
+          "outType": "pivot"
+        },
+        "cost": {
+            "outType": "dtGraph",
+            "graph": {
+              "title": "Overall costs",
+              "tool": "plotly",
+              "type": "pie",
+              "labels": "chdr",
+              "values": "value",
+              "xaxis": {
+                "showgrid": false,
+                "zeroline": false,
+                "showticklabels": false
+              },
+              "yaxis": {
+                "showgrid": false,
+                "zeroline": false,
+                "showticklabels": false
+              }
             }
         },
+        "surplus": {
+          "pivottable": {
+            "cols": [
+              "pp"
+            ],
+            "aggregatorName": "Sum",
+            "vals": "surplus",
+            "rendererName": "Bar Chart",
+            "locale": "en",
+            "subtotals": false
+          },
+          "outType": "pivot"
+        },
         "scalars": {
-      "pivottable": {
-        "rows": [
-          "Scalar"
-        ],
-        "aggregatorName": "Sum",
-        "vals": "Value",
-        "rendererName": "Table",
-        "locale": "en",
-        "subtotals": false
-      },
-      "outType": "pivot"
-    }
+            "pivottable": {
+              "rows": [
+                "Scalar"
+              ],
+              "aggregatorName": "Sum",
+              "vals": "Value",
+              "rendererName": "Table",
+              "locale": "en",
+              "subtotals": false
+            },
+            "outType": "pivot"
+        }
     }
 }

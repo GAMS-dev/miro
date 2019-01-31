@@ -75,7 +75,7 @@ Parameter
 
 Set td(date)    'training days'
     ntd(date)   'none-training days';
-
+    
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
 contribution(d,s) = weight(s)*price(d,s);
@@ -86,7 +86,7 @@ Variable
     w(symbol)   'what part of the portfolio'
     slpos(date) 'positive slack'
     slneg(date) 'negative slack'
-    obj         'objective';
+    obj         'UIOutput: objective';
 
 Positive variables w, slpos, slneg;
 Binary variable p;
@@ -117,20 +117,19 @@ solve pickStock min obj using mip;
 fund(d) = sum(s, price(d, s)*w.l(s));
 error(d) = abs(index(d)-fund(d));
 
-Set 
-    fHdr      'fund header'            / 'dow jones','index fund' /
+Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
-
+    
 $onExternalOutput
 Parameter
-    partOfPortfolio(symbol)            'what part of the portfolio'
-    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:pivot]'
-    abserror(date,errHdr)              'absolute error [MIRO:pivot]';
+    partOfPortfolio(symbol)            'what part of the portfolio'   
+    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:pivot]'     
+    abserror(date,errHdr)              'absolute error [MIRO:pivot]'               
 Singleton Set lastDayTraining(date)    'last date of training period [MIRO:hidden]' ;
 $offExternalOutput
 
 partOfPortfolio(s)                   = w.l(s);
-dowVSindex(d,'dow jones')            = index(d);
+dowVSindex(d,'dj')                   = index(d);
 dowVSindex(d,'index fund')           = fund(d);
 abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
