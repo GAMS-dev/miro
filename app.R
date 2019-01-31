@@ -205,11 +205,11 @@ if(is.null(errMsg)){
         source("./modules/renderers/" %+% file)
       }, error = function(e){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", 
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
                                  file, e), sep = "\n")
       }, warning = function(w){
         errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: %s.", 
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
                                  file, w), sep = "\n")
       })
     }else{
