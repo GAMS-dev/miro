@@ -125,12 +125,8 @@ if(is.null(errMsg)){
 # load model input and output parameters
 if(is.null(errMsg)){
   flog.trace("Language files loaded.")
-  if(identical(tolower(Sys.getenv("LAUNCHHCUBE")), "yes") || 
-     "LAUNCHHCUBE" %in% commandArgs(TRUE)){
+  if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
-  }
-  if(identical(tolower(Sys.getenv("LAUNCHADMIN")), "yes")){
-    LAUNCHADMINMODE <- TRUE
   }
   # handsontable options
   hotOptions        <- config$handsontable

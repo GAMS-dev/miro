@@ -136,7 +136,8 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', MIROVersion, 
-                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube")) "_hcube",
+                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube") ||
+                             "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
                           '.miroconf')
   # set user ID (user name) and user groups
   ugroups <- NULL
@@ -176,6 +177,13 @@ if(is.null(errMsg)){
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
   installPackage <- list()
+  if("NODEVMODE" %in% commandArgs(TRUE)){
+    developMode <- FALSE
+  }
+  if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") ||
+     "LAUNCHADMIN" %in% commandArgs(TRUE)){
+    LAUNCHADMINMODE <- TRUE
+  }
   if(!file.exists(rSaveFilePath) || developMode){
     source("./modules/init.R", local = TRUE)
   }else{
