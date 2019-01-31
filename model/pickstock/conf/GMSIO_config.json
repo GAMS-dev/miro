@@ -53,6 +53,35 @@
         }
     },
     "gamsOutputFiles": {
+        "deffit": {
+            "alias": "fit to Dow Jones index",
+            "headers": {
+                "date": {
+                    "type": "set",
+                    "alias": "date"
+                },
+                "level": {
+                    "type": "parameter",
+                    "alias": "Level"
+                },
+                "marginal": {
+                    "type": "parameter",
+                    "alias": "Marginal"
+                },
+                "lower": {
+                    "type": "parameter",
+                    "alias": "Lower"
+                },
+                "upper": {
+                    "type": "parameter",
+                    "alias": "Upper"
+                },
+                "scale": {
+                    "type": "parameter",
+                    "alias": "Scale"
+                }
+            }
+        },
         "partofportfolio": {
             "alias": "what part of the portfolio",
             "headers": {
@@ -102,6 +131,7 @@
         },
         "scalars_out": {
             "alias": "Output Scalars",
+            "hidden": true,
             "symnames": [
                 "lastDayTraining"
             ],
@@ -124,6 +154,43 @@
                 "value": {
                     "type": "set",
                     "alias": "Scalar Value"
+                }
+            }
+        },
+        "scalarsve_out": {
+            "alias": "Output Variable/Equation Scalars",
+            "headers": {
+                "type": {
+                    "type": "set",
+                    "alias": "Type"
+                },
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "level": {
+                    "type": "parameter",
+                    "alias": "Level"
+                },
+                "marginal": {
+                    "type": "parameter",
+                    "alias": "Marginal"
+                },
+                "lower": {
+                    "type": "parameter",
+                    "alias": "Lower"
+                },
+                "upper": {
+                    "type": "parameter",
+                    "alias": "Upper"
+                },
+                "scale": {
+                    "type": "parameter",
+                    "alias": "Scale"
                 }
             }
         }

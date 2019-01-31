@@ -83,13 +83,6 @@ $(document).keyup(function(event) {
       $("a[href='#shiny-tab-advanced']").click();
     }
   }
-  // Select advanced options menu shortcut: CTRL + ALT + 5
-  if(event.ctrlKey && event.altKey && event.keyCode === 53) {
-    scenTab = $("a[href='#shiny-tab-scenarios']");
-    if(scenTab.length > 0){
-      $("a[href='#shiny-tab-advanced']").click();
-    }
-  }
   // Table view (scenario compare mode) shortcut: CTRL + ALT + T
   if(event.ctrlKey && event.altKey && event.keyCode === 84) {
     for (i = 2; i <= maxNumScen + 3; i++) { 
@@ -121,7 +114,7 @@ $(document).keyup(function(event) {
     Shiny.onInputChange("tabsetShortcutNext", count);
     count++;
   }
-  // Select next tab shortcut: CTRL + ALT + arrow left
+  // Select previous tab shortcut: CTRL + ALT + arrow left
   if(event.ctrlKey && event.altKey && event.keyCode === 37) {
     Shiny.onInputChange("tabsetShortcutPrev", count);
     count++;

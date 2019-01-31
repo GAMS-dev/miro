@@ -1,5 +1,5 @@
 {
-	"UILogo"             : "pickstock.jpg",
+	"UILogo"             : "pickstock.png",
     "aggregateWidgets"    : {
        "title"    : "Parameters"
     },
@@ -25,6 +25,54 @@
         "max": "card(price$date)",
         "alias": "number of days for training",
         "widgetType": "slider"
+      },
+      "GMSOPT_lp": {
+        "alias": "LP-Solver",
+        "widgetType":"dropdown",
+        "label": "Solver to use for LP",
+        "aliases": [
+          "BARON",
+          "BDMLP",
+          "CBC",
+          "CONOPT 3",
+          "CONOPT 4",
+          "CPLEX",
+          "DECIS",
+          "GUROBI",
+          "IPOPT",
+          "KNITRO",
+          "LGO",
+          "LINDO",
+          "LINDOGLOBAL",
+          "MINOS",
+          "MOSEK",
+          "SNOPT",
+          "SOPLEX",
+          "XA",
+          "XPRESS"
+        ],
+        "choices": [
+          "BARON",
+          "BDMLP",
+          "CBC",
+          "CONOPT3",
+          "CONOPT4",
+          "CPLEX",
+          "DECIS",
+          "GUROBI",
+          "IPOPT",
+          "KNITRO",
+          "LGO",
+          "LINDO",
+          "LINDOGLOBAL",
+          "MINOS",
+          "MOSEK",
+          "SNOPT",
+          "SOPLEX",
+          "XA",
+          "XPRESS"
+        ],
+        "selected": "CPLEX"
       }
     },
     "dataRendering"      : {

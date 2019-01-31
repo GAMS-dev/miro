@@ -119,6 +119,7 @@ $endif.minlp
 Set
 scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
 'latM', 'cap', 'demand', 'quantities' /;
+
 $onExternalOutput
 Parameter
 schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:pivot]';

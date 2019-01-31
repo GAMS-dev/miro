@@ -43,14 +43,16 @@ $eolCom //
 Set rhdr 'Reactor data headers' / VMIN,VMAX/
     phdr 'Product data headers' / Demand, 'Production Time' /;
 
-$onExternalInput
+
 Set
    s      'Scenario' / s1,s2  /
    rR     'Reactor'  / R1*R3  /
    pP     'Product'  / L1*L37 /;
 
 $if not set scenario $set scenario s1
-Singleton set actScen(s) 'Active scenario ### { "dropdown":{"choices":["$scenario$", "_"]} }' / %scenario% /;   
+
+$onExternalInput
+Singleton set actScen(s) 'Active scenario' / %scenario% /;   
 
 Table RData(rR,s,rhdr) 'Reactor data'
         s1.VMIN  s1.VMAX  s2.VMIN  s2.VMAX
@@ -58,7 +60,7 @@ Table RData(rR,s,rhdr) 'Reactor data'
    R2    176.07      250     52.5      250
    R3                      151.25      250;
 
-Table PData(pP,s,phdr) 'Product data'
+Table PData(pP,s,phdr) 'Product data [MIRO:pivot]'
          s1.Demand  s1.'Production Time'  s2.Demand  s2.'Production Time'
    L1         2600                    6        2600                    6
    L2         2300                    6        2300                    6
@@ -126,7 +128,7 @@ p(pP) = DEMAND(pP) > 0;
 
 * definition of compact MINLP model
 Variable
-   cTotal    'total  costs'
+   cTotal    'UIOutput: total  costs'
    cInvest   'invest cost'
    cFixed    'fix    costs'
    f(rR,pP)  'utilization rate'
@@ -205,8 +207,7 @@ SOS2 Variable
    lambda(rR,j) 'approximation of economies of scale function';
 
 Equation
-   CNP(rR,pP)     'compute the nonlinear products nB(rp)*f(rp)*vR(r)'
-   SPPx(pP)       'compute surplus production p'
+   SPPx(pP)       'UIOutput: compute surplus production p'
    CNPl0(rR,pP)   'linearized version of CNP'
    CNPl1(rR,pP)   'linearized version of CNP'
    CNPl2(rR,pP,i) 'linearized version of CNP'
@@ -217,11 +218,9 @@ Equation
    DEFSOSone(rR)  'SOS2 sum construct'
    DEFcIlp        'linearized version of DEFcI';
 
+
 * new surplus production equation
 SPPx(p)..   pS(p)   =e= sum(r, pT(r,p))/DEMAND(p) - 1;
-
-* computes batches x volume
-CNP(r,p)..  pT(r,p) =e= nB(r,p)*f(r,p)*vR(r);
 
 * Linearized version of CNP
 CNPl0(r,p)..        pT(r,p)  =e= sum(rpi(r,p,i),2**(ord(i) - 1)*pT2(rpi));
@@ -257,19 +256,20 @@ solve portfolioMIP using mip minimizing cTotal;
 abort$(portfolioMIP.modelstat<>%modelstat.optimal% and
        portfolioMIP.modelstat<>%modelstat.integerSolution%) 'No feasible solution';
 
-$onExternalOutput
 Set
-   CHdr   'Cost Header'           / 'Total Cost', 'Fixed Cost', 'Investment Cost' /
+   CHdr   'Cost Header'           / 'Fixed Cost', 'Investment Cost' /
    SHdr   'Surplus Header'        / Demand, Surplus /
    PTHdr  'ProductionTime Header' / 'Production Time', 'max. Production Time' /
    RPHdr  'RP Header'             / 'Utilization rate', 'Number of batches' /;
+   
+$onExternalOutput
 Parameter
    Cost(CHdr)                     'Cost report'
-   Surplus(pP,SHdr)               'Demand/Surplus report'
-   ProductionTime(rR,PTHdr)       'Production time report'
-   RPreport(rR,pP,RPHdr)          'Reactor/Product report';
+   Surplus(pP,SHdr)               'Demand/Surplus report [MIRO:pivot]'
+   ProductionTime(rR,PTHdr)       'Production time report [MIRO:pivot]'
+   RPreport(rR,pP,RPHdr)          'Reactor/Product report [MIRO:pivot]';
 $offExternalOutput
-Cost('Total Cost')      = cTotal.l;
+
 Cost('Fixed Cost')      = cFixed.l;
 Cost('Investment Cost') = cInvest.l;
                         
@@ -284,4 +284,4 @@ RPreport(r,p,'Number of batches') = nb.l(r,p);
 
 display Cost, Surplus, ProductionTime, RPreport;
 
-$libInclude webui
+$libInclude miro

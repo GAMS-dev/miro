@@ -10,79 +10,35 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
 }
 
 renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL){
-
+  
   tryCatch({
-    map.data <- read_sf(paste0(path, options$geojsonloc))
+    mapData <- read_sf(file.path(path, options$geojsonloc))
   }, error = function(e){
     stop(paste0("Problems reading GEOJSON file. Error message: ", e), call. = FALSE)
   })
   
-  labels <- map.data$name
+  labels <- mapData$name
   
   # generate a color palette
-  getPalette = colorRampPalette(brewer.pal(12, "Set3"))
-  pal <- colorFactor(palette = getPalette(length(unique(labels))), map.data$id)
-
+  getPalette <- colorRampPalette(brewer.pal(12, "Set3"))
+  pal        <- colorFactor(palette = getPalette(length(unique(labels))), mapData$id)
+  
   #generate map
-  map <- leaflet(map.data) %>%
-         addTiles() %>%
-         setView(lng = -98.5795, lat = 39.8283, zoom = 5) %>%
-         addPolygons(smoothFactor = 0.5, fillOpacity = 0.4, 
-                     highlightOptions = highlightOptions(color = "white", weight = 1), 
-                     color = ~pal(id), label = labels,
-                     labelOptions = labelOptions(style = list("font-weight" = "normal", 
-                                                              padding = "3px 8px"), 
-                                                                     textsize = "15px", direction = "auto")) %>%
-   #       addPopups(
-   #         data$lngP,data$latP,
-   #         paste(sep = "<br/>",
-   #               "<b style = 'font-size: 16px;color:#008f01'>" %+% 
-   #                 htmltools::htmlEscape(data[["canning plants"]]) %+% "</b>",
-   #               "Capacity: " %+% htmltools::htmlEscape(data$cap)
-   #         ), options = popupOptions(closeButton = FALSE)
-   #       ) %>%
-   # addPopups(
-   #   data$lngM,data$latM,
-   #   paste(sep = "<br/>",
-   #         "<b style = 'font-size: 16px;color:#c60000'>" %+% 
-   #           htmltools::htmlEscape(data$markets) %+% "</b>",
-   #         "Demand: " %+% htmltools::htmlEscape(data$demand)
-   #   ), options = popupOptions(closeButton = FALSE)
-   # ) %>%
-      addMarkers(
-        lng = data$lngP, lat = data$latP,
-        label = paste0(data[["canning plants"]], " (capacity: ", data$cap, ")"),
-        labelOptions = labelOptions(noHide = T, textsize = "22px", style = list("background-color" = "rgb(243, 150, 25)"))) %>%
-      addMarkers(
-        lng = data$lngM, lat = data$latM,
-        label = paste(sep = "\n", data$markets, " (demand: ", data$demand, ")"),
-        labelOptions = labelOptions(closeButton = F, noHide = T, textsize = "22px", style= list("color" = "rgb(243, 150, 25)"))) %>%
+  map <- leaflet(mapData) %>%
+    addTiles() %>%
+    setView(lng = -98.5795, lat = 39.8283, zoom = 5) %>%
+    addMarkers(
+      lng = data$lngp, lat = data$latp,
+      label = paste0(data$i, " (capacity: ", data$cap, ")"),
+      labelOptions = labelOptions(noHide = T, textsize = "22px", style = list("background-color" = "rgb(243, 150, 25)"))) %>%
+    addMarkers(
+      lng = data$lngm, lat = data$latm,
+      label = paste(sep = "\n", data$j, " (demand: ", data$demand, ")"),
+      labelOptions = labelOptions(closeButton = F, noHide = T, textsize = "22px", style= list("color" = "rgb(243, 150, 25)"))) %>%
     
-         addFlows(lng0 = data$lngP, lat0 = data$latP, lng1 = data$lngM, lat1 = data$latM, 
-                  color = "indianred", flow = data$quantities, 
-                  time = data[['time steps']], opacity = 1, minThickness = 0, 
-                  maxThickness = 12, 
-                  layerId = paste0("From ", data[["canning plants"]], " to ", data$markets), popup = popupArgs())
+    addFlows(lng0 = data$lngp, lat0 = data$latp, lng1 = data$lngm, lat1 = data$latm, 
+             color = "indianred", flow = data$quantities, opacity = 1, minThickness = 0, 
+             maxThickness = 12, 
+             layerId = paste0("From ", data$i, " to ", data$j), popup = popupArgs())
   output$trnsport <- leaflet::renderLeaflet(map)
 }
-#
-#renderSimple2 <- function(input, output, server, data, options = NULL, path = NULL){
-#  
-#  
-#  #mapping of Ids (from GAMS) and labels (R)
-#  map.id.name <- as.list(labels)
-#  names(map.id.name) <- sapply(1:16, function(i){ paste0("ID_", i)})
-#  label0 <- sapply(data$Regions, function(el){map.id.name[[el]]})
-#  label1 <- sapply(data$Regions1, function(el){map.id.name[[el]]})
-#  
-#  
-#    addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, 
-#             color = "indianred", flow = data$Flow, 
-#             time = data[['time steps']], opacity = 1, minThickness = 1, 
-#             maxThickness = 12, 
-#             #Popup for flows - label0 and label1 need to be filled before
-#             layerId = paste0("From ", label0, " to ", label1), popup = popupArgs())
-#  
-#  
-#  output$simple <- leaflet::renderLeaflet(map)
-#}

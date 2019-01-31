@@ -45,13 +45,13 @@ Variable
     w(symbol)   'what part of the portfolio'
     slpos(date) 'positive slack'
     slneg(date) 'negative slack'
-    obj         'objective';
+    obj         'UIOutput: objective';
 
 Positive variables w, slpos, slneg;
 Binary variable p;
 
 Equation
-    deffit(date)    'fit to Dow Jones index'
+    deffit(date)    'UIOutput: fit to Dow Jones index'
     defpick(symbol) 'can only use stock if picked'
     defnumstock     'few stocks allowed'
     defobj          'absolute violation (L1 norm) from index';

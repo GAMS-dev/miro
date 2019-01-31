@@ -17,20 +17,12 @@ comments.
 Keywords: linear programming, transportation problem, scheduling
 $offText
 
-set
-   locHdr 'location data header' /lat, lng/;
-
-*configuration of WebUI input
-$ifthen set gmswebui
-$onecho > webuiconf.json
-{ "GMSPAR_type": {"alias": "Model Type", "dropdown": {"label": "Select model type", "aliases": ["LP", "MIP", "MINLP"], "choices": ["lp", "mip", "minlp"]}}}
-$offecho
-$endif
-
-$onExternalInput
 Set
-   i 'canning plants' / seattle,  san-diego /
-   j 'markets'        / new-york, chicago, topeka /;
+   locHdr 'location data header' /lat, lng/
+   i 'UIInput: canning plants' / seattle,  san-diego /
+   j 'UIInput: markets'        / new-york, chicago, topeka /;
+
+$onExternalInput   
 Parameter
    a(i) 'capacity of plant i in cases'
         / seattle   350
@@ -41,9 +33,9 @@ Parameter
           chicago   300
           topeka   275 /;
 
-Scalar f 'freight in dollars per case per thousand miles ### { "slider":{"min":1, "max":500, "default":90,  "step":1 }}' / 90 /
-       minS 'minimum shipment (MIP- and MINLP-only) ### { "slider":{"min":0, "max":500, "default":100,  "step":1 }}' / 100 /
-       beta 'beta (MINLP-only) ### { "slider":{"min":0, "max":1, "default":0.95,  "step":0.01 }}' / 0.95 /;
+Scalar f 'freight in dollars per case per thousand miles' / 90 /
+       minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
+       beta 'beta (MINLP-only)' / 0.95 /;
 $offExternalInput
 
 Parameter
@@ -170,20 +162,19 @@ Solve transportMINLP using MINLP minimizing z ;
 abort$(transportMINLP.modelstat > 2 and transportMINLP.modelstat <> 8) "No feasible solution found"
 $endif.minlp
 
-
-
 Set
 scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
 'latM', 'cap', 'demand', 'quantities' /;
+
 $onExternalOutput
 Parameter
-schedule(i,j,scheduleHdr) 'shipment quantities in cases';
+schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:pivot]';
 
 Scalar
 total_cost 'total transportation costs in thousands of dollars';
 $offExternalOutput
 
-$ifthen.type set type
+$ifthen set type
 total_cost = z.l;
 
 schedule(i,j, 'lngP') = iLocData(i,'lng');
@@ -193,6 +184,6 @@ schedule(i,j, 'latM') = jLocData(j,'lat');
 schedule(i,j, 'cap') = a(i);
 schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
-$endif.type
+$endif
 
-$libInclude webui
+$libInclude miro
