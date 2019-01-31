@@ -454,7 +454,7 @@ if(is.null(errMsg)){
   # Hypercube mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$hcubeMode, TRUE)){
-    rSaveFilePath <- gsub(".gmsconf", "_hcube.gmsconf", rSaveFilePath, fixed = TRUE)
+    rSaveFilePath <- gsub(".miroconf", "_hcube.miroconf", rSaveFilePath, fixed = TRUE)
     lapply(seq_along(modelIn), function(i){
       if(!identical(modelIn[[i]]$noHcube, TRUE)){
         switch(modelIn[[i]]$type,

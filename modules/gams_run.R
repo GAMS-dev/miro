@@ -337,9 +337,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       genHcubeJobFolder(fromDir = currentModelDir, 
                         submFileDir = file.path(homeDir, "resources"),
                         toDir = workDirHcube, scenGmsPar = scenGmsPar)
-      
+      filesToInclude <- list.files(recursive = TRUE)
+      idsToExclude   <- startsWith(filesToInclude, 
+                                   file.path(basename(currentModelDir), 
+                                             hcubeDirName)) | 
+        endsWith(filesToInclude, ".miroconf")
+      filesToInclude <- filesToInclude[!idsToExclude]
       removeModal()
-      zip(file, list.files(recursive = TRUE), compression_level = 6)
+      zip(file, filesToInclude, compression_level = 6)
       # END EPIGRIDS specific
     },
     contentType = "application/zip")

@@ -137,7 +137,7 @@ if(is.null(errMsg)){
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', webuiVersion, 
                           if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube")) "_hcube",
-                          '.gmsconf')
+                          '.miroconf')
   # set user ID (user name) and user groups
   ugroups <- NULL
   if(isShinyProxy){
