@@ -43,7 +43,8 @@
       "noDataDep":"Please first import all data this element depends on.",
       "tooltips":{  
         "btGraphView":"switch to graph view"
-      }
+      },
+      "widgetTabTitle": "Input widgets"
     },
     "gams":{  
       "boxModelStatus":{  

@@ -123,8 +123,8 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
 $onExternalOutput
 Parameter
     partOfPortfolio(symbol)            'what part of the portfolio'   
-    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:pivot]'     
-    abserror(date,errHdr)              'absolute error [MIRO:pivot]'               
+    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:table]'     
+    abserror(date,errHdr)              'absolute error [MIRO:table]'               
 Singleton Set lastDayTraining(date)    'last date of training period [MIRO:hidden]' ;
 $offExternalOutput
 

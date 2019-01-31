@@ -107,8 +107,5 @@
           "class": "checkbox-material"
        }
     },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "saveTraceFile":true
 }

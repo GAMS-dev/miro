@@ -122,7 +122,7 @@ scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
 
 $onExternalOutput
 Parameter
-schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:pivot]';
+schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
 
 Scalar
 total_cost 'total transportation costs in thousands of dollars';

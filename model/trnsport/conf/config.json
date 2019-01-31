@@ -1,10 +1,4 @@
 {
-    "activateModules":{
-        "scenario":true
-    },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "inputWidgets":{
        "f":{
           "widgetType": "slider",

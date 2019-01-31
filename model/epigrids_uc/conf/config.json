@@ -168,8 +168,5 @@
          "selected": "DICOPT"
       }
     },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "saveTraceFile":true
 }

@@ -43,7 +43,8 @@
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
       "tooltips":{  
         "btGraphView":"Zur grafischen Ansicht wechseln"
-      }
+      },
+      "widgetTabTitle": "Eingabe-Widgets"
     },
     "gams":{  
       "boxModelStatus":{  

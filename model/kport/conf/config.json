@@ -3,9 +3,6 @@
     "activateModules":{
         "scenario":true
     },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "inputWidgets":{
       "actScen":{
           "widgetType": "dropdown",

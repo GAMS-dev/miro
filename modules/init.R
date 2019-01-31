@@ -342,9 +342,9 @@ Please specify another widget type.", modelInAlias[i]))
 }
 if(is.null(errMsg)){
   # declare input sheets as they will be displayed in UI
-  if(!length(config$aggregateWidgets$title)){
+  if(identical(config$aggregateWidgets, FALSE)){
     # every input element on its own tab
-    inputTabs  <- seq_along(modelIn)
+    inputTabs      <- seq_along(modelIn)
     inputTabTitles <- modelInAlias
   }else{
     # aggregate input widgets on a single tab
@@ -370,7 +370,7 @@ if(is.null(errMsg)){
         if(is.null(widgetId)){
           widgetId         <<- i
           inputTabs[[i]] <<- widgetIds
-          inputTabTitles[[i]]<<- config$aggregateWidgets$title
+          inputTabTitles[[i]]<<- lang$nav$inputScreen$widgetTabTitle
         }
       }
     })

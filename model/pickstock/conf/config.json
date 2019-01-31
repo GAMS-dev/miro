@@ -1,8 +1,5 @@
 {
 	"UILogo"             : "pickstock.png",
-    "aggregateWidgets"    : {
-       "title"    : "Parameters"
-    },
     "inputWidgets":{
       "price":{
         "widgetType": "table",

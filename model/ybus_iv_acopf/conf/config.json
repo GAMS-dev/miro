@@ -98,8 +98,5 @@
          "value": 1,
          "class": "checkbox-material"
       }
-    },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
     }
 }

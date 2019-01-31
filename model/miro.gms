@@ -40,7 +40,7 @@ input_tag = 'UIInput:'
 uii = len(input_tag)
 output_tag = 'UIOutput:'
 uio = len(output_tag)
-pivot_marker = '[MIRO:pivot]'
+pivot_marker = '[MIRO:table]'
 hidden_marker = '[MIRO:hidden]'
 gams.wsWorkingDir = '.'
 gdxfn = r'%fn%_cmiro_outdb.gdx'   
@@ -314,6 +314,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
             extra = 'index=1..' + str(s[0].dimension-1) + ' valuedim=1 values=' + str(s[0].dimension) + '..lastCol'
          f.write('$hiddencall csv2gdx %csvHome%' + symname + '.csv id=' + symname + ' useheader=y ' + extra + ' > csv2gdx.log\n')
          f.write('$if errorlevel 1 $abort "Problem converting ' + symname + '.csv to GDX. Check csv2gdx.log"\n')
+         f.write('$hiddencall rm -f csv2gdx.log\n')
          f.write('$gdxin ' + symname + '\n')
          f.write('$loadDCR ' + symname +'\n')
          f.write('$gdxin\n')
@@ -505,6 +506,7 @@ if have_o_scalar:
       st.append(extractSymText(s[0],1))
       if hidden_marker in st[-1]:
          hiddenCnt = hiddenCnt+1
+         st[-1] = st[-1].replace(hidden_marker, '')
       if s[1]=="ss":
          sty.append("set")
       else:

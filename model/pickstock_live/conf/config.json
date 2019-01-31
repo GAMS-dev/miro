@@ -1,8 +1,5 @@
 {
 	"UILogo":"pickstock-live.png",
-    "aggregateWidgets"    : {
-       "title"    : "Parameters"
-    },
     "inputWidgets": {
       "maxstock": {
         "min": 1,

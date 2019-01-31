@@ -241,18 +241,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               },
-              "aggregateWidgetsTmp":{
+              "aggregateWidgets":{
                  "title":"Aggregate all input widgets on a single tab?",
                  "type":"boolean",
                  "required":false,
                  "default":true
-              },
-              "aggregateWidgetsTitle":{
-                "title":"Title of the tab where input widgets are aggregated",
-                "type":"string",
-                "minLength":"1",
-                "default": "Widgets",
-                "required":true
               },
               "scalarAliases":{
                  "title":"Specify the aliases for the input and output scalar tables",
@@ -2856,9 +2849,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               }
-           },
-           "dependencies": {
-             "aggregateWidgetsTitle": "aggregateWidgetsTmp"
            }
         },
         "options":{
@@ -3322,8 +3312,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "autoGenInputGraphs":1,
                     "defCompMode": 1,
                     "activateModules": 1,
-                    "aggregateWidgetsTmp": 1,
-                    "aggregateWidgetsTitle": 1,
+                    "aggregateWidgets": 1,
                     "scalarAliases":1,
                     "saveTraceFile": 1,
                     "roundingDecimals":1,
@@ -3383,13 +3372,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        }
                        // remove default values
                        removeDefaults(co, this);
-                       // change object "tabtitle" to "title" (to match schema)
-                       if(co.aggregateWidgetsTmp){
-                          co.aggregateWidgets = {};
-                          co.aggregateWidgets.title = co.aggregateWidgetsTitle;
-                          delete co.aggregateWidgetsTitle;
-                       }
-                       delete co.aggregateWidgetsTmp;
                        //restructuring of "dataRendering" for all output elements
                        if(typeof co.dataRendering !== 'undefined'){
                          makeKey("Format: datatable", "Parameter", "datatable");
@@ -4017,8 +3999,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
               });
             }
 
-            $("[data-alpaca-field-name='aggregateWidgetsTmp']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='aggregateWidgetsTmp']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.PNG' style = 'max-height:1000px; max-Width:800px;'/>");
+            $("[data-alpaca-field-name='aggregateWidgets']").addClass("alpaca-popup-image");
+            $("[data-alpaca-field-name='aggregateWidgets']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.PNG' style = 'max-height:1000px; max-Width:800px;'/>");
 
             $("[data-alpaca-field-name='activateModules_logFile:']").addClass("alpaca-popup-image");
             $("[data-alpaca-field-name='activateModules_logFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_log.PNG' style = 'max-height:600px; max-Width:1000px;'/>");

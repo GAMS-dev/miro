@@ -271,8 +271,5 @@
          "selected": "given"
       }
     },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "saveTraceFile":true
 }

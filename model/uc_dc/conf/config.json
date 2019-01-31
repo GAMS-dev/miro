@@ -309,9 +309,6 @@
           "class": "checkbox-material"
       }
     },
-	"aggregateWidgets"    : {
-		"title"				: "Input Options"
-    },
     "dataRendering"      : {
 		"eprice"   	: {
 			"outType"			: "eprice",

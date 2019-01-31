@@ -174,18 +174,11 @@
             }
          }
       },
-      "aggregateWidgets":{  
-         "description":"Whether to aggregate all input widgets on a single tab",
-         "type":"object",
-         "additionalProperties":false,
-         "properties":{  
-            "title":{  
-               "description":"Title of the tab",
-               "type":"string",
-               "minLength":"1",
-               "required":false
-            }
-         }
+      "aggregateWidgets":{
+         "description": "Whether to aggregate all input widgets on a single tab",
+         "type": "boolean",
+         "default":true,
+         "required":false
       },
       "scalarAliases":{  
          "description":"Specify the aliases for the input and output scalar tables",

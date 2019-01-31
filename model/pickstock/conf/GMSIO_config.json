@@ -136,7 +136,7 @@
                 "lastDayTraining"
             ],
             "symtext": [
-                "last date of training period [MIRO:hidden]"
+                "last date of training period "
             ],
             "symtypes": [
                 "set"

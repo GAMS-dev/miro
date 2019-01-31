@@ -60,7 +60,7 @@ Table RData(rR,s,rhdr) 'Reactor data'
    R2    176.07      250     52.5      250
    R3                      151.25      250;
 
-Table PData(pP,s,phdr) 'Product data [MIRO:pivot]'
+Table PData(pP,s,phdr) 'Product data [MIRO:table]'
          s1.Demand  s1.'Production Time'  s2.Demand  s2.'Production Time'
    L1         2600                    6        2600                    6
    L2         2300                    6        2300                    6
@@ -265,9 +265,9 @@ Set
 $onExternalOutput
 Parameter
    Cost(CHdr)                     'Cost report'
-   Surplus(pP,SHdr)               'Demand/Surplus report [MIRO:pivot]'
-   ProductionTime(rR,PTHdr)       'Production time report [MIRO:pivot]'
-   RPreport(rR,pP,RPHdr)          'Reactor/Product report [MIRO:pivot]';
+   Surplus(pP,SHdr)               'Demand/Surplus report [MIRO:table]'
+   ProductionTime(rR,PTHdr)       'Production time report [MIRO:table]'
+   RPreport(rR,pP,RPHdr)          'Reactor/Product report [MIRO:table]';
 $offExternalOutput
 
 Cost('Fixed Cost')      = cFixed.l;
