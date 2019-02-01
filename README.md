@@ -1,6 +1,6 @@
 # MIRO
 
-GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in your browser.
+GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in your browser based on the [R/shiny package](https://github.com/rstudio/shiny).
 
 You can find the documentation with examples [here](http://gams.com/miro).
 
@@ -28,9 +28,9 @@ git pull command
 
 For a running application you need R (v. 3.5.1 or later) with the following packages installed:
 
-* stringi
 * shiny
 * shinydashboard
+* stringi
 * processx
 * V8
 * dplyr
