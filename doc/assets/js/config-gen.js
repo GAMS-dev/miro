@@ -68,19 +68,20 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
         if(iScalarOut > -1){
           gmsSymOut.splice(iScalarOut, 1);
         }
-        $("#gmsioUpload").hide();
-        $("#confGenContent").show();
-        $("#selectConfigType").show();
-
         gmsSymHdr = gmsSymHdrIn;
         $.extend(gmsSymHdr, gmsSymHdrOut);
         $.extend(gmsSymNumHdrIn, gmsSymNumHdrOut);
 
-        $("#launchConfigGenBt").one("click", function(){
-          $("#selectConfigType").hide();
-          // Merge gmsSymHdrOut into gmsSymHdrIn
-          launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms);
-        });
+        $("#gmsioUpload").hide();
+        $("#confGenContent").show();
+        launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms);
+        //$("#selectConfigType").show();
+//
+//        //$("#launchConfigGenBt").one("click", function(){
+//        //  $("#selectConfigType").hide();
+//        //  // Merge gmsSymHdrOut into gmsSymHdrIn
+//        //  launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms);
+        //});
       }
       catch(err) {
           $("#errMsg").html("Problems parsing the JSON file. Please upload a valid GMSIO configutation file!");
@@ -241,11 +242,18 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               },
-              "aggregateWidgets":{
+              "aggregateWidgetsTmp":{
                  "title":"Aggregate all input widgets on a single tab?",
                  "type":"boolean",
                  "required":false,
                  "default":true
+              },
+              "aggregateWidgetsTitle":{
+                "title":"Title of the tab where input widgets are aggregated",
+                "type":"string",
+                "minLength":"1",
+                "default": "Widgets",
+                "required":true
               },
               "scalarAliases":{
                  "title":"Specify the aliases for the input and output scalar tables",
@@ -2849,6 +2857,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               }
+           },
+           "dependencies": {
+             "aggregateWidgetsTitle": "aggregateWidgetsTmp"
            }
         },
         "options":{
@@ -3312,7 +3323,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "autoGenInputGraphs":1,
                     "defCompMode": 1,
                     "activateModules": 1,
-                    "aggregateWidgets": 1,
+                    "aggregateWidgetsTmp": 1,
+                    "aggregateWidgetsTitle": 1,
                     "scalarAliases":1,
                     "saveTraceFile": 1,
                     "roundingDecimals":1,
@@ -3372,6 +3384,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        }
                        // remove default values
                        removeDefaults(co, this);
+                       // change object "tabtitle" to "title" (to match schema)
+                       if(co.aggregateWidgetsTmp){
+                          co.aggregateWidgets = {};
+                          co.aggregateWidgets.title = co.aggregateWidgetsTitle;
+                          delete co.aggregateWidgetsTitle;
+                       }
+                       delete co.aggregateWidgetsTmp;
                        //restructuring of "dataRendering" for all output elements
                        if(typeof co.dataRendering !== 'undefined'){
                          makeKey("Format: datatable", "Parameter", "datatable");
@@ -3820,15 +3839,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                   let gmsSymName = pivot.children[i].childrenByPropertyId["Parameter"].data[0].text;
                   let pivottable = pivot.children[i].childrenByPropertyId["pivottable"];
                   let rows = pivottable.childrenByPropertyId["rows"];
-                  rows.refresh();
-                  for(let j = 0; j < rows.children.length; j++) {
+                  for(j = 0; j < rows.children.length; j++) {
                     rows.children[j].schema.enum = rows.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
                     rows.children[j].schema.default = gmsSymHdr[gmsSymName][0];
                     rows.children[j].refresh();
                   }
                   let cols = pivottable.childrenByPropertyId["cols"];
-                  cols.refresh();
-                  for(let j = 0; j < cols.children.length; j++) {
+                  for(j = 0; j < cols.children.length; j++) {
                     cols.children[j].schema.enum = cols.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
                     cols.children[j].schema.default = gmsSymHdr[gmsSymName][0];
                     cols.children[j].refresh();
@@ -3999,8 +4016,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
               });
             }
 
-            $("[data-alpaca-field-name='aggregateWidgets']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='aggregateWidgets']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.PNG' style = 'max-height:1000px; max-Width:800px;'/>");
+            $("[data-alpaca-field-name='aggregateWidgetsTmp']").addClass("alpaca-popup-image");
+            $("[data-alpaca-field-name='aggregateWidgetsTmp']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.PNG' style = 'max-height:1000px; max-Width:800px;'/>");
 
             $("[data-alpaca-field-name='activateModules_logFile:']").addClass("alpaca-popup-image");
             $("[data-alpaca-field-name='activateModules_logFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_log.PNG' style = 'max-height:600px; max-Width:1000px;'/>");
