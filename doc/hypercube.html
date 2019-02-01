@@ -444,7 +444,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre></p>
                                         </ul>
                                         <p>As already mentioned, CSV files are usually generated automatically. However, optional files can be deleted manually so that they are not included in the database.</p>
 
-                                        <p>The picture below extends the previous schema and shows the workflow from the generated Hypercube file over its conversion to an executable GAMS script, the job submission (local or via compute server) up to the structure of the obtained results.</p>
+                                        <p>The image below extends the previous schema and shows the workflow from the generated Hypercube file over its conversion to an executable GAMS script, the job submission (local or via compute server) up to the structure of the obtained results.</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/hcube_schema.png" alt="schematic of possible workflow" />
                                         </div>
@@ -477,25 +477,34 @@ Scalar f    'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 $offExternalInput
-</pre></code>                           <p>In the database query, you can search for exactly these scalar data of a scenario.
+</pre></code>                           <p>In the database query, you can search for exactly these scalar data of a scenario. More precisely, it is possible to search for the following GAMS symbols:
+                                        <ul>
+                                          <li>Scalars</li>
+                                          <li>Singleton sets</li>
+                                          <li>Double-dash parameters</li>
+                                          <li>GAMS options</li>
+                                        </ul>
                                         <br>Next to those scenario specific filters, the optionally defined job tags of a Hypercube job and the date of creation can be used in a database query as well. Database queries can be combined with the help of the Boolean Operators AND and/or OR.</p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" src="assets/images/batch_img/batch_db_query.png" alt="Filtered database search" />
+                                            <img class="img-fluid" src="assets/images/batch_img/hcube_db_query.png" alt="Filtered database search" />
                                         </div>
                                         <p>If all desired filters are set, the database query is started with a click on 'query database'. The results are then displayed in the lower screen area. There the user can select scenarios for the analysis.
                                         <br>If this is done the user is asked to chose an analysis method:</p>
                                         <div class="section-block" style="text-align:center;">
-                                              <img class="img-fluid" style="display:block; margin:auto; max-height:150px;" src="assets/images/batch_img/analyzing_method.png" alt="Choose method for analyses" />
+                                              <img class="img-fluid" style="display:block; margin:auto; max-height:150px;" src="assets/images/batch_img/comparison_method.png" alt="Choose method for analyses" />
                                         </div>
                                         <ul>
-                                        <li><b>Interactive mode: </b><br/>
-                                        Internal scenario comparison. Compare different scenarios directly in split view or tab view. Best suited for a small number of scenarios to compare (maximum number of scenarios allowed: 10).
+                                        <li><b>Delete:</b><br/>
+                                        Delete selected scenarios from the database.
+                                        </li>
+                                        <li><b>Download data:</b><br/>
+                                        Download of scenario data to be analyzed with an external analyzing method.
                                         </li>
                                         <li><b>Paver:</b><br/>
                                          Automated Performance Analysis. Suitable for a large number of scenarios to be compared with regard to defined performance criteria.
                                         </li>
-                                        <li><b>Download data:</b><br/>
-                                        Download of scenario data to be analyzed with an external analyzing method.
+                                        <li><b>Interactive mode: </b><br/>
+                                        Internal scenario comparison. Compare different scenarios directly in split view or tab view. Best suited for a small number of scenarios to compare (maximum number of scenarios allowed: 10).
                                         </li>
                                         </ul>
                                         <p>The various analysis methods are described in detail below.</p>
