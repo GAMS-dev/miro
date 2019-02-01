@@ -420,31 +420,33 @@
                                         </code> tags (or <code class="language-gams">'UIOutput: ' 
                                         </code> in the explanatory text). Each output parameter declared there must be stored in a separate CSV file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
                                         <li>It is mandatory that the header line of a CSV file is identical to the corresponding parameter declared in GAMS.
-                                        <br>Example: In the trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared between the <code class="language-gams">$onExternalOutput
-                                        </code> / <code class="language-gams">$offExternalOutput
-                                        </code> tags. 
-                                        The resulting <i>schedule.csv</i> contains the header row "<span class="code" style="white-space:nowrap">canning plants,markets,cap,demand,quantities</span>", 
-                                        which corresponds to the explanatory texts of the indexes <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
-                                        The conventions concerning the selection of the headers can be found <a href="./model.html#create-3" target="_blank">here</a>.</p>
-                                        <pre><code class="language-gams">[...]
-                                        
-$onExternalOutput
-Variable z 'total transportation costs in thousands of dollars';
-$offExternalOutput
-Positive Variable x;
+                                        <br>Example: In the (slightly adapted) trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared with the <code class="language-gams">'UIOutput: '
+                                        </code> tag. 
+                                        </p>
+                                        <p><pre><code class="language-gams">Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
 
-[...]</code></pre> 
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="display:block; margin:auto;" src="assets/images/batch_img/pickstock_output_symbols.png" alt="CSV file header row" />
-                                        </div>
-                                        
+Parameter schedule(i,j,scheduleHdr) 'UIOutput: shipment quantities in cases [MIRO:table]';
+
+schedule(i,j,'cap')        = a(i);
+schedule(i,j,'demand')     = b(j);
+schedule(i,j,'quantities') = x.l(i,j);</code></pre></p>
+                                        <p>The resulting <i>schedule.csv</i> contains the header row <span class="code" style="white-space:nowrap">i,j,cap,demand,quantities</span>, 
+                                        which corresponds to the first two domains <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
+                                        The conventions concerning the selection of the headers can be found <a href="./model.html#create-3" target="_blank">here</a>.</p>
+                                        <pre><code class="language-csv">i,j,cap,demand,quantities
+"Seattle","New-York",350,325,20
+"Seattle","Chicago",350,300,300
+"Seattle","Topeka",350,275,
+"San-Diego","New-York",600,325,305
+"San-Diego","Chicago",600,300,
+"San-Diego","Topeka",600,275,275</code></pre>
                                         </li>
                                         </ul>
                                         <p>As already mentioned, CSV files are usually generated automatically. However, optional files can be deleted manually so that they are not included in the database.</p>
 
                                         <p>The picture below extends the previous schema and shows the workflow from the generated Hypercube file over its conversion to an executable GAMS script, the job submission (local or via compute server) up to the structure of the obtained results.</p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/batch_file_skript.png" alt="schematic of possible workflow" />
+                                            <img class="img-fluid" style="margin-bottom:15px;" src="assets/images/batch_img/hcube_complete.png" alt="schematic of possible workflow" />
                                         </div>
                                     </div><!--//section-block-->
                                     <div  id="scengen-6"  class="section-block">
@@ -467,7 +469,7 @@ Positive Variable x;
                                     <p></p>
                                     <div  id="analyze-2"  class="section-block">
                                         <h3 class="block-title">Scenario selection</h3>
-                                        <p>Scenarios that have been imported into the database can be loaded at a later time for subsequent analyses. For this purpose the module "load scenarios" is used, which represents a graphical representation of a database query. If not all available scenarios are to be displayed, the query can be strongly individualized. All scalar input values that can be set by the user to uniquely identify a scenario can be selected as filters. 
+                                        <p>Scenarios that have been imported into the database can be loaded at a later time for subsequent analyses. For this purpose the module <i>load scenarios</i> is used, which is a graphical representation of a database query. If not all available scenarios are to be displayed, the query can be strongly individualized. All scalar input values that can be set by the user to uniquely identify a scenario can be selected as filters. 
                                         </p><p>Example: 
                                         <br>In the following example from the demo model trnsport 3 scalar input values are integrated into the WebUI:</p>
                                         <pre><code class="language-gams">$onExternalInput 
