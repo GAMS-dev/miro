@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>GAMS WebUI documentation</title>
+    <title>GAMS MIRO documentation</title>
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -32,7 +32,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
-                            <span class="text-highlight">GAMS</span><span class="text-bold">WebUI</span>
+                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -46,7 +46,7 @@
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
                     <h1 class="doc-title"><i class="icon fas fa-arrow-alt-circle-down"></i> Installation</h1>
-                    <div class="meta"><i class="far fa-clock"></i> Last updated: Jauary 11th, 2019</div>
+                    <div class="meta"><i class="far fa-clock"></i> Last updated: February 1st, 2019</div>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -55,58 +55,70 @@
                                 <h2 class="section-title">Requirements</h2>
                                 <div id="req-gams"  class="section-block">
                                     <h4 class="block-title">GAMS</h4>
-                                    <p>To be able to use the GAMS WebUI for your <a href="faqs.html#def-model" target="_blank">model</a>, a current GAMS version (25.1.2 or later) is required.  You can download it <a href="https://www.gams.com/download/" target="_blank">here</a>.
+                                    <p>To be able to use GAMS MIRO for your <a href="faqs.html#def-model" target="_blank">model</a>, a current GAMS version (26.0.3 or later) is required. You can download GAMS <a href="https://www.gams.com/download/" target="_blank">here</a>.
                                     You will also find installation instructions for the GAMS system there.</p>
                                 </div><!--//section-block-->
                                 <div id="req-r"  class="section-block">
                                     <h4 class="block-title">R</h4>
-                                    <p>A current R version (3.5.1 or later) is required for using the WebUI. You can download it <a href="https://www.r-project.org/" target="_blank">here</a>.</p>
+                                    <p>A current R version (3.5.1 or later) is required for using MIRO. You can download it <a href="https://www.r-project.org/" target="_blank">here</a>.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
-                            <section id="win-installation-section" class="doc-section">
-                                <h2 class="section-title">Windows</h2>
-                                <div id="win-webui"  class="section-block">
-                                    <h4 class="block-title">GAMS WebUI Installation</h4>
-                                    <p>To install the GAMS WebUI and its components, download the <a href="./index.html" target="_blank">latest</a> WebUI version and run the setup, which will guide you through the installation process.<br>
-                                    The installer checks for an existing R version on your system and installs a current one, if necessary. 
-                                    </p>
-                                </div><!--//section-block-->
-                                <div id="win-demo"  class="section-block">
-                                    <h4 class="block-title">Demo applications</h4>
-                                    <p>There are demo applications that can help you get started with the WebUI and its functionality. Those demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\</span> after a successful installation. 
-                                    In case you want to download them again, you can find the demo applications <a href="" target="_blank">here [link missing]</a>. To use it, simply unzip the downloaded file and move the folder into a directory of your choice.
-                                    </p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="osx-installation-section" class="doc-section">
-                                <h2 class="section-title">MacOS</h2>
-                                <div id="osx-webui"  class="section-block">
-                                    <h4 class="block-title">GAMS WebUI Installation</h4>
-                                    <p>To install the GAMS WebUI and its components, download the <a href="./index.html" target="_blank">latest</a> WebUI version.<br>
-                                    <br><b>Note:</b> In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
-                                    </p>
-                                </div><!--//section-block-->
-                                <div id="osx-demo"  class="section-block">
-                                    <h4 class="block-title">Demo applications</h4>
-                                    <p>There are demo applications that can help you get started with the WebUI and its functionality.  
-                                    You can download these applications <a href="" target="_blank">here [link missing]</a>. To use it, simply unzip the downloaded file and move the folder into a directory of your choice.
-                                    </p>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
-                            <section id="linux-installation-section" class="doc-section">
-                                <h2 class="section-title">Linux</h2>
-                                <div id="linux-webui"  class="section-block">
-                                    <h4 class="block-title">GAMS WebUI Installation</h4>
-                                    <p>To install the GAMS WebUI and its components, download the <a href="./index.html" target="_blank">latest</a> WebUI version.<br>
-                                    <br><b>Note:</b> In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
-                                    </p>
-                                </div><!--//section-block-->
-                                <div id="linux-demo"  class="section-block">
-                                    <h4 class="block-title">Demo applications</h4>
-                                    <p>There are demo applications that can help you get started with the WebUI and its functionality.  
-                                    You can download these applications <a href="" target="_blank">here [link missing]</a>. To use it, simply unzip the downloaded file and move the folder into a directory of your choice.
-                                    </p>
-                                </div><!--//section-block-->
+                            <section id="installation-section" class="doc-section">
+                                <ul class="nav nav-tabs" id="installOS" role="tablist">
+                                  <li class="nav-item">
+                                    <a class="nav-link active" id="win-tab" data-toggle="tab" href="#windows" role="tab" aria-controls="windows" aria-selected="true">Windows</a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" id="macos-tab" data-toggle="tab" href="#macos" role="tab" aria-controls="macos" aria-selected="false">MacOS</a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" id="linux-tab" data-toggle="tab" href="#linux" role="tab" aria-controls="linux" aria-selected="false">Linux</a>
+                                  </li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent">
+                                  <div class="tab-pane fade show active" id="windows" role="tabpanel" aria-labelledby="win-tab">
+                                      <div id="win-webui"  class="section-block">
+                                        <h4 class="block-title">GAMS MIRO installation</h4>
+                                        <p>To install MIRO and its components, download the <a href="./index.html" target="_blank">latest</a> version and run the setup, which will guide you through the installation process.<br>
+                                        The installer checks for an existing R version on your system and installs a current one, if necessary. 
+                                        </p>
+                                    </div><!--//section-block-->
+                                    <div id="win-demo"  class="section-block">
+                                        <h4 class="block-title">Demo applications</h4>
+                                        <p>There are demo applications that can help you get started with MIRO and its functionality. Those demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\</span> after a successful installation. 
+                                        In case you want to download them again, you can find the demo applications <a href="" target="_blank">here [link missing]</a>. To use them, simply unzip the downloaded file and move the folder into a directory of your choice.
+                                        </p>
+                                    </div><!--//section-block-->
+                                  </div>
+                                  <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-tab">
+                                      <div id="osx-webui"  class="section-block">
+                                        <h4 class="block-title">GAMS MIRO installation</h4>
+                                        <p>To install MIRO and its components, download the <a href="./index.html" target="_blank">latest</a> version.<br>
+                                        <br><b>Note:</b> In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
+                                        </p>
+                                    </div><!--//section-block-->
+                                    <div id="osx-demo"  class="section-block">
+                                        <h4 class="block-title">Demo applications</h4>
+                                        <p>There are demo applications that can help you get started with MIRO and its functionality.  
+                                        You can download these applications <a href="" target="_blank">here [link missing]</a>. To use them, simply unzip the downloaded file and move the folder into a directory of your choice.
+                                        </p>
+                                    </div><!--//section-block-->
+                                  </div>
+                                  <div class="tab-pane fade" id="linux" role="tabpanel" aria-labelledby="linux-tab">
+                                      <div id="linux-webui"  class="section-block">
+                                        <h4 class="block-title">GAMS MIRO installation</h4>
+                                        <p>To install MIRO and its components, download the <a href="./index.html" target="_blank">latest</a> version.<br>
+                                        <br><b>Note:</b> In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
+                                        </p>
+                                    </div><!--//section-block-->
+                                    <div id="linux-demo"  class="section-block">
+                                        <h4 class="block-title">Demo applications</h4>
+                                        <p>There are demo applications that can help you get started with MIRO and its functionality.  
+                                        You can download these applications <a href="" target="_blank">here [link missing]</a>. To use them, simply unzip the downloaded file and move the folder into a directory of your choice.
+                                        </p>
+                                    </div><!--//section-block-->
+                                  </div>
+                                </div>
                             </section><!--//doc-section-->
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
@@ -115,25 +127,7 @@
 
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                     <a class="nav-link scrollto" href="#step1">Requirements</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#req-gams">GAMS</a>
-                                        <a class="nav-link scrollto" href="#req-r">R</a>
-                                    </nav><!--//nav-->
-	                                <a class="nav-link scrollto" href="#win-installation-section">Windows</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#win-webui">GAMS WebUI Installation</a>
-                                        <a class="nav-link scrollto" href="#win-demo">Demo applications</a>
-                                    </nav><!--//nav-->
-                                    <a class="nav-link scrollto" href="#osx-installation-section">MacOS</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#osx-webui">GAMS WebUI Installation</a>
-                                        <a class="nav-link scrollto" href="#osx-demo">Demo applications</a>
-                                    </nav><!--//nav-->
-                                    <a class="nav-link scrollto" href="#linux-installation-section">Linux</a>
-                                    <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#linux-webui">GAMS WebUI Installation</a>
-                                        <a class="nav-link scrollto" href="#linux-demo">Demo applications</a>
-                                    </nav><!--//nav-->
+                                    <a class="nav-link scrollto" href="#installation-section">Installation</a>
 	                            </nav><!--//doc-menu-->
 
                         </div>
@@ -154,11 +148,19 @@
 
 
     <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
-    <script type="text/javascript" src="assets/js/main.js"></script>
+    <script type="application/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="application/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="application/javascript" src="assets/js/main.js"></script>
+    <script type = "application/javascript">
+       if (navigator.appVersion.indexOf("Mac")!==-1){
+         $('#installOS a[href="#macos"]').tab('show') 
+       };
+       if (navigator.appVersion.indexOf("Linux")!==-1){
+         $('#installOS a[href="#linux"]').tab('show') 
+       };
+    </script>
 
 </body>
 </html>
