@@ -25,16 +25,6 @@
 	<!-- GITHUB BUTTON JS -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
-    <!--FACEBOOK LIKE BUTTON JAVASCRIPT SDK-->
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
     <div class="page-wrapper">
 
       <a href="TODO: ADD GITHUB LINK!!"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
@@ -50,7 +40,7 @@
                 </div><!--//branding-->
                 <div class="tagline">
                     <p>Documentation Center</p>
-                    <p style="font-size:10pt">Please note that GAMS WebUI is currently in the alpha phase (not suited for use in production).</p>
+                    <p style="font-size:10pt">Please note that GAMS MIRO is currently in the alpha phase (not suited for use in production).</p>
                 </div><!--//tagline-->
             </div><!--//container-->
         </header><!--//header-->
@@ -61,44 +51,39 @@
                 <div class="intro">
                     <p>Welcome to the documentation of GAMS MIRO for and from GAMS, the General Algebraic Modeling System. GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in your browser. With this interface you can supply your models with input data and generate, display and save the results of your optimization. Various graphics tools visually support your data to get a deep insight into your GAMS models.</p>
                     <p>GAMS MIRO is currently in the alpha phase. If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
-                      <div class="gams_webui">
-                          <img class="img-fluid" style="height:450px;" src="assets/images/gams_webui.png" alt="The GAMS WebUI" />               
-                      </div><!--//gams_webui-->
+                      <div>
+                          <img class="img-fluid" style="height:450px;" src="assets/images/gams_miro.png" alt="GAMS MIRO" />               
+                      </div>
+                      <div id="why-section">
+                        <h2 class="title">Why should I use MIRO?</h2>
+                        <p>Are you working with GAMS and looking for a fast way to deploy your GAMS models automatically?
+                        <br>Do you have to make decisions based on optimization problems and are looking for an intuitive visualization tool?</p>
+                        <p>Then GAMS MIRO is a good choice for you!</p>
+                        <ul align="left" style="display:inline-block;">
+                          <li>Quick & automated deployment of GAMS models</li>
+                          <li>Data visualization with wide range of different diagrams and charts</li>
+                          <li>Generation, processing, evaluation & storing of scenario data</li>
+                          <li>Creation & analysis of performance statistics</li>
+                          <li>Intuitive use of a model without GAMS knowledge</li>
+                          <li>Easy to use & comfortable working environment</li>
+                          <li>Highly customizable</li>
+                        </ul>
+                        <p>We have developed this tool to extend the possibilities of working with your GAMS models.</p>
+                      </div><!--//why-section-->
                       <div class="cta-container">
-                        <a id="dl-webui-default" class="btn btn-primary btn-cta" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download GAMS MIRO (v. 0.2.3.1) for Windows</a>
+                        <a id="dl-miro-default" class="btn btn-primary btn-cta" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download GAMS MIRO (v. 0.2.3.1) for Windows</a>
                       </div><!--//cta-container-->
-                      <a id="dl-webui-left" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank">Download for MacOS</a> /
-                      <a id="dl-webui-right" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank">Download for Linux</a>
-                  </div>
+                      <a id="dl-miro-left" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank">Download for MacOS</a> /
+                      <a id="dl-miro-right" href="https://cloud.gams.com/s/eYcCaD6tM97QnHs" target="_blank">Download for Linux</a>
                 </div><!--//intro-->
                 <div id="cards-wrapper" class="cards-wrapper row">
-                    <div class="item item-orange col-lg-4 col-6">
-                        <div class="item-inner">
-                            <div class="icon-holder">
-                                <span aria-hidden="true" class="icon fas fa-globe"></span>
-                            </div><!--//icon-holder-->
-                            <h3 class="title">GAMS MIRO</h3>
-                            <p class="intro">Get to know GAMS MIRO</p>
-                            <a class="link" href="overview.html"><span></span></a>
-                        </div><!--//item-inner-->
-                    </div><!--//item-->
-                    <div class="item item-blue col-lg-4 col-6">
-                        <div class="item-inner">
-                            <div class="icon-holder">
-                                <span aria-hidden="true" class="icon fas fa-arrow-alt-circle-down"</span>
-                            </div><!--//icon-holder-->
-                            <h3 class="title">Installation</h3>
-                            <p class="intro">Install MIRO on Windows, MacOS or Linux.</p>
-                            <a class="link" href="installation.html"><span></span></a>
-                        </div><!--//item-inner-->
-                    </div><!--//item-->
                     <div class="item item-orange col-lg-4 col-6">
                         <div class="item-inner">
                             <div class="icon-holder">
                                 <i class="icon fa fa-paper-plane"></i>
                             </div><!--//icon-holder-->
                             <h3 class="title">Getting started</h3>
-                            <p class="intro">Getting started</p>
+                            <p class="intro">Get to know GAMS MIRO</p>
                             <a class="link" href="start.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
@@ -152,6 +137,38 @@
                             <a class="link" href="faqs.html"><span></span></a>
                         </div><!--//item-inner-->
                     </div><!--//item-->
+                    <div class="item item-orange col-lg-4 col-6">
+                        <div class="item-inner">
+                            <div class="icon-holder">
+                                <span aria-hidden="true" class="icon fas fa-arrow-alt-circle-down"</span>
+                            </div><!--//icon-holder-->
+                            <h3 class="title">Installation</h3>
+                            <p class="intro">Install MIRO on Windows, MacOS or Linux</p>
+                            <a class="link" href="installation.html"><span></span></a>
+                        </div><!--//item-inner-->
+                    </div><!--//item-->
+                </div><!--//cards-wrapper-->
+                <div id="cheatsheet-wrapper">
+                  <h2 class="title">Cheat sheets</h2>
+                  <div class="section-block">
+                    <p>Lazy to read the documentation or just want a compact summary of the most important features of MIRO?</p>
+                    <p>Download our cheat sheets:</p>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <a href="assets/images/cheat_sheets/high_res1.png" download>
+                          <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: 10pt; max-height:300px;" src="assets/images/cheat_sheets/low_res1.png" alt="Custom visualization options"/>
+                          <p>MIRO basics</p>
+                        </a>
+                      </div>
+                      <div class="col-md-6">
+                        <a href="assets/images/cheat_sheets/high_res2.png" download>
+                          <img class="img-fluid" style= "display: block; margin-left: 10pt; margin-right: auto; max-height:300px;" src="assets/images/cheat_sheets/low_res2.png" alt="Custom visualization options"/>
+                          <p>MIRO Hypercube mode</p>
+                        </a>
+                      </div>
+                    </div><!--//row-->
+                  </div><!--//section-block-->
+                </div><!--//cheatsheet-wrapper-->                              
             </div><!--//container-->
         </section><!--//cards-section-->
     </div><!--//page-wrapper-->
@@ -172,11 +189,11 @@
     <script type="text/javascript" src="assets/js/main.js"></script>
     <script type = "application/javascript">
        let OSName="Unknown OS";
-       let defDl = document.getElementById('dl-webui-default');
-       let leftDl = document.getElementById('dl-webui-left');
-       let rightDl = document.getElementById('dl-webui-right');
+       let defDl = document.getElementById('dl-miro-default');
+       let leftDl = document.getElementById('dl-miro-left');
+       let rightDl = document.getElementById('dl-miro-right');
        if (navigator.appVersion.indexOf("Mac")!==-1){
-         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS WebUI (v. 0.2.3.1) for MacOS";
+         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS MIRO (v. 0.2.3.1) for MacOS";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
          leftDl.innerHTML = "Download for Windows";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
@@ -184,7 +201,7 @@
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
        };
        if (navigator.appVersion.indexOf("Linux")!==-1){
-         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS WebUI (v. 0.2.3.1) for Linux";
+         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS MIRO (v. 0.2.3.1) for Linux";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
          leftDl.innerHTML = "Download for MacOS";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
