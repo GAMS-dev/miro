@@ -51,7 +51,7 @@ pipeline {
                         }
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         sh '''
-                            MIRO_VERSION=$(grep -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                            MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME="GAMS_MIRO-${MIRO_VERSION}_tmp.dmg"
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
