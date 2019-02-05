@@ -12,7 +12,7 @@ getScenTabData <- function(sheetName){
       tabData$sheetName     <- modelOutAlias[i]
       tabData$tooltip       <- lang$nav$scen$tooltips$outputSheet
       tabData$graphConfig   <- configGraphsOut[[i]]
-      tabData$headerAliases <- attr(names(modelOutTemplate[[i]]), "aliases")
+      tabData$headerAliases <- attr(modelOutTemplate[[i]], "aliases")
     }
   }else{
     # sheet is input sheet
@@ -27,7 +27,7 @@ getScenTabData <- function(sheetName){
     }
     tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
-    
+    tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
     if(inputDsNames[i] == scalarsFileName){
       tabData$sheetName <- config$scalarAliases$inputScalars
       tabData$headerAliases <- scalarsFileHeaders

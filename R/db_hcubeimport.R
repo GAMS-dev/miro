@@ -171,13 +171,14 @@ HcubeImport <- R6Class("HcubeImport",
                            
                            invisible(self)
                          },
-                         saveScenarios     = function(hcubeTags, readPerm = private$uid, 
+                         saveScenarios     = function(hcubeTags, jobID, readPerm = private$uid, 
                                                       writePerm = private$uid, execPerm = private$uid,
                                                       progressBar = NULL){
                            # Save multiple scenarios to database
                            #
                            # Args:
                            #   hcubeTags:    character vector with tags to attach to scenario
+                           #   jobID:        integer (scalar), job ID of Hypercube job to import
                            #   readPerm:     character vector with uids/groups that have 
                            #                 read permissions for scenarios
                            #   writePerm:    character vector with uids/groups that have 
@@ -191,6 +192,8 @@ HcubeImport <- R6Class("HcubeImport",
                            
                            # BEGIN error checks
                            stopifnot(is.list(private$scenData), length(private$scenData) >= 1)
+                           jobID <- as.integer(jobID)
+                           stopifnot(!is.na(jobID), length(jobID) == 1L)
                            stopifnot(is.character(hcubeTags), length(hcubeTags) >= 1)
                            stopifnot(is.character(names(private$scenData)), 
                                      length(private$scenData) >= 1)
@@ -222,7 +225,7 @@ HcubeImport <- R6Class("HcubeImport",
                            metadataTable  <- tibble(rep.int(private$uid, numberScen), names(scenData), 
                                                     rep.int(1, numberScen), rep.int(hcubeTags, numberScen), 
                                                     rep.int(readPerm, numberScen), rep.int(writePerm, numberScen),
-                                                    rep.int(execPerm, numberScen), rep.int(1L, numberScen))
+                                                    rep.int(execPerm, numberScen), rep.int(jobID, numberScen))
                            metadataTable[[3]] <- Sys.time()
                            names(metadataTable) <- scenMetaColnames[-1]
                            firstScenId <- self$getLatestSid() + 1L

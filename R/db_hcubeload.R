@@ -100,12 +100,17 @@ HcubeLoad <- R6Class("HcubeLoad",
                            return(tibble())
                          }
                          if(inherits(private$conn, "PqConnection")){
-                           return(private$fetchResultsPG(subsetList = subsetList, 
-                                                  colNames = colNames, limit = limit))
+                           data <- private$fetchResultsPG(subsetList = subsetList, 
+                                                          colNames = colNames, limit = limit)
                          }else{
-                           return(private$fetchResultsR(subsetList = subsetList, 
-                                                        colNames = colNames, limit = limit))
+                           data <- private$fetchResultsR(subsetList = subsetList, 
+                                                         colNames = colNames, limit = limit)
                          }
+                         tagID <- which(endsWith(private$dbSchema$colNames[["_scenMeta"]][['stag']], names(data)))[1L]
+                         if(length(tagID)){
+                           data[[tagID]] <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
+                         }
+                         return(data)
                        },
                        exceedsMaxNoSolvers = function(data, attribs, maxNoGroups, exclAttrib = NULL){
                          stopifnot(inherits(data, "data.frame"))
@@ -301,15 +306,19 @@ HcubeLoad <- R6Class("HcubeLoad",
                                                  private$scalarColNames[[2]], 
                                                  private$keyTypeList[[innerTable]])
                          }, character(1L), USE.NAMES = FALSE)
-                         innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
-                                             ") AS ", dbQuoteIdentifier(private$conn, innerTables),
-                                             " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
-                                             ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
-                                             ".", private$sidCol)
+                         innerJoin <- NULL
+                         if(length(innerPivotTables)){
+                           innerJoin <- paste0(" FULL JOIN (", innerPivotTables,
+                                               ") AS ", dbQuoteIdentifier(private$conn, innerTables),
+                                               " ON ", dbQuoteIdentifier(private$conn, private$tabNameMeta), 
+                                               ".", private$sidCol, "=", dbQuoteIdentifier(private$conn, innerTables),
+                                               ".", private$sidCol)
+                         }
+                         
                          # fetch dataframe
                          tryCatch({
                            subsetRows <- ""
-                           subsetSids <- private$db$fetchScenList(scode = c(0L, 1L))[[1L]]
+                           subsetSids <- private$db$fetchScenList(scode = 0L, gt = TRUE)[[1L]]
                            subsetSidSQL <- NULL
                            if(length(subsetSids)){
                              subsetSidSQL <- paste0(" INNER JOIN (VALUES ",
@@ -346,7 +355,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                        fetchResultsR           = function(subsetList, colNames, limit){
                          innerTables <- private$scalarTables
                          
-                         metaData    <- private$db$fetchScenList(scode = c(0L, 1L))
+                         metaData    <- private$db$fetchScenList(scode = 0L, gt = TRUE)
                          names(metaData)[-1] <- paste0(private$tabNameMeta, ".", 
                                                        names(metaData)[-1])
                          sidsToFetch <- metaData[[1]]

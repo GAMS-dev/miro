@@ -218,7 +218,6 @@ server_admin <- function(input, output, session){
     appDisconnected <<- TRUE
     if(!interactive()){
       stopApp()
-      q("no")
     }
   })
 }

@@ -346,7 +346,7 @@ Db <- R6Class("Db",
                   scenExists <- self$importDataset(private$tableNameMetadata, tibble(
                     c(private$scenMetaColnames['uid'], private$scenMetaColnames['sname'],
                       private$scenMetaColnames['scode']), 
-                    c(uid, sname, if(private$hcubeActive) 2L else 0L)), count = TRUE, limit = 1L)[[1]]
+                    c(uid, sname, if(private$hcubeActive) -1L else 0L)), count = TRUE, limit = 1L)[[1]]
                   if(scenExists >= 1){
                     flog.trace("Db: Scenario with name: '%s' alreaddy exists for user: '%s' " %+%
 "(Db.checkScenExists returns FALSE).", sname, uid)
@@ -1056,23 +1056,27 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                fetchScenList = function(scode = 0L){
+                fetchScenList = function(scode = 0L, gt = FALSE){
                   # returns list of scenarios that the current user has access to
                   #
                   # Args:
                   #   scode:           Fetch only scenarios with either of these scenario codes
+                  #   gt:              boolean that specifies whether to fetch qual status codes or greater/equal
                   #
                   # Returns:
                   #   tibble: tibble with all scenarios user has access to read as well 
                   #   as their metadata, throws exception in case of error
                   stopifnot(is.integer(scode))
-
-                  scenList <- self$importDataset(private$tableNameMetadata, 
-                                                 tibble(private$scenMetaColnames['scode'], 
-                                                        scode), innerSepAND = FALSE)
-                
+                  stopifnot(is.logical(gt), length(gt) == 1L)
                   
-                  return(scenList)
+                  if(gt){
+                    return(self$importDataset(private$tableNameMetadata, 
+                                              tibble(private$scenMetaColnames['scode'], 
+                                                     scode, ">="), innerSepAND = FALSE))
+                  }
+                  return(self$importDataset(private$tableNameMetadata, 
+                                                 tibble(private$scenMetaColnames['scode'], 
+                                                        scode), innerSepAND = FALSE))
                   
                 },
                 formatScenList = function(scenList, orderBy = NULL, desc = FALSE, limit = 100L){

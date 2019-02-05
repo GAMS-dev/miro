@@ -21,8 +21,8 @@ if(isInSplitView){
   newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter)
   # add new Scenario tab
   appendTab("scenTabset", newScenTabPanel)
-  numberScenTabs <<- numberScenTabs + 1
-  if(numberScenTabs == 1){
+  numberScenTabs <<- numberScenTabs + 1L
+  if(numberScenTabs == 1L){
     hideEl(session, "#no-scen")
   }else{
     enableEl(session, "#btCompareScen")
@@ -58,7 +58,7 @@ lapply(scenTableNamesToDisplay, function(sheetName){
 })
 
 if(!is.null(eMsg)){
-  stop(eMsg, call. = F)
+  stop(eMsg, call. = FALSE)
 }
 flog.trace("New scenario tab added in scenario comparison mode: %s.", scenMetaData[[scenIdLong]][[3]][1])
 

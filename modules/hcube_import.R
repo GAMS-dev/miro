@@ -26,8 +26,10 @@ hcubeMetaHistory <- "e"
 disableEl(session, "#btUploadHcube")
 
 # initialise hcube import class
-hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, tableNamesCanHave = names(modelOut),
-                               tableNamesMustHave = c(setdiff(inputDsNames, additionalInputScalars), 
+hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
+                               tableNamesCanHave = c(setdiff(inputDsNames, additionalInputScalars), 
+                                                     names(modelOut)),
+                               tableNamesMustHave = c(if(scalarsFileName %in% inputDsNames) scalarsFileName, 
                                                       if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
@@ -198,7 +200,7 @@ observeEvent(virtualActionButton(rv$btSave), {
   errMsg <- NULL
   removeModal()
   tryCatch({
-    hcubeImport$saveScenarios(hcubeTags, readPerm = uid, 
+    hcubeImport$saveScenarios(hcubeTags, jobID = currentJobID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
     flog.error("Problems exporting scenarios. Error message: %s.", e)

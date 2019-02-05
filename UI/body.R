@@ -480,12 +480,11 @@ body <- dashboardBody({
     tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
     tags$script(src = "mirosc.js", type = "application/javascript"),
     tags$script(src = "miro.js", type = "application/javascript"),
-    
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)
     tags$style(HTML(paste0('
 .main-header .logo {
-  background-image: url("', if(dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
+  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
 }
 .pvtRows, .pvtCols { 
   background-color: ', config$pivottable$bgColor, '; 

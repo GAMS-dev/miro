@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.3.4"
-MIRORDate   <- "Jan 31 2019"
+MIROVersion <- "0.3.5"
+MIRORDate   <- "Feb 4 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -34,7 +34,7 @@ CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 if(R.version[["major"]] < 3 || 
    R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 5){
-  errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run the GAMS WebUI."
+  errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run GAMS MIRO."
 }
 tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
@@ -51,7 +51,7 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
                       "futile.logger", "zip", "tidyr")
 LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  pb <- winProgressBar(title = "Loading WebUI", label = "Loading required packages",
+  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
   on.exit(close(pb))
@@ -86,7 +86,7 @@ if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "MIRO",
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.6, label= "Initialising GAMS WebUI")
+  setWinProgressBar(pb, 0.6, label= "Initialising GAMS MIRO")
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -123,7 +123,6 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
-  logFileDir <- file.path(tmpFileDir, logFileDir)
   # check if GAMS model file exists
   if(file.exists(modelPath %+% modelGmsName)){
     currentModelDir  <- modelPath
@@ -134,6 +133,11 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
+  if(isShinyProxy){
+    logFileDir <- file.path(tmpFileDir, logFileDir)
+  }else{
+    logFileDir <- file.path(currentModelDir, logFileDir)
+  }
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', MIROVersion, 
                           if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube") ||
@@ -166,11 +170,14 @@ if(is.null(errMsg)){
   #initialise loggers
   if(!dir.exists(logFileDir)){
     tryCatch({
-      dir.create(file.path(logFileDir), showWarnings = FALSE)
-    }, warning = function(w){
+      if(!dir.create(logFileDir, showWarnings = FALSE))
+        stop()
+    }, error = function(e){
       errMsg <<- "Log file directory could not be created. Check that you have sufficient read/write permissions in application folder."
     })
   }
+}
+if(is.null(errMsg)){
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.false", 
                         list(file = file.path(logFileDir, paste0(modelName, "_", uid, "_", 
                                               format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
@@ -351,7 +358,7 @@ if(is.null(errMsg) && developMode && config$activateModules$scenario){
       msg <- sprintf("There are orphaned tables in your database: '%s'.\n
 This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs).",
                      paste(orphanedTables, collapse = "', '"))
-      warning(msg, call. = FALSE)
+      message(msg, call. = FALSE)
       flog.warn(msg)
     }
     inconsistentTables <- NULL
@@ -391,15 +398,17 @@ Those tables are: '%s'.\nError message: '%s'.",
   })
 }
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 1, label= "GAMS WebUI initialised")
+  setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   close(pb)
 }
 MIROVersionLatest <- NULL
-if(!isShinyProxy){
+if(!isShinyProxy && curl::has_internet()){
   try(
     local({
+      verCon <- url("https://gams.com/webui/latest.ver")
+      on.exit(close(verCon))
       MIROVersionLatestTmp <- suppressWarnings(read.csv(
-        url("https://gams.com/webui/latest.ver"), 
+        verCon, 
         header = FALSE))
       currentMIROVersion <- strsplit(MIROVersion, ".", fixed = TRUE)[[1]]
       if(MIROVersionLatestTmp[[1]][1] > currentMIROVersion[1] ||
@@ -417,7 +426,7 @@ if(!isShinyProxy){
         
       }
     })
-  )
+  , silent = TRUE)
 }
 
 aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
@@ -443,7 +452,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
 }else if(!is.null(errMsg)){
   ui_initError <- fluidPage(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "webui.css")
+      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
     ),
     titlePanel(
       if(!exists("lang") || is.null(lang$errMsg$initErrors$title)){
@@ -455,7 +464,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
              HTML("<br>"),
              div(
                if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
-                 "Please fix the errors mentioned below and restart the GAMS WebUI:"
+                 "Please fix the errors mentioned below and restart GAMS MIRO:"
                }else{
                  lang$errMsg$initErrors$desc
                }
@@ -475,7 +484,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     session$onSessionEnded(function() {
       if(!interactive()){
         stopApp()
-        q("no")
       }
     })
   }
@@ -677,7 +685,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L)
+                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L,
+                         loadHcubeHashSid = 0L)
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -944,6 +953,34 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       # export output data to Excel spreadsheet
       source("./modules/excel_scen_save.R", local = TRUE)
     }
+    if(!isShinyProxy && 
+       curl::has_internet() && 
+       file.exists(file.path(currentModelDir, ".crash.zip"))){
+      showModal(modalDialog(title = "MIRO terminated unexpectedly",
+                            "MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
+                            Would you like to send the error report to GAMS in order to avoid such crashes in the future?
+                            The ONLY files that we send (encrypted via HTTPS) are the configuration files: 'GMSIO_config.json' and 'config.json' as well as the error log. 
+                            None of your .gms model files will be sent!", 
+                            footer = tagList(actionButton("crash_dontsend", "Don't send"),
+                                             actionButton("crash_send", "Send", class = "bt-highlight-1"))))
+      observeEvent(input$crash_dontsend, {
+        unlink(file.path(currentModelDir, ".crash.zip"))
+        removeModal()
+      })
+      observeEvent(input$crash_send, {
+        on.exit(unlink(file.path(currentModelDir, ".crash.zip")))
+        try(
+          uploadFile(
+            file = file.path(currentModelDir, ".crash.zip"), 
+            url = paste0(bugReportUrl$url, format(Sys.time(), "%y.%m.%d_%H.%M.%S"), 
+                         "_", substr(modelName, 1L, 3L), ".zip"), 
+            userpwd = paste0(bugReportUrl$dir, ":")
+          )
+        , silent = TRUE)
+        
+        removeModal()
+      })
+    }
     hideEl(session, "#loading-screen")
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
@@ -959,7 +996,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       gc()
       if(!interactive()){
         stopApp()
-        q("no")
       }
     })
   }

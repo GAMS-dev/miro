@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "trnsport"
+modelName <- "pickstock"
 # controls whether webUI parameters are compiled on startup or loaded from save file
 developMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
@@ -115,5 +115,6 @@ tableNameAttachPrefix <- "_sys_attach_"
 attachAllowExec       <- TRUE
 attachMaxFileSize     <- 1e7
 attachMaxNo           <- 5L
-
+# bug report URL
+bugReportUrl <- list(url = "https://cloud.gams.com/public.php/webdav/", dir = "4raJTCgwfoyi2HK")
 

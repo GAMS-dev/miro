@@ -7,7 +7,7 @@ paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
 
 genPaverArgs <- function(traceFilenames){
   stopifnot(is.character(traceFilenames), length(traceFilenames) >= 1)
-  c(paste0(getwd(), .Platform$file.sep, "tools", .Platform$file.sep, "paver", .Platform$file.sep, "paver.py"),
+  c(file.path(getwd(), "tools", "paver", "paver.py"),
     traceFilenames, "--failtime", "3600", "--writehtml", paverFileDir , "--writeimg", paverFileDir, "--gmswebiter", gmswebiter)
 }
 

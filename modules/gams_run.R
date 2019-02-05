@@ -258,7 +258,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  jID %+% ".log", hcubeDir)
     })
     p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(hcubeSubmDir, "curdir=" %+% curdir, "lo=3", "--exec=true", 
+                     args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
                               "--jobID=" %+% jID),
                      cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
                      windows_hide_window = TRUE)
@@ -398,7 +398,7 @@ observeEvent(input$btSolve, {
     }
     disableEl(session, "#btSolve")
     idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, 1L))
+                                  tibble(scodeIdentifier, 1L, ">="))
     if(length(idsSolved)){
       idsSolved <- unique(idsSolved[[1L]])
     }
@@ -522,7 +522,7 @@ observeEvent(input$btSolve, {
     }
     prog$close()
     gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                         "pf=" %+% pfFilePath), 
+                                                         "pf", pfFilePath), 
                          stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc

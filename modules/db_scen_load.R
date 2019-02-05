@@ -150,7 +150,8 @@ observeEvent(input$btSortTime, {
 })
 
 # load scenario confirmed
-observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid), {
+observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid, 
+                                 rv$loadHcubeHashSid), {
   flog.debug("Confirm load scenario button clicked.")
   if(identical(isolate(input$tb_importData), "tb_importData_hcube")){
     if(identical(length(sidsToLoad), 2L) && identical(sidsToLoad[[1L]], -1L)){
@@ -294,7 +295,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
     }
     names(scenInputData)         <- inputDsNames
-    newInputCount                <- 0
+    newInputCount                <- 0L
     
     if(scalarsFileName %in% inputDsNames){
       scalarDataset <- scenInputData[[length(scenInputData)]]
@@ -309,35 +310,40 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       return()
     }
     removeModal()
-    # render output data (not compare mode)
-    # generate data
-    noOutput <- TRUE
-    # load scalar data if available
-    lapply(seq_along(modelOut), function(i){
-      if(!nrow(scenDataTmp[[1]][[i]])){
-        scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
-      }else{
-        noOutput <<- FALSE
-        scenData[["scen_1_"]][[i]] <<- scenDataTmp[[1]][[i]]
-        if(identical(i, idxScalarOut)){
-          # scalar data exists
-          removeRows                 <- grepl(config$gamsMetaDelim, 
-                                              scenData[["scen_1_"]][[i]][[2]])
-          scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
-          scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
+    if(!config$activateModules$hcubeMode){
+      # render output data
+      # generate data
+      noOutput <- TRUE
+      # load scalar data if available
+      lapply(seq_along(modelOut), function(i){
+        if(!nrow(scenDataTmp[[1]][[i]])){
+          scenData[["scen_1_"]][[i]] <<- scenDataTemplate[[i]]
         }else{
-          scalarData[["scen_1_"]]    <<- data.frame()
+          noOutput <<- FALSE
+          scenData[["scen_1_"]][[i]] <<- scenDataTmp[[1]][[i]]
+          attr(scenData[["scen_1_"]][[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
+          if(identical(i, idxScalarOut)){
+            # scalar data exists
+            removeRows                 <- grepl(config$gamsMetaDelim, 
+                                                scenData[["scen_1_"]][[i]][[2]])
+            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
+            scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
+          }else{
+            scalarData[["scen_1_"]]    <<- data.frame()
+          }
         }
+      })
+      scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
+      if(noOutput){
+        noOutputData <<- TRUE
+      }else{
+        noOutputData <<- FALSE
       }
-    })
-    scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
-    if(noOutput){
-      noOutputData <<- TRUE
+      # rendering tables and graphs
+      renderOutputData()
     }else{
-      noOutputData <<- FALSE
+      noOutputData <<- TRUE
     }
-    # rendering tables and graphs
-    renderOutputData()
     
     flog.debug("Scenario: '%s' was loaded into UI", sidsToLoad[[1]])
     
@@ -459,7 +465,7 @@ observeEvent(input$hcHashLookup, {
     matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
                                     colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
                                     tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
-                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), c(hashVal, 1L)))
+                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), c(hashVal, 0L), c("=", ">=")))
   }, error = function(e){
     flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
     showHideEl(session, "#importScenError")
@@ -468,11 +474,12 @@ observeEvent(input$hcHashLookup, {
   if(!noErr)
     return()
   if(length(matchingScen)){
-    if(identical(nrow(matchingScen), 1L)){
+    if(identical(nrow(matchingScen), 0L)){
       showHideEl(session, "#importScenNoHcubeScen", 4000L)
       return()
     }else if(identical(nrow(matchingScen), 1L)){
       sidsToLoad <<- list(-1L, matchingScen[[1L]][1])
+      rv$loadHcubeHashSid <- isolate(rv$loadHcubeHashSid) + 1L
       return()
     }
   }

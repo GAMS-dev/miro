@@ -837,3 +837,14 @@ gmsFilePath <- function(path){
   }
   return(path)
 }
+uploadFile <- function(file, url, userpwd){
+  stopifnot(file.exists(file))
+  stopifnot(is.character(url), length(url) == 1L)
+  con <- file(file, open = "rb")
+  on.exit(close(con))
+  h <- curl::new_handle(upload = TRUE, filetime = FALSE, httpauth = 1, userpwd = userpwd)
+  curl::handle_setopt(h, readfunction = function(n) {
+    readBin(con, raw(), n = n)
+  })
+  curl::curl_fetch_memory(url, handle = h)
+}

@@ -66,7 +66,7 @@ Scenario <- R6Class("Scenario",
                         private$writePerm           <- vector2Csv(writePerm)
                         private$execPerm            <- vector2Csv(execPerm)
                         if(db$getHcubeActive())
-                          private$scode <- 2L
+                          private$scode <- -1L
                         else
                           private$scode <- 0L
                         if(is.null(sid)){
