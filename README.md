@@ -18,11 +18,7 @@ If you have any questions about MIRO, please contact us via [mail](support@gams.
 
 ## Installation
 
-To get the latest version from GITLAB, run the following from the console:
-
-```
-git pull command
-```
+Simply pull the repository. Some example models that help you getting started can be found inside the *model* folder.
 
 ## Getting started
 
@@ -56,5 +52,5 @@ shiny::runApp(launch.browser=TRUE)
 
 ## License
 
-The GAMS WebUI as a whole is distributed under GPL-2 (GNU GENERAL PUBLIC LICENSE version 2), or (at your option) any later version. 
+GAMS MIRO as a whole is distributed under GPL-2 (GNU GENERAL PUBLIC LICENSE version 2), or (at your option) any later version. 
 See the [LICENSE](LICENSE) file for more details.
