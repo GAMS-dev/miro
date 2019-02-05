@@ -681,19 +681,26 @@ if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
   rm(checkSourceDefault)
 }}
 library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
-tryCatch({{
-   shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)
+withCallingHandlers({{
+   on.exit(q('no'))
+   a <- shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)
 }}, error = function(e){{
+   currwd <- getwd()
+   on.exit(setwd(currwd))
+   setwd("{1}")
    futile.logger::flog.fatal('%s', w)
    logFiles <- list.files('logs', full.names = TRUE)
    zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
 }}, warning = function(w){{
+   if(!startsWith(conditionMessage(w), "Error"))
+      return()
+   currwd <- getwd()
+   on.exit(setwd(currwd))
+   setwd("{1}")
    futile.logger::flog.fatal('%s', w)
    logFiles <- list.files('logs', full.names = TRUE)
    zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
-}}, finally = {{
-   q('no')
-}})""".format(r"%MIRODIR% ".strip().replace("\\","/")))
+}})""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/")))
 
 if %mkApp%>0:
     fn_model = "%fn%"

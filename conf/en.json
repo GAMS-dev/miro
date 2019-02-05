@@ -104,7 +104,7 @@
     "hcubeAnalyze":{
       "title":"Analyze Scenarios",
       "loadMsg":"Please wait while the results are calculated. This may take a while.",
-      "failMsg":"Something went wrong while trying to run paver. If this problem persists, please contact a system administrator.",
+      "failMsg":"Something went wrong while trying to run paver.",
       "duplicatesMsg": "Paver found a duplicated instance: '%s'. Please make sure that you don't select duplicates.",
 	    "btCancel": "Cancel",
 	    "btNew": "Select scenarios"
@@ -440,7 +440,7 @@
     },
     "initErrors":{  
       "title":"Some errors occurred",
-      "desc":"Please fix the errors mentioned below and restart the GAMS WebUI:"
+      "desc":"Please fix the errors mentioned below and restart MIRO:"
     },
     "fetchScenData":{  
       "title":"Error fetching scenario metadata",

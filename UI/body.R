@@ -485,6 +485,7 @@ body <- dashboardBody({
     tags$style(HTML(paste0('
 .main-header .logo {
   background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
+  background-size: contain;
 }
 .pvtRows, .pvtCols { 
   background-color: ', config$pivottable$bgColor, '; 

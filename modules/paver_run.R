@@ -29,10 +29,9 @@ observeEvent(input$btPaver, {
   req(input$selPaverAttribs)
   noErr <- TRUE
   tryCatch({
-    exclAttrib <- isolate(input$paverExclAttrib)
     exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
                                                                              drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver, exclAttrib)
+                                                         input$selPaverAttribs, maxSolversPaver, isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
@@ -108,8 +107,17 @@ observeEvent(input$btPaver, {
     errMsg <- NULL
     # run paver
     tryCatch({
-      pyExec <- file.path(gamsSysDir, "GMSPython", "python")
-      paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles), windows_hide_window = TRUE,
+      if(length(gamsSysDir) && nchar(gamsSysDir)){
+        pyExec <- file.path(gamsSysDir, "GMSPython", "python")
+      }else{
+        if(isWindows())
+          pyExec <- "python"
+        else
+          pyExec <- "python3"
+      }
+      
+      paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles), 
+                                      windows_hide_window = TRUE,
                                       stdout = workDir %+% modelName %+% ".paverlog", stderr = "|")
       rm(pyExec)
     }, error = function(e) {
@@ -119,14 +127,18 @@ observeEvent(input$btPaver, {
     if(is.null(showErrorMsg(lang$errMsg$paverExec$title, errMsg))){
       return(NULL)
     }
-    paverStatus <<- reactivePoll(5000, session, checkFunc = function(){
+    paverStatus <<- reactivePoll2(5000, session, checkFunc = function(){
       paver$get_exit_status()
     }, valueFunc = function(){
       paver$get_exit_status()
     })
+    paverStatusObs <- paverStatus$obs
+    paverStatus    <- paverStatus$re
     # include html files (seperate tabs)
     output$paverResults <- renderUI(
       if(!is.null(paverStatus())){
+        paverStatusObs$destroy()
+        paverStatus <- NULL
         if(paverStatus() == 0){
           hideEl(session, "#paverLoad")
           paverResultTabs <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
@@ -149,7 +161,7 @@ observeEvent(input$btPaver, {
           })
           return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultTabs[1], ".html")))
         }else{
-          paverError <- paver$read_all_error()
+          paverError <- paver$read_error()
           flog.error("Problems while running paver. Error message: '%s'.", paverError)
           hideEl(session, "#paverLoad")
           duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))

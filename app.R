@@ -358,7 +358,6 @@ if(is.null(errMsg) && developMode && config$activateModules$scenario){
       msg <- sprintf("There are orphaned tables in your database: '%s'.\n
 This could be caused because you used a different database schema in the past (e.g. due to different inputs and/or outputs).",
                      paste(orphanedTables, collapse = "', '"))
-      message(msg, call. = FALSE)
       flog.warn(msg)
     }
     inconsistentTables <- NULL

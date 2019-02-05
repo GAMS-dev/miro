@@ -120,6 +120,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            names(data) <- gsub("^.+\\.", "", names(data))
                          }
                          attribs          <- gsub("^.+\\.", "", attribs)
+                         exclAttrib       <- gsub("^.+\\.", "", exclAttrib)
                          sids             <- as.integer(data[[1]])
                          colIdsAttrib     <- match(attribs, names(data))
                          colIdsExclAttrib <- match(exclAttrib, names(data))
@@ -137,14 +138,12 @@ HcubeLoad <- R6Class("HcubeLoad",
                                 call. = FALSE)
                          }
                            
-                         attribs <- rlang::syms(attribs)
+                         attribs     <- rlang::syms(attribs)
                          groupedData <- dplyr::group_by(data, !!!attribs)
-                         
                          groupedRowIds       <- attr(groupedData, "indices")
                          private$groupedSids <- lapply(groupedRowIds, function(rowIds){
                            sids[rowIds + 1L]
                          })
-                         
                          if(length(groupedRowIds) > maxNoGroups){
                            return(TRUE)
                          }
@@ -187,7 +186,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                              stop("noTrc", call. = FALSE)
                            }
                            groupedNames   <- private$groupedNames[[i]]
-                           paverData      <- paverData[-1L]
+                           paverData      <- paverData[match(private$groupedSids[[i]], paverData[[1]]), -1L]
                            paverData[[1]] <- groupedNames
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))
                            if(length(exclTraceCols)){

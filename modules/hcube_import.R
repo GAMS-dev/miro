@@ -329,12 +329,10 @@ observeEvent(input$showHypercubeLog, {
   logContent  <- NULL
   if(file.access(logFilePath, 4L) != -1L){
     try(
-      if(file.size(logFilePath) > maxSizeToRead){
-        logContent <- lang$nav$hcubeMode$showLogFileDialog$fileSize
-      }else{
-        logContent <- readChar(logFilePath, file.info(logFilePath)$size)
-      }
+      logContent <- readChar(logFilePath, file.info(logFilePath)$size)
     )
+    logSize    <- file.info(logFilePath)$size
+    logContent <- paste0(if(logSize > (1e5 + 1)) "[...]\n", substr(logContent, max(logSize - 3e4, 1L), logSize))
   }
   
   showHypercubeLogFileDialog(logContent)

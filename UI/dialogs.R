@@ -563,7 +563,7 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                       style = "cursor: pointer;"),
                tags$div(style = "display:none;",
                         selectInput("paverExclAttrib", label = lang$nav$hcubeMode$configPaverDialog$selIgnoreAttribs, 
-                                    choices = exclAttribChoices, selected = exclAttribChoices, multiple = TRUE)
+                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE)
                )
       ),
       if(hasRemovePerm){

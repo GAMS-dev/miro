@@ -95,9 +95,7 @@ activeLines    <- vector("logical", maxNumBlocks^2)
 fieldsSelected <- vector("character", maxNumBlocks^2)
 tmpOutputKeys  <- vapply(scalarKeyTypeList[[scalarsTabNameOut]], 
                          "[[", character(1L), "key", USE.NAMES = FALSE)
-exclAttribChoices <- c("_uid", "_stime", "_stag", 
-                       if(length(tmpOutputKeys)) paste0("_", tmpOutputKeys))
-names(exclAttribChoices)[1:3] <- names(fields)[2:4]
+exclAttribChoices <- c(fields[2:4], scalarOutFields)
 if(length(tmpOutputKeys))
   names(exclAttribChoices)[4:length(exclAttribChoices)] <- vapply(scalarKeyTypeList[[scalarsTabNameOut]],
                                                                   "[[", character(1L), "alias", USE.NAMES = FALSE)

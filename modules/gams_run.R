@@ -16,9 +16,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     return(as.character(openssl::md5(con)))
   }
   getHcubeParPrefix <- function(id){
-    if(names(modelIn)[i] %in% GMSOpt){
+    if(names(modelIn)[id] %in% GMSOpt){
       return("")
-    }else if(names(modelIn)[i] %in% DDPar){
+    }else if(names(modelIn)[id] %in% DDPar){
       return("--")
     }else{
       return("--HCUBE_SCALAR_")
@@ -108,7 +108,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 parPrefix <- getHcubeParPrefix()
+                 parPrefix <- getHcubeParPrefix(i)
                    
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
@@ -133,7 +133,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  names(data) <- tolower(names(modelIn))[i]
                  return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
                }
-               parPrefix <- getHcubeParPrefix()
+               parPrefix <- getHcubeParPrefix(i)
                value <- input[["dropdown_" %+% i]]
                if("_" %in% value){
                  value <- value[value != "_"]
@@ -146,7 +146,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
-               parPrefix <- getHcubeParPrefix()
+               parPrefix <- getHcubeParPrefix(i)
                
                return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", escapeGAMSCL(value[1]), 
                              " ", parPrefix, names(modelIn)[[i]], "_up=", escapeGAMSCL(value[2])))

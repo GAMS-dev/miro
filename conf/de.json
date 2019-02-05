@@ -104,7 +104,7 @@
     "hcubeAnalyze":{
       "title":"Szenarioanalyse",
       "loadMsg":"Bitte warten Sie, bis die Ergebnisse berechnet sind. Dies kann eine Weile dauern.",
-      "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "failMsg":"Beim Ausführen von Paver ist ein Fehler aufgetreten.",
       "duplicatesMsg": "Paver hat eine doppelte Instanz gefunden: '%s'. Achten Sie darauf, dass Sie keine Duplikate auswählen.",
 	    "btCancel": "Abbrechen",
 	    "btNew": "Szenarien auswählen"
@@ -440,7 +440,7 @@
     },
     "initErrors":{  
       "title":"Es sind Fehler aufgetreten",
-      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie das GAMS WebUI neu."
+      "desc":"Bitte beheben Sie die nachfolgend aufgeführten Fehler und starten Sie MIRO neu."
     },
     "fetchScenData":{  
       "title":"Fehler beim Lesen der Szenariodaten",

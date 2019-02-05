@@ -8,7 +8,6 @@ Set date   'date'
     
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
-
 Scalar maxstock        'maximum number of stocks to select'  / 2  /
        trainingdays    'number of days for training'  / 99  /;
 $offExternalInput
