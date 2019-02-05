@@ -62,7 +62,7 @@ pipeline {
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
-                            hdiutil attach -nobrowse -noverify -mountpoint ./$DMG_ROOT installer/macOS/$DMG_NAME
+                            hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/$DMG_NAME
 
                             TARGET=$DMG_ROOT/GAMS25.1/sysdir
 
@@ -73,7 +73,7 @@ pipeline {
                             cp model/miro.gms $TARGET/inclib
                             
                             hdiutil detach $DMG_ROOT
-
+                            sleep 5s
                             cd installer/macOS
 
                             hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
