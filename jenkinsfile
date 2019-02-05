@@ -70,7 +70,7 @@ pipeline {
                             mkdir $TARGET/inclib
         
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/MIRO
-                            cp model/loadCSV.gms model/webui.gms $TARGET/inclib
+                            cp model/miro.gms $TARGET/inclib
 
                             hdiutil detach $DMG_ROOT
 
