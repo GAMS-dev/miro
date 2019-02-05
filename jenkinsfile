@@ -51,7 +51,7 @@ pipeline {
                         }
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         sh '''
-                            MIRO_VERSION=$(grep -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                            MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME="GAMS_MIRO-${MIRO_VERSION}_tmp.dmg"
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
@@ -70,10 +70,9 @@ pipeline {
                             mkdir $TARGET/inclib
         
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/MIRO
-                            cp model/loadCSV.gms model/webui.gms $TARGET/inclib
-
-                            hdiutil detach $DMG_ROOT
-
+                            cp model/miro.gms $TARGET/inclib
+                            
+                            hdiutil detach -verbose $DMG_ROOT
                             cd installer/macOS
 
                             hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
