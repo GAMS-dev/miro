@@ -77,7 +77,7 @@
                                   </li>
                                 </ol>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/gams_miro.png" alt="Custom visualization options"/>
+                                        <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/config-img.png" alt="Custom visualization options"/>
                                     </div>
                                   <p>GAMS MIRO offers comprehensive visualization options. Some basic diagram types are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
                                     <p>To create graphics that are perfectly tailored to your data, you can use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
@@ -225,7 +225,7 @@
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
                                        <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. Those values are therefore available to the GAMS model at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.
-                                       If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><code class="language-gams">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</code></pre></p>
+                                       If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><span class="code">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</span></pre></p>
                                        <p>You can generate the configuration for GAMS command line parameters the same way as scalar widgets for GAMS symbols manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
                                        <div class="callout-block callout-warning">
                                            <div class="icon-holder">
@@ -396,20 +396,22 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   <p>Since we already have a <span class="code">config.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
                                   <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>--miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
+                                      <img class="img-fluid" style= "max-height:275pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
                                   </div>
                                   <p>That's it. We've created our first MIRO graph.</p>
                                   <p>Besides bar charts, we can create multiple other types of charts. Just try it out yourself! You are now able to explore the different options on your own. And if you are stuck, you can always visit our <a href="https://forum.gamsworld.org/" target="_blank">forum</a> and ask others for help.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="graphics-pivot">
                                   <h3 class="block-title">Pivot Tables</h3>
-                                  <p>With the integrated pivot tool you can easily create and interactively process a variety of charts.</p>
+                                  <p>With the integrated pivot tool you can easily create and interactively process a variety of charts. 
+                                  In addition to classic tables, the graphical representation with the help of a pivot table is the default selected form of data visualization. 
+                                  If no graphic is configured for a symbol, this symbol can be displayed as a pivot table / graphic without any further action.</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/pivot-pickstock.png" alt="Pivot" />
+                                      <img class="img-fluid" style= "max-height:325pt;" src="assets/images/pivot-pickstock.png" alt="Pivot" />
                                   </div>
-                                  <p>In the next section we will show you how to create really sophisticated graphics like the map you find in the demo <i>trnsport</i> model that comes with your MIRO installation:</p>
+                                  <p><br><br>In the next section we will show you how to create really sophisticated graphics like the map you find in the demo <i>trnsport</i> model that comes with your MIRO installation:</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
+                                      <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
