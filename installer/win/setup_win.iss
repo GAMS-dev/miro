@@ -1,25 +1,25 @@
 ; credit to: The RInno package (https://github.com/ficonsulting/RInno/blob/master/LICENSE) (GPL 3 licensed)
 
-#define WebUIName "GAMS MIRO"
+#define MIROName "GAMS MIRO"
 #define RMajor 3
 #define RMinor 5
 #define RPatch 1
-#define WebUIPublisher "GAMS Software GmbH/GAMS Development Corp."
-#define WebUIURL "gams.com"
+#define MIROPublisher "GAMS Software GmbH/GAMS Development Corp."
+#define MIROURL "gams.com"
 #define docURL "https://www.gams.com/miro/"
 
 [Setup]
-AppName = {#WebUIName}
+AppName = {#MIROName}
 AppId = {{R77BWYZ1-KM2Y-WCD5-E8JC-Z7CIVDSLX2Y4}
 DefaultDirName={code:GetDefaultDirName}
 DefaultGroupName = GAMS MIRO
-OutputBaseFilename = GAMS_MIRO-{#WebUIVersion}
+OutputBaseFilename = GAMS_MIRO-{#MIROVersion}
 SetupIconFile = setup.ico
-AppVersion = {#WebUIVersion}
-AppPublisher = {#WebUIPublisher}
+AppVersion = {#MIROVersion}
+AppPublisher = {#MIROPublisher}
 AppPublisherURL = gams.com
 AppSupportURL = gams.com/support
-AppUpdatesURL = {#WebUIURL}
+AppUpdatesURL = {#MIROURL}
 PrivilegesRequired = lowest
 InfoBeforeFile = infobefore.txt
 InfoAfterFile = infoafter.txt
@@ -38,7 +38,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "full"; Description: "Full installation"
 Name: "custom"; Description: "Custom installation"; Flags: iscustom
 [Components]
-Name: "program"; Description: "WebUI Files"; Types: full custom; Flags: fixed
+Name: "program"; Description: "MIRO Files"; Types: full custom; Flags: fixed
 Name: "examples"; Description: "Sample Models"; Types: full
 [Files]
 Source: "../../R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; DestDir: "{tmp}"; Check: installR
@@ -77,7 +77,7 @@ Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "
 Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport_live"; Flags: ignoreversion;Components: examples
 [Icons]
-Name: "{group}\{cm:UninstallProgram,{#WebUIName}}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,{#MIROName}}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{tmp}\R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; Parameters: "/SILENT"; WorkingDir: {tmp}; Check: installR; Flags: skipifdoesntexist; StatusMsg: "Installing R {#RMajor}.{#RMinor}.{#RPatch}"

@@ -29,17 +29,17 @@ pipeline {
                         unzip dir: 'library', glob: '', zipFile: 'win-lib.zip'
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
-                                for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set WEBUI_VERSION=%%i
-                                set WEBUI_VERSION=%WEBUI_VERSION:MIROVersion <- =%
-                                iscc "installer\\win\\setup_win.iss" /DWebUIVersion=%WEBUI_VERSION%
+                                for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
+                                set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
+                                iscc "installer\\win\\setup_win.iss" /DMIROVersion=%MIRO_VERSION%
                                 echo Setting up environment for VS2017 usage...
                                 cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
                                 call vcvars64.bat
                                 cd %WORKSPACE%\\installer\\win\\Output
-                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_WebUI-%WEBUI_VERSION%.exe
+                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_MIRO-%MIRO_VERSION%.exe
                             '''
                         }
-                        archiveArtifacts artifacts: '**/GAMS_WebUI-*.exe', fingerprint: true
+                        archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
                     }
                 },
                 macos: {
@@ -51,13 +51,13 @@ pipeline {
                         }
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         sh '''
-                            WEBUI_VERSION=$(grep -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
-                            DMG_NAME="GAMS_WebUI-${WEBUI_VERSION}_tmp.dmg"
-                            DMG_NAME_FINAL="GAMS_WebUI-${WEBUI_VERSION}.dmg"
+                            MIRO_VERSION=$(grep -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                            DMG_NAME="GAMS_MIRO-${MIRO_VERSION}_tmp.dmg"
+                            DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
                             cd installer/macOS
-                            gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
-                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSWebUI.dmg
+                            gzip -d GAMSMIRO.dmg.gz #&& mv GAMSMIRO.dmg $DMG_NAME
+                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSMIRO.dmg
                             cd ../..
 
                             DMG_ROOT=volume
