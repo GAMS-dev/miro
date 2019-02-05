@@ -72,8 +72,6 @@ pipeline {
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/MIRO
                             cp model/miro.gms $TARGET/inclib
                             
-                            hdiutil detach $DMG_ROOT
-                            sleep 5s
                             cd installer/macOS
 
                             hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
