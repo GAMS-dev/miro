@@ -56,8 +56,8 @@ pipeline {
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
                             cd installer/macOS
-                            gzip -d GAMSMIRO.dmg.gz #&& mv GAMSMIRO.dmg $DMG_NAME
-                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSMIRO.dmg
+                            gzip -d GAMSWebUI.dmg.gz #&& mv GAMSWebUI.dmg $DMG_NAME
+                            hdiutil convert -verbose -format UDRW -o $DMG_NAME GAMSWebUI.dmg
                             cd ../..
 
                             DMG_ROOT=volume
