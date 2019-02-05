@@ -207,7 +207,7 @@ $libInclude miro
                                         <ul>
                                           <li>Run the model with the double dash parameter: <span class="code">--miro=build</span>.
                                             <div class="section-block" style="text-align:center;">
-                                                <img class="img-fluid" style="max-height:45pt;" src="assets/images/miro-build.png" alt="--miro=build" />
+                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-build.png" alt="--miro=build" />
                                             </div>
                                             <div class="callout-block callout-warning">
                                                 <div class="icon-holder">
@@ -233,7 +233,7 @@ $libInclude miro
                                           </li>
                                           <li>The very basic configuration is now done. You can start MIRO by running the model again, this time with <span class="code" style="white-space:nowrap">--miro=launch</span>.
                                             <div class="section-block" style="text-align:center;">
-                                                <img class="img-fluid" src="assets/images/miro-launch.png" alt="--miro=launch" />
+                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="--miro=launch" />
                                             </div>
                                             The first time you launch MIRO, all the required R packages are installed automatically. This may take a while. When the installation is complete, GAMS MIRO launches in the default browser of your operating system.
                                           </li>
@@ -303,13 +303,10 @@ $offExternalInput
                                     <p>The parameter <span class="code">price</span> is declared between the mentioned tags <code class="language-gams">$onExternalInput
                                     </code> and <code class="language-gams">$offExternalInput
                                     </code>.
-                                    <br>When we start MIRO via <span class="code">--miro=launch</span> and load the <a href="./start.html#create-excel">Excel spreadsheet</a> that was automatically created, we see the following input screen:</p>
-                                    
+                                    <br>When we start MIRO via <span class="code">--miro=launch</span> and load the <a href="./start.html#create-excel">Excel spreadsheet</a> that was automatically created, we see the following input screen:</p>                                 
                                     <div class="section-block" style="text-align:center;" id="no-header">
-                                        <img class="img-fluid" style="max-height:300pt;" src="assets/images/deploy_pickstock2.png" alt="Pickstock: imput symbols displayed in MIRO" />
+                                        <img class="img-fluid" style="max-height:200pt;" src="assets/images/deploy_pickstock2.png" alt="Pickstock: imput symbols displayed in MIRO" />
                                     </div>
-                                    
-                                    
                                     <p>Since each <i>index</i> is shown in a separate column, each <i>set element</i> of an index will be visible in a separate row. In the given example the parameter <span class="code">price</span> has two indices <span class="code">date</span> and <span class="code">symbol</span>. 
                                     Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol). 
                                     The value column of a parameter is always called "value" and aliased with the explanatory text of the parameter. This type of representation of a GAMS parameter is what we call the "parameter view".
@@ -326,7 +323,7 @@ Parameter dowVSindex(date,fHdr)     'dow jones vs. index fund [MIRO:table]';
 $offExternalOutput
 </pre></code>    
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:150pt;"  src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
+                                        <img class="img-fluid" style="max-height:125pt;"  src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
                                     </div>
                                     <div class="callout-block callout-warning">
                                       <div class="icon-holder">
@@ -334,7 +331,7 @@ $offExternalOutput
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <h4 class="callout-title">Note:</h4>
-                                          <p>A keyword added to the explanatory text is not displayed in MIRO.</p>
+                                          <p>A keyword added to the explanatory text (e.g. <span class="code">[MIRO:table]</span>) is not displayed in MIRO.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: If we were to decide to pivot the index <span class="code">symbol</span> of the parameter <span class="code">price</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:
@@ -347,7 +344,7 @@ $offExternalInput
 </pre></code>
                                       </p>
                                     <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
+                                        <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
                                     </div>
                                     <p>A table width quickly increases when the number of set elements of the header index gets large. A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. In this case we should stick to the "parameter view" as shown <a href="#no-header" class="scrollto">above</a>. Please note also that you should only use the "table view" for parameters where the header remains fixed! The database schema used internally directly depends on the structure of your parameters. This means that adding and removing columns dynamically is not possible! More on this also in the next section.</p>
                                 </div><!--//section-block--> 
@@ -449,12 +446,12 @@ $offExternalInput
                                     <br>Example:</p>
                                     <pre><code class="language-gams">$onExternalInput 
 Singleton Set 
-   multidim(i,j)  'multidimensional singleton set'  / seattle.topeka /
+   multidim(i,j)  'multidimensional singleton set'  / seattle.topeka 'this is an explanatory text'/
    multidim2(i,j) 'another multidimensional singleton set' / seattle.chicago /;
 $offExternalInput
 </pre></code>
                                     <div class="section-block" style="text-align:center;">
-                                          <img class="img-fluid" style="max-height:200pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
+                                          <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
                                 </div><!--//section-block--> 
                                 <div  id="display-var"  class="section-block">
@@ -466,9 +463,7 @@ $offExternalInput
                                     <p>Another property of variables: While a GAMS parameter has a single value associated with each unique label combination, a variable has several (<span class="code">level</span>, <span class="code">marginal</span>, <span class="code">lower bound</span>, <span class="code">upper bound</span> and <span class="code">scale</span>).
                                     When you tag a variable to be displayed in MIRO, all of its attributes will be displayed. If you are only interested in a subset of these attributes, you need to assign them to a parameter and tag this parameter for display in MIRO.</p>
                                     <p>In the following example we integrate the variable <code class="language-gams">x(i,j)</code> into MIRO.</p>
-                                    <pre><code class="language-gams">$onExternalOutput 
-Variable x(i,j) 'shipment quantities in cases';
-$offExternalOutput
+                                    <pre><code class="language-gams">Variable x(i,j) 'UIOutput: shipment quantities in cases';
 </pre></code>
                                     <p>The resulting table then looks like this:</p>
                                     <div class="section-block" style="text-align:center;">
@@ -480,10 +475,7 @@ $offExternalOutput
                                     <h3 class="block-title">Equations</h3>
                                     <p>Equations are treated identically with variables, i.e. they have a fixed number of 4 value columns, namely <span class="code">level</span>, <span class="code">marginal</span>, <span class="code">lower bound</span>, <span class="code">upper bound</span> and <span class="code">scale</span>.
                                     <br>Example:</p>
-                                    <pre><code class="language-gams">$onExternalOutput 
-Equation
-  demand(j)   'satisfy demand at market j' ;
-$offExternalOutput
+                                    <pre><code class="language-gams">Equation demand(j)   'UIOutput: satisfy demand at market j' ;
 </pre></code>
                                     <p>This leads to the following table:</p>
                                     <div class="section-block" style="text-align:center;">
@@ -500,7 +492,7 @@ Equation cost   'define objective function';
 $offExternalInput
 </pre></code>
                                     <div class="section-block" style="text-align:center;">
-                                          <img class="img-fluid" style="max-height:200pt;" src="assets/images/eq-var-table.png" alt="Visualization of equations in a table" />
+                                          <img class="img-fluid" style="max-height:250pt;" src="assets/images/eq-var-table.png" alt="Visualization of equations in a table" />
                                     </div>
                                 </div><!--//section-block--> 
                                 <div  id="create-compile"  class="section-block">

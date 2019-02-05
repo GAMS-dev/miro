@@ -77,7 +77,7 @@
                                     </ul>                                    
                                     To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code" style="white-space:nowrap">--miro=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" src="assets/images/miro-launch.png" alt="--miro=launch" />
+                                        <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="--miro=launch" />
                                     </div>
                                     <p>or using the command prompt:</p>
                                     <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms --miro=launch</kbd></p>
@@ -192,10 +192,10 @@
                                         To import such data, click on the <i>"Load data"</i> button in the navigation bar. The following window pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                      <img class="img-fluid" src="assets/images/import_3.png" alt="Database import" />
+                                                      <img class="img-fluid" src="assets/images/import-db.png" alt="Database import" />
                                                 </div>
                                                 <div class="col-md-6">
-                                                      <img class="img-fluid" src="assets/images/import.png" alt="Local Import" />
+                                                      <img class="img-fluid" src="assets/images/import-local.png" alt="Local Import" />
                                                 </div>
                                             </div>
                                         <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. 
@@ -222,6 +222,13 @@
                                               <p>Instead of the whole spreadsheet you can also <a href="#step1" class="scrollto">load individual sheets</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
+                                        <p>Besides the local and the database import there is the third option "Hypercube". This option is also a database import, but here you can import scenarios generated and saved in <a href="./hypercube.html">Hypercube mode</a>.
+                                        Since the affected scenarios are stored in the database with their individual hash values, this hash must be specified during the import.  
+                                        </p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
+                                            <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
+                                        </div>
+                                        <p>The hash value can be obtained by selecting the corresponding scenario in Hypercube mode and <a href="./hypercube.html#show-hash">displaying the hash value [missing]</a>.</p>
                                     </div><!--//section-block-->
                                     <div id="workflow-2"  class="section-block">
                                         <h3 class="block-title">Data manipulation</h3>
@@ -259,7 +266,7 @@
                                         </div>
                                         <p></p>
                                         <h6 class="callout-title">Tip:</h6>
-                                        <p>All temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>. 
+                                        <p>All temporarily created files of the model run (like solution reports or the <span class="code">lst</span> and <span class="code">log</span> files) can be downloaded separately or as a ZIP archive with a click on the <img class="img-fluid" width="25" height="25" align="middle" src="assets/images/advanced-button.png" alt="Download temporary files" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                              <img class="img-fluid" style="max-height:325pt;" src="assets/images/advanced-options.png" alt="Output data screen - scalars" />
                                         </div>
@@ -292,13 +299,19 @@
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-width:350pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
                                         </div>
-                                        You can also attach files to a scenario here. These can be files of any format. Note that you can decide whether you want this file to be visible to GAMS when you run your model. This way, you may for example provide the model with an entire Excel spreadsheet or GDX container that you don't want to see/edit from MIRO.
+                                        You can also attach files to a scenario here, see <a href="#file-attachment" class="scrollto">section below</a>. 
                                         </li>
                                         <li><b>Export</b>
                                         <br>Download of the scenario data in the form of an Excel spreadsheet. The spreadsheet contains all datasets of the currently active scenario.</li>
                                         <li><b>Delete</b>
                                         <br>Delete a scenario from the database.</li>
                                         </ul>
+                                        <div  id="file-attachment"  class="subsection-block">
+                                            <h5 class="block-title">File attachments</h5>
+                                            <p>The <i>attachments</i> option allows you to attach files to a scenario in the database. 
+                                            These can be files of any format. You can attach files that are completely scenario independent as well as files that are relevant for the model calculations. Note that you can decide whether you want this file to be visible to GAMS when you run your model. This way, you may for example provide the model with an entire Excel spreadsheet or GDX container that you don't want to see/edit from MIRO.
+                                            </p>
+                                        </div><!--//subsection-block-->
                                     </div><!--//section-block-->
                                     <div id="workflow-6"  class="section-block">
                                         <h3 class="block-title">Scenario comparison</h3>

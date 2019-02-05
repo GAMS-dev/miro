@@ -136,7 +136,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
            "additionalProperties":false,
            "properties":{
               "language":{
-                 "title":"Language for WebUI",
+                 "title":"Language for MIRO",
                  "type":"string",
                  "default":"en",
                  "enum":[
@@ -304,7 +304,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     },
                     "alias":{
                       "type":"string",
-                      "title":"Enter the element name as it should be displayed in the WebUI",
+                      "title":"Enter the element name as it should be displayed in MIRO",
                       "minLength":1
                     },
                     "table":{
@@ -962,7 +962,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     },
                     "alias":{
                       "type":"string",
-                      "title":"Enter the element name as it should be displayed in the WebUI",
+                      "title":"Enter the element name as it should be displayed in MIRO",
                       "minLength":1
                     },
                     "slider":{
@@ -1528,7 +1528,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                 }
               },
               "dataRendering":{
-                 "title":"Format in which input or output data is to be displayed in the WebUI.",
+                 "title":"Format in which input or output data is to be displayed in MIRO.",
                  "type":"object",
                  "additionalProperties":false,
                  "properties":{
