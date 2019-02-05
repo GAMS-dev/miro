@@ -68,6 +68,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
         if(iScalarOut > -1){
           gmsSymOut.splice(iScalarOut, 1);
         }
+
         gmsSymHdr = gmsSymHdrIn;
         $.extend(gmsSymHdr, gmsSymHdrOut);
         $.extend(gmsSymNumHdrIn, gmsSymNumHdrOut);
@@ -3839,13 +3840,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                   let gmsSymName = pivot.children[i].childrenByPropertyId["Parameter"].data[0].text;
                   let pivottable = pivot.children[i].childrenByPropertyId["pivottable"];
                   let rows = pivottable.childrenByPropertyId["rows"];
-                  for(j = 0; j < rows.children.length; j++) {
+                  for(let j = 0; j < rows.children.length; j++) {
                     rows.children[j].schema.enum = rows.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
                     rows.children[j].schema.default = gmsSymHdr[gmsSymName][0];
                     rows.children[j].refresh();
                   }
                   let cols = pivottable.childrenByPropertyId["cols"];
-                  for(j = 0; j < cols.children.length; j++) {
+                  for(let j = 0; j < cols.children.length; j++) {
                     cols.children[j].schema.enum = cols.children[j].options.optionLabels = gmsSymHdr[gmsSymName];
                     cols.children[j].schema.default = gmsSymHdr[gmsSymName][0];
                     cols.children[j].refresh();
@@ -3919,6 +3920,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
               gmsParam.on("change", function() {
                 let roCols = control.getControlByPath("inputWidgets/table/readOnlyCols");
                 let gmsSymName = gmsParam.data[0].text;
+                roCols.schema.items.enum = gmsSymHdrIn[gmsSymName];
+                roCols.schema.items.default = gmsSymHdrIn[gmsSymName][0];
                 for(let i = 0; i < roCols.children.length; i++) {
                   roCols.children[i].schema.enum=
                   roCols.children[i].options.optionLabels = gmsSymHdrIn[gmsSymName];

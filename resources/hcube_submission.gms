@@ -19,6 +19,7 @@ $if not set exec $set exec "true"
 $onEmbeddedCode Python:
 import os
 import re
+import shlex
 
 bfdir = r"%bfdir%"
 for file in os.listdir(bfdir):
@@ -47,9 +48,10 @@ def extractDir(fdir):
 def getScalars(text):
    try:
       if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1]
+         text = text.split('.gms ')[1].split(' --MIRO=')[0]
       textTmp = text.split()
-      scalars = "Scalar,Description,Value" + r"\n"
+      scalarsRaw = r"Scalar,Description,Value\n"
+      scalars = scalarsRaw
       fileNames = []
       for i in textTmp:
          if i.startswith("--HCUBE_SCALAR_"):
@@ -62,12 +64,12 @@ def getScalars(text):
             i = i[2:]
          itmp = i.split("=")
          for idx, j in enumerate(itmp):
-            if j.lower().startswith(("trace", "lo", "idir", "execmode", "miro", "hcube")):
-               break
             if idx == 0:
                scalars += j + ",,"
             else:
                scalars += j + r"\n"
+      if(scalars == scalarsRaw):
+         scalars = ""
       return scalars, fileNames
    except:
       pass
@@ -129,14 +131,14 @@ if outScript == "gams":
       tmpdir = "tmp"+str(index)
       call = extractCall(item)
       
-      linestmp += "$call cd " + zipname + "\n$if dexist " + tmpdir + " $call rm -r " + tmpdir + "\n"
       linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
       # dummy trace file (to gurantee that a trace file exists for each run)
       if trcName(item) is not None:
          linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
       # scalars.csv file manually filled (needed in webui for data validation)
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + scalarsCSV + "\" > " + fscalars + "\n"
+      if(len(scalarsCSV)):
+         linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + scalarsCSV + "\" > " + fscalars + "\n"
 
       # copy static csv files
       if len(fileNames):
@@ -144,7 +146,7 @@ if outScript == "gams":
          
       # gams call
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
-      linestmp += "$call cd " + zipname + " \n$if dexist " + dirname + " $call rm -r " + dirname + "\n"
+      linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before

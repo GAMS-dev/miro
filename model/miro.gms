@@ -544,16 +544,29 @@ $ifthen.mk not set mkApp
 $   set mkApp 0
 $else.mk
 $   set mkApp 1
+$   ifthen.mode set MIROMODE
+$      ifthen.host %system.HostPlatform%=="WEX"
+* windows
+$         iftheni.modetype %MIROMODE%==HCUBE
+$            set SETMODEENV "SET LAUNCHHCUBE=yes&&"
+$         elseif.modetype %MIROMODE%==ADMIN
+$            set SETMODEENV "SET LAUNCHADMIN=yes&&"
+$         endif.modetype
+$      elseif.host %system.HostPlatform%=="DEX"
+* mac
+$         ifthen.modetype %MIROMODE%==HCUBE
+$            set SETMODEENV "export LAUNCHHCUBE='yes';"
+$         elseif.modetype %MIROMODE%==ADMIN
+$            set SETMODEENV "export LAUNCHADMIN='yes';"
+$         endif.modetype
+* linux
+$      else.host
+$        set SETMODEENV ""
+$      endif.host
+$   else.mode
+$      set SETMODEENV ""
+$   endif.mode
 $endif.mk
-$ifthen.mode set MIROMODE
-$  iftheni.modetype %MIROMODE%==HCUBE
-$     set LAUNCHMIROMODE "LAUNCHHCUBE"
-$  elseif.modetype %MIROMODE%==ADMIN
-$     set LAUNCHMIROMODE "LAUNCHADMIN"
-$  endif.modetype
-$else.mode
-$   set LAUNCHMIROMODE ""
-$endif.mode
 $ifthen dExist %gams.sysdir%MIRO
 $  set MIRODIR %gams.sysdir%MIRO
 $else
@@ -668,7 +681,19 @@ if(!'shiny'%in%installed.packages(lib.loc = RLibPath)[, 'Package']){{
   rm(checkSourceDefault)
 }}
 library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)
-shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)""".format(r"%MIRODIR% ".strip().replace("\\","/")))
+tryCatch({{
+   shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)
+}}, error = function(e){{
+   futile.logger::flog.fatal('%s', w)
+   logFiles <- list.files('logs', full.names = TRUE)
+   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+}}, warning = function(w){{
+   futile.logger::flog.fatal('%s', w)
+   logFiles <- list.files('logs', full.names = TRUE)
+   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+}}, finally = {{
+   q('no')
+}})""".format(r"%MIRODIR% ".strip().replace("\\","/")))
 
 if %mkApp%>0:
     fn_model = "%fn%"
@@ -678,11 +703,11 @@ if %mkApp%>0:
    
     if system() == "Windows":
         with open(fn_model + ".bat", "w") as f:
-            f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}" NODEVMODE %LAUNCHMIROMODE%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''start /min "" cmd /C "%SETMODEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
-            f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}' NODEVMODE %LAUNCHMIROMODE%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''do shell script "%SETMODEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")
         subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
@@ -732,6 +757,13 @@ $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher requir
 $ terminate
 $endif
 
-$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %LAUNCHMIROMODE%
+$iftheni.mode %MIROMODE%==HCUBE
+$  set MODEARG LAUNCHHCUBE
+$elseifi.mode %MIROMODE%==ADMIN
+$  set MODEARG LAUNCHADMIN
+$else.mode
+$  set MODEARG ''
+$endif.mode
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
