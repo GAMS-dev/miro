@@ -71,7 +71,7 @@ pipeline {
         
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/MIRO
                             cp model/miro.gms $TARGET/inclib
-
+                            sleep 5s
                             hdiutil detach $DMG_ROOT
 
                             cd installer/macOS
