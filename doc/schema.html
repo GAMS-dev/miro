@@ -56,12 +56,12 @@
                                     <pre><code class="language-json">{  
    "$schema":"http://json-schema.org/draft-07/schema#",
    "title":"Configuration file schema",
-   "description":"GAMS WebUI configuration file schema",
+   "description":"GAMS MIRO configuration file schema",
    "type":"object",
    "additionalProperties":false,
    "properties":{  
       "language":{  
-         "description":"default language for WebUI",
+         "description":"default language for MIRO",
          "type":"string",
          "default":"en",
          "enum":[  
@@ -206,7 +206,7 @@
          "required":false
       },
       "inputWidgets":{
-        "description":"Format in which input or output data is to be displayed in the WebUI.",
+        "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
@@ -624,7 +624,7 @@
          }
       },
       "dataRendering":{  
-        "description":"Format in which input or output data is to be displayed in the WebUI.",
+        "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
