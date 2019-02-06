@@ -185,7 +185,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                               nrow(paverData) != length(private$groupedSids[[i]])){
                              stop("noTrc", call. = FALSE)
                            }
-                           groupedNames   <- private$groupedNames[[i]]
+                           groupedNames   <- gsub(",", "|", private$groupedNames[[i]], fixed = TRUE)
                            paverData      <- paverData[match(private$groupedSids[[i]], paverData[[1]]), -1L]
                            paverData[[1]] <- groupedNames
                            paverData[[3]] <- rep.int(groupLabels[i], nrow(paverData))

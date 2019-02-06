@@ -529,35 +529,21 @@ with open(confdir + '/GMSIO_config.json', 'w') as f:
 $offembeddedCode
    
 $include "%fp%%fn%_miro.gms"
-$ifi %MIRO%==BUILD $terminate
+$ifi x%MIRO%==xBUILD $terminate
+
+$iftheni.mode x%MIROMODE%==xHCUBE
+$  set MODEARG LAUNCHHCUBE
+$elseifi.mode x%MIROMODE%==xADMIN
+$  set MODEARG LAUNCHADMIN
+$else.mode
+$  set MODEARG ''
+$endif.mode
 
 $if not set appLogoPath $set appLogoPath ""
 $ifthen.mk not set mkApp
 $   set mkApp 0
 $else.mk
 $   set mkApp 1
-$   ifthen.mode set MIROMODE
-$      ifthen.host %system.HostPlatform%=="WEX"
-* windows
-$         iftheni.modetype %MIROMODE%==HCUBE
-$            set SETMODEENV "SET LAUNCHHCUBE=yes&&"
-$         elseif.modetype %MIROMODE%==ADMIN
-$            set SETMODEENV "SET LAUNCHADMIN=yes&&"
-$         endif.modetype
-$      elseif.host %system.HostPlatform%=="DEX"
-* mac
-$         ifthen.modetype %MIROMODE%==HCUBE
-$            set SETMODEENV "export LAUNCHHCUBE='yes';"
-$         elseif.modetype %MIROMODE%==ADMIN
-$            set SETMODEENV "export LAUNCHADMIN='yes';"
-$         endif.modetype
-* linux
-$      else.host
-$        set SETMODEENV ""
-$      endif.host
-$   else.mode
-$      set SETMODEENV ""
-$   endif.mode
 $endif.mk
 $ifthen dExist %gams.sysdir%MIRO
 $  set MIRODIR %gams.sysdir%MIRO
@@ -706,11 +692,11 @@ if %mkApp%>0:
    
     if system() == "Windows":
         with open(fn_model + ".bat", "w") as f:
-            f.write('''start /min "" cmd /C "%SETMODEENV%"{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}""'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}" %MODEARG%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree
         with open(fn_model + ".applescript", "w") as f:
-            f.write('''do shell script "%SETMODEENV%'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}'"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
+            f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}' %MODEARG%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")
         subprocess.call(["osacompile", "-o", fn_model + ".app", fn_model + ".applescript"])
@@ -760,13 +746,6 @@ $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher requir
 $ terminate
 $endif
 
-$iftheni.mode %MIROMODE%==HCUBE
-$  set MODEARG LAUNCHHCUBE
-$elseifi.mode %MIROMODE%==ADMIN
-$  set MODEARG LAUNCHADMIN
-$else.mode
-$  set MODEARG ''
-$endif.mode
 $hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
