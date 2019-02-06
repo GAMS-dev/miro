@@ -38,10 +38,10 @@ ui_crashrep <- fluidPage(
   fluidRow(align="center",
            HTML("<br>"),
            div(
-             "MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
-                            Would you like to send the error report to GAMS in order to avoid such crashes in the future?
-                            The ONLY files that we send (encrypted via HTTPS) are the configuration files: 'GMSIO_config.json' and 'config.json' as well as the error log. 
-                            None of your .gms model files will be sent!"),
+             "MIRO discovered an unexpected error. We are constantly striving to improve MIRO and any feedback helps us to do so.
+             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
+             The ONLY files that we send (encrypted via HTTPS) are the configuration files: 'GMSIO_config.json' and 'config.json' as well as the error log. 
+             None of your '*.gms' model files or anything else will be sent!"),
            HTML("<br>"),
            actionButton("crash_dontsend", "Don't send"),
            actionButton("crash_send", "Send")

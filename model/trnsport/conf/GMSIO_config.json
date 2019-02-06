@@ -1,6 +1,5 @@
 {
     "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
-    "gamsMetaDelim": "[MIRO:hidden]",
     "MIROSwitch": "--MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
@@ -52,7 +51,7 @@
             "alias": "Input Scalars",
             "symnames": [
                 "f",
-                "minS",
+                "mins",
                 "beta"
             ],
             "symtext": [
@@ -125,7 +124,6 @@
         },
         "scalars_out": {
             "alias": "Output Scalars",
-            "hidden": false,
             "symnames": [
                 "total_cost"
             ],
@@ -148,43 +146,6 @@
                 "value": {
                     "type": "set",
                     "alias": "Scalar Value"
-                }
-            }
-        },
-        "scalarsve_out": {
-            "alias": "Output Variable/Equation Scalars",
-            "headers": {
-                "type": {
-                    "type": "set",
-                    "alias": "Type"
-                },
-                "scalar": {
-                    "type": "set",
-                    "alias": "Scalar Name"
-                },
-                "description": {
-                    "type": "set",
-                    "alias": "Scalar Description"
-                },
-                "level": {
-                    "type": "parameter",
-                    "alias": "Level"
-                },
-                "marginal": {
-                    "type": "parameter",
-                    "alias": "Marginal"
-                },
-                "lower": {
-                    "type": "parameter",
-                    "alias": "Lower"
-                },
-                "upper": {
-                    "type": "parameter",
-                    "alias": "Upper"
-                },
-                "scale": {
-                    "type": "parameter",
-                    "alias": "Scale"
                 }
             }
         }

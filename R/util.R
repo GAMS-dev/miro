@@ -687,9 +687,7 @@ reactivePoll2 <- function(intervalMillis, session, checkFunc, valueFunc) {
   
   return(list("re" = re, "obs" = obs))
 }
-reactiveFileReader2 <- function(intervalMillis, session, filePath, readFunc, ...) {
-  extraArgs <- list(...)
-  
+reactiveFileReader2 <- function(intervalMillis, session, filePath) {
   reactivePoll2(
     intervalMillis, session,
     function() {
@@ -697,7 +695,7 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath, readFunc, ...
       return(paste(filePath, info$mtime, info$size))
     },
     function() {
-      do.call(readFunc, c(filePath, extraArgs))
+      do.call(readChar, list(filePath, file.size(filePath)))
     }
   )
 }

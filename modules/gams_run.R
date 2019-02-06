@@ -538,8 +538,7 @@ observeEvent(input$btSolve, {
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader2(300, session, file.path(workDir, modelName %+% ".log"), 
-                                     readLines, warn = FALSE)
+      logfile <- reactiveFileReader2(300, session, file.path(workDir, modelName %+% ".log"))
       logfileObs <- logfile$obs
       logfile <- logfile$re
     }, error = function(e) {
@@ -560,7 +559,10 @@ observeEvent(input$btSolve, {
   if(config$activateModules$logFile){
     output$logStatus <- renderText({
       # read log file 
-      logText <- paste(logfile(), collapse = "\n")
+      logText    <- logfile()
+      logSize    <- nchar(logText)
+      logText    <- paste0(if(logSize > (3e4 + 1)) "[...]\n", 
+                           substr(logText, logSize - 3e4, logSize))
       if(!is.null(modelStatus())){
         return(logText)
       }
