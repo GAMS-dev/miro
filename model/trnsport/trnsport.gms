@@ -139,5 +139,3 @@ schedule(i,j, 'cap') = a(i);
 schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif
-
-$libInclude miro

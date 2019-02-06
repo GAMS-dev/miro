@@ -92,5 +92,3 @@ dowVSindex(d,'index fund')           = fund(d);
 abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
-
-$libinclude miro

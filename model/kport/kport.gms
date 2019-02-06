@@ -283,5 +283,3 @@ RPreport(r,p,'Utilization rate')$(nb.l(r,p)*vR.l(r)) = pT.l(r,p)/(nb.l(r,p)*vR.l
 RPreport(r,p,'Number of batches') = nb.l(r,p);
 
 display Cost, Surplus, ProductionTime, RPreport;
-
-$libInclude miro
