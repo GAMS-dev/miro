@@ -118,7 +118,7 @@
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:300pt" src="assets/images/batch_img/regular_batch.png" alt="cartesian product of configured parameters" />
                                         </div>
                                         <p>When we set up a run in the MIRO base mode, we could specify the freight cost as well as the minimum amount of goods to ship. Those are zero dimensional values. The very same scalars can now be specified within a given range: The sliders we specified in the base mode have now become slider ranges. In addition, we can set a 'step size' for each slider range. 
-                                        In addition, the single dropdown menu for selecting the problem type has been replaced by a multi dropdown menu. 
+                                        In addition, the single dropdown menu for selecting the problem type has been replaced by a multi dropdown menu.</p>
                                         </div><!--//section-block-->
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -130,7 +130,7 @@
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <div  class="section-block">
-                                        The table below gives an overview of the widgets and their different appearance in the base and the Hypercube mode.</p>
+                                        <p>The table below gives an overview of the widgets and their different appearance in the base and the Hypercube mode.</p>
                                         <div class="table-responsive">
                                           <table class="table table-striped" style="margin: 0px auto; margin-bottom:15px;">
                                               <thead>
@@ -207,7 +207,7 @@
                                         </div>
                                         <p id="nobatch">It becomes clear that the number of scenarios resulting from a particular Hypercube job configuration can increase rapidly with the number of scalar that are expanded. Depending on how computationally intensive the underlying GAMS model is, the scenarios should be carefully configured. 
                                         <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO configuration for the GAMS model (i.e. in the config.json file) using the option <code class="language-json">"noHcube": "true"</code> or via the <a href="./configgen.html">Configuration Generator</a>. 
-                                        Example: The scalar 'minimum shipment' in the config.json file is configured as follows: <pre><code class="language-json">"mins": {                                      
+                                        Example: The scalar 'minimum shipment' in the config.json file is configured as follows: </p><pre><code class="language-json">"mins": {                                      
    &#x22;widgetType&#x22;: &#x22;slider&#x22;,
    &#x22;alias&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
    &#x22;label&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
@@ -217,14 +217,14 @@
    &#x22;step&#x22;: 1,
    &#x22;noHcube&#x22;: true
 }</code></pre>
-                                    This configuration now has the consequence that the scalar can still be selected in the scenario generation but the double slider is now a single slider again. Its selection remains fixed for each generated scenario of a Hypercube job.</p>
+                                    <p>This configuration now has the consequence that the scalar can still be selected in the scenario generation but the double slider is now a single slider again. Its selection remains fixed for each generated scenario of a Hypercube job.</p>
                                     <p id="multi-dim-symbols"><b>Multidimensional Symbols</b>:
                                     <br>Unlike scalar values, multidimensional symbols such as sets, parameters and multidimensional singleton sets cannot be varied within a job. They remain identical in every created scenario of a job. 
                                     For example, if a parameter is part of the input data, you may modify its values just like you did in the MIRO base mode. However, the data remains fixed within a Hypercube job.</p>
                                     </div><!--//section-block-->
                                     <div  id="scengen-3"  class="section-block">
                                         <h3 class="block-title">Automated job submission</h3>
-                                        <p>Once you are happy with the set up of your Hypercube job, you can submit it by clicking: 'Submit job'. This triggers the expansion of all scenarios resulting from your configuration and sets up your Hypercube job.
+                                        <p>Once you are happy with the set up of your Hypercube job, you can submit it by clicking: 'Submit job'. This triggers the expansion of all scenarios resulting from your configuration and sets up your Hypercube job.</p>
                                           <div class="callout-block callout-warning">
                                             <div class="icon-holder">
                                                 <i class="fas fa-info-circle"></i>
@@ -234,7 +234,7 @@
                                                 <p>The maximum number of scenarios that can be submitted in one job is currently limited to 10&thinsp;000.
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        MIRO also looks into the database where your previous runs are stored and checks whether a subset of the scenarios you want to commit have already been saved. If it finds results from previous runs, MIRO asks if it should commit only the scenarios that have not yet been executed, or if it should submit all of them again.<br>
+                                        <p>MIRO also looks into the database where your previous runs are stored and checks whether a subset of the scenarios you want to commit have already been saved. If it finds results from previous runs, MIRO asks if it should commit only the scenarios that have not yet been executed, or if it should submit all of them again.<br>
                                       There are a number of reasons why you might want to re-submit certain scenarios. We will elaborate on these reasons in the next section that discusses the technical details of how MIRO sets up a Hypercube job. If you are reading this documentation for the first time, you might want to skip this next (sub)section.</p>
                                       <div id="hash-generation"  class="section-block">
                                         <h4 class="block-title">Advanced: How MIRO indentifies Hypercube jobs</h4>
@@ -250,7 +250,7 @@
                                         Command line parameters (GAMS options and double dash parameters) are just appended as in any GAMS call.</p>
                                         Once the command is built, we hash this again with the aforementioned SHA-2 hash function and get an identifier of the form:
                                         <span class="code" style="white-space: nowrap;">7f14dcce0c726d215adae54daa2690b6a86b540cf4e3efaf9f97e8f4f3ab90a5</span>.
-                                        We end up with a (relatively) compact identifier of a scenario while also making sure that we have a valid file/directory name without any reserved characters. The obvious disadvantage is that there is no way to derive the input parameters from the hash.
+                                        <p>We end up with a (relatively) compact identifier of a scenario while also making sure that we have a valid file/directory name without any reserved characters. The obvious disadvantage is that there is no way to derive the input parameters from the hash.
                                         </p>
                                       </div>
                                         <p>When we decided which of the scenarios to submit, we have two options of HOW to submit the job:</p>
@@ -304,7 +304,7 @@
                                         The ZIP archive has the following contents:</p>
                                         <ul>
                                           <li><i>static</i> folder
-                                          <br>This folder contains all non-scalar (thus multidimensional) input data of the corresponding GAMS model. As explained <a href="#multi-dim-symbols" class"scrollto">here</a>, this data remains the same for all scenarios of a Hypercube job.</li>
+                                          <br>This folder contains all non-scalar (thus multidimensional) input data of the corresponding GAMS model. As explained <a href="#multi-dim-symbols" class="scrollto">here</a>, this data remains the same for all scenarios of a Hypercube job.</li>
                                           <li><i>trnsport</i> folder
                                           <br>This folder is a copy of the directory of the underlying GAMS model. If files are included in the model using relative paths, they should be located in this folder.</li>
                                           <li><i>hcube_submission.gms</i>
@@ -426,14 +426,13 @@
                                         <li>It is mandatory that the header line of a csv file is identical to the corresponding parameter declared in GAMS.
                                         <br>Example: In the (slightly adapted) trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared with the <code class="language-gams">'UIOutput: '
                                         </code> tag. 
-                                        </p>
-                                        <p><pre><code class="language-gams">Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
+                                        <pre><code class="language-gams">Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
 
 Parameter schedule(i,j,scheduleHdr) 'UIOutput: shipment quantities in cases [MIRO:table]';
 
 schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
-schedule(i,j,'quantities') = x.l(i,j);</code></pre></p>
+schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                         <p>The resulting <i>schedule.csv</i> contains the header row <span class="code" style="white-space:nowrap">i,j,cap,demand,quantities</span>, 
                                         which corresponds to the first two domains <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
                                         To learn more about how headers are defined in MIRO, read <a href="./model.html#create-3" target="_blank">here</a>.</p>
@@ -464,7 +463,6 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre></p>
                                         <p>A dialog pops up that lets you choose the zip archive with the Hypercube job results. Note that you probably want to assign <a href="#job-tag" class="scrollto">job tags</a> here as well.</p>
                                         <p>With a click on 'upload', the archive is evaluated and, if the data contained is valid, will be stored in the MIRO database.</p>
                                     </div><!--//section-block-->
-                                </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="analyses-section" class="doc-section">
                                 <h2 class="section-title">Analyses</h2>
@@ -473,20 +471,20 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre></p>
                                     <div  id="analyze-2"  class="section-block">
                                         <h3 class="block-title">Scenario selection</h3>
                                         <p>Scenarios that have been imported into the MIRO database can be loaded at a later time for subsequent analyses. The <i>load scenarios</i> module is a graphical way to build datbase queries. It gives you a lot of flexibility and power to get exactly those scenarios you are interested in. Let's take a look at an example:</p>
-                                        <br>In our <i>trnsport</i> model, we have three input scalars that we import from MIRO:</p>
+                                        <br>In our <i>trnsport</i> model, we have three input scalars that we import from MIRO:
                                         <pre><code class="language-gams">$onExternalInput 
 Scalar f    'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 $offExternalInput
-</pre></code>                           <p>Of particular interest are scalar inputs and outputs, as you can easily use them to filter your data. More specifically, it is possible to filter your database tables by the following GAMS symbols:
+</code></pre>                    <p>Of particular interest are scalar inputs and outputs, as you can easily use them to filter your data. More specifically, it is possible to filter your database tables by the following GAMS symbols:</p>
                                         <ul>
                                           <li>Scalars</li>
                                           <li>Singleton sets</li>
                                           <li>Double-dash parameters</li>
                                           <li>GAMS options</li>
                                         </ul>
-                                        <br>In addition to those scenario-specific filters, you can also use scenario metadata such as the optionally defined job tags and the date of creation in a database query.</p>
+                                        <p>In addition to those scenario-specific filters, you can also use scenario metadata such as the optionally defined job tags and the date of creation in a database query.</p>
                                         <p>The MIRO Hypercube load module lets you combine any of these filters with the logical operators AND and OR (see figure below).</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/batch_img/hcube_db_query.png" alt="Filtered database search" />
@@ -531,7 +529,7 @@ $offExternalInput
                                         <div class="section-block" style="text-align:center;">
                                          <img class="img-fluid" style="display:block; margin:auto; max-height:400px;" src="assets/images/batch_img/paver-trace-files.png" alt="Trace files generated for Paver run" />
                                         </div>
-                                        <p>Per default, all input scalars are what we call model-defining: They contribute to the PAVER "model" name. This means that when the scalar changes, PAVER would regard it as an new, independent model. Output scalars and metadata attributes are ignored meaning that different values would still be regarded as the same "model". If you want to change this default setting, there is a small arrow in the lower left corner of the PAVER set-up dialog box that lets you do so:
+                                        <p>Per default, all input scalars are what we call model-defining: They contribute to the PAVER "model" name. This means that when the scalar changes, PAVER would regard it as an new, independent model. Output scalars and metadata attributes are ignored meaning that different values would still be regarded as the same "model". If you want to change this default setting, there is a small arrow in the lower left corner of the PAVER set-up dialog box that lets you do so:</p>
                                         <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="display:block; margin:auto; max-height:300px;" src="assets/images/batch_img/paver-attributes-ignore.png" alt="Select PAVER attributes to ignore" />
                                         </div>
@@ -543,7 +541,7 @@ $offExternalInput
                                         <li>Date of creation of a Hypercube job<br/></li>
                                         <li>Owner of a Hypercube job<br/></li>
                                         </ul>
-                                        Once you have decided which attributes you want to use to compare your scenarios, you can start Paver. The results of your analysis could look like this: </p>
+                                        <p>Once you have decided which attributes you want to use to compare your scenarios, you can start Paver. The results of your analysis could look like this: </p>
                                         <div class="section-block" style="text-align:center;">
                                               <img class="img-fluid" src="assets/images/batch_img/batch_paver.png" alt="Scenario analysis results" />
                                         </div>
