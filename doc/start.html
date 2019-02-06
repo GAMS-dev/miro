@@ -221,17 +221,17 @@
                                               <p>Instead of the whole spreadsheet you can also <a href="#step1" class="scrollto">load individual sheets</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>Besides the local and the database import there is the third option "Hypercube". This option is also a database import, but here you can import scenarios generated and saved in <a href="./hypercube.html">Hypercube mode</a>.
-                                        Since the affected scenarios are stored in the database with their individual hash values, this hash must be specified during the import.  
+                                        <p>Besides the local and the database import there is the third option: "Hypercube". This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
+                                        Since Hypercube scenarios are identified by their hash value (read more about this <a href="./hypercube.html" target="_blank">here</a>) and not by a user-defined name like in base mode, you need to import them differently.  
                                         </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
                                             <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
                                         </div>
-                                        <p>The hash value can be obtained by selecting the corresponding scenario in Hypercube mode and <a href="./hypercube.html#analyze-2">displaying the hash value</a>.</p>
+                                        <p>Please refer to the chapter about <a href="./hypercube.html#analyze-2">Hypercube scenario import</a> if you do not know how to get the hash value of a Hypercube scenario.</p>
                                     </div><!--//section-block-->
                                     <div id="workflow-2"  class="section-block">
                                         <h3 class="block-title">Data manipulation</h3>
-                                        <p>The previously empty tables in the main window are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model. 
+                                        <p>The tables that were empty before are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model. 
                                         More about the tabular and graphical representation of input data in MIRO is explained <a href="./model.html#creating-section">here</a>. 
                                         <br>We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our <i>trnsport</i> demo you have to option to edit the capacities, the demand, the distance matrix and several scalar values: 
                                         <div class="section-block">
@@ -298,7 +298,7 @@
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-width:350pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
                                         </div>
-                                        You can also attach files to a scenario here, see <a href="#file-attachment" class="scrollto">section below</a>. 
+                                        You can also attach files to a scenario here, see the <a href="#file-attachment" class="scrollto">section below</a>. 
                                         </li>
                                         <li><b>Export</b>
                                         <br>Download of the scenario data in the form of an Excel spreadsheet. The spreadsheet contains all datasets of the currently active scenario.</li>
@@ -307,8 +307,7 @@
                                         </ul>
                                         <div  id="file-attachment"  class="subsection-block">
                                             <h5 class="block-title">File attachments</h5>
-                                            <p>The <i>attachments</i> option allows you to attach files to a scenario in the database. 
-                                            These can be files of any format. You can attach files that are completely scenario independent as well as files that are relevant for the model calculations. Note that you can decide whether you want this file to be visible to GAMS when you run your model. This way, you may for example provide the model with an entire Excel spreadsheet or GDX container that you don't want to see/edit from MIRO.
+                                            <p>With the <i>attachments</i> option, you can attach files to the scenario you currently have open. These can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen. For example, if you want to provide data to your model that don't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for. In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed. Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.
                                             </p>
                                         </div><!--//subsection-block-->
                                     </div><!--//section-block-->
