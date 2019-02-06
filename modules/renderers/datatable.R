@@ -14,6 +14,7 @@ renderDTable <- function(data, options, roundPrecision = 2){
       formatRound(seq_along(data)[vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)], 
                   digits = roundPrecision)
     
+    
     return(renderDT(dt))
   }else{
     data <- roundDf(data, roundPrecision)
