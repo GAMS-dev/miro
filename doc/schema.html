@@ -205,6 +205,16 @@
          "default":false,
          "required":false
       },
+      "hiddenOutputScalars": {
+        "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
+         "type":"array",
+         "uniqueItems":true,
+         "required":false,
+         "items":{
+           "type":"string",
+           "minLength": 1
+         }
+      },
       "inputWidgets":{
         "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
