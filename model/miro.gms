@@ -41,7 +41,6 @@ uii = len(input_tag)
 output_tag = 'UIOutput:'
 uio = len(output_tag)
 pivot_marker = '[MIRO:table]'
-hidden_marker = '[MIRO:hidden]'
 gams.wsWorkingDir = '.'
 gdxfn = r'%fn%_cmiro_outdb.gdx'   
 db = gams.ws.add_database_from_gdx(gdxfn)
@@ -89,8 +88,6 @@ def extractSymText(sym,level):
       text = sym.name
    if level>0:
       text = text.replace(pivot_marker, '')
-   if level>1:
-      text = text.replace(hidden_marker, '')
    return text.strip()
 
 # Iterate through all symbols
@@ -447,7 +444,6 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    
 # Now the JSON config file
 config = { "pageTitle" : "%system.title%",
-           "gamsMetaDelim": "[MIRO:hidden]",
            "MIROSwitch" : "--MIRO=RUN",
            "fileExchange" : "csv",
            "csvDelim" : "," }
@@ -470,7 +466,7 @@ if have_i_scalar:
    for s in i_sym:
       if not (s[1]=="ss" or s[1]=="ps"):
          continue
-      sn.append(s[0].name)
+      sn.append(s[0].name.lower())
       st.append(extractSymText(s[0],2))
       if s[1]=="ss":
          sty.append("set")
@@ -498,15 +494,11 @@ if have_o_scalar:
    st = []
    sty = []
    headers = {}
-   hiddenCnt = 0
    for s in o_sym:
       if not (s[1]=="ss" or s[1]=="ps"):
          continue
-      sn.append(s[0].name)
+      sn.append(s[0].name.lower())
       st.append(extractSymText(s[0],1))
-      if hidden_marker in st[-1]:
-         hiddenCnt = hiddenCnt+1
-         st[-1] = st[-1].replace(hidden_marker, '')
       if s[1]=="ss":
          sty.append("set")
       else:
@@ -514,7 +506,7 @@ if have_o_scalar:
    headers['scalar'] = { 'type':'set', 'alias':'Scalar Name' }
    headers['description'] = { 'type':'set', 'alias':'Scalar Description' }
    headers['value'] = { 'type':'set', 'alias':'Scalar Value' }
-   io_dict['scalars_out'] = { 'alias':'Output Scalars', 'hidden':hiddenCnt==len(sn), 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
+   io_dict['scalars_out'] = { 'alias':'Output Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
 
 if have_o_vescalar:
    headers = {}   

@@ -273,12 +273,12 @@ observeEvent(input$btSendQuery, {
   enableEl(session, "#btSendQuery")
 })
 if("DT" %in% (.packages())){
-  output$hcubeLoadResults <- renderDataTable(datatable({
+  output$hcubeLoadResults <- renderDataTable(
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
-      rv$fetchedScenarios[, -1]
+      datatable(
+        rv$fetchedScenarios[, -1], filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
+      formatDate(2L,  method = "toLocaleString")
     }
-  }, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
-    formatDate(2L,  method = "toLocaleString")
   )
 }else{
   output$hcubeLoadResults <- renderDataTable({

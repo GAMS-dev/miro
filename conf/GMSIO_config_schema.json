@@ -17,13 +17,6 @@
       "minLength":5,
       "required":true
     },
-    "gamsMetaDelim":{  
-      "description":"GAMS delimitor used to identify meta information (e.g. slider, dropdown, ...)",
-      "type":"string",
-      "minLength":1,
-      "required":false,
-      "default":"###"
-    },
     "fileExchange":{  
       "description":"Method used to exchange files",
       "type":"string",
@@ -125,11 +118,6 @@
           "alias":{  
             "type":"string",
             "minLength":1
-          },
-          "hidden":{  
-            "description":"Boolean that specifies whether element should not be displayed in UI (e.g. configuration data)",
-            "type":"boolean",
-            "required":false
           },
           "symnames":{ 
             "description": "Symbol names in scalar tables",

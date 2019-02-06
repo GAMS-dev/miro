@@ -109,7 +109,7 @@
             "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":true,
+               "default":false,
                "required":false
             },
             "logFile:":{  
@@ -155,6 +155,16 @@
                "minLength":"1",
                "required":false
             }
+         }
+      },
+      "hiddenOutputScalars": {
+        "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
+         "type":"array",
+         "uniqueItems":true,
+         "required":false,
+         "items":{
+           "type":"string",
+           "minLength": 1
          }
       },
       "saveTraceFile":{  

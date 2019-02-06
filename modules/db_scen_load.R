@@ -324,8 +324,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           attr(scenData[["scen_1_"]][[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
           if(identical(i, idxScalarOut)){
             # scalar data exists
-            removeRows                 <- grepl(config$gamsMetaDelim, 
-                                                scenData[["scen_1_"]][[i]][[2]])
+            removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
             scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
           }else{
@@ -392,8 +391,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         # load scalar data if available
         if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
           # scalar data exists
-          rowIdsToRemove                         <- grepl(config$gamsMetaDelim, 
-                                                          scenData[[scenIdLong]][[idxScalarOut]][[2]])
+          rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
           scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]][rowIdsToRemove, ]
           scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
         }else{

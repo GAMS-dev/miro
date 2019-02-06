@@ -4,6 +4,7 @@ let gmsSymHdrIn = {};
 let gmsSymNumHdrIn = {};
 let gmsSymHdr = {};
 let scalarSyms = [];
+let scalarOutSyms = [];
 let scalars = [];
 
 function parseGMSIO() {
@@ -54,6 +55,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
           if(gmsSymOut[i] === "scalars_out"){
             scalars.push("scalars_out");
             gmsSymNumHdrOut[gmsSymOut[i]] = ["Value"];
+            scalarOutSyms = gmsData.gamsOutputFiles[gmsSymOut[i]].symnames;
           }else{
             gmsSymNumHdrOut[gmsSymOut[i]] = [];
           }
@@ -75,7 +77,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
 
         $("#gmsioUpload").hide();
         $("#confGenContent").show();
-        launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms);
+        launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms, scalarOutSyms);
         //$("#selectConfigType").show();
 //
 //        //$("#launchConfigGenBt").one("click", function(){
@@ -104,7 +106,7 @@ function mergeExisting(){
   configFR.onload = function(e) {
     try{
       $("#selectConfigType").hide();
-      launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms, JSON.parse(e.target.result));
+      launchConfigGen(gmsSymIn.concat(gmsSymOut, scalars), gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdrIn, scalars, scalarSyms, scalarOutSyms, JSON.parse(e.target.result));
     }
     catch(err) {
         $("#errMsg").html("Problems parsing the JSON file. Please upload a valid configuration file!");
@@ -115,7 +117,7 @@ function mergeExisting(){
   configFR.readAsText(configFile.item(0));
 }
 
-function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr, scalars, scalarSyms, existingConfig = null){
+function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr, scalars, scalarSyms, scalarOutSyms, existingConfig = null){
     let gmsSymHeaders = [];
     for(let i=0;i<gmsSymIn.length;i++){
       if(typeof gmsSymHdrIn[gmsSymIn[i]] !== "undefined"){
@@ -127,9 +129,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
   }else{
     gmsSymHdrIngmsSymIn0 = gmsSymHdrIn[gmsSymIn[0]];
   }
-  Alpaca.defaultToolbarSticky = true;
-    $("#form1").alpaca({
-        "schema": {
+  let configSchema = {
            "$schema":"http://json-schema.org/draft-07/schema#",
            "title":"",
            "type":"object",
@@ -160,7 +160,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "required":true
               },
               "includeParentDir":{
-                "description":"Include parent directory of the curren model folder in your model runs (e.g. because several models share files)?",
+                "title":"Include parent directory of the curren model folder in your model runs (e.g. because several models share files)?",
                  "type":"boolean",
                  "default":false,
                  "required":false
@@ -236,7 +236,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "required":false
                     },
                     "attachments":{
-                       "description": "Should users be allowed to add attachments to scenarios?",
+                       "title": "Should users be allowed to add attachments to scenarios?",
                        "type": "boolean",
                        "default":true,
                        "required":false
@@ -278,8 +278,21 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
               "saveTraceFile":{
                  "title":"Save trace files?",
                  "type":"boolean",
-                 "default":false,
+                 "default":true,
                  "required":false
+              },
+              "hiddenOutputScalars": {
+                "title":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
+                 "type":"array",
+                 "uniqueItems":true,
+                 "maxItems": scalarOutSyms.length,
+                 "required":false,
+                 "items":{
+                   "type":"string",
+                   "minLength": 1,
+                   "enum": scalarOutSyms,
+                   "required": true
+                 }
               },
               "inputWidgets":{
                 "title":"Generate new widget for model input data",
@@ -891,7 +904,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                            "value":{  
-                           "description":"default value",
+                           "title":"default value",
                            "type": "string",
                            "minLength":1,
                            "required":false
@@ -1487,7 +1500,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "required":false
                         },
                         "value":{  
-                           "description":"default value",
+                           "title":"default value",
                            "type": "string",
                            "minLength":1
                         },
@@ -2862,7 +2875,13 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
            "dependencies": {
              "aggregateWidgetsTitle": "aggregateWidgetsTmp"
            }
-        },
+        };
+  if(scalarOutSyms.length === 0){
+    delete configSchema.properties.hiddenOutputScalars;
+  }
+  Alpaca.defaultToolbarSticky = true;
+    $("#form1").alpaca({
+        "schema": configSchema,
         "options":{
            "fields":{
              "inputWidgets":{
@@ -3318,6 +3337,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                 "bindings": {
                     "language": 1,
                     "pageSkin": 1,
+                    "includeParentDir": 1,
                     "excelIncludeMeta": 1,
                     "excelIncludeEmptySheets": 1,
                     "UILogo": 1,
@@ -3328,6 +3348,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "aggregateWidgetsTitle": 1,
                     "scalarAliases":1,
                     "saveTraceFile": 1,
+                    "hiddenOutputScalars":1,
                     "roundingDecimals":1,
                     "inputWidgets":2,
                     "inputWidgetsCL":2,

@@ -83,7 +83,7 @@ Parameter
     partOfPortfolio(symbol)            'what part of the portfolio'   
     dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:table]'     
     abserror(date,errHdr)              'absolute error [MIRO:table]'               
-Singleton Set lastDayTraining(date)    'last date of training period [MIRO:hidden]' ;
+Singleton Set lastDayTraining(date)    'last date of training period' ;
 $offExternalOutput
 
 partOfPortfolio(s)                   = w.l(s);

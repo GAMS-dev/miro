@@ -1,5 +1,5 @@
 loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
-                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenMarker = "###"){
+                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L)){
   
   if(!(method %in% c("csv"))){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
@@ -47,7 +47,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
-          removeRows       <- grepl(hiddenMarker, scalarTmp[[2]], fixed = TRUE)
+          removeRows       <- tolower(scalarTmp[[1]]) %in% hiddenOutputScalars
           ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
           scalarTmp        <<- scalarTmp[removeRows, ]
         }, error = function(e){

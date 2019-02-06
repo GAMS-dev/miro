@@ -337,6 +337,22 @@ Please specify another widget type.", modelInAlias[i]))
   })
 }
 if(is.null(errMsg)){
+  # declare hidden output scalars and remove entire scalar table if all hidden
+  if(length(config$hiddenOutputScalars)){
+    config$hiddenOutputScalars <- tolower(config$hiddenOutputScalars)
+    outScalarTmp <- character(0L)
+    if(scalarsOutName %in% names(modelOut)){
+      outScalarTmp  <- modelOut[[scalarsOutName]]$symnames
+    }
+    isValidScalar <- config$hiddenOutputScalars %in% outScalarTmp
+    if(any(!isValidScalar)){
+      errMsg <- paste(errMsg, sprintf("Some output scalars you declared to be hidden were not defined in your GAMS model as scalars to be displayed in MIRO. These scalars are: '%s'. Please either add them in your model or remove them from the list of hidden output scalars in your config.json file.", 
+                                      config$hiddenOutputScalars[!config$hiddenOutputScalars %in% names(modelOut)]), sep = "\n")
+    }else if(length(outScalarTmp) > 0L && identical(sum(isValidScalar), length(outScalarTmp))){
+      modelOut[[scalarsOutName]]$hidden <- TRUE
+    }
+    rm(outScalarTmp, isValidScalar)
+  }
   # declare input sheets as they will be displayed in UI
   if(identical(config$aggregateWidgets, FALSE)){
     # every input element on its own tab

@@ -669,7 +669,7 @@ observeEvent(input$btSolve, {
                                          modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                          scalarsFileHeaders = scalarsFileHeaders, colTypes = db$getDbSchema()$colTypes,
                                          modelOutTemplate = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                         hiddenMarker = config$gamsMetaDelim) 
+                                         hiddenOutputScalars = config$hiddenOutputScalars) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc

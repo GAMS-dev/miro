@@ -1,5 +1,6 @@
 {
 	"UILogo"             : "pickstock.png",
+    "hiddenOutputScalars": ["lastdaytraining"],
     "inputWidgets":{
       "price":{
         "widgetType": "table",
@@ -177,7 +178,7 @@
 					"strokeColor"			: ""
 				},
 				"dyEvent"    :{
-					"lastDayTraining"  : {
+					"lastdaytraining"  : {
 						 "label"     	: "End of training phase",
 						 "labelLoc"     : "bottom",
 						 "color"        : "red"
