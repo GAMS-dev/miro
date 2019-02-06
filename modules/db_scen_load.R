@@ -327,8 +327,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
             removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
             scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
-          }else{
-            scalarData[["scen_1_"]]    <<- data.frame()
           }
         }
       })
