@@ -62,6 +62,7 @@ pipeline {
 
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
+                            mount
                             hdiutil attach -mountpoint ./$DMG_ROOT installer/macOS/$DMG_NAME
 
                             TARGET=$DMG_ROOT/GAMS25.1/sysdir
@@ -71,7 +72,6 @@ pipeline {
         
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/MIRO
                             cp model/miro.gms $TARGET/inclib
-                            
                             hdiutil detach -verbose $DMG_ROOT
                             cd installer/macOS
 
