@@ -12,7 +12,10 @@ renderDTable <- function(data, options, roundPrecision = 2){
   if("DT" %in% (.packages())){
     dt <- do.call(datatable, c(list(data), options)) %>%
       formatRound(seq_along(data)[vapply(data, is.numeric, logical(1L), USE.NAMES = FALSE)], 
-                  digits = roundPrecision)
+                  digits = roundPrecision) %>%
+      formatDate(seq_along(data)[vapply(data, inherits, logical(1L), "POSIXt", USE.NAMES = FALSE)], 
+                 method = "toLocaleString")
+    
     
     return(renderDT(dt))
   }else{
