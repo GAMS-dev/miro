@@ -79,6 +79,7 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
     
 $onExternalOutput
+Scalar kpi                             'key performance indicator - absoulte error in entire testing phase'
 Parameter
     partOfPortfolio(symbol)            'what part of the portfolio'   
     dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:table]'     
@@ -92,3 +93,9 @@ dowVSindex(d,'index fund')           = fund(d);
 abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
+kpi                                  = sum(ntd, error(ntd));
+* parameter including all stocks and dow jones index
+Parameter priceMerge(date,*) 'UIOutput: Price (stocks & dow jones)';
+priceMerge(d,symbol)      = price(d,symbol);
+priceMerge(d,'DowJones')  = index(d);
+

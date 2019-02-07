@@ -18,27 +18,17 @@ Keywords: linear programming, transportation problem, scheduling
 $offText
 
 Set
-   i 'canning plants' / Seattle, San-Diego /
-   j 'markets'        / New-York, Chicago, Topeka /
+   i 'canning plants'
+   j 'markets'      
 ;
-Table ilocData(i,*) 'Plant location information'
-               lat           lng     
-Seattle     47.608013  -122.335167
-San-Diego   32.715736  -117.161087;
-
-Table jlocData(j,*) 'Market location information'
-           lat           lng     
-New-York   40.730610  -73.935242
-Chicago    41.881832  -87.623177
-Topeka     39.056198  -95.695312;
 
 $onExternalInput
 Parameter
-   a(i) 'capacity of plant i in cases'
+   a(i<) 'capacity of plant i in cases'
         / Seattle     350
           San-Diego   600 /
 
-   b(j) 'demand at market j in cases'
+   b(j<) 'demand at market j in cases'
         / New-york   325
           Chicago   300
           Topeka   275 /;
@@ -51,6 +41,17 @@ San-Diego       2.5       1.8     1.4;
 Scalar f 'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
+
+Table ilocData(i,*) 'Plant location information'
+               lat           lng     
+Seattle     47.608013  -122.335167
+San-Diego   32.715736  -117.161087;
+
+Table jlocData(j,*) 'Market location information'
+           lat           lng     
+New-York   40.730610  -73.935242
+Chicago    41.881832  -87.623177
+Topeka     39.056198  -95.695312;
 $offExternalInput
 
 Parameter

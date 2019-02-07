@@ -15,9 +15,9 @@ Parameter
     price(date,symbol)        'UIOutput: stock price';
 
 $if not set TW_lo $set TW_lo "2017-01-01"
-$if not set TW_up $set TW_up "2017-12-31"
+$if not set TW_up $set TW_up "2017-01-02"
 
-$ifthen %MIRO% == "RUN"
+$log ****fetching stockdata (this may take ~30s)****
 $onEmbeddedCode Python:
 try:
    import pandas as pd
@@ -57,10 +57,6 @@ for sym in djSymbols:
 price = pd.concat(price)
 gams.set("price", [(r[0], r[2], r[1]) for r in price.itertuples()])
 $offEmbeddedCode date<price.dim1 symbol<price.dim2 price
-$else
-Set date / system.empty /, symbol /system.empty /;
-Parameter price(date,symbol)  / system.empty.system.empty 0 /;
-$endif
 
 Alias (d,date), (s,symbol);
 Parameter

@@ -26,7 +26,7 @@ renderTrnsport1 <- function(input, output, session, data, options = NULL, path =
   #generate map
   map <- leaflet(mapData) %>%
     addTiles() %>%
-    setView(lng = -98.5795, lat = 39.8283, zoom = 5) %>%
+    setView(lng = data$lngp[[1]], lat = data$latp[[1]], zoom = 5) %>%
     addMarkers(
       lng = data$lngp, lat = data$latp,
       label = paste0(data$i, " (capacity: ", data$cap, ")"),

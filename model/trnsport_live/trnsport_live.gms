@@ -19,23 +19,23 @@ $offText
 
 Set
    locHdr 'location data header' /lat, lng/
-   i 'UIInput: canning plants' / seattle,  san-diego /
-   j 'UIInput: markets'        / new-york, chicago, topeka /;
+   i 'canning plants' 
+   j 'markets';
 
 $onExternalInput   
 Parameter
-   a(i) 'capacity of plant i in cases'
-        / seattle   350
-          san-diego   600 /
+   a(i<) 'capacity of plant i in cases'
+        / London  550
+          Warsaw  425 /
 
-   b(j) 'demand at market j in cases'
-        / new-york   325
-          chicago   300
-          topeka   275 /;
+   b(j<) 'demand at market j in cases'
+        / Madrid   325
+          Munich   300
+          Istanbul 275 /;
 
-Scalar f 'freight in dollars per case per thousand miles' / 90 /
-       minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
-       beta 'beta (MINLP-only)' / 0.95 /;
+Scalar f    'freight in dollars per case per thousand miles' / 90 /
+       minS 'minimum shipment (MIP- and MINLP-only)'         / 100 /
+       beta 'beta (MINLP-only)'                              / 0.95 /;
 $offExternalInput
 
 Parameter

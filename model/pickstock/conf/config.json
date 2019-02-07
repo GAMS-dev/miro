@@ -239,6 +239,63 @@
 					"title"					: "Frequency"
                 }
             }
+		},
+        "priceMerge"   	: {
+			"outType"               : "graph",
+			"height"				: 700,
+			"graph"                 : {
+				"tool"      			: "dygraphs",
+				"title"     			: "Price (stocks & dow jones)",
+				"color"					: "uni",
+				"dyOptions"				:{
+					"includeZero"			: true,
+					"logscale"				: false,
+					"drawGrid"				: true,
+					"drawPoints"			: false,
+					"pointSize"				: 2,
+					"fillGraph"				: false,
+					"fillAlpha"				: 0.15
+				},
+				"dylegend"				:{
+					"width"					: 450,
+					"show"					: "always",
+					"hideOnMouseOut"		: true
+				},
+				"dyHighlight"			:{
+					"highlightSeriesOpts"	:{
+						"strokeWidth" 			: 8,
+						"strokeBorderWidth"		: 5,
+						"highlightCircleSize"	: 14
+					},
+					"hideOnMouseOut"		: true
+					
+				},
+				"dyRangeSelector"		:{
+					"height"				: 20,
+					"strokeColor"			: ""
+				},						
+				"xdata"     			:"date",
+				"ydata" 				: {
+					"Price (stocks & dow jones)":{
+						"label"					: "symbol"
+					}
+				},
+				"xaxis"     :{
+					"title"         		: "date",
+                    "showgrid"              : true
+				},		
+				"yaxis"     :{		
+					"title"         		: "value",
+                    "showgrid"              : true
+				},
+				"dyEvent"    :{
+					"lastdaytraining"  : {
+						 "label"     	: "End of training phase",
+						 "labelLoc"     : "top",
+						 "color"        : "red"
+					}
+				}
+			}
 		}
 	}
 }

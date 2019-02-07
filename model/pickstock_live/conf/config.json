@@ -2,29 +2,53 @@
 	"UILogo":"pickstock-live.png",
     "inputWidgets": {
       "maxstock": {
+        "label": "Select the maximum number of stocks",
         "min": 1,
-        "max": 29,
-        "default": 5,
+        "default": 3,
         "step": 1,
+        "max": "30",
+        "alias": "maximum number of stocks to select",
         "widgetType": "slider"
       },
       "trainingdays": {
+        "label": "Select the number of days for training",
         "min": 1,
-        "max": 200,
         "default": 99,
         "step": 1,
+        "max": "252",
+        "alias": "number of days for training",
         "widgetType": "slider"
       },
       "GMSPAR_TW": {
          "alias": "time window",
          "widgetType": "daterange",
-         "label": "time window",
+         "label": "Time window",
          "start": "2017-01-01",
          "end": "2017-12-31",
          "min": "2017-01-01",
          "max": "2018-12-31",
          "autoclose": true,
          "noHcube": true
+      },
+      "GMSOPT_mip": {
+          "alias": "MIP-Solver",
+          "widgetType":"dropdown",
+          "label": "Solver to use for MIP",
+          "aliases": [
+              "solver 1",
+              "solver 2",
+              "solver 3",
+              "solver 4",
+              "solver 5"
+          ],
+          "choices": [
+              "BARON",
+              "BDMLP",
+              "CBC",
+              "CPLEX",
+              "GUROBI"
+          ],
+          "selected": "CPLEX"
       }
     },
     "dataRendering"      : {
@@ -100,7 +124,7 @@
             }
         },
 		"dowvsindex"   	: {
-			"outType"               : "graph",
+			"outType"               : "dtGraph",
 			"height"				: 700,
 			"graph"                 : {
 				"tool"      			: "dygraphs",
