@@ -505,7 +505,7 @@ $offExternalInput
                                 </div><!--//section-block-->
                                 <div  id="create-db"  class="section-block">
                                     <h3 class="block-title">Database</h3>
-                                    <p>MIRO is connected to a database where all your scenario data is stored. By default, MIRO uses the relational database <a href="https://www.sqlite.org/index.html" target=_blank">SQLite</a>.</p>
+                                    <p>MIRO is connected to a database where all your scenario data is stored. By default, MIRO uses the relational database <a href="https://www.sqlite.org/index.html" target="_blank">SQLite</a>.</p>
                                     <p>The first time you save a scenario in the database, the schema of your GAMS input and output symbols is analyzed and the database schema derived from that. This has important implications: in case you change the underlying model, the database schema changes as well. If the two schemas are incompatible (e.g. because you added another index to a parameter), MIRO will issue an error as it won't just overwrite existing data. 
                                     To resolve this, the database tables of your model must be recreated, resulting in the loss of all previously stored data. To avoid this, you can save your database tables before removing them; manually adjust the saved records to your new schema (e.g. add/remove columns) and then use the result to restore your database. You can do so by using the admin mode built into MIRO. In addition to launching MIRO via <span class="code">--miro=launch</span>, you can tell MIRO to launch in admin mode via: <span class="code">--miro=launch --miromode=admin</span>.</p>
                                     <div class="callout-block callout-warning">
@@ -563,8 +563,8 @@ $offExternalInput
     <footer class="footer text-center">
         <div class="container">
             Copyright © 2019 GAMS Software GmbH. All rights reserved. || 
-            <a href="./legal.html" target="_blank">Legal notice</a> || 
-            <a href="./privacy.html" target="_blank">Privacy policy</a>
+           <a href="./legal.html">Legal notice</a> || 
+            <a href="./privacy.html">Privacy policy</a>
         </div><!--//container-->
     </footer><!--//footer-->
 
