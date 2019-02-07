@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.3.5"
+MIROVersion <- "0.3.6"
 MIRORDate   <- "Feb 4 2019"
 #####packages:
 # processx        #MIT
@@ -404,7 +404,7 @@ MIROVersionLatest <- NULL
 if(!isShinyProxy && curl::has_internet()){
   try(
     local({
-      verCon <- url("https://gams.com/webui/latest.ver")
+      verCon <- url("https://gams.com/miro/latest.ver")
       on.exit(close(verCon))
       MIROVersionLatestTmp <- suppressWarnings(read.csv(
         verCon, 
