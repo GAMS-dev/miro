@@ -1,28 +1,21 @@
 * Driver miro.gms to interact with GAMS/MIRO
 $offListing
 $onText
-Add $libinclude miro at the end of your model and put the input and output symbols in
-$on/offExternalInput and $on/offExternalOutput blocks.
+Put the input and output symbols in $on/offExternalInput and $on/offExternalOutput blocks.
 
-Start your model with --miro=launch to start the GAMS/MIRO web app
+Start your model with miro=launch to start the GAMS/MIRO web app
 $offText
-$if not set MIRO $exit
-$ifi x%MIRO%==xRUN    $goto MIRO_L1
-$ifi x%MIRO%==xLAUNCH $goto MIRO_L2
-$ifi x%MIRO%==xBUILD  $goto MIRO_L2
-$log "--- Use either LAUNCH to start the web app GAMS/MIRO or BUILD to "
-$log "    create the configuration files without starting the web app."
-$abort "Unknown setting --MIRO=%MIRO%. Available are --MIRO=LAUNCH|BUILD|RUN."
+$ifi x%gams.MIRO%==xLAUNCH $goto MIRO_L1
+$ifi x%gams.MIRO%==xBUILD  $goto MIRO_L1
 
-* --MIRO=run is usually set when this model is started from the GAMS/MIRO web app
+* MIRO=run is usually set when this model is started from the GAMS/MIRO web app
 * The model specific driver modelname_miro.gms will read the input symbols from CSV files
 * and after execution write the content of the output symbols as CSV files.
-$label MIRO_L1
 $setNames "%gams.input%" fp fn fe
 $include "%fp%%fn%_miro.gms"
 $exit
 
-$label MIRO_L2
+$label MIRO_L1
 
 * Export GDX file with all symbols and current data
 $setNames "%gams.input%" fp fn fe
@@ -529,11 +522,11 @@ with open(confdir + '/GMSIO_config.json', 'w') as f:
 $offembeddedCode
    
 $include "%fp%%fn%_miro.gms"
-$ifi x%MIRO%==xBUILD $terminate
+$ifi x%gams.MIRO%==xBUILD $terminate
 
-$iftheni.mode x%MIROMODE%==xHCUBE
+$iftheni.mode x%gams.MIROMODE%==x1
 $  set MODEARG LAUNCHHCUBE
-$elseifi.mode x%MIROMODE%==xADMIN
+$elseifi.mode x%gams.MIROMODE%==x2
 $  set MODEARG LAUNCHADMIN
 $else.mode
 $  set MODEARG ''
@@ -545,8 +538,8 @@ $   set mkApp 0
 $else.mk
 $   set mkApp 1
 $endif.mk
-$ifthen dExist %gams.sysdir%MIRO
-$  set MIRODIR %gams.sysdir%MIRO
+$ifthen dExist %gams.sysdir%miro
+$  set MIRODIR %gams.sysdir%miro
 $else
 $  set MIRODIR %fp%..%system.dirsep%..
 $endif
@@ -617,7 +610,7 @@ def get_r_path():
 RPath = get_r_path()
 
 os.environ["RPATH"] = RPath
-if os.path.exists(r"%gams.sysdir%MIRO%system.dirsep%library"):
+if os.path.exists(r"%gams.sysdir%miro%system.dirsep%library"):
     sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "MIRO/library"
 else:
     sysdir = ""
