@@ -132,7 +132,7 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-scalars">
                                   <h3 class="block-title">Scalars</h3>
-                                  <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> (in the following both referred to as "<i>scalar values</i>" or simply "<i>scalars</i>") are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called <span class="code">scalars</span>. This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the <span class="code">scalars</span> table. Thus, it improves compactness and flexibility - especially when MIRO is connected to a database as the schema stays fixed even when you add or remove certain scalars.</p>
+                                  <p><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> (in the following both referred to as <i>scalar values</i> or simply <i>scalars</i>) are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined into a single table called <span class="code">scalars</span>. This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the <span class="code">scalars</span> table. Thus, it improves compactness and flexibility - especially when MIRO is connected to a database as the schema stays fixed even when you add or remove certain scalars.</p>
                                     <p>Instead of displaying scalars in tabular form, you can use sliders, dropdown menus, checkboxes and more to populate your models.</p>
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
@@ -161,7 +161,7 @@
 }</code></pre>
                                       </div><!--//code-block-->
                                       <p>Again, this can be done either by manually editing the JSON file or via the Configuration Generator.</p>
-                                      <p>When we restart our app, the scalar is now automatically removed from the "Scalars" table and instead rendered as a separate widget:</p>
+                                      <p>When we restart our app, the scalar is now automatically removed from the <i>Scalars</i> table and instead rendered as a separate widget:</p>
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:60pt;" src="assets/images/trnsport-slider.png" alt="Input widgets for scalar values"/>
                                       </div>
@@ -353,8 +353,8 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the variable <span class="code">x</span>  ('<span class="code">quantities</span>').
                                   The latter is relevant for our desired graphic, the other two serve here only as additional information that we can work with.
                                   <br>With this result parameter we can now generate a diagram. For any pre-implemented visualization options we can use the configuration generator. 
-                                  There, we upload our <i>GMSIO_config.json</i> file and then say "generate new config.json file". Under the tab "Graphs" we select "graphs" again. Now we can configure the parameter <span class="code">schedule</span> as desired.
-                                  We leave all other configurations as they are, click on "next" and then on "Download json". The resulting <i>config.json</i> file looks as followeds:</p>
+                                  There, we upload our <i>GMSIO_config.json</i> file and choose <i>generate new config.json file"</i> Under the tab <i>Graphs</i> we select <i>graphs</i> again. Now we can configure the parameter <span class="code">schedule</span> as desired.
+                                  We leave all other configurations as they are, click on <i>next</i> and then on <i>Download json</i>. The resulting <i>config.json</i> file looks as followeds:</p>
                                   <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
@@ -554,8 +554,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     <footer class="footer text-center">
         <div class="container">
             Copyright © 2019 GAMS Software GmbH. All rights reserved. || 
-            <a href="./legal.html" target="_blank">Legal notice</a> || 
-            <a href="./privacy.html" target="_blank">Privacy policy</a>
+           <a href="./legal.html">Legal notice</a> || 
+            <a href="./privacy.html">Privacy policy</a>
         </div><!--//container-->
     </footer><!--//footer-->
 
