@@ -61,6 +61,7 @@ closeScenario <- function(){
     )
     rv[["in_" %+% i]]    <<- NULL
   })
+  unlink(list.files(workDir, recursive = TRUE))
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
   # reset model output data

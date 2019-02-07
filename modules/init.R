@@ -429,9 +429,18 @@ if(is.null(errMsg)){
       }
     }
     if(is.null(configGraphsOut[[i]])){
-      if(identical(names(modelOut)[[i]], scalarsOutName) && modelOut[[i]]$count < maxScalarsValBox && all(modelOut[[i]]$symtypes == "parameter")){
-        configGraphsOut[[i]]$outType <<- "valuebox"
-        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+      if(identical(names(modelOut)[[i]], scalarsOutName)){
+        visibleOutputScalars <- !(modelOut[[i]]$symnames %in% config$hiddenOutputScalars)
+        if(sum(visibleOutputScalars) <= maxScalarsValBox && 
+           all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
+          configGraphsOut[[i]]$outType <<- "valuebox"
+          configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+        }else{
+          configGraphsOut[[i]]$outType <<- defOutType
+          if(identical(defOutType, "pivot")){
+            configGraphsOut[[i]]$pivottable <<- prepopPivot(modelOut[[i]])
+          }
+        }
       }else{
         configGraphsOut[[i]]$outType <<- defOutType
         if(identical(defOutType, "pivot")){

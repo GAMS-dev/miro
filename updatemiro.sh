@@ -11,7 +11,12 @@ BASE=$(git merge-base @ "$UPSTREAM")
 if [ $LOCAL = $REMOTE ]; then
     echo "Up-to-date: $BASE == $LOCAL"
 elif [ $LOCAL = $BASE ]; then
-    git pull
-    grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs|sed 's/\./,/g' > ./doc/latest.ver
+    git fetch origin master
+    git reset --hard FETCH_HEAD
+    git clean -df
+    MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs) 
+    echo $MIRO_VERSION | sed 's/\./,/g'> ./doc/latest.ver
     sed -e '/<code class="language-json">/r./conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
+    sed -i "s/Download GAMS MIRO (v\. .*) for/Download GAMS MIRO (v\. $MIRO_VERSION) for/g" ./doc/index.html
+    sed -e '/Download GAMS MIRO (v\. /r./conf/$(command)ma.json' ./doc/schema_template.html >./doc/schema.html
 fi

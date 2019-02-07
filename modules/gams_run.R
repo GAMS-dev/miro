@@ -4,13 +4,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
-  getHcubeStaticElMd5 <- function(id, data, hcubeStaticFilePath){
+  getHcubeStaticCSVMd5 <- function(id, data, hcubeStaticFilePath){
     filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[id]) %+% ".csv")
     if(!inherits(data, "data.frame"))
       return(NA)
     write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
               quote_escape = "double")
     flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
+    return(getHcubeStaticElMd5(filePath))
+  }
+  getHcubeStaticElMd5 <- function(filePath){
     con <- file(filePath, open = "r")
     on.exit(close(con), add = TRUE)
     return(as.character(openssl::md5(con)))
@@ -131,7 +134,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                if(identical(modelIn[[i]]$dropdown$single, FALSE)){
                  data <- tibble(input[["dropdown_" %+% i]])
                  names(data) <- tolower(names(modelIn))[i]
-                 return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
+                 return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
                }
                parPrefix <- getHcubeParPrefix(i)
                value <- input[["dropdown_" %+% i]]
@@ -166,7 +169,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              hot = {
                input[['in_' %+% i]]
                data <- getInputDataset(i)
-               return(getHcubeStaticElMd5(i, data, hcubeStaticFilePath))
+               return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
@@ -175,6 +178,17 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
     gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
+    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
+      filePaths     <- activeScen$downloadAttachmentData(hcubeStaticFilePath, 
+                                                         allExecPerm = TRUE)
+      filePaths     <- filePaths[match(basename(filePaths), sort(basename(filePaths)))]
+      if(length(filePaths)){
+        gmsString <- paste(gmsString, paste(vapply(seq_along(filePaths), function(i){
+          return(paste0("--HCUBE_STATIC_", i, "=", getHcubeStaticElMd5(filePaths[i])))
+        }, character(1L), USE.NAMES = FALSE), collapse = " "))
+      }
+    }
+    print(gmsString)
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
@@ -397,12 +411,17 @@ observeEvent(input$btSolve, {
       return(NULL)
     }
     disableEl(session, "#btSolve")
+    prog <- Progress$new()
+    on.exit(suppressWarnings(prog$close()))
+    prog$set(message = lang$progressBar$prepRun$title, value = 0)
+    
     idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
                                   tibble(scodeIdentifier, 1L, ">="))
     if(length(idsSolved)){
       idsSolved <- unique(idsSolved[[1L]])
     }
     errMsg <- NULL
+    prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
     tryCatch(
       scenToSolve <- scenToSolve(),
       error = function(e){
@@ -422,6 +441,7 @@ observeEvent(input$btSolve, {
     
     sidsDiff <- setdiff(idsToSolve, idsSolved)
     idxDiff  <<- match(sidsDiff, idsToSolve)
+    prog$close()
     showHcubeSubmitDialog(noIdsToSolve = length(idsToSolve), noIdsExist = length(idsToSolve) - length(sidsDiff))
   
     enableEl(session, "#btSolve")
@@ -639,7 +659,9 @@ observeEvent(input$btSolve, {
                         paste(filesToStore[filesTooLarge], collapse = "', '"))
               errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
             }
-            activeScen$addAttachments(filesToStore[!filesTooLarge], overwrite = TRUE, noSave = TRUE)
+            filesToStore <- filesToStore[!filesTooLarge]
+            activeScen$addAttachments(filesToStore, overwrite = TRUE, 
+                                      noSave = TRUE, execPerm = rep.int(FALSE, length(filesToStore)))
           }, error = function(e){
             switch(conditionMessage(e),
                    fileAccessException = {

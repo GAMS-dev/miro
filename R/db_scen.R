@@ -191,7 +191,7 @@ Scenario <- R6Class("Scenario",
                         invisible(self)
                       },
                       addAttachments = function(filePaths, fileNames = NULL, forbiddenFnames = NULL, 
-                                                overwrite = FALSE, noSave = FALSE){
+                                                overwrite = FALSE, noSave = FALSE, execPerm = NULL){
                         # Saves attachments
                         # 
                         # Args:
@@ -208,6 +208,11 @@ Scenario <- R6Class("Scenario",
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
                         stopifnot(is.logical(noSave), length(noSave) == 1L)
+                        if(is.null(execPerm)){
+                          execPerm <- rep.int(TRUE, length(filePaths))
+                        }else{
+                          stopifnot(is.logical(execPerm), length(filePaths) == length(execPerm))
+                        }
                         if(private$isReadonly()){
                           stop("roException", call. = FALSE)
                         }
@@ -241,10 +246,10 @@ Scenario <- R6Class("Scenario",
                         }
                         
                         attachmentData <- private$readBlob(filePaths, private$attachmentConfig[["maxSize"]], 
-                                                           fileNames = fileNames)
+                                                           fileNames = fileNames, execPerm = execPerm)
                         
                         super$exportScenDataset(private$bindSidCol(attachmentData), 
-                                                private$dbSchema$tabName[["_scenAttach"]])
+                                                private$dbSchema$tabName[["_scenAttach"]], addForeignKey = FALSE)
                         if(!noSave)
                           private$scenSaved <- TRUE
                         self$updateMetadata()
@@ -280,7 +285,7 @@ Scenario <- R6Class("Scenario",
                         #   allExecPerm:   whether to download all files with execution permission (optional)
                         #
                         # Returns:
-                        #   R6 object (reference to itself)
+                        #   filepaths of downloaded files
                         
                         stopifnot(!is.null(private$sid))
                         stopifnot(is.character(filePath), length(filePath) == 1L)
@@ -314,7 +319,7 @@ Scenario <- R6Class("Scenario",
                           Map(writeBin, data[["fileContent"]], filePaths)
                         }
                         
-                        invisible(self)
+                        return(filePaths)
                       },
                       setAttachmentExecPerm = function(fileName, value){
                         # Sets execute permission for particular attachment
@@ -375,6 +380,9 @@ Scenario <- R6Class("Scenario",
                         }
                         noErr <- TRUE
                         self$deleteRows(private$tableNameMetadata, 
+                                        private$scenMetaColnames['sid'], 
+                                        private$sid)
+                        self$deleteRows(private$dbSchema$tabName[["_scenAttach"]], 
                                         private$scenMetaColnames['sid'], 
                                         private$sid)
                         
@@ -764,12 +772,12 @@ Scenario <- R6Class("Scenario",
                         }
                         return(data)
                       },
-                      readBlob = function(filePaths, maxSize, fileNames){
+                      readBlob = function(filePaths, maxSize, fileNames, execPerm){
                         # reads blob data and returns tibble with meta data and file content
                         
                         stopifnot(is.character(filePaths), length(filePaths) >= 1L)
                         stopifnot(is.numeric(maxSize), length(maxSize) == 1L)
-                        
+                        stopifnot(is.logical(execPerm), length(execPerm) == length(filePaths))
                         
                         fileSize <- file.info(filePaths, extra_cols = FALSE)$size
                         
@@ -779,7 +787,7 @@ Scenario <- R6Class("Scenario",
                         content <- blob::new_blob(lapply(seq_along(filePaths), 
                                                          function(i) readBin(filePaths[[i]], "raw", n = fileSize[[i]])))
                         return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
-                                      execPerm = rep.int(TRUE, length(filePaths)), 
+                                      execPerm = execPerm, 
                                       fileContent = content, timestamp = as.character(Sys.time(), usetz = TRUE, tz = "GMT")))
                       }
                     )

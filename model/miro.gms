@@ -243,9 +243,9 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       f.write('   f.write("scalar,description,value\\n")\n')
       for s in i_sym:
          if s[1]=='ss':
-            f.write('   f.write("' + s[0].name + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '","") + "\\n")\n')
+            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '","") + "\\n")\n')
          elif s[1]=='ps':
-            f.write('   f.write("' + s[0].name + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '",0) + "\\n")\n')
+            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '",0) + "\\n")\n')
             f.write('   f.closed\n')
    f.write('fn = r"' + r'%fp%%fn%' + '.xlsx"\n')
    f.write('icsvlist = ["none"')
@@ -418,9 +418,9 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('   f.write("scalar,description,value\\n")\n')
          for s in o_sym:
             if s[1]=='ps':
-               f.write('   f.write(\'' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + getval("' + s[0].name + '",0) + \'\\n\')\n')
+               f.write('   f.write(\'' + s[0].name.lower() +',"' + extractSymText(s[0],1) + '",\' + getval("' + s[0].name + '",0) + \'\\n\')\n')
             elif s[1]=='ss':
-               f.write('   f.write(\'' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + getval("' + s[0].name + '","") + \'\\n\')\n')
+               f.write('   f.write(\'' + s[0].name.lower() +',"' + extractSymText(s[0],1) + '",\' + getval("' + s[0].name + '","") + \'\\n\')\n')
          f.write('   f.closed\n')
       f.write('\n')
       if have_o_vescalar:
@@ -435,9 +435,9 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('   f.write("type,scalar,description,level,marginal,lower,upper,scale\\n")\n')
          for s in o_sym:
             if s[1]=='vs':
-               f.write('   f.write(\'var,' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + veValues("' + s[0].name + '") + \'\\n\')\n')
+               f.write('   f.write(\'var,' + s[0].name.lower() +',"' + extractSymText(s[0],1) + '",\' + veValues("' + s[0].name + '") + \'\\n\')\n')
             elif s[1]=='es':
-               f.write('   f.write(\'equ,' + s[0].name +',"' + extractSymText(s[0],1) + '",\' + veValues("' + s[0].name + '") + \'\\n\')\n')
+               f.write('   f.write(\'equ,' + s[0].name.lower() +',"' + extractSymText(s[0],1) + '",\' + veValues("' + s[0].name + '") + \'\\n\')\n')
          f.write('   f.closed\n')
       f.write('endEmbeddedCode\n')
    f.closed
