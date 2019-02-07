@@ -18,5 +18,4 @@ elif [ $LOCAL = $BASE ]; then
     echo $MIRO_VERSION | sed 's/\./,/g'> ./doc/latest.ver
     sed -e '/<code class="language-json">/r./conf/config_schema.json' ./doc/schema_template.html >./doc/schema.html
     sed -i "s/Download GAMS MIRO (v\. .*) for/Download GAMS MIRO (v\. $MIRO_VERSION) for/g" ./doc/index.html
-    sed -e '/Download GAMS MIRO (v\. /r./conf/$(command)ma.json' ./doc/schema_template.html >./doc/schema.html
 fi

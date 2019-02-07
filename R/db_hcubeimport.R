@@ -388,12 +388,12 @@ HcubeImport <- R6Class("HcubeImport",
                            isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
                              tableName <- tolower(names(scenTables)[tableId])
                              if(identical(tableName, private$scalarsInputName) &&
-                                any(!scenTables[[tableId]][[1]] %in% scalarInToVerify)){
+                                any(!tolower(scenTables[[tableId]][[1]]) %in% scalarInToVerify)){
                                  flog.info("Additional elements in input scalar table: '%s'.", 
                                            scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarInToVerify])
                                  return(TRUE)
                              }else if(identical(tableName, private$scalarsOutputName) &&
-                                      (any(!scenTables[[tableId]][[1]] %in% scalarOutToVerify) || 
+                                      (any(!tolower(scenTables[[tableId]][[1]]) %in% scalarOutToVerify) || 
                                       length(scenTables[[tableId]][[1]]) != length(scalarOutToVerify))){
                                flog.info("Missing or additional elements in output scalar table.")
                                return(TRUE)
