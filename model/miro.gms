@@ -396,9 +396,9 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       
       for h in symHeader[1:]:
          htext = htext + ',' + h[0]
-      f.write('execute$card(' + symname + ') ')
-      f.write('\'gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';\n')
-      f.write('abort$errorlevel "problems writing ' + symname + '.csv";\n')
+      f.write('$if DEFINED ' + symname + ' execute$card(' + symname + ') ')
+      f.write('\'gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';')
+      f.write(' abort$errorlevel "problems writing ' + symname + '.csv";\n')
    f.write('$if not set MIRO_DEBUG execute "rm -rf ' + fn + '";\n')
 
    f.write('\n')
