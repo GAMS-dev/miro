@@ -11,7 +11,7 @@ BASE=$(git merge-base @ "$UPSTREAM")
 if [ $LOCAL = $REMOTE ]; then
     echo "Up-to-date: $BASE == $LOCAL"
 elif [ $LOCAL = $BASE ]; then
-    git fetch origin master
+    git fetch origin develop
     git reset --hard FETCH_HEAD
     git clean -df
     MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs) 
