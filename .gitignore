@@ -20,3 +20,5 @@ tools/paver/examples
 tools/paver/__pycache__
 tools/paver/results
 packrat/src/
+doc/latest.ver
+doc/schema.html
