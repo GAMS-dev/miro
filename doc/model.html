@@ -81,6 +81,8 @@
                                           <li>Flag output data with <code class="language-gams">$onExternalOutput
                                           </code> / <code class="language-gams">$offExternalOutput
                                           </code> or <code class="language-gams">'UIOutput: '</code></li>
+                                          <li>At the very end of the model include (<span class="code"><a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARlibinclude" target="_blank">$libinclude</a></span>) the file <span class="code">miro</span> with <code class="language-gams">$libinclude 
+                                          miro</code></li>
                                         </ol>
                                         We will examine these steps more closely in the following.
                                     </div><!--//section-block-->
@@ -174,7 +176,20 @@ $offExternalOutput
 Positive Variable x;
 
 [...]</code></pre> 
-                                        <p>We now defined both input and output data for use in MIRO. That's it! The model is now ready to be deployed with GAMS MIRO.</p>
+                                        <p>We now defined both input and output data for use in MIRO. 
+                                        <br>A last step now is to include the script: <span class="code">miro.gms</span> via: <code class="language-gams">$libinclude 
+                                        miro</code> <b>at the very end of the GAMS model</b>. This is where all the magic happens and the interface between GAMS and MIRO is built; including some basic configuration.</p>
+                                        <pre><code class="language-gams">[...]
+                                        
+Model transport / all /;
+
+solve transport using lp minimizing z;
+display x.l, x.m;
+
+$libInclude miro
+</code></pre> 
+                                        <p><b>Note</b>: The file miro.gms is copied into the <i> GAMS library include directory</i> (by default, this is the directory <i>inclib</i> in the GAMS system directory) during the MIRO installation and can be included with a <span class="code"><a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARlibinclude" target="_blank">$libinclude</a></span>.</p>
+                                        <p>That's it. The model is now ready to be deployed with GAMS MIRO.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -205,7 +220,7 @@ Positive Variable x;
                                             </div><!--//callout-block-->
                                           </li>
                                           <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">GMSIO_config.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
-                                            <br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data in the database as you can use the Excel file to populate the tables.
+                                            </br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data in the database as you can use the Excel file to populate the tables.
                                             <div class="callout-block callout-warning">
                                                 <div class="icon-holder">
                                                     <i class="fas fa-info-circle"></i>
@@ -248,7 +263,7 @@ Set
    i 'canning plants'
    j 'markets';
 $offExternalInput
-</code></pre>
+</pre></code>
                                     <p>If a set is included in this way, it is displayed in a separate table in MIRO. 
                                     Set tables consist of one column for the set elements and one column for the explanatory text of each element.
                                     <br>Since the sets <span class="code">i</span> and <span class="code">j</span> are displayed in MIRO, their definition is handled directly in MIRO, i.e. filled with content / elements.</p>
@@ -269,7 +284,7 @@ $offExternalInput
 $onExternalInput
 Parameter d(i&lt;,j&lt;) 'distance in thousands of miles'
 $offExternalInput
-</code></pre>
+</pre></code>
                                 <p>The <span class="code">&lt;</span> signs signal that the set <span class="code">i</span> will contain all elements which define the first dimension of <span class="code">d</span> and that the set <span class="code">j</span> will contain all elements which define the second dimension of <span class="code">d</span>, respectively.
                                 In other words, the elements of parameter <span class="code">d</span> determine the definition of the two sets. This way, you avoid domain violations when loading symbols from MIRO.</p>
                                 </div><!--//section-block--> 
@@ -284,7 +299,7 @@ $offExternalInput
 $onExternalInput    
 Parameter price(date,symbol) 'Price';
 $offExternalInput
-</code></pre>
+</pre></code>
                                     <p>The parameter <span class="code">price</span> is declared between the mentioned tags <code class="language-gams">$onExternalInput
                                     </code> and <code class="language-gams">$offExternalInput
                                     </code>.
@@ -294,10 +309,10 @@ $offExternalInput
                                     </div>
                                     <p>Since each <i>index</i> is shown in a separate column, each <i>set element</i> of an index will be visible in a separate row. In the given example the parameter <span class="code">price</span> has two indices <span class="code">date</span> and <span class="code">symbol</span>. 
                                     Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol). 
-                                    The value column of a parameter is always called "value" and aliased with the explanatory text of the parameter. This type of representation of a GAMS parameter is what we call the "parameter view".
+                                    The value column of a parameter is always called <i>value</i> and aliased with the explanatory text of the parameter. This type of representation of a GAMS parameter is what we call the <i>parameter view</i>.
                                     </p>
                                     <p><b>Definition of a table header</b>:
-                                    <br>Sometimes it can be useful to show each set element of an index in a separate column; we call this the "table view" of a parameter.<br>
+                                    <br>Sometimes it can be useful to show each set element of an index in a separate column; we call this the <i>table view</i> of a parameter.<br>
                                     Let's take the output parameter <span class="code">dowVSindex</span> as an example. This parameter reports the actual price of the dow jones index as well as the calculated price of the index fund. Note that the elements of the set <span class="code">fHdr</span> are fixed, namely: <span class="code">dow jones</span> and <span class="code">index fund</span>. We want to display each of these prices in a separate column so that we can easily compare them side by side. In order to achieve this type of pivot functionality, we need to <b>change the explanatory text of the parameter</b> that we want to pivot. More precisely, we need to include the keyword: <span class="code">[MIRO:table]</span>. 
                                     Doing so will lead to the desired result: <span class="code">dow jones</span> and <span class="code">index fund</span> are shown as separate value columns.</p>
                                     <pre><code class="language-gams">Set date   'date'
@@ -306,7 +321,7 @@ $offExternalInput
 $onExternalOutput    
 Parameter dowVSindex(date,fHdr)     'dow jones vs. index fund [MIRO:table]';
 $offExternalOutput
-</code></pre>
+</pre></code>    
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:125pt;"  src="assets/images/multi-col-table.png" alt="Table with Demand and Production time columns" />
                                     </div>
@@ -319,18 +334,19 @@ $offExternalOutput
                                           <p>The keyword: <span class="code">[MIRO:table]</span> is not displayed in MIRO.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: If we were to decide to pivot the index <span class="code">symbol</span> of the parameter <span class="code">price</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:</p>
+                                    <p>Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: If we were to decide to pivot the index <span class="code">symbol</span> of the parameter <span class="code">price</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:
                                         <pre><code class="language-gams">Set date   'date'
     symbol 'stockSymbol';
     
 $onExternalInput
 Parameter price(date,symbol) 'Price [MIRO:table]';
 $offExternalInput
-</code></pre>
+</pre></code>
+                                      </p>
                                     <div class="section-block" style="text-align:center;">
                                         <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
                                     </div>
-                                    <p>A table width quickly increases when the number of set elements of the header index gets large. A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. In this case we should stick to the "parameter view" as shown <a href="#no-header" class="scrollto">above</a>. Please note also that you should only use the "table view" for parameters where the header remains fixed! The database schema used internally directly depends on the structure of your parameters. This means that adding and removing columns dynamically is not possible! More on this also in the next section.</p>
+                                    <p>A table width quickly increases when the number of set elements of the header index gets large. A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. In this case we should stick to the <i>parameter view</i> as shown <a href="#no-header" class="scrollto">above</a>. Please note also that you should only use the <i>table view</i> for parameters where the header remains fixed! The database schema used internally directly depends on the structure of your parameters. This means that adding and removing columns dynamically is not possible! More on this also in the next section.</p>
                                 </div><!--//section-block--> 
                                 <div class="section-block">
                                    <p><b>Restrictions on the use of headers</b>:
@@ -339,17 +355,17 @@ $offExternalInput
                                    <p>This means:</p>
                                    <ul>
                                      <li>The set of the of the affected parameter index must not be declared between the <span class="code">$on-/offExternalInput</span> tags.
-                                     <br>Example:
+                                     <br>Example:</p>
                                      <pre><code class="language-gams">$onExternalInput
 Set date   'date'
     symbol 'stockSymbol';
     
 Parameter price(date,symbol) 'Price [MIRO:table]';
 $offExternalInput
-</code></pre>
-                                     <br>Here, the sets <span class="code">date</span> and <span class="code">symbol</span> are declared to be MIRO input elements. 
+</pre></code>
+                                     <p>Here, the sets <span class="code">date</span> and <span class="code">symbol</span> are declared to be MIRO input elements. 
                                      This means that they are populated and modified explicitly from MIRO. At the same time the set <span class="code">symbol</span> should serve as header for the parameter <span class="code">price</span>. 
-                                     As a dynamic number of set elements would result in a dynamic number of columns, this constellation is not allowed. 
+                                     As a dynamic number of set elements would result in a dynamic number of columns, this constellation is not allowed.</p>
                                    <div class="callout-block callout-warning">
                                       <div class="icon-holder">
                                           <i class="fas fa-info-circle"></i>
@@ -360,15 +376,15 @@ $offExternalInput
                                       </div><!--//content-->
                                     </div><!--//callout-block--></li>
                                      <li>The set of the of the affected parameter index must not be <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition" target="_blank">defined implicitly</a> through data statements of a parameter which use these sets as domains and is displayed in MIRO at the same time.  
-                                     <br>Example:
+                                     <br>Example:</p>
                                      <pre><code class="language-gams">Set date   'date'
     symbol 'stockSymbol';
  
 $onExternalInput 
 Parameter price(date&lt;,symbol&lt;) 'Price [MIRO:table]';
 $offExternalInput
-</code></pre>
-                                   <br>Here, the sets are declared outside the <span class="code">$on-/offExternalInput</span> tags. But the definition, the population with elements, takes place implicitly via the data statement <span class="code">price(date&lt;,symbol&lt;)</span>. 
+</pre></code>
+                                   <p>Here, the sets are declared outside the <span class="code">$on-/offExternalInput</span> tags. But the definition, the population with elements, takes place implicitly via the data statement <span class="code">price(date&lt;,symbol&lt;)</span>. 
                                    The <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_ImplicitSetDefinition" target="_blank"><span class="code">&lt;</span> signs</a> signal that the sets <span class="code">date</span> and <span class="code">price</span> will be defined implicitly via the parameter <span class="code">price</span> (see also <a href="#implicit-set" class="scrollto">here</a>).
                                    Since the set <span class="code">symbol</span> should be the header of parameter <span class="code">price</span> but at the same time the set <span class="code">symbol</span> is implicitly defined in MIRO by parameter <span class="code">price</span>, this configuration is not allowed.</li>
                                    </ul>
@@ -397,14 +413,14 @@ $offExternalInput
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
                                     They are merged in a joint table in the interface by default. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in MIRO in one single table called <span class="code">scalars</span>. The same is also true for output scalars. These are summarized in the results section in a table called <span class="code">scalars_out</span>.
-                                    <br>Example:
+                                    <br>Example:</p>
                                     <pre><code class="language-gams">$onExternalInput 
 Scalar f    'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 Singleton Set  single  'Singleton Set'    / element  /;
 $offExternalInput
-</code></pre>
+</pre></code>
                                     <p>Here we have declared the scalar input data <span class="code">f</span>, <span class="code">minS</span> and <span class="code">beta</span> as well as a singleton set <span class="code">single</span> between the input tags. In MIRO, they are all displayed in a single table:
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/scalars-table.png" alt="Visualization of scalars and singleton sets in a table" />
@@ -433,7 +449,7 @@ Singleton Set
    multidim(i,j)  'multidimensional singleton set'  / seattle.topeka 'this is an explanatory text'/
    multidim2(i,j) 'another multidimensional singleton set' / seattle.chicago /;
 $offExternalInput
-</code></pre>
+</pre></code>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
@@ -448,7 +464,7 @@ $offExternalInput
                                     When you tag a variable to be displayed in MIRO, all of its attributes will be displayed. If you are only interested in a subset of these attributes, you need to assign them to a parameter and tag this parameter for display in MIRO.</p>
                                     <p>In the following example we integrate the variable <code class="language-gams">x(i,j)</code> into MIRO.</p>
                                     <pre><code class="language-gams">Variable x(i,j) 'UIOutput: shipment quantities in cases';
-</code></pre>
+</pre></code>
                                     <p>The resulting table then looks like this:</p>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/variable-table.png" alt="Visualization of variables in a table" />
@@ -460,7 +476,7 @@ $offExternalInput
                                     <p>Equations are treated identically with variables, i.e. they have a fixed number of 4 value columns, namely <span class="code">level</span>, <span class="code">marginal</span>, <span class="code">lower bound</span>, <span class="code">upper bound</span> and <span class="code">scale</span>.
                                     <br>Example:</p>
                                     <pre><code class="language-gams">Equation demand(j)   'UIOutput: satisfy demand at market j' ;
-</code></pre>
+</pre></code>
                                     <p>This leads to the following table:</p>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/equation-table.png" alt="Visualization of equations in a table" />
@@ -474,7 +490,7 @@ $offExternalInput
 Variable z      'total transportation costs in thousands of dollars';
 Equation cost   'define objective function';
 $offExternalInput
-</code></pre>
+</pre></code>
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:250pt;" src="assets/images/eq-var-table.png" alt="Visualization of equations in a table" />
                                     </div>
@@ -489,7 +505,7 @@ $offExternalInput
                                 </div><!--//section-block-->
                                 <div  id="create-db"  class="section-block">
                                     <h3 class="block-title">Database</h3>
-                                    <p>MIRO is connected to a database where all your scenario data is stored. By default, MIRO uses the relational database <a href="https://www.sqlite.org/index.html" target="_blank">SQLite</a>.</p>
+                                    <p>MIRO is connected to a database where all your scenario data is stored. By default, MIRO uses the relational database <a href="https://www.sqlite.org/index.html" target=_blank">SQLite</a>.</p>
                                     <p>The first time you save a scenario in the database, the schema of your GAMS input and output symbols is analyzed and the database schema derived from that. This has important implications: in case you change the underlying model, the database schema changes as well. If the two schemas are incompatible (e.g. because you added another index to a parameter), MIRO will issue an error as it won't just overwrite existing data. 
                                     To resolve this, the database tables of your model must be recreated, resulting in the loss of all previously stored data. To avoid this, you can save your database tables before removing them; manually adjust the saved records to your new schema (e.g. add/remove columns) and then use the result to restore your database. You can do so by using the admin mode built into MIRO. In addition to launching MIRO via <span class="code">--miro=launch</span>, you can tell MIRO to launch in admin mode via: <span class="code">--miro=launch --miromode=admin</span>.</p>
                                     <div class="callout-block callout-warning">

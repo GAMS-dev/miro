@@ -115,6 +115,7 @@
                                             </table>
                                         </div><!--//table-responsive-->
                                     </div><!--//content-->
+                                   </p>
                                 </div><!--//section-block-->
                                 <div  id="start-2"  class="section-block">
                                     <h3 class="block-title">Structure of MIRO</h3>
@@ -138,7 +139,7 @@
                                         While solving a model with GAMS this section shows the current status of your run as well as the Log and Lst files.
                                       </li>
                                       <li><span class="fa-li"><i class="fas fa-copy"></i></span><b>Compare Scenarios:</b><br/>
-                                        Module for the comparison of results / scenarios in a split screen mode or a multi-scenario comparison mode (also referred to as "tab view").
+                                        Module for the comparison of results / scenarios in a split screen mode or a multi-scenario comparison mode (also referred to as <i>tab view</i>).
                                       </li>
                                     </ol>
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
@@ -188,7 +189,7 @@
                                         <h3 class="block-title">Import data</h3>
                                         <p>A MIRO app is quite useful if there is data to be visualized, e.g. as tables, diagrams or other graphics. This applies to output data as well as input data. 
                                         Input data which should be visualized in MIRO can be (re-)imported either from existing scenarios in the database or locally via an Excel spreadsheet.
-                                        To import such data, click on the <i>"Load data"</i> button in the navigation bar. The following window pops up:</p>
+                                        To import such data, click on the <i>Load data</i> button in the navigation bar. The following window pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                       <img class="img-fluid" src="assets/images/import-db.png" alt="Database import" />
@@ -209,9 +210,9 @@
                                                 <p>Every time you start a MIRO app, an Excel spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model. Read more about this topic <a href="#step1" class="scrollto">here</a>.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>To load the Excel spreadsheet select the menu item "Local" and click on "browse". Navigate to the directory of the currently running app, e.g. 
+                                        <p>To load the Excel spreadsheet select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory of the currently running app, e.g. 
                                         <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.xlsx</span> and select the spreadsheet.
-                                        Now assign a name for the new scenario and confirm the data import with a click on "import". A new (currently still unsaved) scenario is now created under the name specified.</p>
+                                        Now assign a name for the new scenario and confirm the data import with a click on <i>import</i>. A new (currently still unsaved) scenario is now created under the name specified.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
@@ -231,9 +232,9 @@
                                     </div><!--//section-block-->
                                     <div id="workflow-2"  class="section-block">
                                         <h3 class="block-title">Data manipulation</h3>
-                                        <p>The tables that were empty before are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model. 
+                                        <p>The tables that were empty before are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model.
                                         More about the tabular and graphical representation of input data in MIRO is explained <a href="./model.html#creating-section">here</a>. 
-                                        <br>We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our <i>trnsport</i> demo you have to option to edit the capacities, the demand, the distance matrix and several scalar values: 
+                                        <br>We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our <i>trnsport</i> demo you have the option to edit the capacities, the demand, the distance matrix and several scalar values: 
                                         <div class="section-block">
                                             <img class="img-fluid" src="assets/images/input-data.png" alt="Input data screen" />
                                         </div>
@@ -241,25 +242,25 @@
                                     </div><!--//section-block-->
                                     <div id="workflow-3"  class="section-block">
                                         <h3 class="block-title">Solve the model</h3>
-                                        <p>A click on the <i>"Solve model"</i> button starts the model run. In the background GAMS is called and the model <span class="code">trnsport.gms</span> is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the model.
-                                        <br>During the calculations, MIRO automatically switches to the section <i>"GAMS interaction"</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
+                                        <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">trnsport.gms</span> is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the model.
+                                        <br>During the calculations, MIRO automatically switches to the section <i>GAMS interaction</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
                                         </div>
-                                        <p><b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>"GAMS interaction"</i> can also be viewed at any time after a model run.</p>
-                                        <p>As long as the calculations are running in GAMS, the "Stop" button on the left can be clicked. This immediately stops the running GAMS process and thus the model calculations.
-                                        <br>After the run, the view of MIRO changes to the <i>"Output"</i> view.</p>
+                                        <p><b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>GAMS interaction</i> can also be viewed at any time after a model run.</p>
+                                        <p>As long as the calculations are running in GAMS, the <i>Stop</i> button on the left can be clicked. This immediately stops the running GAMS process and thus the model calculations.
+                                        <br>After the run, the view of MIRO changes to the <i>Output</i> view.</p>
                                     </div><!--//section-block-->
                                     <div id="workflow-4"  class="section-block">
                                         <h3 class="block-title">Inspect results</h3>
-                                        <p>In the <i>"Output"</i> section the results are visualized. 
+                                        <p>In the <i>Output</i> section the results are visualized. 
                                         As with the input data, a distinction is made between GAMS parameters and scalar values. GAMS parameters are each visualized in a separate tab and scalars are combined in one table.
                                         <br>If you configured a graphical representation of your data, it can also be seen here. In the <i>trnsport</i> model a plot is configured for the only present output parameter in the form of a map, see image below.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
                                         </div>
                                         <p>With a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button in the upper right corner you can switch between a plot and the tabular representation of the data.</p>
-                                        <p>All scalar results are summarized in <i>"Output Scalars"</i>. The default visualization selected here are tiles. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
+                                        <p>All scalar results are summarized in <i>Output Scalars</i>. The default visualization selected here are tiles. Like before, you can switch between graphical and tabular representation with a click on the <img class="img-fluid" src="assets/images/tabular-btn.png" width="25" height="25" align="middle" alt="Switch to tabular view button" /> button.</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-height:175pt;" src="assets/images/output-data2.png" alt="Output data screen - scalars" />
                                         </div>
@@ -298,7 +299,7 @@
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                               <img class="img-fluid" style="max-width:350pt;" src="assets/images/scenario_metadata.png" alt="Edit scenario metadata" />
                                         </div>
-                                        You can also attach files to a scenario here, see the <a href="#file-attachment" class="scrollto">section below</a>. 
+                                        You can also attach files to a scenario here, see the <a href="#file-attachment" class="scrollto">section below</a>.
                                         </li>
                                         <li><b>Export</b>
                                         <br>Download of the scenario data in the form of an Excel spreadsheet. The spreadsheet contains all datasets of the currently active scenario.</li>
@@ -307,7 +308,11 @@
                                         </ul>
                                         <div  id="file-attachment"  class="subsection-block">
                                             <h5 class="block-title">File attachments</h5>
-                                            <p>With the <i>attachments</i> option, you can attach files to the scenario you currently have open. These can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen. For example, if you want to provide data to your model that don't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for. In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed. Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.
+                                            <p>With the <i>attachments</i> option, you can attach files to the scenario you currently have open. These can be files of any format. 
+                                            MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen. 
+                                            For example, if you want to provide data to your model that don't need to be visible/modifiable in the UI (e.g. in the form of a gdx container or Excel files), attachments that your model can read are what you are looking for. 
+                                            In case you just want to add some report about a particular scenario, which is irrelevant for the GAMS model, you should not allow the model to read this file. Note that all files that you allow your model to read need to be first downloaded into the working directory before GAMS is executed. 
+                                            Thus, it is advisable to select only those files to be readable that are actually relevant for the optimization run.
                                             </p>
                                         </div><!--//subsection-block-->
                                     </div><!--//section-block-->
@@ -325,14 +330,14 @@
                                         <p>The <b>comparison mode</b> makes comparing scenarios more convenient. 
                                         As soon as this option is activated via the <i>Comparison mode</i> button in the navigation bar, the switch to another data set of a scenario is also performed for all other open scenarios. 
                                         This means that if you change the symbol to be displayed in a scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes accordingly for the other currently open scenario(s).</p>
-                                        <p>By the way: For many operations in MIRO there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. To learn more about shortcuts, check out our <a href="./overview.html#cheatsheet-section">cheat sheets</a>!</p>
+                                        <p>By the way: For many operations in MIRO there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. To learn more about shortcuts, check out our <a href="./index.html#cheatsheet-wrapper">cheat sheets</a>!</p>
                                     </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="additional-features" class="doc-section">
                                 <h2 class="section-title">Additional Features </h2>
                                 <div id="additional-db" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The mode of MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html">"Hypercube mode"</a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
+                                  <p>The mode of MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
                                   <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube mode</a> to learn more.
                                   
                                 </div>
