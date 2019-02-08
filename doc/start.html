@@ -74,12 +74,12 @@
                                     <li>kport</li>
                                     This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
                                     </ul>                                    
-                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.gms</span>) with the compile-time parameter <span class="code" style="white-space:nowrap">--miro=launch</span>. This can either be done from within the new GAMS Studio or the GAMSIDE:
+                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.gms</span>) with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="--miro=launch" />
+                                        <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="miro=launch" />
                                     </div>
                                     <p>or using the command prompt:</p>
-                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms --miro=launch</kbd></p>
+                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms miro=launch</kbd></p>
                                     <p><b>Note</b>: To use the command prompt, GAMS must be included in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
 
                                     <div class="callout-block callout-warning">
@@ -88,7 +88,7 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Note:</h4>
-                                            <p>If you run a model with "<span class="code">--miro=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed first. This may take a while.</p>
+                                            <p>If you run a model with "<span class="code">miro=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed first. This may take a while.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <div class="content" id="pip_install">
@@ -119,7 +119,7 @@
                                 <div  id="start-2"  class="section-block">
                                     <h3 class="block-title">Structure of MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us throgh this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
-                                    In order to launch the MIRO app for this model, we open the <span class="code">trnsport.gms</span> file in GAMS Studio and run it with the double dash parameter <span class="code" style="white-space:nowrap">--miro=launch</span>.</p>
+                                    In order to launch the MIRO app for this model, we open the <span class="code">trnsport.gms</span> file in GAMS Studio and run it with the GAMS command line parameter <span class="code" style="white-space:nowrap">miro=launch</span>.</p>
                                     <p>Once all the packages have been loaded, the MIRO app will start. Below you see the input mask as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
                                         <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial MIRO screen" />

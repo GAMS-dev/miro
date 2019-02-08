@@ -63,7 +63,7 @@
                                     The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
                                       <li><h6>GMSIO_config.json</h6>
-                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">--miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>--miro=launch</nobr></span>. 
+                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>. 
                                     It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> and <code class="language-gams">$onExternalOutput
@@ -232,7 +232,7 @@
                                            </div><!--//icon-holder-->
                                            <div class="content">
                                                <h4 class="callout-title">Warning:</h4>
-                                               <p>The following GAMS options are reserved by GAMS MIRO and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,--MIRO</span></p>
+                                               <p>The following GAMS options are reserved by GAMS MIRO and can not be used: <span class="code">idir1,idir2,curdir,trace,traceopt,miro</span></p>
                                            </div><!--//content-->
                                        </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -393,7 +393,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
     }
 }</code></pre> 
                                   <p>Since we already have a <span class="code">config.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
-                                  <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>--miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
+                                  <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:275pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
                                   </div>
