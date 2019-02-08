@@ -4,10 +4,10 @@ header_admin <- dashboardHeader(
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  "Help", tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
-                  tags$li(tags$a(href = "https://www.gams.com/webui/", 
+                  tags$li(tags$a(href = "https://www.gams.com/miro/", 
                                  target = "_blank", "Documentation")),
                   tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
-                                      'About GAMS WebUI\', \'', 
+                                      'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
                   )))),
   title=paste0("GAMS WebUI admin panel (", modelName, ")"), disable = FALSE)

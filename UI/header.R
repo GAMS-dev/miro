@@ -27,10 +27,10 @@ header <- dashboardHeader(
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
                  lang$nav$header$help$title, tags$span(class="caret")),
             tags$ul(class = "dropdown-menu", role="menu",
-                    tags$li(tags$a(href = "https://www.gams.com/webui/", 
+                    tags$li(tags$a(href = "https://www.gams.com/miro/", 
                            target = "_blank", lang$nav$header$help$doc)),
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
-                                        'About GAMS WebUI\', \'', 
+                                        'About MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
                                         lang$nav$header$help$about, '</a>')
                     )))),

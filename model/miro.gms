@@ -616,8 +616,8 @@ def get_r_path():
 RPath = get_r_path()
 
 os.environ["RPATH"] = RPath
-if os.path.exists(r"%gams.sysdir%miro%system.dirsep%library"):
-    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "miro/library"
+if os.path.exists(r"%gams.sysdir%GMSR%system.dirsep%library"):
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "GMSR/library"
 else:
     sysdir = ""
 with open("runapp.R", "w") as f: 

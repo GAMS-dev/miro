@@ -74,13 +74,12 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
-if(identical(gamsSysDir, "") || !dir.exists(paste0(gamsSysDir, "miro", 
-                                                   .Platform$file.sep, "library"))){
+if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
 
   RLibPath = NULL
 
 }else{
-  RLibPath = file.path(gamsSysDir, "miro", "library")
+  RLibPath = file.path(gamsSysDir, "GMSR", "library")
   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
