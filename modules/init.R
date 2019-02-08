@@ -316,7 +316,7 @@ if(is.null(errMsg)){
       if(names(modelIn)[[i]] %in% c(DDPar, GMSOpt) && 
          modelIn[[i]]$type %in% c("hot", "dt")){
         stop(sprintf("Tables are not supported for GAMS command line parameters ('%s'). 
-Please specify another widget type.", modelInAlias[i]))
+                     Please specify another widget type.", modelInAlias[i]))
       }
       if(identical(modelIn[[i]]$type, "checkbox") && is.character(modelIn[[i]]$checkbox$max)){
         cbValueTmp <- strsplit(modelIn[[i]]$checkbox$max, "\\(|\\$")[[1]]
@@ -331,11 +331,11 @@ Please specify another widget type.", modelInAlias[i]))
                        paste(listOfOperators, collapse = "', '")))
         }
       }
-    }, error = function(e){
-      errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
-    })
-  })
-}
+      }, error = function(e){
+        errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
+      })
+      })
+    }
 if(is.null(errMsg)){
   # declare hidden output scalars and remove entire scalar table if all hidden
   if(length(config$hiddenOutputScalars)){
@@ -421,7 +421,7 @@ if(is.null(errMsg)){
   lapply(seq_along(modelOut), function(i){
     if(identical(tolower(configGraphsOut[[i]]$outType), "valuebox")){
       if(identical(names(modelOut)[[i]], scalarsOutName)){
-        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+        configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
       }else{
         errMsg <<- paste(errMsg, 
                          sprintf("Output type: 'valueBox' is only valid for scalar tables. Please choose another output type for your dataset : '%s'.", 
@@ -434,7 +434,7 @@ if(is.null(errMsg)){
         if(sum(visibleOutputScalars) <= maxScalarsValBox && 
            all(modelOut[[i]]$symtypes[visibleOutputScalars] == "parameter")){
           configGraphsOut[[i]]$outType <<- "valuebox"
-          configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count
+          configGraphsOut[[i]]$options$count <<- modelOut[[i]]$count - length(config$hiddenOutputScalars)
         }else{
           configGraphsOut[[i]]$outType <<- defOutType
           if(identical(defOutType, "pivot")){
@@ -515,11 +515,11 @@ if(is.null(errMsg)){
                date =,
                daterange = {
                  flog.warn(sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
-                           Thus, it will not be transformed and stays static.", 
-                                                  names(modelIn)[i]))
+                                   Thus, it will not be transformed and stays static.", 
+                                   names(modelIn)[i]))
                })
       }
-    })
+      })
     modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
       if((modelIn[[i]]$type == "slider" 
           && identical(modelIn[[i]]$slider$double, TRUE)) 
@@ -532,14 +532,14 @@ if(is.null(errMsg)){
           return(names(modelIn)[i] %+% "=")
         }else if(modelIn[[i]]$type %in% c("hot", "dt") ||
                  (identical(modelIn[[i]]$type, c("dropdown")) &&
-                 identical(modelIn[[i]]$dropdown$single, FALSE))){
-         return("--HCUBE_STATIC_" %+% names(modelIn)[i] %+% "=")
+                  identical(modelIn[[i]]$dropdown$single, FALSE))){
+          return("--HCUBE_STATIC_" %+% names(modelIn)[i] %+% "=")
         }else{
           return("--HCUBE_SCALAR_" %+% names(modelIn)[i] %+% "=")
         }
       }
     }), use.names = FALSE)
-  }
+    }
   
   # get datasets whose data source is shared with other models
   sharedData       <- vector("logical", length(modelIn))
@@ -643,7 +643,7 @@ if(is.null(errMsg)){
              }else{
                return(NULL)
              }
-           },
+             },
            slider = {
              # a slider cannot use the reserved name for the scalar table
              if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
@@ -789,7 +789,7 @@ if(is.null(errMsg)){
   if(tolower(scalarsFileName) %in% modelInTabularData){
     scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
   }
-}
+  }
 
 if(is.null(errMsg)){
   # determine the filenames for the model input datasets
@@ -961,13 +961,13 @@ if(is.null(errMsg)){
                                '_scenTrc' = tableNameTracePrefix %+% modelName,
                                '_scenAttach' = tableNameAttachPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
-                                                stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
-                                                scode = scodeIdentifier),
+                                                   stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
+                                                   accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
+                                                   scode = scodeIdentifier),
                                    '_hcubeMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
-                                                 stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                 accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
-                                                 scode = scodeIdentifier),
+                                                    stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
+                                                    accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
+                                                    scode = scodeIdentifier),
                                    '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
                                    '_scenTrc' = traceColNames,
                                    '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
