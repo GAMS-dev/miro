@@ -70,7 +70,7 @@ pipeline {
                             mkdir $TARGET/miro
                             mkdir $TARGET/inclib
         
-                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www admin tools $TARGET/miro
+                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools $TARGET/miro
                             cp model/miro.gms $TARGET/inclib
                             hdiutil detach -verbose $DMG_ROOT
                             cd installer/macOS
