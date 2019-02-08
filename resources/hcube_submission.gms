@@ -145,11 +145,13 @@ if outScript == "gams":
          linestmp += "$call cp -r static/. " + zipname + "/" + tmpdir + "\n"
          
       # gams call
-      linestmp += "$log ---------------------------------------------\n"
-      linestmp += "$log ---------------------------------------------\n"
-      linestmp += "$log          STARTING RUN " + str(index) + "/" + str(len(content)) + "\n"
-      linestmp += "$log ---------------------------------------------\n"
-      linestmp += "$log ---------------------------------------------\n"
+      linestmp += "$onecho >> \"%jobID%.log\"\n"
+      linestmp += "---------------------------------------------\n"
+      linestmp += "---------------------------------------------\n"
+      linestmp += "       EXECUTING SCENARIO " + str(index + 1) + "/" + str(len(content)) + "\n"
+      linestmp += "---------------------------------------------\n"
+      linestmp += "---------------------------------------------\n"
+      linestmp += "$offecho\n"
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
