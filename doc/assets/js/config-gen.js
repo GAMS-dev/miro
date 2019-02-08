@@ -4045,6 +4045,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
             $("[data-alpaca-field-name='dataRendering_Format: pivottable']").addClass("alpaca-popup-image");
             $("[data-alpaca-field-name='dataRendering_Format: pivottable']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_pivot_table.png' style = 'max-height:600px; max-Width:1000px;'/>");
 
+            $("[data-alpaca-field-name='dataRendering_Format: custom']").addClass("alpaca-popup-image");
+            $("[data-alpaca-field-name='dataRendering_Format: custom']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/output-data_raw1.png' style = 'max-height:300px; max-Width:1000px;'/>");
+
         }
     });
 };
