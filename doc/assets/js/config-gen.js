@@ -160,7 +160,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "required":true
               },
               "includeParentDir":{
-                "title":"Include parent directory of the curren model folder in your model runs (e.g. because several models share files)?",
+                "title":"Include parent directory of the current model folder in your model runs (e.g. because several models share files)?",
                  "type":"boolean",
                  "default":false,
                  "required":false
@@ -4041,25 +4041,25 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
             }
 
             $("[data-alpaca-field-name='aggregateWidgetsTmp']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='aggregateWidgetsTmp']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.PNG' style = 'max-height:1000px; max-Width:800px;'/>");
+            $("[data-alpaca-field-name='aggregateWidgetsTmp']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.png' style = 'max-height:1000px; max-Width:800px;'/>");
 
             $("[data-alpaca-field-name='activateModules_logFile:']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='activateModules_logFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_log.PNG' style = 'max-height:600px; max-Width:1000px;'/>");
+            $("[data-alpaca-field-name='activateModules_logFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_log.png' style = 'max-height:600px; max-Width:1000px;'/>");
 
             $("[data-alpaca-field-name='activateModules_lstFile:']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='activateModules_lstFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_lst.PNG' style = 'max-height:600px; max-Width:1000px;'/>");
+            $("[data-alpaca-field-name='activateModules_lstFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_lst.png' style = 'max-height:600px; max-Width:1000px;'/>");
 
             $("[data-alpaca-field-name='dataRendering_Format: graph']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='dataRendering_Format: graph']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_graph.PNG' style = 'max-height:600px; max-Width:1000px;'/>");
+            $("[data-alpaca-field-name='dataRendering_Format: graph']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_graph.png' style = 'max-height:600px; max-Width:1000px;'/>");
 
             $("[data-alpaca-field-name='dataRendering_Format: valuebox']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='dataRendering_Format: valuebox']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_scalar_widget.PNG' style = 'max-height:300px; max-Width:500px;'/>");
+            $("[data-alpaca-field-name='dataRendering_Format: valuebox']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_scalar_widget.png' style = 'max-height:300px; max-Width:500px;'/>");
 
             $("[data-alpaca-field-name='dataRendering_Format: valuebox_0_options_icon']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='dataRendering_Format: valuebox_0_options_icon']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_scalar_widget_icon.PNG' style = 'max-height:300px; max-Width:500px;'/>");
+            $("[data-alpaca-field-name='dataRendering_Format: valuebox_0_options_icon']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_scalar_widget_icon.png' style = 'max-height:300px; max-Width:500px;'/>");
 
             $("[data-alpaca-field-name='dataRendering_Format: pivottable']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='dataRendering_Format: pivottable']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_pivot_table.PNG' style = 'max-height:600px; max-Width:1000px;'/>");
+            $("[data-alpaca-field-name='dataRendering_Format: pivottable']>.alpaca-container-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_pivot_table.png' style = 'max-height:600px; max-Width:1000px;'/>");
 
         }
     });
