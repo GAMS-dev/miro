@@ -56,7 +56,6 @@ $offExternalInput
 
 Parameter
 c(i,j) 'transport cost in thousands of dollars per case';
-
 c(i,j) = f*d(i,j)/1000;
 
 Variable
@@ -66,9 +65,9 @@ Variable
 Positive Variable x;
 
 Equation
-  cost        define objective function
-  supply(i)   observe supply limit at plant i
-  demand(j)   satisfy demand at market j ;
+   cost        'define objective function'
+   supply(i)   'observe supply limit at plant i'
+   demand(j)   'satisfy demand at market j';
 
 cost ..        z  =e=  sum((i,j), c(i,j)*x(i,j));
 
@@ -86,21 +85,25 @@ binary variable ship(i,j) '1 if we ship from i to j, otherwise 0';
 equation minship(i,j) minimum shipment
          maxship(i,j) maximum shipment;
 
-minship(i,j).. x(i,j) =g= minS * ship(i,j);
-maxship(i,j).. x(i,j) =l= bigM * ship(i,j);
+minship(i,j) .. x(i,j) =g= minS * ship(i,j);
+maxship(i,j) .. x(i,j) =l= bigM * ship(i,j);
 
-Model transportMIP / transportLP, minship, maxship / ;
+Model  transportMIP / transportLP, minship, maxship / ;
 option optcr = 0;
 
-Equation  costnlp define non-linear objective function;
-costnlp.. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
+Equation
+   costnlp 'define non-linear objective function';
+   costnlp .. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
 
 Model transportMINLP / transportMIP - cost + costnlp /;
 
 $if not set type $set type lp
 
+*some starting point
+x.l(i,j) = 1;
+
 solve transport%type% using %type% minimizing z;
-abort$(transport%type%.modelstat <> 1 and transport%type%.modelstat <> 8) "No feasible solution found"
+abort$(transport%type%.modelstat > 2 and transport%type%.modelstat <> 8) "No feasible solution found"
 
 
 Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;

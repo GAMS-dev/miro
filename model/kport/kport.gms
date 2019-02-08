@@ -40,14 +40,12 @@ $offText
 
 $eolCom //
 
-Set rhdr 'Reactor data headers' / VMIN,VMAX/
-    phdr 'Product data headers' / Demand, 'Production Time' /;
-
-
 Set
-   s      'Scenario' / s1,s2  /
-   rR     'Reactor'  / R1*R3  /
-   pP     'Product'  / L1*L37 /;
+   rhdr 'Reactor data headers' / VMIN,VMAX/
+   phdr 'Product data headers' / Demand, 'Production Time' /
+   s    'Scenario'             / s1,s2  /
+   rR   'Reactor'              / R1*R3  /
+   pP   'Product'              / L1*L37 /;
 
 $if not set scenario $set scenario s1
 

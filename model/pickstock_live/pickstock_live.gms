@@ -3,16 +3,15 @@ $title Stock Selection Optimization with live data from the web
 * some weights, such that this portfolio has a similar behavior to our
 * overall Dow Jones index.
 
-Set date   'date'
-    symbol 'stockSymbol';
+Set       date          'date'
+          symbol        'stockSymbol';
     
 $onExternalInput
-Scalar maxstock      'maximum number of stocks to select '  / 2  /
-       trainingdays  'number of days for training '  / 99  /;
+Scalar    maxstock      'maximum number of stocks to select ' /  2 /
+          trainingdays  'number of days for training '        / 99 /;
 $offExternalInput
 
-Parameter
-    price(date,symbol)        'UIOutput: stock price';
+Parameter price(date,symbol) 'UIOutput: stock price';
 
 $if not set TW_lo $set TW_lo "2017-01-01"
 $if not set TW_up $set TW_up "2017-01-02"

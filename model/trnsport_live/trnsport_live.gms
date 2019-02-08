@@ -19,8 +19,8 @@ $offText
 
 Set
    locHdr 'location data header' /lat, lng/
-   i 'canning plants' 
-   j 'markets';
+   i      'canning plants' 
+   j      'markets';
 
 $onExternalInput   
 Parameter
@@ -33,16 +33,16 @@ Parameter
           Munich   300
           Istanbul 275 /;
 
-Scalar f    'freight in dollars per case per thousand miles' / 90 /
-       minS 'minimum shipment (MIP- and MINLP-only)'         / 100 /
+Scalar f    'freight in dollars per case per thousand miles' /  90  /
+       minS 'minimum shipment (MIP- and MINLP-only)'         / 100  /
        beta 'beta (MINLP-only)'                              / 0.95 /;
 $offExternalInput
 
 Parameter
 ilocData(i,locHdr) 'Plant location information',
 jlocData(j,locHdr) 'Market location information'
-d(i,j) 'distance in thousands of miles'
-c(i,j) 'transport cost in thousands of dollars per case';
+d(i,j)             'distance in thousands of miles'
+c(i,j)             'transport cost in thousands of dollars per case';
 
 
 EmbeddedCode Python:
@@ -122,15 +122,6 @@ demand(j).. sum(i, x(i,j)) =g= b(j);
 
 Model transportLP / all /;
 
-$ifthen.lp not %type% == "mip"
-solve transportLP using lp minimizing z;
-abort$(transportLP.modelstat <> 1) "No feasible solution found"
-$endif.lp
-
-
-
-* MIP
-$ifthen.noLP not %type% == "lp"
 scalar bigM big M;
 bigM = min(smax(i,a(i)), smax(j,b(j)));
 
@@ -139,39 +130,32 @@ binary variable ship(i,j) '1 if we ship from i to j, otherwise 0';
 equation minship(i,j) minimum shipment
          maxship(i,j) maximum shipment;
 
-minship(i,j).. x(i,j) =g= minS * ship(i,j);
-maxship(i,j).. x(i,j) =l= bigM * ship(i,j);
+minship(i,j) .. x(i,j) =g= minS * ship(i,j);
+maxship(i,j) .. x(i,j) =l= bigM * ship(i,j);
 
-Model transportMIP / transportLP, minship, maxship / ;
+Model  transportMIP / transportLP, minship, maxship / ;
 option optcr = 0;
-$endif.noLP
 
-$ifthen.mip %type% == "mip"
-Solve transportMIP using MIP minimizing z ;
-abort$(transportMIP.modelstat <> 1) "No feasible solution found"
-$endif.mip
-
-
-* MINLP
-$ifthen.minlp %type% == "minlp"
-Equation  costnlp define non-linear objective function;
-costnlp.. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
+Equation
+   costnlp 'define non-linear objective function';
+   costnlp .. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
 
 Model transportMINLP / transportMIP - cost + costnlp /;
-Solve transportMINLP using MINLP minimizing z ;
-abort$(transportMINLP.modelstat > 2 and transportMINLP.modelstat <> 8) "No feasible solution found"
-$endif.minlp
 
-Set
-scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
-'latM', 'cap', 'demand', 'quantities' /;
+$if not set type $set type lp
+
+*some starting point
+x.l(i,j) = 1;
+
+solve transport%type% using %type% minimizing z;
+abort$(transport%type%.modelstat > 2 and transport%type%.modelstat <> 8) "No feasible solution found"
+
+Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
 
 $onExternalOutput
 Parameter
-schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
-
-Scalar
-total_cost 'total transportation costs in thousands of dollars';
+   schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]'
+   total_cost                'total transportation costs in thousands of dollars';
 $offExternalOutput
 
 $ifthen set type

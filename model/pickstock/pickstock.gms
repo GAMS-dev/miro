@@ -3,13 +3,13 @@ $title Stock Selection Optimization
 * some weights, such that this portfolio has a similar behavior to our
 * overall Dow Jones index.
 
-Set date   'date'
-    symbol 'stock symbol';
+Set       date                 'date'
+          symbol               'stock symbol';
     
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
-Scalar maxstock        'maximum number of stocks to select'  / 2  /
-       trainingdays    'number of days for training'  / 99  /;
+Scalar    maxstock             'maximum number of stocks to select'  /  2 /
+          trainingdays         'number of days for training'         / 99 /;
 $offExternalInput
 
 $setNames "%gams.input%" fp fn fe
@@ -94,8 +94,9 @@ abserror(td, 'absolute error train') = error(td);
 abserror(ntd,'absolute error test')  = error(ntd);
 lastDayTraining(td)                  = td.pos=card(td);
 kpi                                  = sum(ntd, error(ntd));
+
 * parameter including all stocks and dow jones index
 Parameter priceMerge(date,*) 'UIOutput: Price (stocks & dow jones)';
-priceMerge(d,symbol)      = price(d,symbol);
-priceMerge(d,'DowJones')  = index(d);
+priceMerge(d,symbol)        = price(d,symbol);
+priceMerge(d,'DowJones')    = index(d);
 
