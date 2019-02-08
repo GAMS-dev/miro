@@ -20,7 +20,7 @@ if(isInSplitView){
   }, logical(1L))
   newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter)
   # add new Scenario tab
-  appendTab("scenTabset", newScenTabPanel)
+  insertTab("scenTabset", newScenTabPanel, "scen_add", "before")
   numberScenTabs <<- numberScenTabs + 1L
   if(numberScenTabs == 1L){
     hideEl(session, "#no-scen")

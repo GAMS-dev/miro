@@ -21,10 +21,7 @@ if(!identical(config$activateModules$hcubeMode, TRUE)){
                     actionButton("btSplitView", lang$nav$sidebarButtons$tabView, width = "85%", 
                                  class = "bt-highlight-2", style = "display:block;"),
                     actionButton("btCompareScen", class = "bt-highlight-3", lang$nav$sidebarButtons$compareStart, 
-                                 width = "85%", style = "display:block;"),
-                    conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
-                                     actionButton("btLoadScen", lang$nav$sidebarButtons$load, width = "85%", 
-                                                  class = "bt-highlight-2", style = "display:block;"))
+                                 width = "85%", style = "display:block;")
                   )
                 }
     )
@@ -49,11 +46,7 @@ if(!identical(config$activateModules$hcubeMode, TRUE)){
                                                  class = "bt-highlight-3", 
                                                  lang$nav$sidebarButtons$compareStart, 
                                                  width = "85%", style = "display:block;"), 
-                                    disabled = ""),
-                conditionalPanel("input.btSplitView%2 != " %+% if(identical(config$defCompMode, "split")) "0" else "1",
-                                 actionButton("btLoadScen", class = "btHighlight3", 
-                                              lang$nav$sidebarButtons$load, width = "85%", 
-                                              class = "bt-highlight-2", style = "display:block;"))
+                                    disabled = "")
     )
   )
 }
