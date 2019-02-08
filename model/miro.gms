@@ -201,7 +201,7 @@ def headerList(s):
 
 # Now write model specific MIRO driver
 with open(r'%fp%%fn%_miro.gms', 'w') as f:
-   f.write('$ifi %' + 'MIRO%==run $goto MIRO_RUN\n')
+   f.write('$ifi %' + 'gams.MIRO%==run $goto MIRO_RUN\n')
    f.write('\n')
    f.write('* Create csv files of existing data for Excel file creation\n')
    for s in i_sym:
@@ -437,7 +437,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    
 # Now the JSON config file
 config = { "pageTitle" : "%system.title%",
-           "MIROSwitch" : "--MIRO=RUN",
+           "MIROSwitch" : "MIRO=RUN",
            "fileExchange" : "csv",
            "csvDelim" : "," }
 
