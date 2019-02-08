@@ -188,7 +188,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
-    print(gmsString)
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     scenIds <- as.character(sha256(gmsString))
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)

@@ -48,7 +48,7 @@ def extractDir(fdir):
 def getScalars(text):
    try:
       if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1].split(' --MIRO=')[0]
+         text = text.split('.gms ')[1].split(' MIRO=')[0]
       textTmp = text.split()
       scalarsRaw = r"Scalar,Description,Value\n"
       scalars = scalarsRaw
@@ -145,6 +145,11 @@ if outScript == "gams":
          linestmp += "$call cp -r static/. " + zipname + "/" + tmpdir + "\n"
          
       # gams call
+      linestmp += "$log "---------------------------------------------\n"
+      linestmp += "$log "---------------------------------------------\n"
+      linestmp += "$log "         STARTING RUN " + str(index) + "/" + str(len(content)) + "\n"
+      linestmp += "$log "---------------------------------------------\n"
+      linestmp += "$log "---------------------------------------------\n"
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"

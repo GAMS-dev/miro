@@ -45,19 +45,19 @@ Source: "../../R-{#RMajor}.{#RMinor}.{#RPatch}-win.exe"; DestDir: "{tmp}"; Check
 Source: "../../LICENSE"; Flags: dontcopy noencryption
 Source: "default.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
-Source: "../../app.R"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
-Source: "../../global.R"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
-Source: "../../LICENSE"; DestDir: "{app}\MIRO"; Flags: ignoreversion;Components: program
-Source: "../../admin/server.R"; DestDir: "{app}\MIRO\admin"; Flags: ignoreversion;Components: program
-Source: "../../admin/ui.R"; DestDir: "{app}\MIRO\admin"; Flags: ignoreversion;Components: program
-Source: "../../library/*"; DestDir: "{app}\MIRO\library\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../conf/*"; DestDir: "{app}\MIRO\conf\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../JS/*"; DestDir: "{app}\MIRO\JS\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../modules/*"; DestDir: "{app}\MIRO\modules\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../R/*"; DestDir: "{app}\MIRO\R\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../UI/*"; DestDir: "{app}\MIRO\UI\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../www/*"; DestDir: "{app}\MIRO\www\*"; Flags: ignoreversion recursesubdirs;Components: program
-Source: "../../tools/*"; DestDir: "{app}\MIRO\tools\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../app.R"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
+Source: "../../global.R"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
+Source: "../../LICENSE"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
+Source: "../../admin/server.R"; DestDir: "{app}\miro\admin"; Flags: ignoreversion;Components: program
+Source: "../../admin/ui.R"; DestDir: "{app}\miro\admin"; Flags: ignoreversion;Components: program
+Source: "../../library/*"; DestDir: "{app}\miro\library\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../conf/*"; DestDir: "{app}\miro\conf\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../JS/*"; DestDir: "{app}\miro\JS\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../modules/*"; DestDir: "{app}\miro\modules\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../R/*"; DestDir: "{app}\miro\R\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../UI/*"; DestDir: "{app}\miro\UI\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../www/*"; DestDir: "{app}\miro\www\*"; Flags: ignoreversion recursesubdirs;Components: program
+Source: "../../tools/*"; DestDir: "{app}\miro\tools\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../resources/hcube_submission.gms"; DestDir: "{app}\resources"; Flags: ignoreversion;Components: program
 Source: "../../model/miro.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
 
