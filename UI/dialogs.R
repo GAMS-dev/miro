@@ -820,7 +820,7 @@ addHcubeLoadBlock <- function(id, choices){
                   tags$div(class = "item-add-block",
                            tags$div(class = "item-and", 
                                     tags$span(style = "display:inline-block;vertical-align:middle;line-height: 70px;", 
-                                              'AND')),
+                                              lang$nav$hcubeLoad$andButton)),
                            tags$div(class = "item-dropdown", 
                                     selectInput("newLine_" %+% id, "", 
                                                 choices = fields)

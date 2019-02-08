@@ -288,9 +288,9 @@ if(config$activateModules$hcubeMode){
                            tags$div(id = "selectorsWrapper"
                            ),
                            tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                    actionButton("btNewBlock", label = "OR")),
+                                    actionButton("btNewBlock", label = lang$nav$hcubeLoad$orButton)),
                            tags$div(class = "item-or-query",
-                                    actionButton("btSendQuery", label = "Query database", 
+                                    actionButton("btSendQuery", label = lang$nav$hcubeLoad$queryButton, 
                                                  class = "bt-highlight-1")
                            )
                   ),

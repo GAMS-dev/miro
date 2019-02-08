@@ -27,6 +27,7 @@
     "header":{
       "scenario":{
         "title":"Scenario",
+        "titleHC": "HC job",
         "edit":"Edit metadata",
         "save":"Save",
         "saveAs":"Save As",
@@ -91,6 +92,9 @@
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
+      "orButton": "OR",
+      "andButton": "AND",
+      "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
         "desc": "The selected scenario has the following hash. You may use this to import it in the base mode."

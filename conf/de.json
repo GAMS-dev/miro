@@ -27,6 +27,7 @@
     "header":{
       "scenario":{
         "title":"Szenario",
+        "titleHC": "HC-Job",
         "edit":"Metadaten bearbeiten",
         "save":"Speichern",
         "saveAs":"Speichern unter",
@@ -91,6 +92,9 @@
       "chooseSelectedButton":"Markierte auswählen",
       "chooseCurrentButton":"Aktuelle Seite auswählen",
       "chooseAllButton":"Wähle alle",
+      "orButton": "ODER",
+      "andButton": "UND",
+      "queryButton": "Ergebnisse abrufen",
       "showHashDialog":{
         "title": "Szenario Hash",
         "desc": "Das ausgewählte Szenario hat den folgenden Hash. Damit können Sie es im Basismodus importieren."

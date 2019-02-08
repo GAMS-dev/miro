@@ -12,6 +12,11 @@ function isInputEl(id){
     return false;
   }
 }
+function rerenderHot(){
+  try{
+      setTimeout(function(){ HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render(); }, 100);
+  }catch(e){}
+}
 let spinnerActive = {};
 function showSpinnerIcon(el, delay = 3000){
   if(spinnerActive[$(el).prop('id')]){
@@ -145,6 +150,7 @@ $(document).ready(function () {
   
   $("a[data-value='inputData']").click(function() {
     changeActiveButtons('inputData');
+    rerenderHot();
   });
   $("a[data-value='outputData']").click(function() {
     changeActiveButtons('outputData');
@@ -157,6 +163,9 @@ $(document).ready(function () {
   });
   $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='hcubeAnalyze']").click(function() {
     changeActiveButtons('default');
+  });
+  $("#inputTabset li").click(function(){
+    rerenderHot();
   });
   // show/hide buttons after (R triggered) tab switch.
   Shiny.addCustomMessageHandler('gms-switchTab', function(el) {

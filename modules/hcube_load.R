@@ -63,6 +63,7 @@ if(length(scalarKeyTypeList[[scalarsTabNameIn]])){
                                 "[[", character(1L), "alias", USE.NAMES = FALSE)
   scalarTables <- scalarsTabNameIn
 }
+scalarOutFields <- NULL
 if(length(modelOut[[scalarsOutName]])){
   scalarKeyTypeList[[scalarsTabNameOut]] <- lapply(seq_along(modelOut[[scalarsOutName]]$symnames), function(i){
     list(key = modelOut[[scalarsOutName]]$symnames[[i]], 

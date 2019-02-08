@@ -1,5 +1,5 @@
 # run the paver module (python)
-
+paver <- NULL
 traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
 # paver solution files
 paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)

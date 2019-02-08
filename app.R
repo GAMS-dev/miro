@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.3.6"
+MIROVersion <- "0.3.7"
 MIRORDate   <- "Feb 4 2019"
 #####packages:
 # processx        #MIT
@@ -716,6 +716,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
         # reset nest level
         shortcutNest <<- FALSE
         isInSolveMode <<- FALSE
+      }else if(identical(input$sidebarMenuId, "importData")){
+        rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
       }
     })
     
@@ -895,7 +897,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
             skipScenCompObserve[i] <<- FALSE
             return(NULL)
           }
-          print(i)
           j <- strsplit(isolate(input[[paste0("contentScen_", i)]]), "_")[[1]][3]
           if(identical(i, 2L)){
             skipScenCompObserve[i + 1L] <<- TRUE
@@ -908,7 +909,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                               paste0(paste0("contentScen_", i - 1, "_", j)))
           }else{
             lapply(names(scenData), function(scen){
-              scen <- names(scenData)[i]
               k <- strsplit(scen, "_")[[1]][2]
               skipScenCompObserve[k] <<- TRUE
               updateTabsetPanel(session, paste0("contentScen_", k),

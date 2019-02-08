@@ -142,6 +142,11 @@
                     "minLength":1,
                     "required":true
                   },
+                  "titleHC":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
                   "edit":{  
                     "type":"string",
                     "minLength":1,
@@ -413,6 +418,21 @@
               "required":true
             },   
             "chooseAllButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "orButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "andButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "queryButton":{  
               "type":"string",
               "minLength":1,
               "required":true
