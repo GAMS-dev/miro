@@ -243,18 +243,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               },
-              "aggregateWidgetsTmp":{
+              "aggregateWidgets":{
                  "title":"Aggregate all input widgets on a single tab?",
                  "type":"boolean",
                  "required":false,
                  "default":true
-              },
-              "aggregateWidgetsTitle":{
-                "title":"Title of the tab where input widgets are aggregated",
-                "type":"string",
-                "minLength":"1",
-                "default": "Widgets",
-                "required":true
               },
               "scalarAliases":{
                  "title":"Specify the aliases for the input and output scalar tables",
@@ -2587,38 +2580,38 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "required":false
               },
               "handsontable":{
-                 "title":"Parameters used to customize handsontables (spreadsheet like js-editor used to modify input data).",
+                 "title":"Configuration of tables for model input data (handsontable).",
                  "type":"object",
                  "required":false,
                  "properties":{
                     "height":{
-                       "title":"Height of handsontable (in px).",
+                       "title":"Height of table (in px).",
                        "type":"integer",
                        "exclusiveMinimum":0,
                        "default":700,
                        "required":false
                     },
                     "width":{
-                       "title":"Width of handsontable (in px). If not set, optimum value is determined",
+                       "title":"Width of table (in px). If not set, optimum value is determined",
                        "type":"integer",
                        "exclusiveMinimum":0,
                        "default":null,
                        "required":false
                     },
                     "readonly":{
-                       "title":"Should handsontables be read-only?",
+                       "title":"Should all tables for input data be read-only?",
                        "type":"boolean",
                        "default":false,
                        "required":false
                     },
                     "search":{
-                       "title":"Enable browser search for handsontables?",
+                       "title":"Enable browser search for tables?",
                        "type":"boolean",
                        "default":true,
                        "required":false
                     },
                     "highlightCol":{
-                       "title":"Hoghlight column of current active cell?",
+                       "title":"Highlight column of current active cell?",
                        "type":"boolean",
                        "default":true,
                        "required":false
@@ -2666,7 +2659,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "required":false
                     },
                     "manualColumnResize":{
-                       "title":"Enable manuall column resizing?",
+                       "title":"Enable manual column resizing?",
                        "type":"boolean",
                        "default":false,
                        "required":false
@@ -2686,7 +2679,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        "required":false
                     },
                     "contextMenu":{
-                       "title":"Options for customizing the handsontable context menu (accessible via right mouse click)",
+                       "title":"Options for customizing the table context menu (accessible via right mouse click)",
                        "type":"object",
                        "additionalProperties":false,
                        "required":"false",
@@ -2698,17 +2691,17 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                              "required":false
                           },
                           "allowRowEdit":{
-                             "title":"logical enabling row editing",
+                             "title":"Logical enabling row editing",
                              "type":"boolean",
                              "default":true
                           },
                           "allowColEdit":{
-                             "title":"logical enabling column editing. Note that Handsontable does not support column add/remove when column types are defined (i.e. useTypes == TRUE in rhandsontable).",
+                             "title":"Logical enabling column editing. Note that handsontable does not support column add/remove when column types are defined (i.e. useTypes == TRUE in rhandsontable).",
                              "type":"boolean",
                              "default":true
                           },
                           "allowReadOnly":{
-                             "title":"logical enabling read-only toggle",
+                             "title":"Logical enabling read-only toggle",
                              "type":"boolean",
                              "default":false
                           },
@@ -2722,7 +2715,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  }
               },
               "pivottable":{
-                 "title":"Parameters used to customize pivottable (used to render output data).",
+                 "title":"Parameters used to customize pivottable.",
                  "type":"object",
                  "additionalProperties":false,
                  "properties":{
@@ -2735,7 +2728,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  }
               },
               "datatable":{
-                 "title":"Parameters used to customize datatable (used to render output data).",
+                 "title":"Configuration of tables for model output data (datatable).",
                  "type":"object",
                  "additionalProperties":false,
                  "properties":{
@@ -2846,18 +2839,18 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                          }
                                    },
                                    "className":{
-                                      "title":"column(s) class name",
+                                      "title":"Column(s) class name",
                                       "required":false,
                                       "type":"string",
                                       "minLength":1
                                    },
                                    "visible":{
-                                      "title":"visible",
+                                      "title":"Visible",
                                       "required":false,
                                       "type":"boolean"
                                    },
                                    "searchable":{
-                                      "title":"searchable",
+                                      "title":"Searchable",
                                       "required":false,
                                       "type":"boolean"
                                    }
@@ -2871,9 +2864,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     }
                  }
               }
-           },
-           "dependencies": {
-             "aggregateWidgetsTitle": "aggregateWidgetsTmp"
            }
         };
   if(scalarOutSyms.length === 0){
@@ -3344,8 +3334,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "autoGenInputGraphs":1,
                     "defCompMode": 1,
                     "activateModules": 1,
-                    "aggregateWidgetsTmp": 1,
-                    "aggregateWidgetsTitle": 1,
+                    "aggregateWidgets": 1,
                     "scalarAliases":1,
                     "saveTraceFile": 1,
                     "hiddenOutputScalars":1,
@@ -3408,13 +3397,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                        }
                        // remove default values
                        removeDefaults(co, this);
-                       // change object "tabtitle" to "title" (to match schema)
-                       if(co.aggregateWidgetsTmp){
-                          co.aggregateWidgets = {};
-                          co.aggregateWidgets.title = co.aggregateWidgetsTitle;
-                          delete co.aggregateWidgetsTitle;
-                       }
-                       delete co.aggregateWidgetsTmp;
                        //restructuring of "dataRendering" for all output elements
                        if(typeof co.dataRendering !== 'undefined'){
                          makeKey("Format: datatable", "Parameter", "datatable");
@@ -4042,8 +4024,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
               });
             }
 
-            $("[data-alpaca-field-name='aggregateWidgetsTmp']").addClass("alpaca-popup-image");
-            $("[data-alpaca-field-name='aggregateWidgetsTmp']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.png' style = 'max-height:1000px; max-Width:800px;'/>");
+            $("[data-alpaca-field-name='aggregateWidgets']").addClass("alpaca-popup-image");
+            $("[data-alpaca-field-name='aggregateWidgets']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_aggregate_both.png' style = 'max-height:1000px; max-Width:800px;'/>");
 
             $("[data-alpaca-field-name='activateModules_logFile:']").addClass("alpaca-popup-image");
             $("[data-alpaca-field-name='activateModules_logFile:']>.control-label").append(" <i class='fas fa-info-circle'/><img src='./assets/images/generator_img/gen_log.png' style = 'max-height:600px; max-Width:1000px;'/>");

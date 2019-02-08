@@ -206,7 +206,7 @@ Positive Variable x;
                                             </div><!--//callout-block-->
                                           </li>
                                           <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">GMSIO_config.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
-                                            </br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data in the database as you can use the Excel file to populate the tables.
+                                            </br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data saved yet as you can use the Excel file to populate the tables.
                                             <div class="callout-block callout-warning">
                                                 <div class="icon-holder">
                                                     <i class="fas fa-info-circle"></i>
@@ -384,7 +384,15 @@ $offExternalInput
                                            If a set is not used as a header, then explicit and implicit definitions as seen above are possible, see also <a href="#display-set" class="scrollto">here</a>.</p>
                                        </div><!--//content-->
                                    </div><!--//callout-block-->
-                                   <p></p>
+                                   <p>A further restriction of the use of headers concerns the dimensionality of parameters. 
+                                   Only multi-dimensional parameters can be pivoted. 
+                                   For the parameter of the following example the option <span class="code">[MIRO:table]</span> cannot be set: 
+                                     <pre><code class="language-gams">$onExternalInput
+*This parameter cannot be pivoted!
+Parameter oneDim(dom1) 'One domain/dimension [MIRO:table]';
+$onExternalOutput
+</code></pre> 
+                                   </p>
                                 </div><!--//section-block-->  
                                 <div  id="create-4"  class="section-block">
                                     <h3 class="block-title">Scalars</h3>
