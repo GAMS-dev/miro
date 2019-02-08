@@ -57,8 +57,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                              tableTmp <- private$importScalarValues(table, field)
                            }else{
                              tableTmp <- private$db$importDataset(table, 
-                                                                   colNames = field, 
-                                                                   distinct = TRUE)
+                                                                  colNames = field, 
+                                                                  distinct = TRUE)
                            }
                            if(length(tableTmp)){
                              if(is.null(private$values[[table]])){
@@ -86,7 +86,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          
                          # BEGIN error checks
                          if(length(subsetList))
-                          stopifnot(is.list(subsetList))
+                           stopifnot(is.list(subsetList))
                          stopifnot(is.character(colNames), length(colNames) >= 1L)
                          stopifnot(!is.na(as.integer(limit)), length(limit) == 1L)
                          # END error checks
@@ -108,7 +108,10 @@ HcubeLoad <- R6Class("HcubeLoad",
                          }
                          tagID <- which(endsWith(private$dbSchema$colNames[["_scenMeta"]][['stag']], names(data)))[1L]
                          if(length(tagID)){
-                           data[[tagID]] <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
+                           tags_trimmed <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
+                           if(length(tags_trimmed)){
+                             data[[tagID]] <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
+                           }
                          }
                          return(data)
                        },
@@ -137,7 +140,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                                               collapse = "', '")), 
                                 call. = FALSE)
                          }
-                           
+                         
                          attribs     <- rlang::syms(attribs)
                          groupedData <- dplyr::group_by(data, !!!attribs)
                          groupedRowIds       <- attr(groupedData, "indices")
@@ -391,7 +394,6 @@ HcubeLoad <- R6Class("HcubeLoad",
                          colNames     <- paste0(names(colNames), ".", colNames)
                          colNamesNew  <- !(colNames %in% names(dataset))
                          colNamesSym  <- rlang::syms(colNames[!colNamesNew])
-                         
                          dataset      <- select(dataset, !!!colNamesSym)
                          dataset[, colNames[colNamesNew]] <- NA
                          return(dataset[, colNames])
