@@ -78,13 +78,6 @@ demand(j).. sum(i, x(i,j)) =g= b(j);
 
 Model transportLP / all /;
 
-$ifthen.lp not %type% == "mip"
-solve transportLP using lp minimizing z;
-abort$(transportLP.modelstat <> 1) "No feasible solution found"
-$endif.lp
-
-* MIP
-$ifthen.noLP not %type% == "lp"
 scalar bigM big M;
 bigM = min(smax(i,a(i)), smax(j,b(j)));
 
@@ -98,45 +91,32 @@ maxship(i,j).. x(i,j) =l= bigM * ship(i,j);
 
 Model transportMIP / transportLP, minship, maxship / ;
 option optcr = 0;
-$endif.noLP
 
-$ifthen.mip %type% == "mip"
-Solve transportMIP using MIP minimizing z ;
-abort$(transportMIP.modelstat <> 1) "No feasible solution found"
-$endif.mip
-
-
-* MINLP
-$ifthen.minlp %type% == "minlp"
 Equation  costnlp define non-linear objective function;
 costnlp.. z  =e=  sum((i,j), c(i,j)*x(i,j)**beta) ;
 
 Model transportMINLP / transportMIP - cost + costnlp /;
-Solve transportMINLP using MINLP minimizing z ;
-abort$(transportMINLP.modelstat > 2 and transportMINLP.modelstat <> 8) "No feasible solution found"
-$endif.minlp
+
+$if not set type $set type lp
+
+solve transport%type% using %type% minimizing z;
+abort$(transport%type%.modelstat <> 1 and transport%type%.modelstat <> 8) "No feasible solution found"
 
 
-Set
-scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM',
-'latM', 'cap', 'demand', 'quantities' /;
+Set scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
 
 $onExternalOutput
 Parameter
-schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
-
-Scalar
-total_cost 'total transportation costs in thousands of dollars';
+   schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]'
+   total_cost                'total transportation costs in thousands of dollars';
 $offExternalOutput
 
-$ifthen set type
 total_cost = z.l;
 
-schedule(i,j, 'lngP') = iLocData(i,'lng');
-schedule(i,j, 'latP') = iLocData(i,'lat');
-schedule(i,j, 'lngM') = jLocData(j,'lng');
-schedule(i,j, 'latM') = jLocData(j,'lat');
-schedule(i,j, 'cap') = a(i);
-schedule(i,j, 'demand') = b(j);
+schedule(i,j, 'lngP')       = iLocData(i,'lng');
+schedule(i,j, 'latP')       = iLocData(i,'lat');
+schedule(i,j, 'lngM')       = jLocData(j,'lng');
+schedule(i,j, 'latM')       = jLocData(j,'lat');
+schedule(i,j, 'cap')        = a(i);
+schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
-$endif
