@@ -376,7 +376,6 @@ Those tables are: '%s'.\nError message: '%s'.",
 Those tables are: '%s'.\nError message: '%s'.",
                                    paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg),
                    collapse = "\n")
-      warning(msg, call. = FALSE)
       if(config$activateModules$strictmode || length(inconsistentTables$errMsg)){
         errMsg <<- paste(errMsg, msg, sep = "\n")
       }else{
