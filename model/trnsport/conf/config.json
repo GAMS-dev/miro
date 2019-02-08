@@ -41,11 +41,6 @@
               "mip",
               "minlp"
           ]
-       },
-       "GMSOPT_lp":{
-          "widgetType": "textinput",
-          "label": "Select solver",
-          "placeholder":"CPLEX"
        }
     },
     "dataRendering"      : {
