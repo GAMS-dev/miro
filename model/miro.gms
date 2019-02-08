@@ -551,7 +551,7 @@ import os
 
 def get_r_path():
     try:
-        with open(os.path.join(r"%gams.sysdir% ".strip(), 'MIRO', 'conf', 'rpath.conf')) as f:
+        with open(os.path.join(r"%gams.sysdir% ".strip(), 'miro', 'conf', 'rpath.conf')) as f:
             RPath = f.readline().strip()
             return RPath
     except:
@@ -571,6 +571,12 @@ def get_r_path():
            major, minor = RverTmp.groups()
         return int(major), int(minor)
     if system() == "Windows":
+        try:
+            with open(os.path.join(r"%gams.sysdir% ".strip(), 'GMSR', 'bin', 'Rscript.exe')) as f:
+                return os.path.join(r"%gams.sysdir% ".strip(), 'GMSR', r'bin%system.dirsep% '.strip())
+        except:
+            pass
+    
         import winreg
         try:
             aReg = winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
@@ -603,15 +609,15 @@ def get_r_path():
         else:
            RPath = RPath.decode('utf-8').strip().strip('Rscript')
 
-    #if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
-    #  os.environ["PYEXCEPT"] = "RVERSIONERROR"
-    #  raise FileNotFoundError('Bad R version')
+    if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
+      os.environ["PYEXCEPT"] = "RVERSIONERROR"
+      raise FileNotFoundError('Bad R version')
     return latestRPath
 RPath = get_r_path()
 
 os.environ["RPATH"] = RPath
 if os.path.exists(r"%gams.sysdir%miro%system.dirsep%library"):
-    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "MIRO/library"
+    sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "miro/library"
 else:
     sysdir = ""
 with open("runapp.R", "w") as f: 
@@ -735,10 +741,9 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 
 $ifthen not errorfree
-$ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/MIRO/conf/' directory."
+$ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif
-
 $hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
