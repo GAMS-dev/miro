@@ -18,7 +18,7 @@ sidebar_admin <- dashboardSidebar(
   )
 )
 body_admin <- dashboardBody({
-  addResourcePath("admin", "admin/resources")
+  addResourcePath("admin", "tools/admin/resources")
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),

@@ -445,8 +445,8 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
 if(identical(LAUNCHADMINMODE, TRUE)){
-  source("./admin/server.R", local = TRUE)
-  source("./admin/ui.R", local = TRUE)
+  source("./tools/admin/server.R", local = TRUE)
+  source("./tools/admin/ui.R", local = TRUE)
   shinyApp(ui = ui_admin, server = server_admin)
 }else if(!is.null(errMsg)){
   ui_initError <- fluidPage(
