@@ -3399,8 +3399,10 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            if(typeof jsonObject[key] === 'object' && jsonObject[key] !== null && !$.isEmptyObject(jsonObject[key])){
                              removeDefaults(jsonObject[key], alpacaObject.childrenByPropertyId[key]);
                            }
-                           if($.isEmptyObject(jsonObject[key]) || (Array.isArray(jsonObject[key]) && !jsonObject[key].length) || jsonObject[key] === alpacaObject.childrenByPropertyId[key].schema.default){
-                             delete jsonObject[key];
+                           if(($.isEmptyObject(jsonObject[key]) && typeof jsonObject[key] === 'object')  ||
+                               (Array.isArray(jsonObject[key]) && !jsonObject[key].length) || 
+                               jsonObject[key] === alpacaObject.childrenByPropertyId[key].schema.default){
+                                 delete jsonObject[key];
                            }
                          }
                        }
