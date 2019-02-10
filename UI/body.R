@@ -32,26 +32,20 @@ tabItemList <- list(
                             <i class="fa fa-times"></i></button>'))
                        )
             ), status="primary", solidHeader = TRUE, width = 12L,
+            tags$div(class="scen-header",
+                     tags$div(class = "out-buttons-wrapper",
+                              tagAppendAttributes(
+                                actionButton(inputId = "btGraphIn", 
+                                             icon = icon("table"), label = NULL,
+                                             class="scen-button"), disabled = ""
+                              )
+                     )
+            ),
             do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
               i <- inputTabs[[tabId]][1]
               tabPanel(
                 title=inputTabTitles[tabId],
                 value = paste0("inputTabset_", tabId),
-                tags$div(class="small-space"),
-                tags$div(class = "in-data-header",
-                         tags$div(class = "in-buttons-wrapper",
-                                  if(length(inputTabs[[tabId]]) == 1){
-                                    if(!is.null(configGraphsIn[[i]])){
-                                      tags$div(title = lang$nav$scen$tooltips$btGraphView, class = "scen-button-tt",
-                                               tagAppendAttributes(
-                                                 actionButton(inputId = "btGraphIn" %+% i, icon = icon("bar-chart"), label = NULL,
-                                                              class="scen-button"), disabled = ""
-                                               )
-                                      )
-                                    }
-                                  }
-                         )
-                ),
                 tags$div(class="small-space"),
                 lapply(inputTabs[[tabId]], function(i){
                   hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
@@ -407,7 +401,7 @@ if(config$activateModules$hcubeMode){
               box(title = list(
                 tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
                          icon("exclamation-triangle")),
-                textOutput("outputDataTitle", inline = T),
+                textOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon" 
                                    onclick="confirmModalShow(\'', 

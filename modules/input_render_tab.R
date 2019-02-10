@@ -36,36 +36,45 @@ getInputDataset <- function(id){
   }
   return(inputData)
 }
-
+observeEvent(input$inputTabset, {
+  i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])
+  if(is.null(configGraphsIn[[i]]) || isEmptyInput[i]){
+    disableEl(session, "#btGraphIn")
+  }else{
+    enableEl(session, "#btGraphIn")
+  }
+})
+observeEvent(input$btGraphIn, {
+  i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])
+  if(is.null(configGraphsIn[[i]])){
+    return()
+  }else if(identical(modelIn[[i]]$type, "hot")){
+    data <- hot_to_r(input[["in_" %+% i]])
+  }else if(identical(modelIn[[i]]$type, "dt")){
+    data <- tableContent[[i]]
+  }
+  toggleEl(session, "#graph-in_" %+% i)
+  toggleEl(session, "#data-in_" %+% i)
+  errMsg <- NULL
+  tryCatch({
+    callModule(renderData, "in_" %+% i, 
+               type = configGraphsIn[[i]]$outType, 
+               data = data,
+               dtOptions = config$datatable, 
+               graphOptions = configGraphsIn[[i]]$graph, 
+               pivotOptions = configGraphsIn[[i]]$pivottable, 
+               customOptions = configGraphsIn[[i]]$options,
+               roundPrecision = roundPrecision, modelDir = modelDir)
+  }, error = function(e) {
+    flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
+               modelInAlias[i], e)
+    errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+  })
+  showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+})
 lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
-  
-  observeEvent(input[["btGraphIn" %+% i]], {
-    if(identical(modelIn[[i]]$type, "hot")){
-      data <- hot_to_r(input[["in_" %+% i]])
-    }else{
-      data <- tableContent[[i]]
-    }
-    toggleEl(session, "#graph-in_" %+% i)
-    toggleEl(session, "#data-in_" %+% i)
-    errMsg <- NULL
-    tryCatch({
-      callModule(renderData, "in_" %+% i, 
-                 type = configGraphsIn[[i]]$outType, 
-                 data = data,
-                 dtOptions = config$datatable, 
-                 graphOptions = configGraphsIn[[i]]$graph, 
-                 pivotOptions = configGraphsIn[[i]]$pivottable, 
-                 customOptions = configGraphsIn[[i]]$options,
-                 roundPrecision = roundPrecision, modelDir = modelDir)
-    }, error = function(e) {
-      flog.error("Problems rendering output charts and/or tables for dataset: '%s'. Error message: %s.", 
-                 modelInAlias[i], e)
-      errMsg <<- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-    })
-    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-  })
   
   switch(modelIn[[i]]$type,
          hot = {
@@ -104,10 +113,10 @@ lapply(modelInTabularData, function(sheet){
                modelInputData[[i]] <<- anti_join(modelInputData[[i]], data, by = idsIn[[i]])
                if(!nrow(data)){
                  data[1, ] <- ""
-                 disableEl(session, paste0("#btGraphIn", i))
+                 disableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enableEl(session, paste0("#btGraphIn", i))
+                 enableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- FALSE
                }
                return(data)
@@ -118,10 +127,10 @@ lapply(modelInTabularData, function(sheet){
                hotInit[[i]] <<- TRUE
                if(!nrow(modelInputData[[i]])){
                  modelInputData[[i]][1, ] <<- ""
-                 disableEl(session, paste0("#btGraphIn", i))
+                 disableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enableEl(session, paste0("#btGraphIn", i))
+                 enableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- FALSE
                }
                return(modelInputData[[i]])
@@ -202,10 +211,10 @@ lapply(modelInTabularData, function(sheet){
                                                  data, by = idsIn[[i]])
                if(!nrow(data)){
                  # disable graph button as no data was loaded
-                 disableEl(session, "#btGraphIn" %+% i)
+                 disableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enableEl(session, "#btGraphIn" %+% i)
+                 enableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- data
@@ -216,10 +225,10 @@ lapply(modelInTabularData, function(sheet){
                rv[["in_" %+% i]]
                if(!nrow(modelInputData[[i]])){
                  # disable graph button as no data was loaded
-                 disableEl(session, "#btGraphIn" %+% i)
+                 disableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- TRUE
                }else{
-                 enableEl(session, "#btGraphIn" %+% i)
+                 enableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- FALSE
                }
                tableContent[[i]] <<- modelInputData[[i]]
