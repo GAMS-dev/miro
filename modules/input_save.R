@@ -75,6 +75,21 @@ lapply(seq_along(modelIn), function(i){
              # double slider (two values)
              scalar      <- paste0(tolower(names(modelIn))[[i]], c("_lo", "_up"))
              description <- paste0(modelInAlias[i], c(" (min)", " (max)"))
+             if(identical(modelIn[[i]]$slider$double, TRUE)){
+               scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
+                                                c("_step", "_mode")))
+               description <- c(description, paste0(modelInAlias[i], 
+                                                    c(" (step size)", " (mode)")))
+               value       <- c(value, isolate(input[["hcubeStep_" %+% i]]),
+                                isolate(input[["hcubeMode_" %+% i]]))
+             }
+             if(identical(modelIn[[i]]$slider$single, TRUE)){
+               scalar      <- c(scalar, paste0(tolower(names(modelIn))[[i]], 
+                                                "_step"))
+               description <- c(description, paste0(modelInAlias[i], 
+                                                    " (step size)"))
+               value       <- c(value, isolate(input[["hcubeStep_" %+% i]]))
+             }
            }else{
              # standard slider (one value)
              scalar      <- names(modelIn)[[i]]

@@ -537,6 +537,20 @@ lapply(seq_along(modelIn), function(id){
                  updateSliderInput(session, inputId = paste0("slider_", id), value = value)
                }
              }, priority = -1)
+             if(identical(modelIn[[id]]$slider$single, TRUE) || 
+                identical(modelIn[[id]]$slider$double, TRUE)){
+               observe({
+                 rv[["in_" %+% id]]
+                 if(length(modelInputDataHcube[[id]])){
+                   updateNumericInput(session, "hcubeStep_" %+% id, 
+                                      value = modelInputDataHcube[[id]][1])
+                 }
+                 if(length(modelInputDataHcube[[id]]) > 1L){
+                   updateCheckboxInput(session, "hcubeMode_" %+% id, 
+                                       value = modelInputDataHcube[[id]][2])
+                 }
+               }, priority = -1)
+             }
            }
          }
   )
