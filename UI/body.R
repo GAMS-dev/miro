@@ -1,4 +1,23 @@
 ## UI body
+genSplitCompButtons <- function(id){
+  if(config$activateModules$hcubeMode){
+    tags$div(id = paste0("scenSplit", id, "_open"),
+             actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+                          class = "scenSplit-button-load", style = "font-size: 20pt;")
+             )
+  }else{
+    tags$div(id = paste0("scenSplit", id, "_open"), class = "split-open",
+             tags$div(class = "split-open-cell",
+                      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+                                   class = "scenSplit-button-load")
+             ),
+             tags$div(class = "split-open-cell",
+                      HTML(paste0('<button class="btn btn-default action-button scenSplit-button-load" 
+type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1, 
+                                  ', {priority: \'event\'})">', 
+                                  lang$nav$scen$split$loadActive, '</button>'))))
+  }
+}
 getHypercubeJobsTableSkeleton <- function(id = NULL, content = NULL){
   tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
@@ -256,18 +275,17 @@ tabItemList <- list(
                                                          label = NULL))), 
                          tags$div(id = "scenSplit1_content", style = "display:none;", 
                                   generateScenarioTabsetSplit(2)), 
-                         tags$div(id = "scenSplit1_open", 
-                                  actionButton("btScenSplit1_open", lang$nav$scen$split$load, 
-                                               class = "scenSplit-button-load"))),
+                         genSplitCompButtons(1)
+                         ),
                      box(width = 6, solidHeader = TRUE, status="primary", 
                          title = tagList(textOutput("title_3", inline = T), 
                                          tags$div(style = "float: right;", 
                                                   actionButton(inputId = "btScenSplit2_close", 
                                                                class = "bt-icon", icon = icon("times"), label = NULL))),
-                         tags$div(id = "scenSplit2_content", style = "display:none;", generateScenarioTabsetSplit(3)), 
-                         tags$div(id = "scenSplit2_open", 
-                                  actionButton("btScenSplit2_open", lang$nav$scen$split$load, 
-                                               class = "scenSplit-button-load")))
+                         tags$div(id = "scenSplit2_content", style = "display:none;", 
+                                  generateScenarioTabsetSplit(3)), 
+                         genSplitCompButtons(2)
+                     )
             )
           )
   )

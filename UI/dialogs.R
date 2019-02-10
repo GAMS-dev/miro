@@ -336,8 +336,6 @@ showLoadScenDialog <- function(dbScenList, uiScenList, isInSplitView, noDBPanel 
     )
   }
   if(!noDBPanel && length(dbScenList)){
-    print(uiScenList)
-    print(dbScenList)
     tabPanelDB <- tabPanel(lang$nav$dialogLoadScen$tabDB, icon = icon("database"),
                            value = "loadScenDb",
                            tags$div(class = "space"),

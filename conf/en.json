@@ -76,7 +76,8 @@
         "outputSheet":"model output"
       },
       "split":{
-        "load":"Load scenario"
+        "load":"Load scenario",
+        "loadActive": "Load active"
       }
     },
     "hcubeImport":{

@@ -76,7 +76,8 @@
         "outputSheet":"Ausgabedaten"
       },
       "split":{
-        "load":"Szenario öffnen"
+        "load":"Szenario öffnen",
+        "loadActive": "Aktives öffnen"
       }
     },
     "hcubeImport":{
