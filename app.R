@@ -748,6 +748,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                }, 
                slider = {
                  input[["slider_" %+% i]]
+                 input[["hcubeStep_" %+% i]]
+                 input[["hcubeMode_" %+% i]]
                },
                textinput ={
                  input[["text_" %+% i]]

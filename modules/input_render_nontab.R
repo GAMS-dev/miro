@@ -71,8 +71,11 @@ lapply(seq_along(modelIn), function(id){
              })
              
              observe({
-               noCheck[id] <<- TRUE
-               updateCheckboxInput(session, "cb_" %+% id, value = getSelected[[id]]())
+               value <- getSelected[[id]]()
+               if(!is.null(value) && !identical(value, isolate(input[["cb_" %+% id]]))){
+                 noCheck[id] <<- TRUE
+                 updateCheckboxInput(session, "cb_" %+% id, value = value)
+               }
              })
            }else{
              # has dependency
@@ -151,12 +154,15 @@ lapply(seq_along(modelIn), function(id){
                }else{
                  selected <- isolate(input[["cb_" %+% id]])
                }
-               noCheck[id] <<- TRUE
-               updateCheckboxInput(session, "cb_" %+% id, value = selected)
-               if(value <= 0.5){
-                 disableEl(session, "#cb_" %+% id)
-               }else{
-                 enableEl(session, "#cb_" %+% id)
+               if(!is.null(selected) && !identical(selected, isolate(input[["cb_" %+% id]]))){
+                 noCheck[id] <<- TRUE
+                 updateCheckboxInput(session, "cb_" %+% id, value = selected)
+                 
+                 if(value <= 0.5){
+                   disableEl(session, "#cb_" %+% id)
+                 }else{
+                   enableEl(session, "#cb_" %+% id)
+                 }
                }
              })
            }
@@ -175,8 +181,11 @@ lapply(seq_along(modelIn), function(id){
              }
            })
            observe({
-             noCheck[id] <<- TRUE
-             updateTextInput(session, "text_" %+% id, value = getSelected[[id]]())
+             value <- getSelected[[id]]()
+             if(!is.null(value) && !identical(value, isolate(input[["text_" %+% id]]))){
+               noCheck[id] <<- TRUE
+               updateTextInput(session, "text_" %+% id, value = value)
+             }
            })
          },
          date = {
@@ -194,8 +203,11 @@ lapply(seq_along(modelIn), function(id){
            })
            # TODO: support dependency
            observe({
-             noCheck[id] <<- TRUE
-             updateDateInput(session, "date_" %+% id, value = getSelected[[id]]())
+             value <- getSelected[[id]]()
+             if(!is.null(value) && !identical(value, isolate(input[["date_" %+% id]]))){
+               noCheck[id] <<- TRUE
+               updateDateInput(session, "date_" %+% id, value = value)
+             }
            })
          },
          daterange = {
@@ -214,9 +226,13 @@ lapply(seq_along(modelIn), function(id){
            # TODO: support dependency
            
            observe({
-             noCheck[id] <<- TRUE
-             updateDateRangeInput(session, "daterange_" %+% id, 
-                                         start = getSelected[[id]]()[[1]], end = getSelected[[id]]()[[2]])
+             value <- getSelected[[id]]()
+             if(!is.null(value) && !identical(value, isolate(input[["daterange_" %+% id]]))){
+               noCheck[id] <<- TRUE
+               updateDateRangeInput(session, "daterange_" %+% id, 
+                                    start = value[[1]], 
+                                    end = value[[2]])
+             }
            })
          },
          dropdown = {
@@ -238,8 +254,11 @@ lapply(seq_along(modelIn), function(id){
              
              # observe changes of dropdown menu data
              observe({
-               noCheck[id] <<- TRUE
-               updateSelectInput(session, "dropdown_" %+% id, selected = getSelected[[id]]())
+               value <- getSelected[[id]]()
+               if(!is.null(value) && !identical(value, isolate(input[["dropdown_" %+% id]]))){
+                 noCheck[id] <<- TRUE
+                 updateSelectInput(session, "dropdown_" %+% id, selected = value)
+               }
              })
            }else{
              # has dependencies on other datasets
@@ -360,9 +379,11 @@ lapply(seq_along(modelIn), function(id){
                       (length(selectedEl) && !selectedEl %in% choices)){
                      selectedEl <- choices[[1]]
                    }
-                   noCheck[id] <<- TRUE
+                   if(!identical(selectedEl, isolate(input[["dropdown_" %+% id]]))){
+                     noCheck[id] <<- TRUE
+                   }
                    updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
-                                            selected = selectedEl)
+                                              selected = selectedEl)
                    inputInitialized[i] <<- TRUE
                    showEl(session, paste0("#dropdown_", id))
                    hideEl(session, paste0("#no_data_dep_", id))
@@ -375,16 +396,17 @@ lapply(seq_along(modelIn), function(id){
                    }
                  }
                }else{
-                 noCheck[id] <<- TRUE
                  updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
                                           selected = isolate(input[[paste0("dropdown_", id)]]))
                }
              })
              # observe changes of dropdown default value
              observe({
-               noCheck[id] <<- TRUE
-               # update default
-               updateSelectInput(session, paste0("dropdown_", id), selected = getSelected[[id]]())
+               value <- getSelected[[id]]()
+               if(!is.null(value) && !identical(value, isolate(input[["dropdown_" %+% id]]))){
+                 noCheck[id] <<- TRUE
+                 updateSelectInput(session, paste0("dropdown_", id), selected = value)
+               }
              }, priority = -1)
            }
          },
@@ -411,9 +433,8 @@ lapply(seq_along(modelIn), function(id){
              # does not have any dependencies on other datasets
              # observe changes of slider data
              observe({
-               # update slider with default value
                value <- getSelected[[id]]()
-               if(!is.null(value)){
+               if(!is.null(value) && !identical(value, isolate(input[["slider_" %+% id]]))){
                  noCheck[id] <<- TRUE
                  updateSliderInput(session, paste0("slider_", id), value = value)
                }
@@ -512,7 +533,9 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               noCheck[id] <<- TRUE
+               if(!is.null(value) && !identical(value, isolate(input[["slider_" %+% id]]))){
+                 noCheck[id] <<- TRUE
+               }
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){
@@ -532,7 +555,7 @@ lapply(seq_along(modelIn), function(id){
              # update slider default value
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value)){
+               if(!is.null(value) && !identical(value, isolate(input[[paste0("slider_", id)]]))){
                  noCheck[id] <<- TRUE
                  updateSliderInput(session, inputId = paste0("slider_", id), value = value)
                }
@@ -541,13 +564,17 @@ lapply(seq_along(modelIn), function(id){
                 identical(modelIn[[id]]$slider$double, TRUE)){
                observe({
                  rv[["in_" %+% id]]
-                 if(length(modelInputDataHcube[[id]])){
+                 value <- modelInputDataHcube[[id]]
+                 if(length(value) && !identical(value[1], isolate(input[[paste0("hcubeStep_", id)]]))){
+                   noCheck[id] <<- TRUE
                    updateNumericInput(session, "hcubeStep_" %+% id, 
-                                      value = modelInputDataHcube[[id]][1])
+                                      value = value[1])
                  }
-                 if(length(modelInputDataHcube[[id]]) > 1L){
+                 if(length(value) > 1 && !identical(value[2], 
+                                                    isolate(input[[paste0("hcubeMode_", id)]]))){
+                   noCheck[id] <<- TRUE
                    updateCheckboxInput(session, "hcubeMode_" %+% id, 
-                                       value = modelInputDataHcube[[id]][2])
+                                       value = value[2])
                  }
                }, priority = -1)
              }
