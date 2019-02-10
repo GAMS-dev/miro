@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.3.7"
-MIRORDate   <- "Feb 4 2019"
+MIROVersion <- "0.3.8"
+MIRORDate   <- "Feb 9 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -487,8 +487,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
-  rm(LAUNCHADMINMODE)
-  rm(installedPackages)
+  rm(LAUNCHADMINMODE, installedPackages)
   if(developMode){
     save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
@@ -513,6 +512,9 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
     btSortTime         <- TRUE
+    btSortNameDescBase <- FALSE
+    btSortTimeDescBase <- TRUE
+    btSortTimeBase     <- TRUE
     # boolean that specifies whether output data should be saved
     saveOutput         <- TRUE
     # count number of open scenario tabs
@@ -556,10 +558,13 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
       scenMetaDb       <- NULL
+      scenMetaDbBase   <- NULL
+      scenMetaDbBaseList <- NULL
       # temporary name and sid of the scenario currently active in the UI
       activeSnameTmp   <- NULL
       scenTags         <- NULL
       scenMetaDbSubset <- NULL
+      scenMetaDbBaseSubset <- NULL
       # save the scenario ids loaded in UI
       scenCounterMultiComp <- 4L
       sidsInComp       <- vector("integer", length = maxNumberScenarios + 1)
@@ -692,7 +697,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
     # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
     previousInputData <- vector(mode = "list", length = length(modelIn))
-    noDataChanges     <- vector(mode = "logical", length = length(modelIn))
+    # vector that specifies whether dataset is modified by user
+    datasetsModified <- vector(mode = "logical", length = length(modelIn))
     # initialize model input data
     modelInputData <- modelInTemplate
     # initialise list of reactive expressions returning data for model input
@@ -762,6 +768,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           noCheck[i] <<- FALSE
           return()
         }
+        datasetsModified[i] <<- TRUE
         if(isolate(rv$unsavedFlag)){
           return()
         }
@@ -811,7 +818,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     observe({
       datasetsImported <- vapply(names(modelInMustImport), function(el){
         i <- match(el, names(modelIn))[[1]]
-        if(length(rv[["in_" %+% i]])){
+        if(length(rv[["in_" %+% i]]) || datasetsModified[i]){
           return(TRUE)
         }else{
           return(FALSE)

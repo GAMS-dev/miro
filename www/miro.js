@@ -82,17 +82,10 @@ function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall
   cModal.find('.modal-footer').html(btData);
   cModal.modal('show');
 }
-
-let removeButtonCounter = {};
   
 function removeAttachment(elId){
   $('#btRemoveAttachment_' + elId).parent().parent().remove();
-  if(typeof(removeButtonCounter[elId]) == 'undefined'){
-    removeButtonCounter[elId] = 0;
-  }else{
-    removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
-  }
-  Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
+  Shiny.setInputValue("btRemoveAttachment_" + elId, 1, {priority: "event"});
 }
 
 function showHypercubeLog(jID){

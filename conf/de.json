@@ -138,11 +138,41 @@
       "cancelButton":"Abbrechen",
       "okButton":"Ok"
     },
+    "dialogNewHCJob":{  
+      "title":"Neue Hypercube-Job-Konfiguration",
+      "desc":"Bitte wählen Sie einen Namen für die Hypercube-Job-Konfiguration:",
+      "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
+      "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
+      "newScenName":"Neue HC-Job-Konfiguration",
+      "scenExits":"Der von Ihnen gewählte HC-Job-Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "btNewName":"Anderen Namen wählen",
+      "btOverwrite":"Überschreiben",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ok"
+    },
     "dialogEditMeta":{
       "title":"Metadaten bearbeiten",
       "newName": "New name",
       "newTags":"Neue Tags",
       "scenExits":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
+      "attachmentsLabel": "Anhänge",
+      "attachmentsAdd": "Anhänge hinzufügen",
+      "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
+      "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
+      "attachMaxSizeError": "Die maximale Anhanggröße von %s Byte wurde überschritten.",
+      "attachMaxNoError":"Die maximale Anzahl an Anhängen wurde erreicht. Bevor neue Anhänge hochgeladen werden können, müssen zunächst alte Anhänge gelöscht werden.",
+      "attachDuplicateError": "Ein Anhang mit diesem Namen existiert bereits. Bitte wählen Sie einen anderen Namen und versuchen es anschließend erneut.",
+      "attachForbiddenFnameError": "Ein Anhang, den Sie hochladen möchten, verwendet einen verbotenen Dateinamen. Bitte wählen Sie einen anderen Dateinamen und versuchen Sie es erneut.",
+      "success": "Metadaten wurden erfolgreich aktualisiert.",
+      "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
+      "cancelButton":"Schließen",
+      "okButton":"Metadaten aktualisieren"
+    },
+    "dialogEditMetaHC":{
+      "title":"Metadaten bearbeiten",
+      "newName": "New name",
+      "newTags":"Neue Tags",
+      "scenExits":"Es existiert bereits eine Hypercube-Job-Konfiguration mit dem von Ihnen gewählten Namen.",
       "attachmentsLabel": "Anhänge",
       "attachmentsAdd": "Anhänge hinzufügen",
       "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
@@ -168,9 +198,27 @@
         "okButton":"Szenario schließen"
       }
     },
+    "dialogDeleteHCJob":{  
+      "title":"Hypercube-Job löschen",
+      "desc":"Sind Sie sicher, dass Sie die ausgewählte Hypercube-Job-Konfiguration löschen möchten?",
+      "cancelButton":"Abbrechen",
+      "okButton":"Ja",
+      "removeFromUI":{  
+        "title":"Hypercube-Job aus Editor entfernen",
+        "desc":"Möchten Sie die Hypercube-Job-Konfiguration aus dem Editor entfernen? Ungespeicherte Daten gehen dadurch verloren!",
+        "cancelButton": "Abbrechen",
+        "okButton":"Szenario schließen"
+      }
+    },
     "dialogRemoveScen":{  
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogRemoveHCJob":{  
+      "title":"Hypercube-Job schließen",
+      "desc":"Sind Sie sicher, dass Sie die aktive Hypercube-Job-Konfiguration schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -206,6 +254,24 @@
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
       "scenNameExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
+      "okButton":"Importieren",
+      "cancelButton":"Abbrechen",
+      "overwriteButton": "Existierende Daten überschreiben",
+      "newNameButton": "Neuer Name"
+    },
+    "dialogImportHC":{  
+      "title":"Daten importieren",
+      "tabLocal":"Lokal",
+      "tabDatabase":"Hypercube",
+      "tabBase": "Basismodus",
+      "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "descLocal":"Wählen Sie eine Datei mit Daten aus",
+      "newScenName": "Wählen Sie einen Namen für die neue Hypercube-Job-Konfiguration.",
+      "badScenName": "Bitte wählen Sie einen gültigen Namen",
+      "scenNameExists":"Der von Ihnen gewählte Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
@@ -259,8 +325,14 @@
       "desc":"Das Szenario, welches Sie laden möchten, wird derzeit vom Benutzer: '%s' bearbeitet. Bitte versuchen Sie es später erneut."
     },
     "dialogReadonly":{
-      "title": "No write permissions",
+      "title": "Keine Schreibberechtigung",
       "desc": "Sie habe keine Schreibrechte für dieses Szenario. Möchten Sie es stattdessen als neues Szenario speichern?",
+      "okButton": "Speichern als",
+      "cancelButton": "Abbrechen"
+    },
+    "dialogReadonlyHC":{
+      "title": "Keine Schreibberechtigung",
+      "desc": "Sie habe keine Schreibrechte für diese Hypercube-Job-Konfiguration. Möchten Sie sie stattdessen als neue Konfiguration speichern?",
       "okButton": "Speichern als",
       "cancelButton": "Abbrechen"
     },
@@ -308,8 +380,8 @@
         "selectMethod": "Welche Methode möchten Sie anwenden, um Ihre Szenarien zu vergleichen?",
         "maxScenWarning1": "Sie können nur bis zu: '%d' gleichzeitig für den Vergleich im interaktiven Modus laden.", 
         "maxScenWarning2": " Wählen Sie weniger Szenarien aus oder verwenden Sie das Paver Modul zum Vergleich.",
-        "cancelButton": "Abbruch",
-        "paverButton": "Paver",
+        "cancelButton": "Abbrechen",
+        "paverButton": "Analysieren",
         "desc":"Bitte wählen Sie die Attribute, welche Sie vergleichen möchten.",
         "delTrace":"Hinweis: Die vorhandenen Trace-Dateien im aktuellen Arbeitsverzeichnis werden beim Start von Paver gelöscht.",
         "tooManySolvers":"Die von Ihnen gewählten Attribute ergeben zu viele zu vergleichende Szenarien (maximal: %s Szenarien können verglichen werden). Bitte reduzieren Sie die Anzahl an Szenarien.",
@@ -319,7 +391,7 @@
         "selAttribs":"Attribute:",
         "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
         "runButton": "Paver starten",
-        "interactiveButton":"Interaktiver Modus",
+        "interactiveButton":"Vergleichen",
         "downloadButton":"Daten herunterladen",
         "removeButton": "Szenarien löschen"
       },

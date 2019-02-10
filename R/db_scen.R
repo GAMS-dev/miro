@@ -517,7 +517,7 @@ Scenario <- R6Class("Scenario",
                           metadata     <- self$importDataset(private$tableNameMetadata, 
                                                              subsetSids = sid, innerSepAND = FALSE)
                           if(!nrow(metadata)){
-                            stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the user tampering with the app!", 
+                            stop(sprintf("A scenario with ID: '%s' could not be found. This could be due to the scenario being deleted in the meantime or due to the user tampering with the app!", 
                                          sid), call. = FALSE)
                           }
                           
