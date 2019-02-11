@@ -300,14 +300,14 @@ select {
 }
 
 /* ====== Header ====== */
-.header {
+.sub-header {
   background: #494d55;
   color: rgba(255, 255, 255, 0.85);
   border-top: 5px solid #f90;
   padding: 30px 0;
 }
 
-.header a {
+.sub-header a {
   color: #fff;
 }
 
@@ -747,7 +747,7 @@ select {
 
 /* Color Schemes */
 
-.body-blue .header {
+.body-blue .sub-header {
   border-color: #494d55;
 }
 
@@ -759,7 +759,7 @@ select {
   color: #494d55;
 }
 
-.body-orange .header {
+.body-orange .sub-header {
   border-color: #f90;
 }
 
@@ -1035,13 +1035,13 @@ select {
 }
 
 /* ======= Landing Page ======= */
-.landing-page .header {
+.landing-page .sub-header {
   background: #494d55;
   color: rgba(255, 255, 255, 0.85);
   padding: 60px 0;
 }
 
-.landing-page .header a {
+.landing-page .sub-header a {
   color: #fff;
 }
 
