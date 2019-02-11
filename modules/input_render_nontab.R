@@ -72,7 +72,8 @@ lapply(seq_along(modelIn), function(id){
              
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, isolate(input[["cb_" %+% id]]))){
+               if(!is.null(value) && !identical(suppressWarnings(as.logical(value)), 
+                                                isolate(input[["cb_" %+% id]]))){
                  noCheck[id] <<- TRUE
                  updateCheckboxInput(session, "cb_" %+% id, value = value)
                }
@@ -154,7 +155,8 @@ lapply(seq_along(modelIn), function(id){
                }else{
                  selected <- isolate(input[["cb_" %+% id]])
                }
-               if(!is.null(selected) && !identical(selected, isolate(input[["cb_" %+% id]]))){
+               if(!is.null(selected) && !identical(suppressWarnings(as.logical(selected)), 
+                                                   isolate(input[["cb_" %+% id]]))){
                  noCheck[id] <<- TRUE
                  updateCheckboxInput(session, "cb_" %+% id, value = selected)
                  
