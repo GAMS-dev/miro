@@ -8,7 +8,7 @@
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import results",
-        "load": "Load results",
+        "load": "Load scenarios",
         "analyze" : "Analyze scenarios"
       }
     },
@@ -81,12 +81,12 @@
       }
     },
     "hcubeImport":{
-      "title":"Import data",
+      "title":"Import jobs",
       "btManualImport": "Manual import",
       "btShowHistory": "Show history"
     },
     "hcubeLoad":{
-      "title":"Load Scenarios",
+      "title":"Load scenarios",
       "noData":"No data was returned by your query",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",

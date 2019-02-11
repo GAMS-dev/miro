@@ -8,7 +8,7 @@
       "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
         "import": "Ergebnisse importieren",
-        "load": "Ergebnisse laden",
+        "load": "Szenarien laden",
         "analyze": "Szenarienanalyse"
       }
     },
@@ -81,7 +81,7 @@
       }
     },
     "hcubeImport":{
-      "title":"Importiere Daten",
+      "title":"Importiere Jobs",
       "btManualImport": "Manueller Import",
       "btShowHistory": "Verlauf anzeigen"
     },
