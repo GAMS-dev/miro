@@ -299,13 +299,18 @@ observeEvent(input$btShowHash, {
   noErr <- TRUE
   tryCatch(
     hashValue <- db$importDataset(db$getDbSchema()$tabName[['_scenMeta']], colNames = snameIdentifier, 
-                                  tibble(sidIdentifier, rv$fetchedScenarios[[1]][selectedRows]))[[1]]
+                                  tibble(scodeIdentifier, 1, ">="),
+                                  subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
   , error = function(e){
     flog.error("Problems fetching hash value from database. Error message: '%s'.", e)
     showHideEl(session, "#showHashError", 4000L)
     noErr <<- FALSE
   })
   if(!noErr){
+    return()
+  }
+  if(!length(hashValue)){
+    showHideEl(session, "#showNoHashError", 4000L)
     return()
   }
   showHashDialog(hashValue)

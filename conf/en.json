@@ -90,6 +90,7 @@
       "noData":"No data was returned by your query",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
+      "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube mode.",
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",

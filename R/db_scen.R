@@ -93,6 +93,7 @@ Scenario <- R6Class("Scenario",
                       getScenUid  = function() private$suid,
                       getScenName = function() private$sname,
                       getScenTime = function() private$stime,
+                      isFromOtherMode = function() private$dataFromOtherMode,
                       getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata
                         #
@@ -494,6 +495,8 @@ Scenario <- R6Class("Scenario",
                       scode               = integer(1L),
                       scenSaved           = logical(1L),
                       newScen             = logical(1L),
+                      traceData           = tibble(),
+                      dataFromOtherMode   = logical(1L),
                       fetchMetadata       = function(sid = NULL, sname = NULL, uid = NULL){
                         # fetches scenario metadata from database
                         #
@@ -527,6 +530,12 @@ Scenario <- R6Class("Scenario",
                             private$suid      <- private$uid
                             private$stime     <- Sys.time()
                             private$tags      <- metadata[[private$scenMetaColnames['stag']]][1]
+                            private$dataFromOtherMode <- TRUE
+                            traceData         <- super$importDataset(private$dbSchema$tabName[["_scenTrc"]],
+                                                                     subsetSids = sid, limit = 1L)
+                            if(length(traceData) && nrow(traceData)){
+                              private$traceData <- traceData[-1]
+                            }
                             private$writeMetadata()
                           }else{
                             private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
@@ -556,6 +565,10 @@ Scenario <- R6Class("Scenario",
                           private$sname     <- sname
                           private$stime     <- Sys.time()
                           private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode][1])
+                          if(length(private$traceData) && nrow(private$traceData)){
+                            self$saveTraceData(private$traceData)
+                            private$traceData <- tibble()
+                          }
                         }
                         
                         invisible(self)

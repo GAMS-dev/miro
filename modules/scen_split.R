@@ -53,6 +53,9 @@ observeEvent(input$loadActiveScenSplitComp, {
   updateTabsetPanel(session, "contentScen_" %+% id, paste0("contentScen_", id, "_1"))
   
   sidsToLoad <<- list(activeScen$getSid())
+  if(!length(scenMetaDb) || !sidsToLoad[[1]] %in% scenMetaDb[[1]]){
+    scenMetaDb <<- db$fetchScenList(scode = 0L)
+  }
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
 

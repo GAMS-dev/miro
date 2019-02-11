@@ -11,7 +11,6 @@ closeScenario <- function(){
   # reset input data sheets
   modelInputData     <<- modelInTemplate
   tableContent       <<- vector(mode = "list", length = length(modelIn))
-  modelInputData     <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
   datasetsModified[] <<- FALSE
   lapply(seq_along(modelIn), function(i){
@@ -65,6 +64,11 @@ closeScenario <- function(){
   unlink(list.files(workDir, recursive = TRUE))
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())
+  # reset input data
+  lapply(seq_along(modelIn), function(i){
+    hideEl(session, "#graph-in_" %+% i)
+    showEl(session, "#data-in_" %+% i)
+  })
   # reset model output data
   renderOutputData()
   activeScenario    <<- NULL

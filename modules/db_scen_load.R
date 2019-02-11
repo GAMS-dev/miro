@@ -351,7 +351,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     
     # update scenario name
     rv$activeSname  <<- activeScen$getScenName()
-    
+    if(activeScen$isFromOtherMode())
+      rv$unsavedFlag  <<- TRUE
     # function ends here in case not in compare mode!
     return()
   }
@@ -466,7 +467,7 @@ observeEvent(input$hcHashLookup, {
     matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
                                     colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
                                     tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
-                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), c(hashVal, 0L), c("=", ">=")))
+                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), c(hashVal, 1L), c("=", ">=")))
   }, error = function(e){
     flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
     showHideEl(session, "#importScenError")
