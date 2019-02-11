@@ -40,7 +40,8 @@
               "lp",
               "mip",
               "minlp"
-          ]
+          ],
+          "selected": "lp"
        }
     },
     "dataRendering"      : {
@@ -55,9 +56,6 @@
         "scalars_out"   : {
             "outType"			: "valueBox",
             "options"  :{
-                "icon":{
-                    "name" : "list"
-                },
                 "color":"aqua"
             }
         }
