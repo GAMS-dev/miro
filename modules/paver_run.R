@@ -83,7 +83,7 @@ observeEvent(input$btPaver, {
   addResourcePath("paver", paverDir)
   
   removeModal()
-  if(!is.null(paver$get_exit_status())){
+  if(is.null(paver) || !is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")
     if(gmswebiter > 0){
       removeTab("tabs_paver_results", "stat_Status")
