@@ -567,7 +567,6 @@ lapply(seq_along(modelIn), function(id){
              observe({
                rv[["in_" %+% id]]
                value <- modelInputDataHcube[[id]]
-               print(value)
                if(length(value) && !identical(value[1], as.numeric(isolate(input[[paste0("hcubeStep_", id)]])))){
                  noCheck[id] <<- TRUE
                  updateNumericInput(session, "hcubeStep_" %+% id, 

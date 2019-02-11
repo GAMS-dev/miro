@@ -524,7 +524,7 @@ observeEvent(input$btSolve, {
   tryCatch({
     gamsArgs <- c(paste0('idir1="', gmsFilePath(currentModelDir), '"'), if(config$includeParentDir)
       paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), paste0('curdir="', workDir, '"'),
-      "lo=3", "execMode=" %+% gamsExecMode, config$MIROSwitch)
+      "lo=3", "execMode=" %+% gamsExecMode, config$MIROSwitch, "LstTitleLeftAligned=1")
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
     }
@@ -591,7 +591,8 @@ observeEvent(input$btSolve, {
       return(logText)
     })
   }
-  
+  # reset listing file when new solve is started
+  output$listFile <- renderText("")
   # print model status
   output$modelStatus <- renderText({
     
