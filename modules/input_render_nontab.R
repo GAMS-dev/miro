@@ -434,7 +434,7 @@ lapply(seq_along(modelIn), function(id){
              # observe changes of slider data
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, isolate(input[["slider_" %+% id]]))){
+               if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
                  noCheck[id] <<- TRUE
                  updateSliderInput(session, paste0("slider_", id), value = value)
                }
@@ -533,7 +533,7 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               if(!is.null(value) && !identical(value, isolate(input[["slider_" %+% id]]))){
+               if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
                  noCheck[id] <<- TRUE
                }
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
@@ -555,29 +555,31 @@ lapply(seq_along(modelIn), function(id){
              # update slider default value
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, isolate(input[[paste0("slider_", id)]]))){
+               if(!is.null(value) && !identical(value, as.numeric(isolate(input[[paste0("slider_", id)]])))){
                  noCheck[id] <<- TRUE
                  updateSliderInput(session, inputId = paste0("slider_", id), value = value)
                }
              }, priority = -1)
-             if(identical(modelIn[[id]]$slider$single, TRUE) || 
-                identical(modelIn[[id]]$slider$double, TRUE)){
-               observe({
-                 rv[["in_" %+% id]]
-                 value <- modelInputDataHcube[[id]]
-                 if(length(value) && !identical(value[1], isolate(input[[paste0("hcubeStep_", id)]]))){
-                   noCheck[id] <<- TRUE
-                   updateNumericInput(session, "hcubeStep_" %+% id, 
-                                      value = value[1])
-                 }
-                 if(length(value) > 1 && !identical(value[2], 
-                                                    isolate(input[[paste0("hcubeMode_", id)]]))){
-                   noCheck[id] <<- TRUE
-                   updateCheckboxInput(session, "hcubeMode_" %+% id, 
-                                       value = value[2])
-                 }
-               }, priority = -1)
-             }
+             
+           }
+           if(identical(modelIn[[id]]$slider$single, TRUE) || 
+              identical(modelIn[[id]]$slider$double, TRUE)){
+             observe({
+               rv[["in_" %+% id]]
+               value <- modelInputDataHcube[[id]]
+               print(value)
+               if(length(value) && !identical(value[1], as.numeric(isolate(input[[paste0("hcubeStep_", id)]])))){
+                 noCheck[id] <<- TRUE
+                 updateNumericInput(session, "hcubeStep_" %+% id, 
+                                    value = value[1])
+               }
+               if(length(value) > 1 && !identical(value[2], 
+                                                  as.numeric(isolate(input[[paste0("hcubeMode_", id)]])))){
+                 noCheck[id] <<- TRUE
+                 updateCheckboxInput(session, "hcubeMode_" %+% id, 
+                                     value = value[2])
+               }
+             }, priority = -1)
            }
          }
   )
