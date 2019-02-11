@@ -412,6 +412,11 @@
               "minLength":1,
               "required":true
             },
+            "msgNoHashFound":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "chooseSelectedButton":{  
               "type":"string",
               "minLength":1,
