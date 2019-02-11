@@ -54,8 +54,8 @@ tabItemList <- list(
             tags$div(class="scen-header",
                      tags$div(class = "out-buttons-wrapper",
                               tagAppendAttributes(
-                                actionButton(inputId = "btGraphIn", 
-                                             icon = icon("table"), label = NULL,
+                                actionButton(inputId = "btGraphIn",
+                                             icon = icon("chart-line"), label = NULL,
                                              class="scen-button"), disabled = ""
                               )
                      )
@@ -435,7 +435,7 @@ if(config$activateModules$hcubeMode){
                        tags$div(class = "out-buttons-wrapper",
                                 actionButton("btDownloadTmpFiles", icon("folder-open"), 
                                              class="scen-button"),
-                                actionButton("outputTableView", icon("table"), 
+                                actionButton("outputTableView", icon("chart-line"), 
                                              class="scen-button")
                        )
               ),
