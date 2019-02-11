@@ -11,6 +11,7 @@ closeScenario <- function(){
   # reset input data sheets
   modelInputData     <<- modelInTemplate
   tableContent       <<- vector(mode = "list", length = length(modelIn))
+  modelInputData     <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
   datasetsModified[] <<- FALSE
   lapply(seq_along(modelIn), function(i){

@@ -533,9 +533,9 @@ lapply(seq_along(modelIn), function(id){
                  # in case slider has only numeric values as default (no dependencies), keep currently selected value(s)
                  value <- isolate(input[[paste0("slider_", id)]])
                }
-               if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
+               #if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
                  noCheck[id] <<- TRUE
-               }
+               #}
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){
