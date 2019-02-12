@@ -180,12 +180,12 @@
   background-color: #f9f9fb;
   margin: 0px;
 }
-.page-wrapper .page-wrapper {
+.page-wrapper {
   min-height: 100%;
   /* equal to footer height */
   margin-bottom: -131px;
 }
-.page-wrapper .page-wrapper:after {
+.page-wrapper:after {
   content: "";
   display: block;
   height: 50px;
