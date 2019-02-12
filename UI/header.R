@@ -13,7 +13,8 @@ header <- dashboardHeader(
   if(config$activateModules$scenario){
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
-                 lang$nav$header$scenario$title, tags$span(class="caret")),
+                 if(config$activateModules$hcubeMode) lang$nav$header$scenario$titleHC
+                 else lang$nav$header$scenario$title, tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
                   tags$li(actionLink("btEditMeta", lang$nav$header$scenario$edit)),
                   tags$li(actionLink("btSave", lang$nav$header$scenario$save)),

@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
 <head>
     <title>GAMS MIRO Documentation</title>
     <!-- Meta -->
@@ -24,17 +27,18 @@
 
 	<!-- GITHUB BUTTON JS -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-
+    <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-
-      <a href="TODO: ADD GITHUB LINK!!"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+        
+        <a href="TODO: ADD GITHUB LINK!!"><img style="position: absolute; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+        <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
-        <header class="header text-center">
+        <header class="sub-header text-center">
             <div class="container">
                 <div class="branding">
                     <h1 class="logo">
-                      <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/>
+                      <!-- <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/> -->
                         <span class="text-highlight">GAMS</span><span style="color:#f90;"></span><span class="text-bold">MIRO</span>
                     </h1>
                 </div><!--//branding-->
@@ -184,17 +188,9 @@
                 </div><!--//demo-section-->                
             </div><!--//container-->
         </section><!--//cards-section-->
-    </div><!--//page-wrapper-->
-
-    <footer class="footer text-center">
-        <div class="container">
-            Copyright © 2019 GAMS Software GmbH. All rights reserved. || 
-            <a href="./legal.html">Legal notice</a> || 
-            <a href="./privacy.html">Privacy policy</a>
-        </div><!--//container-->
-    </footer><!--//footer-->
-
-
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+    
     <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
@@ -222,6 +218,5 @@
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
        };
     </script>
-
 </body>
 </html>

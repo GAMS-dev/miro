@@ -1,6 +1,4 @@
 {  
-   "type":"postgres",
-   "name":"shiny",
-   "host":"localhost",
-   "port":5432
+   "type":"sqlite",
+   "name":"miro"
 }

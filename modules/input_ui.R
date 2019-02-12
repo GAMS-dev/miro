@@ -29,17 +29,26 @@ observeEvent(input$btImport, {
       maxNoScenExceeded <- FALSE
     }
   }
-  showLoadDataDialog(scenMetadata = scenMetaDbSubset, 
+  activeSid <- NULL
+  if(!is.null(activeScen)){
+    activeSid  <- activeScen$getSid()
+    scenListDb <- db$formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ], 
+                                    stimeIdentifier, desc = TRUE)
+  }else{
+    scenListDb <- db$formatScenList(scenMetaDbSubset, 
+                                    stimeIdentifier, desc = TRUE)
+  }
+    
+  showLoadDataDialog(scenListDb = scenListDb, 
                      noDataInUI = is.null(isolate(rv$activeSname)), dbTagList = dbTagList)
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)
   
   if(config$activateModules$scenario){
-    if(identical(nrow(scenMetaDb), 0L)){
+    if(!length(scenListDb)){
       # no scenarios in database, so select local tab
       updateTabsetPanel(session, "tb_importData", selected = "tb_importData_local")
     }
-    addClassEl(session, "#btSortTime", "scen-sort-by-selected")
   }
 })
 observeEvent(input$localInput$name, {

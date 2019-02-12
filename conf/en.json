@@ -8,7 +8,7 @@
       "hcube":{
         "configureRun": "Configure Hypercube job",
         "import": "Import results",
-        "load": "Load results",
+        "load": "Load scenarios",
         "analyze" : "Analyze scenarios"
       }
     },
@@ -17,8 +17,8 @@
       "solve":"Solve model",
       "solveHcube":"Submit job",
       "load":"Load",
-      "splitView":"Switch to split view",
-      "tabView":"Switch to tab view",
+      "splitView":"Split view",
+      "tabView":"Tab view",
       "compareStart":"Compare mode",
       "compareStop":"Stop compare",
       "download":"Download output",
@@ -27,6 +27,7 @@
     "header":{
       "scenario":{
         "title":"Scenario",
+        "titleHC": "HC job",
         "edit":"Edit metadata",
         "save":"Save",
         "saveAs":"Save As",
@@ -75,22 +76,27 @@
         "outputSheet":"model output"
       },
       "split":{
-        "load":"Load scenario"
+        "load":"Load scenario",
+        "loadActive": "Load active"
       }
     },
     "hcubeImport":{
-      "title":"Import data",
+      "title":"Import jobs",
       "btManualImport": "Manual import",
       "btShowHistory": "Show history"
     },
     "hcubeLoad":{
-      "title":"Load Scenarios",
+      "title":"Load scenarios",
       "noData":"No data was returned by your query",
       "showHashButton": "Show hash",
       "msgOnlyOneHash": "Please select only one scenario.",
+      "msgNoHashFound": "No hash was found for the selected scenario. Apparently the scenario was not solved in Hypercube mode.",
       "chooseSelectedButton":"Choose selected scenarios",
       "chooseCurrentButton":"Choose current page",
       "chooseAllButton":"Choose all",
+      "orButton": "OR",
+      "andButton": "AND",
+      "queryButton": "Fetch results",
       "showHashDialog":{
         "title": "Scenario hash",
         "desc": "The selected scenario has the following hash. You may use this to import it in the base mode."
@@ -134,6 +140,18 @@
       "cancelButton":"Cancel",
       "okButton":"Ok"
     },
+    "dialogNewHCJob":{  
+      "title":"New Hypercube job",
+      "desc":"Please enter a name for the Hypercube job configuration:",
+      "tags":"Add tag(s) to your HC job (optional):",
+      "newScenName":"New Hypercube job",
+      "badName":"Please choose a valid name for the new Hypercube job configuration.",
+      "scenExits":"The HC job name you chose does already exist. Do you want to overwrite the existing data?",
+      "btNewName":"Choose different name",
+      "btOverwrite":"Overwrite",
+      "cancelButton":"Cancel",
+      "okButton":"Ok"
+    },
     "dialogEditMeta":{
       "title":"Edit metadata",
       "success": "Metadata updated successfully.",
@@ -152,6 +170,24 @@
       "cancelButton":"Close",
       "okButton":"Update metadata"
     },
+    "dialogEditMetaHC":{
+      "title":"Edit metadata",
+      "success": "Metadata updated successfully.",
+      "newName": "New name",
+      "newTags":"New tags",
+      "scenExits":"A Hypercube job configuration already exists with the name you selected.",
+      "attachmentsLabel": "Attachments",
+      "attachmentsAdd": "Add attachments",
+      "attachmentsExecPerm": "Allow model to read this file",
+      "attachSuccess": "Attachments were updated successfully",
+      "attachMaxSizeError": "Your attachments exceed the maximum attachment size of %s bytes.",
+      "attachMaxNoError":"The maximum number of attachments is reached. Please first remove attachments before uploading new ones.",
+      "attachDuplicateError": "An attachment with the same name already exists. Please choose another name and try again.",
+      "attachForbiddenFnameError": "An attachment you try to upload uses a forbidden filename. Please choose a different filename and try again.",
+      "errMsg": "Prolems updating Hypercube job metadata. If this problem persists, please contact the system administrator.",
+      "cancelButton":"Close",
+      "okButton":"Update metadata"
+    },
     "dialogDeleteScen":{  
       "title":"Delete scenario",
       "desc":"Are you sure you want to delete the selected scenario from the database?",
@@ -164,9 +200,27 @@
         "okButton":"Remove from editor"
       }
     },
+    "dialogDeleteHCJob":{  
+      "title":"Delete Hypercube job",
+      "desc":"Are you sure you want to delete the selected Hypercube job configuration from the database?",
+      "cancelButton":"Cancel",
+      "okButton":"Yes",
+      "removeFromUI":{
+        "title":"Remove Hypercube job from editor",
+        "desc":"Do you want to remove the Hypercube job configuration from the editor? Unsaved data will be lost!",
+        "cancelButton":"Cancel",
+        "okButton":"Remove from editor"
+      }
+    },
     "dialogRemoveScen":{  
       "title":"Close scenario",
       "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
+      "cancelButton":"No",
+      "okButton":"Yes"
+    },
+    "dialogRemoveHCJob":{  
+      "title":"Close Hypercube job",
+      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data might be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -202,6 +256,24 @@
       "newScenName": "Choose a name for the new scenario",
       "badScenName": "Please specify a valid name",
       "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
+      "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
+      "cbSelectManually":"Manually choose datasets",
+      "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
+      "cancelButton":"Cancel",
+      "okButton":"Import",
+      "overwriteButton": "Overwrite existing data",
+      "newNameButton": "New name"
+    },
+    "dialogImportHC":{  
+      "title":"Import data",
+      "tabLocal":"Local",
+      "tabDatabase":"Hypercube",
+      "tabBase": "Base mode",
+      "selInputData":"Select datasets to import",
+      "descLocal":"Choose file with data to import",
+      "newScenName": "Choose a name for the new Hypercube job configuration",
+      "badScenName": "Please specify a valid name",
+      "scenNameExists":"The name you chose does already exist. Do you want to overwrite the existing data?",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
@@ -257,7 +329,13 @@
     "dialogReadonly":{
       "title": "No write permissions",
       "desc": "You do not have write permissions for this scenario. Do you want to save the scenario as a new scenario  instead?",
-      "okButton": "Save as new",
+      "okButton": "Save as",
+      "cancelButton": "Cancel"
+    },
+    "dialogReadonlyHC":{
+      "title": "No write permissions",
+      "desc": "You do not have write permissions for this Hypercube job configuration. Do you want to save the it as a new configuration instead?",
+      "okButton": "Save as",
       "cancelButton": "Cancel"
     },
     "dialogDownloadTmp":{
@@ -305,7 +383,7 @@
         "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
         "maxScenWarning2": " Select less scenarios or use the Paver module to compare.",
         "cancelButton": "Cancel",
-        "paverButton": "Paver",
+        "paverButton": "Analyze",
         "desc":"Please select the attributes you want to compare.",
         "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
@@ -315,7 +393,7 @@
         "selAttribs":"Attributes to select:",
         "selIgnoreAttribs": "Select attributes to ignore:",
         "runButton":"Start Paver",
-        "interactiveButton":"Interactive mode",
+        "interactiveButton":"Compare",
         "downloadButton":"Download data",
         "removeButton": "Delete scenarios"
       },

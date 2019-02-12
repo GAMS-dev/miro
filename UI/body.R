@@ -1,4 +1,23 @@
 ## UI body
+genSplitCompButtons <- function(id){
+  if(config$activateModules$hcubeMode){
+    tags$div(id = paste0("scenSplit", id, "_open"),
+             actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+                          class = "scenSplit-button-load", style = "font-size: 20pt;")
+             )
+  }else{
+    tags$div(id = paste0("scenSplit", id, "_open"), class = "split-open",
+             tags$div(class = "split-open-cell",
+                      actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
+                                   class = "scenSplit-button-load")
+             ),
+             tags$div(class = "split-open-cell",
+                      HTML(paste0('<button class="btn btn-default action-button scenSplit-button-load" 
+type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1, 
+                                  ', {priority: \'event\'})">', 
+                                  lang$nav$scen$split$loadActive, '</button>'))))
+  }
+}
 getHypercubeJobsTableSkeleton <- function(id = NULL, content = NULL){
   tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
@@ -32,26 +51,20 @@ tabItemList <- list(
                             <i class="fa fa-times"></i></button>'))
                        )
             ), status="primary", solidHeader = TRUE, width = 12L,
+            tags$div(class="scen-header",
+                     tags$div(class = "out-buttons-wrapper",
+                              tagAppendAttributes(
+                                actionButton(inputId = "btGraphIn",
+                                             icon = icon("chart-line"), label = NULL,
+                                             class="scen-button"), disabled = ""
+                              )
+                     )
+            ),
             do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
               i <- inputTabs[[tabId]][1]
               tabPanel(
                 title=inputTabTitles[tabId],
                 value = paste0("inputTabset_", tabId),
-                tags$div(class="small-space"),
-                tags$div(class = "in-data-header",
-                         tags$div(class = "in-buttons-wrapper",
-                                  if(length(inputTabs[[tabId]]) == 1){
-                                    if(!is.null(configGraphsIn[[i]])){
-                                      tags$div(title = lang$nav$scen$tooltips$btGraphView, class = "scen-button-tt",
-                                               tagAppendAttributes(
-                                                 actionButton(inputId = "btGraphIn" %+% i, icon = icon("bar-chart"), label = NULL,
-                                                              class="scen-button"), disabled = ""
-                                               )
-                                      )
-                                    }
-                                  }
-                         )
-                ),
                 tags$div(class="small-space"),
                 lapply(inputTabs[[tabId]], function(i){
                   hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
@@ -262,18 +275,17 @@ tabItemList <- list(
                                                          label = NULL))), 
                          tags$div(id = "scenSplit1_content", style = "display:none;", 
                                   generateScenarioTabsetSplit(2)), 
-                         tags$div(id = "scenSplit1_open", 
-                                  actionButton("btScenSplit1_open", lang$nav$scen$split$load, 
-                                               class = "scenSplit-button-load"))),
+                         genSplitCompButtons(1)
+                         ),
                      box(width = 6, solidHeader = TRUE, status="primary", 
                          title = tagList(textOutput("title_3", inline = T), 
                                          tags$div(style = "float: right;", 
                                                   actionButton(inputId = "btScenSplit2_close", 
                                                                class = "bt-icon", icon = icon("times"), label = NULL))),
-                         tags$div(id = "scenSplit2_content", style = "display:none;", generateScenarioTabsetSplit(3)), 
-                         tags$div(id = "scenSplit2_open", 
-                                  actionButton("btScenSplit2_open", lang$nav$scen$split$load, 
-                                               class = "scenSplit-button-load")))
+                         tags$div(id = "scenSplit2_content", style = "display:none;", 
+                                  generateScenarioTabsetSplit(3)), 
+                         genSplitCompButtons(2)
+                     )
             )
           )
   )
@@ -288,9 +300,9 @@ if(config$activateModules$hcubeMode){
                            tags$div(id = "selectorsWrapper"
                            ),
                            tags$div(id = "buttonsWrapper", class = "item-or-query",
-                                    actionButton("btNewBlock", label = "OR")),
+                                    actionButton("btNewBlock", label = lang$nav$hcubeLoad$orButton)),
                            tags$div(class = "item-or-query",
-                                    actionButton("btSendQuery", label = "Query database", 
+                                    actionButton("btSendQuery", label = lang$nav$hcubeLoad$queryButton, 
                                                  class = "bt-highlight-1")
                            )
                   ),
@@ -313,6 +325,8 @@ if(config$activateModules$hcubeMode){
                     tags$div(class = "col-sm-6", style = "text-align:right;",
                              tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
                                       lang$nav$hcubeLoad$msgOnlyOneHash),
+                             tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                      lang$nav$hcubeLoad$msgNoHashFound),
                              tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
                                       lang$errMsg$unknownError),
                              actionButton("btShowHash", 
@@ -407,7 +421,7 @@ if(config$activateModules$hcubeMode){
               box(title = list(
                 tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
                          icon("exclamation-triangle")),
-                textOutput("outputDataTitle", inline = T),
+                textOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon" 
                                    onclick="confirmModalShow(\'', 
@@ -423,7 +437,7 @@ if(config$activateModules$hcubeMode){
                        tags$div(class = "out-buttons-wrapper",
                                 actionButton("btDownloadTmpFiles", icon("folder-open"), 
                                              class="scen-button"),
-                                actionButton("outputTableView", icon("table"), 
+                                actionButton("outputTableView", icon("chart-line"), 
                                              class="scen-button")
                        )
               ),

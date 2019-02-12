@@ -24,23 +24,41 @@ observeEvent(input$btScenSplit1_open, {
   loadInLeftBoxSplit <<- TRUE
   
   updateTabsetPanel(session, "contentScen_2", "contentScen_2_1")
-  if(is.null(isolate(rv$btLoadScen))){
-    rv$btLoadScen <<- 1
-  }else{
-    rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
-  }
+  rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
 observeEvent(input$btScenSplit2_open, {
   flog.debug("Load Scenario button clicked (right box in split view).")
   loadInLeftBoxSplit <<- FALSE
   
   updateTabsetPanel(session, "contentScen_3", "contentScen_3_1")
-  if(is.null(isolate(rv$btLoadScen))){
-    rv$btLoadScen <<- 1
-  }else{
-    rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
-  }
+  rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
+observeEvent(input$loadActiveScenSplitComp, {
+  flog.debug("Load active scenario to split comparison mode pressed. ID: '%s'.", 
+             isolate(input$loadActiveScenSplitComp))
+  if(is.null(activeScen)){
+    flog.debug("No scenario currently opened/active. Nothing to load.")
+    return()
+  }
+  id <- suppressWarnings(as.integer(isolate(input$loadActiveScenSplitComp)))
+  if(identical(id, 2L)){
+    loadInLeftBoxSplit <<- TRUE
+  }else if(identical(id, 3L)){
+    loadInLeftBoxSplit <<- FALSE
+  }else{
+    flog.error("Button ID (load active scenario to split comp) has invalid value: '%s'. This should never happen! 
+               User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))
+    return()
+  }
+  updateTabsetPanel(session, "contentScen_" %+% id, paste0("contentScen_", id, "_1"))
+  
+  sidsToLoad <<- list(activeScen$getSid())
+  if(!length(scenMetaDb) || !sidsToLoad[[1]] %in% scenMetaDb[[1]]){
+    scenMetaDb <<- db$fetchScenList(scode = 0L)
+  }
+  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+})
+
 observeEvent(input$btScenSplit1_close, {
   flog.debug("%s: Close Scenario button clicked (left box in split view).", uid)
   

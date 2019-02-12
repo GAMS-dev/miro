@@ -12,6 +12,11 @@ function isInputEl(id){
     return false;
   }
 }
+function rerenderHot(){
+  try{
+      setTimeout(function(){ HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render(); }, 100);
+  }catch(e){}
+}
 let spinnerActive = {};
 function showSpinnerIcon(el, delay = 3000){
   if(spinnerActive[$(el).prop('id')]){
@@ -34,7 +39,6 @@ function changeActiveButtons(tabId){
         $("#btInterrupt").hide();
         $("#btSplitView").hide();
         $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
         break;
     case 'outputData':
         $("#btImport").show();
@@ -42,7 +46,6 @@ function changeActiveButtons(tabId){
         $("#btInterrupt").hide();
         $("#btSplitView").hide();
         $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
         break;
     case 'gamsinter':
         $("#btImport").hide();
@@ -50,7 +53,6 @@ function changeActiveButtons(tabId){
         $("#btInterrupt").show();
         $("#btSplitView").hide();
         $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
         break;
     case 'scenarios':
         $("#btImport").hide();
@@ -58,7 +60,6 @@ function changeActiveButtons(tabId){
         $("#btInterrupt").hide();
         $("#btSplitView").show();
         $("#btCompareScen").show();
-        $("#btLoadScen").show();
         break;
     default:
         $("#btImport").hide();
@@ -66,7 +67,6 @@ function changeActiveButtons(tabId){
         $("#btInterrupt").hide();
         $("#btSplitView").hide();
         $("#btCompareScen").hide();
-        $("#btLoadScen").hide();
   }
 }
 function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null){
@@ -82,17 +82,10 @@ function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall
   cModal.find('.modal-footer').html(btData);
   cModal.modal('show');
 }
-
-let removeButtonCounter = {};
   
 function removeAttachment(elId){
   $('#btRemoveAttachment_' + elId).parent().parent().remove();
-  if(typeof(removeButtonCounter[elId]) == 'undefined'){
-    removeButtonCounter[elId] = 0;
-  }else{
-    removeButtonCounter[elId] = removeButtonCounter[elId] + 1;
-  }
-  Shiny.setInputValue("btRemoveAttachment_" + elId, removeButtonCounter[elId]);
+  Shiny.setInputValue("btRemoveAttachment_" + elId, 1, {priority: "event"});
 }
 
 function showHypercubeLog(jID){
@@ -145,6 +138,7 @@ $(document).ready(function () {
   
   $("a[data-value='inputData']").click(function() {
     changeActiveButtons('inputData');
+    rerenderHot();
   });
   $("a[data-value='outputData']").click(function() {
     changeActiveButtons('outputData');
@@ -158,6 +152,12 @@ $(document).ready(function () {
   $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='hcubeAnalyze']").click(function() {
     changeActiveButtons('default');
   });
+  $("#inputTabset li").click(function(){
+    rerenderHot();
+  });
+  $("#scenTabset").append("<li id=\"scenTabsetAdd\"><a href=\"#\" data-value=\"scen_add\" " +
+  "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event\'});\">" +
+  "<i class=\"far fa-plus-square\" style=\"font-size:13pt;\"></i></a></li>");
   // show/hide buttons after (R triggered) tab switch.
   Shiny.addCustomMessageHandler('gms-switchTab', function(el) {
     switch(el) {

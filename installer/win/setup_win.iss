@@ -48,8 +48,6 @@ Source: "setup.ico"; DestDir: "{app}"; Flags: ignoreversion;Components: program
 Source: "../../app.R"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
 Source: "../../global.R"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
 Source: "../../LICENSE"; DestDir: "{app}\miro"; Flags: ignoreversion;Components: program
-Source: "../../admin/server.R"; DestDir: "{app}\miro\admin"; Flags: ignoreversion;Components: program
-Source: "../../admin/ui.R"; DestDir: "{app}\miro\admin"; Flags: ignoreversion;Components: program
 Source: "../../library/*"; DestDir: "{app}\miro\library\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../conf/*"; DestDir: "{app}\miro\conf\*"; Flags: ignoreversion recursesubdirs;Components: program
 Source: "../../JS/*"; DestDir: "{app}\miro\JS\*"; Flags: ignoreversion recursesubdirs;Components: program

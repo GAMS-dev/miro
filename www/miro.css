@@ -294,7 +294,7 @@ animation: none !important;
   overflow: hidden;
   width: 100%;
   position: relative;
-  height: 35px;
+  height: 37px;
 }
 .scen-buttons-wrapper{
   position: absolute;
@@ -315,10 +315,18 @@ animation: none !important;
   padding-right: 5px;
   padding-left: 5px;
 }
+.split-open{
+  display: table; 
+  table-layout: fixed;
+  width: 100%;
+}
+.split-open-cell{
+  display:table-cell;
+}
 .scenSplit-button-load{
   height: 400px;
   width: 100%;
-  font-size: 20pt;
+  font-size: 15pt;
   background-color: inherit;
 }
 /* scnario button tooltips */
