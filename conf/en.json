@@ -7,7 +7,7 @@
       "scen":"Compare scenarios",
       "hcube":{
         "configureRun": "Configure Hypercube job",
-        "import": "Import results",
+        "import": "Import jobs",
         "load": "Load scenarios",
         "analyze" : "Analyze scenarios"
       }

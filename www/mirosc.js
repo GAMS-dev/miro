@@ -24,37 +24,27 @@ $(document).keyup(function(event) {
     }
   }
   // SAVE shortcut: CTRL + ALT + S
-  if(event.ctrlKey && event.altKey && event.keyCode === 83 && $("#btSave").is(":visible")) {
-    if($("#btSave").is(":enabled")){
-      $("#btSave").click();
-    }else if($("#btSaveAs").is(":enabled")){
-      $("#btSaveAs").click();
-    }
+  if(event.ctrlKey && event.altKey && event.keyCode === 83) {
+    Shiny.setInputValue("btSave", 1, {priority: "event"});
   }
   // Solve shortcut: CTRL + ALT + ENTER
   if(event.ctrlKey && event.altKey && event.keyCode === 13 && $("#btSolve").is(":enabled") && $("#btSolve").is(":visible")) {
     $("#btSolve").click();
   }
   // Remove shortcut: CTRL + ALT + R
-  if(event.ctrlKey && event.altKey && event.keyCode === 82 && $("#btDelete").is(":enabled") && $("#btDelete").is(":visible")) {
-    $("#btDelete").click();
+  if(event.ctrlKey && event.altKey && event.keyCode === 82) {
+    Shiny.setInputValue("btDelete", 1, {priority: "event"});
   }
   // Close shortcut (remove button in input sheet): CTRL + ALT + C
-  if(event.ctrlKey && event.altKey && event.keyCode === 67 && $("#btRemove").is(":enabled") && $("#btRemove").is(":visible")) {
-    $("#btRemove").click();
+  if(event.ctrlKey && event.altKey && event.keyCode === 67 && $(".btRemove").is(":visible")) {
+    $(".btRemove:visible").click();
   }
   // Close shortcut (remove button in output sheet): CTRL + ALT + C
   if(event.ctrlKey && event.altKey && event.keyCode === 67) {
-    if($("#btRemoveO").is(":visible")){
-      if($("#btRemoveO").is(":enabled")){
-        $("#btRemoveO").click();
-      }
-    }else{
-      for (i = 2; i <= maxNumScen; i++) { 
-        id = '#close_' + i;
-        if($(id).is(":visible")){
-          $(id).click();
-        }
+    for (i = 2; i <= maxNumScen; i++) { 
+      id = '#close_' + i;
+      if($(id).is(":visible")){
+        $(id).click();
       }
     }
   }
@@ -68,45 +58,47 @@ $(document).keyup(function(event) {
   }
   // Select output menu shortcut: CTRL + ALT + 2
   if(event.ctrlKey && event.altKey && event.keyCode === 50) {
-    $("a[href='#shiny-tab-outputData']").click();
+    tab = $("a[href='#shiny-tab-outputData']");
+    if(tab.length > 0){
+      tab.click();
+    }else{
+      $("a[href='#shiny-tab-importData']").click();
+    }
   }
   // Select gams interaction menu shortcut: CTRL + ALT + 3
   if(event.ctrlKey && event.altKey && event.keyCode === 51) {
-    $("a[href='#shiny-tab-gamsinter']").click();
+    tab = $("a[href='#shiny-tab-gamsinter']");
+    if(tab.length > 0){
+      tab.click();
+    }else{
+      $("a[href='#shiny-tab-loadResults']").click();
+    }
   }
   // Select scenario menu shortcut: CTRL + ALT + 4
   if(event.ctrlKey && event.altKey && event.keyCode === 52) {
-    scenTab = $("a[href='#shiny-tab-scenarios']");
-    if(scenTab.length > 0){
-      $("a[href='#shiny-tab-scenarios']").click();
-    }else{
-      $("a[href='#shiny-tab-advanced']").click();
+    tab = $("a[href='#shiny-tab-scenarios']").click();
+  }
+  if(event.ctrlKey && event.altKey && event.keyCode === 53) {
+    tab = $("a[href='#shiny-tab-hcubeAnalyze']");
+    if(tab.length > 0){
+      tab.click();
     }
   }
   // Table view (scenario compare mode) shortcut: CTRL + ALT + T
   if(event.ctrlKey && event.altKey && event.keyCode === 84) {
+    id = '#btGraphIn';
+    if($(id).is(":visible") && $(id).is(":enabled")){
+      $(id).click();
+    }
+    id = '#outputTableView';
+    if($(id).is(":visible")){
+      $(id).click();
+    }
     for (i = 2; i <= maxNumScen + 3; i++) { 
       id = '#table_' + i;
       if($(id).is(":visible")){
         $(id).click();
       }
-    }
-  }
-  // Table view (scenario compare mode) shortcut: CTRL + ALT + T
-  if(event.ctrlKey && event.altKey && event.keyCode === 84) {
-    for (i = 1; i <= maxNumScen + 3; i++) { 
-      id = '#table_' + i;
-      if($(id).is(":visible")){
-        $(id).click();
-      }
-      id = '#btGraphIn' + i;
-      if($(id).is(":visible")){
-        $(id).click();
-      }
-    }
-    id = '#outputTableView';
-    if($(id).is(":visible")){
-      $(id).click();
     }
   }
   // Select next tab shortcut: CTRL + ALT + arrow right

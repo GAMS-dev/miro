@@ -1,7 +1,7 @@
 # gams model name
 modelName <- "pickstock"
 # turn debug mode on or off
-debugMode <- FALSE
+debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "GMSMODELNAME"
 spModelModeEnvVar <- "GMSMODE"
