@@ -326,7 +326,7 @@ if(config$activateModules$hcubeMode){
                              tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
                                       lang$nav$hcubeLoad$msgOnlyOneHash),
                              tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                      lang$errMsg$msgNoHashFound),
+                                      lang$nav$hcubeLoad$msgNoHashFound),
                              tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
                                       lang$errMsg$unknownError),
                              actionButton("btShowHash", 
