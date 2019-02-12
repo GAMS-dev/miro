@@ -1,7 +1,7 @@
 # gams model name
 modelName <- "pickstock"
-# controls whether webUI parameters are compiled on startup or loaded from save file
-developMode <- TRUE
+# turn debug mode on or off
+debugMode <- FALSE
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "GMSMODELNAME"
 spModelModeEnvVar <- "GMSMODE"

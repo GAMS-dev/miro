@@ -182,15 +182,14 @@ if(is.null(errMsg)){
                                               format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
-  installPackage <- list()
-  if("NODEVMODE" %in% commandArgs(TRUE)){
-    developMode <- FALSE
+  if(isShinyProxy || "NODEBUG" %in% commandArgs(TRUE)){
+    debugMode <- FALSE
   }
   if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") ||
      "LAUNCHADMIN" %in% commandArgs(TRUE)){
     LAUNCHADMINMODE <- TRUE
   }
-  if(!file.exists(rSaveFilePath) || developMode){
+  if(!file.exists(rSaveFilePath) || debugMode){
     source("./modules/init.R", local = TRUE)
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
@@ -339,7 +338,7 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
-if(is.null(errMsg) && developMode && config$activateModules$scenario){
+if(is.null(errMsg) && debugMode && config$activateModules$scenario){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -488,16 +487,16 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
   rm(LAUNCHADMINMODE, installedPackages)
-  if(developMode){
+  if(debugMode){
     save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
-         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, 
-         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
+         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
+         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, colsWithDep,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
-         modelInToImportAlias, modelInToImport, scenTableNames,
+         modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, dbSchema, file = rSaveFilePath)
+         modelInGmsString, installPackage, dbSchema, file = rSaveFilePath)
   }
   
   #______________________________________________________
