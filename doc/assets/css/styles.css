@@ -171,12 +171,14 @@ body{
   margin: 0px;
 }
 .page-wrapper{
+  font-family: montserratregular,'Open Sans',sans-serif;
   color: #494d55;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   background-color: #f9f9fb;
+  margin: 0px;
   min-height: 100%;
   /* equal to footer height */
   margin-bottom: -131px;
