@@ -167,20 +167,15 @@
     transform: rotate(359deg);
   }
 }
-.page-wrapper body {
+.page-wrapper{
   font-family: 'Open Sans', arial, sans-serif;
   color: #494d55;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-.page-wrapper html,
-.page-wrapper body {
   height: 100%;
   background-color: #f9f9fb;
   margin: 0px;
-}
-.page-wrapper {
   min-height: 100%;
   /* equal to footer height */
   margin-bottom: -131px;
