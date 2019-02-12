@@ -26,7 +26,6 @@ echo no password for the comodo certificate is set. Set via CERTPW
 goto end
 :cont3
 
-goto weiter
 rem quite install of GAMS
 cd C:\gams\win64
 %INSTALLER% /sp- /silent /dir=c:\gams\win64\innofiles /MERGETASKS='!desktopicon'
@@ -66,7 +65,6 @@ cp    %GITDIR%LICENSE .
 cp    %GITDIR%app.R .
 cp    %GITDIR%global.R .
 
-:weiter
 rem APILIB Example models
 cd %GITDIR%model\kport
 gmszip -r kport_conf.zip conf static customRenderer
