@@ -144,12 +144,13 @@ body {
 html, body {
   height: 100%;
   background-color: #f9f9fb;
+  margin:0px;
 }
 
 .page-wrapper {
   min-height: 100%;
   /* equal to footer height */
-  margin-bottom: -50px;
+  margin-bottom: -131px;
 }
 
 .page-wrapper:after {
