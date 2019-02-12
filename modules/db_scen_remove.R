@@ -12,7 +12,7 @@ closeScenario <- function(){
   modelInputData     <<- modelInTemplate
   tableContent       <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
-  datasetsModified[] <<- FALSE
+  rv$datasetsModified[] <- FALSE
   lapply(seq_along(modelIn), function(i){
     switch(modelIn[[i]]$type,
            hot = {
@@ -59,7 +59,12 @@ closeScenario <- function(){
              updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
            }
     )
-    rv[["in_" %+% i]]    <<- NULL
+    # make sure data is cleaned even when modified manually 
+    # (and thus rv$in_i is NULL)
+    if(is.null(isolate(rv[["in_" %+% i]]))){
+      rv[["in_" %+% i]] <- 1L
+    }
+    rv[["in_" %+% i]]    <- NULL
   })
   unlink(list.files(workDir, recursive = TRUE))
   if(is.R6(activeScen))
@@ -80,6 +85,7 @@ closeScenario <- function(){
   noCheck[]         <<- FALSE
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
+  disableEl(session, "#btSolve")
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){
