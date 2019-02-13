@@ -137,6 +137,9 @@ for sym in db:
       else:
          raise Exception('Unexpected type of external input symbol ' + sym.name)
 
+if (len(o_sym)==0) and (not have_o_vescalar) and (not have_o_scalar):
+   raise Exception('No output symbols found. Use $onExternalOutput before output symbol declaration')
+
 savegdxfn = ''
 if pivot_gdx:
    savegdxfn = gdxfn
