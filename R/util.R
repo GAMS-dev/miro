@@ -800,7 +800,8 @@ fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
 
   data[] <- lapply(seq_along(data), function(i){
-    if(identical(substr(colTypes, i, i), "c") && is.numeric(data[[i]])){
+    if(identical(substr(colTypes, i, i), "c") && 
+       (is.numeric(data[[i]]) || is.logical(data[[i]]))){
       return(as.character(data[[i]]))
     }else{
       return(data[[i]])

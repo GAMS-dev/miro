@@ -22,26 +22,33 @@ output[["export_" %+% i]] <- downloadHandler(
   content = function(file) {
     if(i == 1){
       # active scenario (editable)
-      saveAsFlag <<- F
+      saveAsFlag <<- FALSE
       source("./modules/scen_save.R", local = TRUE)
+      data <- scenData[[scenIdLong]]
     }else{
+      data <- scenData[[scenIdLong]]
       # combine hidden and non hidden scalar data
       scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
-      if(!is.na(scalarOutIdx) && !is.null(scenData[[scenIdLong]][[scalarOutIdx]])){
+      if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
         # bind hidden and non hidden scalar data
-        scenData[[scenIdLong]][[scalarOutIdx]] <<- rbind(scenData[[scenIdLong]][[scalarOutIdx]], scalarData[[scenIdLong]])
-        scalarData[[scenIdLong]]                <<- list(NULL)
+        data[[scalarOutIdx]] <- rbind(data[[scalarOutIdx]], 
+                                      scalarData[[scenIdLong]])
       }
     }
-    data                        <- scenData[[scenIdLong]]
-    names(data)                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, names(modelOut), lang$nav$excelExport$outputSuffix), 
-                                     if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, inputDsNames, lang$nav$excelExport$inputSuffix))
+    
+    names(data)                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
+                                                                names(modelOut), 
+                                                                lang$nav$excelExport$outputSuffix), 
+                                     if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, 
+                                                                    inputDsNames, 
+                                                                    lang$nav$excelExport$inputSuffix))
     # remove empty datasets
     if(!config$excelIncludeEmptySheets)
       data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL
     
     # include metadata sheet in Excel file
-    if(config$activateModules$scenario && config$excelIncludeMeta && !is.null(scenMetaData[[scenIdLong]])){
+    if(config$activateModules$scenario && config$excelIncludeMeta && 
+       !is.null(scenMetaData[[scenIdLong]])){
       metadata <- list(scenMetaData[[scenIdLong]][, -1, drop = FALSE])
       names(metadata) <- lang$nav$excelExport$metadataSheet$title
       data <- c(metadata, data)

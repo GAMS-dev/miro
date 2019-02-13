@@ -1,73 +1,44 @@
 {
-	"UILogo"             : "pickstock.png",
-    "hiddenOutputScalars": ["lastdaytraining"],
-    "inputWidgets":{
-      "price":{
-        "widgetType": "table",
-        "readonlyCols": ["date"]
-      },
+	"UILogo":"pickstock-live.png",
+    "inputWidgets": {
       "maxstock": {
         "label": "Select the maximum number of stocks",
         "min": 1,
         "default": 3,
         "step": 1,
-        "max": "card(price$symbol)",
+        "max": "30",
         "alias": "maximum number of stocks to select",
         "widgetType": "slider"
       },
       "trainingdays": {
-        "label": "select the number of days for training",
+        "label": "Select the number of days for training",
         "min": 1,
         "default": 99,
         "step": 1,
-        "max": "card(price$date)",
+        "max": "252",
         "alias": "number of days for training",
         "widgetType": "slider"
       },
-      "GMSOPT_lp": {
-        "alias": "LP-Solver",
+      "GMSPAR_TW": {
+         "alias": "time window",
+         "widgetType": "daterange",
+         "label": "Time window",
+         "start": "2018-02-20",
+         "end": "2019-02-20",
+         "min": "2017-01-01",
+         "max": "2019-12-31",
+         "autoclose": true,
+         "noHcube": true
+      },
+      "GMSOPT_mip": {
+        "alias": "MIP-Solver",
         "widgetType":"dropdown",
-        "label": "Solver to use for LP",
-        "aliases": [
-          "BARON",
-          "BDMLP",
-          "CBC",
-          "CONOPT 3",
-          "CONOPT 4",
-          "CPLEX",
-          "DECIS",
-          "GUROBI",
-          "IPOPT",
-          "KNITRO",
-          "LGO",
-          "LINDO",
-          "LINDOGLOBAL",
-          "MINOS",
-          "MOSEK",
-          "SNOPT",
-          "SOPLEX",
-          "XA",
-          "XPRESS"
-        ],
+        "label": "Solver to use",
         "choices": [
-          "BARON",
-          "BDMLP",
           "CBC",
-          "CONOPT3",
-          "CONOPT4",
           "CPLEX",
-          "DECIS",
-          "GUROBI",
-          "IPOPT",
-          "KNITRO",
-          "LGO",
-          "LINDO",
-          "LINDOGLOBAL",
-          "MINOS",
           "MOSEK",
-          "SNOPT",
-          "SOPLEX",
-          "XA",
+          "SCIP",
           "XPRESS"
         ],
         "selected": "CPLEX"
@@ -146,7 +117,7 @@
             }
         },
 		"dowvsindex"   	: {
-			"outType"               : "graph",
+			"outType"               : "dtGraph",
 			"height"				: 700,
 			"graph"                 : {
 				"tool"      			: "dygraphs",
@@ -178,7 +149,7 @@
 					"strokeColor"			: ""
 				},
 				"dyEvent"    :{
-					"lastdaytraining"  : {
+					"lastDayTraining"  : {
 						 "label"     	: "End of training phase",
 						 "labelLoc"     : "bottom",
 						 "color"        : "red"
@@ -239,63 +210,6 @@
 					"title"					: "Frequency"
                 }
             }
-		},
-        "priceMerge"   	: {
-			"outType"               : "graph",
-			"height"				: 700,
-			"graph"                 : {
-				"tool"      			: "dygraphs",
-				"title"     			: "Price (stocks & dow jones)",
-				"color"					: "uni",
-				"dyOptions"				:{
-					"includeZero"			: true,
-					"logscale"				: false,
-					"drawGrid"				: true,
-					"drawPoints"			: false,
-					"pointSize"				: 2,
-					"fillGraph"				: false,
-					"fillAlpha"				: 0.15
-				},
-				"dylegend"				:{
-					"width"					: 450,
-					"show"					: "always",
-					"hideOnMouseOut"		: true
-				},
-				"dyHighlight"			:{
-					"highlightSeriesOpts"	:{
-						"strokeWidth" 			: 8,
-						"strokeBorderWidth"		: 5,
-						"highlightCircleSize"	: 14
-					},
-					"hideOnMouseOut"		: true
-					
-				},
-				"dyRangeSelector"		:{
-					"height"				: 20,
-					"strokeColor"			: ""
-				},						
-				"xdata"     			:"date",
-				"ydata" 				: {
-					"Price (stocks & dow jones)":{
-						"label"					: "symbol"
-					}
-				},
-				"xaxis"     :{
-					"title"         		: "date",
-                    "showgrid"              : true
-				},		
-				"yaxis"     :{		
-					"title"         		: "value",
-                    "showgrid"              : true
-				},
-				"dyEvent"    :{
-					"lastdaytraining"  : {
-						 "label"     	: "End of training phase",
-						 "labelLoc"     : "top",
-						 "color"        : "red"
-					}
-				}
-			}
 		}
 	}
 }

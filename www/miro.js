@@ -41,7 +41,7 @@ function changeActiveButtons(tabId){
         $("#btCompareScen").hide();
         break;
     case 'outputData':
-        $("#btImport").show();
+        $("#btImport").hide();
         $("#btSolve").hide();
         $("#btInterrupt").hide();
         $("#btSplitView").hide();

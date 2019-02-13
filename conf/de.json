@@ -16,7 +16,6 @@
       "importInput":"Daten laden",
       "solve":"Modell lösen",
       "solveHcube":"Jobs absenden",
-      "load":"Szenario laden",
       "splitView":"Split Screen Ansicht",
       "tabView":"Tabansicht",
       "compareStart":"Vergleichsmodus",
@@ -42,9 +41,6 @@
     },
     "inputScreen":{  
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
-      "tooltips":{  
-        "btGraphView":"Zur grafischen Ansicht wechseln"
-      },
       "widgetTabTitle": "Eingabe-Widgets"
     },
     "gams":{  
@@ -67,11 +63,13 @@
       }
     },
     "scen":{  
-      "noScen":"Kein Szenario geladen. Bitte laden Sie zuerst ein Szenario.",
+      "noScen":"Kein Szenario ausgewählt",
+      "btLoad":"Laden",
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
         "btTableView":"Ansicht wechseln",
         "btClose":"Szenario schließen",
+        "btDownloadTmpFiles":"temporary files",
         "inputSheet":"Eingabedaten",
         "outputSheet":"Ausgabedaten"
       },
@@ -244,14 +242,14 @@
       "okButton":"Ja"
     },
     "dialogImport":{  
-      "title":"Daten importieren",
+      "title":"Daten laden",
       "tabLocal":"Lokal",
       "tabDatabase":"Datenbank",
       "tabHcube":"Hypercube",
-      "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus importieren möchten. Klicken Sie dann einfach auf das Szenario, um es zu importieren.",
+      "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
-      "selInputData":"Wählen Sie die zu importierenden Datensätze",
+      "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
@@ -259,7 +257,7 @@
       "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
-      "okButton":"Importieren",
+      "okButton":"Laden",
       "cancelButton":"Abbrechen",
       "overwriteButton": "Existierende Daten überschreiben",
       "newNameButton": "Neuer Name"

@@ -79,8 +79,11 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         flog.warn("Invalid output data attempted to be read (number of headers of table does not match GMSIO__config schema).")
         stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
       }
-      ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- 0L
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
+      ret$tabular[[i]][is.na(ret$tabular[[i]]) & vapply(ret$tabular[[i]], 
+                                                        is.numeric, logical(1L), 
+                                                        USE.NAMES = FALSE)] <<- 0L
+      ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- ""
       
       names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
       if(!hasValidHeaderTypes(ret$tabular[[i]], colTypes[[names(modelOut)[i]]])){

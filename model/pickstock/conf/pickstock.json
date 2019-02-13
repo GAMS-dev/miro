@@ -1,54 +1,41 @@
 {
-	"UILogo":"pickstock-live.png",
-    "inputWidgets": {
+	"UILogo"             : "pickstock.png",
+    "hiddenOutputScalars": ["lastdaytraining"],
+    "inputWidgets":{
+      "price":{
+        "widgetType": "table",
+        "readonlyCols": ["date"]
+      },
       "maxstock": {
         "label": "Select the maximum number of stocks",
         "min": 1,
         "default": 3,
         "step": 1,
-        "max": "30",
+        "max": "card(price$symbol)",
         "alias": "maximum number of stocks to select",
         "widgetType": "slider"
       },
       "trainingdays": {
-        "label": "Select the number of days for training",
+        "label": "select the number of days for training",
         "min": 1,
         "default": 99,
         "step": 1,
-        "max": "252",
+        "max": "card(price$date)",
         "alias": "number of days for training",
         "widgetType": "slider"
       },
-      "GMSPAR_TW": {
-         "alias": "time window",
-         "widgetType": "daterange",
-         "label": "Time window",
-         "start": "2017-01-01",
-         "end": "2017-12-31",
-         "min": "2017-01-01",
-         "max": "2018-12-31",
-         "autoclose": true,
-         "noHcube": true
-      },
       "GMSOPT_mip": {
-          "alias": "MIP-Solver",
-          "widgetType":"dropdown",
-          "label": "Solver to use for MIP",
-          "aliases": [
-              "solver 1",
-              "solver 2",
-              "solver 3",
-              "solver 4",
-              "solver 5"
-          ],
-          "choices": [
-              "BARON",
-              "BDMLP",
-              "CBC",
-              "CPLEX",
-              "GUROBI"
-          ],
-          "selected": "CPLEX"
+        "alias": "MIP-Solver",
+        "widgetType":"dropdown",
+        "label": "Solver to use",
+        "choices": [
+          "CBC",
+          "CPLEX",
+          "MOSEK",
+          "SCIP",
+          "XPRESS"
+        ],
+        "selected": "CPLEX"
       }
     },
     "dataRendering"      : {
@@ -124,7 +111,7 @@
             }
         },
 		"dowvsindex"   	: {
-			"outType"               : "dtGraph",
+			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
 				"tool"      			: "dygraphs",
@@ -156,7 +143,7 @@
 					"strokeColor"			: ""
 				},
 				"dyEvent"    :{
-					"lastDayTraining"  : {
+					"lastdaytraining"  : {
 						 "label"     	: "End of training phase",
 						 "labelLoc"     : "bottom",
 						 "color"        : "red"
@@ -217,6 +204,63 @@
 					"title"					: "Frequency"
                 }
             }
+		},
+        "priceMerge"   	: {
+			"outType"               : "graph",
+			"height"				: 700,
+			"graph"                 : {
+				"tool"      			: "dygraphs",
+				"title"     			: "Price (stocks & dow jones)",
+				"color"					: "uni",
+				"dyOptions"				:{
+					"includeZero"			: true,
+					"logscale"				: false,
+					"drawGrid"				: true,
+					"drawPoints"			: false,
+					"pointSize"				: 2,
+					"fillGraph"				: false,
+					"fillAlpha"				: 0.15
+				},
+				"dylegend"				:{
+					"width"					: 450,
+					"show"					: "always",
+					"hideOnMouseOut"		: true
+				},
+				"dyHighlight"			:{
+					"highlightSeriesOpts"	:{
+						"strokeWidth" 			: 8,
+						"strokeBorderWidth"		: 5,
+						"highlightCircleSize"	: 14
+					},
+					"hideOnMouseOut"		: true
+					
+				},
+				"dyRangeSelector"		:{
+					"height"				: 20,
+					"strokeColor"			: ""
+				},						
+				"xdata"     			:"date",
+				"ydata" 				: {
+					"Price (stocks & dow jones)":{
+						"label"					: "symbol"
+					}
+				},
+				"xaxis"     :{
+					"title"         		: "date",
+                    "showgrid"              : true
+				},		
+				"yaxis"     :{		
+					"title"         		: "value",
+                    "showgrid"              : true
+				},
+				"dyEvent"    :{
+					"lastdaytraining"  : {
+						 "label"     	: "End of training phase",
+						 "labelLoc"     : "top",
+						 "color"        : "red"
+					}
+				}
+			}
 		}
 	}
 }

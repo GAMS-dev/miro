@@ -53,10 +53,12 @@ tabItemList <- list(
             ), status="primary", solidHeader = TRUE, width = 12L,
             tags$div(class="scen-header",
                      tags$div(class = "out-buttons-wrapper",
-                              tagAppendAttributes(
-                                actionButton(inputId = "btGraphIn",
-                                             icon = icon("chart-line"), label = NULL,
-                                             class="scen-button"), disabled = ""
+                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                                       tagAppendAttributes(
+                                         actionButton(inputId = "btGraphIn",
+                                                      icon = icon("chart-line"), label = NULL,
+                                                      class="scen-button"), disabled = ""
+                                       )
                               )
                      )
             ),
@@ -262,7 +264,13 @@ tabItemList <- list(
   tabItem(tabName = "scenarios",
           tags$div(id = "scen-tab-view", style = "display:none;",
                    tabsetPanel(id="scenTabset"),
-                   tags$div(id = "no-scen", lang$nav$scen$noScen)
+                   tags$div(id = "no-scen", lang$nav$scen$noScen, 
+                            tags$div(style = "margin: 10px;",
+                              HTML(paste0('<button class="btn btn-default action-button" ',
+                                          'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
+                                          1, ', {priority: \'event\'})">', 
+                                          lang$nav$scen$btLoad, '</button>')))
+                   )
           ),
           fluidRow(
             tags$div(id = "scen-split-view",
@@ -435,10 +443,14 @@ if(config$activateModules$hcubeMode){
               ), status="primary", solidHeader = TRUE, width = 12,
               tags$div(class="scen-header",
                        tags$div(class = "out-buttons-wrapper",
-                                actionButton("btDownloadTmpFiles", icon("folder-open"), 
-                                             class="scen-button"),
-                                actionButton("outputTableView", icon("chart-line"), 
-                                             class="scen-button")
+                                tags$div(title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
+                                         actionButton("btDownloadTmpFiles", icon("folder-open"), 
+                                                      class="scen-button")
+                                ),
+                                tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
+                                         actionButton("outputTableView", icon("chart-line"), 
+                                                      class="scen-button")
+                                )
                        )
               ),
               do.call(tabsetPanel, c(id = "contentCurrent", 

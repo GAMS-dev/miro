@@ -1,26 +1,31 @@
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
-  if(!file.exists(currentModelDir %+% configDir %+% "config.json")){
-    tryCatch(cat("{}\n", file = currentModelDir %+% configDir %+% "config.json"),
+  if(!file.exists(paste0(currentModelDir, configDir, modelName, ".json"))){
+    tryCatch(cat("{}\n", file = paste0(currentModelDir, configDir, modelName, ".json")),
              error = function(e){
                errMsg <<- "A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: " %+% currentModelDir %+% configDir
              })
   }
 }
 
-if(is.null(errMsg)){ 
-  # fetch JSON schema files
-  jsonSchemaMap <- c(getJsonFileSchemaPairs(configDir), 
-                     getJsonFileSchemaPairs(fileDir = paste0(currentModelDir, configDir), 
-                                            schemaDir = configDir))
-  
-  lapply(jsonFilesWithSchema, function(file){
-    if(is.null(jsonSchemaMap[[file]])){
-      errMsg <<- paste(errMsg, "Schema and/or JSON file: '" %+% file %+% 
-                         "' is required but missing. Please make sure a valid schema file is available.", 
-                       sep = "\n")
-    }
-  })
+if(is.null(errMsg)){
+  # files that require schema file
+  jsonFilesWithSchema <- c(file.path(currentModelDir, configDir, paste0(modelName,".json")), 
+                           file.path(currentModelDir, configDir, paste0(modelName, "_io.json")),
+                           file.path(configDir, "db_config.json"))
+  jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
+  if(any(jsonFilesMissing)){
+    errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
+                                   "' is required/are required but missing or you have no read permissions. Please make sure this file/these files are available."), 
+                    sep = "\n")
+  }
+  rm(jsonFilesMissing)
+  jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
+                                   file.path(configDir, "config_schema.json")), 
+                        GMSIO_config = c(jsonFilesWithSchema[2], 
+                                     file.path(configDir, "GMSIO_config_schema.json")),
+                        db_config = c(jsonFilesWithSchema[3], 
+                                      file.path(configDir, "db_config_schema.json")))
 }
 
 # validate json files
@@ -32,8 +37,8 @@ if(is.null(errMsg)){
     error <- tryCatch({
       eval <- validateJson(jsonSchemaMap[[i]][1], jsonSchemaMap[[i]][2])
     }, error = function(e){
-      errMsg <<- paste(errMsg, "Some error occurred validating JSON file: '" %+% 
-                         names(jsonSchemaMap)[[i]] %+% "'. Error message: " %+% e, sep = "\n")
+      errMsg <<- paste(errMsg, paste0("Some error occurred validating JSON file: '", 
+                                      basename(jsonFilesWithSchema[i]), "'. Error message: ", e), sep = "\n")
       e
     })
     if(inherits(error, "error")){
@@ -47,15 +52,18 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
       config$db <<- c(config, eval[[1]])
     }else if(!is.null(eval[[2]])){
-      errMsgTmp <- "Some error occurred parsing JSON file: '" %+% names(jsonSchemaMap)[[i]] %+% 
-        "'. See below for more detailed information."
-      errMsg <<- paste(errMsg, errMsgTmp, sep = "\n")
-      jsonErrors <<- rbind(jsonErrors, cbind(file_name = paste0(names(jsonSchemaMap)[[i]], ".json"), eval[[2]]))
+      errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
+                           basename(jsonFilesWithSchema[i]), 
+                           "'. See below for more detailed information.")
+      errMsg     <<- paste(errMsg, errMsgTmp, sep = "\n")
+      jsonErrors <<- rbind(jsonErrors, 
+                           cbind(file_name = basename(jsonFilesWithSchema[i]), eval[[2]]))
     }
   })
 }
 if(is.null(errMsg)){
-  if(identical(config$activateModules$sharedScenarios, TRUE) && identical(config$activateModules$scenario, FALSE)){
+  if(identical(config$activateModules$sharedScenarios, TRUE) &&
+     identical(config$activateModules$scenario, FALSE)){
     flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
     config$activateModules$sharedScenarios <- FALSE
   }
@@ -63,7 +71,8 @@ if(is.null(errMsg)){
     pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
     if(is.na(pg_user)){
       if(!length(config$db$username)){
-        errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\nThe username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
+        errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\n
+                        The username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
                         sep = "\n")
       }
     }else{
@@ -115,7 +124,8 @@ if(is.null(errMsg)){
     if(is.null(eval[[2]])){
       lang <- eval[[1]]
     }else{
-      errMsg <- paste(errMsg, "Some error occurred parsing JSON language file: '" %+% config$language %+% ".json'. See below for more detailed information.", sep = "\n")
+      errMsg <- paste(errMsg, paste0("Some error occurred parsing JSON language file: '",
+                                     config$language, ".json'. See below for more detailed information."), sep = "\n")
       flog.fatal(errMsg)
       jsonErrors <- rbind(jsonErrors, cbind(file_name = paste0(config$language, ".json"), eval[[2]]))
     }
@@ -346,8 +356,9 @@ if(is.null(errMsg)){
     }
     isValidScalar <- config$hiddenOutputScalars %in% outScalarTmp
     if(any(!isValidScalar)){
-      errMsg <- paste(errMsg, sprintf("Some output scalars you declared to be hidden were not defined in your GAMS model as scalars to be displayed in MIRO. These scalars are: '%s'. Please either add them in your model or remove them from the list of hidden output scalars in your config.json file.", 
-                                      config$hiddenOutputScalars[!config$hiddenOutputScalars %in% names(modelOut)]), sep = "\n")
+      errMsg <- paste(errMsg, sprintf("Some output scalars you declared to be hidden were not defined in your GAMS model as scalars to be displayed in MIRO. 
+These scalars are: '%s'. Please either add them in your model or remove them from the list of hidden output scalars in your '%s.json' file.", 
+                                      config$hiddenOutputScalars[!config$hiddenOutputScalars %in% names(modelOut)], modelName), sep = "\n")
     }else if(length(outScalarTmp) > 0L && identical(sum(isValidScalar), length(outScalarTmp))){
       modelOut[[scalarsOutName]]$hidden <- TRUE
     }
