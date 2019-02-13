@@ -1,5 +1,5 @@
 * Driver miro.gms to interact with GAMS/MIRO
-$offListing
+$if not set MIRO_DEBUG $offListing
 $onText
 Put the input and output symbols in $on/offExternalInput and $on/offExternalOutput blocks.
 
@@ -218,9 +218,9 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          htext = htext + ',' + h[0]
       f.write('$ife card(' + sym.name + ')=0 $abort Need data for ' + sym.name + '\n')
       if stype=='pp': # pivot
-         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 header="' + htext + '" format=csv > ' + sym.name.lower() + '.csv\n')
+         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 header="' + htext + '" format=csv > ' + sym.name.lower() + '.csv\n')
       else:
-         f.write('$hiddencall gdxdump ' + gdxfn + ' epsout=0 symb=' + sym.name + ' csvsettext csvallfields header="' + htext + '"  format=csv > ' + sym.name.lower() + '.csv\n')
+         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields header="' + htext + '"  format=csv > ' + sym.name.lower() + '.csv\n')
       f.write('$if errorlevel 1 $abort Problems creating ' + sym.name.lower() + '.csv\n')
    f.write('\n')
    f.write('* Create scalars.csv (if necessary) and produce xlsx file\n')
@@ -277,7 +277,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('          worksheet.write(r, c, col)\n')
    f.write('workbook.close()\n')
    f.write('$offembeddedCode\n')
-   f.write('$if not set MIRO_DEBUG $hiddencall rm -f ' + gdxfn + ' ' + savegdxfn)
+   f.write('$if not set MIRO_DEBUG $hiddencall rm -f "' + gdxfn + '" "' + savegdxfn + '"')
    if have_i_scalar:
       f.write(' scalars.csv')
    for s in i_sym:
@@ -393,7 +393,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       for h in symHeader[1:]:
          htext = htext + ',' + h[0]
       f.write('$if DEFINED ' + symname + ' execute$card(' + symname + ') ')
-      f.write('\'gdxdump ' + fn + ' epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';')
+      f.write('\'gdxdump "' + fn + '" epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';')
       f.write(' abort$errorlevel "problems writing ' + symname + '.csv";\n')
    f.write('$if not set MIRO_DEBUG execute "rm -rf ' + fn + '";\n')
 
@@ -520,7 +520,7 @@ config['gamsOutputFiles'] = io_dict
 confdir = r'%fp%conf'
 if not os.path.exists(confdir):
    os.makedirs(confdir)
-with open(confdir + '/GMSIO_config.json', 'w') as f:
+with open(confdir + '/' + '%fn%'.lower() + 'io.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 $offembeddedCode
    
