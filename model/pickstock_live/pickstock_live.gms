@@ -17,7 +17,7 @@ $if not set TW_lo $set TW_lo "2017-01-01"
 $if not set TW_up $set TW_up "2017-01-02"
 
 $log ***
-$log *** Fetching stockdata (this may take ~30s depending on requested time period)****
+$log *** Fetching stockdata (this may take ~30s depending on requested time period)
 $log ***
 $onEmbeddedCode Python:
 try:
