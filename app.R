@@ -763,12 +763,11 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                checkbox = {
                  input[["cb_" %+% i]]
                })
-        
         if(noCheck[i]){
           noCheck[i] <<- FALSE
           return()
         }
-        rv$datasetsModified[i] <- TRUE
+        isolate(rv$datasetsModified[i] <- TRUE)
         if(isolate(rv$unsavedFlag)){
           return()
         }
