@@ -45,7 +45,9 @@
   /* Large devices (large desktops, 1200px and up) */
   /* ======= Landing Page ======= */
 .doc-wrapper .container, .cards-section .container{
-    padding: 50px 70px;
+    padding-top: 70px;
+    padding-bottom: 70px;
+    margin-bottom:45px;
     background-color: #fff;
     -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
     box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
@@ -346,7 +348,7 @@ body{
   background: #494d55;
   color: rgba(255, 255, 255, 0.85);
   padding: 30px 0;
-  width: 1200px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -457,6 +459,7 @@ body{
   font-weight: bold;
   padding-bottom: 10px;
   border-bottom: 1px solid #d7d6d6;
+  color: #f90;
 }
 .page-wrapper .doc-section h1 {
   font-size: 24px;
