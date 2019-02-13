@@ -52,7 +52,7 @@ $if not set scenario $set scenario s1
 $onExternalInput
 Singleton set actScen(s) 'Active scenario' / %scenario% /;   
 
-Table RData(rR,s,rhdr) 'Reactor data'
+Table RData(rR,s,rhdr) 'Reactor data [MIRO:table]'
         s1.VMIN  s1.VMAX  s2.VMIN  s2.VMAX
    R1    102.14      250     20         50
    R2    176.07      250     52.5      250
