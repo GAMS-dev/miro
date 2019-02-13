@@ -38,20 +38,23 @@ rem Cleanup installation
 cd %GAMSDIR%
 rm -f .uninstinfo.ini unins000.dat unins000.exe gamside.url
 
-rem miro libinclude
-cd %GAMSDIR%
-copy /Y %GITDIR%model\miro.gms inclib
-
 rem R installation
 wget --no-check-certificate --user=%CLOUDUSER% --password=%CLOUDPW% https://cloud.gams.com/remote.php/webdav/GMSR_win.zip
-gmsunzip -qq -o -a GMSR_win.zip
+gmsunzip -qq -o GMSR_win.zip
 rm -f GMSR_win.zip
 
 rem Python modules
 cd GMSPython\Scripts
 pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder
 cd %GAMSDIR%
+
+:fast
+rem miro libinclude
+cd %GAMSDIR%
+copy /Y %GITDIR%model\miro.gms inclib
+
 mkdir miro
+rm -rf miro\*
 cd miro
 cp -r %GITDIR%JS .
 cp -r %GITDIR%R .
@@ -94,6 +97,13 @@ rm -f transport_live_conf.zip
 cd %GITDIR%
 cp -f mkconfig.inc datalib.glb %GAMSDIR%datalib_ml
 
+cd %GAMSDIR%datalib_ml
+echo $include mkconfig.inc >> kport.gms
+echo $include mkconfig.inc >> pickstock.gms
+echo $include mkconfig.inc >> pickstock_live.gms
+echo $include mkconfig.inc >> transport.gms
+echo $include mkconfig.inc >> transport_live.gms
+
 rem Newer cmex
 cd %GAMSDIR%
 copy /Y %GPRODUCTS%gamscmex\optgams.def
@@ -101,6 +111,7 @@ copy /Y %GPRODUCTS%..\..\btree\gamscmex\wei\gamscmex.exe
 
 cd %GAMSDIR%..
 mkdir output
+rm -rf output\*
 copy /Y %GPRODUCTS%global\gams.ico 
 copy /Y %GPRODUCTS%global\gams_left.bmp
 copy /Y %GPRODUCTS%global\gams_small.bmp
@@ -108,5 +119,6 @@ copy /Y %GITDIR%miro.iss
 Compil32.exe /cc miro.iss
 rem when ready sign the installer
 rem move output\setup.exe output\miro_windows_x64_64.exe
+rem rm miro.iss gams.ico gams_left.bmp gams_small.bmp
 rem "c:\Program Files (x86)\Windows Kits\10\bin\10.0.16299.0\x64\signtool" sign -v -f %CERT% -p %CERTPW% -tr http://timestamp.comodoca.com/rfc3161 output/miro_windows_x64_64.exe
 :end
