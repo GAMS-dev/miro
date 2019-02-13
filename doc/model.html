@@ -62,7 +62,7 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="model-1"  class="section-block">
                                     <p>After testing the demo applications, let's now turn an existing GAMS model into a MIRO app. When developing MIRO, we focused on automating this process and making it possible with very few adjustments to your model. In order to get started, it's a good idea to have a look at the GAMS code of the <a href="./start.html#start-1">demo applications</a>.</p>
-                                    <p>The model <i>trnsport</i> is one of the demo applications that come with your MIRO installation. 
+                                    <p>The model <i>transport</i> is one of the demo applications that come with your MIRO installation. 
                                         However, for illustration purposes we now take the original <i>trnsport.gms</i> model from the GAMS <a href="https://www.gams.com/latest/gamslib_ml/libhtml/" target="_blank">Model Library</a>. 
                                         </p><p>If you want to join us in going step by step from the "raw" model to our first MIRO app, download the corresponding file from the Model Library and put it in a directory of your choice.</p>
                                 </div><!--//section-block-->
@@ -82,22 +82,22 @@
                                         </div>
                                         <p>In principle, only two steps are required:</p>
                                         <ol>
-                                          <li>Flag input data with <code class="language-gams">$onExternalInput
+                                          <li>Enclose input data with <code class="language-gams">$onExternalInput
                                           </code> / <code class="language-gams">$offExternalInput
-                                          </code> or <code class="language-gams">'UIInput: '</code></li>
-                                          <li>Flag output data with <code class="language-gams">$onExternalOutput
+                                          </code></li>
+                                          <li>Enclose output data with <code class="language-gams">$onExternalOutput
                                           </code> / <code class="language-gams">$offExternalOutput
-                                          </code> or <code class="language-gams">'UIOutput: '</code></li>
+                                          </code></li>
                                         </ol>
                                         We will examine these steps more closely in the following.
                                     </div><!--//section-block-->
                                     <div  id="create-2"  class="section-block">
                                         <h3 class="block-title">Model adjustments</h3>
-                                        <p>Every GAMS model can be deployed with MIRO in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by wrapping the corresponding symbols with the tags <code class="language-gams">$onExternalInput
+                                        <p>Every GAMS model can be deployed with MIRO in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by enclosing the corresponding symbols with the tags <code class="language-gams">$onExternalInput
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> for input data and <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
-                                        </code> for output data. These tags can be used multiple times within a model. Alternatively one can write <code class="language-gams">'UIInput: '</code> or <code class="language-gams">'UIOutput: '</code> at the beginning of the explanatory text of a GAMS symbol to include this symbol in MIRO. Symbols which are not tagged with one of these markers won’t be visible in the web interface.
+                                        </code> for output data. These tags can be used multiple times within a model. Symbols which are not tagged won’t be visible in the web interface.
                                         <p>The code below shows a small example:</p>
                                         <pre><code class="language-gams">$onExternalInput
 Parameter
@@ -106,13 +106,12 @@ Parameter
 $offExternalInput
 
 Parameter
-   symbol_3(dim4)        'NOT displayed in MIRO'
-   symbol_4(dim5)        'UIOutput: Displayed in MIRO (model output data)';</code></pre> 
+   symbol_3(dim4)        'NOT displayed in MIRO';</code></pre> 
                                         <p>Here, the parameters <span class="code">symbol_1</span> and <span class="code">symbol_2</span> are declared between the tags <code class="language-gams">$onExternalInput
                                           </code> and <code class="language-gams">$offExternalInput
                                           </code>. They will be visible in MIRO (e.g. as tables).
                                         <br><span class="code">symbol_3</span>, on the other hand, was declared outside the keywords. This parameter will not be visible in MIRO (however, of course it is still available as a GAMS symbol in your model).
-                                        <br><span class="code">symbol_4</span> will be displayed in MIRO as output data because its explanatory text starts with <span class="code">UIOutput</span>.</p>
+                                        </p>
                                         <p>The following GAMS symbols can be used in MIRO:</p>
                                         <ul>
                                           <li><a href="https://www.gams.com/latest/docs/UG_SetDefinition.html" target="_blank">Sets</a></li>
@@ -173,9 +172,7 @@ Scalar f 'freight in dollars per case per thousand miles' / 90 /;
 $offExternalInput
 </code></pre> 
                                         <p>In addition, we want MIRO to display the variables of the model. To do so, we simply tag the declaration statement of the variables:</p>
-                                        <pre><code class="language-gams">[...]
-                                        
-$onExternalOutput
+                                        <pre><code class="language-gams">$onExternalOutput
 Variable
    x(i,j) 'shipment quantities in cases'
    z      'total transportation costs in thousands of dollars';
@@ -213,7 +210,7 @@ Positive Variable x;
                                                 </div><!--//content-->
                                             </div><!--//callout-block-->
                                           </li>
-                                          <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">GMSIO_config.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
+                                          <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
                                             </br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data saved yet as you can use the Excel file to populate the tables.
                                             <div class="callout-block callout-warning">
                                                 <div class="icon-holder">
@@ -465,7 +462,9 @@ $offExternalInput
                                     <p>Another property of variables: While a GAMS parameter has a single value associated with each unique label combination, a variable has several (<span class="code">level</span>, <span class="code">marginal</span>, <span class="code">lower bound</span>, <span class="code">upper bound</span> and <span class="code">scale</span>).
                                     When you tag a variable to be displayed in MIRO, all of its attributes will be displayed. If you are only interested in a subset of these attributes, you need to assign them to a parameter and tag this parameter for display in MIRO.</p>
                                     <p>In the following example we integrate the variable <code class="language-gams">x(i,j)</code> into MIRO.</p>
-                                    <pre><code class="language-gams">Variable x(i,j) 'UIOutput: shipment quantities in cases';
+                                    <pre><code class="language-gams">$onExternalOutput
+Variable x(i,j) 'shipment quantities in cases';
+$offExternalOutput
 </pre></code>
                                     <p>The resulting table then looks like this:</p>
                                     <div class="section-block" style="text-align:center;">
@@ -477,7 +476,9 @@ $offExternalInput
                                     <h3 class="block-title">Equations</h3>
                                     <p>Equations are treated identically with variables, i.e. they have a fixed number of 4 value columns, namely <span class="code">level</span>, <span class="code">marginal</span>, <span class="code">lower bound</span>, <span class="code">upper bound</span> and <span class="code">scale</span>.
                                     <br>Example:</p>
-                                    <pre><code class="language-gams">Equation demand(j)   'UIOutput: satisfy demand at market j' ;
+                                    <pre><code class="language-gams">$onExternalOutput
+Equation demand(j)   'satisfy demand at market j';
+$offExternalOutput
 </pre></code>
                                     <p>This leads to the following table:</p>
                                     <div class="section-block" style="text-align:center;">
@@ -501,7 +502,7 @@ $offExternalInput
                                     <h3 class="block-title">Command line parameters</h3>
                                     <p>In addition to GAMS symbols like parameters and scalars, command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double dash parameters</a>) can also be set from within MIRO.
                                     The configuration of these command line parameters differs from that of GAMS symbols. While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged, command line parameters lack such a formal declaration. 
-                                    To be able to set them from MIRO, you must declare them in the config.json file. 
+                                    To be able to set them from MIRO, you must declare them in the &lt;modelname&gt;.json file. 
                                     Read more about this topic <a href="./customize.html#widgets-commandLine">here</a>.
                                     </p>
                                 </div><!--//section-block-->

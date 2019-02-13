@@ -69,11 +69,29 @@
                                 <h2 class="section-title">Starting MIRO</h2>
                                 <div  id="start-1"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. On Windows, the demo applications are located in <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\</span>. If you are using MacOS or Linux, you can find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
+                                    <p>To get a feeling for the use of MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">GAMS MIRO beta:</h4>
+                                            <p>In order to use the GAMS MIRO BETA version, a special installation is necessary. Until an official release of GAMS MIRO, the demo models will only be available via this special version in the data utilities library.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>The following demos are available:</p>
                                     <ul>
-                                    <li>trnsport</li>
+                                    <li>transport</li>
                                     This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Note:</h4>
+                                            <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>. However, we will continue to use the term <i>trnsport</i> in this documentation.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <li>trnsport_live</li>
                                     A "live" version of the trnsport model. Extends trnsport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
                                     <li>pickstock</li>
@@ -83,12 +101,12 @@
                                     <li>kport</li>
                                     This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
                                     </ul>                                    
-                                    To start a demo application, you need to run the corresponding GAMS model (e.g. <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.gms</span>) with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
+                                    To start a demo application, you need to run the corresponding GAMS model with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                         <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="miro=launch" />
                                     </div>
                                     <p>or using the command prompt:</p>
-                                    <p style="display:block; text-align:center;"><kbd>cd path/to/gms_file && gams trnsport.gms miro=launch</kbd></p>
+                                    <p style="display:block; text-align:center;"><kbd>cd path/to/model && gams transport.gms miro=launch</kbd></p>
                                     <p><b>Note</b>: To use the command prompt, GAMS must be included in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
 
                                     <div class="callout-block callout-warning">
@@ -128,7 +146,7 @@
                                 <div  id="start-2"  class="section-block">
                                     <h3 class="block-title">Structure of MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us throgh this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
-                                    In order to launch the MIRO app for this model, we open the <span class="code">trnsport.gms</span> file in GAMS Studio and run it with the GAMS command line parameter <span class="code" style="white-space:nowrap">miro=launch</span>.</p>
+                                    In order to launch the MIRO app for this model, we open the <span class="code">transport.gms</span> file in GAMS Studio and run it with the GAMS command line parameter <span class="code" style="white-space:nowrap">miro=launch</span>.</p>
                                     <p>Once all the packages have been loaded, the MIRO app will start. Below you see the input mask as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
                                         <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial MIRO screen" />
@@ -208,7 +226,7 @@
                                             </div>
                                         <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. 
                                         When you start a MIRO app for a specific GAMS model for the first time, there is no data in the database yet, so you should start with a local file.
-                                        For our trnsport model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.xlsx</span>.</p>
+                                        For the model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span class="code">C:\Users\&lt;user_Name&gt;\Documents\GAMSStudio\workspace\transport.xlsx</span>.</p>
                                         <div class="callout-block callout-warning" id="create-excel">
                                             <div class="icon-holder">
                                                 <i class="fas fa-info-circle"></i>
@@ -218,8 +236,7 @@
                                                 <p>Every time you start a MIRO app, an Excel spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>To load the Excel spreadsheet select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory of the currently running app, e.g. 
-                                        <span class="code">C:\Users\&lt;user_Name&gt;\MIRO_examples\trnsport\trnsport.xlsx</span> and select the spreadsheet.
+                                        <p>To load the Excel spreadsheet select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory of the currently running app and select the spreadsheet.
                                         Now assign a name for the new scenario and confirm the data import with a click on <i>import</i>. A new (currently still unsaved) scenario is now created under the name specified.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -242,7 +259,7 @@
                                         <h3 class="block-title">Data manipulation</h3>
                                         <p>The tables that were empty before are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model.
                                         More about the tabular and graphical representation of input data in MIRO is explained <a href="./model.html#creating-section">here</a>. 
-                                        <br>We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our <i>trnsport</i> demo you have the option to edit the capacities, the demand, the distance matrix and several scalar values: 
+                                        <br>We can now change the input data. You may want to edit individual cells, sort by a different column or add/remove entire records (rows in the table). In our <i>transport</i> demo you have the option to edit the capacities, the demand, the distance matrix and several scalar values: 
                                         <div class="section-block">
                                             <img class="img-fluid" src="assets/images/input-data.png" alt="Input data screen" />
                                         </div>
@@ -250,7 +267,7 @@
                                     </div><!--//section-block-->
                                     <div id="workflow-3"  class="section-block">
                                         <h3 class="block-title">Solve the model</h3>
-                                        <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">trnsport.gms</span> is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the model.
+                                        <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">transport.gms</span> is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the model.
                                         <br>During the calculations, MIRO automatically switches to the section <i>GAMS interaction</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
@@ -263,7 +280,7 @@
                                         <h3 class="block-title">Inspect results</h3>
                                         <p>In the <i>Output</i> section the results are visualized. 
                                         As with the input data, a distinction is made between GAMS parameters and scalar values. GAMS parameters are each visualized in a separate tab and scalars are combined in one table.
-                                        <br>If you configured a graphical representation of your data, it can also be seen here. In the <i>trnsport</i> model a plot is configured for the only present output parameter in the form of a map, see image below.</p>
+                                        <br>If you configured a graphical representation of your data, it can also be seen here. In the <i>transport</i> model a plot is configured for the only present output parameter in the form of a map, see image below.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/output-data.png" alt="Output data screen" />
                                         </div>

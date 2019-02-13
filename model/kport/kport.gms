@@ -126,7 +126,9 @@ p(pP) = DEMAND(pP) > 0;
 
 * definition of compact MINLP model
 Variable
-   cTotal    'UIOutput: total  costs'
+$onExternalOutput
+   cTotal    'total  costs'
+$offExternalOutput
    cInvest   'invest cost'
    cFixed    'fix    costs'
    f(rR,pP)  'utilization rate'
@@ -205,7 +207,9 @@ SOS2 Variable
    lambda(rR,j) 'approximation of economies of scale function';
 
 Equation
-   SPPx(pP)       'UIOutput: compute surplus production p'
+$onExternalOutput
+   SPPx(pP)       'compute surplus production p'
+$offExternalOutput
    CNPl0(rR,pP)   'linearized version of CNP'
    CNPl1(rR,pP)   'linearized version of CNP'
    CNPl2(rR,pP,i) 'linearized version of CNP'

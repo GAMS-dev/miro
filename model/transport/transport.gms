@@ -1,4 +1,4 @@
-$title A Transportation Problem (TRNSPORT,SEQ=1)
+$title A Transportation Problem with multiple version LP/MIP/MINLP
 $onText
 This problem finds a least cost shipping schedule that meets
 requirements at markets and supplies at factories.
@@ -7,20 +7,12 @@ requirements at markets and supplies at factories.
 Dantzig, G B, Chapter 3.3. In Linear Programming and Extensions.
 Princeton University Press, Princeton, New Jersey, 1963.
 
-This formulation is described in detail in:
-Rosenthal, R E, Chapter 2: A GAMS Tutorial. In GAMS: A User's Guide.
-The Scientific Press, Redwood City, California, 1988.
-
-The line numbers will not match those in the book because of these
-comments.
-
-Keywords: linear programming, transportation problem, scheduling
 $offText
 
 Set
-   i 'canning plants'
-   j 'markets'      
-;
+   i      'canning plants'
+   j      'markets'
+   locHdr 'location data header' / lat, lng /;
 
 $onExternalInput
 Parameter
@@ -42,12 +34,12 @@ Scalar f 'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
        beta 'beta (MINLP-only)' / 0.95 /;
 
-Table ilocData(i,*) 'Plant location information'
+Table ilocData(i,locHdr) 'Plant location information [MIRO:table]'
                lat           lng     
 Seattle     47.608013  -122.335167
 San-Diego   32.715736  -117.161087;
 
-Table jlocData(j,*) 'Market location information'
+Table jlocData(j,locHdr) 'Market location information [MIRO:table]'
            lat           lng     
 New-York   40.730610  -73.935242
 Chicago    41.881832  -87.623177

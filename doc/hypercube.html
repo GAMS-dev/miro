@@ -63,7 +63,7 @@
                                 <div class="section-block">      
                                     <p>MIRO allows the user to load input data, manipulate it, start & stop the GAMS optimization run, inspect the results as well as save, manage and compare different scenarios.</p>
                                     <p>Beside this <i>base mode</i>, there is another one which allows to configure and evaluate so-called <a href="./faqs.html#def-hypercube-job">Hypercube jobs</a>. A Hypercube job describes the automated execution of a certain number of automatically generated scenarios that differ with regard to their parameterization.</p>
-                                    <p>Let's get back to our <i>trnsport</i> example: In the MIRO <i>base mode</i>, among other things, we saw that we can determine the freight costs for the transportation of goods from suppliers to markets. We also learned that MIRO allows us to submit this particular scenario and fetch the results once its done.</p>
+                                    <p>Let's get back to our <i>transport</i> example: In the MIRO <i>base mode</i>, among other things, we saw that we can determine the freight costs for the transportation of goods from suppliers to markets. We also learned that MIRO allows us to submit this particular scenario and fetch the results once its done.</p>
                                     <p>But what if we want to solve a multitude of such scenarios with different parameterizations? Say, we are interested in finding out how our model behaves with regard to a change in freight costs as well as other input parameters? To avoid having to configure and solve each scenario individually, there is the <a href="faqs.html#def-hypercube"><i>Hypercube</i></a> <i>mode</i>. The Hypercube mode allows us to automatically solve and examine a subset of the parameter space of our model. This is done by varying all scalar model parameters (zero-dimensional GAMS parameters) within a given range. As a consequence, a large number of scenarios can be configured and analyzed at once.</p>
                                     <p>Results of such Hypercube jobs can be stored and inspected directly in MIRO. For this purpose, the Automated Performance Analysis & Visualization tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a> is already integrated. A direct comparison of scenarios in the scenario view (via split / tab view) is also available. You might also want to download a given subset of the scenarios you stored in MIRO and analyze them externally with the help of your own scripts.</p>
                                     <p>In short, the module presented here is designed to efficiently generate, store and analyze a multitude of scenarios.</p>
@@ -80,7 +80,7 @@
                                         <img class="img-fluid" style="max-height:30pt; display:block; margin:auto;" src="assets/images/batch_img/batch_launch.png" alt="Launch MIRO in Hypercube mode" />
                                     </div>
                                     <p>Or from the command line:
-                                    <span class="code" style="white-space: nowrap;">gams trnsport.gms miro=launch miromode=1</span></p>
+                                    <span class="code" style="white-space: nowrap;">gams transport.gms miro=launch miromode=1</span></p>
                                     <p>MIRO automatically processes and adjusts your base mode configuration so that it will work in Hypercube mode.</p>
                                     <p>Visually, the user Hypercube interface hardly differs from the regular mode. After starting the application, the following familiar startup screen appears.</p>
                                     <div class="section-block" style="text-align:center;">
@@ -116,7 +116,7 @@
                             <section id="scengen-section" class="doc-section">
                                 <h2 class="section-title">Scenario generation</h2>
                                 <div class="section-block">
-                                    <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input (and output) parameters. If, for example, for a run of the <i>trnsport</i> model, the freight cost is set to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario (together with the other input parameters). The Hypercube configuration discussed here makes it possible to automatically submit severl of those scenarios at once. </p>
+                                    <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input (and output) parameters. If, for example, for a run of the <i>transport</i> model, the freight cost is set to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario (together with the other input parameters). The Hypercube configuration discussed here makes it possible to automatically submit severl of those scenarios at once. </p>
                                     <p>The configuration of such a Hypercube job for a model is done in the menu 'Configure Hypercube job'. Let's take a look at an example.</p>
                                     <div  id="scengen-2"  class="section-block">
                                         <h3 class="block-title">Configuration of a Hypercube job</h3>
@@ -188,7 +188,7 @@
                                         </div><!--//table-responsive-->
                                         <p>The transformation of input widgets has the following implication for the submission of Hypercube jobs: <a href="#nobatch" class="scrollto">Unless explicitly specified</a> in the MIRO configuration of the model, each scalar is now expanded and the cartesian product over all scalars defines a Hypercube job. In other words: All combinations are generated from the configuration selected by the user and each of those combinations is what we call a <a href="./faqs.html#def-scenario" target="_blank">scenario</a> in the base mode. </p>
                                         <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="margin-bottom:15px; max-height:300pt" src="assets/images/batch_img/trnsport_batch.png" alt="regular trnsport parameterization" />
+                                            <img class="img-fluid" style="margin-bottom:15px; max-height:300pt" src="assets/images/batch_img/trnsport_batch.png" alt="regular transport parameterization" />
                                         </div>
                                         <p id="hcube-example">In the example, the slider for 'freight in dollars per case per thousand miles' was set by us to a range from 75 to 150 with a step size of 5.
                                         The slider configured in this way leads to 16 different scenarios.</p>
@@ -213,8 +213,8 @@
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:250pt" src="assets/images/batch_img/cart_prod.png" alt="cartesian product of configured parameters" />
                                         </div>
                                         <p id="nobatch">It becomes clear that the number of scenarios resulting from a particular Hypercube job configuration can increase rapidly with the number of scalar that are expanded. Depending on how computationally intensive the underlying GAMS model is, the scenarios should be carefully configured. 
-                                        <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO configuration for the GAMS model (i.e. in the config.json file) using the option <code class="language-json">"noHcube": "true"</code> or via the <a href="./configgen.html">Configuration Generator</a>. 
-                                        Example: The scalar 'minimum shipment' in the config.json file is configured as follows: </p><pre><code class="language-json">"mins": {                                      
+                                        <br>You may want to restrict certain input widgets to be transformed: This can be done in the MIRO configuration for the GAMS model (i.e. in the &lt;modelname&gt;.json file) using the option <code class="language-json">"noHcube": "true"</code> or via the <a href="./configgen.html">Configuration Generator</a>. 
+                                        Example: The scalar 'minimum shipment' in the transport.json file is configured as follows: </p><pre><code class="language-json">"mins": {                                      
    &#x22;widgetType&#x22;: &#x22;slider&#x22;,
    &#x22;alias&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
    &#x22;label&#x22;: &#x22;minimum shipment (MIP- and MINLP-only)&#x22;,
@@ -251,7 +251,7 @@
                                         </p>
                                         <p>
                                           For each scenario of a Hypercube job the GAMS call is compiled:
-                                          <span class="code" style="white-space: nowrap;">gams trnsport.gms --HCUBE_STATIC_a=8bc030208cf6482932608872c5681310 --HCUBE_SCALAR_beta=0.86 --type="mip"</span>
+                                          <span class="code" style="white-space: nowrap;">gams transport.gms --HCUBE_STATIC_a=8bc030208cf6482932608872c5681310 --HCUBE_SCALAR_beta=0.86 --type="mip"</span>
                                         You probably notice some oddities: All of the inputs that come from MIRO are included in this call, even those that are not GAMS command line parameters. GAMS scalars are prefixed with the keyword <kbd>HCUBE_SCALAR_</kbd>; parameters and other multi-dimensional GAMS symbols with the keyword <kbd>HCUBE_STATIC_</kbd>. Furthermore, the value of parameter <span class="code">a</span> looks weird: MIRO hashes the csv representation of the parameter with a 128-bit <a href="https://en.wikipedia.org/wiki/MD5" target="_blank">MD5</a> hash function. This way, we make sure that the parameter and thus the entire GAMS command changes when the table is modified and at the same time keep the call short.<br>
                                         The <kbd>HCUBE_SCALAR_</kbd> keyword instructs the GAMS compiler to assign the specified value not to compile time variable but a GAMS symbol declared in your model.<br>
                                         Command line parameters (GAMS options and double dash parameters) are just appended as in any GAMS call.</p>
@@ -312,24 +312,24 @@
                                         <ul>
                                           <li><i>static</i> folder
                                           <br>This folder contains all non-scalar (thus multidimensional) input data of the corresponding GAMS model. As explained <a href="#multi-dim-symbols" class="scrollto">here</a>, this data remains the same for all scenarios of a Hypercube job.</li>
-                                          <li><i>trnsport</i> folder
+                                          <li><i>transport</i> folder
                                           <br>This folder is a copy of the directory of the underlying GAMS model. If files are included in the model using relative paths, they should be located in this folder.</li>
                                           <li><i>hcube_submission.gms</i>
                                           <br>Script which is used in the <a href="#scengen-import" class="scrollto">automated job submission</a> to convert the Hypercube file into executable GAMS calls. The folder structure of the downloaded ZIP file corresponds to the structure assumed in the hcube_submission.gms file.</li>
-                                          <li>trnsport.hcube
+                                          <li>transport.hcube
                                           <br>Hypercube file. Contains the GAMS calls as well as the hash values for each scenario in the Hypercube job.</li>
                                         </ul>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="max-height:100pt;" src="assets/images/batch_img/hcube-zip.png" alt="Zip file for manual job submission" />
                                         </div>
                                         <p>When submitting your Hypercube job manually, you need to write a script that takes the information provided in the <i>.hcube</i> file and transform it into some sort of executable script. Of course, you can simply take the <span class="code">hcube_submission.gms</span> file that lies in the archive you downloaded. In case you need to customize this script e.g. because you want to send the GAMS jobs to some sort of compute server, you will need to adjust this file accordingly.</p>
-                                        <p>Let's have a brief look at the <i>trnsport.hcube</i> file:</p>
+                                        <p>Let's have a brief look at the <i>transport.hcube</i> file:</p>
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" style="margin-bottom:15px; max-height:300pt;" src="assets/images/batch_img/config_batch_file.png" alt="generated Hypercube file" />
                                         </div>
                                          <p><b>Each row of the file contains the information needed for exactly one scenario</b>.<br>Example: In the first line of the shown Hypercube file it says: </p>
                                          <p>
-                                         <span class="code">2d30a49f5fb10b2aa8aab9e133db4f079c8c753a23ce6f67f1086b572f57ba7c: gams trnsport.gms</span> 
+                                         <span class="code">2d30a49f5fb10b2aa8aab9e133db4f079c8c753a23ce6f67f1086b572f57ba7c: gams transport.gms</span> 
                                          <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=8bc030208cf6482932608872c5681310</span> 
                                          <span class="code" style="white-space:nowrap">--HCUBE_STATIC_b=a5126cbcb9f17e29d4b0e49aaf1087ff</span> 
                                          <span class="code" style="white-space:nowrap">--HCUBE_STATIC_d=50ae5383d3e43c0c902144abbf0b3e8e</span> 
@@ -341,9 +341,9 @@
                                          <span class="code" style="white-space:nowrap">--HCUBE=1</span>
                                          <span class="code" style="white-space:nowrap">execMode=0</span>
                                          <span class="code" style="white-space:nowrap">lo=3</span>
-                                         <span class="code" style="white-space:nowrap">trace="_sys_trace_trnsport.trc"</span>
+                                         <span class="code" style="white-space:nowrap">trace="_sys_trace_transport.trc"</span>
                                          <span class="code" style="white-space:nowrap">traceopt=3</span>
-                                         <span class="code" style="white-space:nowrap">idir1="..\..\trnsport"</span>
+                                         <span class="code" style="white-space:nowrap">idir1="..\..\transport"</span>
                                         <br>  
                                         <p>The following information is included:</p>
                                         <ul>
@@ -351,7 +351,7 @@
                                           <br>A row always begins with a <i>hash value</i> which is used to (almost) uniquely identify a scenario. 
                                           To learn more about how this hash is generated, read <a href="#hash-generation" class="scrollto">this</a> section.</li>
                                           <li>GAMS call:
-                                          <br>After the hash, the GAMS command to execute your model  (in this case: <span class="code" style="white-space:nowrap">gams trnsport.gms</span>) follows. </li>
+                                          <br>After the hash, the GAMS command to execute your model  (in this case: <span class="code" style="white-space:nowrap">gams transport.gms</span>) follows. </li>
                                           <li>Scenario input data:
                                           <br>A scenario is defined by a set of input data that is provided by MIRO. This data includes sets, parameters, scalars, command-line parameters etc.
                                           All of this information is provided in the GAMS call in some sort (again, if you want to learn more read <a href="#hash-generation" class="scrollto">this section</a>):
@@ -359,7 +359,7 @@
                                               <li>Static data:
                                               <br>Non-scalar / multi-dimensional input data such as parameters are used as fixed files for all scenarios of a Hypercube job. In the Hypercube job file such static datasets are specified as <span class="code" style="white-space:nowrap">--HCUBE_STATIC_&lt;parameter-name&gt;=&lt;hash&gt;</span>. 
                                               <br>Example: 
-                                              In the trnsport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, the Hypercube job file includes the substring: <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>.                                        
+                                              In the transport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, the Hypercube job file includes the substring: <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>.                                        
                                               <br>You can safely ignore the compile time variable. It does not serve any purpose other than being part of the hash that identifies the scenario. This way, MIRO makes sure it assigns a different hash to scenarios with exactly the same set of scalars but different multi-dimensional parameters. What you need to make sure of, however, is that the static files are correctly named and located in the directory named: <i>static</i>. Else, the GAMS compiler can't find the data for these symbols.
                                               </li>
                                               <li>Command line parameters:
@@ -374,7 +374,7 @@
                                           <li>Trace file command:
                                           <br>In case you are interested in doing performance analysis using the analysis tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a>, which is integrated into MIRO, you need to make sure to generate trace files for your scenarios. 
                                           Unless otherwise specified in your app configuration, MIRO will already include the GAMS command line options for creating trace files for each scenario (here:
-                                          <span class="code" style="white-space:nowrap">trace=_sys_trace_trnsport.trc traceopt=3</span>). Note that MIRO will only read the last record in the trace file (the last solve statement in your model)!</li>
+                                          <span class="code" style="white-space:nowrap">trace=_sys_trace_transport.trc traceopt=3</span>). Note that MIRO will only read the last record in the trace file (the last solve statement in your model)!</li>
                                           <li>When executing Hypercube jobs, you should always include the option <span class="code" style="white-space:nowrap">miro=run</span> as well as the double dash parameter <span class="code" style="white-space:nowrap">--hcube=1</span>. This instructs the GAMS compiler that you are executing a MIRO Hypercube job.</li>
                                           <li>The GAMS options <span class="code" style="white-space:nowrap">execMode=0</span> and <span class="code" style="white-space:nowrap">lo=3</span> are relevant for the automated execution of a Hypercube job and can be changed or ignored for the manual execution.</li>
                                         </ul>
@@ -411,8 +411,7 @@
                                         <br>Note that the header of this csv file must be: <span class="code" style="white-space:nowrap">"Scalar,Description,Value"</span> where <span class="code" style="white-space:nowrap">Scalar</span> stands for the GAMS Symbol name, <span class="code" style="white-space:nowrap">Description</span> for the optional explanatory text and <span class="code" style="white-space:nowrap">Value</span> contains the value set by the user from within MIRO. Symbol name and value can be extracted from the Hypercube job file, the explanatory text can simply be left blank.</li>
                                         <li>scalars_out.csv<br>This file contains all scalar output values specified between the <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
-                                        </code>  tags (or <code class="language-gams">'UIOutput: '
-                                        </code> in the explanatory text of a scalar). Just like any other output files, this is generated automatically after the model executed successfully.
+                                        </code>  tags. Just like any other output files, this is generated automatically after the model executed successfully.
                                         <br><b>Note:</b> If, for whatever reason, a model calculation is aborted, output files (including scalar output) are not generated. The consequence is that those scenarios will be considered invalid and won't be imported into the database by MIRO. In case you are also interested in scenarios that did not solve successfully, you need to manually create a file called <i>calars_out.csv</i>. This file needs to contain data for all output scalars that were declared in your model in order for the scenario to be accepted.</li>
                                         <li>_sys_trace_&lt;modelname&gt;.trc<br><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOtraceopt" target="_blank">Trace file</a> of the scenario run. This file contains numerous run statistics which are used for the the integrated performance analysis tool PAVER. The Hypercube job file already contains the GAMS options for generating the trace file automatically. In case you specified (in your MIRO app configuration) that you are not interested in trace information (option <code class="language-json">saveTraceFile</code> set to <code class="language-json">false</code>), mustn't be included in your scenario data. You can find more information about the trace file <a href="http://www.gamsworld.org/performance/trace.htm" target="_blank">here</a>.</li>
                                         </ul>
@@ -420,22 +419,21 @@
                                         
                                         <p>In addition to the mandatory files mentioned above, there may be other files in the result folder of a scenario. If <span class="code" style="white-space:nowrap">miro=run</span> is set, a csv file with results is created for each output parameter declared in the GAMS model between the <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
-                                        </code> tags (or <code class="language-gams">'UIOutput: ' 
-                                        </code> in the explanatory text). For example, when the Parameters <span class="code" style="white-space:nowrap">results</span> and <span class="code" style="white-space:nowrap">performance</span> are declared between those tags, the csv files <i>results.csv</i> and <i>performance.csv</i> will be written by GAMS.
+                                        </code> tags. For example, when the Parameters <span class="code" style="white-space:nowrap">results</span> and <span class="code" style="white-space:nowrap">performance</span> are declared between those tags, the csv files <i>results.csv</i> and <i>performance.csv</i> will be written by GAMS.
                                         For these files the following rules apply:</p>
                                         <ul>
                                         <li>Result files of output parameters are not mandatory, but optional for the upload into the database.</li>
                                         <li>The results must be in csv format.</li>
                                         <li>Csv files must be named after the parameters declared in the GAMS model between the <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
-                                        </code> tags (or <code class="language-gams">'UIOutput: ' 
-                                        </code> in the explanatory text). Each output parameter declared there must be stored in a separate csv file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
+                                        </code> tags. Each output parameter declared there must be stored in a separate csv file. Exceptions are scalar values, see <a href="#csv-scalars" class="scrollto">here</a>.</li>
                                         <li>It is mandatory that the header line of a csv file is identical to the corresponding parameter declared in GAMS.
-                                        <br>Example: In the (slightly adapted) trnsport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> is declared with the <code class="language-gams">'UIOutput: '
-                                        </code> tag. 
+                                        <br>Example: In the (slightly adapted) transport model, the output parameter <span class="code" style="white-space:nowrap">schedule(i,j,scheduleHdr)</span> should appear in MIRO. 
                                         <pre><code class="language-gams">Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
 
-Parameter schedule(i,j,scheduleHdr) 'UIOutput: shipment quantities in cases [MIRO:table]';
+$onExternalOutput
+Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
+$offExternalOutput
 
 schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
@@ -478,7 +476,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                     <div  id="analyze-2"  class="section-block">
                                         <h3 class="block-title">Scenario selection</h3>
                                         <p>Scenarios that have been imported into the MIRO database can be loaded at a later time for subsequent analyses. The <i>load scenarios</i> module is a graphical way to build datbase queries. It gives you a lot of flexibility and power to get exactly those scenarios you are interested in. Let's take a look at an example:</p>
-                                        <br>In our <i>trnsport</i> model, we have three input scalars that we import from MIRO:
+                                        <br>In our <i>transport</i> model, we have three input scalars that we import from MIRO:
                                         <pre><code class="language-gams">$onExternalInput 
 Scalar f    'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /

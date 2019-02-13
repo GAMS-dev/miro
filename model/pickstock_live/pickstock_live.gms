@@ -11,42 +11,29 @@ Scalar    maxstock      'maximum number of stocks to select ' /  2 /
           trainingdays  'number of days for training '        / 99 /;
 $offExternalInput
 
-Parameter price(date,symbol) 'UIOutput: stock price';
+$onExternalOutput
+Parameter price(date<,symbol<) 'stock price';
+$offExternalOutput
 
 $if not set TW_lo $set TW_lo "2017-01-01"
-$if not set TW_up $set TW_up "2017-01-02"
+$if not set TW_up $set TW_up "2017-01-15"
 
 $log ***
 $log *** Fetching stockdata (this may take ~30s depending on requested time period)
 $log ***
 $onEmbeddedCode Python:
-try:
-   import pandas as pd
-except:
-   import pip
-   if(hasattr(pip, 'main')):
-      pip.main(['install', 'pandas'])
-   else:
-      pip._internal.main(['install', 'pandas'])
-   import pandas as pd
+import pandas as pd
    
 # This is a work-around for a pandas_datareader bug
 pd.core.common.is_list_like = pd.api.types.is_list_like
 
-try:
-   import pandas_datareader.data as web
-except:
-   import pip
-   if(hasattr(pip, 'main')):
-      pip.main(['install', 'pandas-datareader'])
-   else:
-      pip._internal.main(['install', 'pandas-datareader'])
-   import pandas_datareader.data as web
-   
+import pandas_datareader.data as web
 from datetime import datetime
 
 # stockSymbols in DowJones index
-djSymbols  = ["MMM", "AXP", "AAPL", "BA", "CAT", "CVX", "CSCO", "KO", "DIS", "DWDP", "XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
+djSymbols  = ["MMM","AXP","AAPL","BA","CAT","CVX","CSCO","KO","DIS","DWDP",
+              "XOM","GE","GS","HD","IBM","INTC","JNJ","JPM","MCD","MRK",
+              "MSFT","NKE","PFE","PG","TRV","UTX","UNH","VZ","V","WMT"]
 
 start = datetime.strptime("%TW_lo%", '%Y-%m-%d')
 end   = datetime.strptime("%TW_up%", '%Y-%m-%d')
@@ -57,7 +44,7 @@ for sym in djSymbols:
    price.append(price_sym)
 price = pd.concat(price)
 gams.set("price", [(r[0], r[2], r[1]) for r in price.itertuples()])
-$offEmbeddedCode date<price.dim1 symbol<price.dim2 price
+$offEmbeddedCode price
 
 Alias (d,date), (s,symbol);
 Parameter
@@ -104,7 +91,7 @@ defobj..      obj =e= sum(td, slpos(td) + slneg(td));
 
 Model pickStock /all/;
 
-option optCR=0.01, resLim=6;
+option optCR=0.01;
 
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
