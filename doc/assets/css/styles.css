@@ -44,6 +44,13 @@
   /* Medium devices (desktops, 1075px and up) */
   /* Large devices (large desktops, 1200px and up) */
   /* ======= Landing Page ======= */
+.doc-wrapper .container, .cards-section .container{
+    padding: 50px 70px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
+    webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
+}
 .page-wrapper .upload-btn-wrapper {
   position: relative;
   overflow: hidden;
@@ -177,7 +184,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
-  background-color: #f9f9fb;
+  background-color: #e5e7ee;
   margin: 0px;
   min-height: 100%;
   /* equal to footer height */
@@ -209,7 +216,6 @@ body{
   text-decoration: none;
 }
 .page-wrapper code {
-  color: #fff;
   font-size: 14px;
   font-weight: bold;
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -340,6 +346,9 @@ body{
   background: #494d55;
   color: rgba(255, 255, 255, 0.85);
   padding: 30px 0;
+  width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .page-wrapper .sub-header a {
   color: #fff;
@@ -973,7 +982,7 @@ body{
 }
 .page-wrapper .cards-section {
   padding: 60px 0;
-  background: #f9f9fb;
+  background: #e5e7ee;
 }
 .page-wrapper .cards-section .title {
   margin-top: 0;

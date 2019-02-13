@@ -15,9 +15,8 @@ lapply(datasetsToFetch, function(dataset){
         tryCatch({
           dataTmp <- read_excel(input$localInput$datapath, dataset)
           dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
-          dataTmp[is.na(dataTmp) & vapply(dataTmp, is.numeric, logical(1L), 
-                                          USE.NAMES = FALSE)] <- 0L
-          dataTmp[is.na(dataTmp)] <- ""
+          dataTmp <- dataTmp %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
+            replace(is.na(.), "")
         }, error = function(e) {
           flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Details: %s.", 
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)

@@ -30,7 +30,7 @@ observeEvent(input$btImport, {
     }
   }
   activeSid <- NULL
-  if(!is.null(activeScen)){
+  if(!is.null(activeScen) && length(scenMetaDbSubset)){
     activeSid  <- activeScen$getSid()
     scenListDb <- db$formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ], 
                                     stimeIdentifier, desc = TRUE)

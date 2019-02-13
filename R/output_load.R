@@ -80,10 +80,9 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
         stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
       }
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
-      ret$tabular[[i]][is.na(ret$tabular[[i]]) & vapply(ret$tabular[[i]], 
-                                                        is.numeric, logical(1L), 
-                                                        USE.NAMES = FALSE)] <<- 0L
-      ret$tabular[[i]][is.na(ret$tabular[[i]])] <<- ""
+      ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.numeric , 
+                                                          replace_na, replace = 0) %>% 
+        replace(is.na(.), "")
       
       names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
       if(!hasValidHeaderTypes(ret$tabular[[i]], colTypes[[names(modelOut)[i]]])){

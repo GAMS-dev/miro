@@ -348,10 +348,8 @@ HcubeImport <- R6Class("HcubeImport",
                                  if(!is.null(colTypes)){
                                    scenData <- fixColTypes(scenData, colTypes)
                                  }
-                                 scenData[is.na(scenData) & vapply(scenData, 
-                                                                   is.numeric, logical(1L), 
-                                                                   USE.NAMES = FALSE)] <- 0L
-                                 scenData[is.na(scenData)] <- ""
+                                 scenData <- scenData %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
+                                   replace(is.na(.), "")
                                  
                                }
                                scenData

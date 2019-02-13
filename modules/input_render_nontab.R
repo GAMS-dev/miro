@@ -341,7 +341,7 @@ lapply(seq_along(modelIn), function(id){
                        next
                      }
                      choices[[j]] <- dataTmp[[ddownDep[[name]]$fw[[dataSheet]]]]
-                     if(!length(choices[[j]]) || choices[[j]][[1]] == ""){
+                     if(!length(choices[[j]]) || identical(choices[[j]][[1]], "")){
                        return(NULL)
                      }
                      if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
@@ -384,6 +384,7 @@ lapply(seq_along(modelIn), function(id){
                    if(!identical(selectedEl, isolate(input[["dropdown_" %+% id]]))){
                      noCheck[id] <<- TRUE
                    }
+                   selectedDepEl[[id]] <<- selectedEl
                    updateSelectInput(session, paste0("dropdown_", id), choices = choices, 
                                               selected = selectedEl)
                    inputInitialized[i] <<- TRUE
@@ -398,14 +399,15 @@ lapply(seq_along(modelIn), function(id){
                    }
                  }
                }else{
+                 selectedDepEl[[id]] <<- isolate(input[[paste0("dropdown_", id)]])
                  updateSelectInput(session, paste0("dropdown_", id), choices = getData[[i]](), 
-                                          selected = isolate(input[[paste0("dropdown_", id)]]))
+                                   selected = selectedDepEl[[id]])
                }
              })
              # observe changes of dropdown default value
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, isolate(input[["dropdown_" %+% id]]))){
+               if(!is.null(value) && !identical(value, selectedDepEl[[id]])){
                  noCheck[id] <<- TRUE
                  updateSelectInput(session, paste0("dropdown_", id), selected = value)
                }

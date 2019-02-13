@@ -34,6 +34,7 @@ closeScenario <- function(){
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
                updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
              }else{
+               selectedDepEl[[i]] <<- character(0)
                showEl(session, "#no_data_dep_" %+% i)
                hideEl(session, "#dropdown_" %+% i)
                updateSelectInput(session, "dropdown_" %+% i, choices = character(0), selected = character(0))

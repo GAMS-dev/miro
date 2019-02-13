@@ -537,6 +537,9 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     # boolean that specifies whether check if data is unsaved should be skipped
     noCheck            <- vector("logical", length = length(modelIn))
     noCheck[]          <- TRUE
+    # when inputs change values quickly, they sometimes lag in updating its element in 
+    # 'input' list. Thus, we remember currently selected values in this list
+    selectedDepEl      <- vector(mode = "list", length = length(modelIn))
     # list of attachments for active scenario
     attachmentList     <- tibble(name = vector("character", attachMaxNo),
                                  execPerm = vector("logical", attachMaxNo))
