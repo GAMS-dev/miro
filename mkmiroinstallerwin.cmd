@@ -109,6 +109,7 @@ echo $include mkconfig.inc >> transport_live.gms
 rem Newer cmex
 cd %GAMSDIR%
 copy /Y %GPRODUCTS%gamscmex\optgams.def
+copy /Y %GPRODUCTS%gamscmex\gamserrs.txt
 copy /Y %GPRODUCTS%..\..\btree\gamscmex\wei\gamscmex.exe
 
 cd %GAMSDIR%..
