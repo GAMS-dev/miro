@@ -178,6 +178,13 @@ $(document).ready(function () {
         break;
     }
   });
+  $("body").on("click", ".bt-highlight-1, .bt-highlight-2, .bt-highlight-3", function() {
+      let btn = $(this);
+      btn.prop('disabled', true);
+      setTimeout(function(){
+          btn.prop('disabled', false);
+      }, 1500);
+  });
   // hide pivot filter boxes when clicked outside of box
   $(document).click(function(e) {
   var target = e.target;
