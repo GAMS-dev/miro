@@ -65,7 +65,7 @@ defobj..      obj =e= sum(td, slpos(td) + slneg(td));
 
 Model pickStock /all/;
 
-option optCR=0.01, resLim=6;
+option optCR=0.01;
 
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
@@ -99,4 +99,3 @@ kpi                                  = sum(ntd, error(ntd));
 Parameter priceMerge(date,*) 'UIOutput: Price (stocks & dow jones)';
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
-
