@@ -26,6 +26,8 @@ echo no password for the comodo certificate is set. Set via CERTPW
 goto end
 :cont3
 
+rem goto fast
+
 rem quite install of GAMS
 cd C:\gams\win64
 %INSTALLER% /sp- /silent /dir=c:\gams\win64\innofiles /MERGETASKS='!desktopicon'
@@ -70,27 +72,27 @@ cp    %GITDIR%global.R .
 
 rem APILIB Example models
 cd %GITDIR%model\kport
-gmszip -r kport_conf.zip conf static customRenderer
+gmszip -r kport_conf.zip conf\config.json static customRenderer
 cp kport_conf.zip kport.gms %GAMSDIR%datalib_ml
 rm -f kport_conf.zip
 
 cd %GITDIR%model\pickstock
-gmszip -r pickstock_conf.zip conf static customRenderer
+gmszip -r pickstock_conf.zip conf\config.json static customRenderer
 cp pickstock_conf.zip pickstock.gms dowjones2016.csv %GAMSDIR%datalib_ml
 rm -f pickstock_conf.zip
 
 cd %GITDIR%model\pickstock_live
-gmszip -r pickstock_live_conf.zip conf static customRenderer
+gmszip -r pickstock_live_conf.zip conf\config.json static customRenderer
 cp pickstock_live_conf.zip pickstock_live.gms %GAMSDIR%datalib_ml
 rm -f pickstock_live_conf.zip
 
 cd %GITDIR%model\transport
-gmszip -r transport_conf.zip conf static customRenderer
+gmszip -r transport_conf.zip conf\config.json static customRenderer
 cp transport_conf.zip transport.gms %GAMSDIR%datalib_ml
 rm -f transport_conf.zip
 
 cd %GITDIR%model\transport_live
-gmszip -r transport_live_conf.zip conf static customRenderer
+gmszip -r transport_live_conf.zip conf\config.json static customRenderer
 cp transport_live_conf.zip transport_live.gms %GAMSDIR%datalib_ml
 rm -f transport_live_conf.zip
 
