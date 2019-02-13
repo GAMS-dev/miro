@@ -10,7 +10,8 @@ getInputDataset <- function(id){
           dataTmp <- hot_to_r(isolate(input[["in_" %+% id]]))
           if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
              identical(dataTmp[[1L]][1], ""))
-            return(modelInputData[[id]])
+            return(bind_rows(modelInputData[[id]], 
+                             modelInputDataVisible[[id]]))
           return(bind_rows(dataTmp, modelInputData[[id]]))
         }
         return(bind_rows(tableContent[[id]], 
@@ -115,6 +116,7 @@ lapply(modelInTabularData, function(sheet){
                  enableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- FALSE
                }
+               modelInputDataVisible[[i]] <<- data
                return(data)
              })
            }else{

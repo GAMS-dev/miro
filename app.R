@@ -695,6 +695,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     sidsToLoad <- list()
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
+    modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
     modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
     sharedInputData <- vector(mode = "list", length = length(modelIn))
     sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
