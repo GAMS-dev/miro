@@ -306,7 +306,7 @@ animation: none !important;
   font-size: 9pt;
   left: 5px;
 }
-.scen-button{
+.scen-button, .scen-button:focus{
   color: #fff; 
   background-color: #337ab7; 
   border-color: #2e6da4;

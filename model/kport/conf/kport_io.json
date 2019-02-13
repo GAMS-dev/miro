@@ -1,37 +1,71 @@
 {
-    "pageTitle": "Stock Selection Optimization",
-    "MIROSwitch": "--MIRO=RUN",
+    "pageTitle": "Product Portfolio Optimization",
+    "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "price": {
-            "alias": "Price",
+        "rdata": {
+            "alias": "Reactor data",
             "headers": {
-                "date": {
+                "rr": {
                     "type": "set",
-                    "alias": "date"
+                    "alias": "Reactor"
                 },
-                "symbol": {
+                "s": {
                     "type": "set",
-                    "alias": "stock symbol"
+                    "alias": "Scenario"
+                },
+                "rhdr": {
+                    "type": "set",
+                    "alias": "Reactor data headers"
                 },
                 "value": {
                     "type": "parameter",
-                    "alias": "Price"
+                    "alias": "Reactor data"
+                }
+            }
+        },
+        "pdata": {
+            "alias": "Product data",
+            "headers": {
+                "pp": {
+                    "type": "set",
+                    "alias": "Product"
+                },
+                "s": {
+                    "type": "set",
+                    "alias": "Scenario"
+                },
+                "demand": {
+                    "type": "parameter",
+                    "alias": "Demand"
+                },
+                "production time": {
+                    "type": "parameter",
+                    "alias": "Production Time"
                 }
             }
         },
         "scalars": {
             "alias": "Input Scalars",
             "symnames": [
-                "maxstock",
-                "trainingdays"
+                "actscen",
+                "whrs",
+                "csti",
+                "cstf",
+                "esf"
             ],
             "symtext": [
-                "maximum number of stocks to select",
-                "number of days for training"
+                "Active scenario",
+                "Length of considered period [hours]",
+                "Depreciation cost per m^3 reactor and period [kEuro]",
+                "Fixed cost per week and reactor [kEuro]",
+                "Economies of scale factor"
             ],
             "symtypes": [
+                "set",
+                "parameter",
+                "parameter",
                 "parameter",
                 "parameter"
             ],
@@ -52,12 +86,12 @@
         }
     },
     "gamsOutputFiles": {
-        "deffit": {
-            "alias": "fit to Dow Jones index",
+        "sppx": {
+            "alias": "compute surplus production p",
             "headers": {
-                "date": {
+                "pp": {
                     "type": "set",
-                    "alias": "date"
+                    "alias": "Product"
                 },
                 "level": {
                     "type": "parameter",
@@ -81,77 +115,71 @@
                 }
             }
         },
-        "partofportfolio": {
-            "alias": "what part of the portfolio",
+        "cost": {
+            "alias": "Cost report",
             "headers": {
-                "symbol": {
+                "chdr": {
                     "type": "set",
-                    "alias": "stock symbol"
+                    "alias": "Cost Header"
                 },
                 "value": {
                     "type": "parameter",
-                    "alias": "what part of the portfolio"
+                    "alias": "Cost report"
                 }
             }
         },
-        "dowvsindex": {
-            "alias": "dow jones vs. index fund",
+        "surplus": {
+            "alias": "Demand/Surplus report",
             "headers": {
-                "date": {
+                "pp": {
                     "type": "set",
-                    "alias": "date"
+                    "alias": "Product"
                 },
-                "dj": {
+                "demand": {
                     "type": "parameter",
-                    "alias": "dow jones"
+                    "alias": "Demand"
                 },
-                "index fund": {
+                "surplus": {
                     "type": "parameter",
-                    "alias": "index fund"
+                    "alias": "Surplus"
                 }
             }
         },
-        "abserror": {
-            "alias": "absolute error",
+        "productiontime": {
+            "alias": "Production time report",
             "headers": {
-                "date": {
+                "rr": {
                     "type": "set",
-                    "alias": "date"
+                    "alias": "Reactor"
                 },
-                "absolute error train": {
+                "production time": {
                     "type": "parameter",
-                    "alias": "absolute error train"
+                    "alias": "Production Time"
                 },
-                "absolute error test": {
+                "max. production time": {
                     "type": "parameter",
-                    "alias": "absolute error test"
+                    "alias": "max. Production Time"
                 }
             }
         },
-        "scalars_out": {
-            "alias": "Output Scalars",
-            "symnames": [
-                "lastdaytraining"
-            ],
-            "symtext": [
-                "last date of training period"
-            ],
-            "symtypes": [
-                "set"
-            ],
-            "count": 1,
+        "rpreport": {
+            "alias": "Reactor/Product report",
             "headers": {
-                "scalar": {
+                "rr": {
                     "type": "set",
-                    "alias": "Scalar Name"
+                    "alias": "Reactor"
                 },
-                "description": {
+                "pp": {
                     "type": "set",
-                    "alias": "Scalar Description"
+                    "alias": "Product"
                 },
-                "value": {
-                    "type": "set",
-                    "alias": "Scalar Value"
+                "utilization rate": {
+                    "type": "parameter",
+                    "alias": "Utilization rate"
+                },
+                "number of batches": {
+                    "type": "parameter",
+                    "alias": "Number of batches"
                 }
             }
         },

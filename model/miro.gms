@@ -520,7 +520,7 @@ config['gamsOutputFiles'] = io_dict
 confdir = r'%fp%conf'
 if not os.path.exists(confdir):
    os.makedirs(confdir)
-with open(confdir + '/' + '%fn%'.lower() + 'io.json', 'w') as f:
+with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 $offembeddedCode
    

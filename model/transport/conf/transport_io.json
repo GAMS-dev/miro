@@ -1,6 +1,6 @@
 {
     "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
-    "MIROSwitch": "--MIRO=RUN",
+    "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -44,6 +44,40 @@
                 "value": {
                     "type": "parameter",
                     "alias": "distance in thousands of miles"
+                }
+            }
+        },
+        "ilocdata": {
+            "alias": "Plant location information",
+            "headers": {
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
+                },
+                "uni": {
+                    "type": "set",
+                    "alias": "Universal set"
+                },
+                "value": {
+                    "type": "parameter",
+                    "alias": "Plant location information"
+                }
+            }
+        },
+        "jlocdata": {
+            "alias": "Market location information",
+            "headers": {
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
+                },
+                "uni": {
+                    "type": "set",
+                    "alias": "Universal set"
+                },
+                "value": {
+                    "type": "parameter",
+                    "alias": "Market location information"
                 }
             }
         },

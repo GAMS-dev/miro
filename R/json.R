@@ -1,28 +1,3 @@
-getJsonFileSchemaPairs <- function(fileDir, schemaDir = fileDir, schemaPattern = "_schema"){
-  # Get pairs of json and schema files from specified directory.
-  #
-  # Args:
-  #   fileDir:                  location of JSON files
-  #   schemaDir:                location of JSON schema files
-  #   schemaPattern:           Pattern used to identify schema files (e.g. 'xxx_schema.json'). 
-  #                             Only patterns of the form ('xxxPATTERN.json') are supported
-  #
-  # Returns:
-  #   List of json-schema pairs
-  
-  jsonFiles <- grep(list.files(fileDir), pattern = paste0(schemaPattern,"\\.json$"), inv=TRUE, value=TRUE)
-  jsonSchemaFiles <- list.files(schemaDir, pattern = paste0(schemaPattern,"\\.json$"))
-  
-  jsonSchemaMap <- list()
-  for(jsonFile in jsonFiles){
-    name <- sub("\\.json$", "", jsonFile)
-    if(paste0(name, schemaPattern, ".json") %in% jsonSchemaFiles){
-      jsonSchemaMap[[name]] <-c(paste0(fileDir,name,".json"), paste0(schemaDir,name,schemaPattern,".json"))
-    }
-  }
-  return(jsonSchemaMap)
-}
-
 validateJson <- function(jsonFileLocation, jsonSchemaLocation, verbose = TRUE, greedy = TRUE, addDefaults = TRUE){
   # Validates specified JSON file with JSON schema file and returns boolean as well as possible error messages in attributes.
   #
@@ -47,7 +22,7 @@ validateJson <- function(jsonFileLocation, jsonSchemaLocation, verbose = TRUE, g
   tryCatch({
     jsonValidator <- suppressWarnings(jsonvalidate::json_validator(jsonSchemaLocation))
   }, error = function(e) {
-    stop(paste0("Error reading'",jsonSchemaLocation,"'. Check for valid JSON syntax and make sure file is accessible."), 
+    stop(paste0("Error reading'", jsonSchemaLocation,"'. Check for valid JSON syntax and make sure file is accessible."), 
          call. = F)
   })
   

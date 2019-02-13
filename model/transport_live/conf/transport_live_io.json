@@ -1,36 +1,9 @@
 {
     "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
-    "gamsMetaDelim": "[MIRO:hidden]",
-    "MIROSwitch": "--MIRO=RUN",
+    "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
-        "i": {
-            "alias": "canning plants",
-            "headers": {
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "text": {
-                    "type": "set",
-                    "alias": "Set text canning plants"
-                }
-            }
-        },
-        "j": {
-            "alias": "markets",
-            "headers": {
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "text": {
-                    "type": "set",
-                    "alias": "Set text markets"
-                }
-            }
-        },
         "a": {
             "alias": "capacity of plant i in cases",
             "headers": {
@@ -61,7 +34,7 @@
             "alias": "Input Scalars",
             "symnames": [
                 "f",
-                "minS",
+                "mins",
                 "beta"
             ],
             "symtext": [
@@ -134,7 +107,6 @@
         },
         "scalars_out": {
             "alias": "Output Scalars",
-            "hidden": false,
             "symnames": [
                 "total_cost"
             ],

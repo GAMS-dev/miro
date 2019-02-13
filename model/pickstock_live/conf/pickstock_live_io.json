@@ -1,7 +1,6 @@
 {
     "pageTitle": "Stock Selection Optimization with live data from the web",
-    "gamsMetaDelim": "[MIRO:hidden]",
-    "MIROSwitch": "--MIRO=RUN",
+    "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
     "gamsInputFiles": {
@@ -102,9 +101,8 @@
         },
         "scalars_out": {
             "alias": "Output Scalars",
-            "hidden": true,
             "symnames": [
-                "lastDayTraining"
+                "lastdaytraining"
             ],
             "symtext": [
                 "last date of training period [MIRO:hidden]"

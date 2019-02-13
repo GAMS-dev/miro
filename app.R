@@ -39,8 +39,6 @@ if(R.version[["major"]] < 3 ||
 tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
-# files that require schema file
-jsonFilesWithSchema <- c("config", "GMSIO_config", "db_config")
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
 # required packages
@@ -110,10 +108,11 @@ if(is.null(errMsg)){
   tryCatch({
     modelPath <- paste0(getwd(), .Platform$file.sep, modelDir, modelName, 
                         .Platform$file.sep, modelName, ".gms")
-    modelPath <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, paste0(getwd(), .Platform$file.sep, modelDir))
+    modelPath    <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, 
+                                 paste0(getwd(), .Platform$file.sep, modelDir))
     modelGmsName <- modelPath[[2]]
-    modelName <- modelPath[[3]]
-    modelPath <- modelPath[[1]]
+    modelName    <- modelPath[[3]]
+    modelPath    <- modelPath[[1]]
   }, error = function(e){
     errMsg <<- paste(errMsg,
                      "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve.",
@@ -194,7 +193,7 @@ if(is.null(errMsg)){
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
     if(isShinyProxy){
-      config$db <- fromJSON(paste0(configDir, jsonFilesWithSchema[3], ".json"))
+      config$db <- fromJSON(paste0(configDir, "db_config.json"))
     }
   }
 }
@@ -962,10 +961,11 @@ if(identical(LAUNCHADMINMODE, TRUE)){
        curl::has_internet() && 
        file.exists(file.path(currentModelDir, ".crash.zip"))){
       showModal(modalDialog(title = "MIRO terminated unexpectedly",
-                            "MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
+                            paste0("MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
-                            The ONLY files that we send (encrypted via HTTPS) are the configuration files: 'GMSIO_config.json' and 'config.json' as well as the error log. 
-                            None of your .gms model files will be sent!", 
+                            The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
+                            "_io.json' and '", modelNameRaw, ".json' as well as the error log. 
+                            None of your .gms model files will be sent!"), 
                             footer = tagList(actionButton("crash_dontsend", "Don't send"),
                                              actionButton("crash_send", "Send", class = "bt-highlight-1"))))
       observeEvent(input$crash_dontsend, {

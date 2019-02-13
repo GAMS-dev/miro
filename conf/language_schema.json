@@ -90,11 +90,6 @@
               "minLength":1,
               "required":true
             },
-            "load":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "splitView":{  
               "type":"string",
               "minLength":1,
@@ -208,18 +203,6 @@
               "minLength":1,
               "required":true
             },
-            "tooltips":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "btGraphView":{  
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
-            },
             "widgetTabTitle":{  
               "type":"string",
               "minLength":1,
@@ -314,6 +297,11 @@
               "minLength":1,
               "required":true
             },
+            "btLoad":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "tooltips":{  
               "type":"object",
               "additionalProperties":false,
@@ -330,6 +318,11 @@
                   "required":true
                 },
                 "btClose":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "btDownloadTmpFiles":{  
                   "type":"string",
                   "minLength":1,
                   "required":true

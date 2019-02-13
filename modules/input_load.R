@@ -14,8 +14,10 @@ lapply(datasetsToFetch, function(dataset){
         # load from Excel workbook
         tryCatch({
           dataTmp <- read_excel(input$localInput$datapath, dataset)
-          dataTmp[is.na(dataTmp)] <- 0L
           dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
+          dataTmp[is.na(dataTmp) & vapply(dataTmp, is.numeric, logical(1L), 
+                                          USE.NAMES = FALSE)] <- 0L
+          dataTmp[is.na(dataTmp)] <- ""
         }, error = function(e) {
           flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Details: %s.", 
                     isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
@@ -94,7 +96,7 @@ lapply(datasetsToFetch, function(dataset){
                       Details: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
           })
-          dataTmp[is.na(dataTmp)] <- 0L
+          dataTmp[is.na(dataTmp)] <- ""
           #set names of scalar sheet to scalar headers
           if(!validateHeaders(names(dataTmp), scalarsFileHeaders)){
             flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 

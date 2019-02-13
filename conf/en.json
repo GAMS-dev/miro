@@ -16,7 +16,6 @@
       "importInput":"Load data",
       "solve":"Solve model",
       "solveHcube":"Submit job",
-      "load":"Load",
       "splitView":"Split view",
       "tabView":"Tab view",
       "compareStart":"Compare mode",
@@ -42,9 +41,6 @@
     },
     "inputScreen":{  
       "noDataDep":"Please first import all data this element depends on.",
-      "tooltips":{  
-        "btGraphView":"switch to graph view"
-      },
       "widgetTabTitle": "Input widgets"
     },
     "gams":{  
@@ -67,11 +63,13 @@
       }
     },
     "scen":{  
-      "noScen":"No scenarios loaded. Please first load a scenario",
+      "noScen":"No scenarios selected",
+      "btLoad":"Load",
       "tooltips":{  
         "btExport":"export scenario",
         "btTableView":"switch view",
         "btClose":"close scenario",
+        "btDownloadTmpFiles":"temporary files",
         "inputSheet":"model input",
         "outputSheet":"model output"
       },
@@ -244,15 +242,15 @@
       "okButton":"Yes"
     },
     "dialogImport":{  
-      "title":"Import data",
+      "title":"Load data",
       "tabLocal":"Local",
       "tabDatabase":"Database",
       "tabHcube":"Hypercube",
-      "hcubeHashDesc": "Enter the hash value of the scenario you wish to import from the Hypercube mode. Then simply click on the scenario to import it.",
+      "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
-      "selInputData":"Select datasets to import",
-      "descLocal":"Choose file with data to import",
+      "selInputData":"Select datasets to load",
+      "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
       "badScenName": "Please specify a valid name",
       "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
@@ -260,7 +258,7 @@
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Import",
+      "okButton":"Load",
       "overwriteButton": "Overwrite existing data",
       "newNameButton": "New name"
     },
