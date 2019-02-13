@@ -59,7 +59,8 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
     idsToFetch <- seq_along(modelIn)
   }
   datasetsImported <- vapply(idsToFetch, function(i){
-    if(length(isolate(rv[[paste0("in_", i)]])) || datasetsModified[i]){
+    if(length(isolate(rv[[paste0("in_", i)]])) || 
+       isolate(rv$datasetsModified[i])){
       return(TRUE)
     }else{
       return(FALSE)

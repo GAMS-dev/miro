@@ -7,7 +7,7 @@
       "scen":"Szenarien vergleichen",
       "hcube":{
         "configureRun": "Hypercube-Job konfigurieren",
-        "import": "Ergebnisse importieren",
+        "import": "Jobs importieren",
         "load": "Szenarien laden",
         "analyze": "Szenarienanalyse"
       }

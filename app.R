@@ -182,15 +182,14 @@ if(is.null(errMsg)){
                                               format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
-  installPackage <- list()
-  if("NODEVMODE" %in% commandArgs(TRUE)){
-    developMode <- FALSE
+  if(isShinyProxy || "NODEBUG" %in% commandArgs(TRUE)){
+    debugMode <- FALSE
   }
   if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") ||
      "LAUNCHADMIN" %in% commandArgs(TRUE)){
     LAUNCHADMINMODE <- TRUE
   }
-  if(!file.exists(rSaveFilePath) || developMode){
+  if(!file.exists(rSaveFilePath) || debugMode){
     source("./modules/init.R", local = TRUE)
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
@@ -339,7 +338,7 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
-if(is.null(errMsg) && developMode && config$activateModules$scenario){
+if(is.null(errMsg) && debugMode && config$activateModules$scenario){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -488,16 +487,16 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   shinyApp(ui = ui_initError, server = server_initError)
 }else{
   rm(LAUNCHADMINMODE, installedPackages)
-  if(developMode){
+  if(debugMode){
     save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
-         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, 
-         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, 
+         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
+         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, colsWithDep,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
-         modelInToImportAlias, modelInToImport, scenTableNames,
+         modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, dbSchema, file = rSaveFilePath)
+         modelInGmsString, installPackage, dbSchema, file = rSaveFilePath)
   }
   
   #______________________________________________________
@@ -688,7 +687,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L,
-                         loadHcubeHashSid = 0L)
+                         loadHcubeHashSid = 0L, datasetsModified = vector(mode = "logical", length = length(modelIn)))
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -698,8 +697,6 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
     # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
     previousInputData <- vector(mode = "list", length = length(modelIn))
-    # vector that specifies whether dataset is modified by user
-    datasetsModified <- vector(mode = "logical", length = length(modelIn))
     # initialize model input data
     modelInputData <- modelInTemplate
     # initialise list of reactive expressions returning data for model input
@@ -771,7 +768,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           noCheck[i] <<- FALSE
           return()
         }
-        datasetsModified[i] <<- TRUE
+        rv$datasetsModified[i] <- TRUE
         if(isolate(rv$unsavedFlag)){
           return()
         }
@@ -821,7 +818,9 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     observe({
       datasetsImported <- vapply(names(modelInMustImport), function(el){
         i <- match(el, names(modelIn))[[1]]
-        if(length(rv[["in_" %+% i]]) || datasetsModified[i]){
+        if(length(rv[["in_" %+% i]])){
+          return(TRUE)
+        }else if(rv$datasetsModified[i]){
           return(TRUE)
         }else{
           return(FALSE)

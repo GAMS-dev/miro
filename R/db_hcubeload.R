@@ -106,6 +106,9 @@ HcubeLoad <- R6Class("HcubeLoad",
                            data <- private$fetchResultsR(subsetList = subsetList, 
                                                          colNames = colNames, limit = limit)
                          }
+                         if(!length(data)){
+                           return(tibble())
+                         }
                          tagID <- which(endsWith(private$dbSchema$colNames[["_scenMeta"]][['stag']], names(data)))[1L]
                          if(length(tagID)){
                            tags_trimmed <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
@@ -322,14 +325,15 @@ HcubeLoad <- R6Class("HcubeLoad",
                            subsetRows <- ""
                            subsetSids <- private$db$fetchScenList(scode = 0L, gt = TRUE)[[1L]]
                            subsetSidSQL <- NULL
-                           if(length(subsetSids)){
-                             subsetSidSQL <- paste0(" INNER JOIN (VALUES ",
-                                                    paste("(" %+% subsetSids, 
-                                                          collapse = "), "), ")) vals(_v) ON ",
-                                                    dbQuoteIdentifier(private$conn, 
-                                                                      private$tabNameMeta),
-                                                    ".", private$sidCol, "=_v")
+                           if(!length(subsetSids)){
+                             return(tibble())
                            }
+                           subsetSidSQL <- paste0(" INNER JOIN (VALUES ",
+                                                  paste("(" %+% subsetSids, 
+                                                        collapse = "), "), ")) vals(_v) ON ",
+                                                  dbQuoteIdentifier(private$conn, 
+                                                                    private$tabNameMeta),
+                                                  ".", private$sidCol, "=_v")
                            if(length(subsetList) > 1L || length(subsetList[[1L]])){
                              subsetRows <- private$db$buildRowSubsetSubquery(subsetList, " AND ", 
                                                                              " OR ")
@@ -358,6 +362,9 @@ HcubeLoad <- R6Class("HcubeLoad",
                          innerTables <- private$scalarTables
                          
                          metaData    <- private$db$fetchScenList(scode = 0L, gt = TRUE)
+                         if(!length(metaData) || !nrow(metaData)){
+                           return(tibble())
+                         }
                          names(metaData)[-1] <- paste0(private$tabNameMeta, ".", 
                                                        names(metaData)[-1])
                          sidsToFetch <- metaData[[1]]

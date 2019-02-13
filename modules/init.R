@@ -946,6 +946,7 @@ if(is.null(errMsg)){
     return(TRUE)}, logical(1L), USE.NAMES = FALSE)])
   # get the operating system that shiny is running on
   serverOS          <- getOS()
+  installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
   installPackage$plotly <- any(vapply(c(configGraphsIn, configGraphsOut), 
