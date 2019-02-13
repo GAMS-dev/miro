@@ -120,8 +120,8 @@ lapply(datasetsToFetch, function(dataset){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
            (modelIn[[i]]$type == "daterange")){
-          dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                     paste0(rowName, c("_lo", "_up")), ][[colValue]]
+          dataTmp <- as.numeric(scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                                paste0(rowName, c("_lo", "_up")), ][[colValue]])
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]]      <<- dataTmp
             
@@ -130,12 +130,11 @@ lapply(datasetsToFetch, function(dataset){
               modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
                                                          paste0(rowName, "_step"), ][[colValue]]
               if(identical(modelIn[[i]]$slider$double, TRUE)){
-                modelInputDataHcube[[i]] <<- c(modelInputDataHcubeTmp, 
-                                                scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                                paste0(rowName, "_mode"), ][[colValue]])
-              }else{
-                modelInputDataHcube[[i]] <<- modelInputDataHcubeTmp
+                modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
+                                            scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                                            paste0(rowName, "_mode"), ][[colValue]])
               }
+              modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
             }
             inputVerified <- TRUE
           }

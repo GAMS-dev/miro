@@ -12,7 +12,7 @@ closeScenario <- function(){
   modelInputData     <<- modelInTemplate
   tableContent       <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
-  rv$datasetsModified[] <- FALSE
+  isolate(rv$datasetsModified[] <- FALSE)
   lapply(seq_along(modelIn), function(i){
     switch(modelIn[[i]]$type,
            hot = {
