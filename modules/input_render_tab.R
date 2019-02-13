@@ -7,34 +7,30 @@ getInputDataset <- function(id){
     if(length(colsWithDep[[id]])){
       if(!isEmptyInput[id]){
         if(modelIn[[id]]$type == "hot"){
-          inputData <- bind_rows(hot_to_r(isolate(input[["in_" %+% id]])), 
-                                 modelInputData[[id]])
-        }else{
-          inputData <- bind_rows(tableContent[[id]], 
-                                 modelInputData[[id]])
+          dataTmp <- hot_to_r(isolate(input[["in_" %+% id]]))
+          if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
+             identical(dataTmp[[1L]][1], ""))
+            return(modelInputData[[id]])
+          return(bind_rows(dataTmp, modelInputData[[id]]))
         }
-      }else{
-        inputData <- modelInputData[[id]]
+        return(bind_rows(tableContent[[id]], 
+                               modelInputData[[id]]))
       }
-    }else{
-      if(!isEmptyInput[id]){
-        if(modelIn[[id]]$type == "hot"){
-          inputData <- hot_to_r(isolate(input[["in_" %+% id]]))
-        }else{
-          inputData <- tableContent[[id]]
-        }
-      }else{
-        inputData <- modelInTemplate[[id]]
-      }
+      return(modelInputData[[id]])
     }
+    if(!isEmptyInput[id]){
+      if(modelIn[[id]]$type == "hot"){
+        return(hot_to_r(isolate(input[["in_" %+% id]])))
+      }
+      return(tableContent[[id]])
+    }
+    return(modelInTemplate[[id]])
   }else if(!is.null(modelInputData[[id]])){
     # tab was never activated, so shiny does not update handsontable thus it is 
     # empty although data was loaded
-    inputData <- modelInputData[[id]]
-  }else{
-    stop("No input data found.", call. = FALSE)
+    return(modelInputData[[id]])
   }
-  return(inputData)
+  stop("No input data found.", call. = FALSE)
 }
 observeEvent(input$inputTabset, {
   i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])

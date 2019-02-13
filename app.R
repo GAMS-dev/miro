@@ -23,7 +23,7 @@ MIRORDate   <- "Feb 9 2019"
 # writexl         #BSD-2-clause
 # stringi         #BSD-3-clause
 
-# RPostgres       #GPL-2
+# RPostgres (Scenario mode) #GPL-2
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
 # openssl (Hypercube mode) #MIT
@@ -33,7 +33,8 @@ MIRORDate   <- "Feb 9 2019"
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 if(R.version[["major"]] < 3 || 
-   R.version[["major"]] == 3 && gsub("\\..$", "", R.version[["minor"]]) < 5){
+   R.version[["major"]] == 3 && gsub("\\..$", "", 
+                                     R.version[["minor"]]) < 5){
   errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run GAMS MIRO."
 }
 tmpFileDir <- tempdir(check = TRUE)
