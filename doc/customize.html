@@ -70,7 +70,7 @@
                                     <p>In this section you will learn how to customize GAMS MIRO. As you saw previously when creating your first app, MIRO works without any further configuration. However, you will notice that there are a multitude of configuration options that allow you to shape MIRO to fit your particular model.<br>
                                     The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
-                                      <li><h6>GMSIO_config.json</h6>
+                                      <li><h6>&lt;modelname&gt;_io.json</h6>
                                     This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>. 
                                     It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
@@ -79,8 +79,8 @@
                                     </code> tags. You won't ever have to modify this file!
                                   </li>
                                   <li>
-                                    <h6>config.json</h6>
-                                    All the customization of MIRO happens via the other JSON file <span class="code">config.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
+                                    <h6>&lt;modelname&gt;.json</h6>
+                                    All the customization of MIRO happens via the other JSON file <span class="code">&lt;modelname&gt;.json</span>, e.g. <span class="code">trnsport.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
                                   </li>
                                 </ol>
                                     <div class="section-block">
@@ -95,8 +95,8 @@
                             <section id="input-widgets" class="doc-section">
                                 <h2 class="section-title">Input widgets</h2>
                                 <div class="section-block">
-                                  <p>Let's get back and extend our demo model <i>trnsport</i>. We will do this by adjusting the file <span class="code">config.json</span> in order to to adapt MIRO to our needs.
-                                  When you first launch MIRO for a new model, the <span class="code">config.json</span> file is almost empty:</p>
+                                  <p>Let's get back and extend our demo model <i>trnsport</i>. We will do this by adjusting the file <span class="code">trnsport.json</span> in order to to adapt MIRO to our needs.
+                                  When you first launch MIRO for a new model, the <span class="code">trnsport.json</span> file is almost empty:</p>
                                   <div class="code-block" id="config-start">
                                           <pre><code class="language-json">{}</code></pre>
                                   </div><!--//code-block-->
@@ -108,7 +108,9 @@
                                     <div class="section-block">
                                         <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/editable-table.png" alt="editable table"/>
                                     </div>
-                                    <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. You do so by adding this kind of information to the <span class="code">config.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
+                                    <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. 
+                                    By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. 
+                                    You do so by adding this kind of information to the <span class="code">trnsport.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
                                           <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
@@ -121,10 +123,10 @@
                                       </div><!--//code-block-->
                                       <p>There are two ways to get to this block of JSON data:</p>
                                       <ol>
-                                        <li>By manually editing the <i>config.json</i> file
+                                        <li>By manually editing the <i>trnsport.json</i> file
                                         <br>If you decide to use this method, you need to be careful that the content you add matches the schema.</li>
                                         <li>Use of the <a href="./configgen.html">Configuration Generator</a>
-                                        <br>The Configuration Generator can be used to automatically generate the JSON code for the desired configuration. You can simply replace the file <i>config.json</i> created by the configuration generator with your existing one; or copy code excerpts and merge them with your current configuration.</li>
+                                        <br>The Configuration Generator can be used to automatically generate the JSON code for the desired configuration. You can simply replace the file created by the configuration generator with your existing one; or copy code excerpts and merge them with your current configuration.</li>
                                       </ol>
                                       <p>When we add the configuration shown above, we will be able to see our model's distance matrix <span class="code">d</span>, but can not edit it.</p>
                                     <div class="callout-block callout-success">
@@ -144,8 +146,8 @@
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
                                       </div>
-                                      <p>As with all MIRO customizations, the information about the type of visualization of a GAMS scalar is configured via the file <span class="code">config.json</span>.
-                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">config.json</span> file. 
+                                      <p>As with all MIRO customizations, the information about the type of visualization of a GAMS scalar is configured via the file <span class="code">&lt;modelname&gt;.json</span>.
+                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">trnsport.json</span> file. 
                                       Now we extend the configuration of our app further by adding information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i>:
                                       </p>
                                       <div class="code-block" id="scalar-slider">
@@ -187,7 +189,7 @@
                                      <p>We have already mentioned the possibility of <a href="./model.html#create-compile">setting GAMS command line parameters via MIRO</a>. 
                                      Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
-                                     </code>. To be able to set them from MIRO, they must be specified in the <span class="code">config.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     </code>. To be able to set them from MIRO, they must be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
                                      </p>
                                      <div class="callout-block callout-warning">
                                          <div class="icon-holder">
@@ -199,7 +201,7 @@
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                      <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use. 
-                                     As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">config.json</span> file could look as follows:</p>
+                                     As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">&lt;modelname&gt;.json</span> file could look as follows:</p>
                                      <div class="code-block">
                                            <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
@@ -360,8 +362,8 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the variable <span class="code">x</span>  ('<span class="code">quantities</span>').
                                   The latter is relevant for our desired graphic, the other two serve here only as additional information that we can work with.
                                   <br>With this result parameter we can now generate a diagram. For any pre-implemented visualization options we can use the configuration generator. 
-                                  There, we upload our <i>GMSIO_config.json</i> file and choose <i>generate new config.json file"</i> Under the tab <i>Graphs</i> we select <i>graphs</i> again. Now we can configure the parameter <span class="code">schedule</span> as desired.
-                                  We leave all other configurations as they are, click on <i>next</i> and then on <i>Download json</i>. The resulting <i>config.json</i> file looks as followeds:</p>
+                                  There, we upload our <i>trnsport_io.json</i> file and choose <i>generate new configuration file"</i> Under the tab <i>Graphs</i> we select <i>graphs</i> again. Now we can configure the parameter <span class="code">schedule</span> as desired.
+                                  We leave all other configurations as they are, click on <i>next</i> and then on <i>Download json</i>. The resulting <i>trnsport.json</i> file looks as follows:</p>
                                   <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
@@ -400,7 +402,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
       }
     }
 }</code></pre> 
-                                  <p>Since we already have a <span class="code">config.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
+                                  <p>Since we already have a <span class="code">trnsport.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
                                   <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:275pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
@@ -414,7 +416,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/pivot-pickstock.png" alt="Pivot" />
                                   </div>
-                                  <p><br><br>In the next section we will show you how to create really sophisticated graphics like the map you find in the demo <i>trnsport</i> model that comes with your MIRO installation:</p>
+                                  <p><br><br>In the next section we will show you how to create really sophisticated graphics like the map you find in the demo <i>transport</i> model that comes with your MIRO installation:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
                                   </div>
@@ -470,7 +472,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     </p><p>
                                       The data that you want to visualize is supplied to your rendering function by the <kbd>data</kbd> argument - an R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>, a data structure that is very similar to a Data Frame. The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">customRenderer</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
                                       <p>Now that we are familiar with the template that every custom renderer builds upon, we are still missing one fundamental concept so that we can use our custom renderer: binding the renderer to dataset(s) we wish to visualize.</p>
-                                      <p>This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <span class="code">config.json</span> file; more precisely the <span class="code">dataRendering</span> section. Let's assume that in our transportation example the GAMS parameter that specifies the optimal schedule is defined as <span class="code">optSched(lngp, latp, lngm, latm, plant, market)</span> where <span class="code">(lngP,latP)</span> and <span class="code">(lngm, latm)</span> are the coordinates of the plants and markets respectively. Our <span class="code">config.json</span> file should then look like this:
+                                      <p>This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <span class="code">&lt;modelname&gt;.json</span> file; more precisely the <span class="code">dataRendering</span> section. Let's assume that in our transportation example the GAMS parameter that specifies the optimal schedule is defined as <span class="code">optSched(lngp, latp, lngm, latm, plant, market)</span> where <span class="code">(lngP,latP)</span> and <span class="code">(lngm, latm)</span> are the coordinates of the plants and markets respectively. Our <span class="code">trnsport.json</span> file should then look like this:
                                         <div class="code-block">
                                             <pre><code class="language-json">{
    &#x22;dataRendering&#x22;:{
@@ -517,7 +519,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <div class="section-block">
                                           <img class="img-fluid" src="assets/images/custom-renderer-map.png" alt="Result of custom renderer - Map with markers" />
                                       </div>
-                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <i>trnsport</i> model that comes with your MIRO installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
+                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <i>transport</i> model that comes with your MIRO installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:support@gams.com" target="_blank">contact us</a>!
                                       </p>
                                 </div><!--//section-block-->
                               </section>

@@ -67,7 +67,7 @@
                             <section id="gonfiggen-intro" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                   <p>In order for you to be able to customize MIRO without having to write JSON code, we have developed this Configuration Generator. Here you can customize MIRO and charts. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf/config.json</span>.</p>
+                                   <p>In order for you to be able to customize MIRO without having to write JSON code, we have developed this Configuration Generator. Here you can customize MIRO and charts. At the end you can download the JSON-file that needs to be placed in the folder <span class="code">&lt;modeldirecory&gt;/conf/&lt;modelname&gt;.json</span>.</p>
                                    <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-exclamation-triangle"></i>
@@ -78,13 +78,13 @@
                                             <p>Please also note that the Configuration Generator is currently only supported on Firefox and Chrome.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <p>If you want to take a look at the schema used to validate the config.json file, you can do this here:</p>
-                                    <p><center><font size="5"><a href="./schema.html" target="_blank">config.json - validation schema</a></font></center></p>
+                                    <p>If you want to take a look at the schema used to validate the &lt;modelname&gt;.json file, you can do this here:</p>
+                                    <p><center><font size="5"><a href="./schema.html" target="_blank">&lt;modelname&gt;.json - validation schema</a></font></center></p>
                                    <p><br>When you want to use the Configuration Generator, the workflow can be the following:</p>
                                    <ol>
-                                     <li>Click on <a href="#config-gen" class="scrollto"><i>Upload your GMSIO_config.json</i> file</a></li>
-                                     <li>Navigate to the directory of your model and upload the <i>&lt;modeldirectory&gt;\conf\GMSIO_config.json</i> file.</li>
-                                     <li>Choose whether to generate a new config.json (recommended) or to merge with an existing one.</li>
+                                     <li>Click on <a href="#config-gen" class="scrollto"><i>Upload your &lt;modelname&gt;_io.json</i> file</a></li>
+                                     <li>Navigate to the directory of your model and upload the <i>&lt;modeldirectory&gt;\conf\&lt;modelname&gt;_io.json</i> file.</li>
+                                     <li>Choose whether to generate a new &lt;modelname&gt;.json (recommended) or to merge with an existing one.</li>
                                      <li>The following screen appears:
                                      <div class="section-block">
                                         <img class="img-fluid" style="max-height:200pt;" src="assets/images/generator_img/step-2.png" alt="Pickstock: imput symbols displayed in MIRO" />
@@ -92,8 +92,8 @@
                                      <li>Now click through the menus and make the desired configurations.</li>
                                      <li>Click on <i>next</i> at the bottom of each page to go to the next page.</li>
                                      <li>Finally click on <i>download JSON</i>.</li>
-                                     <li>The created config.json file or parts of it can now be copied into the existing file.</li>
-                                     <li>The next time MIRO is started, the new config.json file is validated with the stored <a href="./schema.html">schema</a>.</li>
+                                     <li>The created JSON file or parts of it can now be copied into the existing file.</li>
+                                     <li>The next time MIRO is started, the new &lt;modelname&gt;.json file is validated with the stored <a href="./schema.html">schema</a>.</li>
                                    </ol>
                                 </div><!--//section-block-->
                             </section>
@@ -102,15 +102,15 @@
                                 <div class="section-block">
                                   <div class="upload-btn-wrapper" id="gmsioUpload">
                                     <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                    <button class="upload-btn">Upload your GMSIO_config.json file</button>
+                                    <button class="upload-btn">Upload your &lt;modelname&gt;_io.json file</button>
                                     <input id="selectFile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="parseGMSIO()"/><br />
                                   </div>
                                   <div id="confGenContent" style="display:none;">
                                     <div id="selectConfigType" style="display:none;">
-                                      <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new config.json file</button>
+                                      <button type="button" id="launchConfigGenBt" class="upload-btn">Generate new configuration file</button>
                                       <div class="upload-btn-wrapper" id="configJSONupload" style="overflow:visible;">
                                         <span id = "errMsg" style="color:red;font-weight:bold;"></span>
-                                        <button class="upload-btn">Merge with existing config.json file</button>
+                                        <button class="upload-btn">Merge with existing &lt;modelname&gt;.json file</button>
                                         <input id="configJSONfile" type="file" name="myfile" value="Import" accept=".json,application/json" oninput="mergeExisting()"/><br />
                                       </div>
                                     </div>
