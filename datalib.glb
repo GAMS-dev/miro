@@ -1687,7 +1687,7 @@ Files = pickstock_live.gms,pickstock_live_conf.zip,mkconfig.inc
 6 = Stock selection problem with live data with MIRO
 
 *$*$*$
-Files = transport.gms,trnsport_conf.zip,pmkconfig.inc
+Files = transport.gms,transport_conf.zip,mkconfig.inc
 1 = 127
 2 = transport
 3 = gms, inc
@@ -1696,7 +1696,7 @@ Files = transport.gms,trnsport_conf.zip,pmkconfig.inc
 6 = Classical transportation problem with MIRO
 
 *$*$*$
-Files = transport_live.gms,trnsport_live_conf.zip,mkconfig.inc
+Files = transport_live.gms,transport_live_conf.zip,mkconfig.inc
 1 = 128
 2 = transport_live
 3 = gms, inc
