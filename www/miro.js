@@ -266,7 +266,8 @@ $(document).ready(function () {
     setTimeout(function() { 
       let el = $(id);
       let parentEl = el.parent()[0];
-      let currSize = parseInt(el.css("font-size"));
+      el.css("font-size", "18px");
+      let currSize = 18;
       while(parentEl.scrollWidth > parentEl.clientWidth && currSize >= 10){
         currSize -= 2;
         el.css("font-size", currSize + "px");

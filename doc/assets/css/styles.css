@@ -568,12 +568,20 @@ body{
   color: #fff;
 }
 .page-wrapper .callout-success {
-  background: #75c181;
-  color: #fff;
+  background: #f9f9fb;
+  color: #000;
+}
+.page-wrapper .callout-success .icon-holder,
+.page-wrapper .callout-success .callout-title{
+  color: #75c181;
 }
 .page-wrapper .callout-warning {
-  background: #f90;
-  color: #fff;
+  background: #f9f9fb;
+  color: #000;
+}
+.page-wrapper .callout-warning .icon-holder,
+.page-wrapper .callout-warning .callout-title{
+  color: #f90;
 }
 .page-wrapper .callout-danger {
   background: #f77b6b;
@@ -1087,41 +1095,41 @@ body{
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /*! Flickity v1.2.1
 http://flickity.metafizzy.co
 ---------------------------------------------- */
-  
-  
-  
-  
-  
+
+
+
+
+
   /*!
 * Yamm!3 - Yet another megamenu for Bootstrap 3
 * http://geedmo.github.com/yamm3
