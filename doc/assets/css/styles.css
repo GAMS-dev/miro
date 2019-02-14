@@ -45,8 +45,7 @@
   /* Large devices (large desktops, 1200px and up) */
   /* ======= Landing Page ======= */
 .doc-wrapper .container, .cards-section .container{
-    padding-top: 70px;
-    padding-bottom: 70px;
+    padding: 70px 50px;
     margin-bottom:45px;
     background-color: #fff;
     -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.15);
@@ -199,6 +198,12 @@ body{
 }
 .page-wrapper .code {
   font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
 }
 .page-wrapper p {
   line-height: 1.5;
