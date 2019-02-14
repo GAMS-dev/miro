@@ -198,12 +198,9 @@ body{
 }
 .page-wrapper .code {
   font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  -webkit-hyphens: auto;
-  -ms-hyphens: auto;
-  -moz-hyphens: auto;
-  hyphens: auto;
+  display: inline-block;
+  max-width:100%;
+  overflow:auto;
 }
 .page-wrapper p {
   line-height: 1.5;
@@ -229,6 +226,8 @@ body{
   padding: 2px 8px;
   padding-top: 4px;
   display: inline-block;
+  max-width:100%;
+  overflow:auto;
 }
 .page-wrapper .btn,
 .page-wrapper a.btn {
