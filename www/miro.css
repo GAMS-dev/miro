@@ -85,6 +85,7 @@ body{
 .box-title{
   width: 100%;
   overflow:hidden;
+  text-overflow: ellipsis;
 }
 .inline-el{
   display: inline;

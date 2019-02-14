@@ -1186,8 +1186,9 @@ Db <- R6Class("Db",
                                       dbQuoteIdentifier(private$conn, colNames[['time']]), "<", 
                                       dbQuoteString(private$conn, expirationTime))
                       affectedRows <- DBI::dbExecute(private$conn, query)
-                      flog.debug("Db: %s attachments in table: '%s' were deleted due to surpassing the expiration date (Db.removeExpiredAttachments).", 
-                                 affectedRows, tableName)
+                      if(affectedRows > 0L)
+                        flog.debug("Db: %s attachments in table: '%s' were deleted due to surpassing the expiration date (Db.removeExpiredAttachments).", 
+                                   affectedRows, tableName)
                     }, error = function(e){
                       stop(sprintf("Db: An error occurred while deleting rows from the database (Db.removeExpiredAttachments, " %+% 
                                      "table: '%s'). Error message: %s.", tableName, e), call. = FALSE)

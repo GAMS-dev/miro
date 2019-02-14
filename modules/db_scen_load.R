@@ -277,7 +277,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     }
     tryCatch(activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]]), 
              error = function(e){
-               flog.error("Error generating new Scenario object. Error message: %s.", e)
+               flog.error("Error generating new Scenario object. Error message: '%s'.", e)
                errMsg <<- lang$errMsg$loadScen$desc
              })
     if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
