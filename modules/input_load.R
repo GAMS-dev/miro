@@ -121,8 +121,11 @@ lapply(datasetsToFetch, function(dataset){
         # double slider has two scalar values saved
         if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
            (modelIn[[i]]$type == "daterange")){
-          dataTmp <- as.numeric(scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                paste0(rowName, c("_lo", "_up")), ][[colValue]])
+          dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                     paste0(rowName, c("_lo", "_up")), ][[colValue]]
+          if(identical(modelIn[[i]]$type, "slider")){
+            dataTmp <- as.numeric(dataTmp)
+          }
           if(!is.null(dataTmp) && length(dataTmp)){
             modelInputData[[i]]      <<- dataTmp
             

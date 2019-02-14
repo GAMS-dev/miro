@@ -86,7 +86,8 @@ closeScenario <- function(){
   noCheck[]         <<- FALSE
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
-  disableEl(session, "#btSolve")
+  if(length(modelInMustImport))
+    disableEl(session, "#btSolve")
   markSaved()
   noOutputData      <<- TRUE
   if(!is.null(errMsg)){
