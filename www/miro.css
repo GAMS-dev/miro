@@ -84,6 +84,7 @@ body{
 /* title field in boxes */
 .box-title{
   width: 100%;
+  overflow:hidden;
 }
 .inline-el{
   display: inline;

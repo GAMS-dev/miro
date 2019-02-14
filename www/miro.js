@@ -180,11 +180,11 @@ $(document).ready(function () {
   });
   // hide pivot filter boxes when clicked outside of box
   $(document).click(function(e) {
-  var target = e.target;
-  if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length
-      && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length){
-    $('.pvtFilterBox').hide();
-  }
+    var target = e.target;
+    if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length
+        && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length){
+      $('.pvtFilterBox').hide();
+    }
   });
   $(window).on('beforeunload', function() {
     if($("#shiny-disconnected-overlay").length === 0){
@@ -254,5 +254,16 @@ $(document).ready(function () {
       }
       $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML+ '</div>').insertBefore('#endAttachList');
     }
+  });
+  Shiny.addCustomMessageHandler('gms-fitTitleInBox', function(id) {
+    setTimeout(function() { 
+      let el = $(id);
+      let parentEl = el.parent()[0];
+      let currSize = parseInt(el.css("font-size"));
+      while(parentEl.scrollWidth > parentEl.clientWidth && currSize >= 10){
+        currSize -= 2;
+        el.css("font-size", currSize + "px");
+      }
+    }, 500);
   });
 });

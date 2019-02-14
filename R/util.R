@@ -656,8 +656,11 @@ updateAttachList <- function(session, id, fileName, token, labelCb, allowExec = 
                                                          token = token, labelCb = labelCb, 
                                                          allowExec = allowExec))
 }
+fitTitleInBox <- function(session, id){
+  session$sendCustomMessage("gms-fitTitleInBox", id)
+}
 isBadScenName <- function(scenName){
-  grepl("^\\s*$", scenName)[[1L]] || grepl("^[A-Fa-f0-9]{64}$", scenName)[[1L]]
+  return(grepl("^\\s*$", scenName)[[1L]] || nchar(scenName) > 63)
 }
 switchTab <- function(session, id){
   session$sendCustomMessage("gms-switchTab", id)
