@@ -252,8 +252,8 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
                                               lang$nav[[modeDescriptor]]$hcubeHashDesc,
                                               HTML(paste0('<div style="margin:10px;">
 <input class="form-control" id="hcHashLookup" style="width:490px;font-size:10pt;"/></div>
-                                                       <div>
-                                                       <button class="btn btn-default" type="button" 
+                                                       <div style="text-align:center;">
+                                                       <button class="btn btn-default bt-highlight-1" type="button" 
                                                                  onclick="validateHcubeHash()">',
                                                           htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
                                                           '</button></div>')),

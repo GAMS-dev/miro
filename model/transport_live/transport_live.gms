@@ -1,4 +1,4 @@
-$title A Transportation Problem (TRNSPORT,SEQ=1)
+$title A Transportation Problem with multiple version LP/MIP/MINLP
 $onText
 This problem finds a least cost shipping schedule that meets
 requirements at markets and supplies at factories.
@@ -7,20 +7,12 @@ requirements at markets and supplies at factories.
 Dantzig, G B, Chapter 3.3. In Linear Programming and Extensions.
 Princeton University Press, Princeton, New Jersey, 1963.
 
-This formulation is described in detail in:
-Rosenthal, R E, Chapter 2: A GAMS Tutorial. In GAMS: A User's Guide.
-The Scientific Press, Redwood City, California, 1988.
-
-The line numbers will not match those in the book because of these
-comments.
-
-Keywords: linear programming, transportation problem, scheduling
 $offText
 
 Set
-   locHdr 'location data header' /lat, lng/
    i      'canning plants' 
-   j      'markets';
+   j      'markets'
+   locHdr 'location data header' /lat, lng/;
 
 $onExternalInput   
 Parameter
@@ -33,71 +25,40 @@ Parameter
           Munich   300
           Istanbul 275 /;
 
-Scalar f    'freight in dollars per case per thousand miles' /  90  /
-       minS 'minimum shipment (MIP- and MINLP-only)'         / 100  /
-       beta 'beta (MINLP-only)'                              / 0.95 /;
+Scalars
+   f    'freight in dollars per case per thousand miles' /  90  /
+   minS 'minimum shipment (MIP- and MINLP-only)'         / 100  /
+   beta 'beta (MINLP-only)'                              / 0.95 /;
 $offExternalInput
 
 Parameter
-ilocData(i,locHdr) 'Plant location information',
-jlocData(j,locHdr) 'Market location information'
-d(i,j)             'distance in thousands of miles'
-c(i,j)             'transport cost in thousands of dollars per case';
+   ilocData(i,locHdr) 'Plant location information',
+   jlocData(j,locHdr) 'Market location information'
+   d(i,j)             'distance in thousands of miles'
+   c(i,j)             'transport cost in thousands of dollars per case';
 
 
 EmbeddedCode Python:
-try:
-   from geocoder import osm
-except:
-   import pip
-   if(hasattr(pip, 'main')):
-      pip.main(['install', 'geocoder'])
-   else:
-      pip._internal.main(['install', 'geocoder'])
-   from geocoder import osm
-from math import sin, cos, sqrt, atan2, radians
+from geocoder import osm
 import itertools
+import geopy.distance
 
-def calcDist(coords):
-    lat1 = radians(coords[0][0])
-    lon1 = radians(coords[0][1])
-    lat2 = radians(coords[1][0])
-    lon2 = radians(coords[1][1])
-    R = 6373.0
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return R * c * 0.62137119 / 1000
+loc = {}
+def mkLocData(s):
+   LocData = []
+   for i in gams.get(s):
+      g = osm(i)
+      LocData.append((i, 'lat', g.latlng[0]))
+      LocData.append((i, 'lng', g.latlng[1]))
+      loc[i] = g.latlng
+   gams.set(s+"LocData", LocData)
 
-i = list(gams.get("i"))
-iCoords = []
-iLocData = []
-for plant in i:
-    g = osm(plant)
-    coords = tuple(g.latlng)
-    iLocData.append((plant, 'lat', coords[0]))
-    iLocData.append((plant, 'lng', coords[1]))
-    iCoords.append(coords)
-gams.set("iLocData", iLocData)
-
-j = list(gams.get("j"))
-jCoords = []
-jLocData = []
-for market in j:
-    g = osm(market)
-    coords = tuple(g.latlng)
-    jLocData.append((market, 'lat', coords[0]))
-    jLocData.append((market, 'lng', coords[1]))
-    jCoords.append(coords)
+mkLocData('i')
+mkLocData('j')
     
-gams.set("jLocData", jLocData)
-    
-coords = list(itertools.product(iCoords,jCoords))
 d = []
-for idx in range(len(coords)):
-    d.append((i[idx//len(j)], j[idx%len(j)], calcDist(coords[idx])))
-
+for i,j in itertools.product(gams.get("i"),gams.get("j")):
+    d.append((i,j,geopy.distance.distance(loc[i],loc[j]).miles/1000))
 gams.set("d", d)
 endEmbeddedCode iLocData, jLocData, d
 
@@ -169,3 +130,4 @@ schedule(i,j, 'cap') = a(i);
 schedule(i,j, 'demand') = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 $endif
+ 

@@ -287,9 +287,11 @@ lapply(seq_along(modelIn), function(id){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
                      rv[["in_" %+% k]]
-                     if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                     if(length(sharedInputData_filtered[[k]]) && 
+                        nrow(sharedInputData_filtered[[k]])){
                        tryCatch(
-                         choices[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$fw[[dataSheet]])
+                         choices[[j]] <- filterDf(sharedInputData_filtered[[k]], 
+                                                  ddownDep[[name]]$fw[[dataSheet]])
                          , error = function(e){
                            flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
                                         "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -298,7 +300,8 @@ lapply(seq_along(modelIn), function(id){
                        })
                        if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
                          tryCatch(
-                           aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], ddownDep[[name]]$aliases[[dataSheet]])
+                           aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], 
+                                                    ddownDep[[name]]$aliases[[dataSheet]])
                            , error = function(e){
                              flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
                                           "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -309,9 +312,11 @@ lapply(seq_along(modelIn), function(id){
                        if(!is.null(modelIn[[id]]$dropdown$operator)){
                          # element is checkbox with shared dependency that was transformed to dropdown in Hypercube mode
                          tryCatch({
-                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), modelIn[[id]]$dropdown$operator)
+                           value <- getScalarValue(unlist(choices[[j]], use.names = FALSE), 
+                                                   modelIn[[id]]$dropdown$operator)
                          }, error = function(e){
-                           flog.warn("Input type for checkbox: '%s' is not numeric.", modelInAlias[id])
+                           flog.warn("Input type for checkbox: '%s' is not numeric.", 
+                                     modelInAlias[id])
                            errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
                          })
                          if(!is.null(errMsg)){
@@ -327,7 +332,6 @@ lapply(seq_along(modelIn), function(id){
                        }
                      }
                    }else{
-                     rv[["in_" %+% k]]
                      input[["in_" %+% k]]
                      tryCatch({
                        dataTmp <- getInputDataset(k)

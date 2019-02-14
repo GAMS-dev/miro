@@ -11,10 +11,13 @@ Scalar    maxstock      'maximum number of stocks to select ' /  2 /
           trainingdays  'number of days for training '        / 99 /;
 $offExternalInput
 
+$onempty
 $onExternalOutput
-Parameter price(date<,symbol<) 'stock price';
+Parameter price(date<,symbol<) 'stock price' / /;
 $offExternalOutput
 
+$iftheni %gams.miro%==RUN
+$onmulti
 $if not set TW_lo $set TW_lo "2017-01-01"
 $if not set TW_up $set TW_up "2017-01-15"
 
@@ -45,6 +48,8 @@ for sym in djSymbols:
 price = pd.concat(price)
 gams.set("price", [(r[0], r[2], r[1]) for r in price.itertuples()])
 $offEmbeddedCode price
+$offmulti
+$endif
 
 Alias (d,date), (s,symbol);
 Parameter
