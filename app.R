@@ -969,7 +969,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                             paste0("MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
                             The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
-                            "_io.json' and '", modelNameRaw, ".json' as well as the error log. 
+                            "_io.json' and '", modelName, ".json' as well as the error log. 
                             None of your .gms model files will be sent!"), 
                             footer = tagList(actionButton("crash_dontsend", "Don't send"),
                                              actionButton("crash_send", "Send", class = "bt-highlight-1"))))
