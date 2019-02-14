@@ -1,5 +1,6 @@
 {
 	"UILogo":"pickstock-live.png",
+    "hiddenOutputScalars": ["lastdaytraining"],
     "inputWidgets": {
       "maxstock": {
         "label": "Select the maximum number of stocks",
