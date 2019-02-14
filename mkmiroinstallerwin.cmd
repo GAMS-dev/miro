@@ -47,7 +47,7 @@ rm -f GMSR_win.zip
 
 rem Python modules
 cd GMSPython\Scripts
-pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder
+pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy
 cd %GAMSDIR%
 
 :fast
