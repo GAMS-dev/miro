@@ -27,8 +27,8 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
       flog.warn("Invalid scalar output data attempted to be read (number of headers of table does not match 3).")
       stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
     }
-    scalarTmp[is.na(scalarTmp)] <- 0L
     scalarTmp <- fixColTypes(scalarTmp,  "ccc")
+    scalarTmp[is.na(scalarTmp)] <- ""
     #set names of scalar sheet to scalar headers
     if(!hasValidHeaderTypes(scalarTmp, colTypes[[scalarsOutName]])){
       flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
