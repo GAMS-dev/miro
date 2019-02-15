@@ -138,9 +138,9 @@
 					"show"					: "always",
 					"hideOnMouseOut"		: true
 				},
-				"dyRangeSelector"		:{
-					"height"				: 20,
-					"strokeColor"			: ""
+                "dyRangeSelector"		:{
+                    "height": 20,
+                    "strokeColor": "" 
 				},
 				"dyEvent"    :{
 					"lastdaytraining"  : {
@@ -155,7 +155,7 @@
 						"label"					: "Dow Jones index",
 						"stepPlot"      		: false,
 						"stemPlot"      		: false,
-						"fillGraph"				: true,
+						"fillGraph"				: false,
 						"drawpoints"			: true
 					},
 					"index fund"    		: {
@@ -228,9 +228,9 @@
 				},
 				"dyHighlight"			:{
 					"highlightSeriesOpts"	:{
-						"strokeWidth" 			: 8,
-						"strokeBorderWidth"		: 5,
-						"highlightCircleSize"	: 14
+						"strokeWidth" 			: 3,
+						"strokeBorderWidth"		: 1,
+						"highlightCircleSize"	: 5
 					},
 					"hideOnMouseOut"		: true
 					
