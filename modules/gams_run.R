@@ -250,6 +250,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
         }
       })
     }
+    
     if(config$includeParentDir){
       scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir),
                            '" idir2="', gmsFilePath(dirname(currentModelDir)), '"')
@@ -430,9 +431,16 @@ observeEvent(input$btSolve, {
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       return(NULL)
     }
+    
     idsToSolve <<- scenToSolve$ids
-    scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
-                         "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+    if(length(config$extraClArgs)){
+      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
+                           paste(config$extraClArgs, collapse = " "),
+                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+    }else{
+      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch,
+                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+    }
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
                            " traceopt=3")
@@ -522,9 +530,11 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c(paste0('idir1="', gmsFilePath(currentModelDir), '"'), if(config$includeParentDir)
-      paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), paste0('curdir="', workDir, '"'),
-      "lo=3", "execMode=" %+% gamsExecMode, config$MIROSwitch, "LstTitleLeftAligned=1")
+    gamsArgs <- c(if(length(config$extraClArgs)) config$extraClArgs, 
+                  paste0('idir1="', gmsFilePath(currentModelDir), '"'),
+                  if(config$includeParentDir) paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), 
+                  paste0('curdir="', workDir, '"'), "lo=3", "execMode=" %+% gamsExecMode, 
+                  config$MIROSwitch, "LstTitleLeftAligned=1")
     if(config$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
     }

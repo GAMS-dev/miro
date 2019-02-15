@@ -41,7 +41,8 @@ tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", "./modules/render_data.R")
+filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", 
+                    "./modules/render_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 

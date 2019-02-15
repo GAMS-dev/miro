@@ -333,6 +333,7 @@ lapply(seq_along(modelIn), function(id){
                      }
                    }else{
                      input[["in_" %+% k]]
+                     rv[["in_" %+% k]]
                      tryCatch({
                        dataTmp <- getInputDataset(k)
                      }, error = function(e){

@@ -200,6 +200,15 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                  "default":"split",
                  "required":true
               },
+              "extraClArgs":{
+                "title":"Specify extra command line arguments that GAMS will be called with",
+                "type":"array",
+                "required":false,
+                "items":{
+                  "type":"string",
+                  "minLength":3
+                }
+              },
               "activateModules":{
                  "title":"Activate/deactivate certain modules",
                  "type":"object",
@@ -3332,6 +3341,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "excelIncludeEmptySheets": 1,
                     "UILogo": 1,
                     "autoGenInputGraphs":1,
+                    "extraClArgs": 1,
                     "defCompMode": 1,
                     "activateModules": 1,
                     "aggregateWidgets": 1,

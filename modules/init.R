@@ -888,8 +888,6 @@ if(is.null(errMsg)){
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))
   # declare set of output sheets that should be displayed in webUI
   modelOutToDisplay <- names(modelOut)[vapply(seq_along(modelOut), function(i){
-    if(identical(modelOut[[i]]$hidden, TRUE))
-      return(FALSE)
     headers   <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers   <- lapply(modelOut[[i]]$headers, function(header){
       switch(header$type,
@@ -908,7 +906,10 @@ if(is.null(errMsg)){
       }
       return(alias)
     }, character(1L), USE.NAMES = FALSE)
-    return(TRUE)
+    if(identical(modelOut[[i]]$hidden, TRUE))
+      return(FALSE)
+    else
+      return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)]
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
   scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
