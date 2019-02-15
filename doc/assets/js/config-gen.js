@@ -3437,7 +3437,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                }
                                //dyGraphs
                                if(co.dataRendering[grname].graph.choice === "UseDygraphs"){
-                                  console.log("dygraphs####")
                                   co.dataRendering[grname].graph.tool = "dyGraphs";
                                   $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraphs);
                                   delete co.dataRendering[grname].graph.dygraphs;
@@ -3457,12 +3456,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      }
                                      delete co.dataRendering[grname].graph.ydata;
                                      co.dataRendering[grname].graph.ydata = ytmp;
-
                                }
                                else if(co.dataRendering[grname].graph.choice === "UsePlotly"){
-                                   
-                                  console.log("plotly###");
-                                  console.log(co);
                                   co.dataRendering[grname].graph.tool = "plotly";
                                   // set plotly graph type to chosen element
                                   if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Histogram"){
@@ -3487,52 +3482,46 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
 
                                   //in a histogram the data is defined for the x axis, not for the y axis
                                   if(co.dataRendering[grname].graph.type === "hist"){
-                                       for (var k = 0; k < co.dataRendering[grname].graph.xdata.length; k++) {
-                                          var xname = co.dataRendering[grname].graph.xdata[k].dataname;
-                                          delete co.dataRendering[grname].graph.xdata[k].dataname;
-                                          co.dataRendering[grname].graph.xdata[xname] = co.dataRendering[grname].graph.xdata[k];
-                                          delete co.dataRendering[grname].graph.xdata[k];
-                                       }
+                                      delete co.dataRendering[grname].graph.choice;
+                                      let xtmp = {};
+                                      for (var k = 0; k < co.dataRendering[grname].graph.xdata.length; k++) {
+                                         if(typeof co.dataRendering[grname].graph.xdata[k].dataname !== "undefined") {
+                                            var xname = co.dataRendering[grname].graph.xdata[k].dataname;
+                                            delete co.dataRendering[grname].graph.xdata[k].dataname;
+                                         }
+                                         xtmp[xname] = co.dataRendering[grname].graph.xdata[k];                                
+                                      }
+                                      delete co.dataRendering[grname].graph.xdata;
+                                      co.dataRendering[grname].graph.xdata = xtmp;
                                   }
-
-                               }  
-                               console.log("1");      
-                               //ydata manipulation for plotly and dygraphs: change the name of ydata objects to the "dataname" value
-                               //if((co.dataRendering[grname].graph.choice === "UseDygraphs") || ((co.dataRendering[grname].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.type !== "hist"))){                            
-                               if((co.dataRendering[grname].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.type !== "hist")){                            
-                                  delete co.dataRendering[grname].graph.choice;
-                                  console.log("2");
-                              //if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraphs") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
-                                  let ytmp = {};
-                                  console.log(co.dataRendering[grname].graph.ydata);
-                                  for (j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
-                                     console.log("3");
-                                     console.log(co.dataRendering[grname].graph.ydata);
-                                     var yname = co.dataRendering[grname].graph.ydata[j].dataname;
-                                     delete co.dataRendering[grname].graph.ydata[j].dataname;
-                                     ytmp[yname] = co.dataRendering[grname].graph.ydata[j];                                
-                                     }
+                                  //ydata manipulation: change the name of ydata objects to the "dataname" value
+                                  console.log(co.dataRendering[grname].graph);
+                                  if((co.dataRendering[grname].graph.type !== "hist") && (co.dataRendering[grname].graph.type !== "pie")){                                    
+                                     delete co.dataRendering[grname].graph.choice;
+                                     let ytmp = co.dataRendering[grname].graph.ydata;
                                      delete co.dataRendering[grname].graph.ydata;
-                                     co.dataRendering[grname].graph.ydata = ytmp;
-                                     
-                                     
-                                  //for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
-                                  //      var yname = co.dataRendering[grname].graph.ydata[j].dataname;
-                                  //      delete co.dataRendering[grname].graph.ydata[j].dataname;
-                                  //      co.dataRendering[grname].graph.ydatatmp = {};
-                                  //      co.dataRendering[grname].graph.ydatatmp[yname] = {};
-                                  //      co.dataRendering[grname].graph.ydatatmp[yname] = co.dataRendering[grname].graph.ydata[j];
-                                  //   }
-                                  //   //delete co.dataRendering[grname].graph.ydata;
-                                  //   co.dataRendering[grname].graph.ydata = co.dataRendering[grname].graph.ydatatmp;
-                                  //   delete co.dataRendering[grname].graph.ydatatmp;
-                               }
-                               if (typeof co.dataRendering[grname].graph.choice != "undefined") {   
-                                  delete co.dataRendering[grname].graph.choice;
-                               }
+                                     let yname = ytmp.dataname;
+                                     co.dataRendering[grname].graph.ydata = {};
+                                     delete ytmp.dataname;
+                                     co.dataRendering[grname].graph.ydata[yname] = ytmp;
+                                     delete ytmp;
+                                  }
+                                  if (typeof co.dataRendering[grname].graph.choice != "undefined") {   
+                                     delete co.dataRendering[grname].graph.choice;
+                                  }
+                                  //replace 'dataname' prperty with 'title' for xaxis and yaxis
+                                  if (typeof co.dataRendering[grname].graph.xaxis.dataname !== "undefined") {
+                                     co.dataRendering[grname].graph.xaxis.title = co.dataRendering[grname].graph.xaxis.dataname;
+                                     delete co.dataRendering[grname].graph.xaxis.dataname;
+                                  }
+                                  if (typeof co.dataRendering[grname].graph.yaxis.dataname !== "undefined") {
+                                     co.dataRendering[grname].graph.yaxis.title = co.dataRendering[grname].graph.yaxis.dataname;
+                                     delete co.dataRendering[grname].graph.yaxis.dataname;
+                                  }
+                               }  
                             }
                          }
-                         //delete co.dataRendering["Format: graph"];
+                         delete co.dataRendering["Format: graph"];
                        }
                        let widgetKeys = ['inputWidgets', 'inputWidgetsCL'];
                        for(let widgetKeyId=0; widgetKeyId<widgetKeys.length;widgetKeyId++){
@@ -3921,8 +3910,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                   dataReqSym.schema.default = gmsSymHdr[gmsSymName][0];
                   dataReqSym.refresh();
                   dataReqSym = plotly.childrenByPropertyId["histogram"].childrenByPropertyId["xdata"];
-                  dataReqSym.schema.items.properties.dataname.enum = gmsSymHdrIn[gmsSymName];
-                  dataReqSym.schema.items.properties.dataname.default = gmsSymHdrIn[gmsSymName][0];
                   for(let j = 0; j < dataReqSym.children.length; j++) {
                     dataReqSym.children[j].childrenByPropertyId["dataname"].schema.enum = dataReqSym.children[j].childrenByPropertyId["dataname"].options.optionLabels = gmsSymHdr[gmsSymName];
                     dataReqSym.children[j].childrenByPropertyId["dataname"].schema.default = gmsSymHdr[gmsSymName][0];
@@ -3938,8 +3925,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                   dataReqSym.schema.default = gmsSymHdr[gmsSymName][0];
                   dataReqSym.refresh();
                   dataReqSym = dygraphs.childrenByPropertyId["ydata"];
-                  dataReqSym.schema.items.properties.dataname.enum = gmsSymHdrIn[gmsSymName];
-                  dataReqSym.schema.items.properties.dataname.default = gmsSymHdrIn[gmsSymName][0];
                   for(let j = 0; j < dataReqSym.children.length; j++) {
                     dataReqSym.children[j].childrenByPropertyId["dataname"].schema.enum = dataReqSym.children[j].childrenByPropertyId["dataname"].options.optionLabels = gmsSymHdr[gmsSymName];
                     dataReqSym.children[j].childrenByPropertyId["dataname"].schema.default = gmsSymHdr[gmsSymName][0];
