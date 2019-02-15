@@ -44,13 +44,13 @@ Variable
     w(symbol)   'what part of the portfolio'
     slpos(date) 'positive slack'
     slneg(date) 'negative slack'
-    obj         'UIOutput: objective';
+    obj         'objective';
 
 Positive variables w, slpos, slneg;
 Binary variable p;
 
 Equation
-    deffit(date)    'UIOutput: fit to Dow Jones index'
+    deffit(date)    'fit to Dow Jones index'
     defpick(symbol) 'can only use stock if picked'
     defnumstock     'few stocks allowed'
     defobj          'absolute violation (L1 norm) from index';
@@ -79,23 +79,27 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
     
 $onExternalOutput
-Scalar kpi                             'key performance indicator - absoulte error in entire testing phase'
+Scalar kpi_train                       'Absoulte error in entire training phase'
+       kpi_test                        'Absoulte error in entire testing phase'    
 Parameter
-    partOfPortfolio(symbol)            'what part of the portfolio'   
-    dowVSindex(date,fHdr)              'dow jones vs. index fund [MIRO:table]'     
-    abserror(date,errHdr)              'absolute error [MIRO:table]'               
+       partOfPortfolio(symbol)         'weight'   
+       dowVSindex(date,fHdr)           'dow jones vs. index fund [MIRO:table]'     
+       abserror(date,errHdr)           'absolute error [MIRO:table]'               
 Singleton Set lastDayTraining(date)    'last date of training period' ;
 $offExternalOutput
 
-partOfPortfolio(s)                   = w.l(s);
-dowVSindex(d,'dj')                   = index(d);
-dowVSindex(d,'index fund')           = fund(d);
-abserror(td, 'absolute error train') = error(td);
-abserror(ntd,'absolute error test')  = error(ntd);
-lastDayTraining(td)                  = td.pos=card(td);
-kpi                                  = sum(ntd, error(ntd));
+partOfPortfolio(s)                     = w.l(s);
+dowVSindex(d,'dj')                     = index(d);
+dowVSindex(d,'index fund')             = fund(d);
+abserror(td, 'absolute error train')   = error(td);
+abserror(ntd,'absolute error test')    = error(ntd);
+lastDayTraining(td)                    = td.pos=card(td);
+kpi_train                              = obj.l;
+kpi_test                               = sum(ntd, error(ntd));
 
 * parameter including all stocks and dow jones index
-Parameter priceMerge(date,*) 'UIOutput: Price (stocks & dow jones)';
+$onExternalOutput
+Parameter priceMerge(date,*) 'Price (stocks & dow jones)';
+$offExternalOutput
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
