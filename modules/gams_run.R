@@ -530,7 +530,8 @@ observeEvent(input$btSolve, {
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c(config$extraClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'),
+    gamsArgs <- c(if(length(config$extraClArgs)) config$extraClArgs, 
+                  paste0('idir1="', gmsFilePath(currentModelDir), '"'),
                   if(config$includeParentDir) paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), 
                   paste0('curdir="', workDir, '"'), "lo=3", "execMode=" %+% gamsExecMode, 
                   config$MIROSwitch, "LstTitleLeftAligned=1")
