@@ -698,7 +698,7 @@ reactiveFileReader2 <- function(intervalMillis, session, filePath) {
       return(paste(filePath, info$mtime, info$size))
     },
     function() {
-      do.call(readChar, list(filePath, file.size(filePath)))
+      paste(do.call(readLines, list(filePath)), collapse = "\n")
     }
   )
 }

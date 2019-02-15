@@ -53,10 +53,10 @@
                     <p>Welcome to the documentation of GAMS MIRO (Model Interface for Rapid Orchestration) for and from GAMS, the General Algebraic Modeling System. 
                     GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in the browser. With this interface you can supply your models with input data and generate, display and save the results of your optimization. 
                     Various graphics tools visually support your data to get a deep insight into the optimization problem.</p>
-                    <p>GAMS MIRO is currently in the alpha phase. If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:support@gams.com" target="_blank">support@gams.com</a>.</p>
+                    <p>GAMS MIRO is currently in the alpha phase. If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.</p>
                       <br>
                       <div>
-                          <img class="img-fluid" style="height:450px;" src="assets/images/gams_miro.png" alt="GAMS MIRO" />               
+                          <img class="img-fluid" style="max-height:450px;" src="assets/images/gams_miro.png" alt="GAMS MIRO" />               
                       </div>
                       <br><br>
                       <div id="why-section">
@@ -77,10 +77,11 @@
                         <p>We have developed this tool to extend the possibilities of working with your GAMS models.</p>
                       </div><!--//why-section-->
                       <div class="cta-container">
-                        <a id="dl-miro-default" class="btn btn-primary btn-cta" href="" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download GAMS MIRO (v. 0.2.3.1) for Windows</a>
+                        <a id="dl-miro-default" class="btn btn-primary btn-cta" href="" target="_blank"><i class="fas fa-cloud-download-alt"></i> GAMS MIRO (v. 0.2.3.1) for Windows</a>
                       </div><!--//cta-container-->
                       <a id="dl-miro-left" href="" target="_blank">Download for MacOS</a> /
                       <a id="dl-miro-right" href="" target="_blank">Download for Linux</a>
+                      <p>GAMS MIRO is supported on Windows, MacOS and Linux. For early access to a beta version, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.</p>
                 </div><!--//intro-->
                 <div id="cards-wrapper" class="cards-wrapper row">
                     <div class="item item-orange col-lg-4 col-6">
@@ -199,7 +200,7 @@
        let leftDl = document.getElementById('dl-miro-left');
        let rightDl = document.getElementById('dl-miro-right');
        if (navigator.appVersion.indexOf("Mac")!==-1){
-         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS MIRO (v. 0.2.3.1) for MacOS";
+         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> GAMS MIRO (v. 0.2.3.1) for MacOS";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
          leftDl.innerHTML = "Download for Windows";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
@@ -207,7 +208,7 @@
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
        };
        if (navigator.appVersion.indexOf("Linux")!==-1){
-         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> Download GAMS MIRO (v. 0.2.3.1) for Linux";
+         defDl.innerHTML = "<i class='fas fa-cloud-download-alt'></i> GAMS MIRO (v. 0.2.3.1) for Linux";
          defDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs"
          leftDl.innerHTML = "Download for MacOS";
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";

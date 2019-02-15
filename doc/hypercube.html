@@ -250,12 +250,12 @@
                                         </p>
                                         <p>
                                           For each scenario of a Hypercube job the GAMS call is compiled:
-                                          <span class="code" style="white-space: nowrap;">gams transport.gms --HCUBE_STATIC_a=8bc030208cf6482932608872c5681310 --HCUBE_SCALAR_beta=0.86 --type="mip"</span>
+                                          <span class="code">gams transport.gms --HCUBE_STATIC_a=8bc030208cf6482932608872c5681310 --HCUBE_SCALAR_beta=0.86 --type="mip"</span>
                                         You probably notice some oddities: All of the inputs that come from MIRO are included in this call, even those that are not GAMS command line parameters. GAMS scalars are prefixed with the keyword <kbd>HCUBE_SCALAR_</kbd>; parameters and other multi-dimensional GAMS symbols with the keyword <kbd>HCUBE_STATIC_</kbd>. Furthermore, the value of parameter <span class="code">a</span> looks weird: MIRO hashes the csv representation of the parameter with a 128-bit <a href="https://en.wikipedia.org/wiki/MD5" target="_blank">MD5</a> hash function. This way, we make sure that the parameter and thus the entire GAMS command changes when the table is modified and at the same time keep the call short.<br>
                                         The <kbd>HCUBE_SCALAR_</kbd> keyword instructs the GAMS compiler to assign the specified value not to compile time variable but a GAMS symbol declared in your model.<br>
                                         Command line parameters (GAMS options and double dash parameters) are just appended as in any GAMS call.</p>
                                         Once the command is built, we hash this again with the aforementioned SHA-2 hash function and get an identifier of the form:
-                                        <span class="code" style="white-space: nowrap;">7f14dcce0c726d215adae54daa2690b6a86b540cf4e3efaf9f97e8f4f3ab90a5</span>.
+                                        <span class="code">7f14dcce0c726d215adae54daa2690b6a86b540cf4e3efaf9f97e8f4f3ab90a5</span>.
                                         <p>We end up with a (relatively) compact identifier of a scenario while also making sure that we have a valid file/directory name without any reserved characters. The obvious disadvantage is that there is no way to derive the input parameters from the hash.
                                         </p>
                                       </div>
@@ -328,21 +328,21 @@
                                         </div>
                                          <p><b>Each row of the file contains the information needed for exactly one scenario</b>.<br>Example: In the first line of the shown Hypercube file it says: </p>
                                          <p>
-                                         <span class="code">2d30a49f5fb10b2aa8aab9e133db4f079c8c753a23ce6f67f1086b572f57ba7c: gams transport.gms</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=8bc030208cf6482932608872c5681310</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_b=a5126cbcb9f17e29d4b0e49aaf1087ff</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_STATIC_d=50ae5383d3e43c0c902144abbf0b3e8e</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=75</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_mins=20</span> 
-                                         <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_beta=0.97</span> 
-                                         <span class="code" style="white-space:nowrap">--type="mip"</span>
-                                         <span class="code" style="white-space:nowrap">miro=RUN</span>
-                                         <span class="code" style="white-space:nowrap">--HCUBE=1</span>
-                                         <span class="code" style="white-space:nowrap">execMode=0</span>
-                                         <span class="code" style="white-space:nowrap">lo=3</span>
-                                         <span class="code" style="white-space:nowrap">trace="_sys_trace_transport.trc"</span>
-                                         <span class="code" style="white-space:nowrap">traceopt=3</span>
-                                         <span class="code" style="white-space:nowrap">idir1="..\..\transport"</span>
+                                         <span class="code">2d30a49f5fb10b2aa8aab9e133db4f079c8c753a23ce6f67f1086b572f57ba7c: gams transport.gms 
+--HCUBE_STATIC_a=8bc030208cf6482932608872c5681310         <br>
+--HCUBE_STATIC_b=a5126cbcb9f17e29d4b0e49aaf1087ff         <br>
+--HCUBE_STATIC_d=50ae5383d3e43c0c902144abbf0b3e8e         <br>
+--HCUBE_SCALAR_f=75                                       <br>
+--HCUBE_SCALAR_mins=20                                    <br>
+--HCUBE_SCALAR_beta=0.97                                  <br>
+--type="mip"                                              
+miro=RUN                                                  
+--HCUBE=1                                                 
+execMode=0                                                
+lo=3                                                      
+trace="_sys_trace_transport.trc"                          
+traceopt=3                                                
+idir1="..\..\transport"</span>
                                         <br>  
                                         <p>The following information is included:</p>
                                         <ul>
@@ -356,19 +356,19 @@
                                           All of this information is provided in the GAMS call in some sort (again, if you want to learn more read <a href="#hash-generation" class="scrollto">this section</a>):
                                             <ul>
                                               <li>Static data:
-                                              <br>Non-scalar / multi-dimensional input data such as parameters are used as fixed files for all scenarios of a Hypercube job. In the Hypercube job file such static datasets are specified as <span class="code" style="white-space:nowrap">--HCUBE_STATIC_&lt;parameter-name&gt;=&lt;hash&gt;</span>. 
+                                              <br>Non-scalar / multi-dimensional input data such as parameters are used as fixed files for all scenarios of a Hypercube job. In the Hypercube job file such static datasets are specified as <span class="code">--HCUBE_STATIC_&lt;parameter-name&gt;=&lt;hash&gt;</span>. 
                                               <br>Example: 
-                                              In the transport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, the Hypercube job file includes the substring: <span class="code" style="white-space:nowrap">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>.                                        
+                                              In the transport model, there is a parameter <span class="code">a</span> which defines the capacity of plants. When this parameter is used for a Hypercube job, the Hypercube job file includes the substring: <span class="code">--HCUBE_STATIC_a=131a04011c1c227dccbbbc7e742073e2</span>.                                        
                                               <br>You can safely ignore the compile time variable. It does not serve any purpose other than being part of the hash that identifies the scenario. This way, MIRO makes sure it assigns a different hash to scenarios with exactly the same set of scalars but different multi-dimensional parameters. What you need to make sure of, however, is that the static files are correctly named and located in the directory named: <i>static</i>. Else, the GAMS compiler can't find the data for these symbols.
                                               </li>
                                               <li>Command line parameters:
                                               <br>Double dash parameters and GAMS options which are <a href="./customize.html#widgets-commandLine">set via MIRO</a> are already in the correct format for a GAMS call. 
-                                              <br>Examples: <br><span class="code" style="white-space:nowrap">--type=lp</span> &rarr; A compile-time variable <span class="code" style="white-space:nowrap">type</span> set to <span class="code" style="white-space:nowrap">lp</span> <br><span class="code" style="white-space:nowrap">lp=CPLEX</span> &rarr; GAMS option <span class="code" style="white-space:nowrap">lp</span> to select a LP solver set to <span class="code" style="white-space:nowrap">CPLEX</span> <br>(the latter is not part of the above example).</li>
+                                              <br>Examples: <br><span class="code">--type=lp</span> &rarr; A compile-time variable <span class="code">type</span> set to <span class="code">lp</span> <br><span class="code">lp=CPLEX</span> &rarr; GAMS option <span class="code">lp</span> to select a LP solver set to <span class="code">CPLEX</span> <br>(the latter is not part of the above example).</li>
                                               <li>Scalars:
                                               <br>Scalars can usually not be set via a GAMS call, but are defined in the model. In order to be able to set scalars via the command line, MIRO adds a special prefix:
                                               <br>When a scalar is specified, this is recorded in the Hypercube job file as 
-                                              <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_&lt;scalar-name&gt;=&lt;scalar-value&gt;</span>, e.g. <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span> for scalar <span class="code" style="white-space:nowrap">f</span> and a value of 90. 
-                                              To continue this example, if a GAMS model is called with <span class="code" style="white-space:nowrap">miro=run</span> and the compile-time variable <span class="code" style="white-space:nowrap">--HCUBE_SCALAR_f=90</span>, a scalar <span class="code" style="white-space:nowrap">f</span> is searched in the list of symbols declared in your GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90.</li>
+                                              <span class="code">--HCUBE_SCALAR_&lt;scalar-name&gt;=&lt;scalar-value&gt;</span>, e.g. <span class="code">--HCUBE_SCALAR_f=90</span> for scalar <span class="code" style="white-space:nowrap">f</span> and a value of 90. 
+                                              To continue this example, if a GAMS model is called with <span class="code">miro=run</span> and the compile-time variable <span class="code">--HCUBE_SCALAR_f=90</span>, a scalar <span class="code">f</span> is searched in the list of symbols declared in your GAMS model and, if declared, set to the value of the compile-time variable, i.e. 90.</li>
                                             </ul>
                                           <li>Trace file command:
                                           <br>In case you are interested in doing performance analysis using the analysis tool <a href="https://github.com/coin-or/Paver" target="_blank">PAVER</a>, which is integrated into MIRO, you need to make sure to generate trace files for your scenarios. 
@@ -461,7 +461,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                         <br>Once a Hypercube job finished execution, it can be imported and stored in MIRO's database via the <i>import results</i> module.
                                         In the bottom right corner of the window, click on <i>Manual import</i>. </p>
                                         <div class="section-block">
-                                            <img class="img-fluid" style="display:block; margin:auto; max-width:325pt" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
+                                            <img class="img-fluid" style="display:block; margin:auto; max-height:250pt" src="assets/images/batch_img/batch_import.png" alt="Results upload module" />
                                         </div>
                                         <h6>Upload Zip file with results:</h6>
                                         <p>A dialog pops up that lets you choose the zip archive with the Hypercube job results. Note that you probably want to assign <a href="#job-tag" class="scrollto">job tags</a> here as well.</p>
