@@ -12,9 +12,9 @@ function isInputEl(id){
     return false;
   }
 }
-function rerenderHot(){
+function rerenderHot(delay = 100){
   try{
-      setTimeout(function(){ HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render(); }, 100);
+      setTimeout(function(){ HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render(); }, delay);
   }catch(e){}
 }
 let spinnerActive = {};
@@ -192,6 +192,9 @@ $(document).ready(function () {
         && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length){
       $('.pvtFilterBox').hide();
     }
+  });
+  $(".sidebar-toggle").click(function(e) {
+    rerenderHot(400);
   });
   $(window).on('beforeunload', function() {
     if($("#shiny-disconnected-overlay").length === 0){

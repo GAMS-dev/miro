@@ -51,6 +51,7 @@ $(document).keyup(function(event) {
   // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
   if(event.ctrlKey && event.altKey && event.keyCode === 70) {
     $("body").toggleClass("sidebar-collapse");
+    rerenderHot(400);
   }
   // Select input menu shortcut: CTRL + ALT + 1
   if(event.ctrlKey && event.altKey && event.keyCode === 49) {

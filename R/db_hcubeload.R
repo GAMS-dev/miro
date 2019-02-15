@@ -109,10 +109,9 @@ HcubeLoad <- R6Class("HcubeLoad",
                          if(!length(data)){
                            return(tibble())
                          }
-                         tagID <- which(endsWith(private$dbSchema$colNames[["_scenMeta"]][['stag']], names(data)))[1L]
-                         if(length(tagID)){
-                           tags_trimmed <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
-                           if(length(tags_trimmed)){
+                         tagID <- which(endsWith(names(data), private$dbSchema$colNames[["_scenMeta"]][['stag']]))[1L]
+                         if(!is.na(tagID)){
+                           if(any(nchar(data[[tagID]]) > 0)){
                              data[[tagID]] <- substr(data[[tagID]], 2L, nchar(data[[tagID]]) - 1L)
                            }
                          }
@@ -382,7 +381,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            if(length(data) && nrow(data) > limit){
                              stop("maxNoRowsVio", call. = FALSE)
                            }
-                           data <- spread(data, 2, 3, drop = FALSE)
+                           data <- spread(data, 2, 3, drop = FALSE, convert = TRUE)
                            names(data)[-1] <- paste0(innerTable, "._", names(data)[-1])
                            return(data)
                          })

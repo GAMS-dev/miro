@@ -1304,7 +1304,14 @@ Db <- R6Class("Db",
                                            field, ", perl = TRUE)"))
                            },
                            {
-                             return(paste0(field, op, "'", val, "'"))
+                             valNum <- suppressWarnings(as.numeric(val))
+                             if(is.na(valNum)){
+                               val <- paste0("'", val, "'")
+                             }else{
+                               val <- valNum
+                             }
+                             print(val)
+                             return(paste0(field, op, val))
                            })
                   }, character(1L), USE.NAMES = FALSE)
                   
