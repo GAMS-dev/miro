@@ -87,7 +87,7 @@ credit: maloric (https://stackoverflow.com/questions/36127648/uploading-a-json-f
         //});
       }
       catch(err) {
-          $("#errMsg").html("Problems parsing the JSON file. Please upload a valid GMSIO configutation file!");
+          $("#errMsg").html("Problems parsing the JSON file. Please upload a valid &lt;modelname&gt;_io configutation file!");
           $("#errMsg").show();
           return;
       }
@@ -1764,7 +1764,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                             "required": true
                                          },
                                          "plotly":{
-                                            "title":"Use Plotly. Note: Only basic configuration is pre-implemented here. For more sophisticated graphic options please refer to <a href='https://plot.ly/r/' target='_blank'>the plotly documentation</a> and configure the config.json file manually.",
+                                            "title":"Use Plotly. Note: Only basic configuration is pre-implemented here. For more sophisticated graphic options please refer to <a href='https://plot.ly/r/' target='_blank'>the plotly documentation</a> and configure the &lt;modelname&gt;.json file manually.",
                                             "type":"object",
                                             "properties":{
                                                "graphtype":{
@@ -2144,7 +2144,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                             }
                                          },
                                          "dygraphs":{
-                                            "title":"Use Dygraphs. Note: Only basic configuration is pre-implemented. For more sophisticated graphic options please refer to https://rstudio.github.io/dygraphs/ and configure the config.json file manually.",
+                                            "title":"Use Dygraphs. Note: Only basic configuration is pre-implemented. For more sophisticated graphic options please refer to https://rstudio.github.io/dygraphs/ and configure the &lt;modelname&gt;.json file manually.",
                                             "type": "object",
                                             "required":false,
                                             "properties":{
@@ -3366,7 +3366,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                     "title":"Download JSON",
                     "click":function(){
                        co = this.getValue();
-                       console.log(co);
                        function makeKey(oldKey, newKey, outType = null){
                          if(typeof co.dataRendering[oldKey] !== 'undefined'){
                            for (var i = 0; i < co.dataRendering[oldKey].length; i++) {
@@ -3438,6 +3437,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                }
                                //dyGraphs
                                if(co.dataRendering[grname].graph.choice === "UseDygraphs"){
+                                  console.log("dygraphs####")
                                   co.dataRendering[grname].graph.tool = "dyGraphs";
                                   $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraphs);
                                   delete co.dataRendering[grname].graph.dygraphs;
@@ -3449,15 +3449,20 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      delete co.dataRendering[grname].graph.dyEvent[k];
                                   }
                                   //ydata object needs name of GAMS Symbol ("dataname")
+                                  let ytmp = {};
                                   for (k = 0; k < co.dataRendering[grname].graph.ydata.length; k++) {
                                      var yname = co.dataRendering[grname].graph.ydata[k].dataname;
                                      delete co.dataRendering[grname].graph.ydata[k].dataname;
-                                     co.dataRendering[grname].graph.ydata[yname] = co.dataRendering[grname].graph.ydata[k];
-                                     delete co.dataRendering[grname].graph.ydata[k];
-                                  }
+                                     ytmp[yname] = co.dataRendering[grname].graph.ydata[k];                                
+                                     }
+                                     delete co.dataRendering[grname].graph.ydata;
+                                     co.dataRendering[grname].graph.ydata = ytmp;
 
                                }
                                else if(co.dataRendering[grname].graph.choice === "UsePlotly"){
+                                   
+                                  console.log("plotly###");
+                                  console.log(co);
                                   co.dataRendering[grname].graph.tool = "plotly";
                                   // set plotly graph type to chosen element
                                   if(co.dataRendering[grname].graph.plotly.graphtype.choice === "Histogram"){
@@ -3490,24 +3495,45 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                        }
                                   }
 
-                               }
-                               delete co.dataRendering[grname].graph.choice;
+                               }  
+                               console.log("1");      
                                //ydata manipulation for plotly and dygraphs: change the name of ydata objects to the "dataname" value
-                               if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraphs") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
-                                  for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
-                                        var yname = co.dataRendering[grname].graph.ydata[j].dataname;
-                                        delete co.dataRendering[grname].graph.ydata[j].dataname;
-                                        co.dataRendering[grname].graph.ydatatmp[yname] = co.dataRendering[grname].graph.ydata[j];
+                               //if((co.dataRendering[grname].graph.choice === "UseDygraphs") || ((co.dataRendering[grname].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.type !== "hist"))){                            
+                               if((co.dataRendering[grname].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.type !== "hist")){                            
+                                  delete co.dataRendering[grname].graph.choice;
+                                  console.log("2");
+                              //if((co.dataRendering["Format: graph"][i].graph.choice === "UseDygraphs") || ((co.dataRendering["Format: graph"][i].graph.choice === "UsePlotly") && (co.dataRendering[grname].graph.plotly.graphtype.choice !== "Histogram"))){
+                                  let ytmp = {};
+                                  console.log(co.dataRendering[grname].graph.ydata);
+                                  for (j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
+                                     console.log("3");
+                                     console.log(co.dataRendering[grname].graph.ydata);
+                                     var yname = co.dataRendering[grname].graph.ydata[j].dataname;
+                                     delete co.dataRendering[grname].graph.ydata[j].dataname;
+                                     ytmp[yname] = co.dataRendering[grname].graph.ydata[j];                                
                                      }
-                                     //delete co.dataRendering[grname].graph.ydata;
-                                     co.dataRendering[grname].graph.ydata = co.dataRendering[grname].graph.ydatatmp;
-                                     delete co.dataRendering[grname].graph.ydatatmp;
+                                     delete co.dataRendering[grname].graph.ydata;
+                                     co.dataRendering[grname].graph.ydata = ytmp;
+                                     
+                                     
+                                  //for (var j = 0; j < co.dataRendering[grname].graph.ydata.length; j++) {
+                                  //      var yname = co.dataRendering[grname].graph.ydata[j].dataname;
+                                  //      delete co.dataRendering[grname].graph.ydata[j].dataname;
+                                  //      co.dataRendering[grname].graph.ydatatmp = {};
+                                  //      co.dataRendering[grname].graph.ydatatmp[yname] = {};
+                                  //      co.dataRendering[grname].graph.ydatatmp[yname] = co.dataRendering[grname].graph.ydata[j];
+                                  //   }
+                                  //   //delete co.dataRendering[grname].graph.ydata;
+                                  //   co.dataRendering[grname].graph.ydata = co.dataRendering[grname].graph.ydatatmp;
+                                  //   delete co.dataRendering[grname].graph.ydatatmp;
+                               }
+                               if (typeof co.dataRendering[grname].graph.choice != "undefined") {   
+                                  delete co.dataRendering[grname].graph.choice;
                                }
                             }
                          }
-                         delete co.dataRendering["Format: graph"];
+                         //delete co.dataRendering["Format: graph"];
                        }
-
                        let widgetKeys = ['inputWidgets', 'inputWidgetsCL'];
                        for(let widgetKeyId=0; widgetKeyId<widgetKeys.length;widgetKeyId++){
                          let widgetKey = widgetKeys[widgetKeyId];
@@ -3826,11 +3852,14 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            }
                          }
                        }
+                       
                        if(existingConfig !== null){
                          $.extend(co, existingConfig);
                        }
+                       var file = $("#selectFile")[0].files;
+                       filename = file[0].name.slice(0, -8);
                        let data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(co,null,"  "));
-                       $("<a href=\"data:" + data + "\" download=\"config.json\" id=\"jsonDlLink\">Download</a>").appendTo("body");
+                       $("<a href=\"data:" + data + "\" download=\"" + filename + ".json\" id=\"jsonDlLink\">Download</a>").appendTo("body");
                        $("#jsonDlLink")[0].click();
                        $("#jsonDlLink").remove();
                     }
