@@ -79,23 +79,25 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
     
 $onExternalOutput
-Scalar kpi_train                       'Absoulte error in entire training phase'
-       kpi_test                        'Absoulte error in entire testing phase'    
+Scalar error_train                     'Absoulte error in entire training phase'
+       error_test                      'Absoulte error in entire testing phase'
+       error_ratio                     'Ratio between error test and error train'
 Parameter
-       partOfPortfolio(symbol)         'weight'   
+       stock_weight(symbol)            'weight'   
        dowVSindex(date,fHdr)           'dow jones vs. index fund [MIRO:table]'     
        abserror(date,errHdr)           'absolute error [MIRO:table]'               
 Singleton Set lastDayTraining(date)    'last date of training period' ;
 $offExternalOutput
 
-partOfPortfolio(s)                     = w.l(s);
+stock_weight(s)                        = w.l(s);
 dowVSindex(d,'dj')                     = index(d);
 dowVSindex(d,'index fund')             = fund(d);
 abserror(td, 'absolute error train')   = error(td);
 abserror(ntd,'absolute error test')    = error(ntd);
 lastDayTraining(td)                    = td.pos=card(td);
-kpi_train                              = obj.l;
-kpi_test                               = sum(ntd, error(ntd));
+error_train                            = obj.l;
+error_test                             = sum(ntd, error(ntd));
+error_ratio                            = error_test/error_train;
 
 * parameter including all stocks and dow jones index
 $onExternalOutput

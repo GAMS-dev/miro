@@ -52,37 +52,8 @@
         }
     },
     "gamsOutputFiles": {
-        "deffit": {
-            "alias": "fit to Dow Jones index",
-            "headers": {
-                "date": {
-                    "type": "set",
-                    "alias": "date"
-                },
-                "level": {
-                    "type": "parameter",
-                    "alias": "Level"
-                },
-                "marginal": {
-                    "type": "parameter",
-                    "alias": "Marginal"
-                },
-                "lower": {
-                    "type": "parameter",
-                    "alias": "Lower"
-                },
-                "upper": {
-                    "type": "parameter",
-                    "alias": "Upper"
-                },
-                "scale": {
-                    "type": "parameter",
-                    "alias": "Scale"
-                }
-            }
-        },
-        "partofportfolio": {
-            "alias": "what part of the portfolio",
+        "stock_weight": {
+            "alias": "weight",
             "headers": {
                 "symbol": {
                     "type": "set",
@@ -90,7 +61,7 @@
                 },
                 "value": {
                     "type": "parameter",
-                    "alias": "what part of the portfolio"
+                    "alias": "weight"
                 }
             }
         },
@@ -148,18 +119,24 @@
         "scalars_out": {
             "alias": "Output Scalars",
             "symnames": [
-                "kpi",
+                "error_train",
+                "error_test",
+                "error_ratio",
                 "lastdaytraining"
             ],
             "symtext": [
-                "key performance indicator - absoulte error in entire testing phase",
+                "Absoulte error in entire training phase",
+                "Absoulte error in entire testing phase",
+                "Ratio between error test and error train",
                 "last date of training period"
             ],
             "symtypes": [
                 "parameter",
+                "parameter",
+                "parameter",
                 "set"
             ],
-            "count": 2,
+            "count": 4,
             "headers": {
                 "scalar": {
                     "type": "set",
@@ -172,43 +149,6 @@
                 "value": {
                     "type": "set",
                     "alias": "Scalar Value"
-                }
-            }
-        },
-        "scalarsve_out": {
-            "alias": "Output Variable/Equation Scalars",
-            "headers": {
-                "type": {
-                    "type": "set",
-                    "alias": "Type"
-                },
-                "scalar": {
-                    "type": "set",
-                    "alias": "Scalar Name"
-                },
-                "description": {
-                    "type": "set",
-                    "alias": "Scalar Description"
-                },
-                "level": {
-                    "type": "parameter",
-                    "alias": "Level"
-                },
-                "marginal": {
-                    "type": "parameter",
-                    "alias": "Marginal"
-                },
-                "lower": {
-                    "type": "parameter",
-                    "alias": "Lower"
-                },
-                "upper": {
-                    "type": "parameter",
-                    "alias": "Upper"
-                },
-                "scale": {
-                    "type": "parameter",
-                    "alias": "Scale"
                 }
             }
         }

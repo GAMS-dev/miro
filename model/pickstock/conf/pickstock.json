@@ -89,7 +89,7 @@
 				}
 			}
 		},
-		"partofportfolio"       : {
+		"stock_weight"       : {
             "outType"               : "dtGraph",
             "graph"                 : {
                 "tool"                  : "plotly",
