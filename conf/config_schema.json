@@ -100,7 +100,7 @@
             "strictmode":{  
                "description":"Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries.",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "loadLocal":{  

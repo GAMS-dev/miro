@@ -368,7 +368,7 @@ if(config$activateModules$hcubeMode){
     tabItem(tabName = "hcubeAnalyze",
             box(width = NULL, solidHeader = TRUE, status="primary", title = lang$nav$hcubeAnalyze$title, 
                 tabsetPanel(id = "tabs_paver_results",
-                            tabPanel("Index", value = "index",
+                            tabPanel("Index", value = "tabs_paver_1",
                                      tags$div(style = "overflow: auto; height: 75vh;",
                                               tags$div(id = "paverLoad", class = "centered-div",
                                                        style = "display:none;",

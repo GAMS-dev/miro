@@ -86,11 +86,11 @@ observeEvent(input$btPaver, {
   if(is.null(paver) || !is.null(paver$get_exit_status())){
     flog.debug("Run Paver button clicked.")
     if(gmswebiter > 0){
-      removeTab("tabs_paver_results", "stat_Status")
-      removeTab("tabs_paver_results", "stat_Efficiency")
-      removeTab("tabs_paver_results", "stat_SolutionQuality")
-      removeTab("tabs_paver_results", "solvedata")
-      removeTab("tabs_paver_results", "documentation")
+      removeTab("tabs_paver_results", "tabs_paver_2")
+      removeTab("tabs_paver_results", "tabs_paver_3")
+      removeTab("tabs_paver_results", "tabs_paver_4")
+      removeTab("tabs_paver_results", "tabs_paver_5")
+      removeTab("tabs_paver_results", "tabs_paver_6")
     }
     
     hideEl(session, "#btLoadHcube")
@@ -140,15 +140,16 @@ observeEvent(input$btPaver, {
         paverStatus <- NULL
         if(paverStatus() == 0){
           hideEl(session, "#paverLoad")
-          paverResultTabs <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
+          paverResultTabs <- paste0("tabs_paver_", 1:6)
+          paverResultFiles <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
           lapply(2:length(paverResultTabs), function(i){
             insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
-                      tabPanel(paverResultTabs[i], value = paverResultTabs[i],
+                      tabPanel(paverResultFiles[i], value = paverResultTabs[i],
                                tags$div(id = "wrapper-" %+% paverResultTabs[i], 
                                         style = "overflow: auto; height: 75vh;",
                                         tryCatch(
                                           suppressWarnings(includeHTML(paste0(paverDir, .Platform$file.sep, 
-                                                                              paverResultTabs[i], ".html"))),
+                                                                              paverResultFiles[i], ".html"))),
                                           error = function(e){
                                             tags$div(class="errMsg", style="text-align:center;font-size:16px;margin-top:50px;",
                                                      lang$errMsg$paverFileLoad$desc)
@@ -158,7 +159,7 @@ observeEvent(input$btPaver, {
                       )
             ) 
           })
-          return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultTabs[1], ".html")))
+          return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultFiles[1], ".html")))
         }else{
           paverError <- paver$read_error()
           flog.error("Problems while running paver. Error message: '%s'.", paverError)

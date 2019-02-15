@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.3.8"
-MIRORDate   <- "Feb 9 2019"
+MIROVersion <- "0.3.9"
+MIRORDate   <- "Feb 15 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -629,6 +629,18 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), 
                             paste0("contentScen_", currentScen + 1, "_", currentSheet + 1))
         }
+      }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
+        flog.debug("Navigated to next data tab in paver output tabpanel (using shortcut).")
+        # go to next data sheet
+        local({
+          tabsetName <- isolate(input$tabs_paver_results)
+          currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
+                                                             nchar(tabsetName), nchar(tabsetName))))
+          if(is.na(currentSheet))
+            return()
+          updateTabsetPanel(session, "tabs_paver_results", 
+                            paste0("tabs_paver_", currentSheet + 1))
+        })
       }
     })
     observeEvent(input$tabsetShortcutPrev,{
@@ -670,6 +682,18 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                             paste0("contentScen_", currentScen + 1, "_", currentSheet - 1))
         }
         
+      }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
+        flog.debug("Navigated to previous data tab in paver output tabpanel (using shortcut).")
+        # go to next data sheet
+        local({
+          tabsetName <- isolate(input$tabs_paver_results)
+          currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
+                                                             nchar(tabsetName), nchar(tabsetName))))
+          if(is.na(currentSheet))
+            return()
+          updateTabsetPanel(session, "tabs_paver_results", 
+                            paste0("tabs_paver_", currentSheet - 1))
+        })
       }
     })
     
@@ -954,8 +978,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
          
           hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), 
                                        c("--vanilla", file.path(currentModelDir, "runApp.R"), 
-                                         "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|",
-                                       cleanup_tree = TRUE, supervise = TRUE)
+                                         "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
         })
       }
     }else{
