@@ -56,7 +56,7 @@ tabItemList <- list(
                               tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                        tagAppendAttributes(
                                          actionButton(inputId = "btGraphIn",
-                                                      icon = icon("chart-line"), label = NULL,
+                                                      icon = icon("chart-bar"), label = NULL,
                                                       class="scen-button"), disabled = ""
                                        )
                               )
@@ -448,7 +448,7 @@ if(config$activateModules$hcubeMode){
                                                       class="scen-button")
                                 ),
                                 tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                                         actionButton("outputTableView", icon("chart-line"), 
+                                         actionButton("outputTableView", icon("chart-bar"), 
                                                       class="scen-button")
                                 )
                        )

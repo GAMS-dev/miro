@@ -114,7 +114,7 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
                                                      class="scen-button")
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                                      actionButton(paste0("table_", scenId), icon("chart-line"), 
+                                      actionButton(paste0("table_", scenId), icon("chart-bar"), 
                                                    class="scen-button")
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btClose, class = "scen-button-tt",
@@ -146,7 +146,7 @@ generateScenarioTabsetSplit <- function(scenId){
                                               class="scen-button")
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
-                               actionButton(paste0("table_", scenId), icon("chart-line"), 
+                               actionButton(paste0("table_", scenId), icon("chart-bar"), 
                                             class="scen-button")
                       )
              )
