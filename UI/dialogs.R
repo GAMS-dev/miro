@@ -237,7 +237,7 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
                                     title = lang$nav[[modeDescriptor]]$tabDatabase, 
                                     scenList = scenListDb, tagList = dbTagList,
-                                    iconName = "cube")
+                                    iconName = "database")
     if(config$activateModules$hcubeMode){
       tabLoadFromBase <- getLoadDbPanel(id = "base", 
                                         title = lang$nav[[modeDescriptor]]$tabBase, 
