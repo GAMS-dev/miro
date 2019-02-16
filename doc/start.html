@@ -88,15 +88,15 @@
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <h4 class="callout-title">Note:</h4>
-                                            <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>. However, we will continue to use the term <i>trnsport</i> in this documentation.</p>
+                                            <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    <li>trnsport_live</li>
-                                    A "live" version of the trnsport model. Extends trnsport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
+                                    <li>transport_live</li>
+                                    A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
                                     <li>pickstock</li>
-                                    Optimization model to pick a small subset of the stocks together with some weights, such that this portfolio has a similar behavior to the overall Dow Jones index.
+                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.
                                     <li>pickstock_live</li>
-                                    A "live" version of the pickstock model. Allows to include current Dow Jones stock prices as well as ones from past periods.
+                                    A "live" version of the pickstock model where the user can specify the time window to be considered regarding the stock prices. This allows to include current Dow Jones stock prices as well as ones from past periods.
                                     <li>kport</li>
                                     This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
                                     </ul>                                    
@@ -133,7 +133,7 @@
                                                         <td>pandas, pandas_datareader</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Trnsport_live</td>
+                                                        <td>Transport_live</td>
                                                         <td>geocoder</td>
                                                     </tr>
                                                 </tbody>
@@ -225,7 +225,7 @@
                                             </div>
                                         <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. 
                                         When you start a MIRO app for a specific GAMS model for the first time, there is no data in the database yet, so you should start with a local file.
-                                        For the model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span class="code">C:\Users\&lt;user_Name&gt;\Documents\GAMSStudio\workspace\transport.xlsx</span>.</p>
+                                        For the model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span style="white-space:nowrap;" class="code">C:\Users\&lt;user_Name&gt;\Documents\GAMSStudio\workspace\transport.xlsx</span>.</p>
                                         <div class="callout-block callout-warning" id="create-excel">
                                             <div class="icon-holder">
                                                 <i class="fas fa-info-circle"></i>

@@ -199,6 +199,7 @@ body{
 .page-wrapper .code {
   font-family: Courier New, Courier, Lucida Sans Typewriter, Lucida Typewriter, monospace;
   display: inline-block;
+  vertical-align:middle;
   max-width:100%;
   overflow:auto;
 }
@@ -226,6 +227,7 @@ body{
   padding: 2px 8px;
   padding-top: 4px;
   display: inline-block;
+  vertical-align:middle;
   max-width:100%;
   overflow:auto;
 }
@@ -544,7 +546,7 @@ body{
   margin-bottom: 30px;
 }
 .page-wrapper .callout-block a {
-  color: rgba(0, 0, 0, 0.55) !important;
+  color: rgba(0, 0, 0, 0.55);
 }
 .page-wrapper .callout-block a:hover {
   color: rgba(0, 0, 0, 0.65) !important;
