@@ -141,6 +141,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   tryCatch({
     if(is.null(activeScen) || saveAsFlag){
       if(saveAsFlag){
+        activeScen <<- NULL
+        gc()
         rv$activeSname <<- isolate(input$scenName)
       }
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), tags = scenTags)
