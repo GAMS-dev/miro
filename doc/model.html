@@ -249,9 +249,8 @@ Positive Variable x;
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> tags:</p>
                                     <pre><code class="language-gams">$onExternalInput
-Set
-   i 'canning plants'
-   j 'markets';
+Set i 'canning plants'
+    j 'markets';
 $offExternalInput
 </pre></code>
                                     <p>If a set is included in this way, it is displayed in a separate table in MIRO. 
@@ -267,12 +266,11 @@ $offExternalInput
                                     In the following example, the sets are declared outside the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> tags. However, they are defined implicitly by the parameter <code class="language-gams">d(i&lt;,j&lt;)</code>, which is declared within these tags.</p>
-                                    <pre><code class="language-gams">Set
-   i 'canning plants'
-   j 'markets';
+                                    <pre><code class="language-gams">Set i 'canning plants'
+    j 'markets';
 
 $onExternalInput
-Parameter d(i&lt;,j&lt;) 'distance in thousands of miles'
+Parameter d(i&lt;,j&lt;) 'distance in thousands of miles';
 $offExternalInput
 </pre></code>
                                 <p>The <span class="code">&lt;</span> signs signal that the set <span class="code">i</span> will contain all elements which define the first dimension of <span class="code">d</span> and that the set <span class="code">j</span> will contain all elements which define the second dimension of <span class="code">d</span>, respectively.
@@ -287,7 +285,7 @@ $offExternalInput
     symbol 'stockSymbol';
 
 $onExternalInput    
-Parameter price(date,symbol) 'Price';
+Parameter price(date<,symbol<) 'Price';
 $offExternalInput
 </pre></code>
                                     <p>The parameter <span class="code">price</span> is declared between the mentioned tags <code class="language-gams">$onExternalInput
