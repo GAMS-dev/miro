@@ -101,6 +101,9 @@ option optCR=0.01;
 td(d) = ord(d)<=trainingdays;
 ntd(d) = not td(d);
 
+abort$(card(date)=0)   "Set date is empty. Please select valid data.";
+abort$(card(symbol)=0) "Set symbol is empty. Please select valid data.";
+abort$(card(price)=0)  "Set price is empty. Please select valid data.";
 solve pickStock min obj using mip;
 
 fund(d) = sum(s, price(d, s)*w.l(s));
