@@ -105,6 +105,7 @@ these components are included below):
 - progress https://github.com/r-lib/progress or https://cran.r-project.org/web/packages/progress/index.html
 - rematch https://github.com/MangoTheCat/rematch or https://cran.r-project.org/web/packages/rematch/index.html
 - prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
+- yaml https://github.com/viking/r-yaml/ or https://cran.r-project.org/web/packages/yaml/index.html
 - formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
 - withr https://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 
@@ -3490,6 +3491,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - pandas, Copyright (c) 2008-2012, AQR Capital Management, LLC, Lambda Foundry, Inc. and PyData Development Team
         - pandas_datareader, Copyright (c) 2011-2012, Lambda Foundry, Inc. and PyData Development Team All rights reserved.
                              Copyright (c) 2008-2011 AQR Capital Management, LLC All rights reserved.
+        - yaml, Copyright (C) 2008-2018 
+                      COPYRIGHT HOLDER: Vanderbilt University Medical Center
+                      ORGANIZATION: Vanderbilt University Medical Center
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
