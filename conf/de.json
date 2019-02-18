@@ -37,6 +37,9 @@
         "title": "Hilfe",
         "doc": "Dokumentation",
         "about": "Über"
+      },
+      "tooltips":{
+        "switchToHcube": "Wechsel zum Hypercube Modus"
       }
     },
     "inputScreen":{  
@@ -71,7 +74,9 @@
         "btClose":"Szenario schließen",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"Eingabedaten",
-        "outputSheet":"Ausgabedaten"
+        "outputSheet":"Ausgabedaten",
+        "load":"Lade gespeichertes Szenario",
+        "loadActive":"Aktives Szenario laden (letzter gespeicherter Zustand)"
       },
       "split":{
         "load":"Szenario öffnen",

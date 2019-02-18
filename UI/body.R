@@ -7,11 +7,11 @@ genSplitCompButtons <- function(id){
              )
   }else{
     tags$div(id = paste0("scenSplit", id, "_open"), class = "split-open",
-             tags$div(class = "split-open-cell",
+             tags$div(title = lang$nav$scen$tooltips$load, class = "split-open-cell",
                       actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
                                    class = "scenSplit-button-load")
              ),
-             tags$div(class = "split-open-cell",
+             tags$div(title = lang$nav$scen$tooltips$loadActive, class = "split-open-cell",
                       HTML(paste0('<button class="btn btn-default action-button scenSplit-button-load" 
 type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 1, 
                                   ', {priority: \'event\'})">', 
