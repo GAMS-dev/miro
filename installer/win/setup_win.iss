@@ -59,18 +59,18 @@ Source: "../../tools/*"; DestDir: "{app}\miro\tools\*"; Flags: ignoreversion rec
 Source: "../../resources/hcube_submission.gms"; DestDir: "{app}\resources"; Flags: ignoreversion;Components: program
 Source: "../../model/miro.gms"; DestDir: "{app}\inclib"; Flags: ignoreversion;Components: program
 
-Source: "../../model/kport/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\kport\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/kport/conf/kport.json"; DestDir: "{userdocs}\MIRO_examples\kport\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/kport/kport.gms"; DestDir: "{userdocs}\MIRO_examples\kport"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\pickstock\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock/conf/pickstock.json"; DestDir: "{userdocs}\MIRO_examples\pickstock\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock/dowjones2016.csv"; DestDir: "{userdocs}\MIRO_examples\pickstock"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock/pickstock.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock"; Flags: ignoreversion;Components: examples
-Source: "../../model/pickstock_live/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/pickstock_live/conf/pickstock_live.json"; DestDir: "{userdocs}\MIRO_examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock_live/pickstock_live.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock_live"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\trnsport\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport/conf/trnsport.json"; DestDir: "{userdocs}\MIRO_examples\trnsport\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport/trnsport.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/conf/config.json"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/trnsport_live/conf/trnsport_live.json"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport_live"; Flags: ignoreversion;Components: examples
