@@ -59,7 +59,7 @@ pipeline {
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME=$(find GAMS26*.dmg)
-                            GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS(.*)\\.[[:digit:]]\\.dmg/\\1/g)
+                            GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\([[:digit:]]+\\.[[:digit:]]\)\\.[[:digit:]]\\.dmg/\\1/)
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
                             DMG_ROOT=volume
