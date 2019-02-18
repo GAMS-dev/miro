@@ -59,15 +59,16 @@ pipeline {
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME=$(find GAMS26*.dmg)
+                            DMG_NAME_TMP="GAMS_MIRO_TMP.dmg"
                             GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
                             GMS_VER_LONG=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\\\.[[:digit:]]\\)\\\\.dmg/\\\\1/)
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
-                            hdiutil convert $DMG_NAME -format UDRW -o ${DMG_NAME}_tmp
+                            hdiutil convert $DMG_NAME -format UDRW -o $DMG_NAME_TMP
                             mount
-                            hdiutil attach -mountpoint ./$DMG_ROOT ${DMG_NAME}_tmp
+                            hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME_TMP
                             
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
@@ -111,7 +112,7 @@ pipeline {
                             cd "$WORKSPACE"/installer/macOS
                             hdiutil detach -verbose $DMG_ROOT
 
-                            hdiutil convert ${DMG_NAME}_tmp -format UDRO -o $DMG_NAME_FINAL
+                            hdiutil convert $DMG_NAME_TMP -format UDRO -o $DMG_NAME_FINAL
                             rm $DMG_NAME
                         '''
                     }
