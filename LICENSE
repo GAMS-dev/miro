@@ -97,6 +97,44 @@ these components are included below):
 - RSQLite https://github.com/r-dbi/RSQLite or https://cran.r-project.org/web/packages/RSQLite/index.html
 - memoise https://github.com/r-lib/memoise https://cran.r-project.org/web/packages/memoise/index.html
 
+- bindr https://github.com/krlmlr/bindr or https://cran.r-project.org/web/packages/bindr/index.html
+- cli https://github.com/r-lib/cli or https://cran.r-project.org/web/packages/cli/index.html
+- pillar https://github.com/r-lib/pillar or https://cran.r-project.org/web/packages/pillar/index.html
+- fansi https://github.com/brodieG/fansi or https://cran.r-project.org/web/packages/fansi/index.html
+- utf8 https://github.com/patperry/r-utf8 or https://cran.r-project.org/web/packages/utf8/index.html
+- progress https://github.com/r-lib/progress or https://cran.r-project.org/web/packages/progress/index.html
+- rematch https://github.com/MangoTheCat/rematch or https://cran.r-project.org/web/packages/rematch/index.html
+- prettyunits https://github.com/gaborcsardi/prettyunits or https://cran.r-project.org/web/packages/prettyunits/index.html
+- formatR https://github.com/yihui/formatR or https://cran.r-project.org/web/packages/formatR/index.html
+- withr https://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
+
+- leaflet https://github.com/rstudio/leaflet or  https://cran.r-project.org/web/packages/leaflet/index.html
+- markdown https://github.com/rstudio/markdown or https://cran.r-project.org/web/packages/markdown/index.html
+- png https://github.com/s-u/png or https://cran.r-project.org/web/packages/png/index.html 
+- raster https://github.com/rspatial/raster or https://cran.r-project.org/web/packages/raster/index.html
+- sp https://github.com/edzer/sp/ or https://cran.r-project.org/web/packages/sp/index.html
+- viridis https://github.com/sjmgarnier/viridis or https://cran.r-project.org/web/packages/viridis/index.html
+- leaflet.minicharts https://github.com/cran/leaflet.minicharts or https://cran.r-project.org/web/packages/leaflet.minicharts/index.html
+- labeling https://github.com/cran/labeling or https://cran.r-project.org/web/packages/labeling/index.html
+- munsell https://github.com/cwickham/munsell/ or https://cran.r-project.org/web/packages/munsell/index.html
+- graphics https://github.com/zenspider/graphics or https://cran.r-project.org/web/packages/RGraphics/index.html
+- stringr, https://github.com/tidyverse/stringr/ or https://cran.r-project.org/web/packages/stringr/index.html
+- reshape2, https://github.com/hadley/reshape/ or https://cran.r-project.org/web/packages/reshape2/index.html
+- Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
+- nlme, https://cran.r-project.org/web/packages/nlme/index.html
+- colorspace, https://cran.r-project.org/web/packages/colorspace/index.html
+- plyr, https://github.com/hadley/plyr/ or https://cran.r-project.org/web/packages/plyr/index.html
+- mgcv, https://cran.r-project.org/web/packages/mgcv/index.html
+- MASS, https://cran.r-project.org/web/packages/MASS/index.html
+- gtable, https://cran.r-project.org/web/packages/gtable/index.html
+- gridExtra, https://cran.r-project.org/web/packages/gridExtra/index.html
+- lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
+
+- pandas https://github.com/pandas-dev/pandas
+- pandas_datareader https://github.com/pydata/pandas-datareader
+- geocoder https://github.com/DenisCarriere/geocoder
+- geopy https://github.com/geopy/geopy
+
 
 jQuery license and license for included components from jQuery UI
 ----------------------------------------------------------------------
@@ -1968,6 +2006,42 @@ Public License instead of this License.
         - httr, Copyright (c) 2014 Hadley Wickham; RStudio
         - viridisLite, Copyright (c) 2015 Simon Garnier
         - memoise, Copyright (c) 2010-2017 Hadley Wickham
+        - bindr, Copyright (c) 2016 RStudio
+        - cli, Copyright (c) 2017 Gábor Csárdi
+        - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
+        - rematch, Copyright (c) 2016 Mango Solutions
+        - prettyunits, Copyright (c) 2014 Gabor Csardi
+        - viridis, Copyright (c) 2015 Simon Garnier
+        - labeling, Copyright (c) 2014 Justin Talbot
+        - munsell, Copyright (c) 2016 Charlotte Wickham
+        - reshape2, Copyright (c) 2008-2016 Hadley Wickham
+        - plyr, Copyright (c) 2014 Hadley Wickham [aut, cre]
+        - geocoder, Copyright (c) 2013-15 Denis Carriere
+        - geopy, Copyright (c) 2006-2018 geopy Adam Tygart <mozes@ksu.edu>, Adrián López <alopez@smartvel.com> ,Afonso Queiros <afonso.queiros@deliveryhero.com> ,Albina <aalmukhametova@gmail.com> ,Alessandro Pasotti <apasotti@gmail.com> ,Andrea Tosatto <andrea.tosy@gmail.com>
+                                                 ,Ann Paul <ann@coffeemeetsbagel.com> ,Antonis Kanouras <antonis@metadosis.eu>
+                                                 ,Arsen Mamikonyan <arsen@locu.com> ,Arsen Mamikonyan <arsen@mamikonyan.am> ,Arthur Pemberton <pembo13@gmail.com> ,Artur <atnartur@users.noreply.github.com>
+                                                 ,avdd <Adrian Dries avdd@modernnoise.com> ,Benjamin Henne <henne@dcsec.uni-hannover.de> ,Benjamin Trigona-Harany <bosth@alumni.sfu.ca> ,Benjamin Trigona-Harany <bosth@boundlessgeo.com>
+                                                 ,Benoit Grégoire <benoitg@coeus.ca> ,Bernd Schlapsi ,Brian Beck ,Charles Karney <charles@karney.com>
+                                                 ,crccheck <c@crccheck.com> ,Dale <dale@puredistortion.com> ,Daniel Thul <daniel.thul@gmail.com> ,Danny Finkelstein <danfinkelstein@cfl.rr.com>
+                                                 ,Dave Arter <dave@minus-zero.org> ,David Gilman <davidgilman1@gmail.com> ,deeplook <gherman@darwin.in-berlin.de> ,Demeter Sztanko <Demeter Sztanko>
+                                                 ,Dody Suria Wijaya <dodysw@gmail.com> ,dutko.adam ,Edward Betts <edward@4angle.com> ,Emile Aben <emileaben@gmail.com>
+                                                 ,Eric Palakovich Carr <carreric@gmail.com> ,exogen ,Fabien Reboia <srounet@gmail.com> ,Feanil Patel <feanil@gmail.com>
+                                                 ,gary.bernhardt ,Gregory Nicholas <nicholas.g.gregory@gmail.com> ,groovecoder <luke.crouch@gmail.com> ,Hanno Schlichting <hanno@hannosch.eu>
+                                                 ,Ian Edwards ,Ian Wilson <ian.owings@gmail.com> ,ijl <uijllji@gmail.com> ,ironfroggy@gmail.com <ironfroggy@gmail.com>
+                                                 ,Isaac Sijaranamual <isaacsijaranamual@gmail.com> ,James Maddox <jhmaddox@gmail.com> ,James Mills <j.mills@griffith.edu.au> ,jhmaddox <jhmaddox@gmail.com>
+                                                 ,Joel Natividad <jnatividad@opengov.com> ,John.L.Clark ,Jonathan Batchelor <jmb@thebatchelors.net> ,Jordan Bouvier <jbouvier@gmail.com>
+                                                 ,Jose Martin <j.martin.bejarano@gmail.com> ,jqnatividad <joel.natividad@ontodia.com> ,Karimov Dmitriy <karimov_dm@tgt72.ru> ,Kostya Esmukov <kostya@esmukov.ru>
+                                                 ,Luca Marra ,Luke Hubbard <luke@codegent.com> ,Magnus Hiie <magnus.hiie@gmail.com> ,Marc-Olivier Titeux <marcoliviertiteux@gmail.com>
+                                                 ,Marco Milanesi <kpanic@gmail.com> ,Mariana Georgieva <mariana.georgieva@valkfleet.com> ,Martin <spatialbits@posteo.net> ,Micah Cochran
+                                                 ,Michal Migurski <mike@teczno.com> ,Mike Tigas <mike@tig.as> ,Mike Toews <mwtoews@gmail.com> ,mtmail <mtmail@gmx.net>
+                                                 ,mz <mattgeoc@autistici.org> ,navidata <kontakt@navidata.pl> ,nucflash <tsagias@gmail.com> ,Oleg <izhyk.oleh@gmail.com>
+                                                 ,Oskar Hollmann <oskarhollmann@gmail.com> ,Pavel <pppessoas@gmail.com> ,Paweł Mandera <pawel.mandera@ugent.be> ,Pedro Rodrigues <medecau@gmail.com>
+                                                 ,Peter Gullekson <peter11235@gmail.com> ,Philip Kimmey <philip.kimmey@gmail.com> ,Risent Zhang <shengqi542@gmail.com> ,Rocky Meza <rocky@fusionbox.com>
+                                                 ,Ryan Nagle <rnagle@tribune.com> ,scottessner <scott.essner@gmail.com> ,Sebastian Neubauer <sebineubauer@gmail.com> ,SemiNormal <bbengels@gmail.com>
+                                                 ,Serphentas ,svalee <triksrimer@gmail.com> ,Svetlana Konovalova ,Sébastien Barré <sheub@users.noreply.github.com>
+                                                 ,Thomas <thomas_gratier@yahoo.fr> ,Tom Wallroth <tomwallroth@gmail.com> ,tony <jinzc1@lenovo.com> ,tristan <tristanhomsi@gmail.com>
+                                                 ,Vladimir Kalinkin <vova.kalinkin@gmail.com> ,William Hammond <william.t.hammond@gmail.com> ,willr <willr@plotwatt.com> ,Yorick Holkamp <github@nextpulse.nl>
+
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
 
@@ -2017,6 +2091,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         - hexbin, Copyright (c) Dan Carr, 
             ported by Nicholas Lewin-Koh and Martin Maechler, 
             contains copies of lattice functions written by Deepayan Sarkar
+        - markdown, Copyright (c) JJ Allaire [aut], Jeffrey Horner [aut], 
+            Yihui Xie ORCID iD [aut, cre], Henrik Bengtsson [ctb], Jim Hester [ctb], 
+            Yixuan Qiu [ctb], Kohske Takahashi [ctb], Adam November [ctb], 
+            Nacho Caballero [ctb], Jeroen Ooms [ctb], Thomas Leeper [ctb], 
+            Joe Cheng [ctb], Andrzej Oles [ctb], Vicent Marti [aut, cph] (The Sundown library), 
+            Natacha Porte [aut, cph] (The Sundown library), RStudio [cph]
+        - gtable, Copyright (c) Hadley Wickham [aut, cre]
+        - stringr, Copyright (c) Hadley Wickham [aut, cre, cph], RStudio [cph, fnd]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -2374,6 +2456,10 @@ Public License instead of this License.
             SQLite Authors [ctb] (for the included SQLite sources), 
             Liam Healy [ctb] (for the included SQLite sources), 
             R Consortium [fnd], RStudio [cph]
+        - pillar, Copyright (c) Kirill Müller [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre], 
+            Elliott Sales De Andrade [ctb], 
+            R Core Team [cph] (UTF8 byte length calcs from src/util.c)
 
 -----------------------------------------------------------------------------
 
@@ -2653,6 +2739,37 @@ Library.
             RStudio [cph, fnd]
         - zoo, Copyright (c) Achim Zeileis ORCID [aut, cre], Gabor Grothendieck [aut], 
             Jeffrey A. Ryan [aut], Joshua M. Ulrich [ctb], Felix Andrews [ctb]
+        - formatR, Copyright (c) Yihui Xie [aut, cre], Eugene Ha [ctb], 
+            Kohske Takahashi [ctb], Ed Lee [ctb]
+        - withr [expanded from: GPL (≥ 2)], Copyright (c)
+            Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], 
+            Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
+        - leaflet, Copyright (c) Joe Cheng [aut, cre], Bhaskar Karambelkar [aut], 
+            Yihui Xie [aut], Hadley Wickham [ctb], Kenton Russell [ctb], Kent Johnson [ctb], 
+            Barret Schloerke [ctb], jQuery Foundation and contributors [ctb, cph] (jQuery library), 
+            Vladimir Agafonkin [ctb, cph] (Leaflet library), CloudMade [cph] (Leaflet library), 
+            Leaflet contributors [ctb] (Leaflet library), 
+            Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), 
+            Brandon Copeland [ctb, cph] (leaflet-measure plugin), 
+            Joerg Dietrich [ctb, cph] (Leaflet.Terminator plugin), 
+            Benjamin Becquet [ctb, cph] (Leaflet.MagnifyingGlass plugin), 
+            Norkart AS [ctb, cph] (Leaflet.MiniMap plugin), 
+            L. Voogdt [ctb, cph] (Leaflet.awesome-markers plugin), 
+            Daniel Montague [ctb, cph] (Leaflet.EasyButton plugin), 
+            Kartena AB [ctb, cph] (Proj4Leaflet plugin), 
+            Robert Kajic [ctb, cph] (leaflet-locationfilter plugin), 
+            Mapbox [ctb, cph] (leaflet-omnivore plugin), Michael Bostock [ctb, cph] (topojson), RStudio [cph]
+        - png, Copyright (c) Simon Urbanek
+        - raster, Copyright (c) Robert J. Hijmans [cre, aut], Jacob van Etten [ctb], Joe Cheng [ctb], Michael Sumner [ctb], Matteo Mattiuzzi [ctb], Jonathan A. Greenberg [ctb], Oscar Perpinan Lamigueiro [ctb], Andrew Bevan [ctb], Roger Bivand [ctb], Lorenzo Busetto [ctb], Mort Canty [ctb], David Forrest [ctb], Aniruddha Ghosh [ctb], Duncan Golicher [ctb], Josh Gray [ctb], Paul Hiemstra [ctb], Institute for Mathematics Applied Geosciences [cph], Charles Karney [ctb], Steven Mosher [ctb], Jakub Nowosad [ctb], Edzer Pebesma [ctb], Etienne B. Racine [ctb], Barry Rowlingson [ctb], Ashton Shortridge [ctb], Bill Venables [ctb], Rafael Wueest [ctb]
+        - sp, Copyright (c) Edzer Pebesma [aut, cre], Roger Bivand [aut], Barry Rowlingson [ctb], Virgilio Gomez-Rubio [ctb], Robert Hijmans [ctb], Michael Sumner [ctb], Don MacQueen [ctb], Jim Lemon [ctb], Josh O'Brien [ctb], Joseph O'Rourke [ctb]
+        - leaflet.minicharts, Copyright (c) Jalal-Edine ZAWAM [aut, cre], Benoit Thieurmel [aut], Francois Guillem [aut], RTE [cph]
+        - Matrix, Copyright (c) Douglas Bates [aut], Martin Maechler [aut, cre], Timothy A. Davis [ctb] (SuiteSparse and 'cs' C libraries, notably CHOLMOD, AMD; collaborators listed in dir(pattern = '^[A-Z]+[.]txt$', full.names=TRUE, system.file('doc', 'SuiteSparse', package='Matrix'))), Jens Oehlschlägel [ctb] (initial nearPD()), Jason Riedy [ctb] (condest() and onenormest() for octave, Copyright: Regents of the University of California), R Core Team [ctb] (base R matrix implementation)
+        - nlme, Copyright (c)  José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), R-core [aut, cre]
+        - mgcv, Copyright (c) Simon Wood
+        - MASS, Copyright (c) Brian Ripley [aut, cre, cph], Bill Venables [ctb], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb]
+        - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
+        - lattice, Copyright (c)  Deepayan Sarkar
+        - RGraphics, Copyright (c) 	Paul Murrell
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -3367,6 +3484,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - sparkline, Copyright (c) Splunk, Inc 2012
         - stringi, Copyright (c) 2013-2018 Marek Gagolewski and other contributors
         - ps, Copyright (c) 2009-2018 Jay Loden, Dave Daeschler, Giampaolo Rodola', RStudio
+        - colorspace, Copyright (c) 2005-2016
+            COPYRIGHT HOLDER: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
+            ORGANIZATION: Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Reto Stauffer, Achim Zeileis
+        - pandas, Copyright (c) 2008-2012, AQR Capital Management, LLC, Lambda Foundry, Inc. and PyData Development Team
+        - pandas_datareader, Copyright (c) 2011-2012, Lambda Foundry, Inc. and PyData Development Team All rights reserved.
+                             Copyright (c) 2008-2011 AQR Capital Management, LLC All rights reserved.
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
@@ -3432,6 +3555,8 @@ DEALINGS IN THE SOFTWARE.
             The “Apache License 2.0” 
         applies to: 
        - RColorBrewer, Copyright (c) Erich Neuwirth [aut, cre]
+       - utf8, Copyright (c) Patrick O. Perry [aut, cph, cre], 
+            Unicode, Inc. [cph, dtc] (Unicode Character Database)
 -----------------------------------------------------------------------------
 
                                  Apache License
