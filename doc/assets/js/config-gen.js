@@ -3466,6 +3466,15 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                      }
                                      delete co.dataRendering[grname].graph.ydata;
                                      co.dataRendering[grname].graph.ydata = ytmp;
+                                  //replace xtitle/ytitle property with 'title' for xaxis and yaxis
+                                  if (typeof co.dataRendering[grname].graph.xaxis.xtitle !== "undefined") {
+                                     co.dataRendering[grname].graph.xaxis.title = co.dataRendering[grname].graph.xaxis.xtitle;
+                                     delete co.dataRendering[grname].graph.xaxis.xtitle;
+                                  }
+                                  if (typeof co.dataRendering[grname].graph.yaxis.ytitle !== "undefined") {
+                                     co.dataRendering[grname].graph.yaxis.title = co.dataRendering[grname].graph.yaxis.ytitle;
+                                     delete co.dataRendering[grname].graph.yaxis.ytitle;
+                                  }
                                }
                                else if(co.dataRendering[grname].graph.choice === "UsePlotly"){
                                   co.dataRendering[grname].graph.tool = "plotly";
@@ -3519,7 +3528,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   if (typeof co.dataRendering[grname].graph.choice != "undefined") {   
                                      delete co.dataRendering[grname].graph.choice;
                                   }
-                                  //replace 'dataname' prperty with 'title' for xaxis and yaxis
+                                  //replace 'dataname' property with 'title' for xaxis and yaxis
                                   if (typeof co.dataRendering[grname].graph.xaxis.dataname !== "undefined") {
                                      co.dataRendering[grname].graph.xaxis.title = co.dataRendering[grname].graph.xaxis.dataname;
                                      delete co.dataRendering[grname].graph.xaxis.dataname;
