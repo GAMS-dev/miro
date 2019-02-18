@@ -69,8 +69,8 @@ pipeline {
                             hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME
                             
                             echo $WORKSPACE
-                            
-                            TARGET="$WORKSPACE/$DMG_ROOT/GAMS $GMS_VER_LONG/GAMS$GMS_VER/sysdir"
+                            ls -la
+                            TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
                             "$TARGET/GMSPython/bin/pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
                             mkdir "$TARGET/miro"
