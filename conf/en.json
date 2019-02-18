@@ -37,6 +37,9 @@
         "title": "Help",
         "doc": "Documentation",
         "about": "About"
+      },
+      "tooltips":{
+        "switchToHcube": "Switch to Hypercube mode"
       }
     },
     "inputScreen":{  
@@ -71,7 +74,9 @@
         "btClose":"close scenario",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"model input",
-        "outputSheet":"model output"
+        "outputSheet":"model output",
+        "load":"Load saved scenario",
+        "loadActive":"Load active scenario (latest saved state)"
       },
       "split":{
         "load":"Load scenario",

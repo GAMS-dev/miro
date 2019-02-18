@@ -3,7 +3,7 @@ header <- dashboardHeader(
   if(config$activateModules$hcubeMode || isShinyProxy){
     tags$li(class = "dropdown")
   }else{
-    tags$li(class = "dropdown", 
+    tags$li(title = lang$nav$header$tooltips$switchToHcube, class = "dropdown", 
             actionLink(inputId = "switchToHcube",  
                        label = NULL,
                        icon("cube"),

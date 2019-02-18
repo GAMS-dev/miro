@@ -51,7 +51,7 @@
 			"height"				: 700,
 			"graph"                 : {
 				"tool"      			: "dygraphs",
-				"title"     			: "Stock prices over time (year: 2016)",
+				"title"     			: "Stock prices over time",
 				"color"					: "symbol",
 				"dyOptions"				:{
 					"includeZero"			: true,
