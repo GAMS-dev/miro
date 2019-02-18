@@ -70,37 +70,37 @@ pipeline {
                             
                             echo $WORKSPACE
                             
-                            TARGET=$WORKSPACE/$DMG_ROOT/GAMS\\ $GMS_VER_LONG/GAMS$GMS_VER/sysdir
+                            TARGET="$WORKSPACE/$DMG_ROOT/GAMS $GMS_VER_LONG/GAMS$GMS_VER/sysdir"
                             
-                            $TARGET/GMSPython/bin/pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
-                            mkdir $TARGET/miro
+                            "$TARGET/GMSPython/bin/pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            mkdir "$TARGET/miro"
                             
-                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools $TARGET/miro
-                            cp model/miro.gms $TARGET/inclib
+                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
+                            cp model/miro.gms "$TARGET/inclib"
                             
                             cd $WORKSPACE/model/kport
-                            $TARGET/gmszip -r kport_conf.zip conf/kport.json static customRenderer
-                            cp kport_conf.zip kport.gms $TARGET/datalib_ml
+                            "$TARGET/gmszip" -r kport_conf.zip conf/kport.json static customRenderer
+                            cp kport_conf.zip kport.gms "$TARGET/datalib_ml"
                             rm -f kport_conf.zip
                             
                             cd $WORKSPACE/model/pickstock
-                            $TARGET/gmszip -r pickstock_conf.zip conf/pickstock.json static customRenderer
-                            cp pickstock_conf.zip pickstock.gms dowjones2016.csv $TARGET/datalib_ml
+                            "$TARGET/gmszip" -r pickstock_conf.zip conf/pickstock.json static customRenderer
+                            cp pickstock_conf.zip pickstock.gms dowjones2016.csv "$TARGET/datalib_ml"
                             rm -f pickstock_conf.zip
                             
                             cd $WORKSPACE/model/pickstock_live
-                            $TARGET/gmszip -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
-                            cp pickstock_live_conf.zip pickstock_live.gms $TARGET/datalib_ml
+                            "$TARGET/gmszip" -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
+                            cp pickstock_live_conf.zip pickstock_live.gms "$TARGET/datalib_ml"
                             rm -f pickstock_live_conf.zip
                             
                             cd $WORKSPACE/model/transport
-                            $TARGET/gmszip -r transport_conf.zip conf/transport.json static customRenderer
-                            cp transport_conf.zip transport.gms $TARGET/datalib_ml
+                            "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static customRenderer
+                            cp transport_conf.zip transport.gms "$TARGET/datalib_ml"
                             rm -f transport_conf.zip
                             
                             cd $WORKSPACE/model/transport_live
-                            $TARGET/gmszip -r transport_live_conf.zip conf/transport_live.json static customRenderer
-                            cp transport_live_conf.zip transport_live.gms $TARGET/datalib_ml
+                            "$TARGET/gmszip" -r transport_live_conf.zip conf/transport_live.json static customRenderer
+                            cp transport_live_conf.zip transport_live.gms "$TARGET/datalib_ml"
                             rm -f transport_live_conf.zip
                             
                             cp -f mkconfig.inc datalib.glb %GAMSDIR%datalib_ml
