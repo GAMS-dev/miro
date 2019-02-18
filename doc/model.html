@@ -192,7 +192,7 @@ Positive Variable x;
                                     </div><!--//section-block-->
                                         
                                     <div id="create-5" class="section-block">
-                                        <h3 class="block-title">Generating model-specific configuration files</h3>
+                                        <h3 class="block-title">Configuration files</h3>
                                         <p>In the next step the model-specific configuration files for MIRO are created.</p>
                                         <ul>
                                           <li>Run the model with the command line parameter: <span class="code">miro=build</span>.
@@ -234,7 +234,13 @@ Positive Variable x;
                                         </div>
                                         <p>With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined. 
                                         Since MIRO is connected to a database, you can store results there, fetch previously saved results and modify them or use them to compare with other scenarios.</p>
-                                    </div><!--//section-block-->    
+                                    </div><!--//section-block-->
+                                    <div id="create-app-shortcut" class="section-block">
+                                        <h3 class="block-title">App shortcut</h3>
+                                        <p>As already explained, an app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create a shortcut for a GAMS MIRO app. 
+                                        By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call (e.g. <span class="code">gams transport.gms miro=launch --mkapp=1</span>), a file is generated which links to the app (under Windows this is a <i>cmd</i> file, under MACOS an <i>app</i> file. For Linux this feature is not supported yet). By double-clicking this shortcut the GAMS MIRO app for the corresponding model can be started from any directory.
+                                        An explicit GAMS call no longer has to be entered manually. </p>
+                                    </div><!--//section-block-->   
                             </section><!--//doc-section-->
                             <section id="conventions-section" class="doc-section">
                                 <h2 class="section-title">GAMS symbols</h2>
@@ -536,7 +542,8 @@ $offExternalInput
 	                            <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a MIRO app</a>
                                   <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#create-2">Model adjustments</a>
-                                    <a class="nav-link scrollto" href="#create-5">Generating model-specific configuration files</a>
+                                    <a class="nav-link scrollto" href="#create-5">Configuration files</a>
+                                    <a class="nav-link scrollto" href="#create-app-shortcut">App shortcut</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#conventions-section">GAMS symbols</a>
                                   <nav class="doc-sub-menu nav flex-column">
