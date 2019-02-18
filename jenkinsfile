@@ -60,6 +60,7 @@ pipeline {
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME=$(find GAMS26*.dmg)
                             GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
+                            GMS_VER_LONG=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\\\.[[:digit:]]\\)\\\\.dmg/\\\\1/)
                             DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
                             
                             DMG_ROOT=volume
@@ -69,10 +70,9 @@ pipeline {
                             
                             echo $WORKSPACE
                             
-                            TARGET=$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir
+                            TARGET="$WORKSPACE/$DMG_ROOT/GAMS $GMS_VER_LONG/GAMS$GMS_VER/sysdir"
                             
-                            cd $TARGET/GMSPython/Scripts
-                            pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            $TARGET/GMSPython/bin/pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
                             mkdir $TARGET/miro
                             
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools $TARGET/miro
