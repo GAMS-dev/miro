@@ -68,46 +68,47 @@ pipeline {
                             mount
                             hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME
                             
-                            echo $WORKSPACE
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
-                            cd volume
-                            ls -l
-                            cd ..
-                            "$TARGET/GMSPython/bin/pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            
+                            cd "$TARGET/GMSPython/bin"
+                            "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            cd "$WORKSPACE"
                             mkdir "$TARGET/miro"
                             
                             cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
-                            cp model/miro.gms "$TARGET/inclib"
+                            cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
-                            cd $WORKSPACE/model/kport
+                            cd "$WORKSPACE/model/kport"
                             "$TARGET/gmszip" -r kport_conf.zip conf/kport.json static customRenderer
                             cp kport_conf.zip kport.gms "$TARGET/datalib_ml"
                             rm -f kport_conf.zip
                             
-                            cd $WORKSPACE/model/pickstock
+                            cd "$WORKSPACE/model/pickstock"
                             "$TARGET/gmszip" -r pickstock_conf.zip conf/pickstock.json static customRenderer
                             cp pickstock_conf.zip pickstock.gms dowjones2016.csv "$TARGET/datalib_ml"
                             rm -f pickstock_conf.zip
                             
-                            cd $WORKSPACE/model/pickstock_live
+                            cd "$WORKSPACE/model/pickstock_live"
                             "$TARGET/gmszip" -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
                             cp pickstock_live_conf.zip pickstock_live.gms "$TARGET/datalib_ml"
                             rm -f pickstock_live_conf.zip
                             
-                            cd $WORKSPACE/model/transport
+                            cd "$WORKSPACE/model/transport"
                             "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static customRenderer
                             cp transport_conf.zip transport.gms "$TARGET/datalib_ml"
                             rm -f transport_conf.zip
                             
-                            cd $WORKSPACE/model/transport_live
+                            cd "$WORKSPACE/model/transport_live"
                             "$TARGET/gmszip" -r transport_live_conf.zip conf/transport_live.json static customRenderer
                             cp transport_live_conf.zip transport_live.gms "$TARGET/datalib_ml"
                             rm -f transport_live_conf.zip
                             
-                            cp -f mkconfig.inc datalib.glb %GAMSDIR%datalib_ml
-                            unzip -o $WORKSPACE/cmex_deg.zip
+                            cp -f "$WORKSPACE/mkconfig.inc" "$WORKSPACE/datalib.glb" "$TARGET/datalib_ml"
+                            mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
+                            unzip -o "$TARGET/cmex_deg.zip"
+                            rm "$TARGET/cmex_deg.zip"
+                            cd "$WORKSPACE"/installer/macOS
                             hdiutil detach -verbose $DMG_ROOT
-                            cd installer/macOS
 
                             #hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
                             #rm $DMG_NAME
