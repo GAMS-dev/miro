@@ -123,7 +123,6 @@ these components are included below):
 - reshape2, https://github.com/hadley/reshape/ or https://cran.r-project.org/web/packages/reshape2/index.html
 - Matrix, https://cran.r-project.org/web/packages/Matrix/index.html
 - nlme, https://cran.r-project.org/web/packages/nlme/index.html
-- BH, https://cran.r-project.org/web/packages/BH/index.html
 - colorspace, https://cran.r-project.org/web/packages/colorspace/index.html
 - plyr, https://github.com/hadley/plyr/ or https://cran.r-project.org/web/packages/plyr/index.html
 - mgcv, https://cran.r-project.org/web/packages/mgcv/index.html
