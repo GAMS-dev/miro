@@ -434,16 +434,16 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
         writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
         ugroups   <- csv2Vector(ugroups)
         tagList(
-          selectInput("editMetaReadPerm", lang$nav[[modeDescriptor]]$readPerm, 
-                      ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
-                      multiple = TRUE, options = list(
-                        'create' = TRUE,
-                        'persist' = FALSE)),
-          selectInput("editMetaWritePerm", lang$nav[[modeDescriptor]]$writePerm, 
-                      ugroups, selected = writePerm,
-                      multiple = TRUE, options = list(
-                        'create' = TRUE,
-                        'persist' = FALSE))
+          selectizeInput("editMetaReadPerm", lang$nav[[modeDescriptor]]$readPerm, 
+                         ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
+                         multiple = TRUE, options = list(
+                           'create' = TRUE,
+                           'persist' = FALSE)),
+          selectizeInput("editMetaWritePerm", lang$nav[[modeDescriptor]]$writePerm, 
+                         ugroups, selected = writePerm,
+                         multiple = TRUE, options = list(
+                           'create' = TRUE,
+                           'persist' = FALSE))
         )
       },
       if(allowAttachments){
@@ -614,7 +614,11 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                       style = "cursor: pointer;"),
                tags$div(style = "display:none;",
                         selectInput("paverExclAttrib", label = lang$nav$hcubeMode$configPaverDialog$selIgnoreAttribs, 
-                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE)
+                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE),
+                        selectizeInput("paverClArgs", lang$nav$hcubeMode$configPaverDialog$selClArgs, c(),
+                                       multiple = TRUE, options = list(
+                                         'create' = TRUE,
+                                         'persist' = FALSE))
                )
       ),
       if(hasRemovePerm){

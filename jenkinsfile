@@ -65,8 +65,9 @@ pipeline {
                             
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
+                            hdiutil convert $DMG_NAME -format UDRW -o ${DMG_NAME}_tmp
                             mount
-                            hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME
+                            hdiutil attach -mountpoint ./$DMG_ROOT ${DMG_NAME}_tmp
                             
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
@@ -110,9 +111,8 @@ pipeline {
                             cd "$WORKSPACE"/installer/macOS
                             hdiutil detach -verbose $DMG_ROOT
 
-                            #hdiutil convert $DMG_NAME -format UDRO -o $DMG_NAME_FINAL
-                            #rm $DMG_NAME
-                            mv $DMG_NAME $DMG_NAME_FINAL
+                            hdiutil convert ${DMG_NAME}_tmp -format UDRO -o $DMG_NAME_FINAL
+                            rm $DMG_NAME
                         '''
                     }
                 }

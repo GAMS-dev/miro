@@ -397,6 +397,7 @@
         "removeSuccess": "The selected scenarios were removed successfully.",
         "selAttribs":"Attributes to select:",
         "selIgnoreAttribs": "Select attributes to ignore:",
+        "selClArgs": "Specify additional arguments to call PAVER with.",
         "runButton":"Start Paver",
         "interactiveButton":"Compare",
         "downloadButton":"Download data",

@@ -1828,6 +1828,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "selClArgs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "removeConfirm":{
                   "type":"string",
                   "minLength":1,

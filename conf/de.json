@@ -397,6 +397,7 @@
         "removeSuccess": "Die ausgewählten Szenarien wurden erfolgreich gelöscht.",
         "selAttribs":"Attribute:",
         "selIgnoreAttribs": "Wählen Sie Attribute aus, die ignoriert werden sollen:",
+        "selClArgs": "Geben Sie zusätzliche Argumente an, mit denen Sie PAVER aufrufen möchten.",
         "runButton": "Paver starten",
         "interactiveButton":"Vergleichen",
         "downloadButton":"Daten herunterladen",

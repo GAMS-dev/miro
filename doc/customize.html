@@ -309,10 +309,29 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-advanced">
                                   <h3 class="block-title">Advanced topics</h3>
-                                   <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Now, we will go into the technical details of how the communication between MIRO and the GAMS compiler works:</p>
-                                   <p>Whenever a scalar value is set in MIRO and GAMS is called, the scalar is read and an environment variable is set. The name of this environment variable is simply the name of the variable prefixed with the filename of your model followed by an underscore. So if your model file is called <span class="code">hello.gms</span> and you defined a scalar input called <kbd>myScalar</kbd> that is read from MIRO, the environment variable that is created when executing your model from MIRO is called <kbd>HELLO_MYSCALAR</kbd>. Inside your GAMS model, this environment variable can be be accessed at compile time via: <kbd>%sysenv.HELLO_MYSCALAR%</kbd>. Note that we follow the convention that environment variables are capitalized.</p>
-                                   <p>Knowing that, internally, scalars are imported from MIRO by setting environment variables comes in handy in certain situations e.g. if you want to access them inside an <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded code</a> section. Thus, you might want to keep this detail in the back of your mind.</p>
-                                   <p>One more important aspect you should be aware of is how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector. The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set.</p>
+                                   <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector:</p>
+                                   <p>The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set at all. If you want to learn more about this, check out the <i>pickstock_live</i> model: Here, we specify a time window that we want to fetch stock data for. Thus, we define a new double dash parameter <kbd>--TW</kbd> that we want to be visualized in the form of a date range selector. We add the following JSON snippet to our <span class="code">pickstock_live.json</span> configuration file:</p>
+                                    <pre><code class="language-json">[...]
+
+Model transport / all /;
+
+solve transport using lp minimizing z;
+display x.l, x.m;
+
+
+*new result parameter and scalar for visualization
+Set scheduleHdr                     'schedule header' / 'cap', 'demand', 'quantities' /;
+
+$onExternalOutput
+Scalar    total_cost                'total transportation costs in thousands of dollars';
+
+Parameter schedule(i,j,scheduleHdr) 'shipment quantities in cases';
+$offExternalOutput
+
+total_cost                 = z.l;
+schedule(i,j,'cap')        = a(i);
+schedule(i,j,'demand')     = b(j);
+schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                 </div><!--//section-block-->
                             </section>
                             <section id="custom-graph" class="doc-section">

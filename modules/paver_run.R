@@ -4,10 +4,34 @@ traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
 # paver solution files
 paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
 
-genPaverArgs <- function(traceFilenames){
+genPaverArgs <- function(traceFilenames, clArgs = NULL){
   stopifnot(is.character(traceFilenames), length(traceFilenames) >= 1)
+  extraClArgs <- NULL
+  if(length(clArgs)){
+    stopifnot(is.character(clArgs))
+    extraClArgs <- unlist(lapply(strsplit(clArgs, "( ?= ?)| "), function(el){
+      el[1] <- tolower(gsub("--", "", el[1], fixed = TRUE)[1L])
+      if(el[1] %in% c("zerogaptol", "nocheckinstanceattr", 
+                      "numpts", "novirt", "refsolver", "nosortsolver",
+                      "bw", "ccreltol", "ccabstol", "ccfeastol",
+                      "ccopttol", "timeshift", "nodeshift", "mintime",
+                      "failtime", "failnodes", "gaptol", "evalgap",
+                      "filtertime", "filternodes", "timerelimpr",
+                      "boundrelimpr", "ignoredualbounds", "eval", 
+                      "extendedprofiles", "optfileisrunname")){
+        return(c(paste0("--", el[1]), el[-1]))
+      }else{
+        flog.info("Ignored unknown paver option: '%s'.", el[1])
+        return(NULL)
+      }
+    }), use.names = FALSE)
+    if(length(extraClArgs)){
+      flog.debug("Calling PAVER with extra arguments: '%s'.", paste(extraClArgs, collapse = " "))
+    }
+  }
+    
   c(file.path(getwd(), "tools", "paver", "paver.py"),
-    traceFilenames, "--failtime", "3600", "--writehtml", paverFileDir , "--writeimg", paverFileDir, "--gmswebiter", gmswebiter)
+    traceFilenames, if(length(extraClArgs)) extraClArgs, "--writehtml", paverFileDir , "--writeimg", paverFileDir, "--gmswebiter", gmswebiter)
 }
 
 observeEvent(input$btPaverConfig, {
@@ -45,6 +69,7 @@ observeEvent(input$btPaver, {
   }else{
     errMsg <- NULL
     paverDir <- paste0(workDir, "paver", .Platform$file.sep)
+    paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){
         unlink(file.path(traceFileDir,"*"), recursive = TRUE, force = TRUE)
@@ -95,7 +120,7 @@ observeEvent(input$btPaver, {
     
     hideEl(session, "#btLoadHcube")
     hideEl(session, "#paverFail")
-    updateTabsetPanel(session, "tabs_paver_results", selected = "index")
+    updateTabsetPanel(session, "tabs_paver_results", selected = "tabs_paver_1")
     output$paverResults <- renderUI(character())
     showEl(session, "#paverLoad")
     hideEl(session, "#newPaverRunButton")
@@ -115,7 +140,7 @@ observeEvent(input$btPaver, {
           pyExec <- "python3"
       }
       
-      paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles), 
+      paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles, paverClArgs), 
                                       windows_hide_window = TRUE,
                                       stdout = workDir %+% modelName %+% ".paverlog", stderr = "|")
       rm(pyExec)
@@ -140,11 +165,12 @@ observeEvent(input$btPaver, {
         paverStatus <- NULL
         if(paverStatus() == 0){
           hideEl(session, "#paverLoad")
-          paverResultTabs <- paste0("tabs_paver_", 1:6)
-          paverResultFiles <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
+          paverResultTabs     <- paste0("tabs_paver_", 1:6)
+          paverResultFiles    <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
+          paverResultTabNames <- c("Index", "Status", "Efficiency", "Solution Quality", "Solve data", "Documentation")
           lapply(2:length(paverResultTabs), function(i){
             insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
-                      tabPanel(paverResultFiles[i], value = paverResultTabs[i],
+                      tabPanel(paverResultTabNames[i], value = paverResultTabs[i],
                                tags$div(id = "wrapper-" %+% paverResultTabs[i], 
                                         style = "overflow: auto; height: 75vh;",
                                         tryCatch(
