@@ -66,14 +66,14 @@ Source: "../../model/pickstock/dowjones2016.csv"; DestDir: "{userdocs}\MIRO_exam
 Source: "../../model/pickstock/pickstock.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock_live/conf/pickstock_live.json"; DestDir: "{userdocs}\MIRO_examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock_live/pickstock_live.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock_live"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/conf/trnsport.json"; DestDir: "{userdocs}\MIRO_examples\trnsport\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport/trnsport.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/conf/trnsport_live.json"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/customRenderer/trnsport_custom.R"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\trnsport_live\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/trnsport_live/trnsport_live.gms"; DestDir: "{userdocs}\MIRO_examples\trnsport_live"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/conf/transport.json"; DestDir: "{userdocs}\MIRO_examples\transport\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/customRenderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/transport.gms"; DestDir: "{userdocs}\MIRO_examples\transport"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/conf/transport_live.json"; DestDir: "{userdocs}\MIRO_examples\transport_live\conf"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/customRenderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport_live\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport_live\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/transport_live.gms"; DestDir: "{userdocs}\MIRO_examples\transport_live"; Flags: ignoreversion;Components: examples
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MIROName}}"; Filename: "{uninstallexe}"
 
