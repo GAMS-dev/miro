@@ -673,7 +673,7 @@ tryCatch({{
        setwd("{1}")
        futile.logger::flog.fatal('%s', w)
        logFiles <- list.files('logs', full.names = TRUE)
-       zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+       zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
     }})
 }}, error = function(e){{
    currwd <- getwd()
@@ -681,10 +681,10 @@ tryCatch({{
    setwd("{1}")
    try(futile.logger::flog.fatal('%s', e), silent = TRUE)
    logFiles <- list.files('logs', full.names = TRUE)
-   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
    shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE)
 }})
-q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/")))
+q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/"), '%fn%'.lower()))
 
 if %mkApp%>0:
     fn_model = "%fn%"

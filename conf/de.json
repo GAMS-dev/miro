@@ -260,6 +260,7 @@
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
+      "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
       "scenNameExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",

@@ -153,8 +153,10 @@ observeEvent(input$btSortTime, {
 # load scenario confirmed
 observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid, 
                                  rv$loadHcubeHashSid), {
+  checkNameTmp <- FALSE
   flog.debug("Confirm load scenario button clicked.")
   if(identical(isolate(input$tb_importData), "tb_importData_hcube")){
+    checkNameTmp <- TRUE
     if(identical(length(sidsToLoad), 2L) && identical(sidsToLoad[[1L]], -1L)){
       sidsToLoad <<- list(sidsToLoad[[2L]])
     }else if(length(isolate(input$loadHcubeHashSid))){
@@ -167,6 +169,7 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
     if(identical(isolate(input$tabsetLoadScen), "loadScenUI")){
       scenSelected <- isolate(input$selLoadScenUI)
     }else if(identical(isolate(input$tb_importData), "tb_importData_base")){
+      checkNameTmp <- TRUE
       scenSelected <- isolate(input[["selLoadScen_base"]])
     }else{
       scenSelected <- isolate(input$selLoadScen)
@@ -179,6 +182,24 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
                                invert = TRUE)
     sidsToLoad  <<- lapply(scenSelected, '[[', 1)
     rm(scenSelected)
+  }
+  if(checkNameTmp){
+    tryCatch({
+      scenNameTmp <- db$importDataset(tableName = db$getTableNameMetadata(), 
+                                      tibble(sidIdentifier, sidsToLoad[[1]]),
+                                      colNames = snameIdentifier)[[1]]
+      if(db$checkSnameExists(scenNameTmp, uid)){
+        flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
+        showHideEl(session, "#importScenSnameExistsErr", 4000L)
+        sidsToLoad <<- NULL
+      }
+    }, error = function(e){
+      showHideEl(session, "#importScenError", 4000L)
+      flog.error("Problems fetching scenario metadata. Error message: '%s'.", e)
+      sidsToLoad <<- NULL
+    })
+    if(is.null(sidsToLoad))
+      return()
   }
 
   # if in comparison mode skip input data check
@@ -347,7 +368,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       noOutputData <<- TRUE
     }
     
-    flog.debug("Scenario: '%s' was loaded into UI", sidsToLoad[[1]])
+    flog.debug("Scenario: '%s' was loaded into UI", activeScen$getSid())
     
     # update scenario name
     rv$activeSname  <<- activeScen$getScenName()

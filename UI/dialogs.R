@@ -237,7 +237,7 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
                                     title = lang$nav[[modeDescriptor]]$tabDatabase, 
                                     scenList = scenListDb, tagList = dbTagList,
-                                    iconName = "database")
+                                    iconName = if(config$activateModules$hcube) "cube" else "database")
     if(config$activateModules$hcubeMode){
       tabLoadFromBase <- getLoadDbPanel(id = "base", 
                                         title = lang$nav[[modeDescriptor]]$tabBase, 
@@ -274,6 +274,8 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
              lang$nav$dialogLoadScen$maxNoScenExceeded),
     tags$div(id = "importScenNoHcubeScen", class = "gmsalert gmsalert-error", 
              lang$nav$dialogImport$hcubeHashNoMatch),
+    tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
+             lang$nav$dialogImport$scenNameExistsErr),
     tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
              lang$errMsg$unknownError),
     tags$div(id = "importDataTabset",

@@ -260,6 +260,7 @@
       "descLocal":"Choose file with data to load",
       "newScenName": "Choose a name for the new scenario",
       "badScenName": "Please specify a valid name",
+      "scenNameExistsErr": "The scenario name you chose does already exist.",
       "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
