@@ -551,6 +551,7 @@ $onEmbeddedCode Python:
 from platform import system
 from re import search
 import os
+import subprocess
 
 def get_r_path():
     try:
@@ -610,7 +611,9 @@ def get_r_path():
         if not len(RPath):
            latestR = (0, 0)
         else:
-           RPath = RPath.decode('utf-8').strip().strip('Rscript')
+           latestRPath = RPath.decode('utf-8').strip().strip('Rscript')
+           latestR = major_minor_micro(subprocess.run(['Rscript', '--version'], stderr=subprocess.PIPE).stderr))
+           
 
     if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
       os.environ["PYEXCEPT"] = "RVERSIONERROR"
