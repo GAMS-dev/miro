@@ -107,11 +107,12 @@ pipeline {
                             
                             cp -f "$WORKSPACE/mkconfig.inc" "$WORKSPACE/datalib.glb" "$TARGET/datalib_ml"
                             mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
+                            cd "$TARGET"
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
+                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO0.4/"
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $DMG_ROOT
-
                             hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
                             rm $DMG_NAME
                         '''
