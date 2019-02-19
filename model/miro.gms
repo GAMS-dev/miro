@@ -612,9 +612,7 @@ def get_r_path():
            latestR = (0, 0)
         else:
            latestRPath = RPath.decode('utf-8').strip().strip('Rscript')
-           print(str(subprocess.run(['Rscript', '--version'], stderr=subprocess.PIPE).stderr))
            latestR = major_minor_micro(str(subprocess.run(['Rscript', '--version'], stderr=subprocess.PIPE).stderr))
-           print(latestR)
 
     if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
       os.environ["PYEXCEPT"] = "RVERSIONERROR"
