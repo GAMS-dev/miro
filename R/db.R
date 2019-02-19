@@ -1270,7 +1270,13 @@ Db <- R6Class("Db",
                     val   <- vals[i]
                     switch(op,
                            "=" = {
-                             return(paste0(field, "=='", val, "'"))
+                             valNum <- suppressWarnings(as.numeric(valsRaw[i]))
+                             if(is.na(valNum)){
+                               val <- paste0("'", val, "'")
+                             }else{
+                               val <- valNum
+                             }
+                             return(paste0(field, "==", val))
                            },
                            "%LIKE" = {
                              return(paste0("grepl('", val, "$', ", 
