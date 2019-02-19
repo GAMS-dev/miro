@@ -31,7 +31,7 @@ header <- dashboardHeader(
                     tags$li(tags$a(href = "https://www.gams.com/miro/", 
                            target = "_blank", lang$nav$header$help$doc)),
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
-                                        'About MIRO\', \'', 
+                                        'About GAMS MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
                                         lang$nav$header$help$about, '</a>')
                     )))),
