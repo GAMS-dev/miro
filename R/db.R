@@ -1256,8 +1256,9 @@ Db <- R6Class("Db",
                   }else if(length(dataFrame) < 3L){
                     dataFrame[[3]] <- "="
                   }
-                  fields <- dataFrame[[1]]
-                  vals   <- self$escapePatternPivot(dataFrame[[2]])
+                  fields  <- dataFrame[[1]]
+                  valsRaw <- dataFrame[[2]]
+                  vals    <- self$escapePatternPivot(valsRaw)
                   if(identical(length(dataFrame), 4L)){
                     fields <- paste0(dataFrame[[4]], ".", fields)
                   }
@@ -1269,7 +1270,13 @@ Db <- R6Class("Db",
                     val   <- vals[i]
                     switch(op,
                            "=" = {
-                             return(paste0(field, "=='", val, "'"))
+                             valNum <- suppressWarnings(as.numeric(valsRaw[i]))
+                             if(is.na(valNum)){
+                               val <- paste0("'", val, "'")
+                             }else{
+                               val <- valNum
+                             }
+                             return(paste0(field, "==", val))
                            },
                            "%LIKE" = {
                              return(paste0("grepl('", val, "$', ", 
@@ -1304,13 +1311,12 @@ Db <- R6Class("Db",
                                            field, ", perl = TRUE)"))
                            },
                            {
-                             valNum <- suppressWarnings(as.numeric(val))
+                             valNum <- suppressWarnings(as.numeric(valsRaw[i]))
                              if(is.na(valNum)){
                                val <- paste0("'", val, "'")
                              }else{
                                val <- valNum
                              }
-                             print(val)
                              return(paste0(field, op, val))
                            })
                   }, character(1L), USE.NAMES = FALSE)

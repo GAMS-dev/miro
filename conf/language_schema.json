@@ -1197,6 +1197,11 @@
               "minLength":1,
               "required":true
             },
+            "scenNameExistsErr":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "cbSelectManually":{  
               "type":"string",
               "minLength":1,

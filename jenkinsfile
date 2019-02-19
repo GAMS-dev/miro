@@ -113,9 +113,7 @@ pipeline {
                             mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO0.4/"
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $DMG_ROOT
-                            cd installer/macOS
-                            
-                            hdiutil convert $DMG_NAME_TMP -format UDRO -o $DMG_NAME_FINAL
+                            hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
                             rm $DMG_NAME
                         '''
                     }
@@ -134,9 +132,7 @@ pipeline {
                                 security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
                                 codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
                                 security lock-keychain
-                            '''
-                            sh '''
-                                codesign --verify --verbose "src/bin/GAMS Studio.app"
+                                codesign --verify --verbose "$DMG_NAME_FINAL"
                             '''
                         }
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.dmg', fingerprint: true

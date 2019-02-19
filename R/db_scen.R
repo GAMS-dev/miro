@@ -564,7 +564,12 @@ Scenario <- R6Class("Scenario",
                           private$suid      <- uid
                           private$sname     <- sname
                           private$stime     <- Sys.time()
-                          private$sid       <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode][1])
+                          sidTmp            <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode])
+                          if(length(sidTmp) > 1){
+                            stop(sprintf("Scenario: '%s' exists more than one time in database! Please choose unique names (Scen.fetchMetadata)!", 
+                                         sname), call. = FALSE)
+                          }
+                          private$sid       <- sidTmp
                           if(length(private$traceData) && nrow(private$traceData)){
                             self$saveTraceData(private$traceData)
                             private$traceData <- tibble()
