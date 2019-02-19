@@ -109,8 +109,9 @@ pipeline {
                             mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
-                            cd "$WORKSPACE"/installer/macOS
+                            cd "$WORKSPACE"
                             hdiutil detach -verbose $DMG_ROOT
+                            cd installer/macOS
 
                             hdiutil convert $DMG_NAME_TMP -format UDRO -o $DMG_NAME_FINAL
                             rm $DMG_NAME
