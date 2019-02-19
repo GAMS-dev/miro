@@ -936,20 +936,26 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           }
           j <- strsplit(isolate(input[[paste0("contentScen_", i)]]), "_")[[1]][3]
           if(identical(i, 2L)){
-            skipScenCompObserve[i + 1L] <<- TRUE
+            if(!identical(isolate(input[[paste0("contentScen_", i + 1)]]), 
+                          paste0("contentScen_", i + 1, "_", j)))
+              skipScenCompObserve[i + 1L] <<- TRUE
             updateTabsetPanel(session, paste0("contentScen_", i + 1),
-                              paste0(paste0("contentScen_", i + 1, "_", j)))
+                              paste0("contentScen_", i + 1, "_", j))
             
           }else if(identical(i, 3L)){
-            skipScenCompObserve[i - 1L] <<- TRUE
+            if(!identical(isolate(input[[paste0("contentScen_", i - 1)]]), 
+                          paste0("contentScen_", i - 1, "_", j)))
+              skipScenCompObserve[i - 1L] <<- TRUE
             updateTabsetPanel(session, paste0("contentScen_", i - 1),
-                              paste0(paste0("contentScen_", i - 1, "_", j)))
+                              paste0("contentScen_", i - 1, "_", j))
           }else{
             lapply(names(scenData), function(scen){
               k <- strsplit(scen, "_")[[1]][2]
-              skipScenCompObserve[k] <<- TRUE
+              if(!identical(isolate(input[[paste0("contentScen_", k)]]), 
+                            paste0("contentScen_", k, "_", j)))
+                skipScenCompObserve[k] <<- TRUE
               updateTabsetPanel(session, paste0("contentScen_", k),
-                                paste0(paste0("contentScen_", k, "_", j)))
+                                paste0("contentScen_", k, "_", j))
             })
           }
         }, suspended = TRUE)

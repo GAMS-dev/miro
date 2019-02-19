@@ -1197,6 +1197,11 @@
               "minLength":1,
               "required":true
             },
+            "scenNameExistsErr":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "cbSelectManually":{  
               "type":"string",
               "minLength":1,
@@ -1824,6 +1829,11 @@
                   "required":true
                 },
                 "selIgnoreAttribs":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "selClArgs":{
                   "type":"string",
                   "minLength":1,
                   "required":true

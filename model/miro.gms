@@ -43,7 +43,6 @@ have_i_scalar = False
 have_o_scalar = False
 have_o_vescalar = False
 pivot_gdx = False
-safeFN = "".join(c for c in r"%fn%" if c.isalnum() or c in ('_')).rstrip()
 
 def fillLastDim(symp, symh):
   rc = False
@@ -327,7 +326,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('     scalars = csv.reader(csvfile)\n')
    f.write('     next(scalars) # skip header row\n')
    f.write('     for row in scalars:\n')
-   f.write('       os.environ["' + safeFN.upper() + '_" + row[0].upper()] = row[2]\n')
+   f.write('       os.environ["MIROENV_" + row[0].upper()] = row[2]\n')
    f.write('$offembeddedCode\n')
    f.write('$onmulti\n')
    for s in i_sym:
@@ -338,7 +337,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       elif s[1]=='ps':
          stype = 'scalar'
       sym = s[0]
-      f.write('$if setenv ' + safeFN.upper() + '_' + sym.name.upper() + ' ' + stype + ' ' + sym.name + ' / %sysEnv.' + safeFN.upper() + '_' + sym.name.upper() + '% /\n')
+      f.write('$if setenv ' + 'MIROENV_' + sym.name.upper() + ' ' + stype + ' ' + sym.name + ' / %sysEnv.' + 'MIROENV_' + sym.name.upper() + '% /\n')
    f.write('$offmulti\n')
    f.write('$endif\n')
    f.write('\n')
@@ -674,7 +673,7 @@ tryCatch({{
        setwd("{1}")
        futile.logger::flog.fatal('%s', w)
        logFiles <- list.files('logs', full.names = TRUE)
-       zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+       zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
     }})
 }}, error = function(e){{
    currwd <- getwd()
@@ -682,10 +681,10 @@ tryCatch({{
    setwd("{1}")
    try(futile.logger::flog.fatal('%s', e), silent = TRUE)
    logFiles <- list.files('logs', full.names = TRUE)
-   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('GMSIO_config.json', 'config.json'))), recurse = FALSE, compression_level = 9)
+   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
    shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE)
 }})
-q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/")))
+q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/"), '%fn%'.lower()))
 
 if %mkApp%>0:
     fn_model = "%fn%"
@@ -694,7 +693,7 @@ if %mkApp%>0:
     gams_sysdir = r"%gams.sysdir% ".strip()
    
     if system() == "Windows":
-        with open(fn_model + ".bat", "w") as f:
+        with open(fn_model + ".cmd", "w") as f:
             f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}" NODEBUG %MODEARG%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree

@@ -237,7 +237,7 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
                                     title = lang$nav[[modeDescriptor]]$tabDatabase, 
                                     scenList = scenListDb, tagList = dbTagList,
-                                    iconName = "database")
+                                    iconName = if(config$activateModules$hcube) "cube" else "database")
     if(config$activateModules$hcubeMode){
       tabLoadFromBase <- getLoadDbPanel(id = "base", 
                                         title = lang$nav[[modeDescriptor]]$tabBase, 
@@ -274,6 +274,8 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
              lang$nav$dialogLoadScen$maxNoScenExceeded),
     tags$div(id = "importScenNoHcubeScen", class = "gmsalert gmsalert-error", 
              lang$nav$dialogImport$hcubeHashNoMatch),
+    tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
+             lang$nav$dialogImport$scenNameExistsErr),
     tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
              lang$errMsg$unknownError),
     tags$div(id = "importDataTabset",
@@ -434,16 +436,16 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
         writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
         ugroups   <- csv2Vector(ugroups)
         tagList(
-          selectInput("editMetaReadPerm", lang$nav[[modeDescriptor]]$readPerm, 
-                      ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
-                      multiple = TRUE, options = list(
-                        'create' = TRUE,
-                        'persist' = FALSE)),
-          selectInput("editMetaWritePerm", lang$nav[[modeDescriptor]]$writePerm, 
-                      ugroups, selected = writePerm,
-                      multiple = TRUE, options = list(
-                        'create' = TRUE,
-                        'persist' = FALSE))
+          selectizeInput("editMetaReadPerm", lang$nav[[modeDescriptor]]$readPerm, 
+                         ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
+                         multiple = TRUE, options = list(
+                           'create' = TRUE,
+                           'persist' = FALSE)),
+          selectizeInput("editMetaWritePerm", lang$nav[[modeDescriptor]]$writePerm, 
+                         ugroups, selected = writePerm,
+                         multiple = TRUE, options = list(
+                           'create' = TRUE,
+                           'persist' = FALSE))
         )
       },
       if(allowAttachments){
@@ -614,7 +616,11 @@ showHcubeLoadMethodDialog <- function(noScenSelected, attribs = NULL, maxSolvers
                       style = "cursor: pointer;"),
                tags$div(style = "display:none;",
                         selectInput("paverExclAttrib", label = lang$nav$hcubeMode$configPaverDialog$selIgnoreAttribs, 
-                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE)
+                                    choices = attribs, selected = exclAttribChoices, multiple = TRUE),
+                        selectizeInput("paverClArgs", lang$nav$hcubeMode$configPaverDialog$selClArgs, c(),
+                                       multiple = TRUE, options = list(
+                                         'create' = TRUE,
+                                         'persist' = FALSE))
                )
       ),
       if(hasRemovePerm){
