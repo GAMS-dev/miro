@@ -76,8 +76,10 @@ pipeline {
                             "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
                             cd "$WORKSPACE"
                             mkdir "$TARGET/miro"
-                            
-                            cp -r app.R conf library global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
+                            mkdir "$TARGET/GMSR"
+                            mkdir "$TARGET/GMSR/library"
+                            cp -r library "$TARGET/GMSR/library"
+                            cp -r app.R conf global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
                             cd "$WORKSPACE/model/kport"
