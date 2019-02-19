@@ -131,9 +131,7 @@ pipeline {
                                 security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
                                 codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
                                 security lock-keychain
-                            '''
-                            sh '''
-                                codesign --verify --verbose "src/bin/GAMS Studio.app"
+                                codesign --verify --verbose "$DMG_NAME_FINAL"
                             '''
                         }
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.dmg', fingerprint: true
