@@ -112,7 +112,7 @@ pipeline {
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $DMG_ROOT
 
-                            hdiutil convert $DMG_NAME_TMP -format UDRO -o $DMG_NAME_FINAL
+                            hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
                             rm $DMG_NAME
                         '''
                     }
