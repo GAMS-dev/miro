@@ -122,8 +122,12 @@ pipeline {
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
                             mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO0.4/"
+                            
                             mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
                             SetFile -a C "$WORKSPACE/$DMG_ROOT"
+                            
+                            diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO 0.4"
+                            
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $STUDIO_ROOT
                             hdiutil detach -verbose $DMG_ROOT
