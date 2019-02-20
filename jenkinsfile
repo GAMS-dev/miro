@@ -61,7 +61,7 @@ pipeline {
                             DMG_NAME_TMP="GAMS_MIRO_TMP.dmg"
                             GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
                             GMS_VER_LONG=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\\\.[[:digit:]]\\)\\\\.dmg/\\\\1/)
-                            DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
+                            DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
                             
                             DMG_ROOT=volume
                             mkdir $DMG_ROOT
