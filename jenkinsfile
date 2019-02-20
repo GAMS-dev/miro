@@ -111,11 +111,11 @@ pipeline {
                             rm -f transport_live_conf.zip
                             
                             cd "$TARGET/datalib_ml"
-                            echo \$include mkconfig.inc >> kport.gms
-                            echo \$include mkconfig.inc >> pickstock.gms
-                            echo \$include mkconfig.inc >> pickstock_live.gms
-                            echo \$include mkconfig.inc >> transport.gms
-                            echo \$include mkconfig.inc >> transport_live.gms
+                            echo \\$include mkconfig.inc >> kport.gms
+                            echo \\$include mkconfig.inc >> pickstock.gms
+                            echo \\$include mkconfig.inc >> pickstock_live.gms
+                            echo \\$include mkconfig.inc >> transport.gms
+                            echo \\$include mkconfig.inc >> transport_live.gms
                             
                             cp -f "$WORKSPACE/mkconfig.inc" "$WORKSPACE/datalib.glb" "$TARGET/datalib_ml"
                             mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
@@ -147,7 +147,8 @@ pipeline {
                       withCredentials([string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
                             sh '''
                                 MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
-                                DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VERSION}.dmg"
+                                MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
+                                DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
                                 
                                 security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
                                 codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
