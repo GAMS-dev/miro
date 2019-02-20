@@ -602,10 +602,13 @@ def get_r_path():
         latestRPath = latestRPath + os.sep + "bin" + os.sep
     elif system() == "Darwin":
         RPath = r"/Library/Frameworks/R.framework/Versions"
-        RVers = os.listdir(RPath)
-        latestRPath = max(RVers, key=major_minor)
-        latestR = major_minor(latestRPath)
-        latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+        try:
+           RVers = os.listdir(RPath)
+           latestRPath = max(RVers, key=major_minor)
+           latestR = major_minor(latestRPath)
+           latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+        except OSError:
+           latestR = (0, 0)
     else:
         RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
         if not len(RPath):
