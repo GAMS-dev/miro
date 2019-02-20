@@ -50,9 +50,7 @@ pipeline {
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'GAMS26.1.0.dmg', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GAMS26.1.0.dmg', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'cmex_deg.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_deg.zip', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'mac-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/mac-lib.zip', userName: username)])
-                        sh '''
-                        ls -al
-                        '''
+                        copyArtifacts filter: 'miro-studio-0.10.4-x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', target: '.'
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         }
