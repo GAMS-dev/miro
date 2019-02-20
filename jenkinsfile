@@ -50,10 +50,10 @@ pipeline {
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'GAMS26.1.0.dmg', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GAMS26.1.0.dmg', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'cmex_deg.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_deg.zip', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'mac-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/mac-lib.zip', userName: username)])
-                        copyArtifacts filter: 'miro-studio-0.10.4-x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', target: '.'
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         }
+                        copyArtifacts filter: 'miro-studio-0.10.4-x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', target: '.'
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             DMG_NAME=$(find GAMS26*.dmg)
@@ -67,6 +67,12 @@ pipeline {
                             hdiutil convert $DMG_NAME -format UDRW -o $DMG_NAME_TMP
                             mount
                             hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME_TMP
+                            
+                            STUDIO_ROOT=studio
+                            mkdir $STUDIO_ROOT
+                            hdiutil attach -mountpoint ./$STUDIO_ROOT miro-studio-0.10.4-x86_64.dmg
+                            rm -fr $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/GAMS\\ Studio.app
+                            cp -R studio/* $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER
                             
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
@@ -119,6 +125,7 @@ pipeline {
                             mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
                             SetFile -a C "$WORKSPACE/$DMG_ROOT"
                             cd "$WORKSPACE"
+                            hdiutil detach -verbose $STUDIO_ROOT
                             hdiutil detach -verbose $DMG_ROOT
                             hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
                             rm $DMG_NAME
