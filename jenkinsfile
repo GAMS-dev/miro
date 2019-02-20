@@ -107,6 +107,13 @@ pipeline {
                             cp transport_live_conf.zip transport_live.gms "$TARGET/datalib_ml"
                             rm -f transport_live_conf.zip
                             
+                            cd "$TARGET/datalib_ml"
+                            echo \$include mkconfig.inc >> kport.gms
+                            echo \$include mkconfig.inc >> pickstock.gms
+                            echo \$include mkconfig.inc >> pickstock_live.gms
+                            echo \$include mkconfig.inc >> transport.gms
+                            echo \$include mkconfig.inc >> transport_live.gms
+                            
                             cp -f "$WORKSPACE/mkconfig.inc" "$WORKSPACE/datalib.glb" "$TARGET/datalib_ml"
                             mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
                             cd "$TARGET"
