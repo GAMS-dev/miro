@@ -56,6 +56,7 @@ pipeline {
                         copyArtifacts filter: 'miro-studio-0.10.4-x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', target: '.'
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                            MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
                             DMG_NAME=$(find GAMS26*.dmg)
                             DMG_NAME_TMP="GAMS_MIRO_TMP.dmg"
                             GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
@@ -121,12 +122,12 @@ pipeline {
                             cd "$TARGET"
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
-                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO0.4/"
+                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO$MIRO_VER_SHORT/"
                             
                             mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
                             SetFile -a C "$WORKSPACE/$DMG_ROOT"
                             
-                            diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO 0.4"
+                            diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO $MIRO_VER_SHORT"
                             
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $STUDIO_ROOT
