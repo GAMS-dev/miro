@@ -75,10 +75,8 @@ pipeline {
                             cd "$TARGET/GMSPython/bin"
                             "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
                             cd "$WORKSPACE"
-                            mkdir "$TARGET/miro"
-                            mkdir "$TARGET/GMSR"
-                            mkdir "$TARGET/GMSR/library"
-                            cp -r library "$TARGET/GMSR/library"
+                            mkdir -p "$TARGET/miro/GMSR"
+                            cp -r library "$TARGET/GMSR"
                             cp -r app.R conf global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
@@ -120,6 +118,8 @@ pipeline {
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
                             mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO0.4/"
+                            mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
+                            SetFile -a C "$WORKSPACE/$DMG_ROOT"
                             cd "$WORKSPACE"
                             hdiutil detach -verbose $DMG_ROOT
                             hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL

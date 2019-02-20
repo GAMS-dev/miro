@@ -486,7 +486,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   # Hypercube mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$hcubeMode, TRUE)){
-    rSaveFilePath <- gsub(".miroconf", "_hcube.miroconf", rSaveFilePath, fixed = TRUE)
     lapply(seq_along(modelIn), function(i){
       if(!identical(modelIn[[i]]$noHcube, TRUE)){
         switch(modelIn[[i]]$type,
