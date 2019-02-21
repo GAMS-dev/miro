@@ -96,19 +96,6 @@
             "subtotals": false
           },
           "outType": "pivot"
-        },
-        "scalars": {
-            "pivottable": {
-              "rows": [
-                "Scalar"
-              ],
-              "aggregatorName": "Sum",
-              "vals": "Value",
-              "rendererName": "Table",
-              "locale": "en",
-              "subtotals": false
-            },
-            "outType": "pivot"
         }
     }
 }

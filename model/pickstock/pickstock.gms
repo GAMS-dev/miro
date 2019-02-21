@@ -79,8 +79,8 @@ Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
     errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
     
 $onExternalOutput
-Scalar error_train                     'Absoulte error in entire training phase'
-       error_test                      'Absoulte error in entire testing phase'
+Scalar error_train                     'Absolute error in entire training phase'
+       error_test                      'Absolute error in entire testing phase'
        error_ratio                     'Ratio between error test and error train'
 Parameter
        stock_weight(symbol)            'weight'   

@@ -15,13 +15,13 @@
                     "type": "set",
                     "alias": "Scenario"
                 },
-                "rhdr": {
-                    "type": "set",
-                    "alias": "Reactor data headers"
-                },
-                "value": {
+                "vmin": {
                     "type": "parameter",
-                    "alias": "Reactor data"
+                    "alias": "VMIN"
+                },
+                "vmax": {
+                    "type": "parameter",
+                    "alias": "VMAX"
                 }
             }
         },

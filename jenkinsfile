@@ -80,9 +80,9 @@ pipeline {
                             cd "$TARGET/GMSPython/bin"
                             "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
                             cd "$WORKSPACE"
-                            mkdir -p "$TARGET/GMSR/library"
+                            mkdir -p "$TARGET/GMSR"
                             mkdir "$TARGET/miro/"
-                            cp -r library "$TARGET/GMSR/library"
+                            mv library "$TARGET/GMSR"
                             cp -r app.R conf global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
