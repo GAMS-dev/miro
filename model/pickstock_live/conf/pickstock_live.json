@@ -7,7 +7,7 @@
         "min": 1,
         "default": 3,
         "step": 1,
-        "max": "30",
+        "max": 30,
         "alias": "maximum number of stocks to select",
         "widgetType": "slider"
       },
@@ -16,7 +16,7 @@
         "min": 1,
         "default": 99,
         "step": 1,
-        "max": "252",
+        "max": "card(tw)",
         "alias": "number of days for training",
         "widgetType": "slider"
       },
