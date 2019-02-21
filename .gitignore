@@ -22,3 +22,7 @@ tools/paver/results
 packrat/src/
 doc/latest.ver
 doc/schema.html
+model/**/*.xlsx
+model/**/*.miroconf
+model/**/*.bat
+model/**/*.gdx
