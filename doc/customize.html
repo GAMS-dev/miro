@@ -196,7 +196,7 @@
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <h4 class="callout-title">Note:</h4>
-                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector or textinput.
+                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector or textinput.</p>
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                      <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use. 
@@ -541,7 +541,48 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       </p>
                                 </div><!--//section-block-->
                               </section>
-                              
+                              <section id="development-mode" class="doc-section">
+                                  <h2 class="section-title">Advanced: Development mode and compilation phase</h2>
+                                  <div class="section-block">
+                                      <p>When GAMS MIRO is started via GAMS Studio or the command line, we call it development mode. The development mode has the following characteristics on start-up:
+                                      <ul>
+                                        <li id="json-configuration-files">If not yet existing, a <i>conf/</i> directory with the files <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> and <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is created in the model directory.</li>
+                                        <li>The GAMS model is parsed and the <i>&lt;modelname&gt;_io.json</i> file is updated. </li>
+                                        <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
+                                        <li>The <a href="./faqs.html#file-miroconf"></a>configuration files</a> <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;.miroconf</i></a> and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_hcube.miroconf</i></a> of the MIRO app are updated. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO.
+                                        The following information is included in binary format:
+                                        <ol>
+                                          <li>The metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
+</code> / <code class="language-gams">$offExternalInput
+</code> and <code class="language-gams">$onExternalOutput
+</code> / <code class="language-gams">$offExternalOutput
+</code> tags in the corresponding GAMS model</li>
+                                          <li>The configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app</li>
+                                          <li>Initialization of MIRO internal data structures</li>
+                                        </ol>
+                                      </li>
+                                      </ul> 
+                                      At a start-up in development mode, the two <a href="#json-configuration-files" class="scrollto">JSON files</a> are used to configure an app. In addition, internal initializations of data structures are run. 
+                                      If a MIRO app is not started in development mode, e.g. via <a href="./model.html#create-app-executable">executable</a>, then the configuration files</a> <i>&lt;modelname&gt;.miroconf</i> and <i>&lt;modelname&gt;_hcube.miroconf</i> are used, which already contain the information about JSON side configuration and the initialization of data structures in binary format. 
+                                      With this, the start of the application is much faster than in development mode. 
+                                      The following has to be considered: 
+                                      <br>Since the miroconf files are updated every time the app is started in development mode, they are always up to date with the last launch in that mode. 
+                                      When changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO, these changes are not taken into account when starting via executable. 
+                                      Only when the app has been started in development mode and the miroconf files have been updated, the changes become effectivee. 
+                                      However, if the actual configuration of a model does not change, it is not necessary to create new configuration files every time the app starts.
+                                      </p>
+                                      <div class="callout-block callout-warning">
+                                         <div class="icon-holder">
+                                             <i class="fas fa-info-circle"></i>
+                                         </div><!--//icon-holder-->
+                                         <div class="content">
+                                             <h4 class="callout-title">Note:</h4>
+                                             <p>There is one binary configuration file each for Base mode and Hypercube mode. Like the former, the latter is only updated when the corresponding mode is started. 
+                                             For the Hypercube configuration this can either be done via the "<i>Switch to Hypercube mode</i>" button in base mode or directly from within Studio via <span class="code">miromode=1</span>.</p>
+                                         </div><!--//content-->
+                                     </div><!--//callout-block-->
+                                  </div><!--//section-block-->
+                              </section>
                               <section id="language-files" class="doc-section">
                                   <h2 class="section-title">Language Files</h2>
                                   <div class="section-block">
