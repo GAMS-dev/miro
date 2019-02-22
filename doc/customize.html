@@ -549,6 +549,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                         <li id="json-configuration-files">If not yet existing, a <i>conf/</i> directory with the files <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> and <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is created in the model directory.</li>
                                         <li>The GAMS model is parsed and the <i>&lt;modelname&gt;_io.json</i> file is updated. </li>
                                         <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
+                                        <li>The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> is created containing information for the startup of a MIRO app.</li>
+                                        <li>Generation of an <a href="./faqs.html#file-mirogms"><i>&lt;modelname&gt;_miro.gms</i></a> file with configuration data.</li>
                                         <li>The <a href="./faqs.html#file-miroconf"></a>configuration files</a> <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;.miroconf</i></a> and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_hcube.miroconf</i></a> of the MIRO app are updated. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO.
                                         The following information is included in binary format:
                                         <ol>
