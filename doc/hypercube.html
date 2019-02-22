@@ -57,7 +57,7 @@
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
                         <div class="content-inner">
-                            <section id="batch-introduction-section" class="doc-section">
+                            <section id="hypercube-introduction" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">      
                                     <p>MIRO allows the user to load input data, manipulate it, start & stop the GAMS optimization run, inspect the results as well as save, manage and compare different scenarios.</p>
@@ -71,7 +71,7 @@
                                     </div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
-                            <section id="batch-overview-section" class="doc-section">
+                            <section id="hypercube-overview" class="doc-section">
                                 <h2 class="section-title">Overview</h2>
                                 <div class="section-block">      
                                     <p>There is little to do to get from the MIRO <i>base mode</i> to the Hypercube interface. When you are in the base mode, you can simply click the <img class="img-fluid" src="assets/images/hcube-button.png" width="25" height="25" align="middle" alt="Change to Hypercube mode" /> button in the header bar and you will automatically be redirected. Alternatively, you can start the Hypercube mode directly via the switch: <span class="code" style="white-space: nowrap;">miromode=1</span> (in addition to <span class="code" style="white-space: nowrap;">miro=launch</span>):</p>
@@ -112,12 +112,12 @@
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
-                            <section id="scengen-section" class="doc-section">
+                            <section id="hypercube-scengen" class="doc-section">
                                 <h2 class="section-title">Scenario generation</h2>
                                 <div class="section-block">
                                     <p>A <a href="./faqs.html#def-scenario">scenario</a> is characterized by a particular set of model input (and output) parameters. If, for example, for a run of the <i>transport</i> model, the freight cost is set to 90 and the minimum shipment of goods is set to 100, then this parameterization characterizes the scenario (together with the other input and output parameters). The Hypercube configuration discussed here makes it possible to automatically submit several of those scenarios at once. </p>
                                     <p>The configuration of such a Hypercube job for a model is done in the menu 'Configure Hypercube job'. Let's take a look at an example.</p>
-                                    <div  id="scengen-2"  class="section-block">
+                                    <div  id="scengen-config"  class="section-block">
                                         <h3 class="block-title">Configuration of a Hypercube job</h3>
                                         <p>If you compare the display of input data between a single run in MIRO base mode and the configuration of a Hypercube job, you will notice that some of the input widgets have been automatically transformed:</p>
                                         <div class="section-block" style="text-align:center;">
@@ -228,7 +228,7 @@
                                     <br>Unlike scalar values, multidimensional symbols such as sets, parameters and multidimensional singleton sets cannot be varied within a job. They remain identical in every created scenario of a job. 
                                     For example, if a parameter is part of the input data, you may modify its values just like you did in the MIRO base mode. However, the data remains fixed within a Hypercube job.</p>
                                     </div><!--//section-block-->
-                                    <div  id="scengen-3"  class="section-block">
+                                    <div  id="scengen-automated"  class="section-block">
                                         <h3 class="block-title">Automated job submission</h3>
                                         <p>Once you are happy with the set up of your Hypercube job, you can submit it by clicking: 'Submit job'. This triggers the expansion of all scenarios resulting from your configuration and sets up your Hypercube job.</p>
                                           <div class="callout-block callout-warning">
@@ -439,7 +439,7 @@ schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                         <p>The resulting <i>schedule.csv</i> contains the header row <span class="code" style="white-space:nowrap">i,j,cap,demand,quantities</span>, 
                                         which corresponds to the first two domains <span class="code" style="white-space:nowrap">i</span> and <span class="code" style="white-space:nowrap">j</span> as well as the set elements of the declared header <span class="code" style="white-space:nowrap">scheduleHdr</span> (see image below). 
-                                        To learn more about how headers are defined in MIRO, read <a href="./model.html#create-3" target="_blank">here</a>.</p>
+                                        To learn more about how headers are defined in MIRO, read <a href="./model.html#display-parameters" target="_blank">here</a>.</p>
                                         <pre><code class="language-csv">i,j,cap,demand,quantities
 "Seattle","New-York",350,325,20
 "Seattle","Chicago",350,300,300
@@ -472,7 +472,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                 <h2 class="section-title">Analyses</h2>
                                 <div class="section-block">
                                     <p></p>
-                                    <div  id="analyze-2"  class="section-block">
+                                    <div  id="scenario-selection"  class="section-block">
                                         <h3 class="block-title">Scenario selection</h3>
                                         <p>Scenarios that have been imported into the MIRO database can be loaded at a later time for subsequent analyses. The <i>load scenarios</i> module is a graphical way to build datbase queries. It gives you a lot of flexibility and power to get exactly those scenarios you are interested in. Let's take a look at an example:</p>
                                         <br>In our <i>transport</i> model, we have three input scalars that we import from MIRO:
@@ -493,7 +493,7 @@ $offExternalInput
                                         <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/batch_img/hcube_db_query.png" alt="Filtered database search" />
                                         </div>
-                                        <p>Once you have set all the filters you are interested in, you can execute your query by clicking on the <i>Query database</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query. In the resulting table, you again have the option of selecting the scenarios that really interest you. If you want to load a scenario that was part of a Hypercube job into the base mode, you can get its hash value by clicking <i>Show Hash</i> in the lower right corner. Note that you can only show the hash of one scenario at a time, so don't select more than one row before clicking this button. To learn more about how to import a Hypercube scenario using its hash, read <a href="./start.html#workflow-1">here</a>.</p>
+                                        <p>Once you have set all the filters you are interested in, you can execute your query by clicking on the <i>Query database</i> button. After the results have been retrieved, the page will be updated and you will see a table with the scenarios that correspond to your query. In the resulting table, you again have the option of selecting the scenarios that really interest you. If you want to load a scenario that was part of a Hypercube job into the base mode, you can get its hash value by clicking <i>Show Hash</i> in the lower right corner. Note that you can only show the hash of one scenario at a time, so don't select more than one row before clicking this button. To learn more about how to import a Hypercube scenario using its hash, read <a href="./start.html#import-data">here</a>.</p>
                                         <p>Whenever you have chosen the scenarios you want to compare, you will be asked to choose a comparison/analysis method:</p>
                                         <div class="section-block" style="text-align:center;">
                                               <img class="img-fluid" style="display:block; margin:auto; max-height:150px;" src="assets/images/batch_img/comparison_method.png" alt="Choose method for analyses" />
@@ -514,11 +514,11 @@ $offExternalInput
                                         </ul>
                                         <p>The various analysis methods are described in detail below:</p>
                                     </div><!--//section-block-->
-                                    <div  id="analyze-3"  class="section-block">
-                                        <h3 class="block-title">Internal Analyses</h3>
+                                    <div  id="internal-analysis"  class="section-block">
+                                        <h3 class="block-title">Internal Analysis</h3>
 
                                         <h6>Scenario comparison:</h6>
-                                        <p>The scenario comparison module is used to directly compare the input and output data for a small number of scenarios. The scenario comparison module is pretty much identical to the one in the <a href="./start.html#workflow-6">base mode</a>: This means that the charts you configured in the base mode will also work in the Hypercube mode. However, there are some subtle differences: A scenario that resulted from a Hypercube job does not have a name assigned (the name is the 256-bit SHA-2 hash). As the hash values are hard to distinguish for the human eye, MIRO will assign a number to each scenario you import. This number is simply a counter that increments every time you load a new scenario and resets when you close the current session. You might be interested in seeing two scenarios that you find particularly important, side by side: all you need to do is remember the numbers that were assigned to those two scenarios and switch to the split view comparison mode. If you load a scenario here, you will notice that there is a new <i>local</i> tab. Here you can choose any of the scenarios that is already opened in the tab view comparison mode:
+                                        <p>The scenario comparison module is used to directly compare the input and output data for a small number of scenarios. The scenario comparison module is pretty much identical to the one in the <a href="./start.html#scenario-comparison">base mode</a>: This means that the charts you configured in the base mode will also work in the Hypercube mode. However, there are some subtle differences: A scenario that resulted from a Hypercube job does not have a name assigned (the name is the 256-bit SHA-2 hash). As the hash values are hard to distinguish for the human eye, MIRO will assign a number to each scenario you import. This number is simply a counter that increments every time you load a new scenario and resets when you close the current session. You might be interested in seeing two scenarios that you find particularly important, side by side: all you need to do is remember the numbers that were assigned to those two scenarios and switch to the split view comparison mode. If you load a scenario here, you will notice that there is a new <i>local</i> tab. Here you can choose any of the scenarios that is already opened in the tab view comparison mode:
                                         <div class="section-block" style="text-align:center;">
                                            <img class="img-fluid" style="display:block; margin:auto; max-height:300px;" src="assets/images/batch_img/hcube-splitcomp-load.png" alt="Load Hypercube scenarios into split view comparison mode" />
                                         </div>
@@ -550,8 +550,8 @@ $offExternalInput
                                               <img class="img-fluid" src="assets/images/batch_img/batch_paver.png" alt="Scenario analysis results" />
                                         </div>
                                     </div><!--//section-block-->
-                                    <div  id="analyze-4"  class="section-block">
-                                        <h3 class="block-title">External Analyses</h3>
+                                    <div  id="external-analysis"  class="section-block">
+                                        <h3 class="block-title">External Analysis</h3>
                                         <p>In case you want to use your own tools to analyse the scenarios of interest, MIRO gives you the option to download the slice of data you selected. 
                                         The structure of the downloaded data is very similar to the one you upload when you execute your <a href="#scengen-5" class="scrollto">Hypercube jobs manually</a>: 
                                         Every scenario is located in its own folder, where the name of the folder is the hash value of the scenario. Inside this folder, you will find the csv representation of the input and output datasets as well as the trace data (in case it was stored).</p>
@@ -565,19 +565,19 @@ $offExternalInput
                         <div id="doc-nav" class="doc-nav">
 
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-	                                <a class="nav-link scrollto" href="#batch-introduction-section">Introduction</a>
-                                    <a class="nav-link scrollto" href="#batch-overview-section">Overview</a>
-	                                <a class="nav-link scrollto" href="#scengen-section">Scenario generation</a>
+	                                <a class="nav-link scrollto" href="#hypercube-introduction">Introduction</a>
+                                    <a class="nav-link scrollto" href="#hypercube-overview">Overview</a>
+	                                <a class="nav-link scrollto" href="#hypercube-scengen">Scenario generation</a>
                                     <nav class="doc-sub-menu nav flex-column">
-                                      <a class="nav-link scrollto" href="#scengen-2">Configuration of a Hypercube job</a>
-                                      <a class="nav-link scrollto" href="#scengen-3">Automated job submission</a>
+                                      <a class="nav-link scrollto" href="#scengen-config">Configuration of a Hypercube job</a>
+                                      <a class="nav-link scrollto" href="#scengen-automated">Automated job submission</a>
                                       <a class="nav-link scrollto" href="#scengen-manual">Manual job submission</a>
                                     </nav><!--//nav-->
 	                                <a class="nav-link scrollto" href="#analyses-section">Scenario Analyses</a>
                                     <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#analyze-2">Scenario selection</a>
-                                        <a class="nav-link scrollto" href="#analyze-3">Internal Analyses</a>
-                                        <a class="nav-link scrollto" href="#analyze-4">External Analyses</a>
+                                        <a class="nav-link scrollto" href="#scenario-selection">Scenario selection</a>
+                                        <a class="nav-link scrollto" href="#internal-analysis">Internal Analysis</a>
+                                        <a class="nav-link scrollto" href="#external-analysis">External Analyses</a>
                                     </nav><!--//nav-->
 	                            </nav><!--//doc-menu-->
 

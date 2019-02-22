@@ -60,15 +60,15 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
                                     <p>This chapter shows the first steps of how to use GAMS MIRO and how to deploy your own GAMS models. For using this application a few components have to be installed first, see section <a href="./installation.html">Installation</a>.</p>
-                                    <p>In this and subsequent sections we will mainly deal with the MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various graphic tools.
+                                    <p>In this and subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various graphic tools.
                                     The Hypercube mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.  </p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
-                            <section id="firststep-section" class="doc-section">
-                                <h2 class="section-title">Starting MIRO</h2>
-                                <div  id="start-1"  class="section-block">
+                            <section id="start-miro" class="doc-section">
+                                <h2 class="section-title">Start GAMS MIRO</h2>
+                                <div  id="demo-applications"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
+                                    <p>To get a feeling for the use of GAMS MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
@@ -118,7 +118,7 @@
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <div class="content" id="pip_install">
-                                        <p>Some of the example models included in the MIRO installation require additional Python packages (this is not true for the beta version of GAMS MIRO). If you want to use any of these models, you may need to install them first: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\26.0\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required by the different example models.</p>
+                                        <p>Some of the example models included in the GAMS MIRO installation require additional Python packages (this is not true for the beta version of GAMS MIRO). If you want to use any of these models, you may need to install them first: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\26.0\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required by the different example models.</p>
                                         <div class="table-responsive" style="color:#000;">
                                             <table class="table table-striped">
                                                 <thead>
@@ -142,13 +142,13 @@
                                     </div><!--//content-->
                                    </p>
                                 </div><!--//section-block-->
-                                <div  id="start-2"  class="section-block">
-                                    <h3 class="block-title">Structure of MIRO</h3>
+                                <div  id="miro-structure"  class="section-block">
+                                    <h3 class="block-title">Structure of GAMS MIRO</h3>
                                     <p>Let's take the famous <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">trnsport</a> example from George Dantzig to guide us throgh this documentation: We own a bunch of factories and wish to find a least cost shipping schedule that meets the demand at markets we are shipping to. Furthermore, the capacity constraints of our factories must not be violated.
                                     In order to launch the MIRO app for this model, we open the <span class="code">transport.gms</span> file in GAMS Studio and run it with the GAMS command line parameter <span class="code" style="white-space:nowrap">miro=launch</span>.</p>
                                     <p>Once all the packages have been loaded, the MIRO app will start. Below you see the input mask as it appears after the launch.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
-                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial MIRO screen" />
+                                        <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
                                     </div>
                                     <p>The screen is essentially divided into two parts:</p>
                                     <h6>Navigation bar:</h6>
@@ -196,9 +196,9 @@
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->    
                             <section id="workflow-section" class="doc-section">
-                                <h2 class="section-title">How to work with MIRO</h2>
+                                <h2 class="section-title">How to work with GAMS MIRO</h2>
                                     <div class="section-block">
-                                        <p>There are several ways to use MIRO. However, a typical workflow could look like this:</p>
+                                        <p>There are several ways to use GAMS MIRO. However, a typical workflow could look like this:</p>
                                         <ol>
                                         <li>Import input data</li>
                                         <li>Modify the data if desired</li>
@@ -210,9 +210,9 @@
                                         <li>In addition, already saved results can be re-imported and compared at any time.</li>
                                         </ul>
                                     </div>
-                                    <div id="workflow-1"  class="section-block">
+                                    <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
-                                        <p>A MIRO app is quite useful if there is data to be visualized, e.g. as tables, diagrams or other graphics. This applies to output data as well as input data. 
+                                        <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. as tables, diagrams or other graphics. This applies to output data as well as input data. 
                                         Input data which should be visualized in MIRO can be (re-)imported either from existing scenarios in the database or locally via an Excel spreadsheet.
                                         To import such data, click on the <i>Load data</i> button in the navigation bar. The following window pops up:</p>
                                             <div class="row">
@@ -224,7 +224,7 @@
                                                 </div>
                                             </div>
                                         <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. 
-                                        When you start a MIRO app for a specific GAMS model for the first time, there is no data in the database yet, so you should start with a local file.
+                                        When you start a GAMS MIRO app for a specific GAMS model for the first time, there is no data in the database yet, so you should start with a local file.
                                         For the model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span style="white-space:nowrap;" class="code">C:\Users\&lt;user_Name&gt;\Documents\GAMSStudio\workspace\transport.xlsx</span>.</p>
                                         <div class="callout-block callout-warning" id="create-excel">
                                             <div class="icon-holder">
@@ -252,9 +252,9 @@
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;"> 
                                             <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
                                         </div>
-                                        <p>Please refer to the chapter about <a href="./hypercube.html#analyze-2">Hypercube scenario import</a> if you do not know how to get the hash value of a Hypercube scenario.</p>
+                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">Hypercube scenario import</a> if you do not know how to get the hash value of a Hypercube scenario.</p>
                                     </div><!--//section-block-->
-                                    <div id="workflow-2"  class="section-block">
+                                    <div id="data-manipulation"  class="section-block">
                                         <h3 class="block-title">Data manipulation</h3>
                                         <p>The tables that were empty before are now filled with some data. In the upper part of the main window, you can navigate between different tabs to switch through the different GAMS symbols that you have specified in your model.
                                         More about the tabular and graphical representation of input data in MIRO is explained <a href="./model.html#creating-section">here</a>. 
@@ -264,9 +264,9 @@
                                         </div>
                                         With the help of sliders and a dropdown menu we can now adjust the freight costs and the model type to be used. If we are satisfied with the settings we can start the GAMS run.
                                     </div><!--//section-block-->
-                                    <div id="workflow-3"  class="section-block">
+                                    <div id="solve-model"  class="section-block">
                                         <h3 class="block-title">Solve the model</h3>
-                                        <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">transport.gms</span> is started. The values set by us in the <a href="#workflow-2" class="scrollto">previous section</a> now serve as input data for the model.
+                                        <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">transport.gms</span> is started. The values set by us in the <a href="#data-manipulation" class="scrollto">previous section</a> now serve as input data for the model.
                                         <br>During the calculations, MIRO automatically switches to the section <i>GAMS interaction</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
@@ -275,7 +275,7 @@
                                         <p>As long as the calculations are running in GAMS, the <i>Stop</i> button on the left can be clicked. This immediately stops the running GAMS process and thus the model calculations.
                                         <br>After the run, the view of MIRO changes to the <i>Output</i> view.</p>
                                     </div><!--//section-block-->
-                                    <div id="workflow-4"  class="section-block">
+                                    <div id="inspect-results"  class="section-block">
                                         <h3 class="block-title">Inspect results</h3>
                                         <p>In the <i>Output</i> section the results are visualized. 
                                         As with the input data, a distinction is made between GAMS parameters and scalar values. GAMS parameters are each visualized in a separate tab and scalars are combined in one table.
@@ -300,7 +300,7 @@
                                         
                                         
                                     </div><!--//section-block-->
-                                    <div id="workflow-5"  class="section-block">
+                                    <div id="save-results"  class="section-block">
                                         <h3 class="block-title">Save / delete results</h3>
                                         <p>The set of all the input and output sheets that are visible in MIRO for a particular model run is what we call a scenario. 
                                         A scenario can be saved at any point. The menu where you can interact with your currently acitve scenario can be found in header bar of your MIRO app:</p>
@@ -349,7 +349,7 @@
                                             </p>
                                         </div><!--//subsection-block-->
                                     </div><!--//section-block-->
-                                    <div id="workflow-6"  class="section-block">
+                                    <div id="scenario-comparison"  class="section-block">
                                         <h3 class="block-title">Scenario comparison</h3>
                                         <p>The scenario comparison mode is useful if you want to compare the input and/or output data of different model runs.
                                         <br>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
@@ -395,15 +395,15 @@
                             </section><!--//doc-section-->
                             <section id="additional-features" class="doc-section">
                                 <h2 class="section-title">Additional Features </h2>
-                                <div id="additional-db" class="section-block">
+                                <div id="multiple-scenarios" class="section-block">
                                   <h6>Manage multiple scenarios</h6>
-                                  <p>The mode of MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
+                                  <p>The mode of GAMS MIRO that you learned about in this chapter is designed to configure and solve one scenario at a time. But what if we want to solve a multitude of such scenarios with different parameterizations one after the other? To avoid having to configure and solve each scenario individually, there is another mode built into MIRO that we call the <a href="./hypercube.html"><i>Hypercube mode</i></a>. In this mode, you can automatically solve scenarios with several different parameterizations.</p>
                                   <p>We developed this mode to efficiently generate, store and analyze a multitude of scenarios. Look at the chapter about the <a href="./hypercube.html">Hypercube mode</a> to learn more.
                                   
                                 </div>
-                                <div id="additional-server" class="section-block">
-                                  <h6>Run MIRO on a server</h6>
-                                  <p>You can also run MIRO on a server. This adds multi-user and multi-application support as well as many enterprise features such as authorization via LDAP, load balancing, rolling updates and much more. 
+                                <div id="miro-server" class="section-block">
+                                  <h6>Run GAMS MIRO on a server</h6>
+                                  <p>You can also run GAMS MIRO on a server. This adds multi-user and multi-application support as well as many enterprise features such as authorization via LDAP, load balancing, rolling updates and much more. 
                                   If you are interested in this version, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!</p>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/webui-server.png" alt="GAMS MIRO on a server with multi-user and multi-application support" />
@@ -412,11 +412,20 @@
                             </section>
                             <section id="learn-more" class="doc-section">
                                 <h2 class="section-title">Learn more</h2>
-                                <div id="additional-db" class="section-block">
+                                <div class="section-block">
                                   <p>To learn more about GAMS MIRO, you have several options. This list will grow over time as the software evolves.</p>
                                   <ul>
                                     <li>Attend one of our webinars taking place on February, 20th 2019: 4 pm CET as well as on February, 21st 2019: 8 am CET. To register, go <a href="https://zoom.us/webinar/register/636fe7e8dff4b509d746f627e8486654" target="_blank">here</a> or <a href="https://zoom.us/webinar/register/b1592ee260792a91c5b9141539e44ee6" target="_blank">here</a>.</li>
                                     <li>Watch the video of our talk at the EURO 2018 in Valencia
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <h4 class="callout-title">Note:</h4>
+                                            <p>The presentation shows GAMS MIRO in a very early stage of development.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                       <!-- 16:9 aspect ratio -->
                                       <div class="embed-responsive embed-responsive-16by9">
                                           <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/OqkODv1p8tA?rel=0&amp;controls=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>
@@ -433,24 +442,24 @@
 
 	                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                     <a class="nav-link scrollto" href="#introduction-section">Introduction</a>
-	                                <a class="nav-link scrollto" href="#firststep-section">Start MIRO</a>
+	                                <a class="nav-link scrollto" href="#start-miro">Start GAMS MIRO</a>
                                       <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#start-1">Demo Applications</a>
-                                        <a class="nav-link scrollto" href="#start-2">Structure of MIRO</a>
+                                        <a class="nav-link scrollto" href="#demo-applications">Demo Applications</a>
+                                        <a class="nav-link scrollto" href="#miro-structure">Structure of GAMS MIRO</a>
                                       </nav><!--//nav-->
-                                    <a class="nav-link scrollto" href="#workflow-section">How to work with MIRO</a>
+                                    <a class="nav-link scrollto" href="#workflow-section">How to work with GAMS MIRO</a>
                                       <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#workflow-1">Import data</a>
-                                        <a class="nav-link scrollto" href="#workflow-2">Data manipulation</a>
-                                        <a class="nav-link scrollto" href="#workflow-3">Solve the model</a>
-                                        <a class="nav-link scrollto" href="#workflow-4">Inspect the results</a>
-                                        <a class="nav-link scrollto" href="#workflow-5">Save / delete results</a>
-                                        <a class="nav-link scrollto" href="#workflow-6">Scenario comparison</a>
+                                        <a class="nav-link scrollto" href="#import-data">Import data</a>
+                                        <a class="nav-link scrollto" href="#data-manipulation">Data manipulation</a>
+                                        <a class="nav-link scrollto" href="#solve-model">Solve the model</a>
+                                        <a class="nav-link scrollto" href="#inspect-results">Inspect the results</a>
+                                        <a class="nav-link scrollto" href="#save-results">Save / delete results</a>
+                                        <a class="nav-link scrollto" href="#scenario-comparison">Scenario comparison</a>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#additional-features">Additional features</a>
                                       <nav class="doc-sub-menu nav flex-column">
-                                        <a class="nav-link scrollto" href="#additional-db">Manage multiple scenarios</a>
-                                        <a class="nav-link scrollto" href="#additional-server">Run MIRO on a server</a>
+                                        <a class="nav-link scrollto" href="#multiple-scenarios">Manage multiple scenarios</a>
+                                        <a class="nav-link scrollto" href="#miro-server">Run GAMS MIRO on a server</a>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#learn-more">Learn more</a>
 	                            </nav><!--//doc-menu-->

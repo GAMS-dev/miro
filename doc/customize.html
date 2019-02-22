@@ -70,7 +70,7 @@
                                     The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
                                       <li><h6>&lt;modelname&gt;_io.json</h6>
-                                    This file is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>. 
+                                    This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>. 
                                     It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> and <code class="language-gams">$onExternalOutput
@@ -79,7 +79,7 @@
                                   </li>
                                   <li>
                                     <h6>&lt;modelname&gt;.json</h6>
-                                    All the customization of MIRO happens via the other JSON file <span class="code">&lt;modelname&gt;.json</span>, e.g. <span class="code">trnsport.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
+                                    All the customization of MIRO happens via the other JSON file <a href="./faqs.html#file-config"><span class="code">&lt;modelname&gt;.json</span></a>, e.g. <span class="code">trnsport.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
                                   </li>
                                 </ol>
                                     <div class="section-block">
@@ -185,7 +185,7 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
-                                     <p>We have already mentioned the possibility of <a href="./model.html#create-compile">setting GAMS command line parameters via MIRO</a>. 
+                                     <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>. 
                                      Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code>. To be able to set them from MIRO, they must be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
@@ -541,6 +541,30 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       </p>
                                 </div><!--//section-block-->
                               </section>
+                              <section id="development-mode" class="doc-section">
+                                  <h2 class="section-title">Advanced: Development mode and compilation phase</h2>
+                                  <div class="section-block">
+                                      <p>When GAMS MIRO is started via GAMS Studio or the command line, we call it development mode. The development mode has the following characteristics:
+                                      <ul>
+                                        <li>If not yet existing, a conf/ directory with the files <i>&lt;modelname&gt;_io.json</i>  and <i>&lt;modelname&gt;.json</i> is created in the model directory.</li>
+                                        <li>The GAMS model is parsed and the <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> file is updated. </li>
+                                        <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
+                                        <li><a href="./faqs.html#file-xlsx"></a> miroconf Dateien</li>
+                                        <li></li>
+                                      </ul>
+                                      
+                                      updated configuration files are written each time. 
+                                      This is useful when changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO. However, if the actual configuration of a model does not change, it is not necessary to create new configuration files every time the app starts.
+                                      </p>
+                                      <p>welche konfigurationen sind enthalten? 
+                                      Jede Aenderung in der json datei muss neu kompiliert werden
+                                      aenderungen im GAMS modell, welche sich zwischen den tags abspielen
+                                      es gibt je eine binaere datei fuer base mode und hypercube mode
+                                      erstellen der hypercube dateie ueber button, wenn aus studio gestartet oder mit miromode=1 udn --mkapp=1
+                                      developmodus deutlich machen. Unterschied zum use-modus
+                                      .cmd oder .app datei. Wenn icon gewuenscht unter Windows, dann verknuepfung erstellen und icon waehlen.</p>
+                                      </div><!--//section-block-->
+                              </section>
                               <section id="language-files" class="doc-section">
                                   <h2 class="section-title">Language Files</h2>
                                   <div class="section-block">
@@ -568,6 +592,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#graphics-pivot">Pivot tables</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
+                                <a class="nav-link scrollto" href="#development-mode">Advanced: Development mode and compilation phase</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
                             </nav><!--//doc-menu-->
                         </div>
