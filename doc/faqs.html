@@ -114,6 +114,61 @@
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
+                            
+                            <section id="files" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO related files</h2>
+                                <div id="file-io" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;_io.json</h3>
+                                    <div class="answer">
+                                        <p>The <i>&lt;modelname&gt;_io.json</i> file, for example <i>transport_io.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
+                                    </code> / <code class="language-gams">$offExternalInput
+                                    </code> and <code class="language-gams">$onExternalOutput
+                                    </code> / <code class="language-gams">$offExternalOutput
+                                    </code> tags in the corresponding GAMS model. The <i>&lt;modelname&gt;_io.json</i> file is created each time a MIRO app ist started via GAMS Studio or the command line and should not be changed.</p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-config" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.json</h3>
+                                    <div class="answer">
+                                        <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app. 
+                                        This file has to be filled manually by the user. 
+                                        <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-xlsx" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.xlsx</h3>
+                                    <div class="answer">
+                                        <p>Every time you start a MIRO app via GAMS Studio or the command line, a &lt;modelname&gt;.xlsx spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model and can be used to initially load data into GAMS MIRO. It is produced without the requirement of having Excel installed. </p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-mirogms" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;_miro.gms</h3>
+                                    <div class="answer">
+                                        <p>This file is generated when starting a MIRO app in development mode. It contains configuration data and should not be changed. </p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-appR" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>runapp.R</h3>
+                                    <div class="answer">
+                                        <p>This file is also generated when starting a MIRO app in development mode. It contains information for the startup of a MIRO app and should not be changed.</p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-miroconf" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.miroconf / &lt;modelname&gt;_hcube.miroconf</h3>
+                                    <div class="answer">
+                                        <p>These files are generated when starting a MIRO app in development mode. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO. Learn more <a href="./customize.html#development-mode">here</a>.</p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                                <div id="file-executable" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.cmd / &lt;modelname&gt;.app</h3>
+                                    <div class="answer">
+                                        <p>An app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create an executable file for a GAMS MIRO app. 
+                                        By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which can execute the app. Learn more <a href="./model.html#create-app-executable">here</a>.</p>
+                                    </div><!--//anwser-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            
+                            
                             <section id="definitions" class="doc-section">
                                 <h2 class="section-title">Definitions</h2>
                                 <div id="def-model" class="section-block">
@@ -121,7 +176,6 @@
                                     <div class="answer">
                                         We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
                                     </div><!--//anwser-->
-
                                     <div id="def-scenario" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of GAMS MIRO?</h3>
                                         <div class="answer">
@@ -154,6 +208,13 @@
                                                 The same can be applied in case you use different <a href="https://www.gams.com/latest/docs/UG_SolverUsage.html#BASIC_USAGE_SOLVER_OPTION_FILE" target="_blank">solver option files</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
+                                    <div id="def-development-mode" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>development mode</b>?</h3>
+                                        <div class="answer">
+                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio or via command line. In both cases current model-specific configuration files are written in binary format at startup. 
+                                            An <a href="./model.html#create-app-executable">app executable</a> created with --mkapp=1 can access these files, so that the start up of this (non-development mode) approach is much faster.</p>
+                                            </div>
+                                    </div><!--//section-block-->
 
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
@@ -183,6 +244,7 @@
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#general">General</a>
                                 <a class="nav-link scrollto" href="#features">Features</a>
+                                <a class="nav-link scrollto" href="#files">GAMS MIRO related files</a>
                                 <a class="nav-link scrollto" href="#definitions">Definitions</a>
                                 <a class="nav-link scrollto" href="#pricing">Pricing</a>
                                 <a class="nav-link scrollto" href="#support">Support</a>
