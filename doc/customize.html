@@ -541,30 +541,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       </p>
                                 </div><!--//section-block-->
                               </section>
-                              <section id="development-mode" class="doc-section">
-                                  <h2 class="section-title">Advanced: Development mode and compilation phase</h2>
-                                  <div class="section-block">
-                                      <p>When GAMS MIRO is started via GAMS Studio or the command line, we call it development mode. The development mode has the following characteristics:
-                                      <ul>
-                                        <li>If not yet existing, a conf/ directory with the files <i>&lt;modelname&gt;_io.json</i>  and <i>&lt;modelname&gt;.json</i> is created in the model directory.</li>
-                                        <li>The GAMS model is parsed and the <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> file is updated. </li>
-                                        <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
-                                        <li><a href="./faqs.html#file-xlsx"></a> miroconf Dateien</li>
-                                        <li></li>
-                                      </ul>
-                                      
-                                      updated configuration files are written each time. 
-                                      This is useful when changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO. However, if the actual configuration of a model does not change, it is not necessary to create new configuration files every time the app starts.
-                                      </p>
-                                      <p>welche konfigurationen sind enthalten? 
-                                      Jede Aenderung in der json datei muss neu kompiliert werden
-                                      aenderungen im GAMS modell, welche sich zwischen den tags abspielen
-                                      es gibt je eine binaere datei fuer base mode und hypercube mode
-                                      erstellen der hypercube dateie ueber button, wenn aus studio gestartet oder mit miromode=1 udn --mkapp=1
-                                      developmodus deutlich machen. Unterschied zum use-modus
-                                      .cmd oder .app datei. Wenn icon gewuenscht unter Windows, dann verknuepfung erstellen und icon waehlen.</p>
-                                      </div><!--//section-block-->
-                              </section>
+                              
                               <section id="language-files" class="doc-section">
                                   <h2 class="section-title">Language Files</h2>
                                   <div class="section-block">
