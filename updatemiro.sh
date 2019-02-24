@@ -11,7 +11,7 @@ BASE=$(git merge-base @ "$UPSTREAM")
 if [ $LOCAL = $REMOTE ]; then
     echo "Up-to-date: $BASE == $LOCAL"
 elif [ $LOCAL = $BASE ]; then
-    git fetch origin develop
+    git fetch origin master
     git reset --hard FETCH_HEAD
     git clean -df
     cd model

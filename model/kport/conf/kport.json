@@ -1,12 +1,9 @@
 {
 	"UILogo": "kport.jpg",
-    "activateModules":{
-        "scenario":true
-    },
     "inputWidgets":{
       "actScen":{
           "widgetType": "dropdown",
-          "alias": "Acvtive scenario",
+          "alias": "Active scenario",
           "label": "Select scenario",
           "choices": ["$s$", "_"]
        },

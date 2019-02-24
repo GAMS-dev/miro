@@ -358,13 +358,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "minLength":1,
                           "required":false
                         },
-                        "slidertype":{
-                          "title":"Do you want a standard slider (single value) or a slider range (min and max values)?",
-                          "type":"string",
-                          "enum":["standard", "slider range"],
-                          "default":"standard",
-                          "required":true
-                        },
                         "minDepSel":{
                           "title":"Do you want the minimum slider value to be dependent on another dataset?",
                           "type":"string",
@@ -450,16 +443,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "default":"static",
                           "required":true
                         },
-                        "defaultmin":{
-                          "title":"Default/starting value (lower end of range)",
-                          "type": "number",
-                          "required":true
-                        },
-                        "defaultmax":{
-                          "title":"Default/starting value (upper end of range)",
-                          "type": "number",
-                          "required":true
-                        },
                         "default":{
                           "title":"Default/starting value",
                           "type": "number",
@@ -526,9 +509,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                         "maxDep":["maxDepSel"],
                         "defDepSel":["slidertype"],
                         "default":["defDepSel"],
-                        "defDep":["defDepSel"],
-                        "defaultmin":["slidertype"],
-                        "defaultmax":["slidertype"],
+                        "defDep":["defDepSel"]
                       }
                     },
                     "dropdown":{
@@ -653,17 +634,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                             }
                           }
                         },
-                        "multiple":{
-                          "title":"Are multiple choices allowed to be selected?",
-                          "type":"boolean",
-                          "required":false
-                        },
-                        "choiceMandatory":{
-                          "title":"Is it mandatory to select an option in the dropdown menu?",
-                          "type":"boolean",
-                          "required":false,
-                          "default":true
-                        },
                         "selected":{
                           "title":"The initially selected value",
                           "type":"string",
@@ -679,9 +649,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "type":"boolean",
                           "required":false
                         }
-                      },
-                      "dependencies":{
-                        "choiceMandatory":["multiple"]
                       }
                     },
                     "date":{
@@ -2903,11 +2870,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                            "widgetType": "dropdown"
                         },
                         "fields":{
-                          "choiceMandatory":{
-                            "dependencies":{
-                              "multiple": false
-                            }
-                          },
                           "choices":{
                             "fields":{
                               "item":{
@@ -2974,16 +2936,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "defDepSel":{
                             "dependencies":{
                               "slidertype": "standard"
-                            }
-                          },
-                          "defaultmin":{
-                            "dependencies":{
-                              "slidertype": "slider range"
-                            }
-                          },
-                          "defaultmax":{
-                            "dependencies":{
-                              "slidertype": "slider range"
                             }
                           },
                           "default":{
