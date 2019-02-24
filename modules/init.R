@@ -210,13 +210,13 @@ if(is.null(errMsg)){
       symDim          <- length(modelIn[[i]]$headers)
       if(symDim > 1L && !identical(widgetType, "table")){
         errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
-                                        names(modelIn[[i]])), sep = "\n")
+                                        names(modelIn)[i]), sep = "\n")
         flog.fatal(errMsg)
         next
       }
       if(identical(symDim, 1L) && !(widgetType %in% c("table", "dropdown"))){
         errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.", 
-                                        names(modelIn[[i]])), sep = "\n")
+                                        names(modelIn)[i]), sep = "\n")
         flog.fatal(errMsg)
         next
       }
