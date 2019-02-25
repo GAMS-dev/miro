@@ -35,9 +35,9 @@
 <body class="body-blue">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-       
+
         <!--TYPO3SEARCH_begin-->
-        
+
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
             <div class="container">
@@ -45,7 +45,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <!-- <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/> -->
-                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
+                            <img class="img-fluid" style="max-height:55pt;" src="assets/images/0219_GAMS MIRO_Small_Web.png" alt="GAMS MIRO" />
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -70,7 +70,7 @@
                                     The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
                                     <ol class="list">
                                       <li><h6>&lt;modelname&gt;_io.json</h6>
-                                    This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>. 
+                                    This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>.
                                     It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
                                     </code> and <code class="language-gams">$onExternalOutput
@@ -107,8 +107,8 @@
                                     <div class="section-block">
                                         <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/editable-table.png" alt="editable table"/>
                                     </div>
-                                    <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>. 
-                                    By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter. 
+                                    <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>.
+                                    By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter.
                                     You do so by adding this kind of information to the <span class="code">trnsport.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
                                           <pre><code class="language-json">{
@@ -146,7 +146,7 @@
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
                                       </div>
                                       <p>As with all MIRO customizations, the information about the type of visualization of a GAMS scalar is configured via the file <span class="code">&lt;modelname&gt;.json</span>.
-                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">trnsport.json</span> file. 
+                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">trnsport.json</span> file.
                                       Now we extend the configuration of our app further by adding information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i>:
                                       </p>
                                       <div class="code-block" id="scalar-slider">
@@ -185,7 +185,7 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
-                                     <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>. 
+                                     <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>.
                                      Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code>. To be able to set them from MIRO, they must be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
@@ -199,7 +199,7 @@
                                              <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector or textinput.</p>
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
-                                     <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use. 
+                                     <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use.
                                      As you have licenses for CPLEX, Gurobi and XPRESS, you can only use either of these three solvers. Thus, your <span class="code">&lt;modelname&gt;.json</span> file could look as follows:</p>
                                      <div class="code-block">
                                            <pre><code class="language-json">{
@@ -227,7 +227,7 @@
     }
   }
 }</code></pre>
-                                       </div><!--//code-block-->                                    
+                                       </div><!--//code-block-->
                                        <p>The resulting interface in MIRO now looks as follows:</p>
                                        <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
@@ -337,8 +337,8 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                             <section id="custom-graph" class="doc-section">
                                 <h2 class="section-title">Graphics Configuration</h2>
                                 <div class="section-block"  id="graphics-intro">
-                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run. 
-                                  At first, we want to use a pre-implemented diagram. The following options are currently available for this purpose:</p>  
+                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run.
+                                  At first, we want to use a pre-implemented diagram. The following options are currently available for this purpose:</p>
                                   <ul>
                                     <li>datatable</li>
                                     <li>histogram</li>
@@ -347,11 +347,11 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                     <li>line chart</li>
                                     <li>scatter plot</li>
                                     <li>pivot table</li>
-                                    </ul>   
+                                    </ul>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="graphics-charts">
                                   <h3 class="block-title">Charts</h3>
-                                  <p>Let's create a bar chart that visualizes the trade relations between suppliers and markets.  
+                                  <p>Let's create a bar chart that visualizes the trade relations between suppliers and markets.
                                   In order to do so we need to define a GAMS parameter that provides the data of those trade relations. We extend our GAMS model as follows:</p>
                                   <pre><code class="language-gams">[...]
 
@@ -373,13 +373,13 @@ $offExternalOutput
 total_cost                 = z.l;
 schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
-schedule(i,j,'quantities') = x.l(i,j);</code></pre>                                  
+schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   <p>When we first started to <a href="./model.html#trnsport-scalar-out">customize</a> our model we already defined the output scalar <span class="code">total_cost = z.l;</span>, so that we can see it in MIRO.
                                   Now we have another parameter <span class="code">schedule</span> which is declared between the <code class="language-gams">$onExternalOutput
                                   </code> / <code class="language-gams">$offExternalOutput
                                   </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the variable <span class="code">x</span>  ('<span class="code">quantities</span>').
                                   The latter is relevant for our desired graphic, the other two serve here only as additional information that we can work with.
-                                  <br>With this result parameter we can now generate a diagram. For any pre-implemented visualization options we can use the configuration generator. 
+                                  <br>With this result parameter we can now generate a diagram. For any pre-implemented visualization options we can use the configuration generator.
                                   There, we upload our <i>trnsport_io.json</i> file and choose <i>generate new configuration file"</i> Under the tab <i>Graphs</i> we select <i>graphs</i> again. Now we can configure the parameter <span class="code">schedule</span> as desired.
                                   We leave all other configurations as they are, click on <i>next</i> and then on <i>Download json</i>. The resulting <i>trnsport.json</i> file looks as follows:</p>
                                   <pre><code class="language-json">{
@@ -419,7 +419,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
         }
       }
     }
-}</code></pre> 
+}</code></pre>
                                   <p>Since we already have a <span class="code">trnsport.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
                                   <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
@@ -455,7 +455,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
 }
                                         </code></pre>
                                     </div><!--//code-block-->
-                                    <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>". 
+                                    <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>".
                                       Let's get back to our <i>trnsport</i> example. We would like to see the flow of goods visualized on a map. As there is currently no out-of-the-box rendering function for visualizing data on a map in MIRO, we need to write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
                                     <div class="code-block">
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
@@ -563,14 +563,14 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                           <li>Initialization of MIRO internal data structures</li>
                                         </ol>
                                       </li>
-                                      </ul> 
-                                      At a start-up in development mode, the two <a href="#json-configuration-files" class="scrollto">JSON files</a> are used to configure an app. In addition, internal initializations of data structures are run. 
-                                      If a MIRO app is not started in development mode, e.g. via <a href="./model.html#create-app-executable">executable</a>, then the configuration files</a> <i>&lt;modelname&gt;.miroconf</i> and <i>&lt;modelname&gt;_hcube.miroconf</i> are used, which already contain the information about JSON side configuration and the initialization of data structures in binary format. 
-                                      With this, the start of the application is much faster than in development mode. 
-                                      The following has to be considered: 
-                                      <br>Since the miroconf files are updated every time the app is started in development mode, they are always up to date with the last launch in that mode. 
-                                      When changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO, these changes are not taken into account when starting via executable. 
-                                      Only when the app has been started in development mode and the miroconf files have been updated, the changes become effectivee. 
+                                      </ul>
+                                      At a start-up in development mode, the two <a href="#json-configuration-files" class="scrollto">JSON files</a> are used to configure an app. In addition, internal initializations of data structures are run.
+                                      If a MIRO app is not started in development mode, e.g. via <a href="./model.html#create-app-executable">executable</a>, then the configuration files</a> <i>&lt;modelname&gt;.miroconf</i> and <i>&lt;modelname&gt;_hcube.miroconf</i> are used, which already contain the information about JSON side configuration and the initialization of data structures in binary format.
+                                      With this, the start of the application is much faster than in development mode.
+                                      The following has to be considered:
+                                      <br>Since the miroconf files are updated every time the app is started in development mode, they are always up to date with the last launch in that mode.
+                                      When changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO, these changes are not taken into account when starting via executable.
+                                      Only when the app has been started in development mode and the miroconf files have been updated, the changes become effectivee.
                                       However, if the actual configuration of a model does not change, it is not necessary to create new configuration files every time the app starts.
                                       </p>
                                       <div class="callout-block callout-warning">
@@ -579,7 +579,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <h4 class="callout-title">Note:</h4>
-                                             <p>There is one binary configuration file each for Base mode and Hypercube mode. Like the former, the latter is only updated when the corresponding mode is started. 
+                                             <p>There is one binary configuration file each for Base mode and Hypercube mode. Like the former, the latter is only updated when the corresponding mode is started.
                                              For the Hypercube configuration this can either be done via the "<i>Switch to Hypercube mode</i>" button in base mode or directly from within Studio via <span class="code">miromode=1</span>.</p>
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
