@@ -52,7 +52,7 @@ $if not set scenario $set scenario s1
 $onExternalInput
 Singleton set actScen(s) 'Active scenario' / %scenario% /;   
 
-Table RData(rR,s,rhdr) 'Reactor data [MIRO:table]'
+Table RData(rR,s,rhdr) 'Reactor data 😀⻩ [MIRO:table]'
         s1.VMIN  s1.VMAX  s2.VMIN  s2.VMAX
    R1    102.14      250     20         50
    R2    176.07      250     52.5      250
@@ -100,8 +100,8 @@ Table PData(pP,s,phdr) 'Product data [MIRO:table]'
 
 Scalar
    WHRS 'Length of considered period [hours]'                  / 168  /
-   CSTI 'Depreciation cost per m^3 reactor and period [kEuro]' / 0.97 /
-   CSTF 'Fixed cost per week and reactor [kEuro]'              / 2.45 /
+   CSTI 'Depreciation cost per m^3 reactor and period [k€]'    / 0.97 /
+   CSTF 'Fixed cost per week and reactor [k€]'                 / 2.45 /
    ESF  'Economies of scale factor'                            / 0.5  /;
 $offExternalInput
 

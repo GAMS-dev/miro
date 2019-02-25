@@ -81,7 +81,7 @@ def extractSymText(sym,level):
       text = sym.name
    if level>0:
       text = text.replace(pivot_marker, '')
-   return text.strip()
+   return text.strip().encode('utf-8', 'replace').decode('utf-8')
 
 # Iterate through all symbols
 for sym in db:
@@ -203,7 +203,7 @@ def headerList(s):
    return headers
 
 # Now write model specific MIRO driver
-with open(r'%fp%%fn%_miro.gms', 'w') as f:
+with open(r'%fp%%fn%_miro.gms', 'w', encoding="utf-8") as f:
    f.write('$ifi %' + 'gams.MIRO%==run $goto MIRO_RUN\n')
    f.write('\n')
    f.write('* Create csv files of existing data for Excel file creation\n')
@@ -235,7 +235,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
       f.write('   except:\n')
       f.write('     return str(default)\n')
       f.write('\n')    
-      f.write('with open("scalars.csv", "w") as f:\n')
+      f.write('with open("scalars.csv", "w", encoding="utf-8") as f:\n')
       f.write('   f.write("scalar,description,value\\n")\n')
       for s in i_sym:
          if s[1]=='ss':
@@ -267,7 +267,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('\n')
    f.write('for s in icsvlist[1:]:\n')
    f.write('  worksheet = workbook.add_worksheet(s) #worksheet with symbol name\n')
-   f.write('  with open(s + ".csv", "r") as f:\n')
+   f.write('  with open(s + ".csv", "r", encoding="utf-8") as f:\n')
    f.write('    reader = csv.reader(f)\n')
    f.write('    for r, row in enumerate(reader):\n')
    f.write('      for c, col in enumerate(row):\n')
@@ -322,7 +322,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
    f.write('import csv\n')
    f.write('import os\n')
    f.write('if os.path.isfile(r"%csvHome%scalars.csv"):\n')
-   f.write('   with open(r"%csvHome%scalars.csv", "r") as csvfile:\n')
+   f.write('   with open(r"%csvHome%scalars.csv", "r", encoding="utf-8") as csvfile:\n')
    f.write('     scalars = csv.reader(csvfile)\n')
    f.write('     next(scalars) # skip header row\n')
    f.write('     for row in scalars:\n')
@@ -410,7 +410,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('   except:\n')
          f.write('     return str(default)\n')
          f.write('\n')
-         f.write('with open("scalars_out.csv", "w") as f:\n')
+         f.write('with open("scalars_out.csv", "w", encoding="utf-8") as f:\n')
          f.write('   f.write("scalar,description,value\\n")\n')
          for s in o_sym:
             if s[1]=='ps':
@@ -427,7 +427,7 @@ with open(r'%fp%%fn%_miro.gms', 'w') as f:
          f.write('  except:\n')
          f.write('    return "0.0,0.0,-inf,+inf,1.0"\n')
          f.write('\n')
-         f.write('with open("scalarsve_out.csv", "w") as f:\n')
+         f.write('with open("scalarsve_out.csv", "w", encoding="utf-8") as f:\n')
          f.write('   f.write("type,scalar,description,level,marginal,lower,upper,scale\\n")\n')
          for s in o_sym:
             if s[1]=='vs':
@@ -520,7 +520,7 @@ config['gamsOutputFiles'] = io_dict
 confdir = r'%fp%conf'
 if not os.path.exists(confdir):
    os.makedirs(confdir)
-with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w') as f:
+with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w', encoding='utf-8') as f:
    json.dump(config, f, indent=4, sort_keys=False)
 $offembeddedCode
    
@@ -628,7 +628,7 @@ if os.path.exists(r"%gams.sysdir%GMSR%system.dirsep%library"):
     sysdir = r"%gams.sysdir% ".strip().replace("\\","/") + "GMSR/library"
 else:
     sysdir = ""
-with open("runapp.R", "w") as f: 
+with open("runapp.R", "w", encoding="utf-8") as f: 
    f.write("RLibPath <- '"+sysdir+"'\n")
    f.write("""
 if(RLibPath == ""){{
@@ -702,7 +702,7 @@ if %mkApp%>0:
             f.write('''start /min "" cmd /C ""{0}Rscript" --vanilla "{1}runapp.R" -modelPath="{2}" -gamsSysDir="{3}" NODEBUG %MODEARG%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
     elif system() == "Darwin":
         from shutil import rmtree
-        with open(fn_model + ".applescript", "w") as f:
+        with open(fn_model + ".applescript", "w", encoding="utf-8") as f:
             f.write('''do shell script "'{0}Rscript' --vanilla '{1}runapp.R' -modelPath='{2}' -gamsSysDir='{3}' NODEBUG %MODEARG%"'''.format(RPath, fp_model, os.path.join(fp_model,fn_model + fe_model), gams_sysdir))
         if os.path.isdir(fn_model + ".app"):
            rmtree(fn_model + ".app")

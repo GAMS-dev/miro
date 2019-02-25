@@ -399,7 +399,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   close(pb)
 }
 MIROVersionLatest <- NULL
-if(!isShinyProxy && curl::has_internet()){
+if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
   try(
     local({
       verCon <- url("https://gams.com/miro/latest.ver")
