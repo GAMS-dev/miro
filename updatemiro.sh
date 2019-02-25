@@ -3,6 +3,7 @@
 cd $HOME/miro
 git remote update
 
+
 UPSTREAM=${1:-'@{u}'}
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "$UPSTREAM")
