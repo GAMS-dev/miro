@@ -507,9 +507,17 @@ observeEvent(input$btSolve, {
       choiceIdx         <- match(dataTmp[[i]][[1L]], 
                                  modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
       csvData           <- dataTmp[[i]]
-      aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
-      aliasCol[is.na(aliasCol)] <- ""
-      csvData[["text"]] <- aliasCol
+      if(length(choiceIdx)){
+        if(!is.na(choiceIdx)){
+          aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
+          aliasCol[is.na(aliasCol)] <- ""
+          csvData[["text"]] <- aliasCol
+        }else{
+          csvData[["text"]] <- ""
+        }
+      }else{
+        csvData[["text"]] <- character(0L)
+      }
     }else{
       csvData <- dataTmp[[i]]
     }

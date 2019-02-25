@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '2', daysToKeepStr: '1'))
@@ -8,18 +8,20 @@ pipeline {
 
     stages {
         stage('Pack') {
-            steps {
-                parallel linux: {
-                    node('master') {
-                        step([$class: 'WsCleanup'])
-                        checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
-                        sh '''
-                            echo "Do the linux packaging stuff here."
-                        '''
-                    }
+            parallel {
+                stage('linux'){
+                    agent { label 'master' }
+                        steps {
+                            step([$class: 'WsCleanup'])
+                            checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
+                            sh '''
+                                echo "Do the linux packaging stuff here."
+                            '''
+                        }
                 },
-                windowsX64: {
-                    node('windowsX64') {
+                stage ('windowsX64') {
+                    agent { label 'windowsX64' }
+                    steps {
                         step([$class: 'WsCleanup'])
                         checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
@@ -42,8 +44,9 @@ pipeline {
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
                     }
                 },
-                macos: {
-                    node('macos') {
+                stage ('macos') {
+                    agent { label 'macos' }
+                    steps {
                         step([$class: 'WsCleanup'])
                         checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
@@ -142,25 +145,27 @@ pipeline {
             }
         }
         stage('Sign') {
-            steps {
-                parallel macos: {
-                    node('macos') {
-                      withCredentials([string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
-                            sh '''
-                                MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
-                                MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
-                                DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
-                                
-                                security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
-                                codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
-                                security lock-keychain
-                                codesign --verify --verbose "$DMG_NAME_FINAL"
-                            '''
-                        }
+            parallel {
+                stage ('macos') {
+                    agent { label 'macos' }
+                    steps {
+                        withCredentials([string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
+                              sh '''
+                                  MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                                  MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
+                                  DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
+                                  
+                                  security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
+                                  codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
+                                  security lock-keychain
+                                  codesign --verify --verbose "$DMG_NAME_FINAL"
+                              '''
+                          }
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.dmg', fingerprint: true
-                    }
-                  }
                 }
+              }
             }
+        }
+        
     }
 }
