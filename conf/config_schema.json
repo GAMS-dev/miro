@@ -621,6 +621,11 @@
                      "type":"string",
                      "minLength":1
                    },
+                   "sharedData":{  
+                     "description":"Choose whether data for this table should come from a shared table (across all scenarios)",
+                     "type":"boolean",
+                     "default": false
+                   },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"

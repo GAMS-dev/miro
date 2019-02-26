@@ -30,8 +30,8 @@ observeEvent(input$btCheckSnameLocalConfirm, {
       return()
     }else{
       if(identical(config$activateModules$scenario, TRUE)){
-        flog.debug("Scenario name is valid, but already exists.")
         if(db$checkSnameExists(scenNameTmp)){
+          flog.debug("Scenario name is valid, but already exists.")
           showEl(session, "#loadLocal_scenNameExists")
           hideEl(session, "#loadLocal_content")
           return()

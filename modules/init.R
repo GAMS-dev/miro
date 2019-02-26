@@ -243,6 +243,10 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
+      if(!is.null(widgetConfig$sharedData)){
+        modelIn[[i]]$sharedData  <- widgetConfig$sharedData
+        widgetConfig$sharedData  <- NULL
+      }
       if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig$readonly
         widgetConfig$readonly  <- NULL
