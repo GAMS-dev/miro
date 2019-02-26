@@ -30,9 +30,9 @@
 <body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
-        
+
         <!--TYPO3SEARCH_begin-->
-        
+
         <!-- ******Header****** -->
         <header id="header" class="sub-header">
             <div class="container">
@@ -40,7 +40,7 @@
                     <h1 class="logo">
                         <a href="index.html">
                           <!-- <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/> -->
-                            <span class="text-highlight">GAMS</span><span class="text-bold">MIRO</span>
+                            <img class="img-fluid" style="max-height:55pt;" src="assets/images/0219_GAMS MIRO_Small_Web.png" alt="GAMS MIRO" />
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -88,7 +88,7 @@
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my MIRO app?</h3>
                                     <div class="answer">
-                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>. 
+                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>.
                                         In order to generate the <span class="code">&lt;modelname&gt;.json</span> file you can use our <a href="./configgen.html">Configuration Generator</a>.</p>
                                     </div><!--//anwser-->
 
@@ -103,18 +103,18 @@
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I also write my own custom functions to generate input data?</h3>
                                         <div class="answer">No. This is currently not supported, but might be added in later development stages depending on the demand for this feature.</div>
                                     </div><!--//section-block-->
-                                    
+
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I use my own Excel spreadsheet for the input data or do I need to use the automatically generated one?</h3>
                                         <div class="answer">
-                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the sheet names and header lines of a symbol). 
+                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the sheet names and header lines of a symbol).
                                             </div>
                                     </div><!--//section-block-->
 
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
-                            
+
                             <section id="files" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO related files</h2>
                                 <div id="file-io" class="section-block">
@@ -130,8 +130,8 @@
                                 <div id="file-config" class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.json</h3>
                                     <div class="answer">
-                                        <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app. 
-                                        This file has to be filled manually by the user. 
+                                        <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
+                                        This file has to be filled manually by the user.
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
@@ -162,13 +162,13 @@
                                 <div id="file-executable" class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.cmd / &lt;modelname&gt;.app</h3>
                                     <div class="answer">
-                                        <p>An app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create an executable file for a GAMS MIRO app. 
+                                        <p>An app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create an executable file for a GAMS MIRO app.
                                         By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which can execute the app. Learn more <a href="./model.html#create-app-executable">here</a>.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
-                            
-                            
+
+
                             <section id="definitions" class="doc-section">
                                 <h2 class="section-title">Definitions</h2>
                                 <div id="def-model" class="section-block">
@@ -203,15 +203,15 @@
                                     <div id="def-job-tag" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a (Hypercube) <b>job tag</b>?</h3>
                                         <div class="answer">
-                                            <p>A Hypercube <i>job tag</i> is an identifier attached to all scenarios of a <a href="#def-hypercube-job" class="scrollto">Hypercube job</a>. Job tags can help you find scenarios of a particular Hypercube job. They can also be useful for scenario analysis. 
-                                                In case a model run is characterized by data that is not part of the input data specified via MIRO, job tags are important to distinguish different runs with the same input data. Suppose you are interested in finding out how sensitive your model is with regard to computing power. Thus, you run the same set of scenarios once on a high performance computing cluster and once on your local machine. As both times you used the exact same set of scenarios, MIRO can't distinguish both runs. However, you can attach different tags to the two jobs. This lets you discriminate a scenario that ran on the cluster from one that ran on your local machine. 
+                                            <p>A Hypercube <i>job tag</i> is an identifier attached to all scenarios of a <a href="#def-hypercube-job" class="scrollto">Hypercube job</a>. Job tags can help you find scenarios of a particular Hypercube job. They can also be useful for scenario analysis.
+                                                In case a model run is characterized by data that is not part of the input data specified via MIRO, job tags are important to distinguish different runs with the same input data. Suppose you are interested in finding out how sensitive your model is with regard to computing power. Thus, you run the same set of scenarios once on a high performance computing cluster and once on your local machine. As both times you used the exact same set of scenarios, MIRO can't distinguish both runs. However, you can attach different tags to the two jobs. This lets you discriminate a scenario that ran on the cluster from one that ran on your local machine.
                                                 The same can be applied in case you use different <a href="https://www.gams.com/latest/docs/UG_SolverUsage.html#BASIC_USAGE_SOLVER_OPTION_FILE" target="_blank">solver option files</a>.</p>
                                             </div>
                                     </div><!--//section-block-->
                                     <div id="def-development-mode" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is meant by <b>development mode</b>?</h3>
                                         <div class="answer">
-                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio or via command line. In both cases current model-specific configuration files are written in binary format at startup. 
+                                            <p>You are in <i>development mode</i> when you start a MIRO app from GAMS Studio or via command line. In both cases current model-specific configuration files are written in binary format at startup.
                                             An <a href="./model.html#create-app-executable">app executable</a> created with --mkapp=1 can access these files, so that the start up of this (non-development mode) approach is much faster.</p>
                                             </div>
                                     </div><!--//section-block-->
@@ -223,7 +223,7 @@
                                 <h2 class="section-title">Pricing</h2>
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> What license is GAMS MIRO released under?</h3>
-                                    <div class="answer">GAMS MIRO is release under the GNU General Public License, either version 2 of the License, or (at your option) any later version. For a copy of this license, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a></div>
+                                    <div class="answer">GAMS MIRO is released under the GNU General Public License, either version 2 of the License, or (at your option) any later version. For a copy of this license, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a></div>
                                 </div><!--//section-block-->
 
                             </section><!--//doc-section-->
@@ -232,7 +232,7 @@
                                 <h2 class="section-title">Support</h2>
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Who should I contact in case I have problems or remarks?</h3>
-                                    <div class="answer">You can use any of the channels you also have if you face problems with the core GAMS system. However, the best way is via our <a href="https://forum.gamsworld.org/" target="_blank">forum</a>. This way, other users who might have similar questions can profit as well from the answers you receive. 
+                                    <div class="answer">You can use any of the channels you also have if you face problems with the core GAMS system. However, the best way is via our <a href="https://forum.gamsworld.org/" target="_blank">forum</a>. This way, other users who might have similar questions can profit as well from the answers you receive.
                                     Alternatively you can also contact us by mail at <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a></div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
