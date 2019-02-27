@@ -39,8 +39,7 @@
                 <div class="branding">
                     <h1 class="logo">
                         <a href="index.html">
-                          <!-- <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="logo"/> -->
-                            <img class="img-fluid" style="max-height:55pt;" src="assets/images/0219_GAMS MIRO_Small_Web.png" alt="GAMS MIRO" />
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
                         </a>
                     </h1>
                 </div><!--//branding-->
@@ -81,6 +80,31 @@
                                     <h3 class="question"><i class="fas fa-question-circle"></i> Can I contribute to improve GAMS MIRO?</h3>
                                     <div class="answer">Yes, absolutely! If you find bugs or have ideas about how to improve MIRO, you are more than welcome to share those with us! Additionally, you can contribute by supplying new <a href="./customize.html#language-files" target="_blank">language files</a> or <a href="./customize.html#custom-renderers" target="_blank">custom renderers</a>! We also welcome any prototypes/PoCs which you think that can help others to get started, to improve and/or to come up with new ideas of what can be done with GAMS MIRO and optimization in general. In any case, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>!</div>
                                 </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I use all solvers which I have a license for with MIRO?</h3>
+                                    <div class="answer">
+                                      Yes, all solvers with a valid license can be used with MIRO.
+                                        </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Will there be limits to the run time or the model size?</h3>
+                                    <div class="answer">
+                                      No, as long as a valid GAMS license exists, there are no limitations regarding the run time or size of a model.
+                                        </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I use MIRO without a GAMS model but work with data only?</h3>
+                                    <div class="answer">
+                                      Yes, but it should be noted that GAMS MIRO is very closely interwoven with GAMS. In order to be able to use MIRO without GAMS, adaptations to the code of GAMS MIRO are necessary.
+                                        </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Do I need Excel installed when running GAMS MIRO?</h3>
+                                    <div class="answer">
+                                      No. The spreadsheet created when starting a MIRO app is generated with the help of internal tools. Excel is not necessary for this.
+                                        </div>
+                                </div><!--//section-block-->
+
                             </section><!--//doc-section-->
 
                             <section id="features" class="doc-section">
@@ -111,6 +135,32 @@
                                             </div>
                                     </div><!--//section-block-->
 
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I set up GAMS MIRO on a server where multiple users can solve GAMS models?</h3>
+                                        <div class="answer">
+                                          Yes. Besides the presented desktop version we also develop an enterprise version, which will run on a server and will offer features like multi-application management, user access management, load balancing, rolling updates, etc.
+                                            </div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube mode?</h3>
+                                        <div class="answer">
+                                          How to get to the Hyperube mode:
+                                          <ul>
+                                            <li>When you are in the base mode, you can simply click the “Switch to Hypercube mode” button in the header bar and you will automatically be redirected.</li>
+                                            <li>Alternatively, you can start the Hypercube mode directly via the switch: miromode=1 (in addition to miro=launch) from within GAMS Studio or the command line.</li>
+                                          </ul>
+                                           See also: <a href="https://www.gams.com/miro/hypercube.html#hypercube-overview">here</a>
+                                            </div>
+                                    </div><!--//section-block-->
+
+                                    <div class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
+                                        <div class="answer">
+                                          In MIRO, both the log and the lst file of the current GAMS model run are displayed. All information about infeasibility and unboundedness is displayed here.
+If a model is not feasible, MIRO interprets this as an error-free run and the view changes to the output screen. If the GAMS model is aborted instead for any reason, this will also result in an abort in MIRO. A corresponding message is displayed in MIRO and no output is displayed.
+                                            </div>
+                                    </div><!--//section-block-->
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
