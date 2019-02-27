@@ -1,0 +1,138 @@
+{
+  "output": {
+    "in_1": {
+      "x": {
+        "data": [
+          {
+            "i": "London",
+            "value": 550
+          },
+          {
+            "i": "Warsaw",
+            "value": 425
+          }
+        ],
+        "rClass": [
+          "tbl_df",
+          "tbl",
+          "data.frame"
+        ],
+        "rColClasses": {
+          "i": "character",
+          "value": "numeric"
+        },
+        "rColnames": [
+          "i",
+          "value"
+        ],
+        "rColHeaders": [
+          "i",
+          "value"
+        ],
+        "rRowHeaders": null,
+        "rDataDim": [
+          2,
+          2
+        ],
+        "selectCallback": true,
+        "colHeaders": [
+          "canning plants",
+          "capacity of plant i in cases"
+        ],
+        "rowHeaders": [
+          "1",
+          "2"
+        ],
+        "columns": [
+          {
+            "type": "text",
+            "renderer": "customRenderer",
+            "default": null
+          },
+          {
+            "type": "numeric",
+            "numericFormat": {
+              "pattern": "0.00"
+            },
+            "renderer": "customRenderer",
+            "default": null
+          }
+        ],
+        "width": null,
+        "height": 700,
+        "debug": 0,
+        "search": true,
+        "stretchH": "all",
+        "comments": true,
+        "contextMenu": {
+          "items": {
+            "row_above": [
+
+            ],
+            "row_below": [
+
+            ],
+            "remove_row": [
+
+            ],
+            "hsep3": {
+              "name": "---------"
+            },
+            "undo": [
+
+            ],
+            "redo": [
+
+            ],
+            "hsep4": {
+              "name": "---------"
+            },
+            "alignment": [
+
+            ],
+            "hsep1": {
+              "name": "---------"
+            },
+            "hsep6": {
+              "name": "---------"
+            },
+            "commentsAddEdit": [
+
+            ],
+            "commentsRemove": [
+
+            ],
+            "hsep2": {
+              "name": "---------"
+            },
+            "col_left": [
+
+            ],
+            "col_right": [
+
+            ],
+            "remove_col": [
+
+            ]
+          }
+        },
+        "ishighlight": true,
+        "currentRowClassName": "currentRow",
+        "currentColClassName": "currentCol",
+        "columnSorting": true,
+        "manualColumnMove": false,
+        "manualColumnResize": false
+      },
+      "evals": [
+        "columns.0.renderer",
+        "columns.1.renderer"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+
+      ]
+    }
+  }
+}

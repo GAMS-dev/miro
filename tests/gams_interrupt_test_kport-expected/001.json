@@ -1,0 +1,186 @@
+{
+  "output": {
+    "in_1": {
+      "x": {
+        "data": [
+          {
+            "rr": "R1",
+            "s": "s1",
+            "vmin": 102.14,
+            "vmax": 250
+          },
+          {
+            "rr": "R2",
+            "s": "s1",
+            "vmin": 176.07,
+            "vmax": 250
+          },
+          {
+            "rr": "R1",
+            "s": "s2",
+            "vmin": 20,
+            "vmax": 50
+          },
+          {
+            "rr": "R2",
+            "s": "s2",
+            "vmin": 52.5,
+            "vmax": 250
+          },
+          {
+            "rr": "R3",
+            "s": "s2",
+            "vmin": 151.25,
+            "vmax": 250
+          }
+        ],
+        "rClass": [
+          "tbl_df",
+          "tbl",
+          "data.frame"
+        ],
+        "rColClasses": {
+          "rr": "character",
+          "s": "character",
+          "vmin": "numeric",
+          "vmax": "numeric"
+        },
+        "rColnames": [
+          "rr",
+          "s",
+          "vmin",
+          "vmax"
+        ],
+        "rColHeaders": [
+          "rr",
+          "s",
+          "vmin",
+          "vmax"
+        ],
+        "rRowHeaders": null,
+        "rDataDim": [
+          5,
+          4
+        ],
+        "selectCallback": true,
+        "colHeaders": [
+          "Reactor",
+          "Scenario",
+          "VMIN",
+          "VMAX"
+        ],
+        "rowHeaders": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "columns": [
+          {
+            "type": "text",
+            "renderer": "customRenderer",
+            "default": null
+          },
+          {
+            "type": "text",
+            "renderer": "customRenderer",
+            "default": null
+          },
+          {
+            "type": "numeric",
+            "numericFormat": {
+              "pattern": "0.00"
+            },
+            "renderer": "customRenderer",
+            "default": null
+          },
+          {
+            "type": "numeric",
+            "numericFormat": {
+              "pattern": "0.00"
+            },
+            "renderer": "customRenderer",
+            "default": null
+          }
+        ],
+        "width": null,
+        "height": 700,
+        "debug": 0,
+        "search": true,
+        "stretchH": "all",
+        "comments": true,
+        "contextMenu": {
+          "items": {
+            "row_above": [
+
+            ],
+            "row_below": [
+
+            ],
+            "remove_row": [
+
+            ],
+            "hsep3": {
+              "name": "---------"
+            },
+            "undo": [
+
+            ],
+            "redo": [
+
+            ],
+            "hsep4": {
+              "name": "---------"
+            },
+            "alignment": [
+
+            ],
+            "hsep1": {
+              "name": "---------"
+            },
+            "hsep6": {
+              "name": "---------"
+            },
+            "commentsAddEdit": [
+
+            ],
+            "commentsRemove": [
+
+            ],
+            "hsep2": {
+              "name": "---------"
+            },
+            "col_left": [
+
+            ],
+            "col_right": [
+
+            ],
+            "remove_col": [
+
+            ]
+          }
+        },
+        "ishighlight": true,
+        "currentRowClassName": "currentRow",
+        "currentColClassName": "currentCol",
+        "columnSorting": true,
+        "manualColumnMove": false,
+        "manualColumnResize": false
+      },
+      "evals": [
+        "columns.0.renderer",
+        "columns.1.renderer",
+        "columns.2.renderer",
+        "columns.3.renderer"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+
+      ]
+    }
+  }
+}
