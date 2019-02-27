@@ -543,14 +543,14 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                               <section id="development-mode" class="doc-section">
                                   <h2 class="section-title">Advanced: Development mode and compilation phase</h2>
                                   <div class="section-block">
-                                      <p>When GAMS MIRO is started via GAMS Studio or the command line, we call it development mode. The development mode has the following characteristics on start-up:
+                                      <p>When GAMS MIRO is started via GAMS Studio or the command line, it is launched in the so-called <i>development mode</i>. This development mode has the following characteristics:
                                       <ul>
                                         <li id="json-configuration-files">If not yet existing, a <i>conf/</i> directory with the files <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> and <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is created in the model directory.</li>
                                         <li>The GAMS model is parsed and the <i>&lt;modelname&gt;_io.json</i> file is updated. </li>
                                         <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
-                                        <li>The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> is created containing information for the startup of a MIRO app.</li>
-                                        <li>Generation of an <a href="./faqs.html#file-mirogms"><i>&lt;modelname&gt;_miro.gms</i></a> file with configuration data.</li>
-                                        <li>The <a href="./faqs.html#file-miroconf"></a>configuration files</a> <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;.miroconf</i></a> and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_hcube.miroconf</i></a> of the MIRO app are updated. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO.
+                                        <li>The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> is created containing some necessary information to launch your MIRO app.</li>
+                                        <li>A GAMS file: <a href="./faqs.html#file-mirogms"><i>&lt;modelname&gt;_miro.gms</i></a> is created that is necessary to run your model from GAMS MIRO.</li>
+                                        <li>The <a href="./faqs.html#file-miroconf"></a>configuration files</a> <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;.miroconf</i></a> and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_hcube.miroconf</i></a> of the MIRO app are updated. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a faster launch of your app.
                                         The following information is included in binary format:
                                         <ol>
                                           <li>The metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
@@ -559,18 +559,17 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
 </code> / <code class="language-gams">$offExternalOutput
 </code> tags in the corresponding GAMS model</li>
                                           <li>The configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app</li>
-                                          <li>Initialization of MIRO internal data structures</li>
+                                          <li>Initialization of MIRO-internal data structures</li>
                                         </ol>
                                       </li>
                                       </ul>
-                                      At a start-up in development mode, the two <a href="#json-configuration-files" class="scrollto">JSON files</a> are used to configure an app. In addition, internal initializations of data structures are run.
-                                      If a MIRO app is not started in development mode, e.g. via <a href="./model.html#create-app-executable">executable</a>, then the configuration files</a> <i>&lt;modelname&gt;.miroconf</i> and <i>&lt;modelname&gt;_hcube.miroconf</i> are used, which already contain the information about JSON side configuration and the initialization of data structures in binary format.
-                                      With this, the start of the application is much faster than in development mode.
-                                      The following has to be considered:
-                                      <br>Since the miroconf files are updated every time the app is started in development mode, they are always up to date with the last launch in that mode.
-                                      When changes have been made to MIRO specific configurations, such as setting a new graphic or specifying a new GAMS symbol to be used in MIRO, these changes are not taken into account when starting via executable.
-                                      Only when the app has been started in development mode and the miroconf files have been updated, the changes become effectivee.
-                                      However, if the actual configuration of a model does not change, it is not necessary to create new configuration files every time the app starts.
+                                      When you launch your app in development mode, the two <a href="#json-configuration-files" class="scrollto">JSON files</a> are used to configure your app. These JSON files are parsed and converted to data structures that MIRO can work with.
+                                      In contrast, if you start your MIRO app via an <a href="./model.html#create-app-executable">executable</a>, the configuration files</a> <i>&lt;modelname&gt;.miroconf</i> and <i>&lt;modelname&gt;_hcube.miroconf</i> are used. This means that updating the JSON files won't have an effect on your app. You first need to launch your app via GAMS Studio again. This will cause the <i>.miroconf</i> files to be refreshed. Note that you need to launch the Hypercube mode explicitly for the <i>&lt;modelname&gt;_hcube.miroconf</i> file to be refreshed!
+                                      Since the entire configuration is already available in binary form, you should notice a significant acceleration of your app startup compared to the development mode!
+                                      To sum up, the following should be taken into account:
+                                      <br>Since the miroconf files are updated every time the app is started in development mode, they are always up to date with the last launch in that particular mode (base or Hypercube).
+                                      If changes have been made to MIRO-specific configurations, such as the configuration of a new graphic or the specification of a new GAMS symbol to be used in MIRO, these changes are not taken into account when starting your app via an executable shortcut.
+                                      Only when the app was started in development mode and the files <i>.miroconf</i> were updated, those changes become effective.
                                       </p>
                                       <div class="callout-block callout-warning">
                                          <div class="icon-holder">
