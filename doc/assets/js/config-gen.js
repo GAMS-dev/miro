@@ -634,6 +634,11 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                             }
                           }
                         },
+                        "choiceMandatory":{
+                          "title":"Is it mandatory to select an option in the dropdown menu?",
+                          "type":"boolean",
+                          "required":false
+                        },
                         "selected":{
                           "title":"The initially selected value",
                           "type":"string",
