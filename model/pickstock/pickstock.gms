@@ -5,7 +5,6 @@ $title Stock Selection Optimization
 
 Set       date                 'date'
           symbol               'stock symbol';
-    
 $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 Scalar    maxstock             'maximum number of stocks to select'  /  2 /
@@ -97,7 +96,10 @@ abserror(ntd,'absolute error test')    = error(ntd);
 lastDayTraining(td)                    = td.pos=card(td);
 error_train                            = obj.l;
 error_test                             = sum(ntd, error(ntd));
-error_ratio                            = error_test/error_train;
+if(error_train > 0,
+   error_ratio = error_test/error_train;
+else
+   error_ratio = inf;);
 
 * parameter including all stocks and dow jones index
 $onExternalOutput

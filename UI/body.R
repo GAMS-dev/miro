@@ -41,7 +41,7 @@ tabItemList <- list(
                        icon("exclamation-triangle")),
               textOutput("inputDataTitle", inline = TRUE),
               tags$div(style = "float: right;", 
-                       HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
+                       HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
                                    onclick="confirmModalShow(\'', 
                                    lang$nav$dialogRemoveScen$title, '\', \'', 
                                    lang$nav$dialogRemoveScen$desc, '\', \'', 

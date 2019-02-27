@@ -476,6 +476,7 @@ lapply(seq_along(modelIn), function(id){
                    # retrieve externally dependent data
                    k <- match(names(el)[1], tolower(names(modelIn)))[1]
                    if(modelIn[[k]]$type == "daterange"){
+                     rv[["in_" %+% k]]
                      switch(el[["$operator"]],
                             count = {
                               dateRange <- input[[paste0("daterange_", k)]]

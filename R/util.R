@@ -58,7 +58,7 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
   # string with model name or error  in case no model name could be retrieved
   
   errMsg <- "Model path could not be retrieved."
-  if(isShinyProxy){
+  if(isShinyProxy || identical(Sys.getenv("SHINYTEST"), "yes")){
     # shiny proxy mode
     if(is.null(envVarPath)){
       if(is.null(modelPath)){

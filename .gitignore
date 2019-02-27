@@ -27,3 +27,6 @@ model/**/*.miroconf
 model/**/*.bat
 model/**/*.gdx
 model/**/runapp.R
+tests/*_kport.R
+tests/*_transport*.R
+tests/*_pickstock*.R

@@ -128,7 +128,7 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE
     ),
     tags$div(class = "small-space"),
     tags$div(style = "text-align: center;",
-             HTML(paste0('<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
+             HTML(paste0('<button type="button" id="btLoadScenConfirm2" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
 onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">', lang$nav$dialogLoadScen$okButton, '</button>'))
     )
   )

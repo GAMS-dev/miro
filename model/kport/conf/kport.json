@@ -8,7 +8,7 @@
           "choices": ["$s$", "_"]
        },
        "WHRS": {
-         "label": "Select period length",
+         "label": "Select period length [h]",
          "min": 1,
          "max": 672,
          "default": 168,
@@ -17,7 +17,7 @@
          "widgetType": "slider"
        },
        "CSTI": {
-         "label": "Select depreciation cost",
+         "label": "Select depreciation cost [k€]",
          "min": 0.01,
          "max": 2.5,
          "default": 0.97,
@@ -26,7 +26,7 @@
          "widgetType": "slider"
        },
        "CSTF": {
-         "label": "Select fixed cost",
+         "label": "Select fixed cost [k€]",
          "min": 1.5,
          "max": 5,
          "default": 2.45,
