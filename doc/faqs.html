@@ -157,8 +157,7 @@
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
-                                          In MIRO, both the log and the lst file of the current GAMS model run are displayed. All information about infeasibility and unboundedness is displayed here.
-If a model is not feasible, MIRO interprets this as an error-free run and the view changes to the output screen. If the GAMS model is aborted instead for any reason, this will also result in an abort in MIRO. A corresponding message is displayed in MIRO and no output is displayed.
+                                          In GAMS MIRO both the log and the lst file of the current GAMS model run are displayed. Any information about infeasibilities and unboundness is also visible here. Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
                                             </div>
                                     </div><!--//section-block-->
                                 </div><!--//section-block-->
