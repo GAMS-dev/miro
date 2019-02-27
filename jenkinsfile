@@ -18,7 +18,7 @@ pipeline {
                                 echo "Do the linux packaging stuff here."
                             '''
                         }
-                },
+                }
                 stage ('windowsX64') {
                     agent { label 'windowsX64' }
                     steps {
@@ -43,7 +43,7 @@ pipeline {
                         }
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
                     }
-                },
+                }
                 stage ('macos') {
                     agent { label 'macos' }
                     steps {
