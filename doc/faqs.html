@@ -157,8 +157,7 @@
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
-                                          In MIRO, both the log and the lst file of the current GAMS model run are displayed. All information about infeasibility and unboundedness is displayed here.
-If a model is not feasible, MIRO interprets this as an error-free run and the view changes to the output screen. If the GAMS model is aborted instead for any reason, this will also result in an abort in MIRO. A corresponding message is displayed in MIRO and no output is displayed.
+                                          In GAMS MIRO both the log and the lst file of the current GAMS model run are displayed. Any information about infeasibilities and unboundness is also visible here. Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
                                             </div>
                                     </div><!--//section-block-->
                                 </div><!--//section-block-->
@@ -168,7 +167,7 @@ If a model is not feasible, MIRO interprets this as an error-free run and the vi
                             <section id="files" class="doc-section">
                                 <h2 class="section-title">GAMS MIRO related files</h2>
                                 <div id="file-io" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;_io.json</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;_io.json</h3>
                                     <div class="answer">
                                         <p>The <i>&lt;modelname&gt;_io.json</i> file, for example <i>transport_io.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the metadata of all input and output symbols defined between the <code class="language-gams">$onExternalInput
                                     </code> / <code class="language-gams">$offExternalInput
@@ -178,7 +177,7 @@ If a model is not feasible, MIRO interprets this as an error-free run and the vi
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-config" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.json</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.json</h3>
                                     <div class="answer">
                                         <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
                                         This file has to be filled manually by the user.
@@ -186,31 +185,31 @@ If a model is not feasible, MIRO interprets this as an error-free run and the vi
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-xlsx" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.xlsx</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.xlsx</h3>
                                     <div class="answer">
                                         <p>Every time you start a MIRO app via GAMS Studio or the command line, a &lt;modelname&gt;.xlsx spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model and can be used to initially load data into GAMS MIRO. It is produced without the requirement of having Excel installed. </p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-mirogms" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;_miro.gms</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;_miro.gms</h3>
                                     <div class="answer">
                                         <p>This file is generated when starting a MIRO app in development mode. It contains configuration data and should not be changed. </p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-appR" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>runapp.R</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> runapp.R</h3>
                                     <div class="answer">
                                         <p>This file is also generated when starting a MIRO app in development mode. It contains information for the startup of a MIRO app and should not be changed.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-miroconf" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.miroconf / &lt;modelname&gt;_hcube.miroconf</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.miroconf / &lt;modelname&gt;_hcube.miroconf</h3>
                                     <div class="answer">
                                         <p>These files are generated when starting a MIRO app in development mode. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a fast startup of MIRO. Learn more <a href="./customize.html#development-mode">here</a>.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-executable" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i>&lt;modelname&gt;.cmd / &lt;modelname&gt;.app</h3>
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.cmd / &lt;modelname&gt;.app</h3>
                                     <div class="answer">
                                         <p>An app of a GAMS model can be started via command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is the possibility to create an executable file for a GAMS MIRO app.
                                         By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which can execute the app. Learn more <a href="./model.html#create-app-executable">here</a>.</p>

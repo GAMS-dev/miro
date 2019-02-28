@@ -43,7 +43,6 @@ For a running application you need R (v. 3.5.1 or later) with the following pack
 * DBI
 * RSQLite
 * openssl
-* DT
 
 To start the application, run the following command from an R console:
 ```
