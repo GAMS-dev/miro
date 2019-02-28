@@ -555,7 +555,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     isInSolveMode      <- TRUE
     
     # currently active scenario (R6 object)
-    activeScen       <- NULL
+    activeScen         <- NULL
     
     if(config$activateModules$scenario){
       scenMetaData     <- list()

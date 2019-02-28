@@ -5,7 +5,12 @@ function changeTab(object, idActive, idRefer) {
   tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
   tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
 }
-
+function showNewNameBaseDialog(){
+  $("#base-overwrite-container").hide();
+  $("#loadBase_snameExistsMsg").hide();
+  $("#loadBase_newName").show();
+  $("#btCheckSnameBase").show();
+}
 function isInputEl(id) {
   if ($(id).parents(".form-group").length) {
     return true;
@@ -133,14 +138,20 @@ function renderMathJax() {
 }
 
 function validateSname(el) {
-  if (/^[a-f0-9]{64}$/i.test($(el).value) !== true && /^\s*$/.test($(el).value) !== true) {
+  var inputID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "btCheckSnameLocalConfirm";
+  if (/^[a-f0-9]{64}$/i.test($(el).val()) !== true && /^\s*$/.test($(el).val()) !== true) {
     $(el).removeClass('invalidInput');
-    Shiny.setInputValue("btCheckSnameLocalConfirm", 1, {
-      priority: "event"
-    });
-    return;
+    if(inputID === "internal"){
+      return true;
+    }else{
+      Shiny.setInputValue(inputID, 1, {
+        priority: "event"
+      });
+      return;
+    }
   } else {
     $(el).addClass('invalidInput');
+    return false;
   }
 }
 
@@ -148,6 +159,9 @@ function validateHcubeHash() {
   var hashVal = $('#hcHashLookup').val();
 
   if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
+    if(!validateSname("#hcube_newScenName", "internal")){
+      return;
+    }
     $('#hcHashLookup').removeClass('invalidInput');
     Shiny.setInputValue("hcHashLookup", hashVal, {
       priority: "event"
@@ -159,6 +173,9 @@ function validateHcubeHash() {
 }
 
 function hcHashImport(sid) {
+  if(!validateSname("#hcube_newScenName", "internal")){
+    return;
+  }
   Shiny.setInputValue("loadHcubeHashSid", sid, {
     priority: "event"
   });

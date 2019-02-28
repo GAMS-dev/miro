@@ -1199,7 +1199,7 @@ Db <- R6Class("Db",
                 },
                 finalize = function(){
                   DBI::dbDisconnect(private$conn)
-                  flog.info("Db: Database connection ended as Db object was gced.")
+                  flog.debug("Db: Database connection ended as Db object was gced.")
                 }
               ),
               active = list(

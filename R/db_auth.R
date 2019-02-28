@@ -215,10 +215,22 @@ Auth <- R6Class("Auth",
                                           dbQuoteIdentifier(private$conn, keyCol))
                       }
                       tryCatch({
-                        sql     <- paste0("SELECT * FROM ", dbQuoteIdentifier(private$conn, tableName), joinSQL, " WHERE ", 
-                                          dbQuoteIdentifier(private$conn, tableName), ".",
-                                          dbQuoteIdentifier(private$conn, accessIdentifier), " IN (", 
-                                          SQL(paste(dbQuoteString(private$conn, private$accessGroups), collapse = ", ")), ") LIMIT ?lim ;")
+                        query   <- paste0("SELECT * FROM ", dbQuoteIdentifier(private$conn, tableName), 
+                                          joinSQL, " LIMIT 1;")
+                        dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
+                        if(!length(dataset)){
+                          return(tibble())
+                        }
+                        subsetClause <- ""
+                        if(accessIdentifier %in% names(dataset)){
+                          subsetClause <- paste0(" WHERE ", 
+                                                 dbQuoteIdentifier(private$conn, tableName), ".",
+                                                 dbQuoteIdentifier(private$conn, accessIdentifier), " IN (", 
+                                                 SQL(paste(dbQuoteString(private$conn, private$accessGroups), 
+                                                           collapse = ", ")), ")")
+                        }
+                        sql     <- paste0("SELECT * FROM ", dbQuoteIdentifier(private$conn, tableName), 
+                                          joinSQL, subsetClause, " LIMIT ?lim ;")
                         query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                         dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
                       }, error = function(e){

@@ -125,8 +125,8 @@
                 "lastdaytraining"
             ],
             "symtext": [
-                "Absoulte error in entire training phase",
-                "Absoulte error in entire testing phase",
+                "Absolute error in entire training phase",
+                "Absolute error in entire testing phase",
                 "Ratio between error test and error train",
                 "last date of training period"
             ],

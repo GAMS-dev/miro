@@ -1,5 +1,5 @@
 {
-    "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
+    "pageTitle": "A Transportation Problem with multiple version LP/MIP/MINLP",
     "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",

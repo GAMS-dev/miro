@@ -5,7 +5,7 @@
     "csvDelim": ",",
     "gamsInputFiles": {
         "rdata": {
-            "alias": "Reactor data",
+            "alias": "Reactor data \ud83d\ude00\u2ee9",
             "headers": {
                 "rr": {
                     "type": "set",
@@ -58,8 +58,8 @@
             "symtext": [
                 "Active scenario",
                 "Length of considered period [hours]",
-                "Depreciation cost per m^3 reactor and period [kEuro]",
-                "Fixed cost per week and reactor [kEuro]",
+                "Depreciation cost per m^3 reactor and period [k\u20ac]",
+                "Fixed cost per week and reactor [k\u20ac]",
                 "Economies of scale factor"
             ],
             "symtypes": [

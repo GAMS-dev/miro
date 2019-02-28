@@ -1,5 +1,5 @@
 {
-    "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
+    "pageTitle": "A Transportation Problem with multiple version LP/MIP/MINLP",
     "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
@@ -31,7 +31,7 @@
             }
         },
         "d": {
-            "alias": "distance in thousands of miles",
+            "alias": "distance in thousands of miles \u20ac\u20ac",
             "headers": {
                 "i": {
                     "type": "set",
@@ -43,7 +43,7 @@
                 },
                 "value": {
                     "type": "parameter",
-                    "alias": "distance in thousands of miles"
+                    "alias": "distance in thousands of miles \u20ac\u20ac"
                 }
             }
         },
@@ -54,13 +54,13 @@
                     "type": "set",
                     "alias": "canning plants"
                 },
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "value": {
+                "lat": {
                     "type": "parameter",
-                    "alias": "Plant location information"
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
                 }
             }
         },
@@ -71,13 +71,13 @@
                     "type": "set",
                     "alias": "markets"
                 },
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "value": {
+                "lat": {
                     "type": "parameter",
-                    "alias": "Market location information"
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
                 }
             }
         },
@@ -89,7 +89,7 @@
                 "beta"
             ],
             "symtext": [
-                "freight in dollars per case per thousand miles",
+                "freight in dollars per case per thousand miles \u20ac\u20ac",
                 "minimum shipment (MIP- and MINLP-only)",
                 "beta (MINLP-only)"
             ],

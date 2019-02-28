@@ -536,6 +536,16 @@ Scenario <- R6Class("Scenario",
                             if(length(traceData) && nrow(traceData)){
                               private$traceData <- traceData[-1]
                             }
+                            existingSids <- self$importDataset(private$tableNameMetadata, 
+                                                               colNames = private$scenMetaColnames['sid'],
+                                                               tibble(c(private$scenMetaColnames['uid'],
+                                                                        private$scenMetaColnames['sname'],
+                                                                        private$scenMetaColnames['scode']),
+                                                                      c(private$suid, private$sname,
+                                                                        private$scode)))[[1]]
+                            if(length(existingSids) > 0L){
+                              private$sid <- existingSids[1L]
+                            }
                             private$writeMetadata()
                           }else{
                             private$suid      <- metadata[[private$scenMetaColnames['uid']]][1]
@@ -565,10 +575,7 @@ Scenario <- R6Class("Scenario",
                           private$sname     <- sname
                           private$stime     <- Sys.time()
                           sidTmp            <- as.integer(metadata[[private$scenMetaColnames['sid']]][!scenFromOtherMode])
-                          if(length(sidTmp) > 1){
-                            stop(sprintf("Scenario: '%s' exists more than one time in database! Please choose unique names (Scen.fetchMetadata)!", 
-                                         sname), call. = FALSE)
-                          }
+                          
                           private$sid       <- sidTmp
                           if(length(private$traceData) && nrow(private$traceData)){
                             self$saveTraceData(private$traceData)
@@ -655,7 +662,8 @@ Scenario <- R6Class("Scenario",
                         flog.debug("Db: Metadata (table: '%s') was added for scenario: '%s' (Scenario.writeMetadata).", 
                                    private$tableNameMetadata, private$sname)
                         if(!length(private$sid))
-                          private$fetchMetadata(sname = private$sname, uid = private$suid)
+                          private$fetchMetadata(sname = private$sname, 
+                                                uid = private$suid)
                         invisible(self)
                       },
                       lock = function(){
