@@ -77,11 +77,12 @@ def extractSymText(sym,level):
       text = text[uii:]
    elif text.startswith(output_tag):
       text = text[uio:]
-   if(len(text) == 0):
-      text = sym.name
    if level>0:
       text = text.replace(pivot_marker, '')
-   return text.strip().encode('utf-8', 'replace').decode('utf-8')
+   text = text.strip().encode('utf-8', 'replace').decode('utf-8')
+   if(len(text) == 0):
+      text = sym.name
+   return text
 
 # Iterate through all symbols
 for sym in db:
@@ -544,7 +545,7 @@ $endif.mk
 $ifthen dExist "%gams.sysdir%miro"
 $  set MIRODIR "%gams.sysdir%miro"
 $else
-$  set MIRODIR %fp%..%system.dirsep%..
+$  set MIRODIR "%fp%..%system.dirsep%.."
 $endif
 
 $onEmbeddedCode Python:
