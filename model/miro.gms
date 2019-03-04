@@ -752,6 +752,6 @@ $ifthen not errorfree
 $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif
-$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -gamsSysDir="%gams.sysdir%" -modelPath="%fp%%fn%%fe%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
