@@ -22,7 +22,7 @@ Simply pull the repository. Some example models that help you getting started ca
 
 ## Getting started
 
-For a running application you need R (v. 3.5.1 or later) with the following packages installed:
+In order to launch GAMS MIRO you need R (v. 3.5.1 or later) with the following packages installed:
 
 * shiny
 * shinydashboard
