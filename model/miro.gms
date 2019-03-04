@@ -541,8 +541,8 @@ $   set mkApp 0
 $else.mk
 $   set mkApp 1
 $endif.mk
-$ifthen dExist %gams.sysdir%miro
-$  set MIRODIR %gams.sysdir%miro
+$ifthen dExist "%gams.sysdir%miro"
+$  set MIRODIR "%gams.sysdir%miro"
 $else
 $  set MIRODIR %fp%..%system.dirsep%..
 $endif
