@@ -5,6 +5,7 @@ GAMS MIRO includes other open source software components. The following
 is a list of these components (full copies of the license agreements used by
 these components are included below):
 
+- R, https://www.r-project.org
 - jQuery, https://github.com/jquery/jquery
 - jQuery UI (some components), https://github.com/jquery/jquery-ui
 - Bootstrap, https://github.com/twbs/bootstrap
@@ -1957,6 +1958,32 @@ Public License instead of this License.
         - progress, Copyright (c) 2015-2018 Gábor Csárdi, RStudio Inc.
         - rematch, Copyright (c) 2016 Mango Solutions
         - prettyunits, Copyright (c) 2014 Gabor Csardi
+        - geocoder, Copyright (c) 2013-15 Denis Carriere
+        - geopy, Copyright (c) 2006-2018 geopy Adam Tygart <mozes@ksu.edu>, Adrián López <alopez@smartvel.com> ,Afonso Queiros <afonso.queiros@deliveryhero.com> ,Albina <aalmukhametova@gmail.com> ,Alessandro Pasotti <apasotti@gmail.com> ,Andrea Tosatto <andrea.tosy@gmail.com>
+                                                 ,Ann Paul <ann@coffeemeetsbagel.com> ,Antonis Kanouras <antonis@metadosis.eu>
+                                                 ,Arsen Mamikonyan <arsen@locu.com> ,Arsen Mamikonyan <arsen@mamikonyan.am> ,Arthur Pemberton <pembo13@gmail.com> ,Artur <atnartur@users.noreply.github.com>
+                                                 ,avdd <Adrian Dries avdd@modernnoise.com> ,Benjamin Henne <henne@dcsec.uni-hannover.de> ,Benjamin Trigona-Harany <bosth@alumni.sfu.ca> ,Benjamin Trigona-Harany <bosth@boundlessgeo.com>
+                                                 ,Benoit Grégoire <benoitg@coeus.ca> ,Bernd Schlapsi ,Brian Beck ,Charles Karney <charles@karney.com>
+                                                 ,crccheck <c@crccheck.com> ,Dale <dale@puredistortion.com> ,Daniel Thul <daniel.thul@gmail.com> ,Danny Finkelstein <danfinkelstein@cfl.rr.com>
+                                                 ,Dave Arter <dave@minus-zero.org> ,David Gilman <davidgilman1@gmail.com> ,deeplook <gherman@darwin.in-berlin.de> ,Demeter Sztanko <Demeter Sztanko>
+                                                 ,Dody Suria Wijaya <dodysw@gmail.com> ,dutko.adam ,Edward Betts <edward@4angle.com> ,Emile Aben <emileaben@gmail.com>
+                                                 ,Eric Palakovich Carr <carreric@gmail.com> ,exogen ,Fabien Reboia <srounet@gmail.com> ,Feanil Patel <feanil@gmail.com>
+                                                 ,gary.bernhardt ,Gregory Nicholas <nicholas.g.gregory@gmail.com> ,groovecoder <luke.crouch@gmail.com> ,Hanno Schlichting <hanno@hannosch.eu>
+                                                 ,Ian Edwards ,Ian Wilson <ian.owings@gmail.com> ,ijl <uijllji@gmail.com> ,ironfroggy@gmail.com <ironfroggy@gmail.com>
+                                                 ,Isaac Sijaranamual <isaacsijaranamual@gmail.com> ,James Maddox <jhmaddox@gmail.com> ,James Mills <j.mills@griffith.edu.au> ,jhmaddox <jhmaddox@gmail.com>
+                                                 ,Joel Natividad <jnatividad@opengov.com> ,John.L.Clark ,Jonathan Batchelor <jmb@thebatchelors.net> ,Jordan Bouvier <jbouvier@gmail.com>
+                                                 ,Jose Martin <j.martin.bejarano@gmail.com> ,jqnatividad <joel.natividad@ontodia.com> ,Karimov Dmitriy <karimov_dm@tgt72.ru> ,Kostya Esmukov <kostya@esmukov.ru>
+                                                 ,Luca Marra ,Luke Hubbard <luke@codegent.com> ,Magnus Hiie <magnus.hiie@gmail.com> ,Marc-Olivier Titeux <marcoliviertiteux@gmail.com>
+                                                 ,Marco Milanesi <kpanic@gmail.com> ,Mariana Georgieva <mariana.georgieva@valkfleet.com> ,Martin <spatialbits@posteo.net> ,Micah Cochran
+                                                 ,Michal Migurski <mike@teczno.com> ,Mike Tigas <mike@tig.as> ,Mike Toews <mwtoews@gmail.com> ,mtmail <mtmail@gmx.net>
+                                                 ,mz <mattgeoc@autistici.org> ,navidata <kontakt@navidata.pl> ,nucflash <tsagias@gmail.com> ,Oleg <izhyk.oleh@gmail.com>
+                                                 ,Oskar Hollmann <oskarhollmann@gmail.com> ,Pavel <pppessoas@gmail.com> ,Paweł Mandera <pawel.mandera@ugent.be> ,Pedro Rodrigues <medecau@gmail.com>
+                                                 ,Peter Gullekson <peter11235@gmail.com> ,Philip Kimmey <philip.kimmey@gmail.com> ,Risent Zhang <shengqi542@gmail.com> ,Rocky Meza <rocky@fusionbox.com>
+                                                 ,Ryan Nagle <rnagle@tribune.com> ,scottessner <scott.essner@gmail.com> ,Sebastian Neubauer <sebineubauer@gmail.com> ,SemiNormal <bbengels@gmail.com>
+                                                 ,Serphentas ,svalee <triksrimer@gmail.com> ,Svetlana Konovalova ,Sébastien Barré <sheub@users.noreply.github.com>
+                                                 ,Thomas <thomas_gratier@yahoo.fr> ,Tom Wallroth <tomwallroth@gmail.com> ,tony <jinzc1@lenovo.com> ,tristan <tristanhomsi@gmail.com>
+                                                 ,Vladimir Kalinkin <vova.kalinkin@gmail.com> ,William Hammond <william.t.hammond@gmail.com> ,willr <willr@plotwatt.com> ,Yorick Holkamp <github@nextpulse.nl>
+                                                 
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
 
@@ -1997,6 +2024,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -----------------------------------------------------------------------------
             The “GNU Lesser General Public License” version 3 (LGPL-3)
         applies to: 
+        - R, Copyright (C) 2018 The R Foundation for Statistical Computing
         - futile.logger, Copyright (c) Brian Lee Yung Rowe
         - lambda.r, Copyright (c) Brian Lee Yung Rowe
         - futile.options, Copyright (c) Brian Lee Yung Rowe
@@ -2991,6 +3019,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         - yaml, Copyright (C) 2008-2018 
             COPYRIGHT HOLDER: Vanderbilt University Medical Center
             ORGANIZATION: Vanderbilt University Medical Center
+        - pandas, Copyright (c) 2008-2012, AQR Capital Management, LLC, Lambda Foundry, Inc. and PyData Development Team
+        - pandas_datareader, Copyright (c) 2011-2012, Lambda Foundry, Inc. and PyData Development Team All rights reserved.
+                             Copyright (c) 2008-2011 AQR Capital Management, LLC All rights reserved.
+        
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
@@ -3018,6 +3050,29 @@ OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
 WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-----------------------------------------------------------------------------
+            PIL Software License
+        applies to: 
+        - Pillow, Copyright (c) Secret Labs AB, Fredrik Lundh, Alex Clark
+-----------------------------------------------------------------------------
+
+The Python Imaging Library (PIL) is
+
+    Copyright © 1997-2011 by Secret Labs AB
+    Copyright © 1995-2011 by Fredrik Lundh
+
+Pillow is the friendly PIL fork. It is
+
+    Copyright © 2010-2019 by Alex Clark and contributors
+
+Like PIL, Pillow is licensed under the open source PIL Software License:
+
+By obtaining, using, and/or copying this software and/or its associated documentation, you agree that you have read, understood, and will comply with the following terms and conditions:
+
+Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or the author not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
+
+SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 -----------------------------------------------------------------------------
             The “BSL-1.0 License"
