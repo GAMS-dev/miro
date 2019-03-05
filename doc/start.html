@@ -79,7 +79,7 @@
                                     </div><!--//callout-block-->
                                     <p>The following demos are available:</p>
                                     <ul>
-                                    <li>transport</li>
+                                    <li>transport<br>
                                     This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -89,15 +89,17 @@
                                             <b class="callout-title">Note:</b>
                                             <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
                                         </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <li>transport_live</li>
+                                    </div><!--//callout-block--></li>
+                                    <li>transport_live<br>
                                     A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
-                                    <li>pickstock</li>
-                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.
-                                    <li>pickstock_live</li>
+                                    <br>This model needs an internet connection.</li>
+                                    <li>pickstock<br>
+                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.</li>
+                                    <li>pickstock_live<br>
                                     A "live" version of the pickstock model where the user can specify the time window to be considered regarding the stock prices. This allows to include current Dow Jones stock prices as well as ones from past periods.
-                                    <li>kport</li>
-                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
+                                    <br>This model needs an internet connection.</li>
+                                    <li>kport<br>
+                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
                                     </ul>
                                     To start a demo application, you need to run the corresponding GAMS model with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
