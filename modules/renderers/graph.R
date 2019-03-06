@@ -29,54 +29,77 @@ renderGraph <- function(data, configData, options, height = NULL){
           p <<- add_trace(p, y = ~try(get(options$ydata[[j]]$values)), name = options$ydata[[j]]$labels)
         }
       })
-      p <- layout(p,title=options$title, barmode=options$barmode,
-                  xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
-                  yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels))
     }else if(options$type=='scatter'){
       # scatter plot
       p <- NULL
       lapply(seq_along(options$ydata), function(j){
         if(j==1){
-          p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), name = options$ydata[[1]]$label, 
-                        mode = options$ydata[[1]]$mode, marker=list(size = options$ydata[[1]]$marker$size,
-                                                                    color = options$ydata[[1]]$marker$color,
-                                                                    line = list(color = options$ydata[[1]]$marker$line$color,
-                                                                                width = options$ydata[[1]]$marker$line$width)),
-                        color = if(!is.null(options$color)){~try(get(options$color))}, symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
-                        colors = options$colors, symbols = options$symbols, size = options$ydata[[1]]$size, type = 'scatter', height = height)
+          p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
+                        name = options$ydata[[1]]$label, 
+                        mode = options$ydata[[1]]$mode, 
+                        marker = list(symbol = options$ydata[[1]]$marker$symbol,
+                                    opacity = options$ydata[[1]]$marker$opacity,
+                                    size = options$ydata[[1]]$marker$size,
+                                    color = options$ydata[[1]]$marker$color,
+                                    line = list(color = options$ydata[[1]]$marker$line$color,
+                                                width = options$ydata[[1]]$marker$line$width)),
+                        line = list(color = options$ydata[[1]]$line$color,
+                                    width = options$ydata[[1]]$line$width,
+                                    shape = options$ydata[[1]]$line$shape,
+                                    dash = options$ydata[[1]]$line$dash),
+                        color = if(!is.null(options$color)){~try(get(options$color))}, 
+                        symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
+                        colors = options$colors, symbols = options$symbols, 
+                        size = options$ydata[[1]]$size, type = 'scatter', height = height)
         }else{
-          p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, mode = options$ydata[[j]]$mode, 
-                          marker = list(size = options$ydata[[j]]$marker$size,color = options$ydata[[j]]$marker$color,
+          p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
+                          mode = options$ydata[[j]]$mode, 
+                          marker = list(symbol = options$ydata[[j]]$marker$symbol,
+                                        opacity = options$ydata[[j]]$marker$opacity,
+                                        size = options$ydata[[j]]$marker$size,
+                                        color = options$ydata[[j]]$marker$color,
                                         line = list(color = options$ydata[[j]]$marker$line$color, 
                                                     width = options$ydata[[j]]$marker$line$width)),
+                          line = list(color = options$ydata[[j]]$line$color, 
+                                      width = options$ydata[[j]]$line$width,
+                                      shape = options$ydata[[j]]$line$shape,
+                                      dash = options$ydata[[j]]$line$dash),
                           color = if(!is.null(options$ydata[[j]]$color)){~try(get(options$ydata[[j]]$color))}, 
-                          symbol= if(!is.null(options$ydata[[j]]$symbol)){~try(get(options$ydata[[j]]$symbol))}, colors = options$ydata[[j]]$colors,
+                          symbol= if(!is.null(options$ydata[[j]]$symbol)){~try(get(options$ydata[[j]]$symbol))}, 
+                          colors = options$ydata[[j]]$colors,
                           symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size)
         }
       })
-      p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
-                  xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
-                  yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels))
     }else if(options$type == 'hist'){
       # histogram
       #first calculate the width of the bins
-      minx <- min(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = T)
-      maxx <- max(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = T)
+      minx <- min(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = TRUE)
+      maxx <- max(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = TRUE)
       p <- NULL
       lapply(seq_along(options$xdata), function(j){
         if(j==1){
-          p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, autobinx = if(is.null(options$nbins)) T else F, 
-                        xbins = list(start = minx, end = maxx, size = (maxx-minx)/options$nbins))
-          p <<- add_histogram(p, x = ~try(get(names(options$xdata)[[j]])), name = options$xdata[[j]]$labels, marker = list(color = toRGB(options$xdata[[j]]$color, options$xdata[[j]]$alpha)))
+          p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
+                        autobinx = if(is.null(options$nbins)) TRUE else FALSE, 
+                        xbins = list(start = minx, end = maxx, size = (maxx-minx)/options$nbins)) %>%
+                add_histogram(x = ~try(get(names(options$xdata)[[j]])), 
+                              name = options$xdata[[j]]$labels, 
+                              marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                          options$xdata[[j]]$alpha)))
         }else{
-          p <<- add_histogram(p, x = ~try(get(names(options$xdata)[[j]])), name = options$xdata[[j]]$labels, marker = list(color = toRGB(options$xdata[[j]]$color, options$xdata[[j]]$alpha)))
+          p <<- add_histogram(p, x = ~try(get(names(options$xdata)[[j]])), 
+                              name = options$xdata[[j]]$labels, 
+                              marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                          options$xdata[[j]]$alpha)))
         }
       })
-      p <- layout(p, title = options$title, barmode = options$barmode, xaxis = list(title = options$xaxis$title), yaxis = list(title = options$yaxis$title))
     }else{
       stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
     }
-    
+    p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
+                xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, 
+                             zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
+                yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
+                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels))
     return(renderPlotly(p))
     
   }else if(options$tool == 'dygraphs'){
@@ -92,13 +115,27 @@ renderGraph <- function(data, configData, options, height = NULL){
           value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
           xts_data <- spread(data, key, value)
-          xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
-          if(!length(xtsIdx)){
-            stop("No date column could be found in the dataset. If you want to use dygraphs make sure you have a date column.", call. = FALSE)
+          if(length(options$xdata)){
+            xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
+            if(is.na(xtsIdx))
+              stop(sprintf("Could not find x data column: '%s'.", options$xdata))
+            xts_idx <- NULL
+            tryCatch({
+              xts_idx  <- as.Date(xts_data[[xtsIdx]])
+              xts_data <- xts_data[, -c(xtsIdx)]
+              xts_data <- xts(xts_data, order.by = xts_idx)
+            }, error = function(e){
+              xts_data <<- xts_data %>% select(!!sym(colnames(data)[xtsIdx]), everything())
+            })
+          }else{
+            xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
+            if(length(xtsIdx)){
+            }else{
+              xts_idx  <- as.Date(xts_data[[xtsIdx]])
+              xts_data <- xts_data[, -c(xtsIdx)]
+              xts_data <- xts(xts_data, order.by = xts_idx)
+            }
           }
-          xts_idx  <- as.Date(xts_data[[xtsIdx]])
-          xts_data <- xts_data[, -c(xtsIdx)]
-          xts_data <- xts(xts_data, order.by = xts_idx)
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
                         elementId = NULL)
@@ -108,14 +145,14 @@ renderGraph <- function(data, configData, options, height = NULL){
           row.names(xts_data) <- as.character(data[[1]])
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, 
-                         color = options$ydata[[j]]$color, axis = "y",
-                         stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, 
-                         fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                         pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, 
-                         strokePattern = options$ydata[[j]]$strokePattern,
-                         strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, 
-                         strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
+          p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
+                         color = options$ydata[[1]]$color, axis = "y",
+                         stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
+                         fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
+                         pointSize = options$ydata[[1]]$pointSize, strokeWidth = options$ydata[[1]]$strokeWidth, 
+                         strokePattern = options$ydata[[1]]$strokePattern,
+                         strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
+                         strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
           }
         
       }else{
@@ -133,6 +170,14 @@ renderGraph <- function(data, configData, options, height = NULL){
     if(!is.null (options$dylegend)){
       p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
     }
+    # add shading to dygraph
+    if(!is.null (options$dyShading)){
+      p <- do.call(dyShading, c(list(dygraph = p), options$dyShading))
+    }
+    # add horizontal limit line
+    if(!is.null (options$dyLimit)){
+      p <- do.call(dyLimit, c(list(dygraph = p), options$dyLimit))
+    }
     # highlighting options - highlight hovered series
     if(!is.null (options$dyHighlight)){
       p <- do.call(dyHighlight, c(list(dygraph = p), options$dyHighlight))
@@ -144,6 +189,9 @@ renderGraph <- function(data, configData, options, height = NULL){
     # Candlestick charts: use the first four data series to plot, the rest of the data series (if any) are rendered with line plotter.
     if(!is.null (options$dyCandlestick)){
       p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
+    }
+    if(!is.null (options$dyAxis)){
+      p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
     }
     # Event lines to note points within a time series. 
     if(!is.null (options$dyEvent)){

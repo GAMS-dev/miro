@@ -971,10 +971,10 @@ if(is.null(errMsg)){
                                   logical(1L), USE.NAMES = FALSE))
   installPackage$plotly <- any(vapply(c(configGraphsIn, configGraphsOut), 
                                       function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
-                                      logical(1L), USE.NAMES = FALSE))
+                                      logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
   installPackage$dygraphs <- any(vapply(c(configGraphsIn, configGraphsOut), 
                                         function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
-                                        logical(1L), USE.NAMES = FALSE))
+                                        logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,

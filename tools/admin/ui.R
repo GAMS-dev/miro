@@ -14,6 +14,7 @@ header_admin <- dashboardHeader(
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
  #             menuItem("Configuration generator", tabName="config_gen", icon = icon("gear")),
+ menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
               menuItem("Database management", tabName="db_management", icon = icon("database"))
   )
 )
@@ -27,6 +28,7 @@ body_admin <- dashboardBody({
 #      tags$link(type = "text/css", rel = "stylesheet", href = "admin/alpaca.min.css"),
       tags$script(src = "mirosc.js", type = "application/javascript"),
       tags$script(src = "miro.js", type = "application/javascript"),
+      tags$script(src = "admin/miro_admin.js", type = "application/javascript"),
 #      tags$script(src = "admin/spectrum.js", type = "application/javascript"),
 #      tags$script(src = "admin/moment.min.js", type = "application/javascript"),
 #      tags$script(src = "admin/bootstrap-datetimepicker.min.js", type = "application/javascript"),
@@ -96,7 +98,52 @@ body_admin <- dashboardBody({
                     )
                 )
               )
-      )#,
+      ),
+      tabItem(tabName = "new_graph",
+              fluidRow(
+                box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
+                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+                    tags$div(class = "space"),
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                      fileInput("localInput", "Upload an Excel spreadsheet with data that will be used for preview purposes",
+                                                width = "100%",
+                                                multiple = FALSE,
+                                                accept = c("application/vnd.ms-excel", 
+                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                                                           ".xlsx")),
+                                      tags$div(id = "preview_wrapper", style = "display:none;",
+                                               selectInput("gams_symbols", "Select which GAMS symbol to plot",
+                                                           choices = NULL),
+                                               textInput("chart_title", "Choose a title for your chart"),
+                                               selectInput("chart_tool", "Select the charting tool you want to use", 
+                                                           c("plotly", "dygraphs")),
+                                               tags$div(id = "tool_options"),
+                                               tags$div(style = "height:100px;")
+                                      )
+                                      )
+                    ),
+                    tags$div(class = "col-sm-6", style = "text-align:right;",
+                             tags$div(id = "preview-error", class = "err-msg",
+                                      textOutput("preview-errmsg")),
+                             tags$div(id = "preview-content-plotly", 
+                                      renderDataUI("preview_output_plotly", type = "graph", 
+                                                   graphTool = "plotly", 
+                                                   height = 400, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-content-dygraph", style = "display:none;",
+                                      renderDataUI("preview_output_dygraph", type = "graph", 
+                                                   graphTool = "dygraphs", 
+                                                   height = 400, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
+                                      actionButton("saveJSON", "Save", icon("save")))
+                    )
+                )
+              )
+      )
+      #,
      #  tabItem(tabName = "config_gen",
      #          fluidRow(
      #            box(title = "Configuration generator", status="primary", solidHeader = TRUE, width = 12,
