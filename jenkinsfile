@@ -40,12 +40,12 @@ pipeline {
                                 windows_x64_64.exe /sp- /silent /dir=%WORKSPACE%\\installer\\win\\innofiles /MERGETASKS='!desktopicon'
                                 rem Cleanup installation
                                 cd %WORKSPACE%\\installer\\win\\innofiles
-                                rm -f .uninstinfo.ini unins000.dat unins000.exe gamside.url
+                                gbin\\rm -f .uninstinfo.ini unins000.dat unins000.exe gamside.url
 
                                 rem R installation
-                                cp %WORKSPACE%\\installer\\win\\GMSR.zip %WORKSPACE%\\installer\\win\\innofiles
+                                gbin\\cp %WORKSPACE%\\installer\\win\\GMSR.zip %WORKSPACE%\\installer\\win\\innofiles
                                 gmsunzip -qq -o GMSR.zip
-                                rm -f GMSR.zip
+                                gbin\\rm -f GMSR.zip
 
                                 rem Python modules
                                 cd %WORKSPACE%\\installer\\win\\innofiles\\GMSPython\\Scripts
@@ -56,47 +56,47 @@ pipeline {
                                 copy /Y %WORKSPACE%\\model\\miro.gms inclib
 
                                 mkdir miro
-                                rm -rf miro\\*
-                                cp -r %WORKSPACE%\\JS miro
-                                cp -r %WORKSPACE%\\R miro
-                                cp -r %WORKSPACE%\\UI miro
-                                cp -r %WORKSPACE%\\conf miro
-                                cp -r %WORKSPACE%\\modules miro
-                                cp -r %WORKSPACE%\\resources miro
-                                cp -r %WORKSPACE%\\tools miro
-                                cp -r %WORKSPACE%\\www miro
-                                cp    %WORKSPACE%\\LICENSE miro
-                                cp    %WORKSPACE%\\app.R miro
-                                cp    %WORKSPACE%\\global.R miro
+                                gbin\\rm -rf miro\\*
+                                gbin\\cp -r %WORKSPACE%\\JS miro
+                                gbin\\cp -r %WORKSPACE%\\R miro
+                                gbin\\cp -r %WORKSPACE%\\UI miro
+                                gbin\\cp -r %WORKSPACE%\\conf miro
+                                gbin\\cp -r %WORKSPACE%\\modules miro
+                                gbin\\cp -r %WORKSPACE%\\resources miro
+                                gbin\\cp -r %WORKSPACE%\\tools miro
+                                gbin\\cp -r %WORKSPACE%\\www miro
+                                gbin\\cp    %WORKSPACE%\\LICENSE miro
+                                gbin\\cp    %WORKSPACE%\\app.R miro
+                                gbin\\cp    %WORKSPACE%\\global.R miro
 
                                 rem APILIB Example models
                                 cd %WORKSPACE%\\model\\kport
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r kport_conf.zip conf\\kport.json static customRenderer
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp kport_conf.zip kport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f kport_conf.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp kport_conf.zip kport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f kport_conf.zip
 
                                 cd %WORKSPACE%\\model\\pickstock
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r pickstock_conf.zip conf\\pickstock.json static customRenderer
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp pickstock_conf.zip pickstock.gms dowjones2016.csv %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f pickstock_conf.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp pickstock_conf.zip pickstock.gms dowjones2016.csv %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f pickstock_conf.zip
 
                                 cd %WORKSPACE%\\model\\pickstock_live
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r pickstock_live_conf.zip conf\\pickstock_live.json static customRenderer
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp pickstock_live_conf.zip pickstock_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f pickstock_live_conf.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp pickstock_live_conf.zip pickstock_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f pickstock_live_conf.zip
 
                                 cd %WORKSPACE%\\model\\transport
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r transport_conf.zip conf\\transport.json static customRenderer
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp transport_conf.zip transport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f transport_conf.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp transport_conf.zip transport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f transport_conf.zip
 
                                 cd %WORKSPACE%\\model\\transport_live
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp transport_live_conf.zip transport_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f transport_live_conf.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp transport_live_conf.zip transport_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f transport_live_conf.zip
 
                                 cd %WORKSPACE%
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp -f mkconfig.inc datalib.glb %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp -f mkconfig.inc datalib.glb %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
 
                                 cd %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
                                 echo $include mkconfig.inc >> kport.gms
@@ -107,13 +107,13 @@ pipeline {
 
                                 rem Newer cmex
                                 cd %WORKSPACE%\\installer\\win
-                                %WORKSPACE%\\installer\\win\\innofiles\\cp GMSCMEX.zip %WORKSPACE%\\installer\\win\\innofiles
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\cp GMSCMEX.zip %WORKSPACE%\\installer\\win\\innofiles
                                 %WORKSPACE%\\installer\\win\\innofiles\\gmsunzip -o -qq GMSCMEX.zip
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -f %WORKSPACE%\\installer\\win\\innofiles\\GMSCMEX.zip
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -f %WORKSPACE%\\installer\\win\\innofiles\\GMSCMEX.zip
 
                                 cd %WORKSPACE%\\installer\\win
                                 mkdir output
-                                %WORKSPACE%\\installer\\win\\innofiles\\rm -rf output\\*
+                                %WORKSPACE%\\installer\\win\\innofiles\\gbin\\rm -rf output\\*
                                 
                                 iscc "%WORKSPACE%\\installer\\win\\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=miro04
                                 
