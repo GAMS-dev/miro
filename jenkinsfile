@@ -26,10 +26,8 @@ pipeline {
                         checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GMSR_win.zip', userName: username)])
-                        }
-                        withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
