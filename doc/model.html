@@ -74,7 +74,7 @@
                                                 <i class="fas fa-thumbs-up"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
-                                                <h4 class="callout-title">Note:</h4>
+                                                <b class="callout-title">Note:</b>
                                                 <p>A GAMS model still can be used in the normal way (via <i>GAMS Studio</i>, <i>GAMSIDE</i> or the console) after the following adjustments</p>
                                             </div><!--//content-->
                                         </div>
@@ -184,7 +184,7 @@ Positive Variable x;
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Note:</h4>
+                                              <b class="callout-title">Note:</b>
                                               <p>You can also use MIRO to set GAMS options and double dash parameters for a model run. More about this is explained <a href="#pickstock_externalinput" class="scrollto">here</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -203,7 +203,7 @@ Positive Variable x;
                                                     <i class="fas fa-info-circle"></i>
                                                 </div><!--//icon-holder-->
                                                 <div class="content">
-                                                    <h4 class="callout-title">Warning:</h4>
+                                                    <b class="callout-title">Warning:</b>
                                                     <p>If your model uses a GAMS <code class="language-gams">$call</code>, the execution phase variant <span class="code">execute</span> or any other command that is unable to understand the GAMS <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">input file directories</a>, you must pay attention to the path of the external files you include in this call: When your model is run from within MIRO, it is executed in a temporary working directory. Thus, you can not rely on relative paths you use in your model to work. For this reason, GAMS MIRO is providing you the path to your model file via the GAMS option <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means that in order to e.g. import an Excel file <span class="code">test.xlsx</span>, the GDXXRW tool needs to be called like this: <code class="language-gams">$call gdxxrw i="%gams.idir1%test.xlsx"</code>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>).</p>
                                                 </div><!--//content-->
                                             </div><!--//callout-block-->
@@ -215,7 +215,7 @@ Positive Variable x;
                                                     <i class="fas fa-info-circle"></i>
                                                 </div><!--//icon-holder-->
                                                 <div class="content">
-                                                    <h4 class="callout-title">Note:</h4>
+                                                    <b class="callout-title">Note:</b>
                                                     <p>In case you don't find an Excel file, please make sure the <span class="code">xlsxwriter</span> Python module was successfully installed (c.f. <a href="./start.html#pip_install">here</a>).</p>
                                                 </div><!--//content-->
                                             </div><!--//callout-block-->
@@ -247,7 +247,7 @@ Positive Variable x;
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>Under Windwos the standard icon for executables is used for the created file. To give it a custom look, you can create a shortcut to this file (<i>right mouse click &rarr; create shortcut</i>) and customize the icon of the shortcut (<i>right mouse click on shortcut &rarr; Properties &rarr; shortcut</i>). Under MacOS the executable is already provided with an own icon.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -336,7 +336,7 @@ $offExternalOutput
                                           <i class="fas fa-info-circle"></i>
                                       </div><!--//icon-holder-->
                                       <div class="content">
-                                          <h4 class="callout-title">Note:</h4>
+                                          <b class="callout-title">Note:</b>
                                           <p>The keyword: <span class="code">[MIRO:table]</span> is not displayed in MIRO.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
@@ -377,7 +377,7 @@ $offExternalInput
                                           <i class="fas fa-info-circle"></i>
                                       </div><!--//icon-holder-->
                                       <div class="content">
-                                          <h4 class="callout-title">Note:</h4>
+                                          <b class="callout-title">Note:</b>
                                           <p>The database schema that GAMS MIRO uses internally depends directly on the structure of your exported parameters, equations, variables, and quantities. When you save a scenario for the first time, database tables are created according to this schema. This also means that you can't easily change the structure of your exported GAMS symbols at a later stage. You may create a new version of your model (e.g. call it mycoolmodelv2.gms) or use the <a href="#database" class="scrollto">admin mode</a> to remove existing tables.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block--></li>
@@ -399,7 +399,7 @@ $offExternalInput
                                            <i class="fas fa-info-circle"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
-                                           <h4 class="callout-title">Note:</h4>
+                                           <b class="callout-title">Note:</b>
                                            <p>These restrictions only apply if the affected set acts as header for a parameter in MIRO.
                                            If a set is not used as a header, then explicit and implicit definitions as seen above are possible, see also <a href="#display-set" class="scrollto">here</a>.</p>
                                        </div><!--//content-->
@@ -422,7 +422,7 @@ $onExternalOutput
                                           <i class="fas fa-thumbs-up"></i>
                                       </div><!--//icon-holder-->
                                       <div class="content">
-                                          <h4 class="callout-title">Note:</h4>
+                                          <b class="callout-title">Note:</b>
                                           <p>Scalars and 0- or 1-dimensional singleton sets are collected in a joint table in the interface by default.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
@@ -446,7 +446,7 @@ $offExternalInput
                                                 <i class="fas fa-thumbs-up"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
-                                                <h4 class="callout-title">Tip:</h4>
+                                                <b class="callout-title">Tip:</b>
                                                 <p>In the scenario selection module of the <a href="./hypercube.html#scenario-selection">Hypercube mode</a> you can search for scalar data of a scenario, making it easy to find matching scenarios.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -531,7 +531,7 @@ $offExternalInput
                                            <i class="fas fa-info-circle"></i>
                                        </div><!--//icon-holder-->
                                        <div class="content">
-                                           <h4 class="callout-title">Note:</h4>
+                                           <b class="callout-title">Note:</b>
                                            <p>In case you saved a lot of data in your database you should use the native backup capabilities of SQLite rather than using the MIRO admin mode.</p>
                                        </div><!--//content-->
                                    </div><!--//callout-block-->

@@ -130,7 +130,7 @@
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>Input widgets you defined for your scalars in the base mode are automatically expanded in the Hypercube mode (e.g. a slider in base mode is expanded to a slider range in Hypercube mode and a single-dropdown menu is expanded to a multi-dropdown menu etc.).</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -235,14 +235,14 @@
                                                 <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
-                                                <h4 class="callout-title">Note:</h4>
+                                                <b class="callout-title">Note:</b>
                                                 <p>The maximum number of scenarios that can be submitted in one job is currently limited to 10&thinsp;000.
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <p>MIRO also looks into the database where your previous runs are stored and checks whether a subset of the scenarios you want to commit have already been saved. If it finds results from previous runs, MIRO asks if it should commit only the scenarios that have not yet been executed, or if it should submit all of them again.<br>
                                       There are a number of reasons why you might want to re-submit certain scenarios. We will elaborate on these reasons in the next section that discusses the technical details of how MIRO sets up a Hypercube job. If you are reading this documentation for the first time, you might want to skip this next (sub)section.</p>
                                       <div id="hash-generation"  class="section-block">
-                                        <h4 class="block-title">Advanced: How MIRO indentifies Hypercube jobs</h4>
+                                        <h3 class="block-title">Advanced: How MIRO indentifies Hypercube jobs</h3>
                                         <p>
                                           You might be wondering how MIRO knows whether a job has already been submitted or rather how a job is identified. Each scenario is characterized by the set of all input datasets that are populated by MIRO. This means that when you change something in your model or your execution environment that is not known to MIRO, it will not be detected as a different scenario. Let's consider the case where you want to run a certain set of scenarios on your local machine and then on a compute cluser in order to perform some performance analyses. Since all of the input datasets that come from MIRO remain the same, MIRO thinks that the scenarios are identical. No attribute "compute environment" is known to MIRO.<br>
                                           A scenario is identified by a 256-bit <a href="https://en.wikipedia.org/wiki/SHA-2" target="_blank">SHA-2</a> hash value that MIRO computes as follows:
@@ -280,7 +280,7 @@
                                         The following section deals with the automated job submission (option 1). If you choose to do this manually, please follow <a href="#scengen-manual" class="scrollto">these steps</a> before you continue reading here.
                                     </div><!--//section-block-->
                                     <div  id="scengen-import"  class="section-block">
-                                        <h4 class="block-title">Import results</h4>
+                                        <h3 class="block-title">Import results</h3>
 
                                         <p>When we submit the Hypercube job automatically, it will be executed in the background. Without going into too much detail, what happens here is simple:
                                         <br>First, a <a href="#scengen-manual" class="scrollto">Hypercube file</a> which contains all scenario configurations is created by MIRO.
@@ -389,7 +389,7 @@ idir1="..\..\transport"</span>
                                                 <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
-                                                <h4 class="callout-title">Note:</h4>
+                                                <b class="callout-title">Note:</b>
                                                 <p>Irrespective of whether the provided script or a custom method is used, the <a href="#import-rules" class="scrollto">rules</a> of how to store the results must be followed.
                                             </div><!--//content-->
                                         </div><!--//callout-block-->

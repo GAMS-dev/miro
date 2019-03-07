@@ -35,13 +35,27 @@ output[["export_" %+% i]] <- downloadHandler(
                                       scalarData[[scenIdLong]])
       }
     }
-    
-    names(data)                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
+    wsNamesTmp                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
                                                                 names(modelOut), 
                                                                 lang$nav$excelExport$outputSuffix), 
                                      if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, 
                                                                     inputDsNames, 
                                                                     lang$nav$excelExport$inputSuffix))
+    if(any(nchar(wsNamesTmp) > 31)){
+      wsNameExceedsLength <- nchar(wsNamesTmp) > 31
+      wsNamesTmp[wsNameExceedsLength] <- paste0(substr(wsNamesTmp[wsNameExceedsLength], 1, 29), "..")
+      if(any(duplicated(wsNamesTmp))){
+        wsNameDuplicated <- duplicated(wsNamesTmp)
+        wsNamesTmp <- lapply(seq_along(wsNamesTmp), function(wsID){
+          if(wsNameDuplicated[wsID]){
+            return(paste0(substr(wsNamesTmp[wsID], 1, 29), wsID))
+          }
+          return(wsNamesTmp[wsID])
+        })
+      }
+    }
+    names(data) <- wsNamesTmp
+    
     # remove empty datasets
     if(!config$excelIncludeEmptySheets)
       data[vapply(data, function(sheet) identical(nrow(sheet), 0L), logical(1L))] <- NULL

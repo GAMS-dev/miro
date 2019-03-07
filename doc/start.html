@@ -67,37 +67,39 @@
                                 <h2 class="section-title">Start GAMS MIRO</h2>
                                 <div  id="demo-applications"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of GAMS MIRO, it is recommended to have a look at the <a href="./installation.html#step-3" target="_blank">demo applications</a> first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
+                                    <p>To get a feeling for the use of GAMS MIRO, it is recommended to have a look at the demo applications first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
-                                            <h4 class="callout-title">GAMS MIRO beta:</h4>
+                                            <b class="callout-title">GAMS MIRO beta:</b>
                                             <p>In order to use the GAMS MIRO BETA version, a special installation is necessary. Until an official release of GAMS MIRO, the demo models will only be available via this special version in the data utilities library.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>The following demos are available:</p>
                                     <ul>
-                                    <li>transport</li>
+                                    <li>transport<br>
                                     This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
-                                            <h4 class="callout-title">Note:</h4>
+                                            <b class="callout-title">Note:</b>
                                             <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
                                         </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <li>transport_live</li>
+                                    </div><!--//callout-block--></li>
+                                    <li>transport_live<br>
                                     A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
-                                    <li>pickstock</li>
-                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.
-                                    <li>pickstock_live</li>
+                                    <br>This model needs an internet connection.</li>
+                                    <li>pickstock<br>
+                                    Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.</li>
+                                    <li>pickstock_live<br>
                                     A "live" version of the pickstock model where the user can specify the time window to be considered regarding the stock prices. This allows to include current Dow Jones stock prices as well as ones from past periods.
-                                    <li>kport</li>
-                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.
+                                    <br>This model needs an internet connection.</li>
+                                    <li>kport<br>
+                                    This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
                                     </ul>
                                     To start a demo application, you need to run the corresponding GAMS model with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
@@ -112,7 +114,7 @@
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
-                                            <h4 class="callout-title">Note:</h4>
+                                            <b class="callout-title">Note:</b>
                                             <p>If you run a model with "<span class="code">miro=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed. This may take a while.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
@@ -230,7 +232,7 @@
                                                 <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
-                                                <h4 class="callout-title">Note:</h4>
+                                                <b class="callout-title">Note:</b>
                                                 <p>Every time you start a MIRO app, an Excel spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -241,7 +243,7 @@
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>Instead of the whole spreadsheet you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -321,7 +323,7 @@
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>Unless otherwise configured, the log and lst file of the GAMS run will also be saved and can be accessed when re-loading the corresponding scenario.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -374,7 +376,7 @@
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>If you have opened scenarios in the split screen mode and switch to the tab view, the scenarios from the split view are pre-selected in the <i>load</i> dialog so that you can easily continue using them.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -386,7 +388,7 @@
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <h4 class="callout-title">Tip:</h4>
+                                              <b class="callout-title">Tip:</b>
                                               <p>For many operations in MIRO there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. To learn more about shortcuts, check out our <a href="./index.html#cheatsheet-wrapper">cheat sheets</a>!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
@@ -426,7 +428,7 @@
                                             <i class="fas fa-info-circle"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
-                                            <h4 class="callout-title">Note:</h4>
+                                            <b class="callout-title">Note:</b>
                                             <p>The presentation shows GAMS MIRO in a very early stage of development.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->

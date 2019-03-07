@@ -77,11 +77,12 @@ def extractSymText(sym,level):
       text = text[uii:]
    elif text.startswith(output_tag):
       text = text[uio:]
-   if(len(text) == 0):
-      text = sym.name
    if level>0:
       text = text.replace(pivot_marker, '')
-   return text.strip().encode('utf-8', 'replace').decode('utf-8')
+   text = text.strip().encode('utf-8', 'replace').decode('utf-8')
+   if(len(text) == 0):
+      text = sym.name
+   return text
 
 # Iterate through all symbols
 for sym in db:
@@ -541,10 +542,10 @@ $   set mkApp 0
 $else.mk
 $   set mkApp 1
 $endif.mk
-$ifthen dExist %gams.sysdir%miro
-$  set MIRODIR %gams.sysdir%miro
+$ifthen dExist "%gams.sysdir%miro"
+$  set MIRODIR "%gams.sysdir%miro"
 $else
-$  set MIRODIR %fp%..%system.dirsep%..
+$  set MIRODIR "%fp%..%system.dirsep%.."
 $endif
 
 $onEmbeddedCode Python:
@@ -752,6 +753,6 @@ $ifthen not errorfree
 $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif
-$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -gamsSysDir="%gams.sysdir%" -modelPath="%fp%%fn%%fe%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
