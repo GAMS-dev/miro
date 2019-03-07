@@ -37,7 +37,6 @@ pipeline {
                                 
                                 cd installer\\win
                                 mkdir innofiles
-                                cd C:\\gams\\win64
                                 windows_x64_64.exe /sp- /silent /dir=%WORKSPACE%\\installer\\win\\innofiles /MERGETASKS='!desktopicon'
                                 rem Cleanup installation
                                 cd %WORKSPACE%\\installer\\win\\innofiles
