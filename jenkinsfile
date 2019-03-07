@@ -24,20 +24,32 @@ pipeline {
                     steps {
                         step([$class: 'WsCleanup'])
                         checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
+                        
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'win-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/win-lib.zip', userName: username)])
-                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'R-3.5.1-win.exe', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/R-3.5.1-win.exe', userName: username)])
+                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GMSR_win.zip', userName: username)])
                         }
-                        unzip dir: 'library', glob: '', zipFile: 'win-lib.zip'
+                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
                         withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
                             bat '''
                                 for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
                                 set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
-                                iscc "installer\\win\\setup_win.iss" /DMIROVersion=%MIRO_VERSION%
+                                
+                                
+                                cd installer\win
+                                mkdir innofiles
+                                cd C:\gams\win64
+                                windows_x64_64.exe /sp- /silent /dir=%WORKSPACE%\installer\win\innofiles /MERGETASKS='!desktopicon'
+                                
+                                
+                                
+                                
+                                
+                                iscc "%WORKSPACE%\installer\win\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=miro04
+                                
                                 echo Setting up environment for VS2017 usage...
                                 cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
                                 call vcvars64.bat
-                                cd %WORKSPACE%\\installer\\win\\Output
+                                cd %WORKSPACE%\\installer\\win\\output
                                 signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_MIRO-%MIRO_VERSION%.exe
                             '''
                         }
