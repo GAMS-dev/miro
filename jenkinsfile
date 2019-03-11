@@ -110,7 +110,7 @@ pipeline {
                             rem Newer cmex
                             cd %WORKSPACE%\\installer\\win
                             %GBIN_DIR%\\cp GMSCMEX_win.zip %GAMS_DIR%
-                            %GAMS_DIR%\\gmsunzip -o GMSCMEX_win.zip
+                            %GAMS_DIR%\\gmsunzip -o -qq %GAMS_DIR%\\GMSCMEX_win.zip
                             %GBIN_DIR%\\rm -f %GAMS_DIR%\\GMSCMEX_win.zip
 
                             cd %WORKSPACE%\\installer\\win
