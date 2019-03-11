@@ -27,7 +27,7 @@ pipeline {
                         
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
-                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
                         
@@ -93,7 +93,7 @@ pipeline {
                             %GBIN_DIR%\\rm -f transport_conf.zip
 
                             cd %WORKSPACE%\\model\\transport_live
-                           %GAMS_DIR%\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
+                            %GAMS_DIR%\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
                             %GBIN_DIR%\\cp transport_live_conf.zip transport_live.gms %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f transport_live_conf.zip
 
@@ -109,9 +109,9 @@ pipeline {
 
                             rem Newer cmex
                             cd %WORKSPACE%\\installer\\win
-                            %GBIN_DIR%\\cp GMSCMEX.zip %GAMS_DIR%
-                            %GAMS_DIR%\\gmsunzip -o -qq GMSCMEX.zip
-                            %GBIN_DIR%\\rm -f %GAMS_DIR%\\GMSCMEX.zip
+                            %GBIN_DIR%\\cp GMSCMEX_win.zip %GAMS_DIR%
+                            %GAMS_DIR%\\gmsunzip -o GMSCMEX_win.zip
+                            %GBIN_DIR%\\rm -f %GAMS_DIR%\\GMSCMEX_win.zip
 
                             cd %WORKSPACE%\\installer\\win
                             mkdir output
