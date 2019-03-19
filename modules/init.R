@@ -891,6 +891,19 @@ if(is.null(errMsg)){
         }
         return(alias)
       }, character(1L), USE.NAMES = FALSE)
+      # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
+      if(identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
+         (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header){
+           if(identical(header$readonly, TRUE))
+             return(TRUE)
+           return(FALSE)
+         }, logical(1L), USE.NAMES = FALSE)))){
+        
+        stop(sprintf(paste0("It is currently not supported to define a table (or certain columns)",
+" to be readonly if this table contains columns with identical names. Please rename the columns ", 
+"(by adjusting the explanatory text of your GAMS symbol) or remove the readonly attribute. ", 
+"Table that causes the problem: '%s'."), modelInAlias[i]), call. = FALSE)
+      }
     }
   })
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))

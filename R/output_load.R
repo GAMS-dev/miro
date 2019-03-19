@@ -1,7 +1,13 @@
 loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
-                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L)){
-  
-  if(!(method %in% c("csv"))){
+                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
+                            xlsxName = character(0L)){
+  if(identical(method, "xlsx")){
+    xlsxPath <- file.path(workDir, xlsxName)
+    if(!file.exists(xlsxPath)){
+      stop(sprintf("File: '%s' could not be found."), xlsxPath, call. = FALSE)
+    }
+    xlsxSheetNames <- tolower(excel_sheets(xlsxPath))
+  }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
   }
   ret         <- list(tabular = NULL, scalar = NULL)
@@ -14,6 +20,14 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
                                        csvDelim, col_types = cols(), 
                                        col_names = TRUE)
+               
+             }
+           },
+           xlsx = {
+             sheetID <- match(scalarsOutName, xlsxSheetNames)[[1]]
+             if(!is.na(sheetID)){
+               scalarTmp <- read_excel(xlsxPath, sheetID, 
+                                       col_types = c("text", "text", "text"))
                
              }
            })
@@ -70,9 +84,19 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                    ret$tabular[[i]] <<- modelOutTemplate[[i]]
                    return()
                  }
+               },
+               xlsx = {
+                 sheetID <- match(names(modelOut)[[i]], xlsxSheetNames)[[1]]
+                 if(!is.na(sheetID)){
+                   ret$tabular[[i]] <<- read_excel(xlsxPath, sheetID,
+                                                   col_names = TRUE)
+                 }else{
+                   ret$tabular[[i]] <<- modelOutTemplate[[i]]
+                   return()
+                 }
                })
       }, error = function(e) {
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
+        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s", 
                      names(modelOut)[[i]] %+% ".csv", modelName, e), call. = FALSE)
       })
       if(!identical(length(ret$tabular[[i]]), length(modelOut[[i]]$headers))){

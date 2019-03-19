@@ -162,7 +162,7 @@ lapply(modelInTabularData, function(sheet){
              # check for readonly columns
              colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
                if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
-                 names(modelIn[[i]]$headers)[[j]]
+                 modelIn[[i]]$headers[[j]]$alias
                }else{
                  NA_character_
                }

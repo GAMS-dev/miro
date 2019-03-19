@@ -442,11 +442,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
-if(identical(LAUNCHADMINMODE, TRUE)){
-  source("./tools/admin/server.R", local = TRUE)
-  source("./tools/admin/ui.R", local = TRUE)
-  shinyApp(ui = ui_admin, server = server_admin)
-}else if(!is.null(errMsg)){
+if(!is.null(errMsg)){
   ui_initError <- fluidPage(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
@@ -486,6 +482,10 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
+}else if(identical(LAUNCHADMINMODE, TRUE)){
+  source("./tools/admin/server.R", local = TRUE)
+  source("./tools/admin/ui.R", local = TRUE)
+  shinyApp(ui = ui_admin, server = server_admin)
 }else{
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
@@ -497,7 +497,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, installPackage, dbSchema, file = rSaveFilePath)
+         modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
   }
   
   #______________________________________________________
@@ -506,8 +506,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #______________________________________________________
   server <- function(input, output, session){
-    options(shiny.maxRequestSize=100*1024^2) 
-    newTab <- vector("list", maxNumberScenarios + 3)
+    options(shiny.maxRequestSize = 100*1024^2)
+    newTab <- vector("list", maxNumberScenarios + 3L)
     flog.info("Session started (model: '%s', user: '%s').", modelName, uid)
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
@@ -995,8 +995,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     if(!isShinyProxy && 
        curl::has_internet() && 
        file.exists(file.path(currentModelDir, ".crash.zip"))){
-      showModal(modalDialog(title = "MIRO terminated unexpectedly",
-                            paste0("MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
+      showModal(modalDialog(title = "Unexpected behavior",
+                            paste0("MIRO discovered it was behaving unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
                             The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
                             "_io.json' and '", modelName, ".json' as well as the error log. 

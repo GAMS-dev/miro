@@ -10,7 +10,7 @@ header_admin <- dashboardHeader(
                                       'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
                   )))),
-  title=paste0("GAMS WebUI admin panel (", modelName, ")"), disable = FALSE)
+  title=paste0("GAMS MIRO admin panel (", modelName, ")"), disable = FALSE)
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
  #             menuItem("Configuration generator", tabName="config_gen", icon = icon("gear")),

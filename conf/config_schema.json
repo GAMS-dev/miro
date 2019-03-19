@@ -69,7 +69,8 @@
       },
       "extraClArgs":{
         "description":"Specify extra command line arguments that GAMS will be called with",
-        "type":"array",
+        "type":["array", "string"],
+        "minLength":3,
         "required":false,
         "items":{
           "type":"string",
@@ -168,7 +169,8 @@
       },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
-         "type":"array",
+         "type":["array", "string"],
+         "minLength":1,
          "uniqueItems":true,
          "required":false,
          "items":{
@@ -289,9 +291,9 @@
                       "description":"List of values to select from.",
                       "type":[  
                         "array",
-                        "string"
+                        "string",
+                        "number"
                       ],
-                      "minLength":1,
                       "uniqueItems":true,
                       "minItems":1,
                       "required":true,
@@ -636,7 +638,8 @@
                     },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
-                      "type":"array",
+                      "type":["array", "string"],
+                      "minLength":1,
                       "items":{
                         "type":"string",
                         "minLength":1
@@ -753,7 +756,8 @@
                         "properties":{  
                            "rows":{  
                               "description":"Array of the names of columns in the data.frame to prepopulate the rows of the pivot table.",
-                              "type":"array",
+                              "type":["array", "string"],
+                              "minLength":1,
                               "uniqueItems":true,
                               "minItems":0,
                               "items":{  
@@ -764,7 +768,8 @@
                            },
                            "cols":{  
                               "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
-                              "type":"array",
+                              "type":["array", "string"],
+                              "minLength":1,
                               "uniqueItems":true,
                               "minItems":0,
                               "items":{  
@@ -870,7 +875,7 @@
                         }
                      }
                   },
-                  "additionalProperties":false,
+                  "additionalProperties":true,
                   "required":[  
                      "outType"
                   ]
@@ -940,7 +945,8 @@
                      },
                      "packages":{  
                         "description":"Packages that need to be installed",
-                        "type":"array",
+                        "type":["array", "string"],
+                        "minLength":2,
                         "minItems":1,
                         "uniqueItems":true,
                         "items":{  
@@ -1133,7 +1139,6 @@
                   "string"
                ],
                "minItems":1,
-               "minLength":1,
                "default":"display",
                "required":false
             },
@@ -1156,7 +1161,20 @@
             },
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
-               "type":"array",
+               "type":["array", "string"],
+               "enum":[  
+                   "AutoFill",
+                   "Buttons",
+                   "ColReorder",
+                   "ColVis",
+                   "FixedColumns",
+                   "FixedHeader",
+                   "KeyTable",
+                   "Responsive",
+                   "RowReorder",
+                   "Scroller",
+                   "Select"
+               ],
                "uniqueItems":true,
                "required":false,
                "items":{  
@@ -1212,7 +1230,8 @@
                               "anyOf":[  
                                  {  
                                     "description":"Column numbers to refer to.",
-                                    "type":"array",
+                                    "type":["array", "integer"],
+                                    "minimum":1,
                                     "minItems":1,
                                     "items":{  
                                        "type":"integer",

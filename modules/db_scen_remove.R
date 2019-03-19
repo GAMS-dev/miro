@@ -22,7 +22,8 @@ closeScenario <- function(){
            },
            slider = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
+               if(length(modelIn[[i]]$slider$default))
+                 updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
              }else{
                showEl(session, "#no_data_dep_" %+% i)
                hideEl(session, "#slider_" %+% i)
@@ -32,7 +33,8 @@ closeScenario <- function(){
            },
            dropdown = {
              if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
+               if(length(modelIn[[i]]$dropdown$selected))
+                 updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
              }else{
                selectedDepEl[[i]] <<- character(0)
                showEl(session, "#no_data_dep_" %+% i)
@@ -41,23 +43,28 @@ closeScenario <- function(){
              }
            },
            date = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$date$value)){
                updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
              }
              previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
            },
            daterange = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
+             if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$daterange$start) &&
+                length(modelIn[[i]]$daterange$end)){
                updateDateRangeInput(session, "daterange_" %+% i, 
                                            start = modelIn[[i]]$daterange$start, 
                                            end = modelIn[[i]]$daterange$end)
              }
            },
            checkbox = {
-             updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+             if(length(modelIn[[i]]$checkbox$value)){
+               updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+             }
            },
            textinput = {
-             updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
+             if(length(modelIn[[i]]$textinput$value)){
+               updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
+             }
            }
     )
     # make sure data is cleaned even when modified manually 
