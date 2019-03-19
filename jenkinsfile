@@ -27,109 +27,99 @@ pipeline {
                         
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
-                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
-                        withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
-                            bat '''
-                                for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
-                                set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
-                                
-                                cd installer\\win
-                                mkdir innofiles
-                                cd C:\\gams\\win64
-                                windows_x64_64.exe /sp- /silent /dir=%WORKSPACE%\\installer\\win\\innofiles /MERGETASKS='!desktopicon'
-                                rem Cleanup installation
-                                cd %WORKSPACE%\\installer\\win\\innofiles
-                                rm -f .uninstinfo.ini unins000.dat unins000.exe gamside.url
+                        
+                        bat '''
+                            for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
+                            set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
+                            set GAMS_DIR=%WORKSPACE%\\installer\\win\\innofiles
+                            set GBIN_DIR=%GAMS_DIR%\\gbin
+                            
+                            cd installer\\win
+                            mkdir innofiles
+                            windows_x64_64.exe /sp- /silent /dir=%WORKSPACE%\\installer\\win\\innofiles /MERGETASKS='!desktopicon'
+                            rem Cleanup installation
+                            cd %GAMS_DIR%
+                            %GBIN_DIR%\\rm -f .uninstinfo.ini unins000.dat unins000.exe gamside.url
 
-                                rem R installation
-                                cd %WORKSPACE%\\installer\\win
-                                cp GMSR.zip %WORKSPACE%\\installer\\win\\innofiles
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmsunzip -qq -o GMSR.zip
-                                rm -f GMSR.zip
+                            rem R installation
+                            %GBIN_DIR%\\cp %WORKSPACE%\\installer\\win\\GMSR.zip %WORKSPACE%\\installer\\win\\innofiles
+                            gmsunzip -qq -o GMSR.zip
+                            %GBIN_DIR%\\rm -f GMSR.zip
 
-                                rem Python modules
-                                cd %WORKSPACE%\\installer\\win\\innofiles\\GMSPython\\Scripts
-                                pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy
-                                cd %WORKSPACE%\\installer\\win\\innofiles
+                            rem Python modules
+                            cd %GAMS_DIR%\\GMSPython\\Scripts
+                            pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy
+                            cd %WORKSPACE%\\installer\\win\\innofiles
 
-                                :fast
-                                rem miro libinclude
-                                cd %WORKSPACE%\\installer\\win\\innofiles
-                                copy /Y %WORKSPACE%\\model\\miro.gms inclib
+                            rem miro libinclude
+                            copy /Y %WORKSPACE%\\model\\miro.gms inclib
 
-                                mkdir miro
-                                rm -rf miro\\*
-                                cd miro
-                                cp -r %WORKSPACE%JS .
-                                cp -r %WORKSPACE%R .
-                                cp -r %WORKSPACE%UI .
-                                cp -r %WORKSPACE%conf .
-                                cp -r %WORKSPACE%modules .
-                                cp -r %WORKSPACE%resources .
-                                cp -r %WORKSPACE%tools .
-                                cp -r %WORKSPACE%www .
-                                cp    %WORKSPACE%LICENSE .
-                                cp    %WORKSPACE%app.R .
-                                cp    %WORKSPACE%global.R .
+                            mkdir miro
+                            %GBIN_DIR%\\rm -rf miro\\*
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\JS miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\R miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\UI miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\conf miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\modules miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\resources miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\tools miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\www miro
+                            %GBIN_DIR%\\cp    %WORKSPACE%\\LICENSE miro
+                            %GBIN_DIR%\\cp    %WORKSPACE%\\app.R miro
+                            %GBIN_DIR%\\cp    %WORKSPACE%\\global.R miro
 
-                                rem APILIB Example models
-                                cd %WORKSPACE%\\model\\kport
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r kport_conf.zip conf\\kport.json static customRenderer
-                                cp kport_conf.zip kport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                rm -f kport_conf.zip
+                            rem APILIB Example models
+                            cd %WORKSPACE%\\model\\kport
+                            %GAMS_DIR%\\gmszip -r kport_conf.zip conf\\kport.json static customRenderer
+                            %GBIN_DIR%\\cp kport_conf.zip kport.gms %GAMS_DIR%\\datalib_ml
+                            %GBIN_DIR%\\rm -f kport_conf.zip
 
-                                cd %WORKSPACE%\\model\\pickstock
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r pickstock_conf.zip conf\\pickstock.json static customRenderer
-                                cp pickstock_conf.zip pickstock.gms dowjones2016.csv %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                rm -f pickstock_conf.zip
+                            cd %WORKSPACE%\\model\\pickstock
+                            %GAMS_DIR%\\gmszip -r pickstock_conf.zip conf\\pickstock.json static customRenderer
+                            %GBIN_DIR%\\cp pickstock_conf.zip pickstock.gms dowjones2016.csv %GAMS_DIR%\\datalib_ml
+                            %GBIN_DIR%\\rm -f pickstock_conf.zip
 
-                                cd %WORKSPACE%\\model\\pickstock_live
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r pickstock_live_conf.zip conf\\pickstock_live.json static customRenderer
-                                cp pickstock_live_conf.zip pickstock_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                rm -f pickstock_live_conf.zip
+                            cd %WORKSPACE%\\model\\pickstock_live
+                            %GAMS_DIR%\\gmszip -r pickstock_live_conf.zip conf\\pickstock_live.json static customRenderer
+                            %GBIN_DIR%\\cp pickstock_live_conf.zip pickstock_live.gms %GAMS_DIR%\\datalib_ml
+                            %GBIN_DIR%\\rm -f pickstock_live_conf.zip
 
-                                cd %WORKSPACE%\\model\\transport
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r transport_conf.zip conf\\transport.json static customRenderer
-                                cp transport_conf.zip transport.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                rm -f transport_conf.zip
+                            cd %WORKSPACE%\\model\\transport
+                            %GAMS_DIR%\\gmszip -r transport_conf.zip conf\\transport.json static customRenderer
+                            %GBIN_DIR%\\cp transport_conf.zip transport.gms %GAMS_DIR%\\datalib_ml
+                            %GBIN_DIR%\\rm -f transport_conf.zip
 
-                                cd %WORKSPACE%\\model\\transport_live
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
-                                cp transport_live_conf.zip transport_live.gms %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                rm -f transport_live_conf.zip
+                            cd %WORKSPACE%\\model\\transport_live
+                            %GAMS_DIR%\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
+                            %GBIN_DIR%\\cp transport_live_conf.zip transport_live.gms %GAMS_DIR%\\datalib_ml
+                            %GBIN_DIR%\\rm -f transport_live_conf.zip
 
-                                cd %WORKSPACE%
-                                cp -f mkconfig.inc datalib.glb %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
+                            cd %WORKSPACE%
+                            %GBIN_DIR%\\cp -f mkconfig.inc datalib.glb %GAMS_DIR%\\datalib_ml
 
-                                cd %WORKSPACE%\\installer\\win\\innofiles\\datalib_ml
-                                echo $include mkconfig.inc >> kport.gms
-                                echo $include mkconfig.inc >> pickstock.gms
-                                echo $include mkconfig.inc >> pickstock_live.gms
-                                echo $include mkconfig.inc >> transport.gms
-                                echo $include mkconfig.inc >> transport_live.gms
+                            cd %GAMS_DIR%\\datalib_ml
+                            echo $include mkconfig.inc >> kport.gms
+                            echo $include mkconfig.inc >> pickstock.gms
+                            echo $include mkconfig.inc >> pickstock_live.gms
+                            echo $include mkconfig.inc >> transport.gms
+                            echo $include mkconfig.inc >> transport_live.gms
 
-                                rem Newer cmex
-                                cd %WORKSPACE%\\installer\\win
-                                cp GMSCMEX.zip %WORKSPACE%\\installer\\win\\innofiles
-                                %WORKSPACE%\\installer\\win\\innofiles\\gmsunzip -o -qq GMSCMEX.zip
-                                rm -f %WORKSPACE%\\installer\\win\\innofiles\\GMSCMEX.zip
+                            rem Newer cmex
+                            cd %WORKSPACE%\\installer\\win
+                            %GBIN_DIR%\\cp GMSCMEX_win.zip %GAMS_DIR%
+                            cd %GAMS_DIR%
+                            gmsunzip -o -qq GMSCMEX_win.zip
+                            %GBIN_DIR%\\rm -f GMSCMEX_win.zip
 
-                                cd %WORKSPACE%\\installer\\win
-                                mkdir output
-                                rm -rf output\\*
-                                
-                                iscc "%WORKSPACE%\\installer\\win\\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=miro04
-                                
-                                echo Setting up environment for VS2017 usage...
-                                cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
-                                call vcvars64.bat
-                                cd %WORKSPACE%\\installer\\win\\output
-                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_MIRO-%MIRO_VERSION%.exe
-                            '''
-                        }
-                        archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
+                            cd %WORKSPACE%\\installer\\win
+                            mkdir output
+                            %GBIN_DIR%\\rm -rf output\\*
+                            
+                            iscc "%WORKSPACE%\\installer\\win\\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=miro04
+                        '''
                     }
                 }
                 stage ('macos') {
@@ -234,6 +224,23 @@ pipeline {
         }
         stage('Sign') {
             parallel {
+                stage ('windowsX64') {
+                    agent { label 'windowsX64' }
+                    steps {
+                        withCredentials([certificate(aliasVariable: '', credentialsId: '302df092-b329-47b9-8f7a-605da075126d', keystoreVariable: 'WIN_CERT_FILE', passwordVariable: 'WIN_CERT_PASSWD')]) {
+                            bat '''
+                                for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
+                                set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
+                                echo Setting up environment for VS2017 usage...
+                                cd "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
+                                call vcvars64.bat
+                                cd %WORKSPACE%\\installer\\win\\output
+                                signtool sign /v /f %WIN_CERT_FILE% /p %WIN_CERT_PASSWD% /tr http://timestamp.comodoca.com/rfc3161 GAMS_MIRO-%MIRO_VERSION%.exe
+                            '''
+                        }
+                        archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
+                    }
+                }
                 stage ('macos') {
                     agent { label 'macos' }
                     steps {
@@ -253,7 +260,6 @@ pipeline {
                 }
               }
             }
-        }
-        
+        }       
     }
 }
