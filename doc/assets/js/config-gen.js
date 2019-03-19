@@ -330,7 +330,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                           "title":"Should the entire table be readonly?",
                           "type":"boolean"
                         },
-                        "readOnlyCols":{
+                        "readonlyCols":{
                           "title":"Select columns that are to be read-only",
                           "type":"array",
                           "items":{
@@ -507,7 +507,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                         "minDep":["minDepSel"],
                         "max":["maxDepSel"],
                         "maxDep":["maxDepSel"],
-                        "defDepSel":["slidertype"],
                         "default":["defDepSel"],
                         "defDep":["defDepSel"]
                       }
@@ -2938,11 +2937,6 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                               "maxDepSel": "dependent"
                             }
                           },
-                          "defDepSel":{
-                            "dependencies":{
-                              "slidertype": "standard"
-                            }
-                          },
                           "default":{
                             "dependencies":{
                               "defDepSel": "static"
@@ -3782,8 +3776,8 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                  }
                                break;
                                default:
-                                 if(!widget.table.readOnlyCols.length){
-                                   delete widget.table.readOnlyCols;
+                                 if(!widget.table.readonlyCols.length){
+                                   delete widget.table.readonlyCols;
                                  }
                                  // get rid of default values as this makes JSON string shorter
                                  if(!widget.table.noImport){
@@ -3913,7 +3907,7 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
             for(let wId = 0; wId < widgets.children.length; wId++) {
               let gmsParam = widgets.children[wId].childrenByPropertyId("gmsParam");
               gmsParam.on("change", function() {
-                let roCols = control.getControlByPath("inputWidgets/table/readOnlyCols");
+                let roCols = control.getControlByPath("inputWidgets/table/readonlyCols");
                 let gmsSymName = gmsParam.data[0].text;
                 roCols.schema.items.enum = gmsSymHdrIn[gmsSymName];
                 roCols.schema.items.default = gmsSymHdrIn[gmsSymName][0];
