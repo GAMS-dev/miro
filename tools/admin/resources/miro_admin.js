@@ -124,6 +124,20 @@ function addHistDataEl(){
   };
   addArrayEl(arrayID, elements);
 }
+function addDyDataEl(){
+  var arrayID      = 'dy_ydata';
+  var elements     = {'chart_ydata' : ['select', 'What index do you want to plot on the y-axis?', scalarIndices, scalarIndexAliases], 
+  'dyser_color' : ['text', 'What color should be used for this series?'],
+  'dyopt_stepPlot' : ['checkbox', 'Do you want the series to be a step plot?'],
+  'dyopt_stemPlot' : ['checkbox', 'Do you want the series to be a stem plot?'],
+  'dyopt_fillGraph' : ['checkbox', 'Should the area underneath the graph be filled?'],
+  'dyopt_drawPoints' : ['checkbox', 'Should points be drawn?'],
+  'dyopt_pointShape' : ['select', 'What shape should points have?',["dot", "triangle", "square", "diamond", "pentagon", "hexagon", 
+                              "circle", "star", "plus", "ex"]],
+  'dyopt_pointSize' : ['numeric', 'What size should points be?', 2, 0]
+  };
+  addArrayEl(arrayID, elements);
+}
 function addArrayDataEl(arrayID){
   switch(arrayID){
     case "chart_ydatabar":
@@ -138,8 +152,9 @@ function addArrayDataEl(arrayID){
     case "hist_data":
       addHistDataEl();
     break;
-    default:
-      throw "array ID: '" + arrayID + "' not defined.";
+    case "dy_ydata":
+      addDyDataEl();
+    break;
   }
 }
 function addArrayDataElWrapper(arrayID){
@@ -151,12 +166,11 @@ function addArrayDataElWrapper(arrayID){
 }
 
 function incElCount(arrayID){
-  if(!$('#' + arrayID + '_wrapper .array-wrapper').children(".config-array-el").length){
+  var count = $('#' + arrayID + '_wrapper .array-wrapper').children(".config-array-el").length;
+  if(count === 0){
     delete elInArray[arrayID];
-    elInArrayCounter[arrayID] = 1;
-  }else if(arrayID in elInArrayCounter){
-    elInArrayCounter[arrayID] += 1;
   }
+  elInArrayCounter[arrayID] = count + 1;
   return(elInArrayCounter[arrayID]);
 }
 function addLabelEl(arrayID, label){
@@ -165,6 +179,7 @@ function addLabelEl(arrayID, label){
       throw "Label: " + label + " already in use.";
     }
     elInArray[arrayID].push(label);
+    return;
   }
   elInArray[arrayID] = [label];
 }
@@ -224,9 +239,14 @@ function addArrayEl(arrayID, elements){
     if(v[0] === 'select'){
         $('#' + k + elID).selectize({
       	  onChange: function(value) {
+      	    console.log(value);
       	    Shiny.setInputValue(k, [elID, value], {priority: "event"});
           }
       	});
+    }else if(v[0] === 'checkbox'){
+      $('#' + k + elID).on('change', function(){
+        Shiny.setInputValue(k, [elID, $(this).prop('checked')], {priority: "event"});
+      });
     }else{
       $('#' + k + elID).on('change', function(){
         Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
@@ -289,34 +309,36 @@ function createCheckboxInput(arrayID, elID, label){
 function removeArrayEl(arrayID, elID){
   var arrayLabel = '';
   var el    = null;
+  var idx   = 0;
   $.each($('#' + arrayID + elID + '_wrapper .form-group'), function(k,v){
     if($(v).children('input[type="number"]').length){
       el = $(v).children('input[type="number"]');
-      if(el[0].id === arrayID + elID){
+      if(idx === 0){
         arrayLabel = el.val();
       }
       el.remove();
     }else if($(v).children('input[type="text"]').length){
       el = $(v).children('input[type="text"]');
-      if(el[0].id === arrayID + elID){
+      if(idx === 0){
         arrayLabel = el.val();
       }
       el.remove();
     }else if($(v).children('input[type="checkbox"]').length){
       el = $(v).children('input[type="checkbox"]');
-      if(el[0].id === arrayID + elID){
-        arrayLabel = el.selectize.getValue();
+      if(idx === 0){
+        arrayLabel = $(el).prop('checked');
       }
       el.remove();
     }else if($(v).find('select').length){
       el         = $(v).find('select').get(0);
-      if(el.id === arrayID + elID){
-        arrayLabel = el.selectize.getValue();
+      if(idx === 0){
+        arrayLabel = $(el).val();
       }
       el.selectize.destroy();
     }else{
       throw "Could not remove array element.";
     }
+    idx++;
   });
   if(arrayLabel.length === 0){
     throw "Failed to remove array element: Could not find identifier for array element: " +
@@ -324,7 +346,7 @@ function removeArrayEl(arrayID, elID){
   }
   elInArray[arrayID].splice($.inArray(arrayLabel, elInArray[arrayID]), 1);
   $('#' + arrayID + '_wrapper .btn-add-array-el:disabled').prop('disabled', false);
-  Shiny.setInputValue('remove_array_el', [arrayID, arrayLabel], {
+  Shiny.setInputValue('remove_array_el', [arrayID, arrayLabel, elID], {
     priority: "event"
   });
   

@@ -614,3 +614,7 @@ animation: none !important;
   padding:10px;
   border: 1px solid #c2c2c2;
 }
+/* admin mode */
+.option-section{
+  margin-left:20px;
+}

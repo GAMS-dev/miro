@@ -24,9 +24,9 @@ renderGraph <- function(data, configData, options, height = NULL){
       lapply(seq_along(options$ydata), function(j){
         if(j==1){
           p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), type = 'bar', 
-                        name = options$ydata[[j]]$labels, height = height, color=if(!is.null(options$color)){~try(get(options$color))})
+                        name = options$ydata[[j]]$label, height = height, color=if(!is.null(options$color)){~try(get(options$color))})
         }else{
-          p <<- add_trace(p, y = ~try(get(options$ydata[[j]]$values)), name = options$ydata[[j]]$labels)
+          p <<- add_trace(p, y = ~try(get(options$ydata[[j]]$values)), name = options$ydata[[j]]$label)
         }
       })
     }else if(options$type=='scatter'){

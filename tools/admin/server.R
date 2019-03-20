@@ -14,6 +14,13 @@ addArrayEl <- function(session, arrayID, plotly_chart_type = ""){
  </button>\n
 </div>'))
 }
+optionSection <- function(title, ..., collapsed = FALSE){
+  tags$div(class = "shiny-input-container", onclick = "$(this).children('.option-section').toggle();",
+           tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer", 
+                   onclick = "$(this)next().toggle();"),
+           tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
+           )
+}
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveJSONConfirm = 0L, resetRE = 0L,
@@ -112,24 +119,8 @@ server_admin <- function(input, output, session){
     }
     indices       <- activeSymbol$indices
     rv$graphConfig$graph$title <- activeSymbol$alias
-    if(identical(isolate(input$plotly_type), "pie")){
-      updateSelectInput(session, "pie_labels", choices = indices)
-      updateSelectInput(session, "pie_values", choices = scalarIndices)
-      isolate({
-        rv$graphConfig$graph$labels <<- unname(indices[1])
-        rv$graphConfig$graph$values <<- unname(scalarIndices[1])
-      })
-    }else if(identical(isolate(input$plotly_type), "hist")){
-      label <- names(indices)[match(scalarIndices[1], 
-                                    indices)][1]
-      updateSelectInput(session, "hist_data", choices = scalarIndices)
-      updateTextInput(session, "hist_label", value = label)
-      isolate({
-        rv$graphConfig$graph$xdata                    <<- list()
-        rv$graphConfig$graph$xdata[[input$hist_data]] <<- list(labels = label)
-      })
-    }
-    
+    rv$initData <- FALSE
+    rv$initData <- TRUE
   }
   observeEvent(input$localInput, {
     # initialize new imported sheets counter
@@ -324,20 +315,57 @@ server_admin <- function(input, output, session){
   observeEvent(input$dyopt_drawGrid, {
     rv$graphConfig$graph$dyOptions$drawGrid <<- input$dyopt_drawGrid
   })
+  observeEvent(input$dyser_color, {
+    if(identical(input$dyser_color[2], '')){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyser_color[1])]]]]$color <<- NULL
+    }else{
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyser_color[1])]]]]$color <<- input$dyser_color[2]
+    }
+  })
   observeEvent(input$dyopt_fillGraph, {
-    rv$graphConfig$graph$dyOptions$fillGraph <<- input$dyopt_fillGraph
+    if(length(input$dyopt_fillGraph) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_fillGraph[1])]]]]$fillGraph <<- input$dyopt_fillGraph[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$fillGraph <<- input$dyopt_fillGraph
+    }
+  })
+  observeEvent(input$dyopt_stepPlot, {
+    if(length(input$dyopt_stepPlot) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_stepPlot[1])]]]]$stepPlot <<- input$dyopt_stepPlot[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$stepPlot <<- input$dyopt_stepPlot
+    }
+  })
+  observeEvent(input$dyopt_stemPlot, {
+    if(length(input$dyopt_stemPlot) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_stemPlot[1])]]]]$stemPlot <<- input$dyopt_stemPlot[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$stemPlot <<- input$dyopt_stemPlot
+    }
   })
   observeEvent(input$dyopt_fillAlpha, {
     rv$graphConfig$graph$dyOptions$fillAlpha <<- input$dyopt_fillAlpha
   })
   observeEvent(input$dyopt_drawPoints, {
-    rv$graphConfig$graph$dyOptions$drawPoints <<- input$dyopt_drawPoints
+    if(length(input$dyopt_drawPoints) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_drawPoints[1])]]]]$drawPoints <<- input$dyopt_drawPoints[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$drawPoints <<- input$dyopt_drawPoints
+    }
   })
   observeEvent(input$dyopt_pointShape, {
-    rv$graphConfig$graph$dyOptions$pointShape <<- input$dyopt_pointShape
+    if(length(input$dyopt_pointShape) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_pointShape[1])]]]]$pointShape <<- input$dyopt_pointShape[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$pointShape <<- input$dyopt_pointShape
+    }
   })
   observeEvent(input$dyopt_pointSize, {
-    rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
+    if(length(input$dyopt_pointSize) > 1){
+      rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$dyopt_pointSize[1])]]]]$pointSize <<- input$dyopt_pointSize[2]
+    }else{
+      rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
+    }
   })
   observeEvent(input$x_title, {
     rv$graphConfig$graph$xaxis$title <<- input$x_title
@@ -386,46 +414,66 @@ server_admin <- function(input, output, session){
     rv$graphConfig$graph$xdata <<- input$chart_xdata
   })
   observeEvent(input$hist_data, {
-    if(input$hist_data[2] %in% names(rv$graphConfig$graph$xdata))
+    hist_id <- as.integer(input$hist_data[1])
+    if(is.na(hist_id))
       return()
-    idLabelMap$hist_data[[input$hist_data[1]]] <<- input$hist_data[2]
+      
+    if(hist_id <= length(idLabelMap$hist_data)){
+      labelID <- idLabelMap$hist_data[[as.integer(hist_id)]]
+      if(sum(labelID == idLabelMap$hist_data) < 1.5){
+        rv$graphConfig$graph$xdata[labelID] <<- NULL
+      }
+    }
+    idLabelMap$hist_data[[hist_id]] <<- input$hist_data[2]
     label <- names(activeSymbol$indices)[match(input$hist_data[2], 
                                                activeSymbol$indices)][1]
-    if(input$hist_data[1] == 1 && !(length(input$x_title) && nchar(input$x_title))){
+    if(identical(hist_id, 1L) && !(length(input$x_title) && nchar(input$x_title))){
       updateTextInput(session, "x_title", value = label)
     }
     rv$graphConfig$graph$xdata[[input$hist_data[2]]] <<- list(labels = label)
   })
   observeEvent(input$chart_ydata, {
-    if(length(input$chart_ydata) < 2L){
-      chart_ydata <- c(1, input$chart_ydata)
-    }else{
-      chart_ydata <- input$chart_ydata
-    }
-    if(chart_ydata[2] %in% names(rv$graphConfig$graph$ydata))
+    chart_ydata <- input$chart_ydata[2]
+    chart_id    <- as.integer(input$chart_ydata[1])
+    if(is.na(chart_id))
       return()
-    idLabelMap$chart_ydata[[chart_ydata[1]]] <<- chart_ydata[2]
-    label       <- names(activeSymbol$indices)[match(chart_ydata[2], activeSymbol$indices)][1]
-    if(chart_ydata[1] == 1 && !(length(input$y_title) && nchar(input$y_title))){
+    
+    if(chart_id <= length(idLabelMap$chart_ydata)){
+      labelID <- idLabelMap$chart_ydata[[chart_id]]
+      if(sum(labelID == idLabelMap$chart_ydata) < 1.5){
+        rv$graphConfig$graph$ydata[labelID] <<- NULL
+      }
+    }
+    
+    idLabelMap$chart_ydata[[chart_id]] <<- chart_ydata
+    label       <- names(activeSymbol$indices)[match(chart_ydata, activeSymbol$indices)][1]
+    if(chart_id == 1 && !(length(input$y_title) && nchar(input$y_title))){
       updateTextInput(session, "y_title", value = label)
     }
-    rv$graphConfig$graph$ydata[[chart_ydata[2]]] <<- list(label = label, 
+    rv$graphConfig$graph$ydata[[chart_ydata]] <<- list(label = label, 
                                                           mode = if(identical(input$plotly_chart_type, "scatter"))
                                                             "markers" else "lines")
   })
   observeEvent(input$chart_ylabel, {
     tryCatch({
-      labelID <- idLabelMap$chart_ydata[[input$chart_ylabel[1]]]
+      labelID <- idLabelMap$chart_ydata[[as.integer(input$chart_ylabel[1])]]
       rv$graphConfig$graph$ydata[[labelID]]$label <<- input$chart_ylabel[2]
     }, error = function(e){
       flog.info("Could not change label for y-data. Error message: '%s'.", e)
     })
   })
   observeEvent(input$remove_array_el, {
-    switch(input$remove_array_el[1],
-           chart_ydata = {
-             rv$graphConfig$graph$ydata[input$remove_array_el[2]] <- NULL
-           })
+    if(startsWith(input$remove_array_el[1], "chart_ydata")){
+      if(sum(input$remove_array_el[2] == idLabelMap$chart_ydata) < 1.5){
+        rv$graphConfig$graph$ydata[input$remove_array_el[2]] <- NULL
+      }
+      idLabelMap$chart_ydata[as.integer(input$remove_array_el[3])] <<- NULL
+    }else if(identical(input$remove_array_el[1], "hist_data")){
+      if(sum(input$remove_array_el[2] == idLabelMap$hist_data) < 1.5){
+        rv$graphConfig$graph$xdata[input$remove_array_el[2]] <- NULL
+      }
+      idLabelMap$chart_ydata[as.integer(input$remove_array_el[3])] <<- NULL
+    }
   })
   observeEvent(input$bar_mode, {
     rv$graphConfig$graph$barmode <<- input$bar_mode
@@ -517,8 +565,7 @@ server_admin <- function(input, output, session){
     scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
     isolate({
       rv$graphConfig$graph$barmode <<- "group"
-      rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
-                                                                mode = "lines")
+      rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1])
     })
     tagList(selectInput("bar_mode", "Select barmode", choices = c("group", "stack")),
             getChartOptions())
@@ -583,6 +630,7 @@ server_admin <- function(input, output, session){
     )
   })
   getDygraphsOptions <- reactive({
+    rv$initData
     indices       <- activeSymbol$indices
     scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
     if(!length(scalarIndices)){
@@ -594,33 +642,43 @@ server_admin <- function(input, output, session){
       rv$graphConfig$graph$xdata <<- unname(indices[1])
       rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = unname(scalarIndices[1]), 
                                                               mode = if(identical(input$plotly_chart_type, "scatter"))
-                                                                "markers" else "lines")
+                                                                "markers" else "lines", 
+                                                              stemPlot = FALSE, stepPlot = FALSE, 
+                                                              fillGraph = FALSE, drawPoints = FALSE, pointShape = "dot",
+                                                              pointSize = 2L)
       rv$graphConfig$graph$dyOptions$includeZero <<- FALSE
       rv$graphConfig$graph$dyOptions$logscale    <<- FALSE
       rv$graphConfig$graph$dyOptions$drawGrid    <<- FALSE
+      rv$graphConfig$graph$dyOptions$stepPlot    <<- FALSE
+      rv$graphConfig$graph$dyOptions$stemPlot    <<- FALSE
       rv$graphConfig$graph$dyOptions$fillGraph   <<- FALSE
       rv$graphConfig$graph$dyOptions$fillAlpha   <<- 0.15
       rv$graphConfig$graph$dyOptions$drawPoints  <<- FALSE
       rv$graphConfig$graph$dyOptions$pointShape  <<- "dot"
       rv$graphConfig$graph$dyOptions$pointSize   <<- 2L
+      idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     })
     tagList(
       selectInput("chart_xdata", "What index do you want to plot on the x-axis?",
                   choices = indices),
-      selectInput("chart_ydata", "What index do you want to plot on the y-axis?",
-                  choices = scalarIndices),
+      addArrayEl(session, "dy_ydata"),
       selectInput("chart_color", "What symbol do you want to use to plot different chart lines?",
                   choices = c("_", indices)),
-      checkboxInput("dyopt_incZero", "Should y-axis start at 0?"),
-      checkboxInput("dyopt_logscale", "Show y-axis in log scale?"),
-      checkboxInput("dyopt_drawGrid", "Should grid lines be displayed?", TRUE),
-      checkboxInput("dyopt_fillGraph", "Should the area underneath the graph be filled?"),
-      numericInput("dyopt_fillAlpha", "Transparency for filled regions", min = 0L, max = 1L, value = 0.15),
-      checkboxInput("dyopt_drawPoints", "Should points be drawn?"),
-      selectInput("dyopt_pointShape", "What shape should points have?", 
-                  choices = c("dot", "triangle", "square", "diamond", "pentagon", "hexagon", 
-                              "circle", "star", "plus", "ex")),
-      numericInput("dyopt_pointSize", "What size should points be?", min = 0L, value = 2L),
+      optionSection(title = "Options", collapsed = TRUE,
+        checkboxInput("dyopt_fillGraph", "Should the area underneath the graph be filled?"),
+        checkboxInput("dyopt_incZero", "Should y-axis start at 0?"),
+        checkboxInput("dyopt_logscale", "Show y-axis in log scale?"),
+        checkboxInput("dyopt_drawGrid", "Should grid lines be displayed?", TRUE),
+        checkboxInput("dyopt_stepPlot", "Do you want a step plot?"),
+        checkboxInput("dyopt_stemPlot", "Do you want a stem plot?"),
+        checkboxInput("dyopt_fillGraph", "Should the area underneath the graph be filled?"),
+        numericInput("dyopt_fillAlpha", "Transparency for filled regions", min = 0L, max = 1L, value = 0.15),
+        checkboxInput("dyopt_drawPoints", "Should points be drawn?"),
+        selectInput("dyopt_pointShape", "What shape should points have?", 
+                    choices = c("dot", "triangle", "square", "diamond", "pentagon", "hexagon", 
+                                "circle", "star", "plus", "ex")),
+        numericInput("dyopt_pointSize", "What size should points be?", min = 0L, value = 2L)
+      ),
       getAxisOptions("x", names(indices)[1], labelOnly = TRUE),
       getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE)
     )
