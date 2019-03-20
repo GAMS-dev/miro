@@ -30,7 +30,7 @@ pipeline {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
-                        
+                        copyArtifacts filter: '*x86_64.zip', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         bat '''
                             for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
                             set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
@@ -113,6 +113,11 @@ pipeline {
                             cd %GAMS_DIR%
                             gmsunzip -o -qq GMSCMEX_win.zip
                             %GBIN_DIR%\\rm -f GMSCMEX_win.zip
+                            
+                            rem Adjust studio
+                            ren %WORKSPACE%\\*x86_64.zip %WORKSPACE%\\studio.zip
+                            %GBIN_DIR%\\rm -rf studio\\*
+                            %GAMS_DIR%\\gmsunzip %WORKSPACE%\\studio.zip %GAMS_DIR%
 
                             cd %WORKSPACE%\\installer\\win
                             mkdir output
@@ -134,7 +139,7 @@ pipeline {
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         }
-                        copyArtifacts filter: 'miro-studio-0.10.4-x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', target: '.'
+                        copyArtifacts filter: '*x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
@@ -152,7 +157,8 @@ pipeline {
                             
                             STUDIO_ROOT=studio
                             mkdir $STUDIO_ROOT
-                            hdiutil attach -mountpoint ./$STUDIO_ROOT miro-studio-0.10.4-x86_64.dmg
+                            mv *x86_64.dmg studio.dmg
+                            hdiutil attach -mountpoint ./$STUDIO_ROOT studio.dmg
                             rm -fr $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/GAMS\\ Studio.app
                             cp -R studio/* $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER
                             
