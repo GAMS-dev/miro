@@ -221,7 +221,7 @@ pipeline {
                             hdiutil detach -verbose $STUDIO_ROOT
                             hdiutil detach -verbose $DMG_ROOT
                             hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
-                            rm miro-studio-0.10.4-x86_64.dmg
+                            rm studio.dmg
                             rm $DMG_NAME
                         '''
                     }
