@@ -115,9 +115,11 @@ pipeline {
                             %GBIN_DIR%\\rm -f GMSCMEX_win.zip
                             
                             rem Adjust studio
-                            ren %WORKSPACE%\\*x86_64.zip %WORKSPACE%\\studio.zip
+                            cd %WORKSPACE%
+                            ren *x86_64.zip studio.zip
+                            cd %GAMS_DIR%
                             %GBIN_DIR%\\rm -rf studio\\*
-                            %GAMS_DIR%\\gmsunzip %WORKSPACE%\\studio.zip %GAMS_DIR%
+                            %GAMS_DIR%\\gmsunzip -o -qq %WORKSPACE%\\studio.zip %GAMS_DIR%
 
                             cd %WORKSPACE%\\installer\\win
                             mkdir output
