@@ -119,7 +119,7 @@ pipeline {
                             ren *x86_64.zip studio.zip
                             cd %GAMS_DIR%
                             %GBIN_DIR%\\rm -rf studio\\*
-                            %GAMS_DIR%\\gmsunzip -o -qq %WORKSPACE%\\studio.zip %GAMS_DIR%
+                            %GAMS_DIR%\\gmsunzip -o %WORKSPACE%\\studio.zip
 
                             cd %WORKSPACE%\\installer\\win
                             mkdir output
