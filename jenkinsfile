@@ -37,7 +37,7 @@ pipeline {
                             set GAMS_DIR=%WORKSPACE%\\installer\\win\\innofiles
                             set GBIN_DIR=%GAMS_DIR%\\gbin
                             %GBIN_DIR%\\rm -rf output\\*
-                            for /F "tokens=1,2,3 delims=." %%a in ("%MIRO_VERSION%") do (
+                            for /F "tokens=1,2,3 delims=." %%a in (%MIRO_VERSION%) do (
                                set MIRO_MAJOR=%%a
                                set MIRO_MINOR=%%b
                                set MIRO_REV=%%c
