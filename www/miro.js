@@ -182,6 +182,10 @@ function hcHashImport(sid) {
 }
 
 function showHideEl(el, delay) {
+  var msg = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+  if(msg.length){
+    $(el).text(msg);
+  }
   $(el).show().delay(delay).fadeOut();
 }
 
@@ -279,7 +283,7 @@ $(document).ready(function () {
     }
   });
   Shiny.addCustomMessageHandler('gms-showHideEl', function (data) {
-    showHideEl(data.id, data.delay);
+    showHideEl(data.id, data.delay, data.msg);
   });
   Shiny.addCustomMessageHandler('gms-enableEl', function (id) {
     $(id).prop("disabled", false);

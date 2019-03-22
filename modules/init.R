@@ -144,8 +144,8 @@ if(is.null(errMsg)){
   modelOut          <- config$gamsOutputFiles
   names(modelOut)   <- tolower(names(modelOut))
   
-  modelIn             <- config$gamsInputFiles
-  names(modelIn)      <- tolower(names(modelIn))
+  modelIn           <- config$gamsInputFiles
+  names(modelIn)    <- tolower(names(modelIn))
   modelInRaw        <- modelIn
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))

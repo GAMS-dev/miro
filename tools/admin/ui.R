@@ -11,6 +11,7 @@ header_admin <- dashboardHeader(
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
                   )))),
   title=paste0("GAMS MIRO admin panel (", modelName, ")"), disable = FALSE)
+
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
               menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
@@ -18,6 +19,7 @@ sidebar_admin <- dashboardSidebar(
               menuItem("Database management", tabName="db_management", icon = icon("database"))
   )
 )
+
 body_admin <- dashboardBody({
   addResourcePath("admin", "tools/admin/resources")
   tagList(
@@ -92,6 +94,7 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_graph",
               fluidRow(
                 box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
@@ -136,18 +139,26 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_widget",
               fluidRow(
                 box(title = "Configure input widgets", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
+                    tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
+                             radioButtons("widget_symbol_type", label = "",
+                                          choices = list("Symbol" = "gams", "GAMS option" = "go", 
+                                                         "Double dash parameter" = "dd"), 
+                                          selected = "gams"),
                              tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      selectInput("widget_symbol", "Which input symbol would you like to create a widget for?", 
-                                                  choices = setNames(c(names(modelIn), 
-                                                                       if(length(modelIn[[scalarsFileName]])) 
-                                                                         modelIn[[scalarsFileName]]$symnames),  
-                                                                     c(modelInAlias, 
-                                                                       if(length(modelIn[[scalarsFileName]])) 
-                                                                         modelIn[[scalarsFileName]]$symtext))),
+                                      conditionalPanel(
+                                        condition = "input.widget_symbol_type == 'gams'",
+                                        selectInput("widget_symbol", "Which input symbol would you like to create a widget for?", 
+                                                    choices = c())
+                                      ),
+                                      conditionalPanel(
+                                        condition = "input.widget_symbol_type != 'gams'",
+                                        textInput("widget_clPar", "Name of command line parameter")
+                                      ),
                                       tags$div(id = "widget_wrapper"),
                                       tags$div(style = "height:100px;")
                              )
@@ -156,6 +167,7 @@ body_admin <- dashboardBody({
                              uiOutput("widget_preview"),
                              rHandsontableOutput("table_preview"),
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
+                                      actionButton("deleteWidget", "Delete", icon("trash-alt")),
                                       actionButton("saveWidget", "Save", icon("save")))
                     )
                 )

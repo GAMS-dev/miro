@@ -1,10 +1,5 @@
-rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
-                     graphConfig = list(outType = "graph", graph = list()), initData = FALSE)
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
-configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
-                                                  simplifyDataFrame = FALSE, 
-                                                  simplifyMatrix = FALSE))
 
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
@@ -747,4 +742,5 @@ observeEvent(virtualActionButton(input$saveGraphConfirm, rv$saveGraphConfirm), {
   configJSON$dataRendering[[activeSymbol$name]] <- rv$graphConfig
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
+  showHideEl(session, "#graphUpdateSuccess", 4000L)
 })
