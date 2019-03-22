@@ -26,11 +26,11 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   #     CUSTOMIZE GRAPHS
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
+  #source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
   # ------------------------------------------------------
   #     Input widgets
   # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
+  #source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
   
   # ------------------------------------------------------
   #     DB MANAGEMENT

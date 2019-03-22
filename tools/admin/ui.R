@@ -13,8 +13,6 @@ header_admin <- dashboardHeader(
   title=paste0("GAMS MIRO admin panel (", modelName, ")"), disable = FALSE)
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
-              menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
-              menuItem("Configure widgets", tabName="new_widget", icon = icon("sliders-h")),
               menuItem("Database management", tabName="db_management", icon = icon("database"))
   )
 )
@@ -85,78 +83,6 @@ body_admin <- dashboardBody({
                                          'This can not be undone! You might want to save the database first before proceeding.\', \'Cancel\', ',
                                          '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
                              ))
-                    )
-                )
-              )
-      ),
-      tabItem(tabName = "new_graph",
-              fluidRow(
-                box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
-                    tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      fileInput("localInput", "Upload an Excel spreadsheet with data that will be used for preview purposes",
-                                                width = "100%",
-                                                multiple = FALSE,
-                                                accept = c("application/vnd.ms-excel", 
-                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                           ".xlsx")),
-                                      tags$div(id = "preview_wrapper", style = "display:none;",
-                                               selectInput("gams_symbols", "Select which GAMS symbol to plot",
-                                                           choices = NULL),
-                                               textInput("chart_title", "Choose a title for your chart"),
-                                               selectInput("chart_tool", "Select the charting tool you want to use", 
-                                                           c("plotly", "dygraphs")),
-                                               tags$div(id = "tool_options"),
-                                               tags$div(style = "height:100px;")
-                                      )
-                                      )
-                    ),
-                    tags$div(class = "col-sm-6", style = "text-align:right;",
-                             tags$div(id = "preview-error", class = "err-msg",
-                                      textOutput("preview-errmsg")),
-                             tags$div(id = "preview-content-plotly", 
-                                      renderDataUI("preview_output_plotly", type = "graph", 
-                                                   graphTool = "plotly", 
-                                                   height = 400, 
-                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
-                             tags$div(id = "preview-content-dygraph", style = "display:none;",
-                                      renderDataUI("preview_output_dygraph", type = "graph", 
-                                                   graphTool = "dygraphs", 
-                                                   height = 400, 
-                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
-                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
-                                      actionButton("saveGraph", "Save", icon("save")))
-                    )
-                )
-              )
-      ),
-      tabItem(tabName = "new_widget",
-              fluidRow(
-                box(title = "Configure input widgets", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
-                    tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      selectInput("widget_symbol", "Which input symbol would you like to create a widget for?", 
-                                                  choices = setNames(c(names(modelIn), 
-                                                                       if(length(modelIn[[scalarsFileName]])) 
-                                                                         modelIn[[scalarsFileName]]$symnames),  
-                                                                     c(modelInAlias, 
-                                                                       if(length(modelIn[[scalarsFileName]])) 
-                                                                         modelIn[[scalarsFileName]]$symtext))),
-                                      tags$div(id = "widget_wrapper"),
-                                      tags$div(style = "height:100px;")
-                             )
-                    ),
-                    tags$div(class = "col-sm-6",
-                             uiOutput("widget_preview"),
-                             rHandsontableOutput("table_preview"),
-                             tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
-                                      actionButton("saveWidget", "Save", icon("save")))
                     )
                 )
               )
