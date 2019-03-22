@@ -146,7 +146,7 @@ if(is.null(errMsg)){
   
   modelIn             <- config$gamsInputFiles
   names(modelIn)      <- tolower(names(modelIn))
-  
+  modelInRaw        <- modelIn
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
     el_l <- tolower(el)

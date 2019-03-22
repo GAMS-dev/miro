@@ -14,19 +14,27 @@ renderGraph <- function(data, configData, options, height = NULL){
     if(options$type == 'pie'){
       # set defaults (no axes in pie chart)
       # pie chart
-      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', height = height) %>%
-           layout(p, title = options$title, showlegend = options$showlegend,
-                  xaxis = options$xaxis,
-                  yaxis = options$yaxis)
+      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', height = height)
     }else if(options$type == 'bar'){
       # bar plot
       p <- NULL
       lapply(seq_along(options$ydata), function(j){
         if(j==1){
-          p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), type = 'bar', 
-                        name = options$ydata[[j]]$label, height = height, color=if(!is.null(options$color)){~try(get(options$color))})
+          p <<- plot_ly(data, x = ~try(get(options$xdata)), 
+                        y = ~try(get(names(options$ydata)[[1]])), 
+                        name = options$ydata[[j]]$label, height = height, 
+                        color=if(!is.null(options$color)){~try(get(options$color))},
+                        marker = list(color = options$ydata[[1]]$marker$color,
+                                      line = list(color = options$ydata[[1]]$marker$line$color,
+                                                  width = options$ydata[[1]]$marker$line$width))) %>% 
+            add_bars(
+              width=if(!is.null(options$width)){~try(get(options$width))},
+              orientation = options$orientation)
         }else{
-          p <<- add_trace(p, y = ~try(get(options$ydata[[j]]$values)), name = options$ydata[[j]]$label)
+          p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label,
+                          marker = list(color = options$ydata[[j]]$marker$color,
+                                        line = list(color = options$ydata[[j]]$marker$line$color,
+                                                    width = options$ydata[[j]]$marker$line$width)))
         }
       })
     }else if(options$type=='scatter'){
@@ -95,11 +103,16 @@ renderGraph <- function(data, configData, options, height = NULL){
     }else{
       stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
     }
+    
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
                 xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, 
                              zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
-                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels))
+                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels),
+                paper_bgcolor = options$paper_bgcolor,
+                plot_bgcolor = options$plot_bgcolor,
+                showlegend = options$showlegend,
+                legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap)
     return(renderPlotly(p))
     
   }else if(options$tool == 'dygraphs'){

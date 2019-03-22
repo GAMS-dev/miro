@@ -55,8 +55,13 @@ var elInArray          = {};
 
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
-  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
-  'chart_ylabel' : ['text', 'What label should be used?', 'label']};
+  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
+  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
+  'marker_color' : ['text', 'Select bar color', 'black'],
+  'marker_line_width': ['numeric', 'Select bar outline width', 0, 0],
+  'marker_line_color' : ['text', 'Select bar outline color']
+  };
+  
   addArrayEl(arrayID, elements);
 }
 function addScatterDataEl(){
