@@ -13,8 +13,8 @@ header_admin <- dashboardHeader(
   title=paste0("GAMS MIRO admin panel (", modelName, ")"), disable = FALSE)
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
- #             menuItem("Configuration generator", tabName="config_gen", icon = icon("gear")),
- menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
+              menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
+              menuItem("Configure widgets", tabName="new_widget", icon = icon("sliders-h")),
               menuItem("Database management", tabName="db_management", icon = icon("database"))
   )
 )
@@ -23,19 +23,9 @@ body_admin <- dashboardBody({
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
-#      tags$link(type = "text/css", rel = "stylesheet", href = "admin/spectrum.css"),
-#      tags$link(type = "text/css", rel = "stylesheet", href = "admin/bootstrap-datetimepicker.min.css"),
-#      tags$link(type = "text/css", rel = "stylesheet", href = "admin/alpaca.min.css"),
       tags$script(src = "mirosc.js", type = "application/javascript"),
       tags$script(src = "miro.js", type = "application/javascript"),
       tags$script(src = "admin/miro_admin.js", type = "application/javascript"),
-#      tags$script(src = "admin/spectrum.js", type = "application/javascript"),
-#      tags$script(src = "admin/moment.min.js", type = "application/javascript"),
-#      tags$script(src = "admin/bootstrap-datetimepicker.min.js", type = "application/javascript"),
-#      tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js", type = "application/javascript"),
-#      tags$script(src = "admin/alpaca.min.js", type = "application/javascript"),
-      tags$script(src = "admin/config-gen.js", type = "application/javascript"),
-      
       tags$style(HTML(paste0('
 .main-header .logo {
                              background-image: url("gams_logo.png");
@@ -102,7 +92,7 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_graph",
               fluidRow(
                 box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
+                    tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
@@ -138,27 +128,39 @@ body_admin <- dashboardBody({
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",
-                                      actionButton("saveJSON", "Save", icon("save")))
+                                      actionButton("saveGraph", "Save", icon("save")))
+                    )
+                )
+              )
+      ),
+      tabItem(tabName = "new_widget",
+              fluidRow(
+                box(title = "Configure input widgets", status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
+                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+                    tags$div(class = "space"),
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                      selectInput("widget_symbol", "Which input symbol would you like to create a widget for?", 
+                                                  choices = setNames(c(names(modelIn), 
+                                                                       if(length(modelIn[[scalarsFileName]])) 
+                                                                         modelIn[[scalarsFileName]]$symnames),  
+                                                                     c(modelInAlias, 
+                                                                       if(length(modelIn[[scalarsFileName]])) 
+                                                                         modelIn[[scalarsFileName]]$symtext))),
+                                      tags$div(id = "widget_wrapper"),
+                                      tags$div(style = "height:100px;")
+                             )
+                    ),
+                    tags$div(class = "col-sm-6",
+                             uiOutput("widget_preview"),
+                             rHandsontableOutput("table_preview"),
+                             tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
+                                      actionButton("saveWidget", "Save", icon("save")))
                     )
                 )
               )
       )
-      #,
-     #  tabItem(tabName = "config_gen",
-     #          fluidRow(
-     #            box(title = "Configuration generator", status="primary", solidHeader = TRUE, width = 12,
-     #                tags$div(id = "updateConfigSuccess", class = "gmsalert gmsalert-success",
-     #                         "The configuration was updated successfully"),
-     #                tags$div(id = "updateConfigError", class = "gmsalert gmsalert-success",
-     #                         "An unexpected error occurred while updating your configuration. If this problem persists, please contact the system administrator."),
-     #                tags$div(class = "space"),
-     #                tags$div(id = "configGenForm", ""),
-     #                tagAppendAttributes(actionButton("btConfigGenNew", "Update config"),
-     #                                    style = "display:none;", 
-     #                                    onclick = "$('#configGenForm').show();$(this).hide();")
-     #            )
-     #          )
-     #  )
     )
   )})
 ui_admin <- dashboardPage(header_admin, sidebar_admin, body_admin, skin = "black")

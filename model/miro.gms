@@ -558,6 +558,7 @@ def get_r_path():
     try:
         with open(os.path.join(r"%gams.sysdir% ".strip(), 'miro', 'conf', 'rpath.conf')) as f:
             RPath = f.readline().strip()
+            
             return RPath
     except:
         pass
@@ -602,14 +603,18 @@ def get_r_path():
         latestR = major_minor_micro(latestRPath)
         latestRPath = latestRPath + os.sep + "bin" + os.sep
     elif system() == "Darwin":
-        RPath = r"/Library/Frameworks/R.framework/Versions"
-        try:
-           RVers = os.listdir(RPath)
-           latestRPath = max(RVers, key=major_minor)
-           latestR = major_minor(latestRPath)
-           latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
-        except OSError:
-           latestR = (0, 0)
+        RPaths = [r"/Library/Frameworks/R.framework/Versions", r"/usr/bin/R", r"/usr/local/bin/R", r"/opt/local/bin/R"]
+        for RPath in RPaths:
+           try:
+              RVers = os.listdir(RPath)
+              latestRPath = max(RVers, key=major_minor)
+              latestR = major_minor(latestRPath)
+              latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+           except OSError:
+              latestR = (0, 0)
+              continue
+           if latestR[0] > 3 or latestR[0] == 3 and latestR[1] >= 5:
+              break
     else:
         RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
         if not len(RPath):
@@ -617,7 +622,9 @@ def get_r_path():
         else:
            latestRPath = RPath.decode('utf-8').strip().strip('Rscript')
            latestR = major_minor_micro(str(subprocess.run(['Rscript', '--version'], stderr=subprocess.PIPE).stderr))
-
+    if latestR == (0,0):
+      os.environ["PYEXCEPT"] = "NORERROR"
+      raise FileNotFoundError('R not installed')
     if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
       os.environ["PYEXCEPT"] = "RVERSIONERROR"
       raise FileNotFoundError('Bad R version')
@@ -750,6 +757,7 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 
 $ifthen not errorfree
+$ if %sysenv.PYEXCEPT% == "NORERROR" $abort "No R installation was found on your system. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif

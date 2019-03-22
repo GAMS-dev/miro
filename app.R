@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.4.3"
-MIRORDate   <- "Mar 20 2019"
+MIROVersion <- "0.4.4"
+MIRORDate   <- "Mar 22 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -489,7 +489,7 @@ if(!is.null(errMsg)){
 }else{
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
-    save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
+    save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
