@@ -36,6 +36,13 @@ pipeline {
                             set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
                             set GAMS_DIR=%WORKSPACE%\\installer\\win\\innofiles
                             set GBIN_DIR=%GAMS_DIR%\\gbin
+                            %GBIN_DIR%\\rm -rf output\\*
+                            for /F "tokens=1,2,3 delims=." %%a in ("%MIRO_VERSION%") do (
+                               set MIRO_MAJOR=%%a
+                               set MIRO_MINOR=%%b
+                               set MIRO_REV=%%c
+                            )
+                            set MIRO_DIR=miro%MIRO_MAJOR%%MIRO_MINOR%
                             
                             cd installer\\win
                             mkdir innofiles
@@ -123,9 +130,8 @@ pipeline {
 
                             cd %WORKSPACE%\\installer\\win
                             mkdir output
-                            %GBIN_DIR%\\rm -rf output\\*
                             
-                            iscc "%WORKSPACE%\\installer\\win\\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=miro04
+                            iscc "%WORKSPACE%\\installer\\win\\miro.iss" /DMIROVersion=%MIRO_VERSION% /DMyDirVersion=%MIRO_DIR%
                         '''
                     }
                 }
