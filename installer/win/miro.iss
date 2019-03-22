@@ -42,8 +42,8 @@ DiskSpanning=false
 OutputDir=output
 SetupIconFile=setup.ico
 
-WizardSmallImageFile=gams_small.bmp,gams_small2.bmp
-WizardImageFile=gams_left.bmp,gams_left2.bmp
+WizardSmallImageFile=gams_small.bmp
+WizardImageFile=gams_left.bmp
 
 DisableWelcomePage=no
 DisableDirPage=no
