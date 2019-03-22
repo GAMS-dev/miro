@@ -899,10 +899,10 @@ if(is.null(errMsg)){
            return(FALSE)
          }, logical(1L), USE.NAMES = FALSE)))){
         
-        stop(sprintf(paste0("It is currently not supported to define a table (or certain columns)",
+        errMsg <<- paste(errMsg, sprintf(paste0("It is currently not supported to define a table (or certain columns)",
 " to be readonly if this table contains columns with identical names. Please rename the columns ", 
 "(by adjusting the explanatory text of your GAMS symbol) or remove the readonly attribute. ", 
-"Table that causes the problem: '%s'."), modelInAlias[i]), call. = FALSE)
+"Table that causes the problem: '%s'."), modelInAlias[i]), sep = "\n")
       }
     }
   })
