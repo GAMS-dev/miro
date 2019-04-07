@@ -14,6 +14,8 @@ header_admin <- dashboardHeader(
 
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
+              menuItem("General settings", tabName = "new_gen", icon = icon("cogs")),
+              menuItem("Table settings", tabName="tables_gen", icon = icon("sliders-h")),
               menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
               menuItem("Configure widgets", tabName="new_widget", icon = icon("sliders-h")),
               menuItem("Database management", tabName="db_management", icon = icon("database"))
@@ -145,7 +147,7 @@ body_admin <- dashboardBody({
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
-                             radioButtons("widget_symbol_type", label = "",
+                             radioButtons("widget_symbol_type", label = "Symbol type to configure",
                                           choices = list("Symbol" = "gams", "GAMS option" = "go", 
                                                          "Double dash parameter" = "dd"), 
                                           selected = "gams"),
@@ -156,8 +158,12 @@ body_admin <- dashboardBody({
                                                     choices = c())
                                       ),
                                       conditionalPanel(
-                                        condition = "input.widget_symbol_type != 'gams'",
-                                        textInput("widget_clPar", "Name of command line parameter")
+                                        condition = "input.widget_symbol_type == 'go'",
+                                        textInput("widget_clPar", "Name of the GAMS option (e.g. 'LP' or 'OptCR')")
+                                      ),
+                                      conditionalPanel(
+                                        condition = "input.widget_symbol_type == 'dd'",
+                                        textInput("widget_clPar", "Name of the double-dash parameter (without '--')")
                                       ),
                                       tags$div(id = "widget_wrapper"),
                                       tags$div(style = "height:100px;")
@@ -172,7 +178,60 @@ body_admin <- dashboardBody({
                     )
                 )
               )
-      )
+      ),
+      tabItem(tabName = "new_gen",
+              fluidRow(
+                box(title = "General settings", status="primary", solidHeader = TRUE, width = 12,
+                    #tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
+                    #tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
+                    #tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
+                    #         "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+                    tags$div(class = "space"),
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                      tags$div(id = "general_wrapper"),
+                                      tags$div(style = "height:100px;")
+                             )
+                    ),
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
+                                      actionButton("saveSettings", "Save", icon("save")))
+                    )
+                )
+              )
+      ),
+      tabItem(tabName = "tables_gen",
+        fluidRow(
+          box(title = "General table settings", status="primary", solidHeader = TRUE, width = 12,
+             # tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
+             # tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
+             # tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
+             #          "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+              tags$div(class = "space"),
+              tags$div(class = "col-sm-6",
+                       tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                radioButtons("table_type", label = "Which table type would you like to configure?",
+                                             choices = c("input table" = "hot", "output table" = "dt", "pivot table" = "piv"), 
+                                             selected = "in"),
+                                tags$div(id = "table_wrapper"),
+                                #tags$div(id = "table_hot_options"),
+                                #tags$div(id = "table_dt_options"),
+                                tags$div(style = "height:100px;")
+                       )
+              ),
+              tags$div(class = "col-sm-6", style = "text-align:right;",
+                      #tags$div(id = "preview-error", class = "err-msg",
+                      #         textOutput("preview-errmsg")),
+                      tags$div(id = "preview-output-hot", 
+                               rHandsontableOutput("table_preview_hot")),
+                      tags$div(id = "preview-output-dt", style = "display:none;",
+                               dataTableOutput("table_preview_dt")),
+                      tags$div(style = "margin-top: 50px; margin-bottom:50px;",
+                               actionButton("saveTable", "Save", icon("save")))
+             )
+          )
+    )
+  )
     )
   )})
 ui_admin <- dashboardPage(header_admin, sidebar_admin, body_admin, skin = "black")

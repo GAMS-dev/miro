@@ -160,7 +160,7 @@ observeEvent({input$widget_type
              dateRangeInput("daterange_test", "I am a date range selector")
            })
          },
-         text = {
+         textinput = {
            output$widget_preview <- renderUI({
              textInput("text_test", "I am a text input")
            })
@@ -213,7 +213,7 @@ observeEvent(input$slider_ticks, {
 #          SAVE JSON
 #  ==============================
 observeEvent(input$saveWidget, {
-  req(lenth(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
+  req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
   
   errMsg <- validateWidgetConfig(rv$widgetConfig)
   if(nchar(errMsg)){
@@ -228,7 +228,7 @@ observeEvent(input$saveWidget, {
   rv$saveWidgetConfirm <- rv$saveWidgetConfirm + 1L
 })
 observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
-  req(lenth(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
+  req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
   
   configJSON$dataRendering[[tolower(input$widget_symbol)]] <- rv$widgetConfig
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)

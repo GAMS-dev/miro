@@ -52,6 +52,12 @@ var scalarIndexAliases = [];
 var elInArrayCounter   = {};
 var elInArray          = {};
 
+function addClArgEl(){
+  var arrayID      = 'general_clArgs';
+  var elements     = {'general_args' : ['text', 'Specify extra command line arguments that GAMS will be called with']
+  };
+  addArrayEl(arrayID, elements);
+}
 
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
@@ -159,6 +165,9 @@ function addArrayDataEl(arrayID){
     break;
     case "dy_ydata":
       addDyDataEl();
+    break;
+    case "general_clArgs":
+      addClArgEl();
     break;
   }
 }

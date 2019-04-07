@@ -31,6 +31,14 @@ server_admin <- function(input, output, session){
                                                     simplifyDataFrame = FALSE, 
                                                     simplifyMatrix = FALSE))
   # ------------------------------------------------------
+  #     General settings
+  # ------------------------------------------------------
+  source(file.path("tools", "admin", "cg_general.R"), local = TRUE)  
+  # ------------------------------------------------------
+  #     Table settings
+  # ------------------------------------------------------
+  source(file.path("tools", "admin", "cg_tables.R"), local = TRUE)  
+  # ------------------------------------------------------
   #     CUSTOMIZE GRAPHS
   # ------------------------------------------------------
   source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
