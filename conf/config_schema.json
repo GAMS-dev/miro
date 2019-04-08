@@ -91,7 +91,7 @@
          "description":"Activate/deactivate certain modules",
          "type":"object",
          "additionalProperties":false,
-         "properties":{  
+         "properties":{
             "scenario":{  
                "description":"Activate scenario functionality?",
                "type":"boolean",
@@ -122,13 +122,13 @@
                "default":false,
                "required":false
             },
-            "logFile:":{  
+            "logFile":{  
                "description":"Show log file in UI?",
                "type":"boolean",
                "default":true,
                "required":false
             },
-            "lstFile:":{  
+            "lstFile":{  
                "description":"Show lst file in UI?",
                "type":"boolean",
                "default":true,

@@ -187,11 +187,9 @@ body_admin <- dashboardBody({
                     #tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                     #         "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      tags$div(id = "general_wrapper"),
-                                      tags$div(style = "height:100px;")
-                             )
+                    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                            tags$div(id = "general_wrapper"),
+                            tags$div(style = "height:100px;")
                     )
                 )
               )

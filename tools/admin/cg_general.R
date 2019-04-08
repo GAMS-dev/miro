@@ -12,10 +12,10 @@ insertUI(selector = "#general_wrapper",
          tagList(
            radioButtons("general_language", label = "Language",
                         choices = c("English" = "en", "German" = "de"), 
-                        selected = configJSON$language),
+                        selected = if(length(configJSON$language)) configJSON$language else "en"),
            selectInput("general_skin", "Skin to use for dashboard", 
                        choices = c("black", "blue", "purple", "green", "red", "yellow"),
-                       selected = configJSON$pageSkin),
+                       selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else "black"),
            tags$label(class = "cb-label",
                       "Include parent directory of the model folder 
            in your model runs (e.g. because several models share files)?"),
@@ -28,7 +28,7 @@ insertUI(selector = "#general_wrapper",
                                "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_meta", value = configJSON$excelIncludeMeta, label = NULL)
+                                 checkboxInput("general_meta", value = if(identical(configJSON$excelIncludeMeta, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
@@ -36,7 +36,7 @@ insertUI(selector = "#general_wrapper",
                                "Include empty sheets in the Excel file"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_empty", value = configJSON$excelIncludeEmptySheets, label = NULL)
+                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
@@ -48,13 +48,13 @@ insertUI(selector = "#general_wrapper",
                       "Generate graphs for each input sheet automatically (pivot tool)"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_auto", value = configJSON$autoGenInputGraphs, label = NULL)
+                        checkboxInput("general_auto", value = if(identical(configJSON$autoGenInputGraphs, FALSE)) FALSE else TRUE, label = NULL)
              )),
            sliderInput("general_save_duration", label = "Duration the GAMS log and lst files are stored in the database (in days). 
             0 means files are not stored at all, 999 means files are stored indefinitely. 
             This setting is ignored when the attachment module is not active. Note that this is currently 
             only supported in the MIRO base mode.",
-                       min = 0, max = 999, step = 1, value = configJSON$storeLogFilesDuration
+                       min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else 7L
            ),
            selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with", 
                           choices = configJSON$extraClArgs, multiple = TRUE, options = list(
@@ -69,27 +69,27 @@ insertUI(selector = "#general_wrapper",
                     tags$label(class = "cb-label", "Activate scenario functionality"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_scen", value = configJSON$activateModules$scenario, label = NULL)
+                                 checkboxInput("general_act_scen", value = if(identical(configJSON$activateModules$scenario, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$label(class = "cb-label", "Launch App in strict mode? This results in throwing 
            error messages instead of accepting possibly faulty user entries."),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_strict", value = configJSON$activateModules$strictmode, label = NULL)
+                        checkboxInput("general_act_strict", value = if(identical(configJSON$activateModules$strictmode, FALSE)) FALSE else TRUE, label = NULL)
              )),
            tags$div(title = "Enables the user to use local data for GAMS runs",
                     tags$label(class = "cb-label", "Activate local data upload module?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_upload", value = configJSON$activateModules$loadLocal, label = NULL)
+                                 checkboxInput("general_act_upload", value = if(identical(configJSON$activateModules$loadLocal, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(
              tags$label(class = "cb-label", "Enable scenario sharing between different users"),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("general_act_share_scen", value = configJSON$activateModules$sharedScenarios, label = NULL)
+                          checkboxInput("general_act_share_scen", value = if(identical(configJSON$activateModules$sharedScenarios, FALSE)) FALSE else TRUE, label = NULL)
                ))
            ),
            tags$div(title = "Efficient generation of multiple scenarios. Designed for scenario runs and sensitivity analisis.",
@@ -102,18 +102,18 @@ insertUI(selector = "#general_wrapper",
            tags$label(class = "cb-label", "Show log file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_log", value = configJSON$activateModules$logFile, label = NULL)
+                        checkboxInput("general_act_log", value = if(identical(configJSON$activateModules$logFile, FALSE)) FALSE else TRUE, label = NULL)
              )),
            tags$label(class = "cb-label", "Show lst file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_lst", value = configJSON$activateModules$lstFile, label = NULL)
+                        checkboxInput("general_act_lst", value = if(identical(configJSON$activateModules$lstFile, FALSE)) FALSE else TRUE, label = NULL)
              )),
            tags$div(title = "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
                     tags$label(class = "cb-label", "Should users be allowed to add attachments to scenarios?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_attach", value = configJSON$activateModules$attachments, label = NULL)
+                                 checkboxInput("general_act_attach", value = if(identical(configJSON$activateModules$attachments, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(title = "If not activated, each input widget is displayed in a separate page.",
@@ -121,7 +121,7 @@ insertUI(selector = "#general_wrapper",
                     aggregated on a single page?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_aggregate", value = configJSON$aggregateWidgets, label = NULL)
+                                 checkboxInput("general_aggregate", value = if(identical(configJSON$aggregateWidgets, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            textInput("general_input_scalars", "Alias for the input scalars table"),
@@ -130,7 +130,7 @@ insertUI(selector = "#general_wrapper",
                     tags$label(class = "cb-label", "Save trace file with each GAMS run (Hypercube mode)"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_save_trace", value = configJSON$saveTraceFile, label = NULL)
+                                 checkboxInput("general_save_trace", value = if(identical(configJSON$saveTraceFile, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            if(length(modelOut[[scalarsOutName]])){
@@ -141,7 +141,7 @@ insertUI(selector = "#general_wrapper",
              )
            },
            sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
-                       min = 0, max = 6, step = 1, value = configJSON$roundingDecimals
+                       min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
            )
          ), 
          where = "beforeEnd")
@@ -276,9 +276,9 @@ observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
 })
 
-#  ==============================
-#          SAVE JSON
-#  ==============================
+#  ==================================
+#          SAVE JSON (automatically)
+#  ==================================
 observeEvent(rv$generalConfig, {
   req(length(rv$generalConfig))
   configJSON <<- modifyList(configJSON, rv$generalConfig)

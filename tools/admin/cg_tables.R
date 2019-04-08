@@ -293,25 +293,6 @@ observe({
   req(rv$tableConfig$tableType)
   tryCatch({
     if(isolate(rv$tableConfig$tableType) == "hot"){
-      rv$tableConfig$handsontable$height <<- input$hot_height
-      rv$tableConfig$handsontable$width <<- input$hot_width
-      rv$tableConfig$handsontable$readonly <<- input$hot_readonly
-      rv$tableConfig$handsontable$search <<- input$hot_search
-      rv$tableConfig$handsontable$highlightCol <<- input$hot_highcol
-      rv$tableConfig$handsontable$highlightRow <<- input$hot_highrow
-      rv$tableConfig$handsontable$rowHeaderWidth <<- input$hot_widthhead
-      rv$tableConfig$handsontable$enableComments <<- input$hot_comment
-      rv$tableConfig$handsontable$stretchH <<- input$hot_strech
-      rv$tableConfig$handsontable$columnSorting <<- input$hot_sort
-      rv$tableConfig$handsontable$manualColumnMove <<- input$hot_move
-      rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
-      rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
-      rv$tableConfig$handsontable$fixedColumnsLeft <<- input$hot_fixcol
-      rv$tableConfig$handsontable$contextMenu$enabled <<- input$hot_context_enable
-      rv$tableConfig$handsontable$contextMenu$allowRowEdit <<- input$hot_context_rowedit
-      rv$tableConfig$handsontable$contextMenu$allowColEdit <<- input$hot_context_coledit
-      rv$tableConfig$handsontable$contextMenu$allowReadOnly <<- input$hot_context_readonly
-      rv$tableConfig$handsontable$contextMenu$allowComments <<- input$hot_context_comments
       hotOptions        <<- rv$tableConfig$handsontable
       print(hotOptions)
       output[["table_preview_hot"]] <- renderRHandsontable({
