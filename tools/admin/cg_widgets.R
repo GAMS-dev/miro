@@ -230,7 +230,7 @@ observeEvent(input$saveWidget, {
 observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
   req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
   
-  configJSON$dataRendering[[tolower(input$widget_symbol)]] <- rv$widgetConfig
+  configJSON$dataRendering[[tolower(input$widget_symbol)]] <<- rv$widgetConfig
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
@@ -258,7 +258,7 @@ observeEvent(input$deleteWidgetConfirm, {
   }else{
     widgetName <- tolower(widgetName)
   }
-  configJSON$inputWidgets[[widgetName]] <- NULL
+  configJSON$inputWidgets[[widgetName]] <<- NULL
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)

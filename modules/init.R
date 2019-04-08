@@ -50,7 +50,7 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "GMSIO_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
-      config$db <<- c(config, eval[[1]])
+      config$db <<- eval[[1]]
     }else if(!is.null(eval[[2]])){
       errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
                            basename(jsonFilesWithSchema[i]), 

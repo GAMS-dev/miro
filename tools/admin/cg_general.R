@@ -4,7 +4,6 @@ scalarSymbols <- setNames(c(names(modelIn),
                           c(modelInAlias, 
                             if(length(modelIn[[scalarsFileName]])) 
                               modelIn[[scalarsFileName]]$symtext))
-
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 updateSelectInput(session, "general_hidden", choices = scalarSymbols)
 
@@ -13,22 +12,23 @@ insertUI(selector = "#general_wrapper",
          tagList(
            radioButtons("general_language", label = "Language",
                         choices = c("English" = "en", "German" = "de"), 
-                        selected = "en"),
+                        selected = configJSON$language),
            selectInput("general_skin", "Skin to use for dashboard", 
-                       choices = c("black", "blue", "purple", "green", "red", "yellow")),
+                       choices = c("black", "blue", "purple", "green", "red", "yellow"),
+                       selected = configJSON$pageSkin),
            tags$label(class = "cb-label",
                       "Include parent directory of the model folder 
            in your model runs (e.g. because several models share files)?"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_parent", value = TRUE, label = NULL)
+                        checkboxInput("general_parent", value = configJSON$includeParentDir, label = NULL)
              )),
            tags$div(title = "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
                     tags$label(class = "cb-label",
                                "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_meta", value = TRUE, label = NULL)
+                                 checkboxInput("general_meta", value = configJSON$excelIncludeMeta, label = NULL)
                       ))
            ),
            tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
@@ -36,96 +36,84 @@ insertUI(selector = "#general_wrapper",
                                "Include empty sheets in the Excel file"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_empty", value = TRUE, label = NULL)
+                                 checkboxInput("general_empty", value = configJSON$excelIncludeEmptySheets, label = NULL)
                       ))
            ),
-           tags$label(class = "cb-label",
-                      "Do you want to use a custom logo for your MIRO app?"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_logo", value = FALSE, label = NULL)
-             )),
-           tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                    conditionalPanel(
-                      condition = "input.general_logo == true",
-                      fileInput("widget_general_logo_upload", "Upload a png/jpg file (best format: 4,6:1)",
-                                width = "100%",
-                                multiple = FALSE,
-                                accept = c(".png", ".PNG", ".jpg", ".JPG"))
-                    )
-           ),
+           fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
+                     width = "100%",
+                     multiple = FALSE,
+                     accept = c(".png", ".PNG", ".jpg", ".JPG")),
+           imageOutput("general_logo_preview", height = "50px", width = "230px"),
            tags$label(class = "cb-label",
                       "Generate graphs for each input sheet automatically (pivot tool)"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_auto", value = TRUE, label = NULL)
+                        checkboxInput("general_auto", value = configJSON$autoGenInputGraphs, label = NULL)
              )),
            sliderInput("general_save_duration", label = "Duration the GAMS log and lst files are stored in the database (in days). 
             0 means files are not stored at all, 999 means files are stored indefinitely. 
             This setting is ignored when the attachment module is not active. Note that this is currently 
             only supported in the MIRO base mode.",
-                       min = 0, max = 999, step = 1, value = 7
+                       min = 0, max = 999, step = 1, value = configJSON$storeLogFilesDuration
            ),
-           ########extraClArgs######
-           tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                    textInput("general_args", "Specify extra command line arguments that GAMS will be called with"),
-                    tags$div(id = "clArgs_wrapper"),
-                    tags$div(style = "height:100px;")
-           ),
+           selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with", 
+                          choices = configJSON$extraClArgs, multiple = TRUE, options = list(
+                            'create' = TRUE,
+                            'persist' = FALSE)),
            selectInput("general_scen", "Default scenario comparison mode.", 
                        choices = c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
                         (suited for > 2 scenarios to compare)" = "tab"),
-                       selected = "split"
+                       selected = configJSON$defCompMode
            ),
            tags$div(title = "Save, delete and compare scenarios",
                     tags$label(class = "cb-label", "Activate scenario functionality"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_scen", value = TRUE, label = NULL)
+                                 checkboxInput("general_act_scen", value = configJSON$activateModules$scenario, label = NULL)
                       ))
            ),
            tags$label(class = "cb-label", "Launch App in strict mode? This results in throwing 
            error messages instead of accepting possibly faulty user entries."),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_strict", value = TRUE, label = NULL)
+                        checkboxInput("general_act_strict", value = configJSON$activateModules$strictmode, label = NULL)
              )),
            tags$div(title = "Enables the user to use local data for GAMS runs",
                     tags$label(class = "cb-label", "Activate local data upload module?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_upload", value = TRUE, label = NULL)
+                                 checkboxInput("general_act_upload", value = configJSON$activateModules$loadLocal, label = NULL)
                       ))
            ),
            tags$div(
              tags$label(class = "cb-label", "Enable scenario sharing between different users"),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("general_act_share_scen", value = TRUE, label = NULL)
+                          checkboxInput("general_act_share_scen", value = configJSON$activateModules$sharedScenarios, label = NULL)
                ))
            ),
            tags$div(title = "Efficient generation of multiple scenarios. Designed for scenario runs and sensitivity analisis.",
                     tags$label(class = "cb-label", "Activate Hypercube mode"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_hcube", value = FALSE, label = NULL)
+                                 checkboxInput("general_act_hcube", value = configJSON$activateModules$hcubeMode, label = NULL)
                       ))
            ),
            tags$label(class = "cb-label", "Show log file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_log", value = TRUE, label = NULL)
+                        checkboxInput("general_act_log", value = configJSON$activateModules$logFile, label = NULL)
              )),
            tags$label(class = "cb-label", "Show lst file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_lst", value = TRUE, label = NULL)
+                        checkboxInput("general_act_lst", value = configJSON$activateModules$lstFile, label = NULL)
              )),
            tags$div(title = "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
                     tags$label(class = "cb-label", "Should users be allowed to add attachments to scenarios?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_attach", value = TRUE, label = NULL)
+                                 checkboxInput("general_act_attach", value = configJSON$activateModules$attachments, label = NULL)
                       ))
            ),
            tags$div(title = "If not activated, each input widget is displayed in a separate page.",
@@ -133,7 +121,7 @@ insertUI(selector = "#general_wrapper",
                     aggregated on a single page?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_aggregate", value = TRUE, label = NULL)
+                                 checkboxInput("general_aggregate", value = configJSON$aggregateWidgets, label = NULL)
                       ))
            ),
            textInput("general_input_scalars", "Alias for the input scalars table"),
@@ -142,18 +130,33 @@ insertUI(selector = "#general_wrapper",
                     tags$label(class = "cb-label", "Save trace file with each GAMS run (Hypercube mode)"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_save_trace", value = TRUE, label = NULL)
+                                 checkboxInput("general_save_trace", value = configJSON$saveTraceFile, label = NULL)
                       ))
            ),
-           tags$div(selectInput("general_hidden", "Scalars that should not be displayed in the scalars table 
+           if(length(modelOut[[scalarsOutName]])){
+             tags$div(selectInput("general_hidden", "Scalars that should not be displayed in the scalars table 
                      but can be used in graphs etc.",
-                                choices = c(), multiple = TRUE)
-           ),
+                                  choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                  selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+             )
+           },
            sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
-                       min = 0, max = 6, step = 1, value = 2
+                       min = 0, max = 6, step = 1, value = configJSON$roundingDecimals
            )
          ), 
          where = "beforeEnd")
+
+output$general_logo_preview <- renderImage({
+  rv$customLogoChanged
+  isolate({
+    if(identical(rv$generalConfig$UILogo, "gams_logo.png") || !length(rv$generalConfig$UILogo)){
+      filename <- normalizePath(file.path(getwd(), "www", "gams_logo.png"))
+    }else{
+      filename <- normalizePath(file.path(currentModelDir, "static", rv$generalConfig$UILogo))
+    }
+  })
+  list(src = filename, height = "50px", width = "230px", alt = "custom logo")
+}, deleteFile = FALSE)
 
 
 observeEvent(input$general_language, {
@@ -174,16 +177,36 @@ observeEvent(input$general_empty, {
 
 observeEvent(input$general_logo, {
   if(identical(input$general_logo, FALSE)){
-    rv$config$UILogo <<- "gams_logo.png"
+    rv$generalConfig$UILogo <<- "gams_logo.png"
+    rv$customLogoChanged <<- rv$customLogoChanged + 1L
   }
 })
 observeEvent(input$widget_general_logo_upload, {
-  if(!is.null(input$widget_general_logo_upload)){
-    inFile <<- input$widget_general_logo_upload
-    filePath <<- inFile$datapath
-    fileName <<- inFile$name
-    rv$config$UILogo <<- fileName
+  inFile   <- input$widget_general_logo_upload
+  filePath <- inFile$datapath
+  fileName <- inFile$name
+  if(!dir.exists(file.path(currentModelDir, "static"))){
+    if(!dir.create(file.path(currentModelDir, "static"))){
+      flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", file.path(currentModelDir, "static"))
+      showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+      return()
+    }
+  }else{
+    filesToDelete <- list.files(file.path(currentModelDir, "static"), full.names = TRUE)
+    filesFailedToDelete <- !file.remove(filesToDelete)
+    if(any(filesFailedToDelete)){
+      flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
+      showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+      return()
+    }
   }
+  if(!file.copy(filePath, file.path(currentModelDir, "static", fileName))){
+    flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", filePath, file.path(currentModelDir, "static"))
+    showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+    return()
+  }
+  rv$generalConfig$UILogo <<- fileName
+  rv$customLogoChanged <<- rv$customLogoChanged + 1L
 })
 
 observeEvent(input$general_auto, {
@@ -195,13 +218,6 @@ observeEvent(input$general_save_duration, {
 
 observeEvent(input$general_args, {
   req(length(input$general_args))
-  removeUI(selector = "#clArgs_wrapper .shiny-input-container", multiple = TRUE)
-  insertUI(selector = "#clArgs_wrapper",
-           tagList(
-             textInput("general_args", "Specify extra command line arguments that GAMS will be called with"),
-             addArrayEl(session, "general_args")
-           ), 
-           where = "beforeEnd")
   rv$generalConfig$extraClArgs <<- input$general_args
 })
 
@@ -237,10 +253,16 @@ observeEvent(input$general_aggregate, {
   rv$generalConfig$aggregateWidgets <<- input$general_aggregate
 })
 observeEvent(input$general_input_scalars, {
-  rv$generalConfig$scalarAliases$inputScalars <<- input$general_input_scalars
+  if(nchar(input$general_input_scalars))
+    rv$generalConfig$scalarAliases$inputScalars <<- input$general_input_scalars
+  else
+    rv$generalConfig$scalarAliases$inputScalars <<- NULL
 })
 observeEvent(input$general_output_scalars, {
-  rv$generalConfig$scalarAliases$outputScalars <<- input$general_output_scalars
+  if(nchar(input$general_output_scalars))
+    rv$generalConfig$scalarAliases$outputScalars <<- input$general_output_scalars
+  else
+    rv$generalConfig$scalarAliases$outputScalars <<- NULL
 })
 observeEvent(input$general_save_trace, {
   rv$generalConfig$saveTraceFile <<- input$general_save_trace
@@ -257,22 +279,8 @@ observeEvent(input$general_decimal, {
 #  ==============================
 #          SAVE JSON
 #  ==============================
-observeEvent(input$saveSettings, {
-  ####save selected logo in static folder!! 
-  print(rv$generalConfig)
-  print("####config###")
-  print(print(rv$config))
-  #req(lenth(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
-  #
-  #errMsg <- validateWidgetConfig(rv$widgetConfig)
-  #if(nchar(errMsg)){
-  #  showHideEl(session, "#widgetValidationErr", 5000L, errMsg)
-  #}
-  #if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
-  #  showModal(modalDialog(title = "Data exists", sprintf("A widget configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!", activeSymbol$name), 
-  #                        footer = tagList(modalButton("Cancel"), 
-  #                                         actionButton("saveWidgetConfirm", "Overwrite"))))
-  #  return()
-  #}
-  #rv$saveWidgetConfirm <- rv$saveWidgetConfirm + 1L
+observeEvent(rv$generalConfig, {
+  req(length(rv$generalConfig))
+  configJSON <<- modifyList(configJSON, rv$generalConfig)
+  write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
 })

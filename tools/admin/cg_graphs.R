@@ -739,7 +739,7 @@ observeEvent(input$saveGraph, {
   rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L
 })
 observeEvent(virtualActionButton(input$saveGraphConfirm, rv$saveGraphConfirm), {
-  configJSON$dataRendering[[activeSymbol$name]] <- rv$graphConfig
+  configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)

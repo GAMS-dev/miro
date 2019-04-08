@@ -192,10 +192,6 @@ body_admin <- dashboardBody({
                                       tags$div(id = "general_wrapper"),
                                       tags$div(style = "height:100px;")
                              )
-                    ),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
-                                      actionButton("saveSettings", "Save", icon("save")))
                     )
                 )
               )

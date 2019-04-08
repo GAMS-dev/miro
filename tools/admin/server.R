@@ -25,7 +25,7 @@ optionSection <- function(title, ..., collapsed = FALSE){
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
                        graphConfig = list(outType = "graph", graph = list()), 
-                       widgetConfig = list(),
+                       widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
                        initData = FALSE, widget_type = 0L, saveWidgetConfirm = 0L)
   configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                     simplifyDataFrame = FALSE, 
