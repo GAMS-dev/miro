@@ -636,6 +636,10 @@
                         "description":"Either true or false for entire table to be readonly",
                         "type":"boolean"
                     },
+                    "heatmap":{
+                        "description":"Turn table into a heatmap?",
+                        "type":"boolean"
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
                       "type":["array", "string"],
@@ -1158,6 +1162,12 @@
                "type":"boolean",
                "required":false,
                "default":false
+            },
+            "autoHideNavigation":{  
+               "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
+               "type":"boolean",
+               "required":false,
+               "default":true
             },
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",

@@ -162,7 +162,7 @@ observeEvent(input$localInput, {
   if(any(!isEmptyInput)){
     changeActiveSymbol(which(!isEmptyInput)[1])
   }else if(any(!isEmptyOutput)){
-    changeActiveSymbol(which(!isEmptyOutput)[1])
+    changeActiveSymbol(which(!isEmptyOutput)[1] + length(modelIn))
   }else{
     showErrorMsg("No valid data", "No valid datasets were found. Please upload a properly formatted Excel file with data.")
     return()
@@ -475,7 +475,11 @@ observeEvent(input$bar_mode, {
 })
 observeEvent(input$gams_symbols, {
   req(input$gams_symbols)
-  changeActiveSymbol(match(isolate(input$gams_symbols), names(modelIn)))
+  symbolID <- match(isolate(input$gams_symbols), names(modelIn))
+  if(is.na(symbolID)){
+    symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
+  }
+  changeActiveSymbol(symbolID)
   updateTextInput(session, "chart_title", value = activeSymbol$alias)
 })
 observeEvent({

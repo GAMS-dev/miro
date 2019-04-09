@@ -382,4 +382,38 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
     setTimeout(addArrayDataElWrapper, 200, arrayID);
   });
+  
+  var colorPickerBinding = new Shiny.InputBinding();
+  $.extend(colorPickerBinding, {
+    find: function(scope) {
+      return $(scope).find(".miro-color-picker");
+    },
+    getValue: function(el) {
+      return $(el).val();
+    },
+    setValue: function(el, value) {
+      $(el).setColor(value);
+    },
+    subscribe: function(el, callback) {
+      $(el).on("change.colorPickerBinding", function(e) {
+        callback(true);
+      });
+    },
+    getRatePolicy: function() {
+      return {
+        policy: 'debounce',
+        delay: 250
+      };
+    },
+    initialize: function(el) {
+      $(el).colorpicker({
+        align: "left"
+      });
+    },
+    unsubscribe: function(el) {
+      $(el).off(".colorPickerBinding");
+    }
+  });
+  
+  Shiny.inputBindings.register(colorPickerBinding);
 });

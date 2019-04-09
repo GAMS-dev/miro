@@ -27,9 +27,11 @@ body_admin <- dashboardBody({
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "admin/bootstrap-colorpicker.min.css"),
       tags$script(src = "mirosc.js", type = "application/javascript"),
       tags$script(src = "miro.js", type = "application/javascript"),
       tags$script(src = "admin/miro_admin.js", type = "application/javascript"),
+      tags$script(src = "admin/bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$style(HTML(paste0('
 .main-header .logo {
                              background-image: url("gams_logo.png");
@@ -182,10 +184,6 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_gen",
               fluidRow(
                 box(title = "General settings", status="primary", solidHeader = TRUE, width = 12,
-                    #tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
-                    #tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
-                    #tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
-                    #         "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
                     tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                             tags$div(id = "general_wrapper"),
@@ -197,31 +195,24 @@ body_admin <- dashboardBody({
       tabItem(tabName = "tables_gen",
         fluidRow(
           box(title = "General table settings", status="primary", solidHeader = TRUE, width = 12,
-             # tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
-             # tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
-             # tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
-             #          "An unexpected error occurred. If this problem persists, please contact the system administrator."),
               tags$div(class = "space"),
               tags$div(class = "col-sm-6",
                        tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                                 radioButtons("table_type", label = "Which table type would you like to configure?",
-                                             choices = c("input table" = "hot", "output table" = "dt", "pivot table" = "piv"), 
-                                             selected = "in"),
+                                             choices = c("input table" = "hot", "output table" = "dt"), 
+                                             selected = "hot"),
                                 tags$div(id = "table_wrapper"),
-                                #tags$div(id = "table_hot_options"),
-                                #tags$div(id = "table_dt_options"),
                                 tags$div(style = "height:100px;")
                        )
               ),
               tags$div(class = "col-sm-6", style = "text-align:right;",
-                      #tags$div(id = "preview-error", class = "err-msg",
-                      #         textOutput("preview-errmsg")),
                       tags$div(id = "preview-output-hot", 
                                rHandsontableOutput("table_preview_hot")),
                       tags$div(id = "preview-output-dt", style = "display:none;",
-                               dataTableOutput("table_preview_dt")),
-                      tags$div(style = "margin-top: 50px; margin-bottom:50px;",
-                               actionButton("saveTable", "Save", icon("save")))
+                               renderDataUI("table_preview_dt", type = "datatable", 
+                                            graphTool = "plotly", 
+                                            height = 700, 
+                                            noDataTxt = lang$nav$outputScreen$boxResults$noData))
              )
           )
     )

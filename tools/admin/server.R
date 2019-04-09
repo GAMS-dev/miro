@@ -21,6 +21,11 @@ optionSection <- function(title, ..., collapsed = FALSE){
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
            )
 }
+colorPickerInput <- function(id, value, label = NULL){
+  HTML(paste0('<div class="form-group shiny-input-container">
+    <label for="', id, '">', label, '</label>
+      <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />'))
+}
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,

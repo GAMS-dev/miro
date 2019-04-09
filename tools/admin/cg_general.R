@@ -16,7 +16,7 @@ insertUI(selector = "#general_wrapper",
            selectInput("general_skin", "Skin to use for dashboard", 
                        choices = c("black", "blue", "purple", "green", "red", "yellow"),
                        selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else "black"),
-           tags$label(class = "cb-label",
+           tags$label(class = "cb-label", "for" = "general_parent",
                       "Include parent directory of the model folder 
            in your model runs (e.g. because several models share files)?"),
            tags$div(
@@ -24,7 +24,7 @@ insertUI(selector = "#general_wrapper",
                         checkboxInput("general_parent", value = configJSON$includeParentDir, label = NULL)
              )),
            tags$div(title = "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
-                    tags$label(class = "cb-label",
+                    tags$label(class = "cb-label", "for" = "general_meta",
                                "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
@@ -32,7 +32,7 @@ insertUI(selector = "#general_wrapper",
                       ))
            ),
            tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
-                    tags$label(class = "cb-label",
+                    tags$label(class = "cb-label", "for" = "general_empty",
                                "Include empty sheets in the Excel file"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
@@ -44,7 +44,7 @@ insertUI(selector = "#general_wrapper",
                      multiple = FALSE,
                      accept = c(".png", ".PNG", ".jpg", ".JPG")),
            imageOutput("general_logo_preview", height = "50px", width = "230px"),
-           tags$label(class = "cb-label",
+           tags$label(class = "cb-label", "for" = "general_auto",
                       "Generate graphs for each input sheet automatically (pivot tool)"),
            tags$div(
              tags$label(class = "checkbox-material", 
@@ -56,8 +56,8 @@ insertUI(selector = "#general_wrapper",
             only supported in the MIRO base mode.",
                        min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else 7L
            ),
-           selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with", 
-                          choices = configJSON$extraClArgs, multiple = TRUE, options = list(
+           selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)", 
+                          choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, multiple = TRUE, options = list(
                             'create' = TRUE,
                             'persist' = FALSE)),
            selectInput("general_scen", "Default scenario comparison mode.", 
@@ -66,58 +66,58 @@ insertUI(selector = "#general_wrapper",
                        selected = configJSON$defCompMode
            ),
            tags$div(title = "Save, delete and compare scenarios",
-                    tags$label(class = "cb-label", "Activate scenario functionality"),
+                    tags$label(class = "cb-label", "for" = "general_act_scen", "Activate scenario functionality"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_scen", value = if(identical(configJSON$activateModules$scenario, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
-           tags$label(class = "cb-label", "Launch App in strict mode? This results in throwing 
+           tags$label(class = "cb-label", "for" = "general_act_strict", "Launch App in strict mode? This results in throwing 
            error messages instead of accepting possibly faulty user entries."),
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_act_strict", value = if(identical(configJSON$activateModules$strictmode, FALSE)) FALSE else TRUE, label = NULL)
              )),
            tags$div(title = "Enables the user to use local data for GAMS runs",
-                    tags$label(class = "cb-label", "Activate local data upload module?"),
+                    tags$label(class = "cb-label", "for" = "general_act_upload", "Activate local data upload module?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_upload", value = if(identical(configJSON$activateModules$loadLocal, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(
-             tags$label(class = "cb-label", "Enable scenario sharing between different users"),
+             tags$label(class = "cb-label", "for" = "general_act_share_scen", "Enable scenario sharing between different users"),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("general_act_share_scen", value = if(identical(configJSON$activateModules$sharedScenarios, FALSE)) FALSE else TRUE, label = NULL)
                ))
            ),
            tags$div(title = "Efficient generation of multiple scenarios. Designed for scenario runs and sensitivity analisis.",
-                    tags$label(class = "cb-label", "Activate Hypercube mode"),
+                    tags$label(class = "cb-label", "for" = "general_act_hcube", "Activate Hypercube mode"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_hcube", value = configJSON$activateModules$hcubeMode, label = NULL)
                       ))
            ),
-           tags$label(class = "cb-label", "Show log file in UI"),
+           tags$label(class = "cb-label", "for" = "general_act_log", "Show log file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_act_log", value = if(identical(configJSON$activateModules$logFile, FALSE)) FALSE else TRUE, label = NULL)
              )),
-           tags$label(class = "cb-label", "Show lst file in UI"),
+           tags$label(class = "cb-label", "for" = "general_act_lst", "Show lst file in UI"),
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_act_lst", value = if(identical(configJSON$activateModules$lstFile, FALSE)) FALSE else TRUE, label = NULL)
              )),
            tags$div(title = "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
-                    tags$label(class = "cb-label", "Should users be allowed to add attachments to scenarios?"),
+                    tags$label(class = "cb-label", "for" = "general_act_attach", "Should users be allowed to add attachments to scenarios?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_attach", value = if(identical(configJSON$activateModules$attachments, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
            tags$div(title = "If not activated, each input widget is displayed in a separate page.",
-                    tags$label(class = "cb-label", "Should all input widgets (slider, dropdown menu, etc.) be
+                    tags$label(class = "cb-label", "for" = "general_aggregate", "Should all input widgets (slider, dropdown menu, etc.) be
                     aggregated on a single page?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
@@ -127,7 +127,7 @@ insertUI(selector = "#general_wrapper",
            textInput("general_input_scalars", "Alias for the input scalars table"),
            textInput("general_output_scalars", "Alias for the output scalars table"),
            tags$div(title = "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
-                    tags$label(class = "cb-label", "Save trace file with each GAMS run (Hypercube mode)"),
+                    tags$label(class = "cb-label", "for" = "general_save_trace", "Save trace file with each GAMS run (Hypercube mode)"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_save_trace", value = if(identical(configJSON$saveTraceFile, FALSE)) FALSE else TRUE, label = NULL)
@@ -142,6 +142,9 @@ insertUI(selector = "#general_wrapper",
            },
            sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
                        min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
+           ),
+           colorPickerInput("general_pivotcolor", label = "Background color of row and column headers in pivot tables.",
+                            value = "rgb(255, 128, 0)"
            )
          ), 
          where = "beforeEnd")
@@ -275,10 +278,13 @@ observeEvent(input$general_hidden, {
 observeEvent(input$general_decimal, {
   rv$generalConfig$roundingDecimals <<- input$general_decimal
 })
+observeEvent(input$general_pivotcolor, {
+  rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
+})
 
-#  ==================================
+#  =======================================
 #          SAVE JSON (automatically)
-#  ==================================
+#  =======================================
 observeEvent(rv$generalConfig, {
   req(length(rv$generalConfig))
   configJSON <<- modifyList(configJSON, rv$generalConfig)

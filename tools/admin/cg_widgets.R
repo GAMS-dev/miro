@@ -86,6 +86,21 @@ observeEvent({input$widget_type
   rv$widget_type}, {
     req(length(input$widget_type) > 0L)
   if(identical(input$widget_type, "table")){
+    insertUI(selector = "#widget_options",
+             tagList(
+               tags$label(class = "cb-label", "for" = "table_readonly", "Should table be readonly?"),
+               tags$div(
+                 tags$label(class = "checkbox-material",
+                            checkboxInput("table_readonly", value = FALSE, label = NULL)
+                 )),
+               selectInput("table_readonlyCols", "Select certain columns to be readonly", choices = c()),
+               tags$label(class = "cb-label", "for" = "table_heatmap", "Turn table into a heatmap?"),
+               tags$div(
+                 tags$label(class = "checkbox-material", 
+                            checkboxInput("table_heatmap", value = FALSE, label = NULL)
+                 ))
+             ), 
+             where = "beforeEnd")
     output$table_preview <- renderRHandsontable(rhandsontable(tibble("Column 1" = 1:10, "Column 2" = letters[1:10])))
     output$widget_preview <- renderUI("")
     showEl(session, "#table_preview")
