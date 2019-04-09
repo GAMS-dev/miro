@@ -730,12 +730,8 @@ observeEvent(input$btSolve, {
             traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% modelName %+%".trc", 
                                         traceColNames)
           }, error = function(e){
-            flog.error("Problems loading trace data. Error message: %s.", e)
-            errMsg <<- lang$errMsg$readOutput$desc
+            flog.info("Problems loading trace data. Error message: %s.", e)
           })
-          if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-            return()
-          }
         }
         
         GAMSResults <- NULL
