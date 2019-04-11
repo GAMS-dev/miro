@@ -110,6 +110,42 @@ getInputToImport <- function(data, keywordsNoImport){
   return(dataToImport)
 }
 
+getWidgetDependencies <- function(widgetType, depString){
+  if(!is.character(depString) || length(depString) != 1L){
+    return(character(0L))
+  }
+  switch(widgetType,
+         slider = {
+           widgetDepTmp <- strsplit(substr(depString, 1L, 
+                                           nchar(depString) - 1L), "(", fixed = TRUE)[[1]]
+           return(c(widgetDepTmp[1], strsplit(widgetDepTmp[2], "$", fixed = TRUE)[[1]]))
+         },
+         dropdown = {
+           if(!grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", depString)){
+             # no dependencies
+             return(character(0L))
+           }
+           if(startsWith(depString, "$")){
+             if(endsWith(depString, "$")){
+               depString <- substr(depString, 2L, nchar(depString) - 1L)
+               depID <- 2L
+             }else{
+               depString <- substr(depString, 2L, nchar(depString))
+               depID <- 0L
+             }
+           }else if(endsWith(depString, "$")){
+             depString <- substr(depString, 1L, nchar(depString) - 1L)
+             depID <- 1L
+           }else{
+             depID <- 0L
+           }
+           return(c(depID, strsplit(depString, "$", fixed = TRUE)[[1]]))
+         },
+         {
+           return(character(0L))
+         })
+}
+
 getInputType <- function(data, keywordsType){
   # Retrieves input type from JSOn file based on keyword list
   #

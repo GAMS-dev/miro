@@ -556,7 +556,7 @@ getChartOptions <- reactive({
     selectInput("chart_color", "Symbol that is used to select different colors",
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
-                  textInput("paper_bgcolor", "What background color shall the paper have?"),
+                  colorPickerInput("paper_bgcolor", "What background color shall the paper have?", value = NULL),
                   textInput("plot_bgcolor", "What background color shall the plot have?"),
                   checkboxInput("showlegend", "Show legend?"),
                   getAxisOptions("x", names(indices)[1]),
@@ -740,9 +740,12 @@ observeEvent(input$saveGraph, {
                                            actionButton("saveGraphConfirm", "Overwrite"))))
     return()
   }
+  print('asd')
   rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L
 })
-observeEvent(virtualActionButton(input$saveGraphConfirm, rv$saveGraphConfirm), {
+observeEvent(input$saveGraphConfirm, rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L)
+observeEvent(rv$saveGraphConfirm, {
+  req(rv$saveGraphConfirm > 0L)
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()

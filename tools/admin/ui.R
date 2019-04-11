@@ -98,7 +98,7 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_graph",
               fluidRow(
                 box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-error"),
+                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success", "Graph configuration was updated successfully"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),
@@ -143,7 +143,7 @@ body_admin <- dashboardBody({
       tabItem(tabName = "new_widget",
               fluidRow(
                 box(title = "Configure input widgets", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-error"),
+                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-success", "Widget configuration was updated successfully"),
                     tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
@@ -167,7 +167,8 @@ body_admin <- dashboardBody({
                                         condition = "input.widget_symbol_type == 'dd'",
                                         textInput("widget_clPar", "Name of the double-dash parameter (without '--')")
                                       ),
-                                      tags$div(id = "widget_wrapper"),
+                                      selectInput("widget_type", "Select the type of widget you want to use", choices = c()),
+                                      tags$div(id = "widget_options"),
                                       tags$div(style = "height:100px;")
                              )
                     ),

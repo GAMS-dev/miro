@@ -183,7 +183,7 @@ function hcHashImport(sid) {
 
 function showHideEl(el, delay) {
   var msg = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-  if(msg.length){
+  if(msg !== null){
     $(el).text(msg);
   }
   $(el).show().delay(delay).fadeOut();

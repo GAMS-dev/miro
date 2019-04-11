@@ -26,12 +26,25 @@ colorPickerInput <- function(id, value, label = NULL){
     <label for="', id, '">', label, '</label>
       <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />'))
 }
+inputSymMultiDim <- setNames(names(modelIn), modelInAlias)
+inputSymMultiDim <- inputSymMultiDim[vapply(modelIn, function(el){
+  if(is.null(el$headers))
+    return(FALSE)
+  else
+    return(TRUE)}, logical(1L), USE.NAMES = FALSE)]
+inputSymHeaders <- lapply(inputSymMultiDim, function(el){
+  headers <- modelIn[[el]]$headers
+  return(setNames(names(headers), vapply(headers, "[[", character(1L), "alias", USE.NAMES = FALSE)))
+})
+names(inputSymHeaders) <- unname(inputSymMultiDim)
+allInputSymHeaders <- setNames(unlist(inputSymHeaders, use.names = FALSE), unlist(lapply(inputSymHeaders, names), use.names = FALSE))
+allInputSymHeaders <- allInputSymHeaders[!duplicated(allInputSymHeaders)]
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
                        graphConfig = list(outType = "graph", graph = list()), 
                        widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
-                       initData = FALSE, widget_type = 0L, saveWidgetConfirm = 0L)
+                       initData = FALSE, widget_type = 0L, widget_symbol = 0L, saveWidgetConfirm = 0L)
   configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                     simplifyDataFrame = FALSE, 
                                                     simplifyMatrix = FALSE))

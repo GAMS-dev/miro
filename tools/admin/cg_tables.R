@@ -247,7 +247,10 @@ observeEvent(input$dt_buttons, {
   }else{
     rv$tableConfig$datatable$options$dom <<- NULL
     rv$tableConfig$datatable$options$buttons <<- NULL
-    rv$tableConfig$datatable$extensions <<- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
+    newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
+    if(!length(newExtensionsVector))
+      newExtensionsVector <- NULL
+    rv$tableConfig$datatable$extensions <<- newExtensionsVector
   }
 })
 observeEvent(input$dt_colReorder, {
@@ -256,7 +259,10 @@ observeEvent(input$dt_colReorder, {
     rv$tableConfig$datatable$extensions <<- c(rv$tableConfig$datatable$extensions, "ColReorder")
   }else{
     rv$tableConfig$datatable$options$colReorder <<- NULL
-    rv$tableConfig$datatable$extensions <<- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "ColReorder"]
+    newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "ColReorder"]
+    if(!length(newExtensionsVector))
+      newExtensionsVector <- NULL
+    rv$tableConfig$datatable$extensions <<- newExtensionsVector
   }
 })
 
