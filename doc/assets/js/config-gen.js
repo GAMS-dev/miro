@@ -3396,9 +3396,9 @@ function launchConfigGen(gmsSym, gmsSymIn, gmsSymHdr, gmsSymHdrIn, gmsSymNumHdr,
                                   co.dataRendering[grname].graph.title = co.dataRendering[grname].graphtitle;
                                   delete co.dataRendering[grname].graphtitle;
                                }
-                               //dyGraphs
+                               //dygraphs
                                if(co.dataRendering[grname].graph.choice === "UseDygraphs"){
-                                  co.dataRendering[grname].graph.tool = "dyGraphs";
+                                  co.dataRendering[grname].graph.tool = "dygraphs";
                                   $.extend(co.dataRendering[grname].graph,co.dataRendering[grname].graph.dygraphs);
                                   delete co.dataRendering[grname].graph.dygraphs;
                                   //dyEvent object needs a name of GAMS Symbol ("eventdata")
