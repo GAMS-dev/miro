@@ -399,6 +399,32 @@
                      "minimum":0,
                      "maximum":6
                    },
+                   "daysofweekdisabled":{
+                     "description":"disallow certain days of week to be selected",
+                     "type": "array",
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"integer",
+                       "minimum":0,
+                       "maximum":6
+                     }
+                   },
+                   "datesdisabled":{
+                     "description":"disallow certain dates to be selected",
+                     "type": "array",
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"string",
+                       "minLength":10,
+                       "maxLength":10
+                     }
+                   },
+                   "autoclose":{  
+                     "description":"Whether or not to close the datepicker immediately when a date is selected",
+                     "type":"boolean"
+                   },
                    "width":{  
                      "description":"width of the input",
                      "type":[  

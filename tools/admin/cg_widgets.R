@@ -20,7 +20,6 @@ validateWidgetConfig <- function(widgetJSON){
   if(!length(widgetJSON$alias) || nchar(widgetJSON$alias) < 1L){
     return("The element's alias must not be empty.")
   }
-  # TODO: VALIDATE WIDGETS
   switch(widgetJSON$widgetType, 
          slider = ,
          sliderrange = {
@@ -37,9 +36,6 @@ validateWidgetConfig <- function(widgetJSON){
            }
            if(!is.numeric(widgetJSON$step)){
              return("The step size must be a number!")
-           }
-           if(!is.numeric(widgetJSON$width)){
-             return("The width must be a number!")
            }
          },
          dropdown = {
@@ -60,10 +56,40 @@ validateWidgetConfig <- function(widgetJSON){
            }
          },
          date = {
-           
+           defDate <- NULL
+           minDate <- NULL
+           maxDate <- NULL
+           try(defDate <- as.Date(widgetJSON$value))
+           try(minDate <- as.Date(widgetJSON$min))
+           try(maxDate <- as.Date(widgetJSON$max))
+           if(is.null(defDate) || is.null(minDate) || is.null(maxDate)){
+             return("Either default, minimum or maximum date is of bad format!")
+           }
+           if(startDate > endDate){
+             return("The start date must be before the end date!")
+           }
+           if(minDate > maxDate){
+             return("The minimum date must be before the maximum date!")
+           }
          },
          daterange = {
-           
+           startDate <- NULL
+           endDate   <- NULL
+           minDate <- NULL
+           maxDate <- NULL
+           try(startDate <- as.Date(widgetJSON$start))
+           try(endDate   <- as.Date(widgetJSON$end))
+           try(minDate   <- as.Date(widgetJSON$min))
+           try(maxDate   <- as.Date(widgetJSON$max))
+           if(is.null(startDate) || is.null(endDate) || is.null(minDate) || is.null(maxDate)){
+             return("Either start, end, minimum or maximum date is of bad format")
+           }
+           if(startDate > endDate){
+             return("The start date must be before the end date!")
+           }
+           if(minDate > maxDate){
+             return("The minimum date must be before the maximum date!")
+           }
          },
          table = {
            if(!is.logical(widgetJSON$readonly)){
@@ -227,7 +253,6 @@ observeEvent({input$widget_type
                                    default = if(length(currentConfig$default)) currentConfig$default else 2L,
                                    step = if(length(currentConfig$step)) currentConfig$step else 2L,
                                    ticks = identical(currentConfig$ticks, TRUE),
-                                   width = if(length(currentConfig$width)) currentConfig$width else 100L,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -237,8 +262,8 @@ observeEvent({input$widget_type
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                        tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container",
+                        tags$div(class = "col-sm-8",
                                  conditionalPanel(condition = "input.slider_min_dep_selector===true",
                                                   numericInput("slider_min", "Minimum value", 
                                                                value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)
@@ -256,7 +281,7 @@ observeEvent({input$widget_type
                                                                           "Standard Deviation" = "sd"),
                                                               selected = dynamicMin[1])
                                  )),
-                        tags$div(class = "col-sm-2",
+                        tags$div(class = "col-sm-4",
                                  tags$div(class = "shiny-input-container",
                                           tags$label(class = "cb-label", "for" = "slider_min_dep_selector", "Static minimum?"),
                                           tags$div(
@@ -266,8 +291,8 @@ observeEvent({input$widget_type
                                             ))
                                  ))
                       ),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                               tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_max_dep_selector===true",
                                                          numericInput("slider_max", "Maximum value", 
                                                                       value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L)
@@ -285,7 +310,7 @@ observeEvent({input$widget_type
                                                                                  "Standard Deviation" = "sd"),
                                                                      selected = dynamicMax[1])
                                         )),
-                               tags$div(class = "col-sm-2",
+                               tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
                                                  tags$label(class = "cb-label", "for" = "slider_min_dep_selector", "Static maximum?"),
                                                  tags$div(
@@ -295,8 +320,8 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                               tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_def_dep_selector===true",
                                                          numericInput("slider_def", "Default value", 
                                                                       value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L)
@@ -314,7 +339,7 @@ observeEvent({input$widget_type
                                                                                  "Standard Deviation" = "sd"),
                                                                      selected = dynamicDef[1])
                                         )),
-                               tags$div(class = "col-sm-2",
+                               tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
                                                  tags$label(class = "cb-label", "for" = "slider_def_dep_selector", "Static default?"),
                                                  tags$div(
@@ -332,8 +357,6 @@ observeEvent({input$widget_type
                                             checkboxInput("slider_ticks", value = rv$widgetConfig$ticks, label = NULL)
                                  ))
                       ),
-                      sliderInput("slider_width", "Width of slider (%)", 0, 100, value = rv$widgetConfig$width,
-                                  ticks = FALSE),
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "widget_hcube", 
                                           "Should element be expanded automatically in Hypercube mode?"),
@@ -361,7 +384,6 @@ observeEvent({input$widget_type
                                    default = if(length(currentConfig$default) > 1L) currentConfig$default else c(2L, 5L),
                                    step = if(length(currentConfig$step)) currentConfig$step else 2L,
                                    ticks = identical(currentConfig$ticks, TRUE),
-                                   width = if(length(currentConfig$width)) currentConfig$width else 100L,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -371,8 +393,8 @@ observeEvent({input$widget_type
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                               tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_min_dep_selector===true",
                                                          numericInput("slider_min", "Minimum value", 
                                                                       value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)
@@ -390,7 +412,7 @@ observeEvent({input$widget_type
                                                                                  "Standard Deviation" = "sd"),
                                                                      selected = dynamicMin[1])
                                         )),
-                               tags$div(class = "col-sm-2",
+                               tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
                                                  tags$label(class = "cb-label", "for" = "slider_min_dep_selector", "Static minimum?"),
                                                  tags$div(
@@ -400,8 +422,8 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                               tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_max_dep_selector===true",
                                                          numericInput("slider_max", "Maximum value", 
                                                                       value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L)
@@ -419,7 +441,7 @@ observeEvent({input$widget_type
                                                                                  "Standard Deviation" = "sd"),
                                                                      selected = dynamicMax[1])
                                         )),
-                               tags$div(class = "col-sm-2",
+                               tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
                                                  tags$label(class = "cb-label", "for" = "slider_min_dep_selector", "Static maximum?"),
                                                  tags$div(
@@ -441,8 +463,6 @@ observeEvent({input$widget_type
                                             checkboxInput("slider_ticks", value = rv$widgetConfig$ticks, label = NULL)
                                  ))
                       ),
-                      sliderInput("slider_width", "Width of slider (%)", 0, 100, value = rv$widgetConfig$width,
-                                  ticks = FALSE),
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "widget_hcube", 
                                           "Should element be expanded automatically in Hypercube mode?"),
@@ -476,8 +496,8 @@ observeEvent({input$widget_type
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
-                      tags$div(class = "column-wrapper shiny-input-container",
-                               tags$div(class = "col-sm-10",
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.dd_choice_dep_selector===true",
                                                          selectizeInput("dd_choices", "Choices to select from", 
                                                                         if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -494,7 +514,7 @@ observeEvent({input$widget_type
                                         ),
                                         conditionalPanel(condition = "input.dd_choice_dep_selector!==true",
                                                          selectInput("dd_choice_dep", "Select symbol and header to depend upon", 
-                                                                     choices = c(c("All" = "$"), inputSymMultiDim), 
+                                                                     choices = c(c("All" = ""), inputSymMultiDim), 
                                                                                  selected = dynamicChoices[2]),
                                                          selectInput("dd_choice_dep_header", NULL, 
                                                                      choices = if(length(dynamicChoices)) inputSymHeaders[[dynamicChoices[2]]] else
@@ -505,7 +525,7 @@ observeEvent({input$widget_type
                                                                                  "Forward and Backward" = "2"),
                                                                      selected = dynamicChoices[1])
                                         )),
-                               tags$div(class = "col-sm-2",
+                               tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
                                                  tags$label(class = "cb-label", "for" = "dd_choice_dep_selector", "Static choices?"),
                                                  tags$div(
@@ -547,14 +567,144 @@ observeEvent({input$widget_type
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                                value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "cb_default", 
+                               tags$label(class = "cb-label", "for" = "widget_value", 
                                           "Default value"),
                                tags$div(
                                  tags$label(class = "checkbox-material", 
-                                            checkboxInput("cb_default", value = rv$widgetConfig$value, 
+                                            checkboxInput("widget_value", value = rv$widgetConfig$value, 
+                                                          label = NULL)
+                                 ))
+                      ),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "widget_hcube", 
+                                          "Should element be expanded automatically in Hypercube mode?"),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
+                                                          label = NULL)
+                                 ))
+                      )
+                    ), 
+                    where = "beforeEnd")
+           
+           output$widget_preview <- renderUI({
+             tagList(
+               tags$label(class = "cb-label", "for" = "checkbox_preview", 
+                          rv$widgetConfig$label), 
+               tags$div(
+                 tags$label(class = "checkbox-material", "for" = "checkbox_preview", 
+                            checkboxInput("checkbox_preview", label = rv$widgetConfig$label,
+                                          value = rv$widgetConfig$value))
+               )
+             )
+           })
+         },
+         date = {
+           rv$widgetConfig <- list(widgetType = "date",
+                                   alias = currentConfig$alias,
+                                   label = currentConfig$label,
+                                   value = currentConfig$value,
+                                   min   = currentConfig$min,
+                                   max   = currentConfig$max,
+                                   format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
+                                   startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
+                                   weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
+                                   daysofweekdisabled = currentConfig$daysofweekdisabled,
+                                   autoclose = identical(currentConfig$autoclose, FALSE),
+                                   noHcube = identical(currentConfig$noHcube, TRUE))
+           insertUI(selector = "#widget_options",
+                    tagList(
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_def_off!==true",
+                                                         dateInput("date_default", "Choose the default date", value = rv$widgetConfig$value)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_def_off", "Use current date"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_def_off", 
+                                                                            value = is.null(rv$widgetConfig$value), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_min_off!==true",
+                                                         dateInput("date_min", "Choose the minimum allowed date", value = rv$widgetConfig$min)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_min_off", "No minimum?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_min_off", 
+                                                                            value = is.null(rv$widgetConfig$min), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_max_off!==true",
+                                                         dateInput("date_max", "Choose the maximum allowed date", 
+                                                                   value = rv$widgetConfig$max)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_max_off", "No maximum?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_max_off", 
+                                                                            value = is.null(rv$widgetConfig$max), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_format_custom_selector!==true",
+                                                         selectInput("date_format", "Choose how you want the date to be formatted.",
+                                                                     choices = dateFormatChoices, 
+                                                                     selected = if(rv$widgetConfig$format %in% dateFormatChoices) rv$widgetConfig$format
+                                                                     else NULL)
+                                        ),
+                                        conditionalPanel(condition = "input.date_format_custom_selector===true",
+                                                         textInput("date_format_custom", "Enter a custom date format",
+                                                                   value = rv$widgetConfig$format)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_format_custom_selector", "Custom date format?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_format_custom_selector", 
+                                                                            value = !rv$widgetConfig$format %in% dateFormatChoices, 
+                                                                            label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      selectInput("date_startview", "What date range is shown per default?", 
+                                  choices = c("Month" = "month", "Year" = "year", "Decade" = "decade")),
+                      selectInput("date_weekstart", "What day shall be the start of the week?", 
+                                  choices = c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L, 
+                                              "Wednesday" = 3L, "Thursday" = 4L, "Friday" = 5L, "Saturday" = 6L),
+                                  selected = 0L),
+                      selectInput("date_daysdisabled", "Select weekdays that you want to disable", 
+                                  choices = c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L, 
+                                              "Wednesday" = 3L, "Thursday" = 4L, "Friday" = 5L, "Saturday" = 6L),
+                                  selected = rv$widgetConfig$daysofweekdisabled, multiple = TRUE),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "date_autoclose", 
+                                          "Should datepicker be closed immediately when a date is selected?"),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("date_autoclose", value = rv$widgetConfig$autoclose, 
                                                           label = NULL)
                                  ))
                       ),
@@ -570,30 +720,182 @@ observeEvent({input$widget_type
                     ), 
                     where = "beforeEnd")
            output$widget_preview <- renderUI({
-             tagList(
-               tags$label(class = "cb-label", "for" = "checkbox_preview", 
-                          rv$widgetConfig$label), 
-               tags$div(
-                 tags$label(class = "checkbox-material", "for" = "checkbox_preview", 
-                            checkboxInput("checkbox_preview", label = NULL, value = rv$widgetConfig$value))
-               )
-             )
+             dateInput("date_preview", label = rv$widgetConfig$label,
+                       value = rv$widgetConfig$value, min = rv$widgetConfig$min, max = rv$widgetConfig$max,
+                       format = rv$widgetConfig$format, startview = rv$widgetConfig$startview, 
+                       weekstart = rv$widgetConfig$weekstart, daysofweekdisabled = rv$widgetConfig$daysofweekdisabled,
+                       autoclose = rv$widgetConfig$autoclose)
            })
-         },
-         date = {
-           output$widget_preview <- renderUI({
-             dateInput("date_preview", "I am a date selector")
-           })
-           rv$widgetConfig$widgetType <<- "date"
          },
          daterange = {
+           rv$widgetConfig <- list(widgetType = "daterange",
+                                   alias = currentConfig$alias,
+                                   label = currentConfig$label,
+                                   start = currentConfig$start,
+                                   end   = currentConfig$end,
+                                   min   = currentConfig$min,
+                                   max   = currentConfig$max,
+                                   format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
+                                   startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
+                                   weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
+                                   separator = if(length(currentConfig$separator)) currentConfig$separator else " to ",
+                                   autoclose = identical(currentConfig$autoclose, FALSE),
+                                   noHcube = identical(currentConfig$noHcube, TRUE))
+           insertUI(selector = "#widget_options",
+                    tagList(
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_start_off!==true",
+                                                         dateInput("date_start", "Choose the default start date", value = rv$widgetConfig$start)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_start_off", "Use current date"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_start_off", 
+                                                                            value = is.null(rv$widgetConfig$start), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_end_off!==true",
+                                                         dateInput("date_start", "Choose the default end date", 
+                                                                   value = rv$widgetConfig$end)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_end_off", "Use current date"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_end_off", 
+                                                                            value = is.null(rv$widgetConfig$end), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_min_off!==true",
+                                                         dateInput("date_min", "Choose the minimum allowed date", value = rv$widgetConfig$min)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_min_off", "No minimum?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_min_off", 
+                                                                            value = is.null(rv$widgetConfig$min), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_max_off!==true",
+                                                         dateInput("date_max", "Choose the maximum allowed date", 
+                                                                   value = rv$widgetConfig$max)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_max_off", "No maximum?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_max_off", 
+                                                                            value = is.null(rv$widgetConfig$max), label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                               tags$div(class = "col-sm-8",
+                                        conditionalPanel(condition = "input.date_format_custom_selector!==true",
+                                                         selectInput("date_format", "Choose how you want the date to be formatted.",
+                                                                     choices = dateFormatChoices, 
+                                                                     selected = if(rv$widgetConfig$format %in% dateFormatChoices) rv$widgetConfig$format
+                                                                     else NULL)
+                                        ),
+                                        conditionalPanel(condition = "input.date_format_custom_selector===true",
+                                                         textInput("date_format_custom", "Enter a custom date format",
+                                                                   value = rv$widgetConfig$format)
+                                        )),
+                               tags$div(class = "col-sm-4",
+                                        tags$div(class = "shiny-input-container",
+                                                 tags$label(class = "cb-label", "for" = "date_format_custom_selector", "Custom date format?"),
+                                                 tags$div(
+                                                   tags$label(class = "checkbox-material", 
+                                                              checkboxInput("date_format_custom_selector", 
+                                                                            value = !rv$widgetConfig$format %in% dateFormatChoices, 
+                                                                            label = NULL)
+                                                   ))
+                                        ))
+                      ),
+                      selectInput("date_startview", "What date range is shown per default?", 
+                                  choices = c("Month" = "month", "Year" = "year", "Decade" = "decade")),
+                      selectInput("date_weekstart", "What day shall be the start of the week?", 
+                                  choices = c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L, 
+                                              "Wednesday" = 3L, "Thursday" = 4L, "Friday" = 5L, "Saturday" = 6L),
+                                  selected = 0L),
+                      textInput("date_separator", "Select the separator between start and end date selector", 
+                                  value = rv$widgetConfig$separator),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "date_autoclose", 
+                                          "Should datepicker be closed immediately when a date is selected?"),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("date_autoclose", value = rv$widgetConfig$autoclose, 
+                                                          label = NULL)
+                                 ))
+                      ),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "widget_hcube", 
+                                          "Should element be expanded automatically in Hypercube mode?"),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
+                                                          label = NULL)
+                                 ))
+                      )
+                    ), 
+                    where = "beforeEnd")
            output$widget_preview <- renderUI({
-             dateRangeInput("daterange_preview", "I am a date range selector")
+             dateRangeInput("daterange_preview", label = rv$widgetConfig$label,
+                            start = rv$widgetConfig$start, end = rv$widgetConfig$end, 
+                            min = rv$widgetConfig$min, max = rv$widgetConfig$max,
+                            format = rv$widgetConfig$format, startview = rv$widgetConfig$startview, 
+                            weekstart = rv$widgetConfig$weekstart, separator = rv$widgetConfig$separator,
+                            autoclose = rv$widgetConfig$autoclose)
            })
          },
          textinput = {
+           rv$widgetConfig <- list(widgetType = "textinput",
+                                   alias = currentConfig$alias,
+                                   label = currentConfig$label,
+                                   value = if(length(currentConfig$value)) currentConfig$value else "",
+                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
+                                   noHcube = identical(currentConfig$noHcube, TRUE))
+           insertUI(selector = "#widget_options",
+                    tagList(
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                                value = rv$widgetConfig$alias),
+                      textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
+                      textInput("widget_value", "Choose a default value", value = rv$widgetConfig$value),
+                      textInput("text_placeholder", "Choose a placeholder", value = rv$widgetConfig$placeholder),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "widget_hcube", 
+                                          "Should element be expanded automatically in Hypercube mode?"),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
+                                                          label = NULL)
+                                 ))
+                      )
+                    ), 
+                    where = "beforeEnd")
+           
            output$widget_preview <- renderUI({
-             textInput("text_preview", "I am a text input")
+             textInput("textinput_preview", rv$widgetConfig$label, value = rv$widgetConfig$value,
+                       placeholder = rv$widgetConfig$placeholder)
            })
          }
   )
@@ -605,19 +907,6 @@ observeEvent(input$widget_alias, {
 })
 observeEvent(input$widget_label, {
   rv$widgetConfig$label <<- input$widget_label
-  switch(input$widget_type, 
-         slider = ,
-         sliderrange = {
-           updateSliderInput(session, "slider_preview", value = input$slider_preview, 
-                             label = input$widget_label)
-         },
-         dropdown = {
-           updateSelectInput(session, "dropdown_preview", label = input$widget_label)
-         },
-         checkbox = {
-           updateCheckboxInput(session, "checkbox_preview", label = input$widget_label)
-         })
-  
 })
 observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube
@@ -640,7 +929,6 @@ observeEvent(input$table_heatmap, {
 observeEvent(input$slider_min, {
   if(!is.numeric(input$slider_min))
     return()
-  updateSliderInput(session, "slider_preview", min = input$slider_min)
   rv$widgetConfig$min <<- input$slider_min
 })
 observeEvent(input$slider_min_dep, {
@@ -649,7 +937,6 @@ observeEvent(input$slider_min_dep, {
 observeEvent(input$slider_max, {
   if(!is.numeric(input$slider_max))
     return()
-  updateSliderInput(session, "slider_preview", max = input$slider_max)
   rv$widgetConfig$max <<- input$slider_max
 })
 observeEvent(input$slider_max_dep, {
@@ -658,7 +945,6 @@ observeEvent(input$slider_max_dep, {
 observeEvent(input$slider_def, {
   if(!is.numeric(input$slider_def))
     return()
-  updateSliderInput(session, "slider_preview", value = input$slider_def)
   rv$widgetConfig$default <<- input$slider_def
 })
 observeEvent(input$slider_def_dep, {
@@ -668,25 +954,16 @@ observeEvent(input$slider_def1, {
   if(!is.numeric(input$slider_def1))
     return()
   rv$widgetConfig$default[1] <<- input$slider_def1
-  updateSliderInput(session, "slider_preview", value = rv$widgetConfig$default)
 })
 observeEvent(input$slider_def2, {
   if(!is.numeric(input$slider_def2))
     return()
   rv$widgetConfig$default[2] <<- input$slider_def2
-  updateSliderInput(session, "slider_preview", value = rv$widgetConfig$default)
 })
 observeEvent(input$slider_step, {
   if(!is.numeric(input$slider_step))
     return()
-  updateSliderInput(session, "slider_preview", value = input$slider_preview, 
-                    step = input$slider_step)
   rv$widgetConfig$step <<- input$slider_step
-})
-observeEvent(input$slider_width, {
-  if(!is.numeric(input$slider_width))
-    return()
-  rv$widgetConfig$width <<- input$slider_width
 })
 observeEvent(input$slider_ticks, {
   if(!is.logical(input$slider_ticks))
@@ -696,15 +973,10 @@ observeEvent(input$slider_ticks, {
 
 observeEvent(input$dd_choices, {
   rv$widgetConfig$choices <<- input$dd_choices
-  if(identical(length(input$dd_aliases), 0L)){
-    updateSelectInput(session, "dropdown_preview", choices = input$dd_choices)
-  }else if(identical(length(input$dd_choices), length(input$dd_aliases))){
-    updateSelectInput(session, "dropdown_preview", choices = setNames(input$dd_choices, input$dd_aliases))
-  }
   updateSelectInput(session, "dd_default", choices = input$dd_choices)
 })
 observeEvent(input$dd_choice_dep, {
-  if(identical(input$dd_choice_dep, "$")){
+  if(identical(input$dd_choice_dep, "")){
     updateSelectInput(session, "dd_choice_dep_header", 
                       choices = allInputSymHeaders)
   }else{
@@ -713,20 +985,96 @@ observeEvent(input$dd_choice_dep, {
 })
 observeEvent(input$dd_aliases, {
   rv$widgetConfig$aliases <<- input$dd_aliases
-  if(identical(length(input$dd_aliases), 0L)){
-    updateSelectInput(session, "dropdown_preview", choices = input$dd_choices)
-  }else if(identical(length(input$dd_choices), length(input$dd_aliases))){
-    updateSelectInput(session, "dropdown_preview", choices = setNames(input$dd_choices, input$dd_aliases))
-  }
 })
 observeEvent(input$dd_default, {
   rv$widgetConfig$selected <<- input$dd_default
-  updateSelectInput(session, "dropdown_preview", selected = rv$widgetConfig$selected)
 })
 
-observeEvent(input$cb_default, {
-  rv$widgetConfig$value <<- input$cb_default
-  updateCheckboxInput(session, "checkbox_preview", value = rv$widgetConfig$value)
+observeEvent(input$widget_value, {
+  rv$widgetConfig$value <<- input$widget_value
+})
+
+observeEvent(input$date_default, {
+  rv$widgetConfig$value <<- input$date_default
+})
+observeEvent(input$date_def_off, {
+  if(input$date_def_off){
+    rv$widgetConfig$value <<- NULL
+  }else{
+    rv$widgetConfig$value <<- input$date_default
+  }
+})
+observeEvent(input$date_start, {
+  rv$widgetConfig$start <<- input$date_start
+})
+observeEvent(input$date_start_off, {
+  if(input$date_start_off){
+    rv$widgetConfig$start <<- NULL
+  }else{
+    rv$widgetConfig$start <<- input$date_start
+  }
+})
+observeEvent(input$date_end, {
+  rv$widgetConfig$end <<- input$date_end
+})
+observeEvent(input$date_end_off, {
+  if(input$date_end_off){
+    rv$widgetConfig$end <<- NULL
+  }else{
+    rv$widgetConfig$end <<- input$date_end
+  }
+})
+observeEvent(input$date_min, {
+  rv$widgetConfig$min <<- input$date_min
+})
+observeEvent(input$date_min_off, {
+  if(identical(input$date_min_off, TRUE)){
+    rv$widgetConfig$min <<- NULL
+  }else{
+    rv$widgetConfig$min <<- input$date_min
+  }
+})
+observeEvent(input$date_max, {
+  rv$widgetConfig$max <<- input$date_max
+})
+observeEvent(input$date_max_off, {
+  if(input$date_max_off){
+    rv$widgetConfig$max <<- NULL
+  }else{
+    rv$widgetConfig$max <<- input$date_max
+  }
+})
+observeEvent(input$date_format, {
+  rv$widgetConfig$format <<- input$date_format
+})
+observeEvent(input$date_format_custom, {
+  rv$widgetConfig$format <<- input$date_format_custom
+})
+observeEvent(input$date_format_custom_selector, {
+  if(input$date_format_custom_selector){
+    rv$widgetConfig$format <<- input$date_format_custom
+  }else{
+    rv$widgetConfig$format <<- input$date_format
+  }
+})
+observeEvent(input$date_startview, {
+  rv$widgetConfig$startview <<- input$date_startview
+})
+observeEvent(input$date_weekstart, {
+  rv$widgetConfig$weekstart <<- input$date_weekstart
+})
+observeEvent(input$date_daysdisabled, {
+  rv$widgetConfig$daysofweekdisabled <<- input$date_daysdisabled
+})
+observeEvent(input$date_autoclose, {
+  rv$widgetConfig$autoclose <<- input$date_autoclose
+})
+observeEvent(input$date_separator, {
+  rv$widgetConfig$separator <<- input$date_separator
+})
+
+observeEvent(input$text_placeholder, {
+  rv$widgetConfig$placeholder <<- input$text_placeholder
 })
 
 #  ==============================
@@ -751,20 +1099,20 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   
   if(rv$widgetConfig$widgetType %in% c("slider", "sliderrange")){
-    if(identical(input$slider_min_dep_selector, TRUE)){
+    if(identical(input$slider_min_dep_selector, FALSE)){
       rv$widgetConfig$min <<- paste0(input$slider_min_dep_op, "(", input$slider_min_dep, 
-                                     "$", input$slider_min_dep_header)
+                                     "$", input$slider_min_dep_header, ")")
     }
-    if(identical(input$slider_max_dep_selector, TRUE)){
+    if(identical(input$slider_max_dep_selector, FALSE)){
       rv$widgetConfig$max <<- paste0(input$slider_max_dep_op, "(", input$slider_max_dep, 
-                                     "$", input$slider_max_dep_header)
+                                     "$", input$slider_max_dep_header, ")")
     }
-    if(identical(rv$widgetConfig$widgetType, "slider") && identical(input$slider_def_dep_selector, TRUE)){
+    if(identical(rv$widgetConfig$widgetType, "slider") && identical(input$slider_def_dep_selector, FALSE)){
       rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
-                                         "$", input$slider_def_dep_header)
+                                         "$", input$slider_def_dep_header, ")")
     }
   }else if(identical(rv$widgetConfig$widgetType, "dropdown")){
-    if(identical(input$dd_choice_dep_selector, TRUE)){
+    if(identical(input$dd_choice_dep_selector, FALSE)){
       switch(input$dd_choice_dep_type,
              "0" = {
                rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
