@@ -8,11 +8,17 @@ local({
   modelInWithPrefix[isDDPar]  <<- prefixDDPar %+% modelInWithPrefix[isDDPar]
   modelInWithPrefix[isGMSOpt] <<- prefixGMSOpt %+% modelInWithPrefix[isGMSOpt]
 })
+if(length(modelInRaw[[scalarsFileName]])){
+  scalarInputSymWithAliases <- setNames(modelInRaw[[scalarsFileName]]$symnames, 
+                                        modelInRaw[[scalarsFileName]]$symtext)
+}else{
+  scalarInputSymWithAliases <- c()
+}
 widgetSymbols <- setNames(c(modelInWithPrefix, 
-                            if(length(modelIn[[scalarsFileName]])) 
-                              modelIn[[scalarsFileName]]$symnames),  
+                          if(length(modelIn[[scalarsFileName]])) 
+                            modelIn[[scalarsFileName]]$symnames), 
                           c(modelInAlias, 
-                            if(length(modelIn[[scalarsFileName]])) 
+                            if(length(modelIn[[scalarsFileName]]))
                               modelIn[[scalarsFileName]]$symtext))
 
 updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
@@ -114,7 +120,13 @@ observeEvent({input$widget_symbol
       identical(input$widget_symbol_type, "gams"))
   
   currentWidgetSymbolName <<- input$widget_symbol
+  
+  hideEl(session, "#noWidgetConfigMsg")
+  
   if(input$widget_symbol %in% scalarInputSym){
+    if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
+      showEl(session, "#noWidgetConfigMsg")
+    }
     symID <- match(input$widget_symbol, modelInRaw[[scalarsFileName]]$symnames)
     widgetOptions <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
     
@@ -251,7 +263,7 @@ observeEvent({input$widget_type
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = if(length(currentConfig$default)) currentConfig$default else 2L,
-                                   step = if(length(currentConfig$step)) currentConfig$step else 2L,
+                                   step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
@@ -382,7 +394,7 @@ observeEvent({input$widget_type
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = if(length(currentConfig$default) > 1L) currentConfig$default else c(2L, 5L),
-                                   step = if(length(currentConfig$step)) currentConfig$step else 2L,
+                                   step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
@@ -1086,11 +1098,6 @@ observeEvent(input$saveWidget, {
   errMsg <- validateWidgetConfig(rv$widgetConfig)
   if(nchar(errMsg)){
     showHideEl(session, "#widgetValidationErr", 5000L, errMsg)
-  }
-  if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
-    showModal(modalDialog(title = "Data exists", sprintf("A widget configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!", activeSymbol$name), 
-                          footer = tagList(modalButton("Cancel"), 
-                                           actionButton("saveWidgetConfirm", "Overwrite"))))
     return()
   }
   rv$saveWidgetConfirm <- rv$saveWidgetConfirm + 1L
@@ -1131,11 +1138,21 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
   
-  write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
     widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, rv$widgetConfig$alias))
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+  }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
+    if(all(scalarInputSymWithAliases %in% names(configJSON$inputWidgets))){
+      widgetSymbols <<- widgetSymbols[widgetSymbols != scalarsFileName]
+      if(scalarsFileName %in% names(configJSON$inputWidgets)){
+        configJSON$inputWidgets[[scalarsFileName]] <<- NULL
+      }
+      updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+    }else{
+      hideEl(session, "#noWidgetConfigMsg")
+    }
   }
+  write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
 })
@@ -1152,8 +1169,15 @@ observeEvent(input$deleteWidgetConfirm, {
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
-    widgetSymbols <<- widgetSymbols[!widgetSymbols == currentWidgetSymbolName]
+    widgetSymbols <<- widgetSymbols[widgetSymbols != currentWidgetSymbolName]
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+  }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
+    if(!scalarsFileName %in% widgetSymbols){
+      widgetSymbols <<- c(widgetSymbols, setNames(scalarsFileName, modelInRaw[[scalarsFileName]]$alias))
+      updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+    }else{
+      showEl(session, "#noWidgetConfigMsg")
+    }
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)

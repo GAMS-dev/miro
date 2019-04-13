@@ -27,14 +27,10 @@ colorPickerInput <- function(id, value, label = NULL){
     <label for="', id, '">', label, '</label>
       <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />'))
 }
-inputSymMultiDim <- setNames(names(modelIn), modelInAlias)
-inputSymMultiDim <- inputSymMultiDim[vapply(modelIn, function(el){
-  if(is.null(el$headers))
-    return(FALSE)
-  else
-    return(TRUE)}, logical(1L), USE.NAMES = FALSE)]
+inputSymMultiDim <- setNames(names(modelInRaw), vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE))
+
 inputSymHeaders <- lapply(inputSymMultiDim, function(el){
-  headers <- modelIn[[el]]$headers
+  headers <- modelInRaw[[el]]$headers
   return(setNames(names(headers), vapply(headers, "[[", character(1L), "alias", USE.NAMES = FALSE)))
 })
 names(inputSymHeaders) <- unname(inputSymMultiDim)

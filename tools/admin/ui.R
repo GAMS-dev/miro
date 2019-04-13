@@ -153,6 +153,9 @@ body_admin <- dashboardBody({
                                           choices = list("Symbol" = "gams", "GAMS option" = "go", 
                                                          "Double dash parameter" = "dd"), 
                                           selected = "gams"),
+                             tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: orange;display: none;", 
+                                      "Currently, there is no widget configured for this symbol"),
                              tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'gams'",
