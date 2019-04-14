@@ -114,6 +114,7 @@ body_admin <- dashboardBody({
                                                selectInput("gams_symbols", "Select which GAMS symbol to plot",
                                                            choices = NULL),
                                                textInput("chart_title", "Choose a title for your chart"),
+                                               numericInput("chart_height", "Choose a height for your chart (px)", min = 0L, value = 700),
                                                selectInput("chart_tool", "Select the charting tool you want to use", 
                                                            c("plotly", "dygraphs")),
                                                tags$div(id = "tool_options"),

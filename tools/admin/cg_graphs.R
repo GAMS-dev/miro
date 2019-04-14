@@ -381,7 +381,10 @@ observeEvent(input$hist_color, {
   rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
 })
 observeEvent(input$hist_alpha, {
-  rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_alpha[1])]]]]$alpha <<- input$hist_alpha[2]
+  alpha <- as.numeric(input$hist_alpha[2])
+  if(is.na(alpha))
+    return()
+  rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_alpha[1])]]]]$alpha <<- alpha
 })
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_"))
@@ -430,7 +433,10 @@ observeEvent(input$hist_data, {
 observeEvent(input$chart_ydata, {
   chart_ydata <- input$chart_ydata[2]
   chart_id    <- as.integer(input$chart_ydata[1])
-  if(is.na(chart_id) || identical(idLabelMap$chart_ydata[[chart_id]], chart_ydata))
+  print(input$chart_ydata)
+  print(idLabelMap$chart_ydata)
+  if(is.na(chart_id) || (length(idLabelMap$chart_ydata) >= chart_id && 
+                         identical(idLabelMap$chart_ydata[[chart_id]], chart_ydata)))
     return()
   
   if(chart_id <= length(idLabelMap$chart_ydata)){
@@ -654,6 +660,7 @@ getDygraphsOptions <- reactive({
   }
   isolate({
     rv$graphConfig$graph$xdata <<- unname(indices[1])
+    rv$graphConfig$graph$ydata <<- NULL
     rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = unname(scalarIndices[1]), 
                                                             mode = if(identical(input$plotly_chart_type, "scatter"))
                                                               "markers" else "lines", 
@@ -679,7 +686,6 @@ getDygraphsOptions <- reactive({
     selectInput("chart_color", "What symbol do you want to use to plot different chart lines?",
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
-                  checkboxInput("dyopt_fillGraph", "Should the area underneath the graph be filled?"),
                   checkboxInput("dyopt_incZero", "Should y-axis start at 0?"),
                   checkboxInput("dyopt_logscale", "Show y-axis in log scale?"),
                   checkboxInput("dyopt_drawGrid", "Should grid lines be displayed?", TRUE),
@@ -704,7 +710,7 @@ observe({
   print("+++++++++++++++++++++++++++++++++++++++")
   print(rv$graphConfig$graph)
   if(activeSymbol$id > length(modelIn)){
-    data <- modelOutputData[[activeSymbol$id]]
+    data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
   }else{
     data <- modelInputData[[activeSymbol$id]]
   }
@@ -740,13 +746,15 @@ observeEvent(input$saveGraph, {
                                            actionButton("saveGraphConfirm", "Overwrite"))))
     return()
   }
-  print('asd')
   rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L
 })
 observeEvent(input$saveGraphConfirm, rv$saveGraphConfirm <- rv$saveGraphConfirm + 1L)
 observeEvent(rv$saveGraphConfirm, {
   req(rv$saveGraphConfirm > 0L)
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
+  if(length(input$chart_height))
+    configJSON$dataRendering[[activeSymbol$name]]$height <<- input$chart_height
+  
   write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)

@@ -24,7 +24,7 @@ widgetSymbols <- setNames(c(modelInWithPrefix,
 updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
 validateWidgetConfig <- function(widgetJSON){
   if(!length(widgetJSON$alias) || nchar(widgetJSON$alias) < 1L){
-    return("The element's alias must not be empty.")
+    return("The alias of the element must not be empty!")
   }
   switch(widgetJSON$widgetType, 
          slider = ,
