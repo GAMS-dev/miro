@@ -491,7 +491,7 @@ if(!is.null(errMsg)){
   if(debugMode){
     save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, modelOutToDisplay,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
-         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
+         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
          inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, colsWithDep,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
