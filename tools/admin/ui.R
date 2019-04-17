@@ -190,7 +190,7 @@ body_admin <- dashboardBody({
               fluidRow(
                 box(title = "General settings", status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
-                    tags$div(style = "max-height:600px;max-height:70vh;overflow:auto;padding-right:30px;",
+                    tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
                             tags$div(id = "general_wrapper"),
                             tags$div(style = "height:100px;")
                     )
