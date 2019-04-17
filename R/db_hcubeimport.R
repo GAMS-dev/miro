@@ -79,7 +79,7 @@ HcubeImport <- R6Class("HcubeImport",
                            private$scenNames    <- private$fetchScenNames(csvPaths)
                            # workaround for unzip function as path with trailing slashes is not found
                            if(length(csvPaths)){
-                             csvPaths <- unzip(zipFilePath, exdir = gsub("/?$", "", private$workDir))
+                             csvPaths <- utils::unzip(zipFilePath, exdir = gsub("/?$", "", private$workDir))
                              if(any(Sys.readlink(csvPaths) != "")){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
@@ -428,7 +428,7 @@ HcubeImport <- R6Class("HcubeImport",
                            }else{
                              grepEx <- "^((?!\\.\\.).)*\\.csv$"
                            }
-                           fileNamesZip   <- unzip(zipFilePath, list = TRUE)
+                           fileNamesZip   <- utils::unzip(zipFilePath, list = TRUE)
                            fileNamesZip   <- fileNamesZip[fileNamesZip$Length > 0, ]$Name
                            validFileNames <- grep(grepEx, fileNamesZip, 
                                                   ignore.case = TRUE, value = TRUE, perl = TRUE)
