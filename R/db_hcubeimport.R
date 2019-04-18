@@ -428,8 +428,8 @@ HcubeImport <- R6Class("HcubeImport",
                            }else{
                              grepEx <- "^((?!\\.\\.).)*\\.csv$"
                            }
-                           fileNamesZip   <- unzip(zipFilePath, list = TRUE)
-                           fileNamesZip   <- fileNamesZip[fileNamesZip$Length > 0, ]$Name
+                           fileNamesZip   <- zip_list(zipFilePath)
+                           fileNamesZip   <- fileNamesZip[fileNamesZip$compressed_size > 0, ]$filename
                            validFileNames <- grep(grepEx, fileNamesZip, 
                                                   ignore.case = TRUE, value = TRUE, perl = TRUE)
                            if(!identical(length(fileNamesZip), length(validFileNames))){
