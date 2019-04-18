@@ -975,7 +975,7 @@ if(!is.null(errMsg)){
               return()
             }
             if(!identical(hcubeProcess$get_exit_status(), 0L)){
-              flog.debug("Problems launching Hypercube mode. Error message: '%s'.", 
+              flog.error("Problems launching Hypercube mode. Error message: '%s'.", 
                          hcubeProcess$read_error())
               showHideEl(session, "#hcubeLaunchError", 4000L)
               return()

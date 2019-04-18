@@ -51,10 +51,16 @@ observeEvent(input$btPaver, {
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
   noErr <- TRUE
+  scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
+  if(!any(scenToFetch)){
+    flog.warn("Paver was attempted to be started while no scenarios were selected.")
+    showHideEl(session, "#paverRunUnknownError", 6000L)
+    return()
+  }
   tryCatch({
-    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
-                                                                             drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver, isolate(input$paverExclAttrib))
+    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[scenToFetch, , drop = FALSE], 
+                                                         input$selPaverAttribs, maxSolversPaver,
+                                                         isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
