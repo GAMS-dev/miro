@@ -654,11 +654,11 @@ vector2Csv <- function(vector){
     return(vector)
   }
 }
-showEl <- function(session, id, text = NULL){
+showEl <- function(session, id){
   session$sendCustomMessage("gms-showEl", id)
 }
 showElReplaceTxt <- function(session, id, txt){
-  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = txt))
+  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)

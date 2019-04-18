@@ -233,9 +233,8 @@ getEvent <- function(configData, eventId){
   #
   # returns:
   # string with event information extracted from configData
-
   if(length(configData)){
-    idx <- match(tolower(eventId), tolower(configData[[1]][[1]]))
+    idx <- match(tolower(eventId), tolower(configData[[1]]))
     if(is.na(idx)){
       # index could not be found so return the string (fixed value)
       return(eventId)

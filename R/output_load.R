@@ -63,7 +63,6 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
           removeRows       <- tolower(scalarTmp[[1]]) %in% hiddenOutputScalars
           ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
-          scalarTmp        <<- scalarTmp[removeRows, ]
         }, error = function(e){
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
         })

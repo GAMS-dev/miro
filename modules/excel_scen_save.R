@@ -31,8 +31,7 @@ output[["export_" %+% i]] <- downloadHandler(
       scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
       if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
         # bind hidden and non hidden scalar data
-        data[[scalarOutIdx]] <- rbind(data[[scalarOutIdx]], 
-                                      scalarData[[scenIdLong]])
+        data[[scalarOutIdx]] <- scalarData[[scenIdLong]]
       }
     }
     wsNamesTmp                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 

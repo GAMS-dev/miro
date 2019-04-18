@@ -144,7 +144,7 @@ insertUI(selector = "#general_wrapper",
                        min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
            ),
            colorPickerInput("general_pivotcolor", label = "Background color of row and column headers in pivot tables.",
-                            value = "rgb(255, 128, 0)"
+                            value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
            )
          ), 
          where = "beforeEnd")

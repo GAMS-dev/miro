@@ -116,15 +116,14 @@ body_admin <- dashboardBody({
                                                textInput("chart_title", "Choose a title for your chart"),
                                                numericInput("chart_height", "Choose a height for your chart (px)", min = 0L, value = 700),
                                                selectInput("chart_tool", "Select the charting tool you want to use", 
-                                                           c("plotly", "dygraphs")),
+                                                           setNames(c("plotly", "dygraphs"), c("Diagram Tool", "Time Series Diagram Tool"))),
                                                tags$div(id = "tool_options"),
                                                tags$div(style = "height:100px;")
                                       )
                                       )
                     ),
                     tags$div(class = "col-sm-6", style = "text-align:right;",
-                             tags$div(id = "preview-error", class = "err-msg",
-                                      textOutput("preview-errmsg")),
+                             tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", 
                                       renderDataUI("preview_output_plotly", type = "graph", 
                                                    graphTool = "plotly", 

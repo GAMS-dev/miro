@@ -44,19 +44,35 @@
   }, 0, 'test');
 }());
 
+/*
+ * jQuery throttle / debounce - v1.1 - 3/7/2010
+ * http://benalman.com/projects/jquery-throttle-debounce-plugin/
+ * 
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ */
+(function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
+
 
 var indices            = [];
 var indexAliases       = [];
 var scalarIndices      = [];
 var scalarIndexAliases = [];
+var outputScalars      = [];
+var outputScalarAliases = [];
 var elInArrayCounter   = {};
 var elInArray          = {};
 
-function addClArgEl(){
-  var arrayID      = 'general_clArgs';
-  var elements     = {'general_args' : ['text', 'Specify extra command line arguments that GAMS will be called with']
+function addDyEvent(){
+  var arrayID      = 'dy_dyEvent';
+  var elements     = {'dy_dyEvent' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
+  'dyEvent_label': ['text', 'What label should be used?'],
+  'dyEvent_labelLoc': ['select', 'Select marker symbol', ['top', 'bottom']],
+  'dyEvent_color': ['color', 'What color should the event line have?', 'rgb(0,0,0)'],
+  'dyEvent_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
   };
-  addArrayEl(arrayID, elements);
+  addArrayEl(arrayID, elements, false);
 }
 
 function addBarDataEl(){
@@ -74,39 +90,39 @@ function addScatterDataEl(){
   var arrayID      = 'chart_ydatascatter';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'marker_symbol': ['select', 'Select marker symbol', ["circle", "circle-open", "circle-dot", 
-                                                        "circle-open-dot", "square", "square-open",
-                                                        "square-dot", "square-open-dot", "diamond",
-                                                        "diamond-open", "diamond-dot", "diamond-open-dot",
-                                                        "cross", "cross-open", "cross-dot", "cross-open-dot",
-                                                        "x", "x-open", "x-dot", "x-open-dot", "triangle-up",
-                                                        "triangle-up-open", "triangle-up-dot", "triangle-up-open-dot",
-                                                        "triangle-down", "triangle-down-open", "triangle-down-dot",
-                                                        "triangle-down-open-dot", "triangle-left", "triangle-left-open", 
-                                                        "triangle-left-dot", "triangle-left-open-dot", "triangle-right",
-                                                        "triangle-right-open", "triangle-right-dot", "triangle-right-open-dot",
-                                                        "triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot",
-                                                        "triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot",
-                                                        "triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot",
-                                                        "triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot",
-                                                        "pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon",
-                                                        "hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", 
-                                                        "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot",
-                                                        "octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram",
-                                                        "hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up",
-                                                        "star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot",
-                                                        "star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot",
-                                                        "star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", 
-                                                        "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall",
-                                                        "diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide",
-                                                        "diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass",
-                                                        "hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", 
-                                                        "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open",
-                                                        "diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin",
-                                                        "cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open",
-                                                        "hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", 
-                                                        "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", 
-                                                        "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"]],
+  'marker_symbol': ['select', 'Select marker symbol', ['circle', 'circle-open', 'circle-dot', 
+                                                        'circle-open-dot', 'square', 'square-open',
+                                                        'square-dot', 'square-open-dot', 'diamond',
+                                                        'diamond-open', 'diamond-dot', 'diamond-open-dot',
+                                                        'cross', 'cross-open', 'cross-dot', 'cross-open-dot',
+                                                        'x', 'x-open', 'x-dot', 'x-open-dot', 'triangle-up',
+                                                        'triangle-up-open', 'triangle-up-dot', 'triangle-up-open-dot',
+                                                        'triangle-down', 'triangle-down-open', 'triangle-down-dot',
+                                                        'triangle-down-open-dot', 'triangle-left', 'triangle-left-open', 
+                                                        'triangle-left-dot', 'triangle-left-open-dot', 'triangle-right',
+                                                        'triangle-right-open', 'triangle-right-dot', 'triangle-right-open-dot',
+                                                        'triangle-ne', 'triangle-ne-open', 'triangle-ne-dot', 'triangle-ne-open-dot',
+                                                        'triangle-se', 'triangle-se-open', 'triangle-se-dot', 'triangle-se-open-dot',
+                                                        'triangle-sw', 'triangle-sw-open', 'triangle-sw-dot', 'triangle-sw-open-dot',
+                                                        'triangle-nw', 'triangle-nw-open', 'triangle-nw-dot', 'triangle-nw-open-dot',
+                                                        'pentagon', 'pentagon-open', 'pentagon-dot', 'pentagon-open-dot', 'hexagon',
+                                                        'hexagon-open', 'hexagon-dot', 'hexagon-open-dot', 'hexagon2', 'hexagon2-open', 
+                                                        'hexagon2-dot', 'hexagon2-open-dot', 'octagon', 'octagon-open', 'octagon-dot',
+                                                        'octagon-open-dot', 'star', 'star-open', 'star-dot', 'star-open-dot', 'hexagram',
+                                                        'hexagram-open', 'hexagram-dot', 'hexagram-open-dot', 'star-triangle-up',
+                                                        'star-triangle-up-open', 'star-triangle-up-dot', 'star-triangle-up-open-dot',
+                                                        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot', 'star-triangle-down-open-dot',
+                                                        'star-square', 'star-square-open', 'star-square-dot', 'star-square-open-dot', 'star-diamond', 
+                                                        'star-diamond-open', 'star-diamond-dot', 'star-diamond-open-dot', 'diamond-tall',
+                                                        'diamond-tall-open', 'diamond-tall-dot', 'diamond-tall-open-dot', 'diamond-wide',
+                                                        'diamond-wide-open', 'diamond-wide-dot', 'diamond-wide-open-dot', 'hourglass',
+                                                        'hourglass-open', 'bowtie', 'bowtie-open', 'circle-cross', 'circle-cross-open', 
+                                                        'circle-x', 'circle-x-open', 'square-cross', 'square-cross-open', 'square-x', 'square-x-open',
+                                                        'diamond-cross', 'diamond-cross-open', 'diamond-x', 'diamond-x-open', 'cross-thin',
+                                                        'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
+                                                        'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
+                                                        'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
+                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
   'marker_color' : ['text', 'Select marker color', 'black'],
   'marker_opacity' : ['numeric', 'Select marker opacity', 1, 0, 1],
   'marker_size' : ['numeric', 'Select marker size', 6, 0],
@@ -121,14 +137,14 @@ function addLineDataEl(){
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
   'line_color' : ['text', 'Select line color', 'black'],
   'line_width' : ['numeric', 'Select line width', 2, 0],
-  'line_shape' : ['select', 'Select line shape', ["linear", "spline", "hv", "vh", "hvh", "vhv"]],
-  'line_dash' : ['select', 'Select line dash type', ["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"]]
+  'line_shape' : ['select', 'Select line shape', ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']],
+  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']]
   };
   addArrayEl(arrayID, elements);
 }
 function addHistDataEl(){
-  var arrayID      = 'hist_data';
-  var elements     = {'hist_data' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
+  var arrayID      = 'hist_xdata';
+  var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
   'hist_label' : ['text', 'What label should be used?', 'label'],
   'hist_color' : ['text', 'Select bar color', 'black'],
   'hist_alpha' : ['numeric', 'Choose bar transparency', 1, 0, 1]
@@ -143,31 +159,34 @@ function addDyDataEl(){
   'dyopt_stemPlot' : ['checkbox', 'Do you want the series to be a stem plot?'],
   'dyopt_fillGraph' : ['checkbox', 'Should the area underneath the graph be filled?'],
   'dyopt_drawPoints' : ['checkbox', 'Should points be drawn?'],
-  'dyopt_pointShape' : ['select', 'What shape should points have?',["dot", "triangle", "square", "diamond", "pentagon", "hexagon", 
-                              "circle", "star", "plus", "ex"]],
+  'dyopt_pointShape' : ['select', 'What shape should points have?',['dot', 'triangle', 'square', 'diamond', 'pentagon', 'hexagon', 
+                              'circle', 'star', 'plus', 'ex']],
   'dyopt_pointSize' : ['numeric', 'What size should points be?', 2, 0]
   };
   addArrayEl(arrayID, elements);
 }
 function addArrayDataEl(arrayID){
+  if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
+    return;
+  }
   switch(arrayID){
-    case "chart_ydatabar":
+    case 'chart_ydatabar':
       addBarDataEl();
     break;
-    case "chart_ydatascatter":
+    case 'chart_ydatascatter':
       addScatterDataEl();
     break;
-    case "chart_ydataline":
+    case 'chart_ydataline':
       addLineDataEl();
     break;
-    case "hist_data":
+    case 'hist_xdata':
       addHistDataEl();
     break;
-    case "dy_ydata":
+    case 'dy_ydata':
       addDyDataEl();
     break;
-    case "general_clArgs":
-      addClArgEl();
+    case 'dy_dyEvent':
+      addDyEvent();
     break;
   }
 }
@@ -180,7 +199,7 @@ function addArrayDataElWrapper(arrayID){
 }
 
 function incElCount(arrayID){
-  var count = $('#' + arrayID + '_wrapper .array-wrapper').children(".config-array-el").length;
+  var count = $('#' + arrayID + '_wrapper .array-wrapper').children('.config-array-el').length;
   if(count === 0){
     delete elInArray[arrayID];
   }
@@ -190,7 +209,7 @@ function incElCount(arrayID){
 function addLabelEl(arrayID, label){
   if(arrayID in elInArray){
     if($.inArray(label, elInArray[arrayID]) !== -1){
-      throw "Label: " + label + " already in use.";
+      throw 'Label: ' + label + ' already in use.';
     }
     elInArray[arrayID].push(label);
     return;
@@ -203,6 +222,7 @@ function addArrayEl(arrayID, elements){
   var label        = '';
   var arrayContent = '<div id="' + arrayID + elID + '_wrapper" class="config-array-el">';
   var idx          = 0;
+  var elRequired   = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   $.each(elements, function( k, v ) {
     switch(v[0]){
       case 'select':
@@ -222,7 +242,7 @@ function addArrayEl(arrayID, elements){
           }
           addLabelEl(arrayID, selected);
           // tell R that new element was addded to array: (ID, label of element)
-          Shiny.setInputValue(k, [elID, selected], {priority: "event"});
+          Shiny.setInputValue("add_array_el", [elID, selected, k], {priority: "event"});
         }
         arrayContent += createSelectInput(k, elID, v[1], v[2], v[3], selected);
       break;
@@ -239,33 +259,52 @@ function addArrayEl(arrayID, elements){
       case 'checkbox':
         arrayContent += createCheckboxInput(k, elID, v[1], v[2]);
         break;
+      case 'color':
+        arrayContent += createColorPickerInput(k, elID, v[1], v[2]);
+        break;
       default:
         throw "Unknown element type: " + v[0];
     }
     idx++;
   });
-  arrayContent += (elID > 1? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID +
+  arrayContent += ((!elRequired || elID > 1)? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID +
   '\')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n': '') + '<hr></div>';
   
   $('#' + arrayID + '_wrapper .array-wrapper').append(arrayContent);
   
+  idx = 0;
   $.each(elements, function( k, v ) {
     if(v[0] === 'select'){
+      if(idx === 0){
         $('#' + k + elID).selectize({
       	  onChange: function(value) {
-      	    console.log(value);
+      	    Shiny.setInputValue("add_array_el", [elID, value, k], {priority: "event"});
+          }
+      	});
+      }else{
+        $('#' + k + elID).selectize({
+      	  onChange: function(value) {
       	    Shiny.setInputValue(k, [elID, value], {priority: "event"});
           }
       	});
+      }
     }else if(v[0] === 'checkbox'){
       $('#' + k + elID).on('change', function(){
         Shiny.setInputValue(k, [elID, $(this).prop('checked')], {priority: "event"});
       });
-    }else{
-      $('#' + k + elID).on('change', function(){
+    }else if(v[0] === 'color'){
+       $('#' + k + elID).colorpicker({
+         align: "left"
+       });
+       $('#' + k + elID).on('change', $.debounce(500, function(){
         Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
-      });
+      }));
+    }else{
+      $('#' + k + elID).on('change', $.debounce(250, function(){
+        Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
+      }));
     }
+    idx++;
   });
 }
 
@@ -320,6 +359,16 @@ function createCheckboxInput(arrayID, elID, label){
   '</div>\n' +
 '</div>');
 }
+function createColorPickerInput(arrayID, elID, label){
+  var id = arrayID + elID;
+  var value = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
+
+  return('<div class="form-group shiny-input-container">\n' +
+  '<label for="' + id + '">' + label + '</label>\n' +
+  '<input id="' + id + '" type="text" class="form-control miro-color-picker" value="' + value + '"/>\n' +
+'</div>');
+}
 function removeArrayEl(arrayID, elID){
   var arrayLabel = '';
   var el    = null;
@@ -331,6 +380,12 @@ function removeArrayEl(arrayID, elID){
         arrayLabel = el.val();
       }
       el.remove();
+    }else if($(v).children('.miro-color-picker').length){
+      el = $(v).children('.miro-color-picker');
+      if(idx === 0){
+        arrayLabel = el.val();
+      }
+      el.colorpicker('destroy');
     }else if($(v).children('input[type="text"]').length){
       el = $(v).children('input[type="text"]');
       if(idx === 0){
@@ -368,6 +423,15 @@ function removeArrayEl(arrayID, elID){
 }
 
 $(document).ready(function () {
+  Shiny.addCustomMessageHandler('gms-setScalarOutputs', function (scalarData) {
+    $.each(scalarData, function(key, val) {
+      if(!$.isArray(val)){
+        scalarData[key] = [val];
+      }
+    });
+    outputScalars       = scalarData.indices;
+    outputScalarAliases = scalarData.aliases;
+  });
   Shiny.addCustomMessageHandler('gms-setIndices', function (indicesFromR) {
     $.each(indicesFromR, function(key, val) {
       if(!$.isArray(val)){
@@ -382,7 +446,6 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
     setTimeout(addArrayDataElWrapper, 200, arrayID);
   });
-  
   var colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {
     find: function(scope) {
@@ -411,6 +474,7 @@ $(document).ready(function () {
       });
     },
     unsubscribe: function(el) {
+      $(el).colorpicker('destroy');
       $(el).off(".colorPickerBinding");
     }
   });

@@ -3,14 +3,14 @@ activeSymbol <- list(id = integer(1L), name = character(1L),
 
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
-hiddenOutputData <- tibble()
+scalarOutputData <- tibble()
 hotInit          <- vector("logical", length(modelIn))
 isEmptyInput     <- vector(mode = "logical", length = length(modelIn))
 isEmptyOutput    <- vector(mode = "logical", length = length(modelOut))
 isEmptyOutput[]  <- TRUE
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 currentSelection <- list("plotly", "pie")
-idLabelMap       <- list(chart_ydata = list(), hist_data = list())
+idLabelMap       <- list(chart_ydata = list(), hist_xdata = list(), dy_dyEvent = list())
 currentConfig    <- list()
 optionsInserted  <- c()
 noOutputData     <- TRUE
@@ -143,7 +143,7 @@ observeEvent(input$localInput, {
       return()
     }
     if(!is.null(outputDataTmp$scalar)){
-      hiddenOutputData <<- outputDataTmp$scalar
+      scalarOutputData <<- outputDataTmp$scalar
     }
     if(!is.null(outputDataTmp$tabular)){
       modelOutputData        <<- outputDataTmp$tabular
@@ -169,6 +169,10 @@ observeEvent(input$localInput, {
   }
   showEl(session, "#preview_wrapper")
   updateSelectInput(session, "gams_symbols", choices = c(tabularInputWithData, tabularOutputWithData))
+  if(identical(length(scalarOutputData), 3L) && nrow(scalarOutputData)){
+    session$sendCustomMessage("gms-setScalarOutputs", list(indices = scalarOutputData[[1]], 
+                                                           aliases = scalarOutputData[[2]]))
+  }
   rv$initData <<- TRUE
 })
 observeEvent(input$chart_title, {
@@ -274,6 +278,40 @@ observeEvent(input$line_shape, {
 observeEvent(input$line_dash, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_dash[1])]]]]$line$dash <<- input$line_dash[2]
 })
+observeEvent(input$dyrange_activate, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector <<- list(height = input$dyrange_height, strokeColor = input$dyrange_strokeColor,
+                                                  fillColor = input$dyrange_fillColor, retainDateWindow = input$dyrange_retainDateWindow,
+                                                  keepMouseZoom = input$dyrange_keepMouseZoom)
+  }else{
+    rv$graphConfig$graph$dyRangeSelector <<- NULL
+  }
+})
+observeEvent(input$dyrange_height, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
+  }
+})
+observeEvent(input$dyrange_strokeColor, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$strokeColor <<- input$dyrange_strokeColor
+  }
+})
+observeEvent(input$dyrange_fillColor, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$fillColor <<- input$dyrange_fillColor
+  }
+})
+observeEvent(input$dyrange_keepMouseZoom, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$keepMouseZoom <<- input$dyrange_keepMouseZoom
+  }
+})
+observeEvent(input$dyrange_height, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
+  }
+})
 observeEvent(input$dyopt_incZero, {
   rv$graphConfig$graph$dyOptions$includeZero <<- input$dyopt_incZero
 })
@@ -335,6 +373,23 @@ observeEvent(input$dyopt_pointSize, {
     rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
   }
 })
+observeEvent(input$dyEvent_label, {
+  if(identical(input$dyEvent_label[2], "")){
+    eventLabel <- NULL
+  }else{
+    eventLabel <- input$dyEvent_label[2]
+  }
+  rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_label[1])]]]]$label <<- eventLabel
+})
+observeEvent(input$dyEvent_labelLoc, {
+  rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_labelLoc[1])]]]]$labelLoc <<- input$dyEvent_labelLoc[2]
+})
+observeEvent(input$dyEvent_color, {
+  rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_color[1])]]]]$color <<- input$dyEvent_color[2]
+})
+observeEvent(input$dyEvent_strokePattern, {
+  rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_strokePattern[1])]]]]$strokePattern <<- input$dyEvent_strokePattern[2]
+})
 observeEvent(input$paper_bgcolor, {
   if(nchar(input$paper_bgcolor))
     rv$graphConfig$graph$paper_bgcolor <<- input$paper_bgcolor
@@ -375,16 +430,16 @@ observeEvent(input$y_showticklabels, {
   rv$graphConfig$graph$yaxis$showticklabels <<- input$y_showticklabels
 })
 observeEvent(input$hist_label, {
-  rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_label[1])]]]]$labels <<- input$hist_label[2]
+  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_label[1])]]]]$labels <<- input$hist_label[2]
 })
 observeEvent(input$hist_color, {
-  rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
+  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
 })
 observeEvent(input$hist_alpha, {
   alpha <- as.numeric(input$hist_alpha[2])
   if(is.na(alpha))
     return()
-  rv$graphConfig$graph$xdata[[idLabelMap$hist_data[[as.integer(input$hist_alpha[1])]]]]$alpha <<- alpha
+  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_alpha[1])]]]]$alpha <<- alpha
 })
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_"))
@@ -411,49 +466,51 @@ observeEvent(input$chart_xdata, {
   }
   rv$graphConfig$graph$xdata <<- input$chart_xdata
 })
-observeEvent(input$hist_data, {
-  hist_id <- as.integer(input$hist_data[1])
-  if(is.na(hist_id))
+observeEvent(input$add_array_el, {
+  chart_id    <- as.integer(input$add_array_el[1])
+  chart_label <- input$add_array_el[2]
+  el_id       <- input$add_array_el[3]
+  JSON_id     <- gsub("^[^_]*_", "", el_id)
+
+  if(is.na(chart_id) || (length(idLabelMap[[el_id]]) >= chart_id && 
+                         identical(idLabelMap[[el_id]][[chart_id]], chart_label)))
     return()
   
-  if(hist_id <= length(idLabelMap$hist_data)){
-    labelID <- idLabelMap$hist_data[[as.integer(hist_id)]]
-    if(sum(labelID == idLabelMap$hist_data) < 1.5){
-      rv$graphConfig$graph$xdata[labelID] <<- NULL
+  if(chart_id <= length(idLabelMap[[el_id]])){
+    labelID <- idLabelMap[[el_id]][[chart_id]]
+    if(sum(labelID == idLabelMap[[el_id]]) < 1.5){
+      rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
   }
-  idLabelMap$hist_data[[hist_id]] <<- input$hist_data[2]
-  label <- names(activeSymbol$indices)[match(input$hist_data[2], 
-                                             activeSymbol$indices)][1]
-  if(identical(hist_id, 1L) && !(length(input$x_title) && nchar(input$x_title))){
-    updateTextInput(session, "x_title", value = label)
+  
+  idLabelMap[[el_id]][[chart_id]] <<- chart_label
+  
+  if(identical(el_id, "chart_ydata")){
+    label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
+    if(identical(chart_id, 1L) && !(length(input$y_title) && nchar(input$y_title))){
+      updateTextInput(session, "y_title", value = label)
+    }
+    rv$graphConfig$graph$ydata[[chart_label]] <<- list(label = label, 
+                                                       mode = if(identical(input$plotly_chart_type, "scatter"))
+                                                         "markers" else "lines")
+  }else if(identical(el_id, "hist_data")){
+    label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
+    if(identical(chart_id, 1L) && !(length(input$x_title) && nchar(input$x_title))){
+      updateTextInput(session, "x_title", value = label)
+    }
+    rv$graphConfig$graph$xdata[[chart_label]] <<- list(labels = label)
+  }else if(identical(el_id, "dy_dyEvent")){
+    rv$graphConfig$graph$dyEvent[[chart_label]] <<- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
   }
-  rv$graphConfig$graph$xdata[[input$hist_data[2]]] <<- list(labels = label)
 })
-observeEvent(input$chart_ydata, {
-  chart_ydata <- input$chart_ydata[2]
-  chart_id    <- as.integer(input$chart_ydata[1])
-  print(input$chart_ydata)
-  print(idLabelMap$chart_ydata)
-  if(is.na(chart_id) || (length(idLabelMap$chart_ydata) >= chart_id && 
-                         identical(idLabelMap$chart_ydata[[chart_id]], chart_ydata)))
-    return()
+observeEvent(input$remove_array_el, {
+  el_id <- input$remove_array_el[1]
+  JSON_id     <- gsub("^[^_]*_", "", el_id)
   
-  if(chart_id <= length(idLabelMap$chart_ydata)){
-    labelID <- idLabelMap$chart_ydata[[chart_id]]
-    if(sum(labelID == idLabelMap$chart_ydata) < 1.5){
-      rv$graphConfig$graph$ydata[labelID] <<- NULL
-    }
+  if(sum(input$remove_array_el[2] == idLabelMap[[el_id]]) < 1.5){
+    rv$graphConfig$graph[[JSON_id]][input$remove_array_el[2]] <- NULL
   }
-  
-  idLabelMap$chart_ydata[[chart_id]] <<- chart_ydata
-  label       <- names(activeSymbol$indices)[match(chart_ydata, activeSymbol$indices)][1]
-  if(chart_id == 1 && !(length(input$y_title) && nchar(input$y_title))){
-    updateTextInput(session, "y_title", value = label)
-  }
-  rv$graphConfig$graph$ydata[[chart_ydata]] <<- list(label = label, 
-                                                     mode = if(identical(input$plotly_chart_type, "scatter"))
-                                                       "markers" else "lines")
+  idLabelMap[[el_id]][as.integer(input$remove_array_el[3])] <<- NULL
 })
 observeEvent(input$chart_ylabel, {
   tryCatch({
@@ -462,19 +519,6 @@ observeEvent(input$chart_ylabel, {
   }, error = function(e){
     flog.info("Could not change label for y-data. Error message: '%s'.", e)
   })
-})
-observeEvent(input$remove_array_el, {
-  if(startsWith(input$remove_array_el[1], "chart_ydata")){
-    if(sum(input$remove_array_el[2] == idLabelMap$chart_ydata) < 1.5){
-      rv$graphConfig$graph$ydata[input$remove_array_el[2]] <- NULL
-    }
-    idLabelMap$chart_ydata[as.integer(input$remove_array_el[3])] <<- NULL
-  }else if(identical(input$remove_array_el[1], "hist_data")){
-    if(sum(input$remove_array_el[2] == idLabelMap$hist_data) < 1.5){
-      rv$graphConfig$graph$xdata[input$remove_array_el[2]] <- NULL
-    }
-    idLabelMap$chart_ydata[as.integer(input$remove_array_el[3])] <<- NULL
-  }
 })
 observeEvent(input$bar_mode, {
   rv$graphConfig$graph$barmode <<- input$bar_mode
@@ -558,7 +602,7 @@ getChartOptions <- reactive({
   tagList(
     selectInput("chart_xdata", "What should be plotted on the x axis?",
                 choices = indices),
-    addArrayEl(session, "chart_ydata", isolate(input$plotly_chart_type)),
+    addArrayEl(session, "chart_ydata", "Add data series", isolate(input$plotly_chart_type)),
     selectInput("chart_color", "Symbol that is used to select different colors",
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
@@ -633,10 +677,10 @@ getHistOptions <- reactive({
     rv$graphConfig$graph$nbins      <<- 2L
     rv$graphConfig$graph$barmode    <<- "overlay"
     rv$graphConfig$graph$xaxis$title <<- label
-    idLabelMap$hist_data[[1]]       <<- scalarIndices[[1]]
+    idLabelMap$hist_xdata[[1]]       <<- scalarIndices[[1]]
   })
   tagList(
-    addArrayEl(session, "hist_data"),
+    addArrayEl(session, "hist_xdata", "Add data series"),
     selectInput("hist_norm", "Type of normalization to use",
                 choices = setNames(c(" ", "percent", "density"), c("Number of occurances", 
                                                                    "Percentage of occurances", 
@@ -654,8 +698,7 @@ getDygraphsOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
   if(!length(scalarIndices)){
-    output[["preview-errmsg"]] <- renderText("No scalar indices found in your data.")
-    showEl(session, "#preview-error")
+    showElReplaceTxt(session, "#preview-error", "No scalar indices found in your data.")
     return()
   }
   isolate({
@@ -667,25 +710,31 @@ getDygraphsOptions <- reactive({
                                                             stemPlot = FALSE, stepPlot = FALSE, 
                                                             fillGraph = FALSE, drawPoints = FALSE, pointShape = "dot",
                                                             pointSize = 2L)
-    rv$graphConfig$graph$dyOptions$includeZero <<- FALSE
-    rv$graphConfig$graph$dyOptions$logscale    <<- FALSE
-    rv$graphConfig$graph$dyOptions$drawGrid    <<- FALSE
-    rv$graphConfig$graph$dyOptions$stepPlot    <<- FALSE
-    rv$graphConfig$graph$dyOptions$stemPlot    <<- FALSE
-    rv$graphConfig$graph$dyOptions$fillGraph   <<- FALSE
-    rv$graphConfig$graph$dyOptions$fillAlpha   <<- 0.15
-    rv$graphConfig$graph$dyOptions$drawPoints  <<- FALSE
-    rv$graphConfig$graph$dyOptions$pointShape  <<- "dot"
-    rv$graphConfig$graph$dyOptions$pointSize   <<- 2L
+    rv$graphConfig$graph$dyEvent <<- NULL
+    rv$graphConfig$graph$dyOptions <<- list(includeZero = FALSE, logscale = FALSE, drawGrid = FALSE,
+                                            stepPlot = FALSE, stemPlot = FALSE, fillGraph = FALSE,
+                                            fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
+                                            pointSize = 2L)
     idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
   })
   tagList(
     selectInput("chart_xdata", "What index do you want to plot on the x-axis?",
                 choices = indices),
-    addArrayEl(session, "dy_ydata"),
+    addArrayEl(session, "dy_ydata", "Add data series"),
+    if(length(scalarOutputData) && nrow(scalarOutputData)){
+      addArrayEl(session, "dy_dyEvent", "Add event line", autoCreate = FALSE)
+    },
     selectInput("chart_color", "What symbol do you want to use to plot different chart lines?",
                 choices = c("_", indices)),
-    optionSection(title = "Options", collapsed = TRUE,
+    optionSection(title = "Range selector options", collapsed = TRUE,
+                  checkboxInput("dyrange_activate", "Do you want to see a range selector?"),
+                  numericInput("dyrange_height", "How high should it be (in px)?", min = 0L, value = 40L),
+                  checkboxInput("dyrange_retainDateWindow", "Should current date range be kept when graph is redrawn?", FALSE),
+                  checkboxInput("dyrange_keepMouseZoom", "Do you still want to be able to zoom with the mouse?", TRUE),
+                  colorPickerInput("dyrange_fillColor", "What fill color should be used?", "#A7B1C4"),
+                  colorPickerInput("dyrange_strokeColor", "What stroke color should be used?", "#808FAB")
+    ),
+    optionSection(title = "General options", collapsed = TRUE,
                   checkboxInput("dyopt_incZero", "Should y-axis start at 0?"),
                   checkboxInput("dyopt_logscale", "Show y-axis in log scale?"),
                   checkboxInput("dyopt_drawGrid", "Should grid lines be displayed?", TRUE),
@@ -717,14 +766,14 @@ observe({
   tryCatch({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
       callModule(renderData, "preview_output_plotly", type = rv$graphConfig$outType, 
-                 data = data, configData = hiddenOutputData, 
+                 data = data, configData = scalarOutputData, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-plotly")
       hideEl(session, "#preview-content-dygraph")
     }else{
       callModule(renderData, "preview_output_dygraph", type = rv$graphConfig$outType, 
-                 data = data, configData = hiddenOutputData, 
+                 data = data, configData = scalarOutputData, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-dygraph")
@@ -734,8 +783,7 @@ observe({
   }, error = function(e) {
     hideEl(session, "#preview-content-dygraph")
     hideEl(session, "#preview-content-plotly")
-    showEl(session, "#preview-error")
-    output[["preview-errmsg"]] <- renderText(toString(e))
+    showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
   })
 }, priority = -1000)
 observeEvent(input$saveGraph, {
