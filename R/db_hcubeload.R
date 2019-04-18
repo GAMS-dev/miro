@@ -143,11 +143,12 @@ HcubeLoad <- R6Class("HcubeLoad",
                                 call. = FALSE)
                          }
                          
-                         attribs     <- rlang::syms(attribs)
-                         groupedData <- dplyr::group_by(data, !!!attribs)
-                         groupedRowIds       <- attr(groupedData, "indices")
+                         attribs             <- rlang::syms(attribs)
+                         groupedData         <- dplyr::group_by(data, !!!attribs)
+                         groupedMetaData     <- dplyr::group_data(groupedData)
+                         groupedRowIds       <- groupedMetaData[[".rows"]]
                          private$groupedSids <- lapply(groupedRowIds, function(rowIds){
-                           sids[rowIds + 1L]
+                           sids[rowIds]
                          })
                          if(length(groupedRowIds) > maxNoGroups){
                            return(TRUE)
@@ -161,7 +162,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                                    collapse = "\\")
                            }, character(1L), USE.NAMES = FALSE)
                          })
-                         private$groupLabels <- attr(groupedData, "labels")
+                         private$groupLabels          <- groupedMetaData
+                         private$groupLabels[".rows"] <- NULL
                          return(FALSE)
                        },
                        genPaverTraceFiles = function(workDir, exclTraceCols = NULL) {
@@ -170,12 +172,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                          stopifnot(length(private$tableNameTrace) > 0L)
                          stopifnot(is.character(workDir), length(workDir) == 1L)
                          
-                         groupLabels   <- as.data.frame(lapply(seq_along(private$groupLabels), function(i) 
-                           #paste0(names(groupLabels)[i], ":", as.character(groupLabels[[i]]))),
-                           as.character(private$groupLabels[[i]])),
-                           stringsAsFactors = FALSE)
-                         groupLabels   <- vapply(seq_len(nrow(groupLabels)), function(i){
-                           paste0(as.vector(groupLabels[i, ], "character"), collapse = "\\")
+                         groupLabels   <- vapply(seq_len(nrow(private$groupLabels)), function(i){
+                           paste0(as.vector(private$groupLabels[i, ], "character"), collapse = "\\")
                          }, character(1L), USE.NAMES = FALSE)
                          lapply(seq_along(private$groupedSids), function(i){
                            fileName <- workDir %+% i %+% ".trc"
