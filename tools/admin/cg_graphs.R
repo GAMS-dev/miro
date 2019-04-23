@@ -112,6 +112,7 @@ observeEvent(input$localInput, {
   datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% modelInTabularData]
   # load input data 
   loadMode <- "xls"
+  overwriteInput <- TRUE
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
     return(NULL)
@@ -390,6 +391,50 @@ observeEvent(input$dyEvent_color, {
 observeEvent(input$dyEvent_strokePattern, {
   rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_strokePattern[1])]]]]$strokePattern <<- input$dyEvent_strokePattern[2]
 })
+observeEvent(input$dyAnnotation_text, {
+  rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_text[1])]]]]$text <<- input$dyAnnotation_text[2]
+})
+observeEvent(input$dyAnnotation_tooltip, {
+  rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_tooltip[1])]]]]$tooltip <<- input$dyAnnotation_tooltip[2]
+})
+observeEvent(input$dyAnnotation_width, {
+  if(identical(input$dyAnnotation_width[2], "0")){
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- NULL
+  }else{
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- input$dyAnnotation_width[2]
+  }
+})
+observeEvent(input$dyAnnotation_height, {
+  if(identical(input$dyAnnotation_width[2], "0")){
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- NULL
+  }else{
+    rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- input$dyAnnotation_height[2]
+  }
+})
+observeEvent(input$dyAnnotation_attachAtBottom, {
+  rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_attachAtBottom[1])]]]]$attachAtBottom <<- identical(input$dyAnnotation_attachAtBottom[2], 1L)
+})
+observeEvent(input$dyShading_up, {
+  chart_id <- as.integer(input$dyShading_up[1])
+  if(is.na(chart_id))
+    return()
+  chart_id_continous <- as.integer(input$dyShading_up[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
+  rv$graphConfig$graph$dyShading[[chart_id_continous]]$to <<- input$dyShading_up[2]
+})
+observeEvent(input$dyShading_color, {
+  chart_id <- as.integer(input$dyShading_color[1])
+  if(is.na(chart_id))
+    return()
+  chart_id_continous <- as.integer(input$dyShading_color[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
+  rv$graphConfig$graph$dyShading[[chart_id_continous]]$color <<- input$dyShading_color[2]
+})
+observeEvent(input$dyShading_axis, {
+  chart_id <- as.integer(input$dyShading_axis[1])
+  if(is.na(chart_id))
+    return()
+  chart_id_continous <- as.integer(input$dyShading_axis[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
+  rv$graphConfig$graph$dyShading[[chart_id_continous]]$axis <<- input$dyShading_axis[2]
+})
 observeEvent(input$paper_bgcolor, {
   if(nchar(input$paper_bgcolor))
     rv$graphConfig$graph$paper_bgcolor <<- input$paper_bgcolor
@@ -471,46 +516,61 @@ observeEvent(input$add_array_el, {
   chart_label <- input$add_array_el[2]
   el_id       <- input$add_array_el[3]
   JSON_id     <- gsub("^[^_]*_", "", el_id)
-
+  
+  # id is not integer or label didnt change
   if(is.na(chart_id) || (length(idLabelMap[[el_id]]) >= chart_id && 
                          identical(idLabelMap[[el_id]][[chart_id]], chart_label)))
     return()
   
+  # if same label already exists, remove it
+  currentContent <- NULL
   if(chart_id <= length(idLabelMap[[el_id]])){
     labelID <- idLabelMap[[el_id]][[chart_id]]
     if(sum(labelID == idLabelMap[[el_id]]) < 1.5){
+      if(length(input$add_array_el) > 3L){
+        # when label is merely changed not added, we must preserve the previous config
+        currentContent <- rv$graphConfig$graph[[JSON_id]][labelID]
+      }
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
   }
   
   idLabelMap[[el_id]][[chart_id]] <<- chart_label
   
+  if(length(currentContent)){
+    rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- currentContent
+    return()
+  }
+  
   if(identical(el_id, "chart_ydata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    if(identical(chart_id, 1L) && !(length(input$y_title) && nchar(input$y_title))){
-      updateTextInput(session, "y_title", value = label)
-    }
-    rv$graphConfig$graph$ydata[[chart_label]] <<- list(label = label, 
-                                                       mode = if(identical(input$plotly_chart_type, "scatter"))
-                                                         "markers" else "lines")
+    newContent  <- list(label = label, 
+                        mode = if(identical(input$plotly_chart_type, "scatter"))
+                          "markers" else "lines")
   }else if(identical(el_id, "hist_data")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    if(identical(chart_id, 1L) && !(length(input$x_title) && nchar(input$x_title))){
-      updateTextInput(session, "x_title", value = label)
-    }
-    rv$graphConfig$graph$xdata[[chart_label]] <<- list(labels = label)
+    newContent  <- list(labels = label)
   }else if(identical(el_id, "dy_dyEvent")){
-    rv$graphConfig$graph$dyEvent[[chart_label]] <<- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
+    newContent  <- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
+  }else if(identical(el_id, "dy_dyAnnotation")){
+    newContent <- list(text = scalarOutputData[[2]][1], tooltip = "", attachAtBottom = FALSE)
+  }else if(identical(el_id, "dy_dyShading")){
+    newContent <- list(from = chart_label, 
+                       to = chart_label, 
+                       color = "#efefef", 
+                       axis = "x")
+    chart_label <- chart_id - sum(idLabelMap[[el_id]][1:chart_id] == "_NULL")
   }
+  rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- newContent
 })
 observeEvent(input$remove_array_el, {
   el_id <- input$remove_array_el[1]
   JSON_id     <- gsub("^[^_]*_", "", el_id)
-  
+  print(input$remove_array_el[3])
   if(sum(input$remove_array_el[2] == idLabelMap[[el_id]]) < 1.5){
     rv$graphConfig$graph[[JSON_id]][input$remove_array_el[2]] <- NULL
   }
-  idLabelMap[[el_id]][as.integer(input$remove_array_el[3])] <<- NULL
+  idLabelMap[[el_id]][as.integer(input$remove_array_el[3])] <<- "_NULL"
 })
 observeEvent(input$chart_ylabel, {
   tryCatch({
@@ -607,7 +667,7 @@ getChartOptions <- reactive({
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
                   colorPickerInput("paper_bgcolor", "What background color shall the paper have?", value = NULL),
-                  textInput("plot_bgcolor", "What background color shall the plot have?"),
+                  colorPickerInput("plot_bgcolor", "What background color shall the plot have?", value = NULL),
                   checkboxInput("showlegend", "Show legend?"),
                   getAxisOptions("x", names(indices)[1]),
                   getAxisOptions("y", names(scalarIndices)[1])
@@ -621,7 +681,7 @@ getBarOptions  <- reactive({
     rv$graphConfig$graph$barmode <<- "group"
     rv$graphConfig$graph$ydata[[indices[[1]]]] <<- list(label = names(indices)[1],
                                                         mode = "lines",
-                                                        marker = list(color = "black", 
+                                                        marker = list(color = "rgb(0,0,0)", 
                                                                       line = list(width = 0)))
     idLabelMap$chart_ydata[[1]] <<- indices[[1]]
   })
@@ -641,7 +701,7 @@ getScatterOptions  <- reactive({
                                                               mode = "markers",
                                                               markers = list(
                                                                 symbol = "circle",
-                                                                color = "black",
+                                                                color = "rgb(0,0,0)",
                                                                 opacity = 1L,
                                                                 size = 6L,
                                                                 line = list(width = 0L)
@@ -657,7 +717,7 @@ getLineOptions  <- reactive({
     rv$graphConfig$graph$ydata <- list()
     rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
                                                               mode = "lines",
-                                                              line = list(color = "black",
+                                                              line = list(color = "rgb(0,0,0)",
                                                                           width = 2L,
                                                                           shape = "linear",
                                                                           dash = "dash"))
@@ -671,7 +731,7 @@ getHistOptions <- reactive({
     label <- names(activeSymbol$indices)[match(scalarIndices[1], 
                                                activeSymbol$indices)][1]
     rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, 
-                                                            color = "black", 
+                                                            color = "rgb(0,0,0)", 
                                                             alpha = 1L)
     rv$graphConfig$graph$histnorm   <<- ""
     rv$graphConfig$graph$nbins      <<- 2L
@@ -711,6 +771,8 @@ getDygraphsOptions <- reactive({
                                                             fillGraph = FALSE, drawPoints = FALSE, pointShape = "dot",
                                                             pointSize = 2L)
     rv$graphConfig$graph$dyEvent <<- NULL
+    rv$graphConfig$graph$dyAnnotation <<- NULL
+    rv$graphConfig$graph$dyShading <<- NULL
     rv$graphConfig$graph$dyOptions <<- list(includeZero = FALSE, logscale = FALSE, drawGrid = FALSE,
                                             stepPlot = FALSE, stemPlot = FALSE, fillGraph = FALSE,
                                             fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
@@ -722,7 +784,11 @@ getDygraphsOptions <- reactive({
                 choices = indices),
     addArrayEl(session, "dy_ydata", "Add data series"),
     if(length(scalarOutputData) && nrow(scalarOutputData)){
-      addArrayEl(session, "dy_dyEvent", "Add event line", autoCreate = FALSE)
+      tagList(
+        addArrayEl(session, "dy_dyEvent", "Add event line", autoCreate = FALSE),
+        addArrayEl(session, "dy_dyAnnotation", "Add annotation", autoCreate = FALSE),
+        addArrayEl(session, "dy_dyShading", "Add shading", autoCreate = FALSE)
+      )
     },
     selectInput("chart_color", "What symbol do you want to use to plot different chart lines?",
                 choices = c("_", indices)),

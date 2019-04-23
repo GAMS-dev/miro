@@ -72,16 +72,36 @@ function addDyEvent(){
   'dyEvent_color': ['color', 'What color should the event line have?', 'rgb(0,0,0)'],
   'dyEvent_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
   };
-  addArrayEl(arrayID, elements, false);
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+function addDyAnnotation(){
+  var arrayID      = 'dy_dyAnnotation';
+  var elements     = {'dy_dyAnnotation' : ['select', 'What shall be annotated?', outputScalars, outputScalarAliases],
+  'dyAnnotation_text': ['text', 'What text should be used?', outputScalarAliases[1]],
+  'dyAnnotation_tooltip': ['text', 'What tooltip should be used?'],
+  'dyAnnotation_width': ['numeric', 'Specify annotation width', 0, 0],
+  'dyAnnotation_height': ['numeric', 'Specify annotation height', 0, 0],
+  'dyAnnotation_attachAtBottom': ['checkbox', 'Should annotation be attached to x axis?']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+function addDyShading(){
+  var arrayID      = 'dy_dyShading';
+  var elements     = {'dy_dyShading' : ['select', 'Which symbol shall be used as lower bound for shading?', outputScalars, outputScalarAliases],
+  'dyShading_up' : ['select', 'Which symbol shall be used as upper bound for shading?', outputScalars, outputScalarAliases],
+  'dyShading_axis': ['select', 'Select axis where shading shall be applied to', ['x', 'y']],
+  'dyShading_color': ['color', 'What color should the event line have?', '#EFEFEF']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
 }
 
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'marker_color' : ['text', 'Select bar color', 'black'],
+  'marker_color' : ['color', 'Select bar color', 'rgb(0,0,0)'],
   'marker_line_width': ['numeric', 'Select bar outline width', 0, 0],
-  'marker_line_color' : ['text', 'Select bar outline color']
+  'marker_line_color' : ['color', 'Select bar outline color']
   };
   
   addArrayEl(arrayID, elements);
@@ -123,11 +143,11 @@ function addScatterDataEl(){
                                                         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
                                                         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
-  'marker_color' : ['text', 'Select marker color', 'black'],
+  'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
   'marker_opacity' : ['numeric', 'Select marker opacity', 1, 0, 1],
   'marker_size' : ['numeric', 'Select marker size', 6, 0],
   'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
-  'marker_line_color' : ['text', 'Select marker outline color']
+  'marker_line_color' : ['color', 'Select marker outline color']
   };
   addArrayEl(arrayID, elements);
 }
@@ -135,7 +155,7 @@ function addLineDataEl(){
   var arrayID      = 'chart_ydataline';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'line_color' : ['text', 'Select line color', 'black'],
+  'line_color' : ['text', 'Select line color', 'rgb(0,0,0)'],
   'line_width' : ['numeric', 'Select line width', 2, 0],
   'line_shape' : ['select', 'Select line shape', ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']],
   'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']]
@@ -146,7 +166,7 @@ function addHistDataEl(){
   var arrayID      = 'hist_xdata';
   var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
   'hist_label' : ['text', 'What label should be used?', 'label'],
-  'hist_color' : ['text', 'Select bar color', 'black'],
+  'hist_color' : ['color', 'Select bar color', 'rgb(0,0,0)'],
   'hist_alpha' : ['numeric', 'Choose bar transparency', 1, 0, 1]
   };
   addArrayEl(arrayID, elements);
@@ -154,7 +174,7 @@ function addHistDataEl(){
 function addDyDataEl(){
   var arrayID      = 'dy_ydata';
   var elements     = {'chart_ydata' : ['select', 'What index do you want to plot on the y-axis?', scalarIndices, scalarIndexAliases], 
-  'dyser_color' : ['text', 'What color should be used for this series?'],
+  'dyser_color' : ['color', 'What color should be used for this series?'],
   'dyopt_stepPlot' : ['checkbox', 'Do you want the series to be a step plot?'],
   'dyopt_stemPlot' : ['checkbox', 'Do you want the series to be a stem plot?'],
   'dyopt_fillGraph' : ['checkbox', 'Should the area underneath the graph be filled?'],
@@ -188,6 +208,12 @@ function addArrayDataEl(arrayID){
     case 'dy_dyEvent':
       addDyEvent();
     break;
+    case 'dy_dyAnnotation':
+      addDyAnnotation();
+    break;
+    case 'dy_dyShading':
+      addDyShading();
+    break;
   }
 }
 function addArrayDataElWrapper(arrayID){
@@ -217,12 +243,16 @@ function addLabelEl(arrayID, label){
   elInArray[arrayID] = [label];
 }
   
-function addArrayEl(arrayID, elements){
+function addArrayEl(arrayID, elements, options){
+  if(options === undefined) options = {};
+  if(options.elRequired === undefined) options.elRequired = true;
+  if(options.updateTxtWithLabel === undefined) options.updateTxtWithLabel = [];
+  
   var elID         = incElCount(arrayID);
   var label        = '';
   var arrayContent = '<div id="' + arrayID + elID + '_wrapper" class="config-array-el">';
   var idx          = 0;
-  var elRequired   = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  
   $.each(elements, function( k, v ) {
     switch(v[0]){
       case 'select':
@@ -250,6 +280,7 @@ function addArrayEl(arrayID, elements){
         var value = v[2]; 
         if(value === 'label'){
           value = label;
+          options.updateTxtWithLabel.push('#' + k + elID);
         }
         arrayContent += createTextInput(k, elID, v[1], value);
       break;
@@ -267,7 +298,7 @@ function addArrayEl(arrayID, elements){
     }
     idx++;
   });
-  arrayContent += ((!elRequired || elID > 1)? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID +
+  arrayContent += ((!options.elRequired || elID > 1)? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID +
   '\')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n': '') + '<hr></div>';
   
   $('#' + arrayID + '_wrapper .array-wrapper').append(arrayContent);
@@ -278,7 +309,16 @@ function addArrayEl(arrayID, elements){
       if(idx === 0){
         $('#' + k + elID).selectize({
       	  onChange: function(value) {
-      	    Shiny.setInputValue("add_array_el", [elID, value, k], {priority: "event"});
+      	    if(options.updateTxtWithLabel.length){
+      	      var alias = outputScalarAliases[outputScalars.findIndex(function(val){
+                            return val === value;
+                          })];
+      	      for(var i = 0; i < options.updateTxtWithLabel.length; i++){
+        	      $(options.updateTxtWithLabel[i]).val(alias);
+        	    }
+      	    }
+      	    
+      	    Shiny.setInputValue("add_array_el", [elID, value, k, "change"], {priority: "event"});
           }
       	});
       }else{
@@ -350,7 +390,7 @@ function createCheckboxInput(arrayID, elID, label){
   var value = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
   
-  return('<div class="form-group shiny-input-container">\n' +
+  return('<div class="form-group">\n' +
   '<div class="checkbox">\n' +
     '<label>\n' +
       '<input id="' + id + '" type="checkbox"' + (value === true? ' checked="checked"': '') + '/>\n' +
@@ -392,8 +432,8 @@ function removeArrayEl(arrayID, elID){
         arrayLabel = el.val();
       }
       el.remove();
-    }else if($(v).children('input[type="checkbox"]').length){
-      el = $(v).children('input[type="checkbox"]');
+    }else if($(v).find('input[type="checkbox"]').length){
+      el = $(v).find('input[type="checkbox"]');
       if(idx === 0){
         arrayLabel = $(el).prop('checked');
       }

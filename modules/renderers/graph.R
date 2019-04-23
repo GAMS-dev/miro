@@ -127,7 +127,11 @@ renderGraph <- function(data, configData, options, height = NULL){
           key   <- match(tolower(options$color), tolower(colnames(data)))
           value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
+          if(length(unique(data[[key]])) > 50L){
+            stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", call. = FALSE)
+          }
           xts_data <- spread(data, key, value)
+          
           if(length(options$xdata)){
             xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
             if(is.na(xtsIdx))
@@ -183,10 +187,6 @@ renderGraph <- function(data, configData, options, height = NULL){
     if(!is.null (options$dylegend)){
       p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
     }
-    # add shading to dygraph
-    if(!is.null (options$dyShading)){
-      p <- do.call(dyShading, c(list(dygraph = p), options$dyShading))
-    }
     # add horizontal limit line
     if(!is.null (options$dyLimit)){
       p <- do.call(dyLimit, c(list(dygraph = p), options$dyLimit))
@@ -208,14 +208,23 @@ renderGraph <- function(data, configData, options, height = NULL){
     }
     # Event lines to note points within a time series. 
     if(!is.null (options$dyEvent)){
-      lapply(seq_along(names(options$dyEvent)), function(j){
+      lapply(seq_along(options$dyEvent), function(j){
         event <- getEvent(configData, names(options$dyEvent)[[j]])
         p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
       })
     }
+    # Annotations to note points within a time series. 
+    if(!is.null (options$dyAnnotation)){
+      lapply(seq_along(options$dyAnnotation), function(j){
+        event <- getEvent(configData, names(options$dyAnnotation)[[j]])
+        p <<- do.call(dyAnnotation, c(list(dygraph = p, x = event), options$dyAnnotation[[j]]))
+      })
+    }
     # Add a shading effect to the graph background for one or more time ranges. 
-    if(!is.null (options$dyShading)){
+    if(length(options$dyShading)){
       lapply(seq_along(options$dyShading), function(j){
+        options$dyShading[[j]]$from <- getEvent(configData, options$dyShading[[j]]$from)
+        options$dyShading[[j]]$to <- getEvent(configData, options$dyShading[[j]]$to)
         p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
       })
     }
