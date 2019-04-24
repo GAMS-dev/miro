@@ -233,6 +233,7 @@
                    },
                    "default":{  
                      "description":"Default/starting value of inputdata",
+                     "required": true,
                      "type":[  
                        "number",
                        "string",

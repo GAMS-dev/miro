@@ -1,6 +1,7 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
 
+
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
 scalarOutputData <- tibble()
@@ -10,11 +11,13 @@ isEmptyOutput    <- vector(mode = "logical", length = length(modelOut))
 isEmptyOutput[]  <- TRUE
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 currentSelection <- list("plotly", "pie")
-idLabelMap       <- list(chart_ydata = list(), hist_xdata = list(), dy_dyEvent = list())
+idLabelMap       <- list(chart_ydata = list(), hist_xdata = list(), dy_dyEvent = list(), 
+                         leaflet_markers = list(), leaflet_flows = list())
 currentConfig    <- list()
 optionsInserted  <- c()
 noOutputData     <- TRUE
 allDataAvailable <- FALSE
+leafletGroups    <- CharArray$new()
 
 saveAndReload <- function(...){
   selected    <- list(...)
@@ -227,6 +230,56 @@ observeEvent(input$plotly_chart_type, {
   }
   allDataAvailable <<- TRUE
 })
+
+observeEvent(input$leafMark_lng, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_lng[1])]]]]$lng <<- input$leafMark_lng[2]
+})
+observeEvent(input$leafMark_label, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_label[1])]]]]$label <<- input$leafMark_label[2]
+})
+observeEvent(input$leafMark_groupName, {
+  id <- idLabelMap$leaflet_markers[[as.integer(input$leafMark_groupName[1])]]
+  if(nchar(input$leafMark_groupName[2])){
+    groupName <- input$leafMark_groupName[2]
+  }else{
+    groupName <- NULL
+  }
+  oldName <- rv$graphConfig$graph$markers[[id]]$group
+  if(length(oldName) || length(groupName))
+    leafletGroups$update(old = oldName, new = groupName)
+  else
+    return()
+  rv$updateLeafletGroups <- rv$updateLeafletGroups + 1L
+  
+  rv$graphConfig$graph$markers[[id]]$group <<- groupName
+})
+observeEvent(input$leafMark_labelcolor, {
+  if(nchar(input$leafMark_labelcolor[2])){
+    color <- input$leafMark_labelcolor[2]
+  }else{
+    color <- NULL
+  }
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelcolor[1])]]]]$labelOptions$style$color <<- color
+})
+observeEvent(input$leafMark_labelsize, {
+  if(nchar(input$leafMark_labelsize[2])){
+    textsize <- paste0(input$leafMark_labelsize[2], "px")
+  }else{
+    textsize <- NULL
+  }
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelsize[1])]]]]$labelOptions$textsize <<- textsize
+})
+observeEvent(rv$updateLeafletGroups, {
+  updateSelectInput(session, "leaflc_baseGroups", choices = leafletGroups$get())
+  updateSelectInput(session, "leaflc_overlayGroups", choices = leafletGroups$get())
+  updateSelectInput(session, "leaflet_hideGroups", choices = leafletGroups$get())
+})
+observe(rv$graphConfig$graph$hideGroups <<- input$leaflet_hideGroups)
+observe(rv$graphConfig$graph$layersControl$baseGroups <<- input$leaflc_baseGroups)
+observe(rv$graphConfig$graph$layersControl$overlayGroups <<- input$leaflc_overlayGroups)
+observe(rv$graphConfig$graph$layersControl$position <<- input$leaflc_position)
+observe(rv$graphConfig$graph$layersControl$options$collapsed <<- input$leaflc_collapsed)
+
 observeEvent(input$hist_norm, {
   if(identical(input$hist_norm, " "))
     value <- ""
@@ -308,6 +361,11 @@ observeEvent(input$dyrange_keepMouseZoom, {
     rv$graphConfig$graph$dyRangeSelector$keepMouseZoom <<- input$dyrange_keepMouseZoom
   }
 })
+observeEvent(input$dyrange_retainDateWindow, {
+  if(identical(input$dyrange_activate, TRUE)){
+    rv$graphConfig$graph$dyRangeSelector$retainDateWindow <<- input$dyrange_retainDateWindow
+  }
+})
 observeEvent(input$dyrange_height, {
   if(identical(input$dyrange_activate, TRUE)){
     rv$graphConfig$graph$dyRangeSelector$height <<- input$dyrange_height
@@ -374,6 +432,16 @@ observeEvent(input$dyopt_pointSize, {
     rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
   }
 })
+observeEvent(input$dyhigh_circleSize, {
+  rv$graphConfig$graph$dyHighlight$highlightCircleSize <<- input$dyhigh_circleSize
+})
+observeEvent(input$dyhigh_seriesBackgroundAlpha, {
+  rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha <<- input$dyhigh_seriesBackgroundAlpha
+})
+observeEvent(input$dyhigh_hideOnMouseOut, {
+  rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
+})
+
 observeEvent(input$dyEvent_label, {
   if(identical(input$dyEvent_label[2], "")){
     eventLabel <- NULL
@@ -418,22 +486,19 @@ observeEvent(input$dyShading_up, {
   chart_id <- as.integer(input$dyShading_up[1])
   if(is.na(chart_id))
     return()
-  chart_id_continous <- as.integer(input$dyShading_up[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
-  rv$graphConfig$graph$dyShading[[chart_id_continous]]$to <<- input$dyShading_up[2]
+  rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$to <<- input$dyShading_up[2]
 })
 observeEvent(input$dyShading_color, {
   chart_id <- as.integer(input$dyShading_color[1])
   if(is.na(chart_id))
     return()
-  chart_id_continous <- as.integer(input$dyShading_color[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
-  rv$graphConfig$graph$dyShading[[chart_id_continous]]$color <<- input$dyShading_color[2]
+  rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$color <<- input$dyShading_color[2]
 })
 observeEvent(input$dyShading_axis, {
   chart_id <- as.integer(input$dyShading_axis[1])
   if(is.na(chart_id))
     return()
-  chart_id_continous <- as.integer(input$dyShading_axis[1]) - sum(idLabelMap$dyShading[1:chart_id] == "_NULL")
-  rv$graphConfig$graph$dyShading[[chart_id_continous]]$axis <<- input$dyShading_axis[2]
+  rv$graphConfig$graph$dyShading[[idLabelMap$dy_dyShading[[chart_id]]]]$axis <<- input$dyShading_axis[2]
 })
 observeEvent(input$paper_bgcolor, {
   if(nchar(input$paper_bgcolor))
@@ -512,15 +577,30 @@ observeEvent(input$chart_xdata, {
   rv$graphConfig$graph$xdata <<- input$chart_xdata
 })
 observeEvent(input$add_array_el, {
-  chart_id    <- as.integer(input$add_array_el[1])
+  chart_id    <- input$add_array_el[1]
   chart_label <- input$add_array_el[2]
   el_id       <- input$add_array_el[3]
+  
+  if(el_id %in% c("dy_dyShading", "leaflet_markers", "leaflet_flows")){
+    # ID is number instead of string as string is not unique
+    chart_label <- chart_id
+  }
+  chart_id    <- as.integer(chart_id)
   JSON_id     <- gsub("^[^_]*_", "", el_id)
   
-  # id is not integer or label didnt change
-  if(is.na(chart_id) || (length(idLabelMap[[el_id]]) >= chart_id && 
-                         identical(idLabelMap[[el_id]][[chart_id]], chart_label)))
+  if(is.na(chart_id))
     return()
+  # label didnt change
+  if(length(idLabelMap[[el_id]]) >= chart_id && 
+     identical(idLabelMap[[el_id]][[chart_id]], chart_label)){
+    if(identical(el_id, "dy_dyShading")){
+      rv$graphConfig$graph[[JSON_id]][[chart_label]]$from <- input$add_array_el[2]
+    }else if(el_id %in% c("leaflet_markers", "leaflet_flows")){
+      rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat <- input$add_array_el[2]
+    }else{
+      return()
+    }
+  }
   
   # if same label already exists, remove it
   currentContent <- NULL
@@ -529,7 +609,7 @@ observeEvent(input$add_array_el, {
     if(sum(labelID == idLabelMap[[el_id]]) < 1.5){
       if(length(input$add_array_el) > 3L){
         # when label is merely changed not added, we must preserve the previous config
-        currentContent <- rv$graphConfig$graph[[JSON_id]][labelID]
+        currentContent <- rv$graphConfig$graph[[JSON_id]][[labelID]]
       }
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
@@ -555,22 +635,27 @@ observeEvent(input$add_array_el, {
   }else if(identical(el_id, "dy_dyAnnotation")){
     newContent <- list(text = scalarOutputData[[2]][1], tooltip = "", attachAtBottom = FALSE)
   }else if(identical(el_id, "dy_dyShading")){
-    newContent <- list(from = chart_label, 
-                       to = chart_label, 
+    newContent <- list(from = input$add_array_el[2], 
+                       to = input$add_array_el[2], 
                        color = "#efefef", 
                        axis = "x")
-    chart_label <- chart_id - sum(idLabelMap[[el_id]][1:chart_id] == "_NULL")
+  }else if(identical(el_id, "leaflet_markers")){
+    newContent <- list(lng = input$add_array_el[2], 
+                       lat = input$add_array_el[2],
+                       textsize = "12px")
   }
   rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- newContent
 })
 observeEvent(input$remove_array_el, {
-  el_id <- input$remove_array_el[1]
-  JSON_id     <- gsub("^[^_]*_", "", el_id)
-  print(input$remove_array_el[3])
-  if(sum(input$remove_array_el[2] == idLabelMap[[el_id]]) < 1.5){
-    rv$graphConfig$graph[[JSON_id]][input$remove_array_el[2]] <- NULL
+  array_id <- input$remove_array_el[1]
+  el_id    <- as.integer(as.integer(input$remove_array_el[3]))
+  JSON_id     <- gsub("^[^_]*_", "", array_id)
+  chart_label <- idLabelMap[[array_id]][[el_id]]
+  
+  if(sum(input$remove_array_el[2] == chart_label) < 1.5){
+    rv$graphConfig$graph[[JSON_id]][chart_label] <- NULL
   }
-  idLabelMap[[el_id]][as.integer(input$remove_array_el[3])] <<- "_NULL"
+  idLabelMap[[array_id]][el_id] <<- "_NULL"
 })
 observeEvent(input$chart_ylabel, {
   tryCatch({
@@ -612,6 +697,11 @@ observeEvent({
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "dygraph_options", getDygraphsOptions()), where = "beforeEnd")
+      allDataAvailable <<- TRUE
+    }else if(identical(input$chart_tool, "leaflet")){
+      currentSelection$noLayers <<- 1L
+      insertUI(selector = "#tool_options",
+               tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
     }
   })
@@ -777,6 +867,7 @@ getDygraphsOptions <- reactive({
                                             stepPlot = FALSE, stemPlot = FALSE, fillGraph = FALSE,
                                             fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
                                             pointSize = 2L)
+    rv$graphConfig$graph$dyHighlight <<- NULL
     idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
   })
   tagList(
@@ -814,8 +905,44 @@ getDygraphsOptions <- reactive({
                                           "circle", "star", "plus", "ex")),
                   numericInput("dyopt_pointSize", "What size should points be?", min = 0L, value = 2L)
     ),
+    optionSection(title = "Highlighting options", collapsed = TRUE,
+                  numericInput("dyhigh_circleSize", "What shall the circle size be (in px)?", min = 0L, value = 3L),
+                  sliderInput("dyhigh_seriesBackgroundAlpha", "Choose the opacity of the background", 
+                              min = 0L, max = 1L, step = 0.1, value = 0.5),
+                  checkboxInput("dyhigh_hideOnMouseOut", "Hide highlighting effects when mouse is moved out of chart?", TRUE)
+    ),
     getAxisOptions("x", names(indices)[1], labelOnly = TRUE),
     getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE)
+  )
+})
+getLeafletOptions <- reactive({
+  rv$initData
+  indices       <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  leafletGroups$reset()
+  isolate({
+    rv$graphConfig$graph$markers <<- NULL
+    rv$graphConfig$graph$flows <<- NULL
+    rv$graphConfig$graph$layersControl$position <<- "topright"
+    rv$graphConfig$graph$layersControl$options$collapsed <<- TRUE
+  })
+  tagList(
+    tagList(
+      addArrayEl(session, "leaflet_markers", "Add Markers", autoCreate = FALSE),
+      addArrayEl(session, "leaflet_flows", "Add Flows", autoCreate = FALSE),
+      selectInput("leaflet_hideGroups", "Select groups that should be hidden on startup", choices = c(),
+                  multiple = TRUE),
+      optionSection(title = "Layer control options", collapsed = TRUE,
+                    selectInput("leaflc_baseGroups", "Which base groups shall be selectable?", choices = c(),
+                                multiple = TRUE),
+                    selectInput("leaflc_overlayGroups", "Which overlay groups shall be selectable?", 
+                                choices = c(), multiple = TRUE),
+                    selectInput("leaflc_position", "Should grid lines be displayed?", 
+                                setNames(c("topright", "bottomright", "bottomleft", "topleft"), c("Top right", "Bottom right",
+                                                                                                  "Bottom left", "Top left"))),
+                    checkboxInput("leaflc_collapsed", "Shall layer control panel be collapsed?", value = TRUE)
+      )
+    )
   )
 })
 observe({
@@ -837,21 +964,36 @@ observe({
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-plotly")
       hideEl(session, "#preview-content-dygraph")
-    }else{
+      hideEl(session, "#preview-content-leaflet")
+    }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
       callModule(renderData, "preview_output_dygraph", type = rv$graphConfig$outType, 
                  data = data, configData = scalarOutputData, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#preview-content-leaflet")
+    }else{
+      callModule(renderData, "preview_output_leaflet", type = rv$graphConfig$outType, 
+                 data = data, configData = scalarOutputData, 
+                 graphOptions = rv$graphConfig$graph,
+                 roundPrecision = roundPrecision, modelDir = modelDir)
+      showEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#preview-content-dygraph")
     }
     hideEl(session, "#preview-error")
   }, error = function(e) {
     hideEl(session, "#preview-content-dygraph")
     hideEl(session, "#preview-content-plotly")
+    hideEl(session, "#preview-content-leaflet")
     showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
   })
 }, priority = -1000)
+
+#  ==============================
+#          SAVE JSON
+#  ==============================
 observeEvent(input$saveGraph, {
   req(nchar(activeSymbol$name) > 0L)
   if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){

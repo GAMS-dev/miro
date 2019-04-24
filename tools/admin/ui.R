@@ -116,7 +116,8 @@ body_admin <- dashboardBody({
                                                textInput("chart_title", "Choose a title for your chart"),
                                                numericInput("chart_height", "Choose a height for your chart (px)", min = 0L, value = 700),
                                                selectInput("chart_tool", "Select the charting tool you want to use", 
-                                                           setNames(c("plotly", "dygraphs"), c("Diagram Tool", "Time Series Diagram Tool"))),
+                                                           setNames(c("plotly", "dygraphs", "leaflet"), 
+                                                                    c("Diagram Tool", "Time Series Diagram Tool", "Map chart"))),
                                                tags$div(id = "tool_options"),
                                                tags$div(style = "height:100px;")
                                       )
@@ -132,6 +133,11 @@ body_admin <- dashboardBody({
                              tags$div(id = "preview-content-dygraph", style = "display:none;",
                                       renderDataUI("preview_output_dygraph", type = "graph", 
                                                    graphTool = "dygraphs", 
+                                                   height = 400, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-content-leaflet", style = "display:none;",
+                                      renderDataUI("preview_output_leaflet", type = "graph", 
+                                                   graphTool = "leaflet", 
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",

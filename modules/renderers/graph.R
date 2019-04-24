@@ -229,6 +229,40 @@ renderGraph <- function(data, configData, options, height = NULL){
       })
     }
     return(renderDygraph(p))
+  }else if(options$tool == 'leaflet'){
+    p   <- leaflet(data) %>% addTiles()
+    
+    lapply(seq_along(options$markers), function(j){
+      p <<- addAwesomeMarkers(p, lng = data[[options$markers[[j]]$lng]], 
+                             lat = data[[options$markers[[j]]$lat]], layerId = j,
+                             group = options$markers[[j]]$group,
+                             label = if(length(options$markers[[j]]$label)) eval(parseLabel(options$markers[[j]]$label, names(data))),
+                             labelOptions = options$markers[[j]]$labelOptions)
+    })
+    if(length(options$hideGroups)){
+      p <- leaflet::hideGroup(p, options$hideGroups)
+    }
+    lapply(seq_along(options$flows), function(j){
+      p <<- addFlows(p, lng0 = data[[options$flows[[j]]$lng0]], 
+                    lat0 = data[[options$flows[[j]]$lat0]], lng1 = data[[options$flows[[j]]$lng1]], 
+                    lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
+                    flow = data[[options$flows[[j]]$flow]], opacity = options$flows[[j]]$opacity,
+                    minThickness = options$flows[[j]]$minThickness, 
+                    time = if(length(options$flows[[j]]$time)) data[[options$flows[[j]]$time]], 
+                    maxThickness = options$flows[[j]]$maxThickness,
+                    initialTime = options$flows[[j]]$initialTime,
+                    dir = options$flows[[j]]$dir)
+    })
+    if(length(options$layersControl$baseGroups) + length(options$layersControl$overlayGroups) > 0L){
+      p <- addLayersControl(p, baseGroups = if(length(options$layersControl$baseGroups)) options$layersControl$baseGroups else character(0L),
+                            overlayGroups = if(length(options$layersControl$overlayGroups)) options$layersControl$overlayGroups else character(0L), 
+                            position = options$layersControl$position,
+                            options = if(length(options$layersControl$options)) 
+                              do.call(layersControlOptions, options$layersControl$options) else
+                              layersControlOptions())
+    }
+    
+    return(renderLeaflet(p))
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }
@@ -254,4 +288,14 @@ getEvent <- function(configData, eventId){
     # config data does not exist, so return string
     return(eventId)
   }
+}
+parseLabel <- function(label, colNames){
+  if(!nchar(label))
+    return(NULL)
+  label <- gsub('"', '\\\\"', label)
+  for(colName in colNames){
+    label <- gsub(paste0("[", colName, "]"), paste0('",data$', colName, ',"'), 
+                  label, fixed = TRUE)
+  }
+  return(parse(text = paste0('paste0("', label, '")')))
 }

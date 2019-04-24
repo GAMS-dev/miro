@@ -85,12 +85,25 @@ function addDyAnnotation(){
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
+
 function addDyShading(){
   var arrayID      = 'dy_dyShading';
   var elements     = {'dy_dyShading' : ['select', 'Which symbol shall be used as lower bound for shading?', outputScalars, outputScalarAliases],
   'dyShading_up' : ['select', 'Which symbol shall be used as upper bound for shading?', outputScalars, outputScalarAliases],
   'dyShading_axis': ['select', 'Select axis where shading shall be applied to', ['x', 'y']],
   'dyShading_color': ['color', 'What color should the event line have?', '#EFEFEF']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+
+function addLeafletMarkers(){
+  var arrayID      = 'leaflet_markers';
+  var elements     = {'leaflet_markers' : ['select', 'Select column with latitude data', scalarIndices, scalarIndexAliases],
+  'leafMark_lng': ['select', 'Select column with longitude data', scalarIndices, scalarIndexAliases],
+  'leafMark_groupName': ['text', 'Choose a group name for these markers'],
+  'leafMark_label': ['text', 'Choose a label'],
+  'leafMark_labelcolor': ['color', 'Choose a font color for the label'],
+  'leafMark_labelsize': ['numeric', 'Choose a font size for the label [in px]', 12, 0]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
@@ -213,6 +226,9 @@ function addArrayDataEl(arrayID){
     break;
     case 'dy_dyShading':
       addDyShading();
+    break;
+    case 'leaflet_markers':
+      addLeafletMarkers();
     break;
   }
 }

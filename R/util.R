@@ -886,3 +886,68 @@ uploadFile <- function(file, url, userpwd){
   })
   curl::curl_fetch_memory(url, handle = h)
 }
+CharArray <- R6Class("CharArray", public = list(
+  push = function(el){
+    stopifnot(length(el) > 0L, is.character(el))
+    private$items[[self$size() + 1L]] <- el
+    invisible(self)
+  },
+  pop = function(){
+    stopifnot(self$size() > 0L)
+    private$items[[self$size()]]
+    invisible(self)
+  },
+  delete = function(el){
+    stopifnot(identical(length(el), 1L), is.character(el))
+    
+    idx <- match(el, private$items)[[1L]]
+    if(is.na(idx)){
+      return(FALSE)
+    }
+    private$items[[idx]] <- NULL
+    return(TRUE)
+  },
+  reset = function(){
+    private$items <- private$initialItems
+    invisible(self)
+  },
+  update = function(old, new){
+    if(length(old)){
+      stopifnot(identical(length(old), 1L), is.character(old))
+    }else{
+      self$push(new)
+      return(TRUE)
+    }
+    if(length(new)){
+      stopifnot(identical(length(new), 1L), is.character(new))
+    }else if(self$delete(old)){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+    
+    idx <- match(old, private$items)[[1L]]
+    if(is.na(idx)){
+      return(FALSE)
+    }
+    private$items[[idx]] <- new
+    return(TRUE)
+  },
+  get = function(){
+    unlist(private$items, use.names = FALSE)
+  },
+  initialize = function(el = NULL){
+    if(length(el)){
+      stopifnot(is.character(el))
+      private$initialItems <- as.list(el)
+      private$items <- private$initialItems
+    }
+    invisible(self)
+  },
+  size = function(){
+    length(private$items)
+  }
+), private = list(
+  initialItems = list(),
+  items = list()
+))

@@ -982,12 +982,15 @@ if(is.null(errMsg)){
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
-  installPackage$plotly <- any(vapply(c(configGraphsIn, configGraphsOut), 
-                                      function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
-                                      logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
-  installPackage$dygraphs <- any(vapply(c(configGraphsIn, configGraphsOut), 
-                                        function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
-                                        logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
+  installPackage$plotly <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                         function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
+                                                         logical(1L), USE.NAMES = FALSE))
+  installPackage$dygraphs <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                           function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
+                                                           logical(1L), USE.NAMES = FALSE))
+  installPackage$leaflet <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                           function(conf){if(identical(conf$graph$tool, "leaflet")) TRUE else FALSE}, 
+                                                           logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,

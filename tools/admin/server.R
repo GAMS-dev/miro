@@ -19,8 +19,8 @@ addArrayEl <- function(session, arrayID, label, plotlyChartType = "", autoCreate
 </div>'))
 }
 optionSection <- function(title, ..., collapsed = FALSE){
-  tags$div(class = "shiny-input-container",
-           tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer", 
+  tags$div(class = "shiny-input-container", style = "min-height:30px;",
+           tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer;font-weight:bold;", 
                    onclick = "$(this).next().toggle();"),
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
            )
@@ -45,7 +45,8 @@ server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
                        graphConfig = list(outType = "graph", graph = list()), 
                        widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
-                       initData = FALSE, widget_type = 0L, widget_symbol = 0L, saveWidgetConfirm = 0L)
+                       initData = FALSE, widget_type = 0L, widget_symbol = 0L, saveWidgetConfirm = 0L,
+                       updateLeafletGroups = 0L)
   configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                     simplifyDataFrame = FALSE, 
                                                     simplifyMatrix = FALSE))

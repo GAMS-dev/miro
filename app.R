@@ -22,6 +22,8 @@ MIRORDate   <- "Apr 15 2019"
 # shinydashboard  #GPL >= v2
 # writexl         #BSD-2-clause
 # stringi         #BSD-3-clause
+# leaflet         #GPL-3
+# leaflet.minicharts #GPL >=v2
 
 # RPostgres (Scenario mode) #GPL-2
 # DBI (Scenario mode)  #LGPL >=2
@@ -206,7 +208,8 @@ if(is.null(errMsg)){
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
-                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs")) 
+                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"))
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
