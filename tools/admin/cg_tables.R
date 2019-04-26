@@ -84,7 +84,7 @@ getHotOptions <- reactive({
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_context_enable",
-                        "Enable manual column resizing."),
+                        "Enable table context menu (accessible via right mouse click)."),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("hot_context_enable", 
