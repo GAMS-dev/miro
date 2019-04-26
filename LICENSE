@@ -2459,10 +2459,6 @@ Public License instead of this License.
             SQLite Authors [ctb] (for the included SQLite sources), 
             Liam Healy [ctb] (for the included SQLite sources), 
             R Consortium [fnd], RStudio [cph]
-        - pillar, Copyright (c) Kirill Müller [aut, cre], Hadley Wickham [aut], RStudio [cph]
-        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre], 
-            Elliott Sales De Andrade [ctb], 
-            R Core Team [cph] (UTF8 byte length calcs from src/util.c)
 
 -----------------------------------------------------------------------------
 
@@ -2774,6 +2770,11 @@ Library.
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
         - lattice, Copyright (c)  Deepayan Sarkar
         - RGraphics, Copyright (c) 	Paul Murrell
+        - pillar, Copyright (c) Kirill Müller [aut, cre], Hadley Wickham [aut], RStudio [cph]
+        - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre], 
+            Elliott Sales De Andrade [ctb], 
+            R Core Team [cph] (UTF8 byte length calcs from src/util.c)
+            
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
