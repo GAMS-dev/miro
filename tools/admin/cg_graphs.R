@@ -246,6 +246,14 @@ observeEvent(input$leafFlow_flow, {
 observeEvent(input$leafFlow_time, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_time[1])]]]]$time <<- input$leafFlow_time[2]
 })
+observeEvent(input$leafFlow_label, {
+  if(nchar(input$leafFlow_label[2])){
+    label <- input$leafFlow_label[2]
+  }else{
+    label <- NULL
+  }
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_label[1])]]]]$layerId <<- label
+})
 observeEvent(input$leafFlow_color, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_color[1])]]]]$color <<- input$leafFlow_color[2]
 })
@@ -287,6 +295,14 @@ observeEvent(input$leafMark_labelcolor, {
   }
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelcolor[1])]]]]$labelOptions$style$color <<- color
 })
+observeEvent(input$leafMark_labelbgcolor, {
+  if(nchar(input$leafMark_labelbgcolor[2])){
+    color <- input$leafMark_labelbgcolor[2]
+  }else{
+    color <- NULL
+  }
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelbgcolor[1])]]]]$labelOptions$style[["background-color"]] <<- color
+})
 observeEvent(input$leafMark_labelsize, {
   if(nchar(input$leafMark_labelsize[2])){
     textsize <- paste0(input$leafMark_labelsize[2], "px")
@@ -294,6 +310,9 @@ observeEvent(input$leafMark_labelsize, {
     textsize <- NULL
   }
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelsize[1])]]]]$labelOptions$textsize <<- textsize
+})
+observeEvent(input$leafMark_labelPermanent, {
+  rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_labelPermanent[1])]]]]$labelOptions$permanent <<- identical(input$leafMark_labelPermanent[2], 0L)
 })
 observeEvent(rv$updateLeafletGroups, {
   updateSelectInput(session, "leaflc_baseGroups", choices = leafletGroups$get())
@@ -670,7 +689,7 @@ observeEvent(input$add_array_el, {
   }else if(identical(el_id, "leaflet_markers")){
     newContent <- list(lng = input$add_array_el[2], 
                        lat = input$add_array_el[2],
-                       labelOptions = list(textsize = "12px"))
+                       labelOptions = list(textsize = "12px", permanent = FALSE))
   }else if(identical(el_id, "leaflet_flows")){
     newContent <- list(lng0 = input$add_array_el[2], 
                        lat0 = input$add_array_el[2],

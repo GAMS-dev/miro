@@ -248,6 +248,7 @@ renderGraph <- function(data, configData, options, height = NULL){
                     lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
                     flow = data[[options$flows[[j]]$flow]], opacity = options$flows[[j]]$opacity,
                     minThickness = options$flows[[j]]$minThickness, 
+                    layerId = if(length(options$flows[[j]]$layerId)) eval(parseLabel(options$flows[[j]]$layerId, names(data))),
                     time = if(length(options$flows[[j]]$time)) data[[options$flows[[j]]$time]], 
                     maxThickness = options$flows[[j]]$maxThickness,
                     initialTime = options$flows[[j]]$initialTime,

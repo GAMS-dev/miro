@@ -122,7 +122,9 @@ function addLeafletMarkers(){
   'leafMark_groupName': ['text', 'Choose a group name for these markers'],
   'leafMark_label': ['text', 'Choose a label'],
   'optionsStart': ['optionsStart', 'Label options'],
+  'leafMark_labelPermanent': ['checkbox', 'Display labels only on hover?', true],
   'leafMark_labelcolor': ['color', 'Choose a font color for the label'],
+  'leafMark_labelbgcolor': ['color', 'Choose a background color for the label'],
   'leafMark_labelsize': ['numeric', 'Choose a font size for the label [in px]', 12, 0],
   'optionsEnd': ['optionsEnd']
   };
@@ -136,6 +138,7 @@ function addLeafletFlows(){
   'leafFlow_lng1': ['select', 'Select longitude data where flow ends', scalarIndices, scalarIndexAliases],
   'leafFlow_flow': ['select', 'Select flow data', scalarIndices, scalarIndexAliases],
   'leafFlow_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafFlow_label': ['text', 'Choose a label'],
   'optionsStart': ['optionsStart', 'Additional options'],
   'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
@@ -480,11 +483,13 @@ function createColorPickerInput(arrayID, elID, label){
   '<input id="' + id + '" type="text" class="form-control miro-color-picker" value="' + value + '"/>\n' +
 '</div>');
 }
-function removeArrayEl(arrayID, elID){
-  var arrayLabel = '';
-  var el    = null;
-  var idx   = 0;
-  $.each($('#' + arrayID + elID + '_wrapper .form-group'), function(k,v){
+function removeElAtomic(element, idx){
+  var el = null;
+  var arrayLabel = null;
+  
+  $.each(element, function(k,v){
+    console.log(k);
+    console.log(idx);
     if($(v).children('input[type="number"]').length){
       el = $(v).children('input[type="number"]');
       if(idx === 0){
@@ -497,6 +502,8 @@ function removeArrayEl(arrayID, elID){
         arrayLabel = el.val();
       }
       el.colorpicker('destroy');
+    }else if($(v).children('.option-section').length){
+      removeElAtomic($(v).children('.option-section').first().children(".form-group"), idx);
     }else if($(v).children('input[type="text"]').length){
       el = $(v).children('input[type="text"]');
       if(idx === 0){
@@ -520,11 +527,22 @@ function removeArrayEl(arrayID, elID){
     }
     idx++;
   });
+  return arrayLabel;
+}
+function removeArrayEl(arrayID, elID){
+  
+  
+  var idx   = 0;
+  var arrayLabel = removeElAtomic($('#' + arrayID + elID + '_wrapper').children(".form-group"), idx);
+  
   if(arrayLabel.length === 0){
     throw "Failed to remove array element: Could not find identifier for array element: " +
     arrayID + ' (label ID: ' + arrayID + elID + ').';
   }
-  elInArray[arrayID].splice($.inArray(arrayLabel, elInArray[arrayID]), 1);
+  
+  if(elInArray[arrayID] !== undefined){
+    elInArray[arrayID].splice($.inArray(arrayLabel, elInArray[arrayID]), 1);
+  }
   $('#' + arrayID + '_wrapper .btn-add-array-el:disabled').prop('disabled', false);
   Shiny.setInputValue('remove_array_el', [arrayID, arrayLabel, elID], {
     priority: "event"
