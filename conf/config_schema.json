@@ -935,7 +935,8 @@
                               "type":"string",
                               "enum":[  
                                  "plotly",
-                                 "dygraphs"
+                                 "dygraphs",
+                                 "leaflet"
                               ],
                               "required":true
                            }

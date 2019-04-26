@@ -53,12 +53,31 @@
  * http://benalman.com/about/license/
  */
 (function(b,c){var $=b.jQuery||b.Cowboy||(b.Cowboy={}),a;$.throttle=a=function(e,f,j,i){var h,d=0;if(typeof f!=="boolean"){i=j;j=f;f=c}function g(){var o=this,m=+new Date()-d,n=arguments;function l(){d=+new Date();j.apply(o,n)}function k(){h=c}if(i&&!h){l()}h&&clearTimeout(h);if(i===c&&m>e){l()}else{if(f!==true){h=setTimeout(i?k:l,i===c?e-m:e)}}}if($.guid){g.guid=j.guid=j.guid||$.guid++}return g};$.debounce=function(d,e,f){return f===c?a(d,e,false):a(d,f,e!==false)}})(this);
-
+/* https://stackoverflow.com/questions/1187518/how-to-get-the-difference-between-two-arrays-in-javascript/11353526 */
+function arr_diff (a1, a2) {
+    var a = [], diff = [];
+    for (var i = 0; i < a1.length; i++) {
+        a[a1[i]] = true;
+    }
+    for (var i = 0; i < a2.length; i++) {
+        if (a[a2[i]]) {
+            delete a[a2[i]];
+        } else {
+            a[a2[i]] = true;
+        }
+    }
+    for (var k in a) {
+        diff.push(k);
+    }
+    return diff;
+}
 
 var indices            = [];
 var indexAliases       = [];
 var scalarIndices      = [];
 var scalarIndexAliases = [];
+var nonScalarIndices   = [];
+var nonScalarIndexAliases = [];
 var outputScalars      = [];
 var outputScalarAliases = [];
 var elInArrayCounter   = {};
@@ -102,8 +121,27 @@ function addLeafletMarkers(){
   'leafMark_lng': ['select', 'Select column with longitude data', scalarIndices, scalarIndexAliases],
   'leafMark_groupName': ['text', 'Choose a group name for these markers'],
   'leafMark_label': ['text', 'Choose a label'],
+  'optionsStart': ['optionsStart', 'Label options'],
   'leafMark_labelcolor': ['color', 'Choose a font color for the label'],
-  'leafMark_labelsize': ['numeric', 'Choose a font size for the label [in px]', 12, 0]
+  'leafMark_labelsize': ['numeric', 'Choose a font size for the label [in px]', 12, 0],
+  'optionsEnd': ['optionsEnd']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+function addLeafletFlows(){
+  var arrayID      = 'leaflet_flows';
+  var elements     = {'leaflet_flows' : ['select', 'Select latitude data where flow originates', scalarIndices, scalarIndexAliases],
+  'leafFlow_lng': ['select', 'Select longitude data where flow originates', scalarIndices, scalarIndexAliases],
+  'leafFlow_lat1': ['select', 'Select latitude data where flow ends', scalarIndices, scalarIndexAliases],
+  'leafFlow_lng1': ['select', 'Select longitude data where flow ends', scalarIndices, scalarIndexAliases],
+  'leafFlow_flow': ['select', 'Select flow data', scalarIndices, scalarIndexAliases],
+  'leafFlow_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'optionsStart': ['optionsStart', 'Additional options'],
+  'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
+  'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
+  'leafFlow_maxThickness': ['numeric', 'Choose the maximum thickness', 20, 0],
+  'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
+  'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
@@ -230,6 +268,9 @@ function addArrayDataEl(arrayID){
     case 'leaflet_markers':
       addLeafletMarkers();
     break;
+    case 'leaflet_flows':
+      addLeafletFlows();
+    break;
   }
 }
 function addArrayDataElWrapper(arrayID){
@@ -258,7 +299,7 @@ function addLabelEl(arrayID, label){
   }
   elInArray[arrayID] = [label];
 }
-  
+
 function addArrayEl(arrayID, elements, options){
   if(options === undefined) options = {};
   if(options.elRequired === undefined) options.elRequired = true;
@@ -274,19 +315,25 @@ function addArrayEl(arrayID, elements, options){
       case 'select':
         var selected = undefined;
         if(idx === 0){
-          // as labels need to be unique, set default to option that is not already in use
-          var noElInArray = (elInArray[arrayID] !== undefined? elInArray[arrayID].length: 0);
-          if(v[2].length - 1 === noElInArray){
-            $('#' + arrayID + '_wrapper .btn-add-array-el').prop('disabled', true);
-          }
-          for(var i = 0; i < v[2].length; i++){
-            if($.inArray(v[2][i], elInArray[arrayID]) === -1){
-              selected = v[2][i];
-              label    = v[3][i];
-              break;
+          if(options.elRequired === true){
+            // as labels need to be unique, set default to option that is not already in use
+            var noElInArray = (elInArray[arrayID] !== undefined? elInArray[arrayID].length: 0);
+            if(v[2].length - 1 === noElInArray){
+              $('#' + arrayID + '_wrapper .btn-add-array-el').prop('disabled', true);
             }
+            for(var i = 0; i < v[2].length; i++){
+              if($.inArray(v[2][i], elInArray[arrayID]) === -1){
+                selected = v[2][i];
+                label    = v[3][i];
+                break;
+              }
+            }
+            addLabelEl(arrayID, selected);
+          }else{
+            selected = v[2][0];
+            label    = v[3][0];
           }
-          addLabelEl(arrayID, selected);
+          
           // tell R that new element was addded to array: (ID, label of element)
           Shiny.setInputValue("add_array_el", [elID, selected, k], {priority: "event"});
         }
@@ -309,6 +356,14 @@ function addArrayEl(arrayID, elements, options){
       case 'color':
         arrayContent += createColorPickerInput(k, elID, v[1], v[2]);
         break;
+      case 'optionsStart':
+        arrayContent += '<div class="form-group" style="min-height:30px;">' + 
+        '<h4 class="box-title option-section-header" style="cursor:pointer;font-weight:bold;" onclick="$(this).next().toggle();">' + 
+        v[1] + ' <i class="fa fa-plus"></i></h4><div class="option-section"' + ((v[2] === false)? '': ' style="display:none;"') + '>';
+        break;
+      case 'optionsEnd':
+        arrayContent += '</div></div>';
+      break;
       default:
         throw "Unknown element type: " + v[0];
     }
@@ -498,6 +553,8 @@ $(document).ready(function () {
     indexAliases = indicesFromR.aliases;
     scalarIndices = indicesFromR.scalarIndices;
     scalarIndexAliases = indicesFromR.scalarAliases;
+    nonScalarIndices = arr_diff(indices, scalarIndices);
+    nonScalarIndexAliases = arr_diff(indexAliases, scalarIndexAliases);
   });
   Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
     setTimeout(addArrayDataElWrapper, 200, arrayID);

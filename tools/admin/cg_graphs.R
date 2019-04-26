@@ -231,6 +231,32 @@ observeEvent(input$plotly_chart_type, {
   allDataAvailable <<- TRUE
 })
 
+observeEvent(input$leafFlow_lng, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng[1])]]]]$lng0 <<- input$leafFlow_lng[2]
+})
+observeEvent(input$leafFlow_lat1, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lat1[1])]]]]$lat1 <<- input$leafFlow_lat1[2]
+})
+observeEvent(input$leafFlow_lng1, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng1[1])]]]]$lng1 <<- input$leafFlow_lng1[2]
+})
+observeEvent(input$leafFlow_flow, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_flow[1])]]]]$flow <<- input$leafFlow_flow[2]
+})
+observeEvent(input$leafFlow_time, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_time[1])]]]]$time <<- input$leafFlow_time[2]
+})
+observeEvent(input$leafFlow_color, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_color[1])]]]]$color <<- input$leafFlow_color[2]
+})
+observeEvent(input$leafFlow_minThickness, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_minThickness[1])]]]]$minThickness <<- input$leafFlow_minThickness[2]
+})
+observeEvent(input$leafFlow_maxThickness, {
+  rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_maxThickness[1])]]]]$maxThickness <<- input$leafFlow_maxThickness[2]
+})
+
+
 observeEvent(input$leafMark_lng, {
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_lng[1])]]]]$lng <<- input$leafMark_lng[2]
 })
@@ -595,8 +621,10 @@ observeEvent(input$add_array_el, {
      identical(idLabelMap[[el_id]][[chart_id]], chart_label)){
     if(identical(el_id, "dy_dyShading")){
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$from <- input$add_array_el[2]
-    }else if(el_id %in% c("leaflet_markers", "leaflet_flows")){
+    }else if(identical(el_id, "leaflet_markers")){
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat <- input$add_array_el[2]
+    }else if(identical(el_id, "leaflet_flows")){
+      rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat0 <- input$add_array_el[2]
     }else{
       return()
     }
@@ -642,7 +670,16 @@ observeEvent(input$add_array_el, {
   }else if(identical(el_id, "leaflet_markers")){
     newContent <- list(lng = input$add_array_el[2], 
                        lat = input$add_array_el[2],
-                       textsize = "12px")
+                       labelOptions = list(textsize = "12px"))
+  }else if(identical(el_id, "leaflet_flows")){
+    newContent <- list(lng0 = input$add_array_el[2], 
+                       lat0 = input$add_array_el[2],
+                       lng1 = input$add_array_el[2], 
+                       lat1 = input$add_array_el[2], 
+                       flow = input$add_array_el[2], 
+                       color = "#0000ff",
+                       minThickness = 1,
+                       maxThickness = 20)
   }
   rv$graphConfig$graph[[JSON_id]][[chart_label]] <<- newContent
 })
