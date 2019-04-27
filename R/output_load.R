@@ -1,8 +1,8 @@
 loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
                             modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
-                            xlsxName = character(0L)){
+                            fileName = character(0L)){
   if(identical(method, "xlsx")){
-    xlsxPath <- file.path(workDir, xlsxName)
+    xlsxPath <- file.path(workDir, fileName)
     if(!file.exists(xlsxPath)){
       stop(sprintf("File: '%s' could not be found."), xlsxPath, call. = FALSE)
     }

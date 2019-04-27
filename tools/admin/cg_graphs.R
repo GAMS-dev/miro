@@ -138,7 +138,7 @@ observeEvent(input$localInput, {
                                        colTypes = db$getDbSchema()$colTypes,
                                        modelOutTemplate = modelOutTemplate, method = "xlsx", 
                                        hiddenOutputScalars = config$hiddenOutputScalars,
-                                       xlsxName = basename(isolate(input$localInput$datapath)))
+                                       fileName = basename(isolate(input$localInput$datapath)))
     }, error = function(e){
       flog.error("Problems loading output data. Error message: %s.", e)
       errMsg <<- lang$errMsg$readOutput$desc
