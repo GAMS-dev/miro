@@ -707,11 +707,11 @@ observeEvent(input$btSolve, {
                           selected = "contentCurrent_1")
         errMsg <- NULL
         tryCatch({
-          GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
-                                         modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
-                                         scalarsFileHeaders = scalarsFileHeaders, colTypes = db$getDbSchema()$colTypes,
-                                         modelOutTemplate = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                         hiddenOutputScalars = config$hiddenOutputScalars) 
+          GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
+                                      modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                      scalarsFileHeaders = scalarsFileHeaders,
+                                      templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
+                                      hiddenOutputScalars = config$hiddenOutputScalars) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc
