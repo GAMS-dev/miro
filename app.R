@@ -728,6 +728,19 @@ if(!is.null(errMsg)){
     previousInputData <- vector(mode = "list", length = length(modelIn))
     # initialize model input data
     modelInputData <- modelInTemplate
+    
+    tryCatch({
+      if(length(config$defaultScenName) && nchar(config$defaultScenName)){
+        defSid <- db$getSid(config$defaultScenName)
+        if(!identical(defSid, 0L)){
+          sidsToLoad <- list(defSid)
+          rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
+        }
+      }
+    }, error = function(e){
+      flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+    })
+    
     # initialise list of reactive expressions returning data for model input
     dataModelIn <- vector(mode = "list", length = length(modelIn))
     # auxiliary vector that specifies whether data frame has no data or data was overwritten
