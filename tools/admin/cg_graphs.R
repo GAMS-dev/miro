@@ -136,7 +136,7 @@ observeEvent(input$localInput, {
                                        modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                        scalarsFileHeaders = scalarsFileHeaders, 
                                        colTypes = db$getDbSchema()$colTypes,
-                                       modelOutTemplate = modelOutTemplate, method = "xlsx", 
+                                       modelOutTemplate = modelOutTemplate, method = "xls", 
                                        hiddenOutputScalars = config$hiddenOutputScalars,
                                        fileName = basename(isolate(input$localInput$datapath)))
     }, error = function(e){

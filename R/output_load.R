@@ -1,12 +1,12 @@
 loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
                             modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
                             fileName = character(0L)){
-  if(identical(method, "xlsx")){
-    xlsxPath <- file.path(workDir, fileName)
-    if(!file.exists(xlsxPath)){
-      stop(sprintf("File: '%s' could not be found."), xlsxPath, call. = FALSE)
+  if(identical(method, "xls")){
+    xlsPath <- file.path(workDir, fileName)
+    if(!file.exists(xlsPath)){
+      stop(sprintf("File: '%s' could not be found."), xlsPath, call. = FALSE)
     }
-    xlsxSheetNames <- tolower(excel_sheets(xlsxPath))
+    xlsSheetNames <- tolower(excel_sheets(xlsPath))
   }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
   }
@@ -23,10 +23,10 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                
              }
            },
-           xlsx = {
-             sheetID <- match(scalarsOutName, xlsxSheetNames)[[1]]
+           xls = {
+             sheetID <- match(scalarsOutName, xlsSheetNames)[[1]]
              if(!is.na(sheetID)){
-               scalarTmp <- read_excel(xlsxPath, sheetID, 
+               scalarTmp <- read_excel(xlsPath, sheetID, 
                                        col_types = c("text", "text", "text"))
                
              }
@@ -84,10 +84,10 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
                    return()
                  }
                },
-               xlsx = {
-                 sheetID <- match(names(modelOut)[[i]], xlsxSheetNames)[[1]]
+               xls = {
+                 sheetID <- match(names(modelOut)[[i]], xlsSheetNames)[[1]]
                  if(!is.na(sheetID)){
-                   ret$tabular[[i]] <<- read_excel(xlsxPath, sheetID,
+                   ret$tabular[[i]] <<- read_excel(xlsPath, sheetID,
                                                    col_names = TRUE)
                  }else{
                    ret$tabular[[i]] <<- modelOutTemplate[[i]]
