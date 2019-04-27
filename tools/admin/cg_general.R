@@ -39,6 +39,8 @@ insertUI(selector = "#general_wrapper",
                                  checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
+           textInput("general_default_scen_name", "Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
+                     value = configJSON$defaultScenName),
            fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
                      width = "100%",
                      multiple = FALSE,
@@ -124,8 +126,8 @@ insertUI(selector = "#general_wrapper",
                                  checkboxInput("general_aggregate", value = if(identical(configJSON$aggregateWidgets, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
-           textInput("general_input_scalars", "Alias for the input scalars table"),
-           textInput("general_output_scalars", "Alias for the output scalars table"),
+           textInput("general_input_scalars", "Alias for the input scalars table", value = configJSON$scalarAliases$inputScalars),
+           textInput("general_output_scalars", "Alias for the output scalars table", value = configJSON$scalarAliases$outputScalars),
            tags$div(title = "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
                     tags$label(class = "cb-label", "for" = "general_save_trace", "Save trace file with each GAMS run (Hypercube mode)"),
                     tags$div(
@@ -177,7 +179,9 @@ observeEvent(input$general_meta, {
 observeEvent(input$general_empty, {
   rv$generalConfig$excelIncludeEmptySheets <<- input$general_empty
 })
-
+observeEvent(input$general_default_scen_name, {
+  rv$generalConfig$defaultScenName <<- input$general_default_scen_name
+})
 observeEvent(input$general_logo, {
   if(identical(input$general_logo, FALSE)){
     rv$generalConfig$UILogo <<- "gams_logo.png"
