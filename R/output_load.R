@@ -1,5 +1,5 @@
-loadScenData <- function(scalarsName, metaData, workDir, modelName, errMsg, scalarsFileHeaders,
-                         templates, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
+loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileHeaders,
+                         templates, errMsg = NULL, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
                          fileName = character(0L)){
   if(identical(method, "xls")){
     xlsPath <- file.path(workDir, fileName)
@@ -15,6 +15,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, errMsg, scal
     xlsSheetNames <- tolower(excel_sheets(xlsPath))
   }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading data.", method), call. = FALSE)
+  }
+  if(!length(errMsg)){
+    errMsg <- "Dataset: '%s' is not valid. Please check the format of the data you wish to import."
   }
   ret         <- list(tabular = NULL, scalar = NULL)
   # read scalar data in case it exists

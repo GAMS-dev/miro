@@ -127,12 +127,12 @@ Scenario <- R6Class("Scenario",
                                           stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
                                           writePermAlias = aliases[["writePerm"]])
                       },
-                      save = function(datasets, msgProgress){
+                      save = function(datasets, msgProgress = NULL){
                         # Saves multiple dataframes to database
                         #
                         # Args:
                         #   datasets :           dataframes to save
-                        #   msgProgress:         title and progress info for the progress bar
+                        #   msgProgress:         title and progress info for the progress bar (optional)
                         #
                         # Returns:
                         #   object: invisibly returns reference to itself
@@ -144,19 +144,21 @@ Scenario <- R6Class("Scenario",
                         stopifnot(!is.null(private$sid))
                         stopifnot(length(private$tableNamesScenario) >= 1)
                         stopifnot(is.list(datasets), identical(length(datasets), length(private$tableNamesScenario)))
-                        stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
-                        stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
-                        #END error checks 
-                        
-                        # initialize progress bar
-                        prog <- Progress$new()
-                        on.exit(prog$close())
-                        prog$set(message = msgProgress$title, value = 0)
-                        updateProgress <- NULL
-                        incAmount      <- 1/length(private$tableNamesScenario)
-                        updateProgress <- function(detail = NULL) {
-                          prog$inc(amount = incAmount, detail = detail)
+                        if(!is.null(msgProgress)){
+                          stopifnot(is.character(msgProgress$title), length(msgProgress$title) == 1)
+                          stopifnot(is.character(msgProgress$progress), length(msgProgress$progress) == 1)
+                          # initialize progress bar
+                          prog <- Progress$new()
+                          on.exit(prog$close())
+                          prog$set(message = msgProgress$title, value = 0)
+                          updateProgress <- NULL
+                          incAmount      <- 1/length(private$tableNamesScenario)
+                          updateProgress <- function(detail = NULL) {
+                            prog$inc(amount = incAmount, detail = detail)
+                          }
                         }
+                        #END error checks
+                        
                         # save current time stamp
                         private$stime <- Sys.time()
                         # write scenario metadata
@@ -165,8 +167,10 @@ Scenario <- R6Class("Scenario",
                           if(!is.null(dataset) && nrow(dataset)){
                             super$exportScenDataset(private$bindSidCol(dataset), tableName)
                           }
-                          # increment progress bar
-                          updateProgress(detail = msgProgress$progress)
+                          if(!is.null(msgProgress)){
+                            # increment progress bar
+                            updateProgress(detail = msgProgress$progress)
+                          }
                         }, datasets, private$tableNamesScenario)
                         private$scenSaved <- TRUE
                         # refresh lock for scenario

@@ -397,6 +397,7 @@ Those tables are: '%s'.\nError message: '%s'.",
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   close(pb)
+  pb <- NULL
 }
 MIROVersionLatest <- NULL
 if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
@@ -499,7 +500,46 @@ if(!is.null(errMsg)){
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
          modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
   }
-  
+  local({
+    miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+    miroDataFiles <- list.files(miroDataDir)
+    dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
+    miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
+    tryCatch({
+      if(length(miroDataFiles)){
+        pb <- txtProgressBar()
+        on.exit(close(pb))
+        for(i in seq_along(miroDataFiles)){
+          miroDataFile <- miroDataFiles[i]
+          flog.info("New data: '%s' is being stored in the database. Please wait a while until the import is finished.", miroDataFile)
+          setTxtProgressBar(pb, i/(2*length(miroDataFiles)))
+          if(dataFileExt[i] %in% c("xls", "xlsx")){
+            method <- "xls"
+            modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
+            dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
+          }else{
+            method <- dataFileExt[i]
+            dataModelIn <- modelIn[!names(modelIn) %in% scalarsFileName]
+          }
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
+          dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+          dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelInTemplate, method = method, fileName = miroDataFile)
+          dataIn <- c(dataIn$tabular, list(dataIn$scalar))
+          setTxtProgressBar(pb, i/(2*length(miroDataFiles)))
+          newScen$save(c(dataOut, dataIn))
+          if(!file.remove(file.path(miroDataDir, miroDataFile))){
+            stop(sprintf("Could not remove file: '%s'.", miroDataFile), call. = FALSE)
+          }
+        }
+      }
+    }, error = function(e){
+      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+    }, finally = {
+      pb <- NULL
+    })
+  })
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
