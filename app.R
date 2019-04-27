@@ -730,7 +730,7 @@ if(!is.null(errMsg)){
     modelInputData <- modelInTemplate
     
     tryCatch({
-      if(length(config$defaultScenName) && nchar(config$defaultScenName)){
+      if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
         defSid <- db$getSid(config$defaultScenName)
         if(!identical(defSid, 0L)){
           sidsToLoad <- list(defSid)
