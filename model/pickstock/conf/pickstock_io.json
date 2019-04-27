@@ -122,21 +122,24 @@
                 "error_train",
                 "error_test",
                 "error_ratio",
+                "firstdaytraining",
                 "lastdaytraining"
             ],
             "symtext": [
                 "Absolute error in entire training phase",
                 "Absolute error in entire testing phase",
                 "Ratio between error test and error train",
+                "first date of training period",
                 "last date of training period"
             ],
             "symtypes": [
                 "parameter",
                 "parameter",
                 "parameter",
+                "set",
                 "set"
             ],
-            "count": 4,
+            "count": 5,
             "headers": {
                 "scalar": {
                     "type": "set",
