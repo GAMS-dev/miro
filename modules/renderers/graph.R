@@ -293,7 +293,8 @@ getEvent <- function(configData, eventId){
 parseLabel <- function(label, colNames){
   if(!nchar(label))
     return(NULL)
-  label <- gsub('"', '\\\\"', label)
+  label <- gsub("\\", "\\\\", label, fixed = TRUE)
+  label <- gsub('"', '\\"', label, fixed = TRUE)
   for(colName in colNames){
     label <- gsub(paste0("[", colName, "]"), paste0('",data$', colName, ',"'), 
                   label, fixed = TRUE)
