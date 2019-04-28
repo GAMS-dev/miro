@@ -16,6 +16,8 @@ $include "%fp%%fn%_miro.gms"
 $exit
 
 $label MIRO_L1
+$set DEF_SCEN_NAME "default"
+$set MIRO_DATA_DIR_PREFIX "data_"
 
 * Export GDX file with all symbols and current data
 $setNames "%gams.input%" fp fn fe
@@ -204,87 +206,21 @@ def headerList(s):
    return headers
 
 # Now write model specific MIRO driver
+datadir = r'%fp%%MIRO_DATA_DIR_PREFIX%%fn%'
+if not os.path.exists(datadir):
+   os.makedirs(datadir)
 with open(r'%fp%%fn%_miro.gms', 'w', encoding="utf-8") as f:
    f.write('$ifi %' + 'gams.MIRO%==run $goto MIRO_RUN\n')
    f.write('\n')
-   f.write('* Create csv files of existing data for Excel file creation\n')
-   for s in i_sym:
-      if (s[1]=='ps') or (s[1]=='ss'): # skip scalars
-         continue
-      sym = s[0]
-      stype = s[1]
-      symHeader = headerList(s)
-      htext = symHeader[0][0]
-      for h in symHeader[1:]:
-         htext = htext + ',' + h[0]
-      f.write('$ife card(' + sym.name + ')=0 $abort Need data for ' + sym.name + '\n')
-      if stype=='pp': # pivot
-         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 header="' + htext + '" format=csv > ' + sym.name.lower() + '.csv\n')
-      else:
-         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields header="' + htext + '"  format=csv > ' + sym.name.lower() + '.csv\n')
-      f.write('$if errorlevel 1 $abort Problems creating ' + sym.name.lower() + '.csv\n')
-   f.write('\n')
-   f.write('* Create scalars.csv (if necessary) and produce xlsx file\n')
-   f.write('$onembeddedCode Python:\n')
-   if have_i_scalar:
-      f.write('def getval(ssym,default):\n')
-      f.write('   try:\n')
-      f.write('     if isinstance(default, str):\n')
-      f.write('        return gams.db[ssym].first_record().key(0)\n')
-      f.write('     else:\n')
-      f.write('        return str(gams.db[ssym].first_record().value)\n')
-      f.write('   except:\n')
-      f.write('     return str(default)\n')
-      f.write('\n')    
-      f.write('with open("scalars.csv", "w", encoding="utf-8") as f:\n')
-      f.write('   f.write("scalar,description,value\\n")\n')
-      for s in i_sym:
-         if s[1]=='ss':
-            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '","") + "\\n")\n')
-         elif s[1]=='ps':
-            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '",0) + "\\n")\n')
-            f.write('   f.closed\n')
-   f.write('fn = r"' + r'%fp%%fn%' + '.xlsx"\n')
-   f.write('icsvlist = ["none"')
-   if have_i_scalar:
-      f.write(',"scalars"')
-   for s in i_sym:
-      if not (s[1]=='ss' or s[1]=='ps'):
-         f.write(',"'+s[0].name.lower()+'"')
-   f.write(']\n')
-   f.write('\n')
-   f.write('# Create example XLSX file\n')
-   f.write('def is_number(s):\n')
-   f.write('  try:\n')
-   f.write('    float(s)\n')
-   f.write('    return True\n')
-   f.write('  except ValueError:\n')
-   f.write('    return False\n')
-   f.write('\n')
-   f.write('from xlsxwriter.workbook import Workbook\n')
-   f.write('import csv\n')
-   f.write('\n')       
-   f.write('workbook = Workbook(fn)\n')
-   f.write('\n')
-   f.write('for s in icsvlist[1:]:\n')
-   f.write('  worksheet = workbook.add_worksheet(s) #worksheet with symbol name\n')
-   f.write('  with open(s + ".csv", "r", encoding="utf-8") as f:\n')
-   f.write('    reader = csv.reader(f)\n')
-   f.write('    for r, row in enumerate(reader):\n')
-   f.write('      for c, col in enumerate(row):\n')
-   f.write('        if is_number(col):\n')
-   f.write('          worksheet.write(r, c, float(col)) #write the csv file content into it\n')
-   f.write('        else:\n')
-   f.write('          worksheet.write(r, c, col)\n')
-   f.write('workbook.close()\n')
-   f.write('$offembeddedCode\n')
-   f.write('$if not set MIRO_DEBUG $hiddencall rm -f "' + gdxfn + '" "' + savegdxfn + '"')
-   if have_i_scalar:
-      f.write(' scalars.csv')
-   for s in i_sym:
-      if not (s[1]=='ss' or s[1]=='ps'):
-         f.write(' '+s[0].name.lower()+'.csv')
-   f.write('\n')
+   if i_sym:
+       f.write('* Create initial data\n')
+       f.write('$gdxout "' + datadir + r'%system.dirsep%%DEF_SCEN_NAME%"' + '\n')
+       f.write('$unload ')
+       for s in i_sym:
+           f.write(s[0].name.lower() + ' ')
+       f.write('\n')
+       f.write('$gdxout\n')
+   f.write('$if not set MIRO_DEBUG $hiddencall rm -f "' + gdxfn + '" "' + savegdxfn + '"\n')
    f.write('$exit\n')
 
    # Now the run part
