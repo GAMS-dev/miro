@@ -142,32 +142,36 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(!is.null(errMsg)){
     return(NULL)
   }
-  tryCatch({
-    outputData <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
-                               workDir = dirname(isolate(input$localInput$datapath)), 
-                               modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                               scalarsFileHeaders = scalarsFileHeaders,
-                               templates = modelOutTemplate, method = loadMode,
-                               hiddenOutputScalars = config$hiddenOutputScalars, 
-                               fileName = basename(isolate(input$localInput$datapath))) 
-  }, error = function(e){
-    flog.error("Problems loading output data. Error message: %s.", e)
-    errMsg <<- lang$errMsg$readOutput$desc
-  })
-  if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-    return()
-  }
-  if(any(vapply(outputData$tabular, function(el){length(el) > 0L}, logical(1L), USE.NAMES = FALSE))){
-    scenData[["scen_1_"]] <<- outputData$tabular
-    if(!is.null(outputData$scalar)){
-      scalarData[["scen_1_"]] <<- outputData$scalar
+  if(!config$activateModules$hcubeMode){
+    tryCatch({
+      outputData <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
+                                 workDir = dirname(isolate(input$localInput$datapath)), 
+                                 modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                 scalarsFileHeaders = scalarsFileHeaders,
+                                 templates = modelOutTemplate, method = loadMode,
+                                 hiddenOutputScalars = config$hiddenOutputScalars, 
+                                 fileName = basename(isolate(input$localInput$datapath))) 
+    }, error = function(e){
+      flog.error("Problems loading output data. Error message: %s.", e)
+      errMsg <<- lang$errMsg$readOutput$desc
+    })
+    if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
+      return()
     }
-    renderOutputData()
-    noOutputData <<- FALSE
+    if(any(vapply(outputData$tabular, function(el){length(el) > 0L}, logical(1L), USE.NAMES = FALSE))){
+      scenData[["scen_1_"]] <<- outputData$tabular
+      if(!is.null(outputData$scalar)){
+        scalarData[["scen_1_"]] <<- outputData$scalar
+      }
+      renderOutputData()
+      noOutputData <<- FALSE
+    }else{
+      noOutputData <<- TRUE
+    }
+    outputData <- NULL
   }else{
     noOutputData <<- TRUE
   }
-  outputData <- NULL
   
   if(newInputCount){
     showNotification(sprintf(lang$nav$notificationNewInput$new, newInputCount))
