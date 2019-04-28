@@ -12,7 +12,6 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
     if(!file.exists(gdxPath)){
       stop(sprintf("File: '%s' could not be found."), gdxPath, call. = FALSE)
     }
-    xlsSheetNames <- tolower(excel_sheets(xlsPath))
   }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading data.", method), call. = FALSE)
   }
@@ -28,7 +27,6 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                ret$scalar <- read_delim(workDir %+% scalarsName %+% '.csv', 
                                        csvDelim, col_types = cols(), 
                                        col_names = TRUE)
-               
              }
            },
            xls = {
@@ -38,11 +36,38 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                                        col_types = c("text", "text", "text"))
                
              }
+           },
+           gdx = {
+             if(scalarsName %in% names(metaData)){
+               ret$scalar <- tibble(metaData[[scalarsName]]$symnames, metaData[[scalarsName]]$symtext, 
+                                    vapply(seq_along(metaData[[scalarsName]]$symnames), function(i){
+                                      if(identical(metaData[[scalarsName]]$symtypes[[i]], "parameter")){
+                                        scalar <- NA_character_
+                                        tryCatch({
+                                          scalar <- as.character(rgdx.scalar(gdxPath, 
+                                                                             metaData[[scalarsName]]$symnames[[i]])[[1]])
+                                        }, error = function(e){
+                                          flog.warn("Scalar: '%s' could not be found in gdx container.", 
+                                                    metaData[[scalarsName]]$symnames[[i]])
+                                        })
+                                        return(scalar)
+                                      }else{
+                                        scalar <- NA_character_
+                                        tryCatch({
+                                          scalar <- rgdx.set(gdxPath, metaData[[scalarsName]]$symnames[[i]])[[1]][1]
+                                        }, error = function(e){
+                                          flog.warn("Singleton set: '%s' could not be found in gdx container.", 
+                                                    metaData[[scalarsName]]$symnames[[i]])
+                                        })
+                                        return(scalar)
+                                      }
+                                    }, character(1L), USE.NAMES = FALSE))
+             }
            })
     
   }, error = function(e) {
     stop(sprintf("File: '%s' could not be read (model: '%s'). Error message: %s.", 
-                 scalarsName %+% ".csv", modelName, e), call. = FALSE)
+                 scalarsName, modelName, e), call. = FALSE)
   })
   if(length(ret$scalar)){
     if(!identical(length(ret$scalar), 3L)){
@@ -73,9 +98,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
         })
       }else{
-        # scalar output file does not exist, but is in metaData vector
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s').", 
-                     scalarsName %+% ".csv", modelName), call. = FALSE)
+        ret$tabular[[i]] <<- templates[[i]]
       }
     }else{
       tryCatch({
@@ -99,10 +122,43 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    ret$tabular[[i]] <<- templates[[i]]
                    return()
                  }
+               },
+               gdx = {
+                 if(identical(attr(templates[[i]], "type"), "parameter")){
+                   tryCatch({
+                     ret$tabular[[i]] <<- as_tibble(rgdx.param(gdxPath, names(metaData)[[i]], 
+                                                               check.names = FALSE)) %>% 
+                       mutate_if(is.factor, as.character)
+                     if(nchar(metaData[[i]]$colTypes) - nchar(gsub("d", "", metaData[[i]]$colTypes)) > 1L){
+                       # pivot symbol
+                       ret$tabular[[i]] <<- spread(ret$tabular[[i]], !!length(ret$tabular[[i]]) - 1, 
+                                                   !!length(ret$tabular[[i]]))
+                       newIdx <- match(names(metaData[[i]]$headers), tolower(names(ret$tabular[[i]])))
+                       if(any(is.na(newIdx))){
+                         flog.error("Dataset: '%s' has invalid headers. Headers are: '%s'. Headers should be: '%s'.", 
+                                    names(metaData)[[i]], paste(names(ret$tabular[[i]]), collapse = "', '"), 
+                         paste(names(metaData[[i]]$headers), collapse = "', '"))
+                         stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
+                       }else{
+                         ret$tabular[[i]] <<- ret$tabular[[i]][, newIdx]
+                       }
+                     }
+                   }, error = function(e){
+                     ret$tabular[[i]] <<- templates[[i]]
+                   })
+                 }else{
+                   tryCatch({
+                     ret$tabular[[i]] <<- as_tibble(rgdx.set(gdxPath, names(metaData)[[i]], 
+                                                             check.names = FALSE)) %>%
+                       mutate_if(is.factor, as.character)
+                   }, error = function(e){
+                     ret$tabular[[i]] <<- templates[[i]]
+                   })
+                 }
                })
       }, error = function(e) {
         stop(sprintf("Model file: '%s' could not be read (model: '%s'). Error message: %s", 
-                     names(metaData)[[i]] %+% ".csv", modelName, e), call. = FALSE)
+                     names(metaData)[[i]], modelName, e), call. = FALSE)
       })
       if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
         flog.warn("Invalid data attempted to be read (number of headers of table does not match GMSIO__config schema).")

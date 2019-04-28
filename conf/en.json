@@ -568,7 +568,7 @@
     },
     "GAMSOutput":{  
       "title":"Errors reading output files",
-      "badOutputData":"The GAMS input dataset: '%s' is not valid. Please check the format of the data you wish to import."
+      "badOutputData":"The GAMS output dataset: '%s' is not valid. Please check the format of the data you wish to import."
     },
     "gamsExec":{  
       "title":"Error executing GAMS",

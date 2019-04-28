@@ -209,7 +209,8 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                                                multiple = FALSE,
                                                                accept = c("application/vnd.ms-excel", 
                                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                          ".xlsx")),
+                                                                          ".xlsx",
+                                                                          ".gdx")),
                                                      if(noDataInUI){
                                                        tagList(
                                                          tags$div(id = "local_badScenName",

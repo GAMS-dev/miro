@@ -738,9 +738,6 @@ observeEvent(input$btSolve, {
         # rendering tables and graphs
         renderOutputData()
         
-        # enable download button for saving scenario to Excel file
-        enableEl(session, "#export_1")
-        
         # show load button after solve
         switchTab(session, "output")
         

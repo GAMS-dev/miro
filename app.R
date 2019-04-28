@@ -48,13 +48,14 @@ suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "zip", "tidyr")
+                      "futile.logger", "zip", "tidyr", "gdxrrw")
 LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
-  on.exit(close(pb))
+}else{
+  pb <- txtProgressBar(file = stderr())
 }
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
@@ -85,7 +86,9 @@ if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "libra
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.6, label= "Initialising GAMS MIRO")
+  setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
+}else{
+  setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -394,11 +397,7 @@ Those tables are: '%s'.\nError message: '%s'.",
     }
   })
 }
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  close(pb)
-  pb <- NULL
-}
+
 MIROVersionLatest <- NULL
 if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
   try(
@@ -443,7 +442,20 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
+if(!igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
+  flog.error("Could not find gdx library in GAMS system directory: '%s'.", gamsSysDir)
+  errMsg <- paste(errMsg, sprintf("Could not find gdx library in GAMS system directory: '%s'.", 
+                                  gamsSysDir), sep = '\n')
+}
 if(!is.null(errMsg)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
+  
   ui_initError <- fluidPage(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
@@ -484,10 +496,21 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else if(identical(LAUNCHADMINMODE, TRUE)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
+  
   source("./tools/admin/server.R", local = TRUE)
   source("./tools/admin/ui.R", local = TRUE)
   shinyApp(ui = ui_admin, server = server_admin)
 }else{
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 0.6, label= "Importing new data")
+  }
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
     save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, modelOutToDisplay,
@@ -507,27 +530,25 @@ if(!is.null(errMsg)){
     miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
     tryCatch({
       if(length(miroDataFiles)){
-        pb <- txtProgressBar()
-        on.exit(close(pb))
+        
+        modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
+        dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
+        if(scalarsFileName %in% names(modelInRaw)){
+          dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
+        }
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a while until the import is finished.", miroDataFile)
-          setTxtProgressBar(pb, i/(2*length(miroDataFiles)))
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
-            modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
-            dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
           }else{
             method <- dataFileExt[i]
-            dataModelIn <- modelIn[!names(modelIn) %in% scalarsFileName]
           }
           newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
           dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
-                                  modelInTemplate, method = method, fileName = miroDataFile)
-          dataIn <- c(dataIn$tabular, list(dataIn$scalar))
-          setTxtProgressBar(pb, i/(2*length(miroDataFiles)))
+                                  modelInTemplate, method = method, fileName = miroDataFile)$tabular
           newScen$save(c(dataOut, dataIn))
           if(!file.remove(file.path(miroDataDir, miroDataFile))){
             stop(sprintf("Could not remove file: '%s'.", miroDataFile), call. = FALSE)
@@ -536,10 +557,15 @@ if(!is.null(errMsg)){
       }
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
-    }, finally = {
-      pb <- NULL
     })
   })
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
