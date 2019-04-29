@@ -7,15 +7,15 @@ output[["export_" %+% i]] <- downloadHandler(
         if(is.null(activeSnameTmp)){
           # as no scenario name could be found set, scenario name to model name
           activeSnameTmp <<- modelName
-          return(activeSnameTmp %+% ".xlsx")
+          return(paste0(activeSnameTmp, ".", isolate(input$exportFileType)))
         }else{
-          return(modelName %+% "_" %+% activeSnameTmp %+% ".xlsx")
+          return(paste0(modelName, "_", activeSnameTmp, ".", exportFileType))
         }
       }else{
-        return(modelName %+% "_" %+% isolate(rv$activeSname) %+% ".xlsx")
+        return(paste0(modelName, "_", isolate(rv$activeSname), ".", exportFileType))
       }
     }
-    fileName <- paste0(modelName, "_", scenMetaData[["scen_" %+% i %+% "_"]][[3]][1], ".xlsx")
+    fileName <- paste0(modelName, "_", scenMetaData[["scen_" %+% i %+% "_"]][[3]][1], ".", exportFileType)
     flog.debug("File: '%s' was downloaded.", fileName)
     return(fileName)
   },
@@ -30,10 +30,13 @@ output[["export_" %+% i]] <- downloadHandler(
       # combine hidden and non hidden scalar data
       scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
       if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
-        # bind hidden and non hidden scalar data
-        data[[scalarOutIdx]] <- rbind(data[[scalarOutIdx]], 
-                                      scalarData[[scenIdLong]])
+        data[[scalarOutIdx]] <- scalarData[[scenIdLong]]
       }
+    }
+    
+    if(identical(exportFileType, "gdx")){
+      names(data) <- c(names(modelOut), inputDsNames)
+      return(gdxio$wgdx(file, data))
     }
     wsNamesTmp                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
                                                                 names(modelOut), 
@@ -67,7 +70,8 @@ output[["export_" %+% i]] <- downloadHandler(
       names(metadata) <- lang$nav$excelExport$metadataSheet$title
       data <- c(metadata, data)
     }
-    writexl::write_xlsx(data, file)
+    return(writexl::write_xlsx(data, file))
   },
-  contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  contentType = if(identical(exportFileType, "gdx")) "application/octet-stream" else
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )

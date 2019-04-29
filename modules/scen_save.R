@@ -14,10 +14,9 @@ if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
 }else{
   idxScalarOut <- match(tolower(scalarsOutName), names(modelOut))
   if(!is.na(idxScalarOut)){
-    # bind hidden and non hidden scalar data
     if(nrow(scenData[[scenIdLong]][[idxScalarOut]])){
       if(nrow(scalarData[[scenIdLong]])){
-        scenData[[scenIdLong]][[idxScalarOut]] <<- rbind(scenData[[scenIdLong]][[idxScalarOut]], scalarData[[scenIdLong]])
+        scenData[[scenIdLong]][[idxScalarOut]] <<- scalarData[[scenIdLong]]
       }else{
         scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]]
       }

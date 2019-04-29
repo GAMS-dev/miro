@@ -41,7 +41,7 @@ tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", 
+filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
                     "./modules/render_data.R")
 # required packages
 suppressMessages(library(R6))
@@ -442,11 +442,12 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
-if(!igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
-  flog.error("Could not find gdx library in GAMS system directory: '%s'.", gamsSysDir)
-  errMsg <- paste(errMsg, sprintf("Could not find gdx library in GAMS system directory: '%s'.", 
-                                  gamsSysDir), sep = '\n')
-}
+
+tryCatch(gdxio <<- GdxIO$new(gamsSysDir),
+         error = function(e){
+           flog.error(e, gamsSysDir)
+           errMsg <<- paste(errMsg, e, sep = '\n')
+         })
 if(!is.null(errMsg)){
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
@@ -622,6 +623,7 @@ if(!is.null(errMsg)){
     
     # currently active scenario (R6 object)
     activeScen         <- NULL
+    exportFileType     <- "gdx"
     
     if(config$activateModules$scenario){
       scenMetaData     <- list()

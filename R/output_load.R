@@ -44,15 +44,16 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                                       if(identical(metaData[[scalarsName]]$symtypes[[i]], "parameter")){
                                         scalar <- NA_character_
                                         try({
-                                          scalar <- as.character(rgdx.scalar(gdxPath, 
-                                                                             metaData[[scalarsName]]$symnames[[i]])[[1]])
-                                        })
+                                          scalar <- as.character(gdxio$rgdx(gdxPath, 
+                                                                            metaData[[scalarsName]]$symnames[[i]]))
+                                        }, silent = TRUE)
                                         return(scalar)
                                       }else{
                                         scalar <- NA_character_
                                         try({
-                                          scalar <- rgdx.set(gdxPath, metaData[[scalarsName]]$symnames[[i]])[[1]][1]
-                                        })
+                                          scalar <- gdxio$rgdx(gdxPath, 
+                                                               metaData[[scalarsName]]$symnames[[i]])[[1]][1]
+                                        }, silent = TRUE)
                                         return(scalar)
                                       }
                                     }, character(1L), USE.NAMES = FALSE))
@@ -122,44 +123,28 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                  }
                },
                gdx = {
-                 if(identical(attr(templates[[i]], "type"), "parameter")){
-                   tryCatch({
-                     ret$tabular[[i]] <<- as_tibble(rgdx.param(gdxPath, names(metaData)[[i]], 
-                                                               check.names = FALSE)) %>% 
-                       mutate_if(is.factor, as.character)
-                     if(nchar(metaData[[i]]$colTypes) - nchar(gsub("d", "", metaData[[i]]$colTypes)) > 1L){
-                       # pivot symbol
-                       ret$tabular[[i]] <<- spread(ret$tabular[[i]], !!length(ret$tabular[[i]]) - 1, 
-                                                   !!length(ret$tabular[[i]]))
-                       newIdx <- match(names(metaData[[i]]$headers), tolower(names(ret$tabular[[i]])))
-                       if(any(is.na(newIdx))){
-                         flog.error("Dataset: '%s' has invalid headers. Headers are: '%s'. Headers should be: '%s'.", 
-                                    names(metaData)[[i]], paste(names(ret$tabular[[i]]), collapse = "', '"), 
-                         paste(names(metaData[[i]]$headers), collapse = "', '"))
-                         stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
-                       }else{
-                         ret$tabular[[i]] <<- ret$tabular[[i]][, newIdx]
-                       }
+                 tryCatch({
+                   pivotHeaders <- character(0L)
+                   if(identical(attr(templates[[i]], "type"), "parameter")){
+                     noNonNumCols <- nchar(gsub("d", "", metaData[[i]]$colTypes))
+                     if(nchar(metaData[[i]]$colTypes) - noNonNumCols > 1L){
+                       # symbol shall be pivoted
+                       pivotHeaders <- names(metaData[[i]]$headers)[-seq_len(noNonNumCols)]
                      }
-                   }, error = function(e){
-                     ret$tabular[[i]] <<- templates[[i]]
-                   })
-                 }else{
-                   tryCatch({
-                     ret$tabular[[i]] <<- as_tibble(rgdx.set(gdxPath, names(metaData)[[i]], 
-                                                             check.names = FALSE)) %>%
-                       mutate_if(is.factor, as.character)
-                   }, error = function(e){
-                     ret$tabular[[i]] <<- templates[[i]]
-                   })
-                 }
+                   }
+                   ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
+                                                   names = names(metaData[[i]]$headers),
+                                                   pivotHeaders = pivotHeaders)
+                 }, error = function(e){
+                   ret$tabular[[i]] <<- templates[[i]]
+                 })
                })
       }, error = function(e) {
         stop(sprintf("Model file: '%s' could not be read (model: '%s'). Error message: %s", 
                      names(metaData)[[i]], modelName, e), call. = FALSE)
       })
       if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
-        flog.warn("Invalid data attempted to be read (number of headers of table does not match GMSIO__config schema).")
+        flog.warn("Invalid data attempted to be read (number of headers of table does not match GMSIO_config schema).")
         stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
       }
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  metaData[[i]]$colTypes)
