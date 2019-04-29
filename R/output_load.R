@@ -43,21 +43,15 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                                     vapply(seq_along(metaData[[scalarsName]]$symnames), function(i){
                                       if(identical(metaData[[scalarsName]]$symtypes[[i]], "parameter")){
                                         scalar <- NA_character_
-                                        tryCatch({
+                                        try({
                                           scalar <- as.character(rgdx.scalar(gdxPath, 
                                                                              metaData[[scalarsName]]$symnames[[i]])[[1]])
-                                        }, error = function(e){
-                                          flog.warn("Scalar: '%s' could not be found in gdx container.", 
-                                                    metaData[[scalarsName]]$symnames[[i]])
                                         })
                                         return(scalar)
                                       }else{
                                         scalar <- NA_character_
-                                        tryCatch({
+                                        try({
                                           scalar <- rgdx.set(gdxPath, metaData[[scalarsName]]$symnames[[i]])[[1]][1]
-                                        }, error = function(e){
-                                          flog.warn("Singleton set: '%s' could not be found in gdx container.", 
-                                                    metaData[[scalarsName]]$symnames[[i]])
                                         })
                                         return(scalar)
                                       }
@@ -74,16 +68,20 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       flog.warn("Invalid scalar data attempted to be read (number of headers of table does not match 3).")
       stop(sprintf(errMsg, scalarsName), call. = FALSE)
     }
-    ret$scalar <- fixColTypes(ret$scalar,  "ccc")
-    ret$scalar[is.na(ret$scalar)] <- ""
-    #set names of scalar sheet to scalar headers
-    if(!hasValidHeaderTypes(ret$scalar, "ccc")){
-      flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: 'ccc'.", 
-                scalarsName, paste(vapply(ret$scalar, function(el) return(class(el)[[1L]]), 
-                                          character(1L), USE.NAMES = FALSE), collapse = "', '"))
-      stop(sprintf(errMsg, scalarsName), call. = FALSE)
+    if(all(is.na(ret$scalar[[3]]))){
+      ret$scalar <- NULL
+    }else{
+      ret$scalar <- fixColTypes(ret$scalar,  "ccc")
+      ret$scalar[is.na(ret$scalar)] <- ""
+      #set names of scalar sheet to scalar headers
+      if(!hasValidHeaderTypes(ret$scalar, "ccc")){
+        flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: 'ccc'.", 
+                  scalarsName, paste(vapply(ret$scalar, function(el) return(class(el)[[1L]]), 
+                                            character(1L), USE.NAMES = FALSE), collapse = "', '"))
+        stop(sprintf(errMsg, scalarsName), call. = FALSE)
+      }
+      names(ret$scalar) <- scalarsFileHeaders
     }
-    names(ret$scalar) <- scalarsFileHeaders
   }
   # fetch results from csv files
   lapply(seq_along(metaData), function(i){

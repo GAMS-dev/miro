@@ -551,7 +551,7 @@ if(!is.null(errMsg)){
                                   modelInTemplate, method = method, fileName = miroDataFile)$tabular
           newScen$save(c(dataOut, dataIn))
           if(!file.remove(file.path(miroDataDir, miroDataFile))){
-            stop(sprintf("Could not remove file: '%s'.", miroDataFile), call. = FALSE)
+            flog.info("Could not remove file: '%s'.", miroDataFile)
           }
         }
       }
