@@ -1,128 +1,150 @@
-loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg, scalarsFileHeaders, colTypes,
-                            modelOutTemplate, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
-                            xlsxName = character(0L)){
-  if(identical(method, "xlsx")){
-    xlsxPath <- file.path(workDir, xlsxName)
-    if(!file.exists(xlsxPath)){
-      stop(sprintf("File: '%s' could not be found."), xlsxPath, call. = FALSE)
+loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileHeaders,
+                         templates, errMsg = NULL, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
+                         fileName = character(0L)){
+  if(identical(method, "xls")){
+    xlsPath <- file.path(workDir, fileName)
+    if(!file.exists(xlsPath)){
+      stop(sprintf("File: '%s' could not be found."), xlsPath, call. = FALSE)
     }
-    xlsxSheetNames <- tolower(excel_sheets(xlsxPath))
+    xlsSheetNames <- tolower(excel_sheets(xlsPath))
+  }else if(identical(method, "gdx")){
+    gdxPath <- file.path(workDir, fileName)
+    if(!file.exists(gdxPath)){
+      stop(sprintf("File: '%s' could not be found."), gdxPath, call. = FALSE)
+    }
   }else if(!identical(method, "csv")){
-    stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
+    stop(sprintf("Method ('%s') is not suported for loading data.", method), call. = FALSE)
+  }
+  if(!length(errMsg)){
+    errMsg <- "Dataset: '%s' is not valid. Please check the format of the data you wish to import."
   }
   ret         <- list(tabular = NULL, scalar = NULL)
-  scalarTmp  <- NULL
   # read scalar data in case it exists
   tryCatch({
     switch(method,
            csv = {
-             if(file.exists(workDir %+% scalarsOutName %+% '.csv')){
-               scalarTmp <- read_delim(workDir %+% scalarsOutName %+% '.csv', 
+             if(file.exists(workDir %+% scalarsName %+% '.csv')){
+               ret$scalar <- read_delim(workDir %+% scalarsName %+% '.csv', 
                                        csvDelim, col_types = cols(), 
                                        col_names = TRUE)
+             }
+           },
+           xls = {
+             sheetID <- match(scalarsName, xlsSheetNames)[[1]]
+             if(!is.na(sheetID)){
+               ret$scalar <- read_excel(xlsPath, sheetID, 
+                                       col_types = c("text", "text", "text"))
                
              }
            },
-           xlsx = {
-             sheetID <- match(scalarsOutName, xlsxSheetNames)[[1]]
-             if(!is.na(sheetID)){
-               scalarTmp <- read_excel(xlsxPath, sheetID, 
-                                       col_types = c("text", "text", "text"))
-               
+           gdx = {
+             if(scalarsName %in% names(metaData)){
+               ret$scalar <- gdxio$rgdx(gdxPath, scalarsName, isNewGdx = TRUE)
              }
            })
     
   }, error = function(e) {
-    stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s.", 
-                 scalarsOutName %+% ".csv", modelName, e), call. = FALSE)
+    stop(sprintf("File: '%s' could not be read (model: '%s'). Error message: %s.", 
+                 scalarsName, modelName, e), call. = FALSE)
   })
-  if(length(scalarTmp)){
-    if(!identical(length(scalarTmp), 3L)){
-      flog.warn("Invalid scalar output data attempted to be read (number of headers of table does not match 3).")
-      stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
+  if(length(ret$scalar)){
+    if(!identical(length(ret$scalar), 3L)){
+      flog.warn("Invalid scalar data attempted to be read (number of headers of table does not match 3).")
+      stop(sprintf(errMsg, scalarsName), call. = FALSE)
     }
-    scalarTmp <- fixColTypes(scalarTmp,  "ccc")
-    scalarTmp[is.na(scalarTmp)] <- ""
-    #set names of scalar sheet to scalar headers
-    if(!hasValidHeaderTypes(scalarTmp, colTypes[[scalarsOutName]])){
-      flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
-                scalarsOutName, paste(vapply(scalarTmp, function(el) return(class(el)[[1L]]), 
-                                                 character(1L), USE.NAMES = FALSE), collapse = "', '"), 
-                colTypes[[scalarsOutName]])
-      stop(sprintf(errMsg$badOutputData, scalarsOutName), call. = FALSE)
+    if(all(is.na(ret$scalar[[3]]))){
+      ret$scalar <- NULL
+    }else{
+      ret$scalar <- fixColTypes(ret$scalar,  "ccc")
+      ret$scalar[is.na(ret$scalar)] <- ""
+      #set names of scalar sheet to scalar headers
+      if(!hasValidHeaderTypes(ret$scalar, "ccc")){
+        flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: 'ccc'.", 
+                  scalarsName, paste(vapply(ret$scalar, function(el) return(class(el)[[1L]]), 
+                                            character(1L), USE.NAMES = FALSE), collapse = "', '"))
+        stop(sprintf(errMsg, scalarsName), call. = FALSE)
+      }
+      names(ret$scalar) <- scalarsFileHeaders
     }
-    names(scalarTmp) <- scalarsFileHeaders
   }
-  
   # fetch results from csv files
-  lapply(seq_along(modelOut), function(i){
-    if(identical(names(modelOut)[[i]], scalarsOutName)){
-      if(!is.null(scalarTmp)){
+  lapply(seq_along(metaData), function(i){
+    if(identical(names(metaData)[[i]], scalarsName)){
+      if(!is.null(ret$scalar)){
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
-          removeRows       <- tolower(scalarTmp[[1]]) %in% hiddenOutputScalars
-          ret$tabular[[i]] <<- scalarTmp[!removeRows, ]
-          scalarTmp        <<- scalarTmp[removeRows, ]
+          removeRows       <- tolower(ret$scalar[[1]]) %in% hiddenOutputScalars
+          ret$tabular[[i]] <<- ret$scalar[!removeRows, ]
         }, error = function(e){
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
         })
       }else{
-        # scalar output file does not exist, but is in modelOut vector
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s').", 
-                     scalarsOutName %+% ".csv", modelName), call. = FALSE)
+        ret$tabular[[i]] <<- templates[[i]]
       }
     }else{
       tryCatch({
         switch(method,
                csv = {
-                 if(file.exists(workDir %+% names(modelOut)[[i]] %+% '.csv')){
-                   ret$tabular[[i]] <<- read_delim(workDir %+% names(modelOut)[[i]] %+% '.csv', 
+                 if(file.exists(workDir %+% names(metaData)[[i]] %+% '.csv')){
+                   ret$tabular[[i]] <<- read_delim(workDir %+% names(metaData)[[i]] %+% '.csv', 
                                                    csvDelim, col_types = cols(), 
                                                    col_names = TRUE)
                  }else{
-                   ret$tabular[[i]] <<- modelOutTemplate[[i]]
+                   ret$tabular[[i]] <<- templates[[i]]
                    return()
                  }
                },
-               xlsx = {
-                 sheetID <- match(names(modelOut)[[i]], xlsxSheetNames)[[1]]
+               xls = {
+                 sheetID <- match(names(metaData)[[i]], xlsSheetNames)[[1]]
                  if(!is.na(sheetID)){
-                   ret$tabular[[i]] <<- read_excel(xlsxPath, sheetID,
+                   ret$tabular[[i]] <<- read_excel(xlsPath, sheetID,
                                                    col_names = TRUE)
                  }else{
-                   ret$tabular[[i]] <<- modelOutTemplate[[i]]
+                   ret$tabular[[i]] <<- templates[[i]]
                    return()
                  }
+               },
+               gdx = {
+                 tryCatch({
+                   pivotHeaders <- character(0L)
+                   if(identical(attr(templates[[i]], "type"), "parameter")){
+                     noNonNumCols <- nchar(gsub("d", "", metaData[[i]]$colTypes))
+                     if(nchar(metaData[[i]]$colTypes) - noNonNumCols > 1L){
+                       # symbol shall be pivoted
+                       pivotHeaders <- names(metaData[[i]]$headers)[-seq_len(noNonNumCols)]
+                     }
+                   }
+                   ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
+                                                   names = names(metaData[[i]]$headers),
+                                                   pivotHeaders = pivotHeaders)
+                 }, error = function(e){
+                   ret$tabular[[i]] <<- templates[[i]]
+                 })
                })
       }, error = function(e) {
-        stop(sprintf("Model output file: '%s' could not be read (model: '%s'). Error message: %s", 
-                     names(modelOut)[[i]] %+% ".csv", modelName, e), call. = FALSE)
+        stop(sprintf("Model file: '%s' could not be read (model: '%s'). Error message: %s", 
+                     names(metaData)[[i]], modelName, e), call. = FALSE)
       })
-      if(!identical(length(ret$tabular[[i]]), length(modelOut[[i]]$headers))){
-        flog.warn("Invalid output data attempted to be read (number of headers of table does not match GMSIO__config schema).")
-        stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
+      if(!identical(length(ret$tabular[[i]]), length(metaData[[i]]$headers))){
+        flog.warn("Invalid data attempted to be read (number of headers of table does not match GMSIO_config schema).")
+        stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
       }
-      ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  modelOut[[i]]$colTypes)
+      ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  metaData[[i]]$colTypes)
       ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.numeric , 
                                                           replace_na, replace = 0) %>% 
         replace(is.na(.), "")
-      
-      names(ret$tabular[[i]]) <<- names(modelOut[[i]]$headers)
-      if(!hasValidHeaderTypes(ret$tabular[[i]], colTypes[[names(modelOut)[i]]])){
+      names(ret$tabular[[i]]) <<- names(metaData[[i]]$headers)
+      if(!hasValidHeaderTypes(ret$tabular[[i]], metaData[[i]]$colTypes)){
         flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
-                  names(modelOut)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
+                  names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 
                                                    character(1L), USE.NAMES = FALSE), collapse = "', '"), 
-                  colTypes[[names(modelOut)[i]]])
-        stop(sprintf(errMsg$badOutputData, names(modelOut)[i]), call. = FALSE)
+                  metaData[[i]]$colTypes)
+        stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
       }
     }
-    attr(ret$tabular[[i]], "aliases") <<- attr(modelOutTemplate[[i]], "aliases")
+    attr(ret$tabular[[i]], "aliases") <<- attr(templates[[i]], "aliases")
   })
-  # if scalar dataset is nonempty, assign it to return value
-  if(!is.null(scalarTmp) && nrow(scalarTmp)){
-    ret$scalar <- scalarTmp
-  }
-
+  
   return(ret)
 }

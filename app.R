@@ -41,20 +41,21 @@ tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", 
+filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
                     "./modules/render_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "zip", "tidyr")
+                      "futile.logger", "zip", "tidyr", "gdxrrw")
 LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
-  on.exit(close(pb))
+}else{
+  pb <- txtProgressBar(file = stderr())
 }
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
@@ -85,7 +86,9 @@ if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "libra
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.6, label= "Initialising GAMS MIRO")
+  setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
+}else{
+  setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -394,10 +397,7 @@ Those tables are: '%s'.\nError message: '%s'.",
     }
   })
 }
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  close(pb)
-}
+
 MIROVersionLatest <- NULL
 if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
   try(
@@ -442,7 +442,22 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
+if(is.null(errMsg)){
+  tryCatch(gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut)),
+           error = function(e){
+             flog.error(e)
+             errMsg <<- paste(errMsg, e, sep = '\n')
+           })
+}
 if(!is.null(errMsg)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
+  
   ui_initError <- fluidPage(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
@@ -483,10 +498,21 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else if(identical(LAUNCHADMINMODE, TRUE)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
+  
   source("./tools/admin/server.R", local = TRUE)
   source("./tools/admin/ui.R", local = TRUE)
   shinyApp(ui = ui_admin, server = server_admin)
 }else{
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 0.6, label= "Importing new data")
+  }
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
     save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, modelOutToDisplay,
@@ -499,7 +525,49 @@ if(!is.null(errMsg)){
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
          modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
   }
-  
+  local({
+    miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+    miroDataFiles <- list.files(miroDataDir)
+    dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
+    miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
+    tryCatch({
+      if(length(miroDataFiles)){
+        
+        modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
+        dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
+        if(scalarsFileName %in% names(modelInRaw)){
+          dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
+        }
+        for(i in seq_along(miroDataFiles)){
+          miroDataFile <- miroDataFiles[i]
+          flog.info("New data: '%s' is being stored in the database. Please wait a while until the import is finished.", miroDataFile)
+          if(dataFileExt[i] %in% c("xls", "xlsx")){
+            method <- "xls"
+          }else{
+            method <- dataFileExt[i]
+          }
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
+          dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+          dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelInTemplate, method = method, fileName = miroDataFile)$tabular
+          newScen$save(c(dataOut, dataIn))
+          if(!file.remove(file.path(miroDataDir, miroDataFile))){
+            flog.info("Could not remove file: '%s'.", miroDataFile)
+          }
+        }
+      }
+    }, error = function(e){
+      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+    })
+  })
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -556,6 +624,7 @@ if(!is.null(errMsg)){
     
     # currently active scenario (R6 object)
     activeScen         <- NULL
+    exportFileType     <- "gdx"
     
     if(config$activateModules$scenario){
       scenMetaData     <- list()
@@ -728,6 +797,19 @@ if(!is.null(errMsg)){
     previousInputData <- vector(mode = "list", length = length(modelIn))
     # initialize model input data
     modelInputData <- modelInTemplate
+    
+    tryCatch({
+      if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
+        defSid <- db$getSid(config$defaultScenName)
+        if(!identical(defSid, 0L)){
+          sidsToLoad <- list(defSid)
+          rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
+        }
+      }
+    }, error = function(e){
+      flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+    })
+    
     # initialise list of reactive expressions returning data for model input
     dataModelIn <- vector(mode = "list", length = length(modelIn))
     # auxiliary vector that specifies whether data frame has no data or data was overwritten
@@ -872,7 +954,7 @@ if(!is.null(errMsg)){
     # generate import dialogue
     source("./modules/input_ui.R", local = TRUE)
     # load input data from Excel sheet
-    source("./modules/excel_input_load.R", local = TRUE)
+    source("./modules/scen_import.R", local = TRUE)
     
     ####### GAMS interaction
     # solve button clicked
@@ -925,7 +1007,7 @@ if(!is.null(errMsg)){
         source("./modules/scen_close.R", local = TRUE)
         
         # export Scenario to Excel spreadsheet
-        source("./modules/excel_scen_save.R", local = TRUE)
+        source("./modules/scen_export.R", local = TRUE)
         
         # compare scenarios
         obsCompare[[i]] <<- observe({
@@ -990,8 +1072,14 @@ if(!is.null(errMsg)){
     }else{
       id <- 1
       # export output data to Excel spreadsheet
-      source("./modules/excel_scen_save.R", local = TRUE)
+      source("./modules/scen_export.R", local = TRUE)
     }
+    observeEvent(input$btExportScen, {
+      showScenExportDialog(input$btExportScen)
+    })
+    observeEvent(input$exportFileType, {
+      exportFileType <<- input$exportFileType
+    })
     if(!isShinyProxy && 
        curl::has_internet() && 
        file.exists(file.path(currentModelDir, ".crash.zip"))){

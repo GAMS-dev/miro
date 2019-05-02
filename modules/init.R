@@ -884,6 +884,7 @@ if(is.null(errMsg)){
       })
       names(headers) <- names(modelIn[[i]]$headers)
       modelInTemplate[[i]] <<- tibble(!!!headers)
+      attr(modelInTemplate[[i]], "type") <<- if(any(vapply(headers, is.numeric, logical(1L), USE.NAMES = FALSE))) "parameter" else "set"
       attr(modelInTemplate[[i]], "aliases") <<- vapply(seq_along(modelIn[[i]]$headers), function(j){
         alias <- modelIn[[i]]$headers[[j]]$alias
         if(!length(alias)){
@@ -920,6 +921,7 @@ if(is.null(errMsg)){
     })
     names(headers) <- names(modelOut[[i]]$headers)
     modelOutTemplate[[i]] <<- tibble::tibble(!!!headers)
+    attr(modelOutTemplate[[i]], "type") <<- if(any(vapply(headers, is.numeric, logical(1L), USE.NAMES = FALSE))) "parameter" else "set"
     attr(modelOutTemplate[[i]], "aliases") <<- vapply(seq_along(modelOut[[i]]$headers), function(j){
       alias <- modelOut[[i]]$headers[[j]]$alias
       if(!length(alias)){

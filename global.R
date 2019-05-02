@@ -2,6 +2,8 @@
 modelName <- "transport"
 # turn debug mode on or off
 debugMode <- TRUE
+# miro data folder prefix
+miroDataDirPrefix <- "data_"
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "GMSMODELNAME"
 spModelModeEnvVar <- "GMSMODE"
@@ -60,6 +62,7 @@ customRendererDirName <- "customRenderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
+scalarEquationsOutName <- "scalarsve_out"
 scalarsFileHeaders <- c("scalar", "description", "value")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"

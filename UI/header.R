@@ -19,7 +19,9 @@ header <- dashboardHeader(
                   tags$li(actionLink("btEditMeta", lang$nav$header$scenario$edit)),
                   tags$li(actionLink("btSave", lang$nav$header$scenario$save)),
                   tags$li(actionLink("btSaveAs", lang$nav$header$scenario$saveAs)),
-                  tags$li(downloadLink(outputId = "export_1", lang$nav$header$scenario$export)),
+                  tags$li(HTML(paste0('<a href="#" class="action-button" 
+                                      onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">',
+                                      lang$nav$header$scenario$export, '</a>'))),
                   tags$li(actionLink("btDelete", lang$nav$header$scenario$delete))))
     }else{
       tags$li(class = "dropdown")
@@ -33,6 +35,6 @@ header <- dashboardHeader(
                     tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
                                         'About GAMS MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
-                                        lang$nav$header$help$about, '</a>')
-                    )))),
+                                        lang$nav$header$help$about, '</a>'))
+                    ))),
   title=config$pageTitle, disable = FALSE)

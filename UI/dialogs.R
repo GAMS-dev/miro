@@ -209,7 +209,8 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                                                multiple = FALSE,
                                                                accept = c("application/vnd.ms-excel", 
                                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                          ".xlsx")),
+                                                                          ".xlsx",
+                                                                          ".gdx")),
                                                      if(noDataInUI){
                                                        tagList(
                                                          tags$div(id = "local_badScenName",
@@ -524,6 +525,17 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
                    class = "bt-highlight-1 bt-gms-confirm")
     ),
     fade = TRUE, easyClose = FALSE
+  ))
+}
+showScenExportDialog <- function(id){
+  showModal(modalDialog(
+    title = lang$nav$dialogExportScen$title,
+    selectInput("exportFileType", lang$nav$dialogExportScen$desc, c("gdx", "xls")),
+    footer = tagList(
+      modalButton(lang$nav$dialogExportScen$cancelButton),
+      downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
+                     class = "bt-highlight-1 bt-gms-confirm")
+      ), fade = TRUE, easyClose = TRUE
   ))
 }
 ######## HYPERCUBE MODE

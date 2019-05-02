@@ -47,6 +47,11 @@
          "default":true,
          "required":false
       },
+      "defaultScenName":{
+        "description":"Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
+         "type":"string",
+         "required":false
+      },
       "UILogo":{  
          "description":"String that specifies the name of the logo to use",
          "type":"string",
@@ -122,13 +127,13 @@
                "default":false,
                "required":false
             },
-            "logFile:":{  
+            "logFile":{  
                "description":"Show log file in UI?",
                "type":"boolean",
                "default":true,
                "required":false
             },
-            "lstFile:":{  
+            "lstFile":{  
                "description":"Show lst file in UI?",
                "type":"boolean",
                "default":true,

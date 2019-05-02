@@ -1,182 +1,157 @@
 # load model input data
-lapply(datasetsToFetch, function(dataset){
-  i <- match(tolower(dataset), names(modelIn))[[1]]
-  dataTmp <- NULL
-  if(is.na(i)){
-    return()
-  }
-  inputVerified <- FALSE
-  # execute only if dataframe has not yet been imported or already imported data shall be overridden
-  if(!length(isolate(rv[["in_" %+% i]])) || overwriteInput){
-    # handsontable, multi dropdown, or daterange
-    if(tolower(dataset) %in% modelInTabularData){
-      if(identical(loadMode, "xls")){
-        # load from Excel workbook
-        tryCatch({
-          dataTmp <- read_excel(input$localInput$datapath, dataset)
-          dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
-          dataTmp <- dataTmp %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
-            replace(is.na(.), "")
-        }, error = function(e) {
-          flog.warn("Problems reading Excel file: '%s' (user: '%s', datapath: '%s', dataset: '%s'). Details: %s.", 
-                    isolate(input$localInput$name), uid, isolate(input$localInput$datapath), dataset, e)
-          errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
-        })
-        if(!validateHeaders(names(dataTmp), names(modelIn[[i]]$headers))){
-          if(config$activateModules$strictmode){
-            errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
-          }
-          flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-                    dataset, paste(names(dataTmp), collapse = "', '"), 
-                    paste(names(modelIn[[i]]$headers), collapse = "', '"))
-        }
-      }else if(identical(loadMode, "scen")){
+errMsg <- NULL
+if(!identical(loadMode, "scen")){
+  tryCatch({
+    tabularDatasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% modelInTabularData]
+    scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = modelIn[names(modelIn) %in% tabularDatasetsToFetch], 
+                                  workDir = dirname(isolate(input$localInput$datapath)), 
+                                  modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
+                                  scalarsFileHeaders = scalarsFileHeaders,
+                                  templates = modelInTemplate, method = loadMode,
+                                  fileName = basename(isolate(input$localInput$datapath)))$tabular
+    names(scenInputData) <- names(modelIn)[names(modelIn) %in% tabularDatasetsToFetch]
+  }, error = function(e){
+    flog.error("Problems loading input data. Error message: %s.", e)
+    errMsg <<- conditionMessage(e)
+  })
+}
+if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+  lapply(datasetsToFetch, function(dataset){
+    i <- match(tolower(dataset), names(modelIn))[[1]]
+    dataTmp <- NULL
+    if(is.na(i)){
+      return()
+    }
+    inputVerified <- FALSE
+    # execute only if dataframe has not yet been imported or already imported data shall be overridden
+    if(!length(isolate(rv[["in_" %+% i]])) || overwriteInput){
+      # handsontable, multi dropdown, or daterange
+      if(tolower(dataset) %in% modelInTabularData){
         dataTmp <- scenInputData[[dataset]]
-      }
-      if(!is.null(errMsg)){
-        return(NULL)
-      }
-      
-      # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
-      # rather than setting them to NULL
-      if(nrow(dataTmp)){
         
-        if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
-          if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
-            scalarDataset <<- dataTmp 
-            attr(dataTmp, "aliases")  <- scalarsFileHeaders
-            modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
-            inputVerified <- TRUE
-          }
-        }else{
-          if(verifyInput(dataTmp, modelIn[[i]]$headers)){
-            # GAMS sets are always strings to make sure it is not parsed as a numeric
-            numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
-              if(is.numeric(dataTmp[[dataColIdx]]) && 
-                 identical(modelIn[[i]]$headers[[dataColIdx]]$type, "set")){
-                return(TRUE)
-              }else{
-                return(FALSE)
-              }
-            }, logical(1L), USE.NAMES = FALSE)
-            dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
-            attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
-            modelInputData[[i]] <<- dataTmp
-            inputVerified <- TRUE
-          }
-        }
-      }else{
-        # empty dataset
-        if(length(modelInTemplate[[i]]))
-          modelInputData[[i]] <<- modelInTemplate[[i]]
-        isEmptyInput[[i]]   <<- TRUE
-        inputVerified       <- TRUE
-      }
-      
-    }else{
-      # single dropdown, slider or date
-      
-      # get row names that need to be extracted from scalar table
-      rowName <- tolower(names(modelIn)[[i]])
-      # get column name of ID and value column
-      colId    <- scalarsFileHeaders[1]
-      colValue <- scalarsFileHeaders[3]
-      
-      # check whether scalar dataset has already been imported
-      if(is.null(scalarDataset)){
-        if(loadMode == "xls"){
-          # load from excel workbook
-          tryCatch({
-            # make read of excel sheets case insensitive by selecting sheet via ID
-            sheetId <- match(tolower(scalarsFileName), tolower(excel_sheets(isolate(input$localInput$datapath))))[1]
-            dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = c("text", "text", "text"))
-          }, error = function(e) {
-            flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 
-                      Details: %s.", isolate(input$localInput$name), isolate(input$localInput$datapath), dataset, e)
-            errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$excelRead, dataset), sep = "\n")
-          })
-          dataTmp[is.na(dataTmp)] <- ""
-          #set names of scalar sheet to scalar headers
-          if(!validateHeaders(names(dataTmp), scalarsFileHeaders)){
-            flog.warn("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-                      dataset, paste(names(dataTmp), collapse = "', '"), 
-                      paste(scalarsFileHeaders, collapse = "', '"))
-            if(config$activateModules$strictmode){
-              errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
-            }
-          }
-          names(dataTmp)           <- scalarsFileHeaders
-          attr(dataTmp, "aliases") <- scalarsFileHeaders
-        }
-        if(!is.null(errMsg)){
-          return(NULL)
-        }
         # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
         # rather than setting them to NULL
-        if(!is.null(dataTmp)){
-          scalarDataset <<- dataTmp
-        }
-      }
-      if(!is.null(scalarDataset) && nrow(scalarDataset)){
-        # double slider has two scalar values saved
-        if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
-           (modelIn[[i]]$type == "daterange")){
-          dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                     paste0(rowName, c("_lo", "_up")), ][[colValue]]
-          if(identical(modelIn[[i]]$type, "slider")){
-            dataTmp <- as.numeric(dataTmp)
-          }
-          if(!is.null(dataTmp) && length(dataTmp)){
-            modelInputData[[i]]      <<- dataTmp
-            
-            if(identical(modelIn[[i]]$slider$single, TRUE) ||
-               identical(modelIn[[i]]$slider$double, TRUE)){
-              modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                         paste0(rowName, "_step"), ][[colValue]]
-              if(identical(modelIn[[i]]$slider$double, TRUE)){
-                modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
-                                            scalarDataset[tolower(scalarDataset[[colId]]) %in% 
-                                                            paste0(rowName, "_mode"), ][[colValue]])
-              }
-              modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
+        if(nrow(dataTmp)){
+          
+          if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
+            if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
+              scalarDataset <<- dataTmp 
+              attr(dataTmp, "aliases")  <- scalarsFileHeaders
+              modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
+              inputVerified <- TRUE
             }
-            inputVerified <- TRUE
+          }else{
+            if(verifyInput(dataTmp, modelIn[[i]]$headers)){
+              # GAMS sets are always strings to make sure it is not parsed as a numeric
+              numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
+                if(is.numeric(dataTmp[[dataColIdx]]) && 
+                   identical(modelIn[[i]]$headers[[dataColIdx]]$type, "set")){
+                  return(TRUE)
+                }else{
+                  return(FALSE)
+                }
+              }, logical(1L), USE.NAMES = FALSE)
+              dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
+              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              modelInputData[[i]] <<- dataTmp
+              inputVerified <- TRUE
+            }
           }
         }else{
-          dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
+          # empty dataset
+          if(length(modelInTemplate[[i]]))
+            modelInputData[[i]] <<- modelInTemplate[[i]]
+          isEmptyInput[[i]]   <<- TRUE
+          inputVerified       <- TRUE
+        }
+        
+      }else{
+        # single dropdown, slider or date
+        
+        # get row names that need to be extracted from scalar table
+        rowName <- tolower(names(modelIn)[[i]])
+        # get column name of ID and value column
+        colId    <- scalarsFileHeaders[1]
+        colValue <- scalarsFileHeaders[3]
+        
+        # check whether scalar dataset has already been imported
+        if(is.null(scalarDataset)){
+          dataTmp <- scenInputData[[dataset]]
+          
+          # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
+          # rather than setting them to NULL
+          if(!is.null(dataTmp)){
+            scalarDataset <<- dataTmp
+          }
+        }
+        if(!is.null(scalarDataset) && nrow(scalarDataset)){
+          # double slider has two scalar values saved
+          if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
+             (modelIn[[i]]$type == "daterange")){
+            dataTmp <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                       paste0(rowName, c("_lo", "_up")), ][[colValue]]
+            if(identical(modelIn[[i]]$type, "slider")){
+              dataTmp <- as.numeric(dataTmp)
+            }
+            if(!is.null(dataTmp) && length(dataTmp)){
+              modelInputData[[i]]      <<- dataTmp
+              
+              if(identical(modelIn[[i]]$slider$single, TRUE) ||
+                 identical(modelIn[[i]]$slider$double, TRUE)){
+                modelInputDataHcubeTmp  <- scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                                           paste0(rowName, "_step"), ][[colValue]]
+                if(identical(modelIn[[i]]$slider$double, TRUE)){
+                  modelInputDataHcubeTmp <- c(modelInputDataHcubeTmp, 
+                                              scalarDataset[tolower(scalarDataset[[colId]]) %in% 
+                                                              paste0(rowName, "_mode"), ][[colValue]])
+                }
+                modelInputDataHcube[[i]] <<- as.numeric(modelInputDataHcubeTmp)
+              }
+              inputVerified <- TRUE
+            }
+          }else{
+            dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
                                             colValue, drop = FALSE], use.names = FALSE)
-          if(!is.null(dataTmp) && length(dataTmp)){
-            modelInputData[[i]] <<- dataTmp
-            inputVerified <- TRUE
+            if(!is.null(dataTmp) && length(dataTmp)){
+              modelInputData[[i]] <<- dataTmp
+              inputVerified <- TRUE
+            }
           }
         }
       }
-    }
-    
-    
-    # check if input data is valid
-    if(inputVerified){
-      flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
-      newInputCount <<- newInputCount + 1
-      # set identifier that data was overwritten 
-      isEmptyInput[i] <<- TRUE
-      if(!identical(loadMode, "scen")){
-        # set unsaved flag
-        rv$unsavedFlag <<- TRUE
-        # if scenario includes output data set dirty flag
-        if(!noOutputData){
-          dirtyFlag <<- TRUE
-          showEl(session, "#dirtyFlagIcon")
-          showEl(session, "#dirtyFlagIconO")
-        }
-      }
-      # reset dependent elements
-      inputInitialized[dependentDatasets[[i]]] <<- FALSE
       
-      if(!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])){
-        id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
-        if(inputInitialized[id]){
-          # only update when initialized
+      
+      # check if input data is valid
+      if(inputVerified){
+        flog.debug("Dataset: %s loaded successfully (mode: %s, overwrite: %s)", dataset, loadMode, overwriteInput)
+        newInputCount <<- newInputCount + 1
+        # set identifier that data was overwritten 
+        isEmptyInput[i] <<- TRUE
+        if(!identical(loadMode, "scen")){
+          # set unsaved flag
+          rv$unsavedFlag <<- TRUE
+          # if scenario includes output data set dirty flag
+          if(!noOutputData){
+            dirtyFlag <<- TRUE
+            showEl(session, "#dirtyFlagIcon")
+            showEl(session, "#dirtyFlagIconO")
+          }
+        }
+        # reset dependent elements
+        inputInitialized[dependentDatasets[[i]]] <<- FALSE
+        
+        if(!is.null(modelInWithDep[[tolower(names(modelIn)[[i]])]])){
+          id <- match(tolower(names(modelIn)[[i]]), tolower(names(modelInWithDep)))[1]
+          if(inputInitialized[id]){
+            # only update when initialized
+            if(length(isolate(rv[[paste0("in_", i)]]))){
+              rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
+            }else{
+              rv[[paste0("in_", i)]] <<- 1
+            }
+          }
+        }else{
+          # no dependencies, so update anyway
           if(length(isolate(rv[[paste0("in_", i)]]))){
             rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
           }else{
@@ -184,28 +159,21 @@ lapply(datasetsToFetch, function(dataset){
           }
         }
       }else{
-        # no dependencies, so update anyway
-        if(length(isolate(rv[[paste0("in_", i)]]))){
-          rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1
-        }else{
-          rv[[paste0("in_", i)]] <<- 1
+        if(tolower(dataset) %in% names(modelInMustImport)){
+          flog.info("The uploaded dataset: '%s' could not be verified.", modelInAlias[i])
+          errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
         }
       }
-    }else{
-      if(tolower(dataset) %in% names(modelInMustImport)){
-        flog.info("The uploaded dataset: '%s' could not be verified.", modelInAlias[i])
-        errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$badInputData, modelInAlias[i]), sep = "\n")
-      }
     }
+  })
+  showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
+  
+  if(!is.null(isolate(rv$activeSname))){
+    enableEl(session, "#btSave")
   }
-})
-showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
-
-if(!is.null(isolate(rv$activeSname))){
-  enableEl(session, "#btSave")
-}
-enableEl(session, "#btSaveAs")
-# set initialisation flags for handsontables to FALSE
-if(any(hotInit)){
-  hotInit[]     <<- FALSE
+  enableEl(session, "#btSaveAs")
+  # set initialisation flags for handsontables to FALSE
+  if(any(hotInit)){
+    hotInit[]     <<- FALSE
+  }
 }
