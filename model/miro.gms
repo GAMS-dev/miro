@@ -442,7 +442,19 @@ if have_o_scalar:
    io_dict['scalars_out'] = { 'alias':'Output Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
 
 if have_o_vescalar:
-   headers = {}   
+   sn = []
+   st = []
+   sty = []
+   headers = {}
+   for s in o_sym:
+      if not (s[1]=='vs' or s[1]=='es'):
+         continue
+      sn.append(s[0].name.lower())
+      st.append(extractSymText(s[0],1))
+      if s[1]=='vs':
+         sty.append('variable')
+      else:
+         sty.append('equation')
    headers['type'] = { 'type':'set', 'alias':'Type' }
    headers['scalar'] = { 'type':'set', 'alias':'Scalar Name' }
    headers['description'] = { 'type':'set', 'alias':'Scalar Description' }
@@ -451,7 +463,7 @@ if have_o_vescalar:
    headers['lower'] = { 'type':'parameter', 'alias':'Lower' }
    headers['upper'] = { 'type':'parameter', 'alias':'Upper' }
    headers['scale'] = { 'type':'parameter', 'alias':'Scale' }
-   io_dict['scalarsve_out'] = { 'alias':'Output Variable/Equation Scalars', 'headers':headers }
+   io_dict['scalarsve_out'] = { 'alias':'Output Variable/Equation Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'headers':headers }
 config['gamsOutputFiles'] = io_dict
 
 confdir = r'%fp%conf'

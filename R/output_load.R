@@ -39,24 +39,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            },
            gdx = {
              if(scalarsName %in% names(metaData)){
-               ret$scalar <- tibble(metaData[[scalarsName]]$symnames, metaData[[scalarsName]]$symtext, 
-                                    vapply(seq_along(metaData[[scalarsName]]$symnames), function(i){
-                                      if(identical(metaData[[scalarsName]]$symtypes[[i]], "parameter")){
-                                        scalar <- NA_character_
-                                        try({
-                                          scalar <- as.character(gdxio$rgdx(gdxPath, 
-                                                                            metaData[[scalarsName]]$symnames[[i]]))
-                                        }, silent = TRUE)
-                                        return(scalar)
-                                      }else{
-                                        scalar <- NA_character_
-                                        try({
-                                          scalar <- gdxio$rgdx(gdxPath, 
-                                                               metaData[[scalarsName]]$symnames[[i]])[[1]][1]
-                                        }, silent = TRUE)
-                                        return(scalar)
-                                      }
-                                    }, character(1L), USE.NAMES = FALSE))
+               ret$scalar <- gdxio$rgdx(gdxPath, scalarsName, isNewGdx = TRUE)
              }
            })
     

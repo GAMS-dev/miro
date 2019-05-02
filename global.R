@@ -62,6 +62,7 @@ customRendererDirName <- "customRenderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
+scalarEquationsOutName <- "scalarsve_out"
 scalarsFileHeaders <- c("scalar", "description", "value")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"

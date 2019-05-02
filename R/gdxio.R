@@ -1,7 +1,6 @@
-# TODO: scalars, scalars_out and scalarsve_out!!!
-
 GdxIO <- R6::R6Class("GdxIO", public = list(
-  initialize = function(gamsSysDir){
+  initialize = function(gamsSysDir, metaData){
+    stopifnot(is.list(metaData), length(metaData) > 0L)
     stopifnot(is.character(gamsSysDir), identical(length(gamsSysDir), 1L))
     if(gdxrrw::igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
       private$gdxDllLoaded <- TRUE
@@ -9,19 +8,52 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       stop(sprintf("Could not find gdx library in GAMS system directory: '%s'.", 
                    gamsSysDir), call. = FALSE)
     }
+    private$metaData <- metaData
     return(invisible(self))
   },
-  rgdx = function(gdxName, symName, names = character(0L), pivotHeaders = character(0L)){
+  rgdx = function(gdxName, symName, names = character(0L), 
+                  pivotHeaders = character(0L), isNewGdx = FALSE){
     stopifnot(is.character(gdxName), identical(length(gdxName), 1L))
     stopifnot(is.character(symName), identical(length(symName), 1L))
+    stopifnot(is.logical(isNewGdx), identical(length(isNewGdx), 1L))
     stopifnot(is.character(names))
     stopifnot(is.character(pivotHeaders))
     
-    if(!identical(gdxName, private$rgdxName)){
+    if(isNewGdx || !identical(gdxName, private$rgdxName)){
       private$rgdxName   <- gdxName
       private$gdxSymbols <- gdxInfo(gdxName, returnList = TRUE, dump = FALSE)
     }
     symName <- tolower(symName)
+    if(symName %in% c(scalarsFileName, scalarsOutName)){
+      scalarSymbols <- private$metaData[[symName]]
+      return(tibble::tibble(scalarSymbols$symnames, scalarSymbols$symtext, 
+             vapply(seq_along(scalarSymbols$symnames), function(i){
+               scalar <- NA_character_
+               if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$parameters)){
+                 return(as.character(private$rgdxScalar(scalarSymbols$symnames[[i]])))
+               }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
+                 return(private$rgdxSet(scalarSymbols$symnames[[i]])[[1]][1])
+               }
+               return(scalar)
+             }, character(1L), USE.NAMES = FALSE)))
+    }else if(identical(symName, scalarEquationsOutName)){
+      scalarSymbols <- private$metaData[[symName]]
+      values <- lapply(seq_along(scalarSymbols$symnames), function(i){
+        scalar <- rep.int(NA_real_, 5L)
+        if(scalarSymbols$symnames[[i]] %in% c(tolower(private$gdxSymbols$variables),
+                                              tolower(private$gdxSymbols$equations))){
+          return(private$rgdxScalarVe(scalarSymbols$symnames[[i]]))
+        }
+        return(scalar)
+      })
+      names(values) <- seq_along(scalarSymbols$symnames)
+      values <- tibble::as_tibble(values)
+      values <- t(values)
+      return(dplyr::bind_cols(tibble::tibble(scalarSymbols$symtypes, 
+                                      scalarSymbols$symnames, 
+                                      scalarSymbols$symtext), 
+                       tibble::as_tibble(values)))
+    }
     if(symName %in% tolower(private$gdxSymbols$sets)){
       return(private$rgdxSet(symName, names = names))
     }else if(symName %in% tolower(private$gdxSymbols$parameters)){
@@ -33,17 +65,24 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
            call. = FALSE)
     }
   },
-  wgdx = function(gdxName, data, aliases = character(0L)){
+  wgdx = function(gdxName, data){
     stopifnot(length(names(data)) > 0L)
-    if(!length(aliases)){
-      aliases <- names(data)
-    }
-    do.call(gdxrrw::wgdx, c(gdxName, lapply(seq_along(data), function(i){
+    
+    # tabular data
+    wgdxDotList <- lapply(seq_along(data), function(i){
+      symName   <- names(data)[i]
+      if(symName %in% c(scalarsFileName, scalarsOutName, scalarEquationsOutName)){
+        return(NULL)
+      }
+      if(symName %in% names(private$metaData)){
+        symText <- private$metaData[[symName]]$alias
+      }else{
+        symText <- symName
+      }
       df        <- data[[i]]
       df[seq_len(length(df) - 1L)] <- dplyr::mutate_if(df[seq_len(length(df) - 1L)], 
                                                        is.character, as.factor)
-      symName   <- names(data)[i]
-      symText   <- aliases[i]
+      
       haveTe    <- FALSE
       isSet     <- TRUE
       nc        <- length(df)
@@ -91,19 +130,84 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
       ret$val  <- v
       return(ret)
-    })))
+    })
+    isScalarData <- vapply(wgdxDotList, is.null, 
+                           logical(1L), USE.NAMES = FALSE)
+    wgdxDotList  <- wgdxDotList[!isScalarData]
+    
+    # scalar data
+    scalarSymList <- unlist(lapply(which(isScalarData), function(i){
+      df       <- data[[i]]
+      nc       <- length(df)
+      if(identical(nc, 3L)){
+        symNames <- df[[1L]]
+        symTexts <- df[[2L]]
+        symVals  <- df[[3L]]
+        symTypes <- NULL
+      }else{
+        symTypes <- df[[1L]]
+        symNames <- df[[2L]]
+        symTexts <- df[[3L]]
+        df       <- df[-seq_len(3)]
+      }
+      lapply(seq_along(symNames), function(j){
+        symName  <- symNames[j]
+        form     <- "sparse"
+        dim      <- 0L
+        uels     <- NULL
+        typeCode <- NULL
+        if(is.null(symTypes)){
+          v     <- suppressWarnings(as.numeric(symVals[j]))
+          if(is.na(v)){
+            # element is singleton set
+            dim     <- 1L
+            v       <- matrix(1L)
+            uels    <- list(symVals[j])
+            symType <- "set"
+          }else{
+            form    <- "full"
+            symType <- "parameter"
+          }
+        }else{
+          typeCode <- 0L
+          symType  <- if(startsWith(symTypes[j], "va")) "variable" else "equation"
+          df       <- tidyr::gather(df[j, ], key = "field", 
+                              "value", factor_key = TRUE)
+          uels     <- list(c('l', 'm', 'lo', 'up', 's'))
+          v        <- data.matrix(df)
+        }
+        ret <- list(name = symName, ts = symTexts[j], 
+                    type = symType, dim = dim, 
+                    form = form, val = v)
+        if(!is.null(uels)){
+          ret$uels <- uels
+        }
+        if(!is.null(typeCode)){
+          ret$typeCode <- typeCode
+        }
+        return(ret)
+      })
+    }), use.names = FALSE, recursive = FALSE)
+    do.call(gdxrrw::wgdx, c(gdxName, wgdxDotList, scalarSymList))
     return(invisible(self))
   }
 ), private = list(
   rgdxName = character(1L),
   gdxDllLoaded = FALSE,
   gdxSymbols = list(),
+  metaData = list(),
+  rgdxScalarVe = function(symName){
+    sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
+                                               ts = FALSE, field = "all"),
+                        squeeze = FALSE, useDomInfo = TRUE)
+    return(sym$val[, 2L])
+  },
   rgdxParam = function(symName, names = NULL, pivotHeaders = character(0L)){
     sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE),
                         squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
-      return(private$rgdxScalar(symName))
+      return(private$rgdxScalar(symName, sym))
     }
     if(length(names) && !length(pivotHeaders)){
       stopifnot(is.character(names), identical(length(names), symDim + 1L))
@@ -148,15 +252,17 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
     return(symDF)
   },
-  rgdxScalar = function(symName){
-    sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName))
+  rgdxScalar = function(symName, sym = NULL){
+    if(!length(sym)){
+      sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName))
+    }
     c <- 0
     if(identical(1L, dim(sym$val)[1])){
       c <- sym$val[[1]][1]
     }
     return(c)
   },
-  rgdxSet = function(symName, names=NULL){
+  rgdxSet = function(symName, names = NULL){
     sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, 
                                                compress = FALSE, 
                                                ts = FALSE, te = TRUE),
@@ -180,7 +286,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     dflist[[symDim + 1L]] <- sym$te
     names(dflist) <- seq_along(dflist)
     
-    symDF <- as_tibble(dflist)
+    symDF <- tibble::as_tibble(dflist)
     if(length(names)){
       names(symDF) <- names
     }

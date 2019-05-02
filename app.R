@@ -442,12 +442,13 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
-
-tryCatch(gdxio <<- GdxIO$new(gamsSysDir),
-         error = function(e){
-           flog.error(e, gamsSysDir)
-           errMsg <<- paste(errMsg, e, sep = '\n')
-         })
+if(is.null(errMsg)){
+  tryCatch(gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut)),
+           error = function(e){
+             flog.error(e)
+             errMsg <<- paste(errMsg, e, sep = '\n')
+           })
+}
 if(!is.null(errMsg)){
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
