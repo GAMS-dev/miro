@@ -527,6 +527,17 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     fade = TRUE, easyClose = FALSE
   ))
 }
+showScenExportDialog <- function(id){
+  showModal(modalDialog(
+    title = lang$nav$dialogExportScen$title,
+    selectInput("exportFileType", lang$nav$dialogExportScen$desc, c("gdx", "xls")),
+    footer = tagList(
+      modalButton(lang$nav$dialogExportScen$cancelButton),
+      downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
+                     class = "bt-highlight-1 bt-gms-confirm")
+      ), fade = TRUE, easyClose = TRUE
+  ))
+}
 ######## HYPERCUBE MODE
 showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
   showModal(modalDialog(

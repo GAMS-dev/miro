@@ -579,6 +579,33 @@
             }
           }
         },
+        "dialogExportScen":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "dialogSaveSuccess":{  
           "type":"object",
           "additionalProperties":false,

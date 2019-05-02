@@ -954,7 +954,7 @@ if(!is.null(errMsg)){
     # generate import dialogue
     source("./modules/input_ui.R", local = TRUE)
     # load input data from Excel sheet
-    source("./modules/excel_input_load.R", local = TRUE)
+    source("./modules/scen_import.R", local = TRUE)
     
     ####### GAMS interaction
     # solve button clicked
@@ -1007,7 +1007,7 @@ if(!is.null(errMsg)){
         source("./modules/scen_close.R", local = TRUE)
         
         # export Scenario to Excel spreadsheet
-        source("./modules/excel_scen_save.R", local = TRUE)
+        source("./modules/scen_export.R", local = TRUE)
         
         # compare scenarios
         obsCompare[[i]] <<- observe({
@@ -1072,8 +1072,14 @@ if(!is.null(errMsg)){
     }else{
       id <- 1
       # export output data to Excel spreadsheet
-      source("./modules/excel_scen_save.R", local = TRUE)
+      source("./modules/scen_export.R", local = TRUE)
     }
+    observeEvent(input$btExportScen, {
+      showScenExportDialog(input$btExportScen)
+    })
+    observeEvent(input$exportFileType, {
+      exportFileType <<- input$exportFileType
+    })
     if(!isShinyProxy && 
        curl::has_internet() && 
        file.exists(file.path(currentModelDir, ".crash.zip"))){

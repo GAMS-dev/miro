@@ -110,8 +110,8 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
                     tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
                     tags$div(class = "scen-buttons-wrapper",
                              tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
-                                      downloadButton(outputId = paste0("export_", scenId), label = NULL, 
-                                                     class="scen-button")
+                                      HTML(paste0('<button type="button" class="btn btn-default scen-button" 
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
                              ),
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       actionButton(paste0("table_", scenId), icon("chart-bar"), 
@@ -142,8 +142,8 @@ generateScenarioTabsetSplit <- function(scenId){
              tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
              tags$div(class = "scen-buttons-wrapper",
                       tags$div(title = lang$nav$scen$tooltips$btExport, class = "scen-button-tt",
-                               downloadButton(outputId = paste0("export_", scenId), label = NULL, 
-                                              class="scen-button")
+                               HTML(paste0('<button type="button" class="btn btn-default scen-button" 
+onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\'})"><i class="fas fa-download"></i></button>'))
                       ),
                       tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                actionButton(paste0("table_", scenId), icon("chart-bar"), 

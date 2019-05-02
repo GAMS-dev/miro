@@ -127,6 +127,12 @@
       "new":"%s datasets imported.",
       "noNew":"No dataset was imported."
     },
+    "dialogExportScen":{
+      "title": "Export scenario",
+      "desc": "Select a file type",
+      "cancelButton": "Cancel",
+      "okButton": "Export"
+    },
     "dialogSaveSuccess":{  
       "title":"Success",
       "desc":" %d datasets were saved successfully."

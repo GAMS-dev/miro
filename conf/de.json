@@ -127,6 +127,12 @@
       "new":"%s Datensätze importiert.",
       "noNew":"Keine neuen Datensätze importiert."
     },
+    "dialogExportScen":{
+      "title": "Szenario exportieren",
+      "desc": "Wählen Sie einen Dateityp aus",
+      "cancelButton": "Abbrechen",
+      "okButton": "Exportieren"
+    },
     "dialogSaveSuccess":{  
       "title":"Erfolgreich",
       "desc":" Datensätze wurden erfolgreich gespeichert."

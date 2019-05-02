@@ -33,7 +33,7 @@ output[["export_" %+% i]] <- downloadHandler(
         data[[scalarOutIdx]] <- scalarData[[scenIdLong]]
       }
     }
-    
+    removeModal()
     if(identical(exportFileType, "gdx")){
       names(data) <- c(names(modelOut), inputDsNames)
       return(gdxio$wgdx(file, data))
