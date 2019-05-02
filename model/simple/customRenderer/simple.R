@@ -32,9 +32,9 @@ renderSimple1 <- function(input, output, session, data, options = NULL, path = N
                      labelOptions = labelOptions(style = list("font-weight" = "normal", 
                                                               padding = "3px 8px"), 
                                                  textsize = "15px", direction = "auto")) %>%
-         addMinicharts(lng = data$lng, lat = data$lat, time = data[['time steps']], 
-                       type = "pie", chartdata = data[, c("Renewable", "Fossil")], 
-                       width = 100 * data$Total / max(data$Total), transitionTime = 0, 
+         addMinicharts(lng = data$lng, lat = data$lat, time = data$tt, 
+                       type = "pie", chartdata = data[, c("renewable", "fossil")], 
+                       width = 100 * data$total / max(data$total), transitionTime = 0, 
                        layerId = labels, popup = popupArgs())
   output$simple <- leaflet::renderLeaflet(map)
 }
@@ -60,8 +60,8 @@ renderSimple2 <- function(input, output, session, data, options = NULL, path = N
   #mapping of Ids (from GAMS) and labels (R)
   map.id.name <- as.list(labels)
   names(map.id.name) <- sapply(1:16, function(i){ paste0("ID_", i)})
-  label0 <- sapply(data$Regions, function(el){map.id.name[[el]]})
-  label1 <- sapply(data$Regions1, function(el){map.id.name[[el]]})
+  label0 <- sapply(data$rr, function(el){map.id.name[[el]]})
+  label1 <- sapply(data$rr_1, function(el){map.id.name[[el]]})
   
   # generate a color palette
   getPalette = colorRampPalette(brewer.pal(12, "Set3"))
@@ -75,9 +75,9 @@ renderSimple2 <- function(input, output, session, data, options = NULL, path = N
                      labelOptions = labelOptions(style = list("font-weight" = "normal", 
                                                               padding = "3px 8px"), 
                                                  textsize = "15px", direction = "auto")) %>%
-         addFlows(lng0 = data$Lng0, lat0 = data$Lat0, lng1 = data$Lng1, lat1 = data$Lat1, 
-                  color = "indianred", flow = data$Flow, 
-                  time = data[['time steps']], opacity = 1, minThickness = 1, 
+         addFlows(lng0 = data$lng0, lat0 = data$lat0, lng1 = data$lng1, lat1 = data$lat1, 
+                  color = "indianred", flow = data$flow, 
+                  time = data$tt, opacity = 1, minThickness = 1, 
                   maxThickness = 12, 
                   #Popup for flows - label0 and label1 need to be filled before
                   layerId = paste0("From ", label0, " to ", label1), popup = popupArgs())

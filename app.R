@@ -342,7 +342,7 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
-if(is.null(errMsg) && debugMode && config$activateModules$scenario){
+if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(LAUNCHADMINMODE, FALSE)){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -538,6 +538,7 @@ if(!is.null(errMsg)){
         if(scalarsFileName %in% names(modelInRaw)){
           dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
         }
+        
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
           flog.info("New data: '%s' is being stored in the database. Please wait a while until the import is finished.", miroDataFile)
@@ -551,7 +552,16 @@ if(!is.null(errMsg)){
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
                                   modelInTemplate, method = method, fileName = miroDataFile)$tabular
-          newScen$save(c(dataOut, dataIn))
+
+          if(length(modelIn) > length(modelInRaw)){
+            # additional command line parameters that are not GAMS symbols
+            scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
+            names(scalarsTemplate) <- scalarsFileHeaders
+            newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
+          }else{
+            newScen$save(c(dataOut, dataIn))
+          }
+          
           if(!file.remove(file.path(miroDataDir, miroDataFile))){
             flog.info("Could not remove file: '%s'.", miroDataFile)
           }

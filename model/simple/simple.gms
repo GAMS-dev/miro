@@ -43,7 +43,7 @@ rLocData(rr,'pop') = uniform(0,1);
 $endif
 
 $onExternalInput
-Table planttypedata(type,plant_data_hdr) 'Plant information'
+Table planttypedata(type,plant_data_hdr) 'Plant information [MIRO:table]'
               CO2  Cost  'Expansion Cost'
 coal          390  0.019  1400
 gas           200  0.043   700
@@ -51,7 +51,7 @@ photovoltaic    0  0       900
 wind            0  0       900
 ;
 
-Table timeseries(ttX,time_series_hdr) 'base case time series [GWh]'
+Table timeseries(ttX,time_series_hdr) 'base case time series [GWh] [MIRO:table]'
 $ifthen exist "%gams.wdir%mytimeseries.csv"
 $  ondelim
 $  include mytimeseries.csv
@@ -63,30 +63,15 @@ tX0002  41620  0            8827
 $endif
 ;
 
-$onechoV > webuiconf.json
-{
-  "GMSPAR_RESOLUTION": { "alias": "Time resolution",
-     "dropdown": { "aliases":["hours","days","weeks","months"], "choices":[1,24,168,720] } },
-  "GMSPAR_FROM_TO":    { "alias": "Time range",
-     "slider"  : { "min":0, "max":100, "default":[5,70], "step":0.001 } }  
-}
-$offecho
 $offExternalInput
-$log %sysenv.SIMPLE_RESOLUTION%
-$ifthen %GMSWEBUI%==1
-$  batInclude loadCSV scalars
-$  if setenv SIMPLE_RESOLUTION  $set RESOLUTION  %sysenv.SIMPLE_RESOLUTION%
-$  if setenv SIMPLE_FROM_TO_MIN $set FROM_TO_MIN %sysenv.SIMPLE_FROM_TO_MIN%
-$  if setenv SIMPLE_FROM_TO_MAX $set FROM_TO_MAX %sysenv.SIMPLE_FROM_TO_MAX%
-$endif
 
-$if not set FROM_TO_MIN $set FROM_TO_MIN   0
-$if not set FROM_TO_MAX $set FROM_TO_MAX 100
+$if not set FROM_TO_LO $set FROM_TO_LO   0
+$if not set FROM_TO_UP $set FROM_TO_UP 100
 $if not set RESOLUTION  $set RESOLUTION    1
 
 $if  not set NBREGIONS            $eval NBREGIONS         card(rr)
-$if  not set FROM                 $eval FROM              %FROM_TO_MIN%/100
-$if  not set TO                   $eval TO                %FROM_TO_MAX%/100
+$if  not set FROM                 $eval FROM              %FROM_TO_LO%/100
+$if  not set TO                   $eval TO                %FROM_TO_UP%/100
                                         
 $if  not set LOADFROMXLS          $set  LOADFROMXLS       0
 $if  not set XLSID                $set  XLSID             standard
@@ -395,13 +380,13 @@ $offecho
 
 solve simple min OBJ use lp;
 
-$onExternalOutput
 Set
    emixHdr 'Energy Mix Header'    / 'Lng', 'Lat', 'Total', 'Renewable', 'Fossil' /
    flowHdr 'Flow Header'          / 'Lng0', 'Lat0', 'Lng1', 'Lat1', 'Flow'  /;
+$onExternalOutput
 Parameter
-   rep_emix(tt,rr,emixHdr)     'energy mix report'
-   rep_flow(tt,rr,rr,flowHdr)  'flow report'
+   rep_emix(tt,rr,emixHdr)     'energy mix report [MIRO:table]'
+   rep_flow(tt,rr,rr,flowHdr)  'flow report [MIRO:table]'
    obj_rep                     'objective function value';
 $offExternalOutput
 
@@ -418,6 +403,3 @@ rep_flow(tt,net(rr1,rr2),'lat1') = rLocData(rr2,'lat');
 rep_flow(tt,net(rr1,rr2),'flow') = FLOW.l(tt,rr1,rr2) + eps;
 
 obj_rep = OBJ.l;
-$if not exist webui.gms
-$if set GMSWEBUI $abort Asked to do webui but can't find webui.gms. Set idir=path/to/webui
-$batinclude webui
