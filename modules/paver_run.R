@@ -101,9 +101,11 @@ observeEvent(input$btPaver, {
         noErr <<- FALSE
         switch(conditionMessage(e),
                noTrc = {
+                 flog.info("Unknown error exeuting Paver. Error message: '%s'.", e)
                  showHideEl(session, "#paverRunNoTrc", 6000L)
                },
                {
+                 flog.error("Unknown error exeuting Paver. Error message: '%s'.", e)
                  showHideEl(session, "#paverRunUnknownError", 6000L)
                })
       })
