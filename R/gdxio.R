@@ -26,6 +26,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     symName <- tolower(symName)
     if(symName %in% c(scalarsFileName, scalarsOutName)){
       scalarSymbols <- private$metaData[[symName]]
+      if(is.null(scalarSymbols)){
+        return(tibble())
+      }
       return(tibble::tibble(scalarSymbols$symnames, scalarSymbols$symtext, 
              vapply(seq_along(scalarSymbols$symnames), function(i){
                scalar <- NA_character_
@@ -59,7 +62,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }else if(symName %in% tolower(private$gdxSymbols$parameters)){
       return(private$rgdxParam(symName, names = names, pivotHeaders = pivotHeaders))
     }else if(symName %in% tolower(c(private$gdxSymbols$variables, private$gdxSymbols$equations))){
-      return(private$rgdxParam(symName, names = names, pivotHeaders = c("l", "m", "lo", "up", "s")))
+      return(private$rgdxVe(symName, names = names))
     }else{
       stop(sprintf("Symbol: '%s' does not exist in gdx container: '%s'.", symName, gdxName), 
            call. = FALSE)
@@ -196,10 +199,21 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   gdxDllLoaded = FALSE,
   gdxSymbols = list(),
   metaData = list(),
-  rgdxScalarVe = function(symName){
-    sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
-                                               ts = FALSE, field = "all"),
+  rgdxVe = function(symName, names = NULL){
+    sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE, field = "all"),
                         squeeze = FALSE, useDomInfo = TRUE)
+    symDim <- sym$dim
+    if(identical(symDim, 0L)){
+      return(private$rgdxScalarVe(sym = sym))
+    }
+    private$rgdxTibble(sym, symDim + 1L, names, c("l", "m", "lo", "up", "s"))
+  },
+  rgdxScalarVe = function(symName = NULL, sym = NULL){
+    if(!length(sym)){
+      sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, 
+                                                 ts = FALSE, field = "all"),
+                          squeeze = FALSE, useDomInfo = TRUE)
+    }
     return(sym$val[, 2L])
   },
   rgdxParam = function(symName, names = NULL, pivotHeaders = character(0L)){
@@ -207,8 +221,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                         squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
-      return(private$rgdxScalar(symName, sym))
+      return(private$rgdxScalar(sym = sym))
     }
+    private$rgdxTibble(sym, symDim, names, pivotHeaders)
+  },
+  rgdxTibble = function(sym, symDim, names = NULL, pivotHeaders = character(0L)){
     if(length(names) && !length(pivotHeaders)){
       stopifnot(is.character(names), identical(length(names), symDim + 1L))
     }
@@ -227,6 +244,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     names(dflist) <- seq_along(dflist)
     
     symDF <- tibble::as_tibble(dflist)
+    symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(pivotHeaders)){
       dfDim     <- length(symDF)
       pivotUELS <- sym$uels[[dfDim - 1L]]
@@ -252,7 +270,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
     return(symDF)
   },
-  rgdxScalar = function(symName, sym = NULL){
+  rgdxScalar = function(symName = NULL, sym = NULL){
     if(!length(sym)){
       sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName))
     }
@@ -286,7 +304,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     dflist[[symDim + 1L]] <- sym$te
     names(dflist) <- seq_along(dflist)
     
-    symDF <- tibble::as_tibble(dflist)
+    symDF <- tibble::as_tibble(dflist) 
+    symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(names)){
       names(symDF) <- names
     }

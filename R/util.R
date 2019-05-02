@@ -801,11 +801,15 @@ hasValidHeaderTypes <- function(headersData, headerTypes){
 } 
 fixColTypes <- function(data, colTypes){
   stopifnot(identical(length(data), nchar(colTypes)))
-
+  
   data[] <- lapply(seq_along(data), function(i){
-    if(identical(substr(colTypes, i, i), "c") && 
+    colType <- substr(colTypes, i, i)
+    if(identical(colType, "c") && 
        (is.numeric(data[[i]]) || is.logical(data[[i]]))){
       return(as.character(data[[i]]))
+    }else if(identical(colType, "d") && 
+             (is.character(data[[i]]) || is.logical(data[[i]]))){
+      return(suppressWarnings(as.numeric(data[[i]])))
     }else{
       return(data[[i]])
     } 
