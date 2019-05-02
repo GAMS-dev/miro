@@ -259,12 +259,12 @@
                      "description":"Boolean that specifies whether to hide or show tick marks (optional)",
                      "type":"boolean",
                      "required":false
-                   },
-                   "additionalProperties":false,
-                   "required":[  
+                   }
+                  },
+                  "required":[  
                       "widgetType", "step", "min", "max", "default"
-                   ]
-                  }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -332,12 +332,12 @@
                         "string",
                         "number"
                       ]
-                    },
-                   "additionalProperties":false,
+                    }
+                  },
                    "required":[  
                       "widgetType"
-                   ]
-                  }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -411,12 +411,12 @@
                        "integer"
                      ],
                      "minLength":1
-                   },
-                   "additionalProperties":false,
-                   "required":[  
+                   }
+                 },
+                 "required":[  
                       "widgetType", "min", "max", "value"
-                   ]
-                 }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -506,12 +506,12 @@
                    "autoclose":{  
                      "description":"Whether or not to close the datepicker immediately when a date is selected",
                      "type":"boolean"
-                   },
-                   "additionalProperties":false,
-                   "required":[  
-                      "widgetType"
-                   ]
-                 }
+                   }
+                 },
+                 "required":[  
+                    "widgetType"
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -564,10 +564,10 @@
                      "minLength":1
                    }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -610,10 +610,10 @@
                      "minLength":1
                    }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -651,10 +651,10 @@
                       }
                     }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                }
             ]
          }
