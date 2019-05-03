@@ -21,13 +21,13 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     if(isNewGdx || !identical(gdxName, private$rgdxName)){
       private$rgdxName   <- gdxName
-      private$gdxSymbols <- gdxInfo(gdxName, returnList = TRUE, dump = FALSE)
+      private$gdxSymbols <- gdxrrw::gdxInfo(gdxName, returnList = TRUE, dump = FALSE)
     }
     symName <- tolower(symName)
     if(symName %in% c(scalarsFileName, scalarsOutName)){
       scalarSymbols <- private$metaData[[symName]]
       if(is.null(scalarSymbols)){
-        return(tibble())
+        return(tibble::tibble())
       }
       return(tibble::tibble(scalarSymbols$symnames, scalarSymbols$symtext, 
              vapply(seq_along(scalarSymbols$symnames), function(i){
@@ -49,13 +49,12 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         }
         return(scalar)
       })
-      names(values) <- seq_along(scalarSymbols$symnames)
-      values <- tibble::as_tibble(values)
+      values <- tibble::as_tibble(values, .name_repair = "unique")
       values <- t(values)
       return(dplyr::bind_cols(tibble::tibble(scalarSymbols$symtypes, 
                                       scalarSymbols$symnames, 
                                       scalarSymbols$symtext), 
-                       tibble::as_tibble(values)))
+                       tibble::as_tibble(values, .name_repair = "unique")))
     }
     if(symName %in% tolower(private$gdxSymbols$sets)){
       return(private$rgdxSet(symName, names = names))
@@ -241,9 +240,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
     }
     dflist[[symDim + 1L]] <- sym$val[, symDim + 1L]
-    names(dflist) <- seq_along(dflist)
     
-    symDF <- tibble::as_tibble(dflist)
+    symDF <- tibble::as_tibble(dflist, .name_repair = "unique")
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(pivotHeaders)){
       dfDim     <- length(symDF)
@@ -302,9 +300,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
     }
     dflist[[symDim + 1L]] <- sym$te
-    names(dflist) <- seq_along(dflist)
     
-    symDF <- tibble::as_tibble(dflist) 
+    symDF <- tibble::as_tibble(dflist, .name_repair = "unique") 
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(names)){
       names(symDF) <- names
