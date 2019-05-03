@@ -45,7 +45,9 @@ insertUI(selector = "#general_wrapper",
                      width = "100%",
                      multiple = FALSE,
                      accept = c(".png", ".PNG", ".jpg", ".JPG")),
-           imageOutput("general_logo_preview", height = "50px", width = "230px"),
+           tags$div(style="margin-bottom: 15px;",
+             imageOutput("general_logo_preview", height = "50px", width = "230px")
+           ),
            tags$label(class = "cb-label", "for" = "general_auto",
                       "Generate graphs for each input sheet automatically (pivot tool)"),
            tags$div(

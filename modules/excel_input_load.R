@@ -101,6 +101,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
   }
+  xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
   # extract only sheets which are also in list of input parameters
   datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% c(modelInTabularData, scalarsFileName)]
   # extract scalar sheets

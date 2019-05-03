@@ -439,10 +439,7 @@
                      ],
                      "minLength":1
                    },
-                   "additionalProperties":false,
-                   "required":[  
-                      "widgetType", "min", "max", "value"
-                   ]
+                   "additionalProperties":false
                  }
                },
                {
@@ -1205,19 +1202,6 @@
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
                "type":["array", "string"],
-               "enum":[  
-                   "AutoFill",
-                   "Buttons",
-                   "ColReorder",
-                   "ColVis",
-                   "FixedColumns",
-                   "FixedHeader",
-                   "KeyTable",
-                   "Responsive",
-                   "RowReorder",
-                   "Scroller",
-                   "Select"
-               ],
                "uniqueItems":true,
                "required":false,
                "items":{  
@@ -1250,9 +1234,13 @@
                   },
                   "buttons":{  
                      "description":"Buttons or groups of buttons to insert",
-                     "type":"object",
-                     "required":false,
-                     "default":null
+                     "type":["array","string"],
+                     "uniqueItems":true,
+                     "items":{
+                         "type": "string",
+                         "enum":["copy", "csv", "excel", "pdf", "print"]
+                     },
+                     "required":false
                   },
                   "pageLength":{  
                      "description":"Number of items to display per page",

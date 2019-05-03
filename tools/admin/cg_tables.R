@@ -1,5 +1,6 @@
 data <- tibble("Column 1" = 1:10, "Column 2" = 11:20, "Column 3" = letters[1:10], "Column 4" = letters[11:20])
 attr(data, "aliases") <- c("Column 1", "Column 2", "Column 3", "Column 4")
+dtExtensions <- Set$new()
 
 observeEvent(input$table_type, {
   req(length(input$table_type) > 0L)
@@ -83,6 +84,14 @@ getHotOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
+             tags$label(class = "cb-label", "for" = "hot_resize_cow",
+                        "Enable manual row resizing."),
+             tags$div(
+               tags$label(class = "checkbox-material", 
+                          checkboxInput("hot_resize_row", value = configJSON$handsontable$manualRowResize, label = NULL)
+               ))
+    ),
+    tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_context_enable",
                         "Enable table context menu (accessible via right mouse click)."),
              tags$div(
@@ -92,7 +101,7 @@ getHotOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+             style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
              conditionalPanel(
                condition = "input.hot_context_enable == true",
                tags$div(tags$label(class = "cb-label", "for" = "hot_context_rowedit",
@@ -152,6 +161,13 @@ getDtOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
+             tags$label(class = "cb-label", "for" = "dt_colReorder", "Allow reordering of columns?"),
+             tags$div(
+               tags$label(class = "checkbox-material", 
+                          checkboxInput("dt_colReorder", value = "ColReorder" %in% configJSON$datatable$extensions, label = NULL)
+               ))
+    ),
+    tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "dt_buttons", "Add export buttons?"),
              tags$div(
                tags$label(class = "checkbox-material", 
@@ -159,11 +175,14 @@ getDtOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_colReorder", "Allow reordering of columns?"),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("dt_colReorder", value = "ColReorder" %in% configJSON$datatable$extensions, label = NULL)
-               ))
+             style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
+             conditionalPanel(
+               condition = "input.dt_buttons == true",
+               selectInput("dt_buttons_select", 
+                           choices = c("copy", "csv", "excel", "pdf", "print"), selected = configJSON$datatable$options$buttons,
+                           multiple = TRUE, label = "Select the buttons to use. Note: All button functions only affect the 
+                           visible table page.")
+             )
     )
   )
 })
@@ -192,6 +211,9 @@ observeEvent(input$hot_move, {
 })
 observeEvent(input$hot_resize, {
   rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
+})
+observeEvent(input$hot_resize_row, {
+  rv$tableConfig$handsontable$manualRowResize <<- input$hot_resize_row
 })
 observeEvent(input$hot_colwidth, {
   rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
@@ -230,21 +252,18 @@ observeEvent(input$dt_dom, {
   else
     rv$tableConfig$datatable$options$dom <<- NULL
 })
-observeEvent(input$dt_buttons, {
-  if(nchar(input$dt_buttons))
-    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons
-  else
-    rv$tableConfig$datatable$options$buttons <<- NULL
-})
 observeEvent(input$dt_pagelength, {
   rv$tableConfig$datatable$options$pageLength <<- input$dt_pagelength
 })
 observeEvent(input$dt_buttons, {
   if(input$dt_buttons){
-    rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
-    rv$tableConfig$datatable$options$buttons <<- c('copy', 'csv', 'excel', 'pdf', 'print')
-    rv$tableConfig$datatable$extensions <<- c(rv$tableConfig$datatable$extensions, "Buttons")
+    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
+    if(length(input$dt_buttons_select)){
+      dtExtensions$push("Buttons")
+      rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
+    }
   }else{
+    dtExtensions$delete("Buttons")
     rv$tableConfig$datatable$options$dom <<- NULL
     rv$tableConfig$datatable$options$buttons <<- NULL
     newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
@@ -252,6 +271,26 @@ observeEvent(input$dt_buttons, {
       newExtensionsVector <- NULL
     rv$tableConfig$datatable$extensions <<- newExtensionsVector
   }
+  rv$tableConfig$datatable$extensions <<- dtExtensions$get()
+})
+observe({
+  input$dt_buttons_select
+  isolate({
+    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
+    if(length(rv$tableConfig$datatable$options$buttons) > 0){
+      rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
+      dtExtensions$push("Buttons")
+    }else{
+      rv$tableConfig$datatable$options$dom <<- NULL
+      rv$tableConfig$datatable$options$buttons <<- NULL
+      dtExtensions$delete("Buttons")
+      newExtensionsVector <- rv$tableConfig$datatable$extensions[!rv$tableConfig$datatable$extensions %in% "Buttons"]
+      if(!length(newExtensionsVector))
+        newExtensionsVector <- NULL
+      rv$tableConfig$datatable$extensions <<- newExtensionsVector
+    }
+    rv$tableConfig$datatable$extensions <<- dtExtensions$get()
+  })
 })
 observeEvent(input$dt_colReorder, {
   if(input$dt_colReorder){
@@ -272,7 +311,7 @@ observe({
   tryCatch({
     if(isolate(rv$tableConfig$tableType) == "hot"){
       hotOptions        <- rv$tableConfig$handsontable
-      print(hotOptions)
+      #print(hotOptions)
       output[["table_preview_hot"]] <- renderRHandsontable({
         ht <- rhandsontable(data = data, height = hotOptions$height, 
                             colHeaders = letters[1:4],
@@ -298,7 +337,7 @@ observe({
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
       print(dtOptions)
-      print("asdasdadasdasd")
+      #print(dtOptions)
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)

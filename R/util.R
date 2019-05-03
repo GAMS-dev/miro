@@ -951,3 +951,26 @@ CharArray <- R6Class("CharArray", public = list(
   initialItems = list(),
   items = list()
 ))
+Set <- R6Class("Set", inherit = CharArray, public = list(
+  push = function(el){
+    el <- as.character(el)
+    stopifnot(identical(length(el), 1L))
+    if(!el %in% private$items){
+      private$items[[self$size() + 1L]] <- el
+    }
+    invisible(self)
+  },
+  initialize = function(el = NULL){
+    if(length(el)){
+      el <- unique(as.character(el))
+      private$initialItems <- as.list(el)
+      private$items <- private$initialItems
+    }
+    invisible(self)
+  },
+  update = function(old, new){
+    if(length(new) && new %in% private$items){
+      return(invisible(self))
+    }
+    super$update(old, new)
+}))
