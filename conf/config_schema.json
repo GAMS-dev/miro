@@ -1048,7 +1048,7 @@
                   "last",
                   "all"
                ],
-               "default":"all",
+               "default":"none",
                "required":false
             },
             "columnSorting":{  

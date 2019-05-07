@@ -71,7 +71,7 @@ Db <- R6Class("Db",
                     })
                   }else if(identical(dbConf$type, "sqlite")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name)
+                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name, bigint = "integer")
                       # turn foreign key usage on
                       dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
                     }, error = function(e){

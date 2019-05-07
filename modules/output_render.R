@@ -16,6 +16,8 @@ renderOutputData <- function(){
     }, error = function(e) {
       flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.", sheetName, e)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, modelOutAlias[i]), sep = "\n")
+      showEl(session, paste0("#tab_", i, "-noData"))
+      hideEl(session, paste0("#tab_", i, "-data"))
     })
     progress$inc(1/length(modelOut), detail = paste0(lang$progressBar$renderOutput$progress, i))
   })
