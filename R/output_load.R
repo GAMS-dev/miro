@@ -7,6 +7,7 @@ loadGAMSResults <- function(scalarsOutName, modelOut, workDir, modelName, errMsg
       stop(sprintf("File: '%s' could not be found."), xlsPath, call. = FALSE)
     }
     xlsSheetNames <- tolower(excel_sheets(xlsPath))
+    xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), "[[", character(1L), 1L)
   }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading output data.", method), call. = FALSE)
   }

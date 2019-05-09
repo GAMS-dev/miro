@@ -13,7 +13,8 @@ lapply(datasetsToFetch, function(dataset){
       if(identical(loadMode, "xls")){
         # load from Excel workbook
         tryCatch({
-          dataTmp <- read_excel(input$localInput$datapath, dataset)
+          sheetId <- match(tolower(dataset), xlsWbNames)[1]
+          dataTmp <- read_excel(input$localInput$datapath, sheetId)
           dataTmp <- fixColTypes(dataTmp, modelIn[[i]]$colTypes)
           dataTmp <- dataTmp %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
             replace(is.na(.), "")
@@ -88,7 +89,7 @@ lapply(datasetsToFetch, function(dataset){
           # load from excel workbook
           tryCatch({
             # make read of excel sheets case insensitive by selecting sheet via ID
-            sheetId <- match(tolower(scalarsFileName), tolower(excel_sheets(isolate(input$localInput$datapath))))[1]
+            sheetId <- match(tolower(scalarsFileName), xlsWbNames)[1]
             dataTmp <- read_excel(input$localInput$datapath, sheetId, col_types = c("text", "text", "text"))
           }, error = function(e) {
             flog.warn("Problems reading Excel file: '%s' (datapath: '%s', dataset: '%s'). 

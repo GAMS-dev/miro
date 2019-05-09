@@ -170,11 +170,11 @@ body_admin <- dashboardBody({
                                       ),
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'go'",
-                                        textInput("widget_clPar", "Name of the GAMS option (e.g. 'LP' or 'OptCR')")
+                                        textInput("widget_go", "Name of the GAMS option (e.g. 'LP' or 'OptCR')")
                                       ),
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'dd'",
-                                        textInput("widget_clPar", "Name of the double-dash parameter (without '--')")
+                                        textInput("widget_dd", "Name of the double-dash parameter (without '--')")
                                       ),
                                       selectInput("widget_type", "Select the type of widget you want to use", choices = c()),
                                       tags$div(id = "widget_options"),

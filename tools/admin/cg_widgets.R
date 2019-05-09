@@ -23,9 +23,33 @@ widgetSymbols <- setNames(c(modelInWithPrefix,
 
 updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
 validateWidgetConfig <- function(widgetJSON){
-  if(!length(widgetJSON$alias) || nchar(widgetJSON$alias) < 1L){
+  if(!length(widgetJSON$alias) || identical(nchar(trimws(widgetJSON$alias)), 0L)){
     return("The alias of the element must not be empty!")
   }
+  if(startsWith(currentWidgetSymbolName, prefixDDPar) && 
+     identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixDDPar))){
+    return("The name of the double-dash parameter must not be empty!")
+  }
+  if(startsWith(currentWidgetSymbolName, prefixGMSOpt) && 
+     identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixGMSOpt))){
+    return("The name of the GAMS option must not be empty!")
+  }
+  if(startsWith(currentWidgetSymbolName, prefixDDPar)){ 
+    symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixDDPar)+1L, nchar(currentWidgetSymbolName))
+    if(any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym)){
+      return("The name of the double-dash parameter must not be the same as the name of another used GAMS symbol or command line parameter! Please choose another name.")
+    }
+    rm(symbolNameTmp)
+  } 
+  if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){ 
+    symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixGMSOpt)+1L, nchar(currentWidgetSymbolName))
+    if(any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym)){
+      return("The name of the GAMS option must not be the same as the name of another used GAMS symbol or command line parameter!")
+    }
+    rm(symbolNameTmp)
+  } 
+
+    
   switch(widgetJSON$widgetType, 
          slider = ,
          sliderrange = {
@@ -47,7 +71,7 @@ validateWidgetConfig <- function(widgetJSON){
          dropdown = {
            if(!identical(length(widgetJSON$aliases), 0L) && 
               !identical(length(widgetJSON$choices), length(widgetJSON$aliases))){
-             return("Your dropdown menu must have the same number of aliases as choices or no choices at all!")
+             return("Your dropdown menu must have the same number of aliases as choices or no aliases at all!")
            }
            if(length(widgetJSON$selected) && (!widgetJSON$selected %in% widgetJSON$choices)){
              return("The default value must be one of the choices you specified!")
@@ -60,22 +84,64 @@ validateWidgetConfig <- function(widgetJSON){
            if(!is.logical(widgetJSON$value)){
              return("The value must be a logical!")
            }
+           if(identical(widgetJSON$value, TRUE)){
+             rv$widgetConfig$value <<- 1L
+           }else{
+             rv$widgetConfig$value <<- 0L
+           }
          },
          date = {
            defDate <- NULL
            minDate <- NULL
            maxDate <- NULL
-           try(defDate <- as.Date(widgetJSON$value))
-           try(minDate <- as.Date(widgetJSON$min))
-           try(maxDate <- as.Date(widgetJSON$max))
-           if(is.null(defDate) || is.null(minDate) || is.null(maxDate)){
-             return("Either default, minimum or maximum date is of bad format!")
+           errMsg  <- NULL
+           if(!is.null(widgetJSON$value)){
+             eTxt <- "Default date is invalid!"
+             tryCatch(defDate <- as.Date(widgetJSON$value), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(defDate)){
+               errMsg <- eTxt
+             }
            }
-           if(startDate > endDate){
-             return("The start date must be before the end date!")
+           if(!is.null(widgetJSON$min)){
+             eTxt <- paste(errMsg, "Minimum date is invalid!", collapse = "\n")
+             tryCatch(minDate <- as.Date(widgetJSON$min), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(minDate)){
+               errMsg <- eTxt
+             }
            }
-           if(minDate > maxDate){
-             return("The minimum date must be before the maximum date!")
+           if(!is.null(widgetJSON$max)){
+             eTxt <- paste(errMsg, "Maximum date is invalid!", collapse = "\n")
+             tryCatch(maxDate <- as.Date(widgetJSON$max), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(maxDate)){
+               errMsg <- eTxt
+             }
+           }
+           if(length(errMsg)){
+             return(errMsg)
+           }
+           if(!is.null(defDate) && !is.null(minDate)){
+             if(defDate < minDate){
+               return("The default date must be after the start date!")
+             }
+           }
+           if(!is.null(defDate) && !is.null(maxDate)){
+             if(defDate > maxDate){
+               return("The default date must be before the end date!")
+             }
+           }
+           if(!is.null(minDate) && !is.null(maxDate)){
+             if(minDate > maxDate){
+               return("The minimum date must be before the maximum date!")
+             }
+           }
+           if(identical(nchar(widgetJSON$format), 0L)){
+             return("Minimum length for custom date format is 1!")
            }
          },
          daterange = {
@@ -83,18 +149,84 @@ validateWidgetConfig <- function(widgetJSON){
            endDate   <- NULL
            minDate <- NULL
            maxDate <- NULL
-           try(startDate <- as.Date(widgetJSON$start))
-           try(endDate   <- as.Date(widgetJSON$end))
-           try(minDate   <- as.Date(widgetJSON$min))
-           try(maxDate   <- as.Date(widgetJSON$max))
-           if(is.null(startDate) || is.null(endDate) || is.null(minDate) || is.null(maxDate)){
-             return("Either start, end, minimum or maximum date is of bad format")
+           errMsg  <- NULL
+           if(!is.null(widgetJSON$start)){
+             eTxt <- "Start date is invalid!"
+             tryCatch(startDate <- as.Date(widgetJSON$start), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(startDate)){
+               errMsg <- eTxt
+             }
            }
-           if(startDate > endDate){
-             return("The start date must be before the end date!")
+           if(!is.null(widgetJSON$end)){
+             eTxt <- "End date is invalid!"
+             tryCatch(endDate <- as.Date(widgetJSON$end), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(endDate)){
+               errMsg <- eTxt
+             }
            }
-           if(minDate > maxDate){
-             return("The minimum date must be before the maximum date!")
+           if(!is.null(widgetJSON$min)){
+             eTxt <- paste(errMsg, "Minimum date is invalid!", collapse = "\n")
+             tryCatch(minDate <- as.Date(widgetJSON$min), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(minDate)){
+               errMsg <- eTxt
+             }
+           }
+           if(!is.null(widgetJSON$max)){
+             eTxt <- paste(errMsg, "Maximum date is invalid!", collapse = "\n")
+             tryCatch(maxDate <- as.Date(widgetJSON$max), error = function(e){
+               errMsg <<- eTxt
+             })
+             if(!length(maxDate)){
+               errMsg <- eTxt
+             }
+           }
+           if(length(errMsg)){
+             return(errMsg)
+           }
+           if(!is.null(startDate) && !is.null(minDate)){
+             if(startDate < minDate){
+               return("The start date must be after the minimum date!")
+             }
+           }
+           if(!is.null(endDate) && !is.null(maxDate)){
+             if(endDate > maxDate){
+               return("The end date must be before the maximum date!")
+             }
+           }
+           
+           if(!is.null(startDate) && !is.null(minDate)){
+             if(startDate < minDate){
+               return("The start date must be after the minimum date!")
+             }
+           }
+           if(!is.null(endDate) && !is.null(maxDate)){
+             if(endDate > maxDate){
+               return("The end date must be before the maximum date!")
+             }
+           }
+           if(!is.null(minDate) && !is.null(maxDate)){
+             if(minDate > maxDate){
+               return("The minimum date must be before the maximum date!")
+             }
+           }
+           if(identical(nchar(widgetJSON$format), 0L)){
+             return("Minimum length for custom date format is 1!")
+           }
+           if(!is.null(startDate) && !is.null(endDate)){
+             if(startDate > endDate){
+               return("The start date must be before the end date!")
+             }
+           }
+           if(!is.null(minDate) && !is.null(maxDate)){
+             if(minDate > maxDate){
+               return("The minimum date must be before the maximum date!")
+             }
            }
          },
          table = {
@@ -119,11 +251,10 @@ observeEvent({input$widget_symbol
   req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L, 
       identical(input$widget_symbol_type, "gams"))
   
-  currentWidgetSymbolName <<- input$widget_symbol
-  
   hideEl(session, "#noWidgetConfigMsg")
   
   if(input$widget_symbol %in% scalarInputSym){
+    currentWidgetSymbolName <<- input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
       showEl(session, "#noWidgetConfigMsg")
     }
@@ -138,6 +269,7 @@ observeEvent({input$widget_symbol
                        "Checkbox" = "checkbox", "Date" = "date", "Date range" = "daterange", 
                        "Text box" = "textinput")
   }else if(input$widget_symbol %in% names(modelInRaw)){
+    currentWidgetSymbolName <<- input$widget_symbol
     widgetOptions <- c("Table" = "table")
     if(!input$widget_symbol %in% names(modelInRaw)){
       flog.warn("Symbol: '%s' is not an input symbol.", input$widget_symbol)
@@ -155,12 +287,11 @@ observeEvent({input$widget_symbol
   updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
   rv$widget_type <- rv$widget_type + 1L
 })
-observeEvent(input$widget_clPar, {
-  if(identical(input$widget_symbol_type, "dd")){
-    currentWidgetSymbolName <<- prefixDDPar %+% tolower(input$widget_clPar)
-  }else if(identical(input$widget_symbol_type, "go")){
-    currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_clPar)
-  }
+observeEvent(input$widget_go, {
+  currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
+})
+observeEvent(input$widget_dd, {
+  currentWidgetSymbolName <<- prefixDDPar %+% tolower(input$widget_dd)
 })
 observeEvent(input$widget_symbol_type, {
   if(input$widget_symbol_type %in% c("dd", "go")){
@@ -186,9 +317,14 @@ observeEvent(input$widget_symbol_type, {
                                                            nchar(prefixGMSOpt) + 1L, 
                                                            nchar(currentWidgetSymbolName))
       }
-      latest_widget_symbol_type <<- input$widget_symbol_type
-      return()
     }
+    if(identical(input$widget_symbol_type, "go")){
+      currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
+    }else if(identical(input$widget_symbol_type, "dd")){
+      currentWidgetSymbolName <<- prefixDDPar %+% tolower(input$widget_dd)
+    }
+    latest_widget_symbol_type <<- input$widget_symbol_type
+    return()
   }
   latest_widget_symbol_type <<- input$widget_symbol_type
   rv$widget_symbol <- rv$widget_symbol + 1L
@@ -231,7 +367,8 @@ observeEvent({input$widget_type
                             heatmap = identical(currentConfig$heatmap, TRUE))
     insertUI(selector = "#widget_options",
              tagList(
-               textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+               textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                         (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
                tags$div(class = "shiny-input-container",
                         tags$label(class = "cb-label", "for" = "table_readonly", "Should table be readonly?"),
                         tags$div(
@@ -272,7 +409,8 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container",
                         tags$div(class = "col-sm-8",
@@ -384,6 +522,7 @@ observeEvent({input$widget_type
              sliderInput("slider_preview", rv$widgetConfig$label, min = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L,
                          max = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L, 
                          value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L,
+                         step = if(is.numeric(rv$widgetConfig$step)) rv$widgetConfig$step else 1L,
                          ticks = rv$widgetConfig$ticks)
            })
          },
@@ -402,7 +541,8 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (note that changing this setting does currently not reflect in the live preview)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
@@ -490,6 +630,7 @@ observeEvent({input$widget_type
              sliderInput("slider_preview", rv$widgetConfig$label, min = rv$widgetConfig$min,
                          max = rv$widgetConfig$max, 
                          value = rv$widgetConfig$default,
+                         step = rv$widgetConfig$step,
                          ticks = rv$widgetConfig$ticks)
            })
          },
@@ -505,7 +646,8 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (note that changing this setting does currently not reflect in the live preview)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
@@ -576,10 +718,12 @@ observeEvent({input$widget_type
                                    alias = currentConfig$alias,
                                    label = currentConfig$label,
                                    value = identical(currentConfig$value, TRUE),
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   noHcube = identical(currentConfig$noHcube, TRUE),
+                                   class =  "checkbox-material")
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (note that changing this setting does currently not reflect in the live preview)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container",
@@ -609,7 +753,7 @@ observeEvent({input$widget_type
                           rv$widgetConfig$label), 
                tags$div(
                  tags$label(class = "checkbox-material", "for" = "checkbox_preview", 
-                            checkboxInput("checkbox_preview", label = rv$widgetConfig$label,
+                            checkboxInput("checkbox_preview", label = NULL,
                                           value = rv$widgetConfig$value))
                )
              )
@@ -630,7 +774,8 @@ observeEvent({input$widget_type
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
@@ -755,7 +900,8 @@ observeEvent({input$widget_type
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", value = rv$widgetConfig$alias),
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO
+                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
@@ -884,24 +1030,15 @@ observeEvent({input$widget_type
                                    alias = currentConfig$alias,
                                    label = currentConfig$label,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
-                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "",
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO", 
+                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO
+                                (note that changing this setting does currently not reflect in the live preview)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       textInput("widget_value", "Choose a default value", value = rv$widgetConfig$value),
-                      textInput("text_placeholder", "Choose a placeholder", value = rv$widgetConfig$placeholder),
-                      tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          "Should element be expanded automatically in Hypercube mode?"),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
-                      )
+                      textInput("text_placeholder", "Choose a placeholder", value = rv$widgetConfig$placeholder)
                     ), 
                     where = "beforeEnd")
            
@@ -927,11 +1064,11 @@ observeEvent(input$widget_hcube, {
 observeEvent(input$table_readonly, {
   rv$widgetConfig$readonly <<- input$table_readonly
 })
-observeEvent(input$table_readonlyCols, {
+observe({
   if(!length(input$table_readonlyCols)){
-    rv$widgetConfig$readonlyCols <<- NULL
+    isolate(rv$widgetConfig$readonlyCols <<- NULL)
   }else{
-    rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
+    isolate(rv$widgetConfig$readonlyCols <<- input$table_readonlyCols)
   }
 })
 observeEvent(input$table_heatmap, {
@@ -995,13 +1132,16 @@ observeEvent(input$dd_choice_dep, {
     updateSelectInput(session, "dd_choice_dep_header", choices = inputSymHeaders[[input$dd_choice_dep]])
   }
 })
-observeEvent(input$dd_aliases, {
-  rv$widgetConfig$aliases <<- input$dd_aliases
+observe({
+  if(!length(input$dd_aliases)){
+    isolate(rv$widgetConfig$aliases <<- NULL)
+  }else{
+    isolate(rv$widgetConfig$aliases <<- input$dd_aliases)
+  }
 })
 observeEvent(input$dd_default, {
   rv$widgetConfig$selected <<- input$dd_default
 })
-
 observeEvent(input$widget_value, {
   rv$widgetConfig$value <<- input$widget_value
 })
@@ -1073,11 +1213,17 @@ observeEvent(input$date_startview, {
   rv$widgetConfig$startview <<- input$date_startview
 })
 observeEvent(input$date_weekstart, {
-  rv$widgetConfig$weekstart <<- input$date_weekstart
+  rv$widgetConfig$weekstart <<- as.integer(input$date_weekstart)
 })
-observeEvent(input$date_daysdisabled, {
-  rv$widgetConfig$daysofweekdisabled <<- input$date_daysdisabled
+observe({
+  if(!length(input$date_daysdisabled)){
+    isolate(rv$widgetConfig$daysofweekdisabled <<- NULL)
+  }else{
+    isolate(rv$widgetConfig$daysofweekdisabled <<- as.integer(input$date_daysdisabled))
+  }
 })
+
+
 observeEvent(input$date_autoclose, {
   rv$widgetConfig$autoclose <<- input$date_autoclose
 })

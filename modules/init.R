@@ -297,11 +297,16 @@ if(is.null(errMsg)){
   # declare GAMS compile time variables and GAMS options
   tmpDDPar            <- getGMSPar(names(modelIn), prefixDDPar)
   names(modelIn)      <- tmpDDPar[[1]]
+
   DDPar               <- tmpDDPar[[2]]
   rm(tmpDDPar)
   tmpGMSOpt           <- getGMSPar(names(modelIn), prefixGMSOpt)
   names(modelIn)      <- tmpGMSOpt[[1]]
   GMSOpt              <- tmpGMSOpt[[2]]
+  if(any(vapply(names(modelIn), function(el){ identical(nchar(trimws(el)), 0L)}, 
+                logical(1L), USE.NAMES = FALSE))){
+    errMsg <- "Unnamed GAMS command line parameter(s) detected. Empty names are not allowed!"
+  }
   rm(tmpGMSOpt)
   
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
