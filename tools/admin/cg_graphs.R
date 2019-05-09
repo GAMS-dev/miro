@@ -590,12 +590,6 @@ observeEvent(input$hist_label, {
 observeEvent(input$hist_color, {
   rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
 })
-observeEvent(input$hist_alpha, {
-  alpha <- as.numeric(input$hist_alpha[2])
-  if(is.na(alpha))
-    return()
-  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_alpha[1])]]]]$alpha <<- alpha
-})
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_"))
     rv$graphConfig$graph$color <<- NULL
@@ -674,9 +668,9 @@ observeEvent(input$add_array_el, {
     newContent  <- list(label = label, 
                         mode = if(identical(input$plotly_chart_type, "scatter"))
                           "markers" else "lines")
-  }else if(identical(el_id, "hist_data")){
+  }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    newContent  <- list(labels = label)
+    newContent  <- list(labels = label, color = "#000000", alpha = 1L)
   }else if(identical(el_id, "dy_dyEvent")){
     newContent  <- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyAnnotation")){
@@ -877,7 +871,7 @@ getHistOptions <- reactive({
     label <- names(activeSymbol$indices)[match(scalarIndices[1], 
                                                activeSymbol$indices)][1]
     rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, 
-                                                            color = "rgb(0,0,0)", 
+                                                            color = "#000000", 
                                                             alpha = 1L)
     rv$graphConfig$graph$histnorm   <<- ""
     rv$graphConfig$graph$nbins      <<- 2L

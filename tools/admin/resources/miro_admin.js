@@ -220,7 +220,7 @@ function addHistDataEl(){
   var arrayID      = 'hist_xdata';
   var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
   'hist_label' : ['text', 'What label should be used?', 'label'],
-  'hist_color' : ['color', 'Select bar color', 'rgb(0,0,0)'],
+  'hist_color' : ['color', 'Select bar color', '#000000'],
   'hist_alpha' : ['numeric', 'Choose bar transparency', 1, 0, 1]
   };
   addArrayEl(arrayID, elements);
