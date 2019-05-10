@@ -552,8 +552,7 @@ if(!is.null(errMsg)){
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
                                   modelInTemplate, method = method, fileName = miroDataFile)$tabular
-
-          if(length(modelIn) > length(modelInRaw)){
+          if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
             names(scalarsTemplate) <- scalarsFileHeaders

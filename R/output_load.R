@@ -25,15 +25,15 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            csv = {
              if(file.exists(workDir %+% scalarsName %+% '.csv')){
                ret$scalar <- read_delim(workDir %+% scalarsName %+% '.csv', 
-                                       csvDelim, col_types = cols(), 
-                                       col_names = TRUE)
+                                        csvDelim, col_types = cols(), 
+                                        col_names = TRUE)
              }
            },
            xls = {
              sheetID <- match(scalarsName, xlsSheetNames)[[1]]
              if(!is.na(sheetID)){
                ret$scalar <- read_excel(xlsPath, sheetID, 
-                                       col_types = c("text", "text", "text"))
+                                        col_types = c("text", "text", "text"))
                
              }
            },
@@ -131,10 +131,10 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
         stop(sprintf(errMsg, names(metaData)[i]), call. = FALSE)
       }
       ret$tabular[[i]] <<- fixColTypes(ret$tabular[[i]],  metaData[[i]]$colTypes)
+      names(ret$tabular[[i]]) <<- names(metaData[[i]]$headers)
       ret$tabular[[i]] <<- ret$tabular[[i]] %>% mutate_if(is.numeric , 
                                                           replace_na, replace = 0) %>% 
         replace(is.na(.), "")
-      names(ret$tabular[[i]]) <<- names(metaData[[i]]$headers)
       if(!hasValidHeaderTypes(ret$tabular[[i]], metaData[[i]]$colTypes)){
         flog.warn("Dataset: '%s' has invalid header types ('%s'). Header types should be: '%s'.", 
                   names(metaData)[i], paste(vapply(ret$tabular[[i]], function(el) return(class(el)[[1L]]), 

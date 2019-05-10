@@ -30,15 +30,15 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         return(tibble::tibble())
       }
       return(tibble::tibble(scalarSymbols$symnames, scalarSymbols$symtext, 
-             vapply(seq_along(scalarSymbols$symnames), function(i){
-               scalar <- NA_character_
-               if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$parameters)){
-                 return(as.character(private$rgdxScalar(scalarSymbols$symnames[[i]])))
-               }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
-                 return(private$rgdxSet(scalarSymbols$symnames[[i]])[[1]][1])
-               }
-               return(scalar)
-             }, character(1L), USE.NAMES = FALSE)))
+                            vapply(seq_along(scalarSymbols$symnames), function(i){
+                              scalar <- NA_character_
+                              if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$parameters)){
+                                return(as.character(private$rgdxScalar(scalarSymbols$symnames[[i]])))
+                              }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
+                                return(private$rgdxSet(scalarSymbols$symnames[[i]])[[1]][1])
+                              }
+                              return(scalar)
+                            }, character(1L), USE.NAMES = FALSE)))
     }else if(identical(symName, scalarEquationsOutName)){
       scalarSymbols <- private$metaData[[symName]]
       values <- lapply(seq_along(scalarSymbols$symnames), function(i){
@@ -49,12 +49,15 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         }
         return(scalar)
       })
-      values <- tibble::as_tibble(values, .name_repair = "unique")
+      names(values) <- seq_along(values)
+      values <- tibble::as_tibble(values)
       values <- t(values)
+      colnames(values) <- seq_len(dim(values)[2])
+      values <- tibble::as_tibble(values)
       return(dplyr::bind_cols(tibble::tibble(scalarSymbols$symtypes, 
-                                      scalarSymbols$symnames, 
-                                      scalarSymbols$symtext), 
-                       tibble::as_tibble(values, .name_repair = "unique")))
+                                             scalarSymbols$symnames, 
+                                             scalarSymbols$symtext), 
+                              values))
     }
     if(symName %in% tolower(private$gdxSymbols$sets)){
       return(private$rgdxSet(symName, names = names))
@@ -174,7 +177,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           typeCode <- 0L
           symType  <- if(startsWith(symTypes[j], "va")) "variable" else "equation"
           df       <- tidyr::gather(df[j, ], key = "field", 
-                              "value", factor_key = TRUE)
+                                    "value", factor_key = TRUE)
           uels     <- list(c('l', 'm', 'lo', 'up', 's'))
           v        <- data.matrix(df)
         }
@@ -228,7 +231,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(length(names) && !length(pivotHeaders)){
       stopifnot(is.character(names), identical(length(names), symDim + 1L))
     }
-    
     dflist <- vector("list", symDim + 1L)
     if(identical(dim(sym$val)[1], 0L)){           # empty symbol - no elements
       return(NULL)
@@ -240,12 +242,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
     }
     dflist[[symDim + 1L]] <- sym$val[, symDim + 1L]
-    
-    symDF <- tibble::as_tibble(dflist, .name_repair = "unique")
+    names(dflist) <- seq_along(dflist)
+    symDF <- tibble::as_tibble(dflist)
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(pivotHeaders)){
       dfDim     <- length(symDF)
-      pivotUELS <- sym$uels[[dfDim - 1L]]
       symDF     <- tidyr::spread(symDF, !!length(symDF) - 1L, 
                                  !!length(symDF), fill = 0L)
       nonPivotedColNames <- names(symDF)[seq_len(dfDim - 2L)]
@@ -300,8 +301,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       })
     }
     dflist[[symDim + 1L]] <- sym$te
-    
-    symDF <- tibble::as_tibble(dflist, .name_repair = "unique") 
+    names(dflist) <- seq_along(dflist)
+    symDF <- tibble::as_tibble(dflist)
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(names)){
       names(symDF) <- names

@@ -47,7 +47,7 @@ RLibPath <- 'C:/GAMS/win64/miro05/GMSR/library'
          setwd("C:/Users/frepr/Documents/miro git/model/simple/")
          futile.logger::flog.fatal('%s', w)
          logFiles <- list.files('logs', full.names = TRUE)
-         zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
+         zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
       })
   }, error = function(e){
      currwd <- getwd()
@@ -55,7 +55,7 @@ RLibPath <- 'C:/GAMS/win64/miro05/GMSR/library'
      setwd("C:/Users/frepr/Documents/miro git/model/simple/")
      try(futile.logger::flog.fatal('%s', e), silent = TRUE)
      logFiles <- list.files('logs', full.names = TRUE)
-     zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
+     zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
      shiny::runApp(appDir = file.path("C:/GAMS/win64/miro05/miro", "tools", "crash_report"), launch.browser=TRUE)
   })
   q("no")
