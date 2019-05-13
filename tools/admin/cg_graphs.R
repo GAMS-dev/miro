@@ -731,6 +731,7 @@ observeEvent(input$hist_color, {
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
   else
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- NULL
+#  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
 })
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_"))
@@ -813,7 +814,7 @@ observeEvent(input$add_array_el, {
                           "markers" else "lines")
   }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    newContent  <- list(labels = label, color="#000000", alpha = 1L)
+    newContent  <- list(labels = label, color = "#000000", alpha = 1L)
   }else if(identical(el_id, "dy_dyEvent")){
     newContent  <- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyLimit")){
