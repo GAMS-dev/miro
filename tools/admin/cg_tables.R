@@ -336,8 +336,6 @@ observe({
       })
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
-      print(dtOptions)
-      #print(dtOptions)
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)

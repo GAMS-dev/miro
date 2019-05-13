@@ -55,10 +55,13 @@ renderGraph <- function(data, configData, options, height = NULL){
                                     width = options$ydata[[1]]$line$width,
                                     shape = options$ydata[[1]]$line$shape,
                                     dash = options$ydata[[1]]$line$dash),
+                        showlegend = options$ydata[[j]]$showlegend,
                         color = if(!is.null(options$color)){~try(get(options$color))}, 
                         symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                         colors = options$colors, symbols = options$symbols, 
-                        size = options$ydata[[1]]$size, type = 'scatter', height = height)
+                        size = options$ydata[[1]]$size, type = 'scatter', height = height,
+                        frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))}) 
+          
         }else{
           p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
                           mode = options$ydata[[j]]$mode, 
@@ -72,12 +75,27 @@ renderGraph <- function(data, configData, options, height = NULL){
                                       width = options$ydata[[j]]$line$width,
                                       shape = options$ydata[[j]]$line$shape,
                                       dash = options$ydata[[j]]$line$dash),
+                          showlegend = options$ydata[[j]]$showlegend,
                           color = if(!is.null(options$ydata[[j]]$color)){~try(get(options$ydata[[j]]$color))}, 
                           symbol= if(!is.null(options$ydata[[j]]$symbol)){~try(get(options$ydata[[j]]$symbol))}, 
                           colors = options$ydata[[j]]$colors,
-                          symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size)
+                          symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size,
+                          frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))})
         }
       })
+      if(!is.null(options$animation)){
+        p <- animation_opts(p, frame = if(!is.null(options$animation$frame)){try(options$animation$frame)},
+                             transition = if(!is.null(options$animation$transition)){try(options$animation$transition)},
+                             easing = if(!is.null(options$animation$easing)){try(options$animation$easing)},
+                             redraw = if(!is.null(options$animation$redraw)){try(options$animation$redraw)},
+                             mode = if(!is.null(options$animation$mode)){try(options$animation$mode)})
+      } 
+      if(!is.null(options$animation$slider)){
+        p <- animation_slider(p, hide = if(!is.null(options$animation$slider$hide)){try(options$animation$slider$hide)},
+                               label = if(!is.null(options$animation$slider$label)){try(options$animation$slider$label)},
+                               currentvalue = list(prefix = if(!is.null(options$animation$slider$prefix)){try(options$animation$slider$prefix)},
+                                                   font = list(color=if(!is.null(options$animation$slider$fontcolor)){try(options$animation$slider$fontcolor)})))
+      }
     }else if(options$type == 'hist'){
       # histogram
       #first calculate the width of the bins
@@ -105,10 +123,12 @@ renderGraph <- function(data, configData, options, height = NULL){
     }
     
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
-                xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, 
-                             zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
+                xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
+                             zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
+                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto)),
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
-                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels),
+                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
+                             range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),
                 paper_bgcolor = options$paper_bgcolor,
                 plot_bgcolor = options$plot_bgcolor,
                 showlegend = options$showlegend,
@@ -166,7 +186,8 @@ renderGraph <- function(data, configData, options, height = NULL){
                          color = options$ydata[[1]]$color, axis = "y",
                          stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
                          fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
-                         pointSize = options$ydata[[1]]$pointSize, strokeWidth = options$ydata[[1]]$strokeWidth, 
+                         pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
+                         strokeWidth = options$ydata[[1]]$strokeWidth, 
                          strokePattern = options$ydata[[1]]$strokePattern,
                          strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
                          strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
@@ -175,7 +196,8 @@ renderGraph <- function(data, configData, options, height = NULL){
       }else{
         p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
                        stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                       pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, strokePattern = options$ydata[[j]]$strokePattern,
+                       pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
+                       strokePattern = options$ydata[[j]]$strokePattern,
                        strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
       }
     })
@@ -186,10 +208,6 @@ renderGraph <- function(data, configData, options, height = NULL){
     # lenged options
     if(!is.null (options$dylegend)){
       p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
-    }
-    # add horizontal limit line
-    if(!is.null (options$dyLimit)){
-      p <- do.call(dyLimit, c(list(dygraph = p), options$dyLimit))
     }
     # highlighting options - highlight hovered series
     if(!is.null (options$dyHighlight)){
@@ -211,6 +229,17 @@ renderGraph <- function(data, configData, options, height = NULL){
       lapply(seq_along(options$dyEvent), function(j){
         event <- getEvent(configData, names(options$dyEvent)[[j]])
         p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
+      })
+    }
+    # Limit lines to highlight data levels. 
+    if(!is.null (options$dyLimit)){
+      lapply(seq_along(options$dyLimit), function(j){
+        limitIdx <- match("limit", names(options$dyLimit)[[j]])
+        if(is.na(limitIdx)) 
+          return()
+        event <- getEvent(configData, options$dyLimit[[j]][[limitIdx]])
+        limOpt <- options$dyL1imit[[j]][-limitIdx]
+        p <<- do.call(dyLimit, c(list(dygraph = p, limit = event), limOpt))
       })
     }
     # Annotations to note points within a time series. 

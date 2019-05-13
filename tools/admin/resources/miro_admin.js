@@ -93,6 +93,16 @@ function addDyEvent(){
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
+function addDyLimit(){
+  var arrayID      = 'dy_dyLimit';
+  var elements     = {'dy_dyLimit' : ['numeric', 'Which symbol shall be plotted?', 0, 0],
+  'dyLimit_label': ['text', 'What label should be used?'],
+  'dyLimit_labelLoc': ['select', 'Select marker symbol', ['left', 'right']],
+  'dyLimit_color': ['color', 'What color should the limit line have?', 'rgb(0,0,0)'],
+  'dyLimit_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
 function addDyAnnotation(){
   var arrayID      = 'dy_dyAnnotation';
   var elements     = {'dy_dyAnnotation' : ['select', 'What shall be annotated?', outputScalars, outputScalarAliases],
@@ -143,7 +153,6 @@ function addLeafletFlows(){
   'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
   'leafFlow_maxThickness': ['numeric', 'Choose the maximum thickness', 20, 0],
-  'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
@@ -198,10 +207,11 @@ function addScatterDataEl(){
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
                                                         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
   'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
-  'marker_opacity' : ['numeric', 'Select marker opacity', 1, 0, 1],
   'marker_size' : ['numeric', 'Select marker size', 6, 0],
   'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
-  'marker_line_color' : ['color', 'Select marker outline color']
+  'marker_line_color' : ['color', 'Select marker outline color'],
+  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
+  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
@@ -209,10 +219,12 @@ function addLineDataEl(){
   var arrayID      = 'chart_ydataline';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'line_color' : ['text', 'Select line color', 'rgb(0,0,0)'],
+  'line_color' : ['color', 'Select line color', 'rgb(0,0,0)'],
   'line_width' : ['numeric', 'Select line width', 2, 0],
   'line_shape' : ['select', 'Select line shape', ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']],
-  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']]
+  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']],
+  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
+  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
@@ -220,8 +232,7 @@ function addHistDataEl(){
   var arrayID      = 'hist_xdata';
   var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
   'hist_label' : ['text', 'What label should be used?', 'label'],
-  'hist_color' : ['color', 'Select bar color', 'rgb(0,0,0)'],
-  'hist_alpha' : ['numeric', 'Choose bar transparency', 1, 0, 1]
+  'hist_color' : ['color', 'Select bar color', '#000000']
   };
   addArrayEl(arrayID, elements);
 }
@@ -261,6 +272,9 @@ function addArrayDataEl(arrayID){
     break;
     case 'dy_dyEvent':
       addDyEvent();
+    break;
+    case 'dy_dyLimit':
+      addDyLimit();
     break;
     case 'dy_dyAnnotation':
       addDyAnnotation();
@@ -351,6 +365,12 @@ function addArrayEl(arrayID, elements, options){
         arrayContent += createTextInput(k, elID, v[1], value);
       break;
       case 'numeric':
+        if(idx === 0 && options.elRequired === false){
+          selected = v[2];
+          
+          // tell R that new element was addded to array: (ID)
+          Shiny.setInputValue("add_array_el", [elID, selected, k], {priority: "event"});
+        }
         arrayContent += createNumericInput(k, elID, v[1], v[2], v[3], v[4]);
       break;
       case 'checkbox':
