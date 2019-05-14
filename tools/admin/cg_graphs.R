@@ -19,6 +19,12 @@ noOutputData     <- TRUE
 allDataAvailable <- FALSE
 leafletGroups    <- CharArray$new()
 
+validateGraphConfig <- function(graphJSON){
+  if(identical(is.na(graphJSON$graph$xaxis$rangefrom), TRUE) || identical(is.na(graphJSON$graph$xaxis$rangeto), TRUE)){
+    return("Could not set range for x axis! Check for correct data format!")
+  }
+  return("")
+}
 saveAndReload <- function(...){
   selected    <- list(...)
   subsetIdx   <- 3L
@@ -190,48 +196,75 @@ observeEvent(input$plotly_type, {
   
   if(identical(isolate(input$plotly_type), "pie")){
     rv$graphConfig$graph$type <<- "pie"
-    insertUI(selector = "#plotly_options",
-             getPieOptions(), where = "beforeEnd")
+    insertUI(selector = "#plotly_options", getPieOptions(), where = "beforeEnd")
     allDataAvailable <<- TRUE
-  }else if(identical(isolate(input$plotly_type), "chart")){
+  }else if(identical(isolate(input$plotly_type), "bar")){
     rv$resetRE <- rv$resetRE + 1L
     rv$graphConfig$graph$type <<- "bar"
-    insertUI(selector = "#plotly_options",
-             tagList(
-               selectInput("plotly_chart_type", "Select a chart type", 
-                           setNames(c("bar", "scatter", "line"), 
-                                    c("Bar chart", "Scatter plot", "Line chart"))),
-               tags$div(id = "plotly_chart_options", class = "shiny-input-container",
-                        getBarOptions()),
-               tags$div(id = "plotly_animation_options", class = "shiny-input-container")
-             ), where = "beforeEnd")
-  }else if(identical(isolate(input$plotly_type), "hist")){
+    insertUI(selector = "#plotly_options", getBarOptions(), where = "beforeEnd")
+    allDataAvailable <<- TRUE
+  }else if(identical(isolate(input$plotly_type), "scatter")){
+    rv$resetRE <- rv$resetRE + 1L
+    rv$graphConfig$graph$type <<- "scatter"
+    insertUI(selector = "#plotly_options", getScatterOptions(), where = "beforeEnd")
+    allDataAvailable <<- TRUE
+  }else if(identical(isolate(input$plotly_type), "line")){
+    rv$resetRE <- rv$resetRE + 1L
+    rv$graphConfig$graph$type <<- "scatter"
+    insertUI(selector = "#plotly_options", getLineOptions(), where = "beforeEnd")
+    allDataAvailable <<- TRUE
+  }
+
+  
+  
+  #else if(identical(isolate(input$plotly_type), "chart")){
+  #  rv$resetRE <- rv$resetRE + 1L
+  #  rv$graphConfig$graph$type <<- "bar"
+  #  insertUI(selector = "#plotly_options",
+  #           tagList(
+  #             selectInput("plotly_chart_type", "Select a chart type", 
+  #                         setNames(c("bar", "scatter", "line"), 
+  #                                  c("Bar chart", "Scatter plot", "Line chart"))),
+  #             tags$div(id = "plotly_chart_options", class = "shiny-input-container",
+  #                      getBarOptions()),
+  #             tags$div(id = "plotly_animation_options", class = "shiny-input-container")
+  #           ), where = "beforeEnd")
+  #}
+  
+  
+  else if(identical(isolate(input$plotly_type), "hist")){
     rv$graphConfig$graph$type <<- "hist"
     insertUI(selector = "#plotly_options", getHistOptions(), where = "beforeEnd")
     allDataAvailable <<- TRUE
   }
 })
-observeEvent(input$plotly_chart_type, {
-  saveAndReload("plotly", "chart", input$plotly_chart_type)
-  removeUI(selector = "#plotly_chart_options .shiny-input-container", multiple = TRUE)
-  rv$resetRE <- rv$resetRE + 1L
-  allDataAvailable <<- FALSE
-  
-  if(identical(input$plotly_chart_type, "bar")){
-    rv$graphConfig$graph$type <<- "bar"
-    insertUI(selector = "#plotly_chart_options",
-             getBarOptions(), where = "beforeEnd")
-  }else if(identical(input$plotly_chart_type, "scatter")){
-    rv$graphConfig$graph$type <<- "scatter"
-    insertUI(selector = "#plotly_chart_options",
-             getScatterOptions(), where = "beforeEnd")
-  }else{
-    rv$graphConfig$graph$type <<- "scatter"
-    insertUI(selector = "#plotly_chart_options",
-             getLineOptions(), where = "beforeEnd")
-  }
-  allDataAvailable <<- TRUE
-})
+
+
+
+#observeEvent(input$plotly_chart_type, {
+#  saveAndReload("plotly", "chart", input$plotly_chart_type)
+#  removeUI(selector = "#plotly_chart_options .shiny-input-container", multiple = TRUE)
+#  rv$resetRE <- rv$resetRE + 1L
+#  allDataAvailable <<- FALSE
+#  
+#  if(identical(input$plotly_chart_type, "bar")){
+#    rv$graphConfig$graph$type <<- "bar"
+#    insertUI(selector = "#plotly_chart_options",
+#             getBarOptions(), where = "beforeEnd")
+#  }else if(identical(input$plotly_chart_type, "scatter")){
+#    rv$graphConfig$graph$type <<- "scatter"
+#    insertUI(selector = "#plotly_chart_options",
+#             getScatterOptions(), where = "beforeEnd")
+#  }else{
+#    rv$graphConfig$graph$type <<- "scatter"
+#    insertUI(selector = "#plotly_chart_options",
+#             getLineOptions(), where = "beforeEnd")
+#  }
+#  allDataAvailable <<- TRUE
+#})
+
+
+
 observeEvent(input$leafFlow_lng, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng[1])]]]]$lng0 <<- input$leafFlow_lng[2]
 })
@@ -431,16 +464,16 @@ observeEvent(input$trace_legend, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_legend[1])]]]]$showlegend <<- as.logical(input$trace_legend[2])
 })
 observeEvent(input$trace_frame, {
-  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_frame[1])]]]]$frame <<- input$trace_frame[2]
   if(!is.null(input$trace_frame[2]) && (!identical(input$trace_frame[2], "_"))){
     removeUI(selector = "#plotly_animation_options .shiny-input-container", multiple = TRUE)
-    insertUI(selector = "#plotly_animation_options",
-             getAnimationOptions(), where = "beforeEnd")
-    #tags$div(id = "plotly_animation_options", class = "shiny-input-container",
-    #         getAnimationOptions())
+    insertUI(selector = "#plotly_animation_options", getAnimationOptions(), where = "beforeEnd")
+    traceframetmp <<- input$trace_frame[2]
   }else{
     removeUI(selector = "#plotly_animation_options .shiny-input-container", multiple = FALSE)
+    traceframetmp <<- NULL
   }
+  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_frame[1])]]]]$frame <<- traceframetmp
+  rv$graphConfig$graph$animation <<- NULL
 })
 observeEvent(input$animation_frame, {
   #frame = amount of time between frames (in milliseconds)
@@ -685,6 +718,13 @@ observeEvent(input$plot_bgcolor, {
 observeEvent(input$showlegend, {
   rv$graphConfig$graph$showlegend <<- input$showlegend
 })
+observeEvent(input$outtype, {
+  if(identical(input$outtype, TRUE))
+    outtypetmp <<- "dtGraph"
+  else
+    outtypetmp <<- "graph"
+  rv$graphConfig$graph$outtype <<- outtypetmp
+})
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
 })
@@ -706,7 +746,6 @@ observeEvent(c(input$x_rangefrom,input$x_data_format_selector), {
   }else{
     xfromtmp <<- NULL
   }
-  print(xfromtmp)
   rv$graphConfig$graph$xaxis$rangefrom <<- xfromtmp
 })
 observeEvent(c(input$x_rangeto,input$x_data_format_selector), {
@@ -768,10 +807,11 @@ observeEvent(input$hist_color, {
 #  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
 })
 observeEvent(input$chart_color, {
-  if(identical(input$chart_color, "_"))
+  if(identical(input$chart_color, "_")){
     rv$graphConfig$graph$color <<- NULL
-  else
+  }else{
     rv$graphConfig$graph$color <<- input$chart_color
+  }
 })
 observeEvent(input$bar_width, {
   if(identical(input$bar_width, "_"))
@@ -846,7 +886,7 @@ observeEvent(input$add_array_el, {
   if(identical(el_id, "chart_ydata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
     newContent  <- list(label = label, 
-                        mode = if(identical(input$plotly_chart_type, "scatter"))
+                        mode = if(identical(input$plotly_type, "scatter"))
                           "markers" else "lines")
   }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
@@ -939,8 +979,8 @@ observeEvent({
       insertUI(selector = "#tool_options",
                tags$div(id = "plotly_type_container",
                         selectInput("plotly_type", "Select the type of chart you want to plot",
-                                    choices = setNames(c("pie", "chart", "hist"), 
-                                                       c("Pie chart", "Chart", "Histogram"))),
+                                    choices = setNames(c("pie", "bar", "scatter", "line", "hist"), 
+                                                       c("Pie chart", "Bar chart", "Scatter plot", "Line chart", "Histogram"))),
                         tags$div(id = "plotly_options", getPieOptions())
                ), where = "beforeEnd")
     }else if(identical(input$chart_tool, "dygraphs")){
@@ -995,7 +1035,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     checkboxInput(id %+% "_showgrid", sprintf("Show grid (%s axis)?", id)),
     checkboxInput(id %+% "_zeroline", sprintf("Show zero line (%s axis)?", id)),
     checkboxInput(id %+% "_showticklabels", sprintf("Show tick labels(%s axis)?", id), TRUE),
-    if(identical(input$plotly_chart_type, "scatter") || identical(input$plotly_chart_type, "line")){
+    if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "line")){
       tags$div(style = "width:100%;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", "Set axis range. The format has to match the data format. When not specified, a default is used."),
                tags$div(id = "range-wrapper", class = "col-sm-7 shiny-input-container", style = "padding-left:0px;", 
@@ -1004,7 +1044,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
                ),
                tags$div(class = "col-sm-5",
                         tags$div(class = "shiny-input-container",
-                                 tags$label(class = "cb-label", style="display:block; font-weight: normal;" ,"for" = "animation_data_format_selector", "Numeric values? (Dates are not numeric)"),
+                                 tags$label(class = "cb-label", style="display:block;" ,"for" = "animation_data_format_selector", "Numeric values? (Dates are not numeric)"),
                                    tags$label(class = "checkbox-material", 
                                               checkboxInput(id %+% "_data_format_selector", 
                                                             value = TRUE, label = NULL)
@@ -1026,15 +1066,17 @@ getChartOptions <- reactive({
     selectInput("chart_xdata", "What should be plotted on the x axis?",
                 choices = indices),
     getAxisOptions("x", names(indices)[1]),
-    addArrayEl(session, "chart_ydata", "Add data series", isolate(input$plotly_chart_type)),
+    addArrayEl(session, "chart_ydata", "Add data series", isolate(input$plotly_type)),
     getAxisOptions("y", names(scalarIndices)[1]),
-    selectInput("chart_color", "Symbol that is used to select different colors",
+    selectInput("chart_color", "Symbol that is used to select different colors. Note: The color is only valid, when no line or marker colors are set!",
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
+                  checkboxInput("outtype", "Show graphic and data table in split screen? (no live preview available)", value = FALSE),
                   colorPickerInput("paper_bgcolor", "What background color shall the paper have?", value = NULL),
                   colorPickerInput("plot_bgcolor", "What background color shall the plot have?", value = NULL),
                   checkboxInput("showlegend", "Show legend?")
-    )
+    ),
+    tags$div(id = "plotly_animation_options", class = "shiny-input-container")
   )
 })
 getBarOptions  <- reactive({
@@ -1045,7 +1087,7 @@ getBarOptions  <- reactive({
     rv$graphConfig$graph$ydata[[indices[[1]]]] <<- list(label = names(indices)[1],
                                                         mode = "lines",
                                                         marker = list(color = "rgb(0,0,0)", 
-                                                                      line = list(width = 0)))
+                                                                      line = list(width = 0L)))
     idLabelMap$chart_ydata[[1]] <<- indices[[1]]
   })
   tagList(selectInput("bar_mode", "Select barmode", choices = c("group", "stack")),
@@ -1162,7 +1204,7 @@ getDygraphsOptions <- reactive({
     rv$graphConfig$graph$xdata <<- unname(indices[1])
     rv$graphConfig$graph$ydata <<- NULL
     rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = unname(scalarIndices[1]), 
-                                                            mode = if(identical(input$plotly_chart_type, "scatter"))
+                                                            mode = if(identical(input$plotly_type, "scatter"))
                                                               "markers" else "lines", 
                                                             stemPlot = FALSE, stepPlot = FALSE, 
                                                             fillGraph = FALSE, drawPoints = FALSE, pointShape = "dot",
@@ -1264,7 +1306,7 @@ observe({
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   print("+++++++++++++++++++++++++++++++++++++++")
-  print(rv$graphConfig$graph)
+  #print(rv$graphConfig$graph)
   if(activeSymbol$id > length(modelIn)){
     data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
   }else{
@@ -1310,6 +1352,11 @@ observe({
 #  ==============================
 observeEvent(input$saveGraph, {
   req(nchar(activeSymbol$name) > 0L)
+  errMsg <- validateGraphConfig(rv$graphConfig)
+  if(nchar(errMsg)){
+    showHideEl(session, "#graphValidationErr", 5000L, errMsg)
+    return()
+  }
   if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
     showModal(modalDialog(title = "Data exists", sprintf("A graph configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!", activeSymbol$name), 
                           footer = tagList(modalButton("Cancel"), 

@@ -103,6 +103,7 @@ body_admin <- dashboardBody({
               fluidRow(
                 box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
                     tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success", "Graph configuration was updated successfully"),
+                    tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
                              "An unexpected error occurred. If this problem persists, please contact the system administrator."),
                     tags$div(class = "space"),

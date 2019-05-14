@@ -25,7 +25,7 @@ insertUI(selector = "#general_wrapper",
                                        multiple = FALSE,
                                        accept = c(".png", ".PNG", ".jpg", ".JPG"))
                     ),
-                    tags$div(style = "display:inline-block; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
+                    tags$div(style = "display:inline-block; margin-left: 25px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
                              imageOutput("general_logo_preview", height = "50px", width = "230px")
                     )),
            
