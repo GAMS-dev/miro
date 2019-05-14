@@ -283,6 +283,27 @@ renderGraph <- function(data, configData, options, height = NULL){
                     initialTime = options$flows[[j]]$initialTime,
                     dir = options$flows[[j]]$dir)
     })
+    lapply(seq_along(options$minicharts), function(j){
+      p <<- addMinicharts(p, lng = data[[options$minicharts[[j]]$lng]], 
+                     lat = data[[options$minicharts[[j]]$lat]], 
+                     chartdata = data[[options$minicharts[[j]]$chartdata]], 
+                     time = data[[options$minicharts[[j]]$time]], 
+                     maxValues = data[[options$minicharts[[j]]$maxValues]],
+                     type = data[[options$minicharts[[j]]$type]], 
+                     fillColor = d3.schemeCategory10[1],
+                     colorPalette = d3.schemeCategory10, 
+                     width = data[[options$minicharts[[j]]$width]], 
+                     height = data[[options$minicharts[[j]]$height]],
+                     opacity = 1, 
+                     showLabels = FALSE, labelText = NULL, labelMinSize = 8,
+                     labelMaxSize = 24, labelStyle = NULL, 
+                     transitionTime = data[[options$minicharts[[j]]$transitionTime]],
+                     popup = popupArgs(), layerId = NULL, 
+                     legend = data[[options$minicharts[[j]]$legend]],
+                     legendPosition = data[[options$minicharts[[j]]$legendPosition]], 
+                     timeFormat = NULL, initialTime = NULL,
+                     onChange = NULL) 
+    })
     if(length(options$layersControl$baseGroups) + length(options$layersControl$overlayGroups) > 0L){
       p <- addLayersControl(p, baseGroups = if(length(options$layersControl$baseGroups)) options$layersControl$baseGroups else character(0L),
                             overlayGroups = if(length(options$layersControl$overlayGroups)) options$layersControl$overlayGroups else character(0L), 
