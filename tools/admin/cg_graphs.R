@@ -997,8 +997,8 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     checkboxInput(id %+% "_showticklabels", sprintf("Show tick labels(%s axis)?", id), TRUE),
     if(identical(input$plotly_chart_type, "scatter") || identical(input$plotly_chart_type, "line")){
       tags$div(style = "width:100%;",
-               tags$label(class = "cb-label", "for" = "range-wrapper", "Set axis range. The format has to match the data format. When not specified, a default is used."),
-               tags$div(id = "range-wrapper", class = "col-sm-7", style = "padding-left:0px;", 
+               tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", "Set axis range. The format has to match the data format. When not specified, a default is used."),
+               tags$div(id = "range-wrapper", class = "col-sm-7 shiny-input-container", style = "padding-left:0px;", 
                         div(style="display:inline-block", textInput(id %+% "_rangefrom", sprintf("Range start (%s axis). ", id), value = NULL)),
                         div(style="display:inline-block", textInput(id %+% "_rangeto", sprintf("Range end (%s axis).", id), value = NULL))
                ),
