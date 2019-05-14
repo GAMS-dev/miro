@@ -149,7 +149,7 @@ function addLeafletFlows(){
   'leafFlow_flow': ['select', 'Select flow data', scalarIndices, scalarIndexAliases],
   'leafFlow_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
   'leafFlow_label': ['text', 'Choose a label'],
-  'optionsStart': ['optionsStart', 'Additional options'],
+  'optionsStart': ['optionsStart', 'Additional flow options'],
   'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
   'leafFlow_maxThickness': ['numeric', 'Choose the maximum thickness', 20, 0],
@@ -157,7 +157,38 @@ function addLeafletFlows(){
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
-
+function addLeafletMinicharts(){
+  var arrayID      = 'leaflet_minicharts';
+  var elements     = {'leaflet_minicharts' : ['select', 'Select latitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
+  'leafChart_lng': ['select', 'Select longitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
+  'leafChart_chartdata': ['select', 'Select chart data', scalarIndices, scalarIndexAliases],
+  'leafChart_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafChart_type': ['select', 'Select chart type', ['bar', 'pie', 'polar-area', 'polar-radius', 'auto']], 
+  'optionsStart': ['optionsStart', 'Additional chart options'],
+  'leafChart_width': ['numeric', 'Choose the maximal width of the created elements', 30, 0],
+  'leafChart_height': ['numeric', 'Choose the maximal height of the created elements', 30, 0],
+  'leafChart_transitionTime': ['numeric', 'Choose the duration in milliseconds of the transitions when a property of a chart is updated', 750, 0],
+  'leafChart_legend': ['checkbox', 'Should a legend (data column names) be visible?'],
+  'leafChart_legendPosition': ['select', 'Legend position', ['topright', 'topleft', 'bottomright', 'bottomleft']],
+  'optionsEnd': ['optionsEnd']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+  //'leafChart_maxValues': []      = data[[options$minicharts[[j]]$maxValues]],
+  //'leafChart_fillColor': []      = d3.schemeCategory10[1],
+  //'leafChart_colorPalette': []   = d3.schemeCategory10, 
+  //'leafChart_opacity': []        = 1, 
+  //'leafChart_showLabels': []     = FALSE, 
+  //'labelText': []                = NULL, 
+  //'labelMinSize': []             = 8,
+  //'leafChart_labelMaxSize': []   = 24, 
+  //'labelStyle': []               = NULL,   
+  //'leafChart_popup': []          = popupArgs(), 
+  //'layerId': []                  = NULL, 
+  //'leafChart_timeFormat': []     = NULL, 
+  //'initialTime': []              = NULL,
+  //'leafChart_onChange': []       = NULL,
+  
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
@@ -287,6 +318,9 @@ function addArrayDataEl(arrayID){
     break;
     case 'leaflet_flows':
       addLeafletFlows();
+    break;
+    case 'leaflet_minicharts':
+      addLeafletMinicharts();
     break;
   }
 }

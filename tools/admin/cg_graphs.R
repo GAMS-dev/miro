@@ -12,7 +12,7 @@ isEmptyOutput[]  <- TRUE
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 currentSelection <- list("plotly", "pie")
 idLabelMap       <- list(chart_ydata = list(), animation_options = list(), hist_xdata = list(), dy_dyEvent = list(), 
-                         dy_dyLimit = list(), leaflet_markers = list(), leaflet_flows = list())
+                         dy_dyLimit = list(), leaflet_markers = list(), leaflet_flows = list(), leaflet_minicharts = list())
 currentConfig    <- list()
 optionsInserted  <- c()
 noOutputData     <- TRUE
@@ -267,6 +267,40 @@ observeEvent(input$leafFlow_minThickness, {
 observeEvent(input$leafFlow_maxThickness, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_maxThickness[1])]]]]$maxThickness <<- input$leafFlow_maxThickness[2]
 })
+
+
+#observeEvent(input$leafChart_lng, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lng[1])]]]]$lng <<- input$leafChart_lng[2]
+#})
+#observeEvent(input$leafChart_lat, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lat[1])]]]]$lng <<- input$leafChart_lat[2]
+#})
+#observeEvent(input$leafChart_chartdata, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_chartdata[1])]]]]$lng <<- input$leafChart_chartdata[2]
+#})
+#observeEvent(input$leafChart_time, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_time[1])]]]]$lng <<- input$leafChart_time[2]
+#})
+#observeEvent(input$leafChart_type, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_type[1])]]]]$lng <<- input$leafChart_type[2]
+#})
+#observeEvent(input$leafChart_width, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_width[1])]]]]$lng <<- input$leafChart_width[2]
+#})
+#observeEvent(input$leafChart_height, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$lng <<- input$leafChart_height[2]
+#})
+#observeEvent(input$leafChart_transitionTime, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_transitionTime[1])]]]]$lng <<- input$leafChart_transitionTime[2]
+#})
+#observeEvent(input$leafChart_legend, {
+#  rv$graphConfig$graph$charts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legend[1])]]]]$lng <<- input$leafChart_legend[2]
+#})
+#observeEvent(input$leafChart_legendPosition, {
+#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legendPosition[1])]]]]$lng <<- input$leafChart_legendPosition[2]
+#})
+
+
 
 
 observeEvent(input$leafMark_lng, {
@@ -762,7 +796,7 @@ observeEvent(input$add_array_el, {
   chart_id    <- input$add_array_el[1]
   chart_label <- input$add_array_el[2]
   el_id       <- input$add_array_el[3]
-  if(el_id %in% c("dy_dyShading", "dy_dyLimit", "leaflet_markers", "leaflet_flows")){
+  if(el_id %in% c("dy_dyShading", "dy_dyLimit", "leaflet_markers", "leaflet_flows", "leaflet_minicharts")){
     # ID is number instead of string as string is not unique
     chart_label <- chart_id
   }
@@ -782,6 +816,8 @@ observeEvent(input$add_array_el, {
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat <- input$add_array_el[2]
     }else if(identical(el_id, "leaflet_flows")){
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat0 <- input$add_array_el[2]
+    }else if(identical(el_id, "leaflet_minicharts")){
+      rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat <- input$add_array_el[2]
     }else{
       return()
     }
@@ -839,6 +875,17 @@ observeEvent(input$add_array_el, {
                        color = "#0000ff",
                        minThickness = 1,
                        maxThickness = 20)
+  }else if(identical(el_id, "leaflet_minicharts")){
+    newContent <- list(lng = input$add_array_el[2], 
+                       lat = input$add_array_el[2],
+                       chartdata = input$add_array_el[2],
+                       type = "auto",
+                       width = 30, 
+                       height = 30, 
+                       showLabels = FALSE,
+                       transitionTime = 750,
+                       legend = TRUE,
+                       legendPosition = "topright")
   }else{
     newContent <- NULL
   }
@@ -950,18 +997,18 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
     checkboxInput(id %+% "_showticklabels", sprintf("Show tick labels(%s axis)?", id), TRUE),
     if(identical(input$plotly_chart_type, "scatter") || identical(input$plotly_chart_type, "line")){
       tags$div(style = "width:100%;",
-               tags$div(class = "col-sm-8", style = "padding-left:0px;",
-                        textInput(id %+% "_rangefrom", sprintf("Range start (%s axis). Format has to match data. When not specified, a default is used.", id), value = NULL),
-                        textInput(id %+% "_rangeto", sprintf("Range end (%s axis). Format has to match data. When not specified, a default is used.", id), value = NULL)
+               tags$label(class = "cb-label", "for" = "range-wrapper", "Set axis range. The format has to match the data format. When not specified, a default is used."),
+               tags$div(id = "range-wrapper", class = "col-sm-7", style = "padding-left:0px;", 
+                        div(style="display:inline-block", textInput(id %+% "_rangefrom", sprintf("Range start (%s axis). ", id), value = NULL)),
+                        div(style="display:inline-block", textInput(id %+% "_rangeto", sprintf("Range end (%s axis).", id), value = NULL))
                ),
-               tags$div(class = "col-sm-4",
+               tags$div(class = "col-sm-5",
                         tags$div(class = "shiny-input-container",
-                                 tags$label(class = "cb-label", "for" = "animation_data_format_selector", "Numeric values? (Dates and coordinates are not numeric)"),
-                                 tags$div(
+                                 tags$label(class = "cb-label", style="display:block; font-weight: normal;" ,"for" = "animation_data_format_selector", "Numeric values? (Dates are not numeric)"),
                                    tags$label(class = "checkbox-material", 
                                               checkboxInput(id %+% "_data_format_selector", 
                                                             value = TRUE, label = NULL)
-                                   ))
+                                   )
                         ))
       )
     }
@@ -1188,6 +1235,7 @@ getLeafletOptions <- reactive({
   isolate({
     rv$graphConfig$graph$markers <<- NULL
     rv$graphConfig$graph$flows <<- NULL
+    rv$graphConfig$graph$minicharts <<- NULL
     rv$graphConfig$graph$layersControl$position <<- "topright"
     rv$graphConfig$graph$layersControl$options$collapsed <<- TRUE
   })
@@ -1195,6 +1243,7 @@ getLeafletOptions <- reactive({
     tagList(
       addArrayEl(session, "leaflet_markers", "Add Markers", autoCreate = FALSE),
       addArrayEl(session, "leaflet_flows", "Add Flows", autoCreate = FALSE),
+      addArrayEl(session, "leaflet_minicharts", "Add Charts", autoCreate = FALSE),
       selectInput("leaflet_hideGroups", "Select groups that should be hidden on startup", choices = c(),
                   multiple = TRUE),
       optionSection(title = "Layer control options", collapsed = TRUE,
