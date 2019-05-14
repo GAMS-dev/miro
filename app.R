@@ -1087,7 +1087,10 @@ if(!is.null(errMsg)){
       showScenExportDialog(input$btExportScen)
     })
     observeEvent(input$exportFileType, {
-      exportFileType <<- input$exportFileType
+      switch(input$exportFileType,
+             xls = exportFileType <<- "xlsx",
+             gdx = exportFileType <<- "gdx",
+             flog.warn("Unknown export file type: '%s'.", input$exportFileType))
     })
     if(!isShinyProxy && 
        curl::has_internet() && 
