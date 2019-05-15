@@ -86,7 +86,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       }
       df        <- data[[i]]
       df[seq_len(length(df) - 1L)] <- dplyr::mutate_if(df[seq_len(length(df) - 1L)], 
-                                                       is.character, as.factor)
+                                                       isNonNumeric, as.factor)
       
       haveTe    <- FALSE
       isSet     <- TRUE

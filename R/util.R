@@ -18,7 +18,11 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 isWindows <- function() .Platform$OS.type == 'windows'
-
+isNonNumeric <- function(el){
+  if(is.numeric(el))
+    return(FALSE)
+  return(TRUE)
+}
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){
     return(FALSE)
