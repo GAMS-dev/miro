@@ -80,9 +80,9 @@ option rp<pr, rs<sr;
 
 * compute availability of renewables
 parameter maxre(type);
-loop(sameas(re,time_series_head),
-  maxre(re) = smax(ttX, 0.001 * timeseries(ttX,time_series_head));
-  availibility(ttX,re) = 0.001 * timeseries(ttX,time_series_head)/maxre(re);
+loop(sameas(re,time_series_hdr),
+  maxre(re) = smax(ttX, 0.001 * timeseries(ttX,time_series_hdr));
+  availibility(ttX,re) = 0.001 * timeseries(ttX,time_series_hdr)/maxre(re);
 );  
 availibility(ttX,type)$(not re(type)) = 1;
 
