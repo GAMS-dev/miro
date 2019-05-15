@@ -12,7 +12,8 @@ isEmptyOutput[]  <- TRUE
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
 currentSelection <- list("plotly", "pie")
 idLabelMap       <- list(chart_ydata = list(), animation_options = list(), hist_xdata = list(), dy_dyEvent = list(), 
-                         dy_dyLimit = list(), leaflet_markers = list(), leaflet_flows = list(), leaflet_minicharts = list())
+                         dy_dyLimit = list(), leaflet_markers = list(), leaflet_flows = list(), leaflet_minicharts = list(), 
+                         timevis_series = list())
 currentConfig    <- list()
 optionsInserted  <- c()
 noOutputData     <- TRUE
@@ -993,7 +994,12 @@ observeEvent({
       insertUI(selector = "#tool_options",
                tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }
+    }#else if(identical(input$chart_tool, "timevis")){
+     # currentSelection$noLayers <<- 1L
+     # insertUI(selector = "#tool_options",
+     #          tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd")
+     # allDataAvailable <<- TRUE
+     #}
   })
 getPieOptions <- reactive({
   req(rv$initData)
@@ -1301,6 +1307,25 @@ getLeafletOptions <- reactive({
     )
   )
 })
+#getTimevisOptions<- reactive({
+#  rv$initData
+#  indices       <- activeSymbol$indices
+#  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+#  #isolate({
+#  #  rv$graphConfig$graph$markers <<- NULL
+#  #  rv$graphConfig$graph$flows <<- NULL
+#  #})
+#  tagList(
+#    tagList(
+#      addArrayEl(session, "timevis_series", "Add data series"),
+#      optionSection(title = "Layer control options", collapsed = TRUE,
+#                    selectInput("timevis_test", "test", 
+#                                setNames(c("topright", "bottomright", "bottomleft", "topleft"), c("Top right", "Bottom right",
+#                                                                                                  "Bottom left", "Top left")))
+#      )
+#    )
+#  )
+#})
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))

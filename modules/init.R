@@ -996,6 +996,9 @@ if(is.null(errMsg)){
   installPackage$leaflet <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
                                                            function(conf){if(identical(conf$graph$tool, "leaflet")) TRUE else FALSE}, 
                                                            logical(1L), USE.NAMES = FALSE))
+  installPackage$timevis <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                          function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
+                                                          logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,

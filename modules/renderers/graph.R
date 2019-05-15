@@ -121,7 +121,6 @@ renderGraph <- function(data, configData, options, height = NULL){
     }else{
       stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
     }
-    
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
                 xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
                              zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
@@ -314,6 +313,16 @@ renderGraph <- function(data, configData, options, height = NULL){
     }
     
     return(renderLeaflet(p))
+  }else if(options$tool == 'timevis'){
+    #GANTT chart
+    p <- NULL
+    lapply(seq_along(options$ydata), function(j){
+      if(j==1){
+        p <<- timevis(data)
+      }else{
+        p <<- addItem(p, list(id = "item1", content = "one", start = "2016-08-01"))
+      }
+    })
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }

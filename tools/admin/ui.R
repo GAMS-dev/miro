@@ -121,8 +121,8 @@ body_admin <- dashboardBody({
                                                textInput("chart_title", "Choose a title for your chart"),
                                                numericInput("chart_height", "Choose a height for your chart (px)", min = 0L, value = 700),
                                                selectInput("chart_tool", "Select the charting tool you want to use", 
-                                                           setNames(c("plotly", "dygraphs", "leaflet"), 
-                                                                    c("Diagram Tool", "Time Series Diagram Tool", "Map chart"))),
+                                                           setNames(c("plotly", "dygraphs", "leaflet", "timevis"), 
+                                                                    c("Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart"))),
                                                tags$div(id = "tool_options"),
                                                tags$div(style = "height:100px;")
                                       )

@@ -209,7 +209,8 @@ if(is.null(errMsg)){
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
                         if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"))
+                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
