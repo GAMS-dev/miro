@@ -167,28 +167,16 @@ function addLeafletMinicharts(){
   'optionsStart': ['optionsStart', 'Additional chart options'],
   'leafChart_width': ['numeric', 'Choose the maximal width of the created elements', 30, 0],
   'leafChart_height': ['numeric', 'Choose the maximal height of the created elements', 30, 0],
+  'leafChart_opacity': ['numeric', 'Opacity of the chart?', 1, 0],
+  'leafChart_showlabels': ['checkbox', 'Should values be displayed above chart elements?'],
   'leafChart_transitionTime': ['numeric', 'Choose the duration in milliseconds of the transitions when a property of a chart is updated', 750, 0],
+  'leafChart_layerId': ['select', 'Select layer ID', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
   'leafChart_legend': ['checkbox', 'Should a legend (data column names) be visible?'],
   'leafChart_legendPosition': ['select', 'Legend position', ['topright', 'topleft', 'bottomright', 'bottomleft']],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
-  //'leafChart_maxValues': []      = data[[options$minicharts[[j]]$maxValues]],
-  //'leafChart_fillColor': []      = d3.schemeCategory10[1],
-  //'leafChart_colorPalette': []   = d3.schemeCategory10, 
-  //'leafChart_opacity': []        = 1, 
-  //'leafChart_showLabels': []     = FALSE, 
-  //'labelText': []                = NULL, 
-  //'labelMinSize': []             = 8,
-  //'leafChart_labelMaxSize': []   = 24, 
-  //'labelStyle': []               = NULL,   
-  //'leafChart_popup': []          = popupArgs(), 
-  //'layerId': []                  = NULL, 
-  //'leafChart_timeFormat': []     = NULL, 
-  //'initialTime': []              = NULL,
-  //'leafChart_onChange': []       = NULL,
-  
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
@@ -281,6 +269,20 @@ function addDyDataEl(){
   };
   addArrayEl(arrayID, elements);
 }
+function addTimevisDataEl(){
+  var arrayID      = 'timevis_series';
+  var elements     = {'timevis_series' : ['select', 'The contents of the items?', indices, indexAliases],
+  'timedata_start' : ['select', 'The start date of the items?', indices, indexAliases],
+  'timedata_end' : ['select', 'The end date of the items?', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_id' : ['select', 'Items ID?', ['Count from 1'].concat(indices), ['Count from 1'].concat(indexAliases)],
+  'timedata_type' : ['select', 'The type of the item. Note: Types box and point need only a start date, types range and background need both a start and end date.', ['box', 'point', 'range', 'background']],
+  'timedata_title' : ['select', 'Add a title for the item, displayed when hovering the mouse over the item?', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_group' : ['select', 'Group ID. When a group is provided, all items with the same group are placed on one line.', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_subgroup' : ['select', 'Subgroup ID. Groups all items within a group per subgroup, and positions them on the same height instead of stacking them on top of each other.', ['_'].concat(indices), ['_'].concat(indexAliases)]
+  };
+  addArrayEl(arrayID, elements);
+}
+
 function addArrayDataEl(arrayID){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
@@ -321,6 +323,9 @@ function addArrayDataEl(arrayID){
     break;
     case 'leaflet_minicharts':
       addLeafletMinicharts();
+    break;
+    case 'timevis_series':
+      addTimevisDataEl();
     break;
   }
 }

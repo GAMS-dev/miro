@@ -283,25 +283,29 @@ renderGraph <- function(data, configData, options, height = NULL){
                     dir = options$flows[[j]]$dir)
     })
     lapply(seq_along(options$minicharts), function(j){
-      p <<- addMinicharts(p, lng = data[[options$minicharts[[j]]$lng]], 
-                     lat = data[[options$minicharts[[j]]$lat]], 
-                     chartdata = data[[options$minicharts[[j]]$chartdata]], 
-                     time = data[[options$minicharts[[j]]$time]], 
-                     maxValues = data[[options$minicharts[[j]]$maxValues]],
-                     type = data[[options$minicharts[[j]]$type]], 
-                     fillColor = d3.schemeCategory10[1],
-                     colorPalette = d3.schemeCategory10, 
-                     width = data[[options$minicharts[[j]]$width]], 
-                     height = data[[options$minicharts[[j]]$height]],
-                     opacity = 1, 
-                     showLabels = FALSE, labelText = NULL, labelMinSize = 8,
-                     labelMaxSize = 24, labelStyle = NULL, 
-                     transitionTime = data[[options$minicharts[[j]]$transitionTime]],
-                     popup = popupArgs(), layerId = NULL, 
-                     legend = data[[options$minicharts[[j]]$legend]],
-                     legendPosition = data[[options$minicharts[[j]]$legendPosition]], 
-                     timeFormat = NULL, initialTime = NULL,
-                     onChange = NULL) 
+      p <<- addMinicharts(p, lng = data[[options$minicharts[[j]]$lng]],
+                          lat = data[[options$minicharts[[j]]$lat]],
+                          #chartdata = data[[options$minicharts[[j]]$chartdata]],
+                          chartdata = data[, c("renewable", "fossil")],
+                          time = if(length(options$minicharts[[j]]$time)) data[[options$minicharts[[j]]$time]],
+                          #maxValues = options$minicharts[[j]]$maxValues,
+                          type = options$minicharts[[j]]$type,
+                           fillColor = d3.schemeCategory10[1],
+                           colorPalette = d3.schemeCategory10,
+                          width = options$minicharts[[j]]$width,
+                          height = options$minicharts[[j]]$height,
+                          opacity = options$minicharts[[j]]$opacity,
+                          showLabels = options$minicharts[[j]]$showLabels,
+                          labelText = NULL, labelMinSize = 8,
+                          labelMaxSize = 24, labelStyle = NULL,
+                          transitionTime = if(length(options$minicharts[[j]]$transitionTime)) options$minicharts[[j]]$transitionTime,
+                          popup = popupArgs(), 
+                          layerId = if(length(options$minicharts[[j]]$layerId)) data[[options$minicharts[[j]]$layerId]],
+                          legend = options$minicharts[[j]]$legend,
+                          legendPosition = options$minicharts[[j]]$legendPosition,
+                          timeFormat = NULL, initialTime = NULL,
+                          onChange = NULL
+      )
     })
     if(length(options$layersControl$baseGroups) + length(options$layersControl$overlayGroups) > 0L){
       p <- addLayersControl(p, baseGroups = if(length(options$layersControl$baseGroups)) options$layersControl$baseGroups else character(0L),
@@ -316,13 +320,23 @@ renderGraph <- function(data, configData, options, height = NULL){
   }else if(options$tool == 'timevis'){
     #GANTT chart
     p <- NULL
-    lapply(seq_along(options$ydata), function(j){
-      if(j==1){
-        p <<- timevis(data)
-      }else{
-        p <<- addItem(p, list(id = "item1", content = "one", start = "2016-08-01"))
-      }
-    })
+    data <- data.frame(
+      id      = 1:4,
+      content = c("Item one"  , "Item two"  ,"Ranged item", "Item four"),
+      start   = c("2016-01-10", "2016-01-11", "2016-01-20", "2016-02-14 15:00:00"),
+      end     = c(NA          ,           NA, "2016-02-04", NA)
+    )
+    
+    p <- timevis(data)
+    
+    #lapply(seq_along(options$ydata), function(j){
+    #  if(j==1){
+    #    p <<- timevis(data)
+    #  }else{
+    #    p <<- addItem(p, list(id = "item1", content = "one", start = "2016-08-01"))
+    #  }
+    #})
+    return(renderTimevis(p))
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }

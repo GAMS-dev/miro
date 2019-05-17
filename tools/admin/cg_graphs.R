@@ -303,39 +303,60 @@ observeEvent(input$leafFlow_maxThickness, {
 })
 
 
-#observeEvent(input$leafChart_lng, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lng[1])]]]]$lng <<- input$leafChart_lng[2]
-#})
-#observeEvent(input$leafChart_lat, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lat[1])]]]]$lng <<- input$leafChart_lat[2]
-#})
-#observeEvent(input$leafChart_chartdata, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_chartdata[1])]]]]$lng <<- input$leafChart_chartdata[2]
-#})
-#observeEvent(input$leafChart_time, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_time[1])]]]]$lng <<- input$leafChart_time[2]
-#})
-#observeEvent(input$leafChart_type, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_type[1])]]]]$lng <<- input$leafChart_type[2]
-#})
-#observeEvent(input$leafChart_width, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_width[1])]]]]$lng <<- input$leafChart_width[2]
-#})
-#observeEvent(input$leafChart_height, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$lng <<- input$leafChart_height[2]
-#})
-#observeEvent(input$leafChart_transitionTime, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_transitionTime[1])]]]]$lng <<- input$leafChart_transitionTime[2]
-#})
-#observeEvent(input$leafChart_legend, {
-#  rv$graphConfig$graph$charts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legend[1])]]]]$lng <<- input$leafChart_legend[2]
-#})
-#observeEvent(input$leafChart_legendPosition, {
-#  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legendPosition[1])]]]]$lng <<- input$leafChart_legendPosition[2]
-#})
-
-
-
+observeEvent(input$leafChart_lng, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lng[1])]]]]$lng <<- input$leafChart_lng[2]
+})
+observeEvent(input$leafChart_lat, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_lat[1])]]]]$lat <<- input$leafChart_lat[2]
+})
+observeEvent(input$leafChart_chartdata, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_chartdata[1])]]]]$chartdata <<- input$leafChart_chartdata[2]
+})
+observeEvent(input$leafChart_time, {
+  if(!identical(input$leafChart_time, "_"))
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_time[1])]]]]$time <<- input$leafChart_time[2]
+  else
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_time[1])]]]]$time <<- NULL
+})
+observeEvent(input$leafChart_type, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_type[1])]]]]$type <<- input$leafChart_type[2]
+})
+observeEvent(input$leafChart_width, {
+  if(nchar(input$leafChart_width[2]))
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_width[1])]]]]$width <<- as.numeric(input$leafChart_width[2])
+  else
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_width[1])]]]]$width <<- NULL
+})
+observeEvent(input$leafChart_height, {
+  if(nchar(input$leafChart_height[2]))
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$height <<- as.numeric(input$leafChart_height[2])
+  else
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_height[1])]]]]$height <<- NULL
+})
+observeEvent(input$leafChart_opacity, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_opacity[1])]]]]$opacity <<- as.numeric(input$leafChart_opacity[2])
+})
+observeEvent(input$leafChart_showlabels, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_showlabels[1])]]]]$showlabels <<- as.logical(input$leafChart_showlabels[2])
+})
+observeEvent(input$leafChart_transitionTime, {
+  if(!identical(input$leafChart_time, "_") && nchar(input$leafChart_transitionTime[2]))
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_transitionTime[1])]]]]$transitionTime <<- as.numeric(input$leafChart_transitionTime[2])
+  else
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_transitionTime[1])]]]]$transitionTime <<- NULL
+})
+observeEvent(input$leafChart_layerId, {
+  if(!identical(input$leafChart_time, "_"))
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_layerId[1])]]]]$layerId <<- input$leafChart_layerId[2]
+  else
+    rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_layerId[1])]]]]$layerId <<- NULL
+})
+observeEvent(input$leafChart_legend, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legend[1])]]]]$legend <<- as.logical(input$leafChart_legend[2])
+})
+observeEvent(input$leafChart_legendPosition, {
+  rv$graphConfig$graph$minicharts[[idLabelMap$leaflet_minicharts[[as.integer(input$leafChart_legendPosition[1])]]]]$legendPosition <<- input$leafChart_legendPosition[2]
+})
 
 observeEvent(input$leafMark_lng, {
   rv$graphConfig$graph$markers[[idLabelMap$leaflet_markers[[as.integer(input$leafMark_lng[1])]]]]$lng <<- input$leafMark_lng[2]
@@ -397,6 +418,113 @@ observe(rv$graphConfig$graph$layersControl$overlayGroups <<- input$leaflc_overla
 observe(rv$graphConfig$graph$layersControl$position <<- input$leaflc_position)
 observe(rv$graphConfig$graph$layersControl$options$collapsed <<- input$leaflc_collapsed)
 
+#change behaviour like for datatable buttons?
+observeEvent(input$pivot_rows, {
+  if(length(input$pivot_rows) > 0)
+    rv$graphConfig$pivottable$rows <<- input$pivot_rows
+  else
+    rv$graphConfig$pivottable$rows <<- NULL
+})
+observeEvent(input$pivot_cols, {
+  if(length(input$pivot_cols) > 0)
+    rv$graphConfig$pivottable$cols <<- input$pivot_cols
+  else
+    rv$graphConfig$pivottable$cols <<- NULL
+})
+observeEvent(input$pivot_aggregatorName, {
+  rv$graphConfig$pivottable$aggregatorName <<- input$pivot_aggregatorName
+  rv$graphConfig$pivottable$vals <<- NULL
+  updateSelectInput(session, "pivot_vals", selected = "_")
+  updateSelectInput(session, "pivot_vals2", selected = "_")
+})
+observeEvent(c(input$pivot_vals, input$pivot_vals2), {
+  if(identical(input$pivot_vals, "_") || identical(input$pivot_vals, NULL))
+    valstmp1 <<- NULL
+  else
+    valstmp1 <<- input$pivot_vals
+  if(identical(input$pivot_vals2, "_") || identical(input$pivot_vals2, NULL))
+    valstmp2 <<- NULL
+  else
+    valstmp2 <<- input$pivot_vals2
+  if(identical(valstmp2, NULL))
+    rv$graphConfig$pivottable$vals <<- valstmp1
+  else if(identical(valstmp1, NULL))
+    rv$graphConfig$pivottable$vals <<- c("", valstmp2)
+  else
+    rv$graphConfig$pivottable$vals <<- c(valstmp1,valstmp2)
+})
+observeEvent(input$pivot_rendererName, {
+  rv$graphConfig$pivottable$rendererName <<- input$pivot_rendererName
+})
+observeEvent(input$pivot_locale, {
+  rv$graphConfig$pivottable$locale <<- input$pivot_locale
+})
+observeEvent(input$pivot_subtotals, {
+  rv$graphConfig$pivottable$subtotals <<- input$pivot_subtotals
+})
+observeEvent(input$pivot_width, {
+  if(is.na(input$pivot_width))
+    rv$graphConfig$pivottable$width <<- NULL
+  else
+    rv$graphConfig$pivottable$width <<- input$pivot_width
+})
+
+#observeEvent(input$timevis_series, {
+#  rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]] <<- input$timevis_series
+#})
+#TODO: groups as new file or in uploaded file? -> needs to be saved in json somehow!
+#observeEvent(input$timevis_groups_input, {
+#  rv$graphConfig$graph$timevis_series <<- input$timevis_groups_input
+#})
+observeEvent(input$timedata_start, {
+  rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_start[1])]]]]$start <<- input$timedata_start[2]
+}, priority = -500)
+observeEvent(input$timedata_end, {
+  if(!identical(input$timedata_end,"_"))
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_end[1])]]]]$end <<- input$timedata_end[2]
+  else
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_end[1])]]]]$end <<- NULL
+}, priority = -500)
+observeEvent(input$timedata_id, {
+  rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_id[1])]]]]$id <<- input$timedata_id[2]
+}, priority = -500)
+observeEvent(input$timedata_type, {
+  rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_type[1])]]]]$type <<- input$timedata_type[2]
+}, priority = -500)
+observeEvent(input$timedata_title, {
+  if(!identical(input$timedata_title,"_"))
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_title[1])]]]]$title <<- input$timedata_title[2]
+  else
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_title[1])]]]]$title <<- NULL
+}, priority = -500)
+observeEvent(input$timedata_group, {
+  if(!identical(input$timedata_group,"_"))
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_group[1])]]]]$group <<- input$timedata_group[2]
+  else
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_group[1])]]]]$group <<- NULL
+}, priority = -500)
+observeEvent(input$timedata_subgroup, {
+  if(!identical(input$timedata_subgroup,"_"))
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_subgroup[1])]]]]$subgroup <<- input$timedata_subgroup[2]
+  else
+    rv$graphConfig$graph$series[[idLabelMap$timevis_series[[as.integer(input$timedata_subgroup[1])]]]]$subgroup <<- NULL
+}, priority = -500)
+
+
+
+observeEvent(input$timevis_showZoom, {
+  rv$graphConfig$graph$showZoom <<- input$timevis_showZoom
+})
+observeEvent(input$timevis_zoomFactor, {
+  rv$graphConfig$graph$zoomFactor <<- input$timevis_zoomFactor
+})
+observeEvent(input$timevis_fit, {
+  rv$graphConfig$graph$fit <<- input$timevis_fit
+})
+observeEvent(input$timevis_loadDependencies, {
+  rv$graphConfig$graph$loadDependencies <<- input$timevis_loadDependencies
+})
+
 observeEvent(input$hist_norm, {
   if(identical(input$hist_norm, " "))
     value <- ""
@@ -418,52 +546,52 @@ observeEvent(input$pie_values, {
 })
 observeEvent(input$marker_symbol, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_symbol[1])]]]]$marker$symbol <<- input$marker_symbol[2]
-})
+}, priority = -500)
 observeEvent(input$marker_color, {
   if(nchar(input$marker_color[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_color[1])]]]]$marker$color <<- input$marker_color[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_color[1])]]]]$marker$color <<- NULL
-})
+}, priority = -500)
 observeEvent(input$marker_size, {
   if(nchar(input$marker_size[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- input$marker_size[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_size[1])]]]]$marker$size <<- NULL
-})
+}, priority = -500)
 observeEvent(input$marker_line_width, {
   if(nchar(input$marker_line_width[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_width[1])]]]]$marker$line$width <<- input$marker_line_width[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_width[1])]]]]$marker$line$width <<- NULL
-})
+}, priority = -500)
 observeEvent(input$marker_line_color, {
   if(nchar(input$marker_line_color[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_color[1])]]]]$marker$line$color <<- input$marker_line_color[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_line_color[1])]]]]$marker$line$color <<- NULL
-})
+}, priority = -500)
 observeEvent(input$line_color, {
   if(nchar(input$line_color[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_color[1])]]]]$line$color <<- input$line_color[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_color[1])]]]]$line$color <<- NULL
-})
+}, priority = -500)
 observeEvent(input$line_width, {
   if(nchar(input$line_width[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_width[1])]]]]$line$width <<- input$line_width[2]
   else
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_width[1])]]]]$line$width <<- NULL
-})
+}, priority = -500)
 observeEvent(input$line_shape, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_shape[1])]]]]$line$shape <<- input$line_shape[2]
 })
 observeEvent(input$line_dash, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$line_dash[1])]]]]$line$dash <<- input$line_dash[2]
-})
+}, priority = -500)
 observeEvent(input$trace_legend, {
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_legend[1])]]]]$showlegend <<- as.logical(input$trace_legend[2])
-})
+}, priority = -500)
 observeEvent(input$trace_frame, {
   if(!is.null(input$trace_frame[2]) && (!identical(input$trace_frame[2], "_"))){
     removeUI(selector = "#plotly_animation_options .shiny-input-container", multiple = TRUE)
@@ -475,7 +603,7 @@ observeEvent(input$trace_frame, {
   }
   rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$trace_frame[1])]]]]$frame <<- traceframetmp
   rv$graphConfig$graph$animation <<- NULL
-})
+}, priority = -500)
 observeEvent(input$animation_frame, {
   #frame = amount of time between frames (in milliseconds)
   frametmp <- input$animation_frame
@@ -719,12 +847,12 @@ observeEvent(input$plot_bgcolor, {
 observeEvent(input$showlegend, {
   rv$graphConfig$graph$showlegend <<- input$showlegend
 })
-observeEvent(input$outtype, {
-  if(identical(input$outtype, TRUE))
-    outtypetmp <<- "dtGraph"
+observeEvent(input$outType, {
+  if(identical(input$outType, TRUE))
+    outTypetmp <<- "dtGraph"
   else
-    outtypetmp <<- "graph"
-  rv$graphConfig$graph$outtype <<- outtypetmp
+    outTypetmp <<- "graph"
+  rv$graphConfig$graph$outType <<- outTypetmp
 })
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
@@ -740,7 +868,7 @@ observeEvent(input$x_showticklabels, {
 })
 observeEvent(c(input$x_rangefrom,input$x_data_format_selector), {
   if(nchar(input$x_rangefrom)){
-    if(identical(input$x_data_format_selector, TRUE))
+    if(identical(input$x_data_format_selector, FALSE))
       xfromtmp <<- as.numeric(as.character(input$x_rangefrom))
     else
       xfromtmp <<- input$x_rangefrom
@@ -751,7 +879,7 @@ observeEvent(c(input$x_rangefrom,input$x_data_format_selector), {
 })
 observeEvent(c(input$x_rangeto,input$x_data_format_selector), {
   if(nchar(input$x_rangeto)){
-    if(identical(input$x_data_format_selector, TRUE))
+    if(identical(input$x_data_format_selector, FALSE))
       xtotmp <<- as.numeric(as.character(input$x_rangeto))
     else
       xtotmp <<- input$x_rangeto
@@ -774,7 +902,7 @@ observeEvent(input$y_showticklabels, {
 })
 observeEvent(c(input$y_rangefrom,input$y_data_format_selector), {
   if(nchar(input$y_rangefrom)){
-    if(identical(input$y_data_format_selector, TRUE))
+    if(identical(input$y_data_format_selector, FALSE))
       yfromtmp <<- as.numeric(as.character(input$y_rangefrom))
     else
       yfromtmp <<- input$y_rangefrom
@@ -785,7 +913,7 @@ observeEvent(c(input$y_rangefrom,input$y_data_format_selector), {
 })
 observeEvent(c(input$y_rangeto,input$y_data_format_selector), {
   if(nchar(input$y_rangeto)){
-    if(identical(input$y_data_format_selector, TRUE))
+    if(identical(input$y_data_format_selector, FALSE))
       ytotmp <<- as.numeric(as.character(input$y_rangeto))
     else
       ytotmp <<- input$y_rangeto
@@ -837,7 +965,7 @@ observeEvent(input$add_array_el, {
   chart_id    <- input$add_array_el[1]
   chart_label <- input$add_array_el[2]
   el_id       <- input$add_array_el[3]
-  if(el_id %in% c("dy_dyShading", "dy_dyLimit", "leaflet_markers", "leaflet_flows", "leaflet_minicharts")){
+  if(el_id %in% c("dy_dyShading", "dy_dyLimit", "leaflet_markers", "leaflet_flows", "leaflet_minicharts", "timevis_series")){
     # ID is number instead of string as string is not unique
     chart_label <- chart_id
   }
@@ -859,6 +987,8 @@ observeEvent(input$add_array_el, {
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat0 <- input$add_array_el[2]
     }else if(identical(el_id, "leaflet_minicharts")){
       rv$graphConfig$graph[[JSON_id]][[chart_label]]$lat <- input$add_array_el[2]
+    }else if(identical(el_id, "timevis_series")){
+      rv$graphConfig$graph[[JSON_id]][[chart_label]]$content <- input$add_array_el[2]
     }else{
       return()
     }
@@ -927,6 +1057,11 @@ observeEvent(input$add_array_el, {
                        transitionTime = 750,
                        legend = TRUE,
                        legendPosition = "topright")
+  }else if(identical(el_id, "timevis_series")){
+    newContent  <- list(content = input$add_array_el[2], 
+                        start = input$add_array_el[2],
+                        id = "Count from 1",
+                        type = "box")
   }else{
     newContent <- NULL
   }
@@ -994,12 +1129,18 @@ observeEvent({
       insertUI(selector = "#tool_options",
                tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }#else if(identical(input$chart_tool, "timevis")){
-     # currentSelection$noLayers <<- 1L
-     # insertUI(selector = "#tool_options",
-     #          tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd")
-     # allDataAvailable <<- TRUE
-     #}
+    }else if(identical(input$chart_tool, "timevis")){
+      currentSelection$noLayers <<- 1L
+      insertUI(selector = "#tool_options",
+               tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd")
+      allDataAvailable <<- TRUE
+     }
+    else if(identical(input$chart_tool, "pivot")){
+    currentSelection$noLayers <<- 1L
+    insertUI(selector = "#tool_options",
+             tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd")
+    allDataAvailable <<- TRUE
+  }
   })
 getPieOptions <- reactive({
   req(rv$initData)
@@ -1027,8 +1168,8 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
       rv$graphConfig$graph[[id %+% "axis"]]$showgrid <<- FALSE
       rv$graphConfig$graph[[id %+% "axis"]]$zeroline <<- FALSE
       rv$graphConfig$graph[[id %+% "axis"]]$showticklabels <<- TRUE
-      rv$graphConfig$graph[[id %+% "axis"]]$rangefrom <<- FALSE
-      rv$graphConfig$graph[[id %+% "axis"]]$rangeto <<- FALSE
+      rv$graphConfig$graph[[id %+% "axis"]]$rangefrom <<- NULL
+      rv$graphConfig$graph[[id %+% "axis"]]$rangeto <<- NULL
     }
   })
   if(labelOnly){
@@ -1050,10 +1191,10 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
                ),
                tags$div(class = "col-sm-5",
                         tags$div(class = "shiny-input-container",
-                                 tags$label(class = "cb-label", style="display:block;" ,"for" = "animation_data_format_selector", "Numeric values? (Dates are not numeric)"),
+                                 tags$label(class = "cb-label", style="display:block;" ,"for" = "animation_data_format_selector", "Data in date format?"),
                                    tags$label(class = "checkbox-material", 
                                               checkboxInput(id %+% "_data_format_selector", 
-                                                            value = TRUE, label = NULL)
+                                                            value = FALSE, label = NULL)
                                    )
                         ))
       )
@@ -1067,6 +1208,7 @@ getChartOptions <- reactive({
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
     rv$graphConfig$graph$showlegend <<- FALSE
+    rv$graphConfig$graph$outType <<- "graph" 
   })
   tagList(
     selectInput("chart_xdata", "What should be plotted on the x axis?",
@@ -1077,10 +1219,10 @@ getChartOptions <- reactive({
     selectInput("chart_color", "Symbol that is used to select different colors. Note: The color is only valid, when no line or marker colors are set!",
                 choices = c("_", indices)),
     optionSection(title = "Options", collapsed = TRUE,
-                  checkboxInput("outtype", "Show graphic and data table in split screen? (no live preview available)", value = FALSE),
                   colorPickerInput("paper_bgcolor", "What background color shall the paper have?", value = NULL),
                   colorPickerInput("plot_bgcolor", "What background color shall the plot have?", value = NULL),
-                  checkboxInput("showlegend", "Show legend?")
+                  checkboxInput("showlegend", "Show legend?"),
+                  checkboxInput("outType", "Show graphic and data table in split screen? (no live preview available)", value = FALSE)
     ),
     tags$div(id = "plotly_animation_options", class = "shiny-input-container")
   )
@@ -1111,14 +1253,14 @@ getScatterOptions  <- reactive({
     if(length(scalarIndices)){
       rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
                                                                 mode = "markers",
-                                                                markers = list(
+                                                                marker = list(
                                                                   symbol = "circle",
                                                                   color = "rgb(0,0,0)",
                                                                   opacity = 1L,
                                                                   size = 6L,
                                                                   line = list(width = 0L)
                                                                 ),
-                                                                showlegend = TRUE)
+                                                                showlegend = FALSE)
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -1138,7 +1280,7 @@ getLineOptions  <- reactive({
                                                                           width = 2L,
                                                                           shape = "linear",
                                                                           dash = "solid"),
-                                                              showlegend = TRUE)
+                                                              showlegend = FALSE)
     idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
       idLabelMap$chart_ydata[[1]] <<- "1"
@@ -1307,31 +1449,127 @@ getLeafletOptions <- reactive({
     )
   )
 })
-#getTimevisOptions<- reactive({
-#  rv$initData
-#  indices       <- activeSymbol$indices
-#  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
-#  #isolate({
-#  #  rv$graphConfig$graph$markers <<- NULL
-#  #  rv$graphConfig$graph$flows <<- NULL
-#  #})
-#  tagList(
-#    tagList(
-#      addArrayEl(session, "timevis_series", "Add data series"),
-#      optionSection(title = "Layer control options", collapsed = TRUE,
-#                    selectInput("timevis_test", "test", 
-#                                setNames(c("topright", "bottomright", "bottomleft", "topleft"), c("Top right", "Bottom right",
-#                                                                                                  "Bottom left", "Top left")))
-#      )
-#    )
-#  )
-#})
+getTimevisOptions<- reactive({
+  rv$initData
+  indices       <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  isolate({
+    rv$graphConfig$graph$showZoom <<- TRUE
+    rv$graphConfig$graph$fit <<- TRUE
+    rv$graphConfig$graph$loadDependencies <<- TRUE
+    rv$graphConfig$graph$zoomFactor <<- 0.5
+    rv$graphConfig$graph$series <- NULL
+    #rv$graphConfig$graph$series <- list()
+    #if(length(scalarIndices)){
+    #  rv$graphConfig$graph$series[[scalarIndices[[1]]]] <<- list(content = names(scalarIndices)[1], 
+    #                                                            start = names(scalarIndices)[1],
+    #                                                            id = "Count from 1",
+    #                                                            type = "box")
+    #  idLabelMap$timevis_series[[1]] <<- scalarIndices[[1]]
+    #}else{
+    #  idLabelMap$timevis_series[[1]] <<- "1"
+    #}
+  })
+  tagList(
+    tagList(
+      addArrayEl(session, "timevis_series", "Add data series", autoCreate = FALSE),
+      tags$label(class = "cb-label", "for" = "timevis_groups", "Use groups?"),
+      tags$div(
+        tags$label(class = "checkbox-material", 
+                   checkboxInput("timevis_groups", label = NULL)
+        )),
+      tags$div(class = "shiny-input-container",
+               style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
+               conditionalPanel(condition = "input.timevis_groups===true",
+                                fileInput("timevis_groups_input", span("Upload an Excel spreadsheet with group data. See ", tags$a(href="https://github.com/daattali/timevis#groups", target = "_blank", "https://github.com/daattali/timevis#groups"), " for more information"),
+                                          width = "100%",
+                                          multiple = FALSE,
+                                          accept = c("application/vnd.ms-excel",
+                                                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                                     ".xlsx"))
+               )
+      ),
+      tags$label(class = "cb-label", "for" = "timevis_showZoom", "Include 'Zoom In' / 'Zoom Out' buttons?"),
+      tags$div(
+        tags$label(class = "checkbox-material", 
+                   checkboxInput("timevis_showZoom", label = NULL, value = TRUE)
+        )),
+      numericInput("timevis_zoomFactor", "Zoomfaktor? Zooming out from 20 days with a zoomFactor of 1 will results in showing 40 days.", min = 0, value = 0.5, step = 0.1),
+      tags$label(class = "cb-label", "for" = "timevis_fit", "Fit all data on the timeline when the timeline initializes? Otherwise, the timeline will be set to show the current date."),
+      tags$div(
+        tags$label(class = "checkbox-material", 
+                   checkboxInput("timevis_fit", label = NULL, value = TRUE)
+        )),
+      tags$label(class = "cb-label", "for" = "timevis_loadDependencies", "Load JQuery and bootstrap dependencies? (recommended)"),
+      tags$div(
+        tags$label(class = "checkbox-material", 
+                   checkboxInput("timevis_loadDependencies", label = NULL, value = TRUE)
+        ))
+    )
+  )
+})
+getPivotOptions<- reactive({
+  
+  rv$initData
+  indices       <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  isolate({
+      ##rv$graphConfig$graph <<- NULL
+      if(length(input$chart_height))
+        rv$graphConfig$pivottable$height <<- input$height
+      rv$graphConfig$pivottable$rows <<- NULL
+      rv$graphConfig$pivottable$cols <<- NULL
+      rv$graphConfig$pivottable$aggregatorName <<- "Count"
+      rv$graphConfig$pivottable$vals <<- "_"
+      rv$graphConfig$pivottable$rendererName <<- "Table"
+      rv$graphConfig$pivottable$locale <<- "en"
+      rv$graphConfig$pivottable$subtotals <<- FALSE
+      rv$graphConfig$pivottable$width <<- 800L
+    })
+  tagList(
+    selectInput("pivot_rows", "Prepopulate rows of the pivot table", choices = indices, multiple = TRUE, selected = NULL),
+    selectInput("pivot_cols", "Prepopulate columns of the pivot table", choices = indices, multiple = TRUE, selected = NULL),
+    selectInput("pivot_aggregatorName", "Aggregator to use", choices = c("Count","Count Unique Values","List Unique Values",
+                                                              "Sum","Integer Sum","Average","Median","Sample Variance",
+                                                              "Sample Standard Deviation","Minimum","Maximum","First","Last",
+                                                              "Sum over Sum","80% Upper Bound","80% Lower Bound","Sum as Fraction of Total",
+                                                              "Sum as Fraction of Total","Sum as Fraction of Rows",
+                                                              "Sum as Fraction of Columns","Count as Fraction of Total",
+                                                              "Count as Fraction of Rows","Count as Fraction of Columns"),
+                selected = "Count"),
+    tags$div(class = "shiny-input-container",
+             style = "max-height:800px;max-height: 80vh;padding-right:30px;padding-left:40px;",
+             conditionalPanel(condition = "input.pivot_aggregatorName != 'Count' && input.pivot_aggregatorName != 'Count as Fraction of Total' && 
+                     input.pivot_aggregatorName != 'Count as Fraction of Rows' && input.pivot_aggregatorName != 'Count as Fraction of Columns'",
+                              selectInput("pivot_vals", "String name of the column in the dataset to use with aggregatorName.", choices = c("_", indices))
+             ),  
+             conditionalPanel(condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' || 
+                     input.pivot_aggregatorName === '80% Lower Bound'",
+                              selectInput("pivot_vals2", "String name of the column in the dataset to use with aggregatorName.", choices = c("_", indices))
+             )),  
+    selectInput("pivot_rendererName", "Name of the renderer selected.", choices = c("Table","Table Barchart","Heatmap","Row Heatmap",
+                                                                                "Col Heatmap","Treemap","Horizontal Bar Chart",
+                                                                                "Horizontal Stacked Bar Chart","Bar Chart",
+                                                                                "Stacked Bar Chart","Line Chart","Area Chart",
+                                                                                "Scatter Chart"), selected = "Table"),
+    optionSection(title = "Pivot table options", collapsed = TRUE,
+                  selectInput("pivot_locale", "Localization options. A change from 'en' to another language will cause 
+                              the configuration of the used graphic to be lost.", choices = c("cs","da","de","en","es","fr",
+                                                                                               "it","nl","pl","pt","ru","sq","tr","zh"), 
+                              selected = "en"),
+                  checkboxInput("pivot_subtotals", span("Should subtotal plugin be used? For examples, see: ", tags$a(href="http://nagarajanchinnasamy.com/subtotal/", target = "_blank", "http://nagarajanchinnasamy.com/subtotal/")), 
+                                value = FALSE),
+                  numericInput("pivot_width", "Width of pivottable ", min = 0L, value = 800L)
+    )
+    
+  )
+}) 
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   print("+++++++++++++++++++++++++++++++++++++++")
-  #print(rv$graphConfig$graph)
+  print(rv$graphConfig$graph)
   if(activeSymbol$id > length(modelIn)){
     data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
   }else{
@@ -1346,6 +1584,8 @@ observe({
       showEl(session, "#preview-content-plotly")
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-timevis")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
       callModule(renderData, "preview_output_dygraph", type = rv$graphConfig$outType, 
                  data = data, configData = scalarOutputData, 
@@ -1354,6 +1594,29 @@ observe({
       showEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-timevis")
+    }else if(isolate(rv$graphConfig$graph$tool) == "pivot"){
+      pivotOptions <- rv$graphConfig$pivottable
+      callModule(renderData, "preview_output_pivot", type = "pivot", 
+                 data = data, configData = scalarOutputData, 
+                 pivotOptions = pivotOptions,
+                 roundPrecision = 2, modelDir = modelDir)
+      showEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-timevis")
+    }else if(isolate(rv$graphConfig$graph$tool) == "timevis"){
+      callModule(renderData, "preview_output_timevis", type = rv$graphConfig$outType, 
+                 data = data, configData = scalarOutputData, 
+                 graphOptions = rv$graphConfig$graph,
+                 roundPrecision = roundPrecision, modelDir = modelDir)
+      showEl(session, "#preview-content-timevis")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-dygraph")
     }else{
       callModule(renderData, "preview_output_leaflet", type = rv$graphConfig$outType, 
                  data = data, configData = scalarOutputData, 
@@ -1362,12 +1625,16 @@ observe({
       showEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-timevis")
     }
     hideEl(session, "#preview-error")
   }, error = function(e) {
     hideEl(session, "#preview-content-dygraph")
     hideEl(session, "#preview-content-plotly")
     hideEl(session, "#preview-content-leaflet")
+    hideEl(session, "#preview-content-pivot")
+    hideEl(session, "#preview-content-timevis")
     showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
   })
 }, priority = -1000)

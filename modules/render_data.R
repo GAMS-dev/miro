@@ -52,6 +52,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       data <- dygraphOutput(ns("graph"), height = height)
     }else if(graphTool == "leaflet"){
       data <- leafletOutput(ns("graph"), height = height)
+    }else if(graphTool == "timevis"){
+      data <- timevisOutput(ns("graph"), height = height)
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
