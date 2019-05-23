@@ -31,7 +31,7 @@
             }
         },
         "d": {
-            "alias": "distance in thousands of miles \u20ac\u20ac",
+            "alias": "distance in thousands of miles",
             "headers": {
                 "i": {
                     "type": "set",
@@ -43,7 +43,7 @@
                 },
                 "value": {
                     "type": "parameter",
-                    "alias": "distance in thousands of miles \u20ac\u20ac"
+                    "alias": "distance in thousands of miles"
                 }
             }
         },
@@ -89,7 +89,7 @@
                 "beta"
             ],
             "symtext": [
-                "freight in dollars per case per thousand miles \u20ac\u20ac",
+                "freight in dollars per case per thousand miles",
                 "minimum shipment (MIP- and MINLP-only)",
                 "beta (MINLP-only)"
             ],

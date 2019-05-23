@@ -53,7 +53,7 @@ if(length(newPackages)){
       }
       
       install.packages(pkg_name, lib = if(length(RLibPath)) RLibPath else .libPaths()[[1]], 
-                       repos = CRANMirror, dependencies = c("Depends", "Imports"))
+                       repos = CRANMirror, dependencies = c("Depends", "Imports", "LinkingTo"))
     }, error = function(e){
       if(exists("flog.fatal")){
         flog.fatal("Problems installing required R packages. Error message: %s.", e)
