@@ -282,7 +282,7 @@ if(is.null(errMsg)){
     modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
   }else if(!length(config$scalarAliases$inputScalars)){
     if(!length(modelIn[[scalarsFileName]])){
-      config$scalarAliases$inputScalars <- "Input scalars"
+      config$scalarAliases$inputScalars <- lang$nav$inputScreen$scalarTabTitle
     }else{
       config$scalarAliases$inputScalars <- modelIn[[scalarsFileName]]$alias
     }

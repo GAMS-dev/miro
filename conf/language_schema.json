@@ -219,6 +219,11 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "scalarTabTitle":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },
