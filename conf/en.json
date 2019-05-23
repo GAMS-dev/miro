@@ -1,5 +1,14 @@
 {  
   "nav":{  
+    "scalarAliases":{
+      "scalars": "Scalars",
+      "scalarsOut": "Output Scalars",
+      "cols":{
+        "name": "Scalar Name",
+        "desc": "Scalar Description",
+        "value": "Scalar Value"
+      }
+    },
     "sidebarMenu":{  
       "inputScreen":"Input",
       "outputScreen":"Output",

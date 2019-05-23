@@ -10,7 +10,46 @@
       "type":"object",
       "required":true,
       "additionalProperties":false,
-      "properties":{  
+      "properties":{
+        "scalarAliases":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "scalars":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "scalarsOut":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cols":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "name":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "desc":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "value":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+          }
+        },
         "sidebarMenu":{  
           "type":"object",
           "additionalProperties":false,
@@ -219,11 +258,6 @@
               "type":"string",
               "minLength":1,
               "required":true
-            },
-            "scalarTabTitle":{  
-              "type":"string",
-              "minLength":1,
-              "required":true
             }
           }
         },
@@ -284,7 +318,7 @@
           "type":"object",
           "additionalProperties":false,
           "required":true,
-          "properties":{  
+          "properties":{
             "boxResults":{  
               "type":"object",
               "additionalProperties":false,

@@ -277,6 +277,13 @@ if(is.null(errMsg)){
     flog.fatal(errMsg)
   }
   # rename input and output scalar aliases
+  if(length(modelIn[[scalarsFileName]])){
+    modelIn[[scalarsFileName]]$alias <-  lang$nav$scalarAliases$scalars
+    modelIn[[scalarsFileName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
+    modelIn[[scalarsFileName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
+    modelIn[[scalarsFileName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
+  }
+  
   if(!is.null(config$scalarAliases$inputScalars) && 
      nchar(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
     modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
@@ -287,6 +294,13 @@ if(is.null(errMsg)){
       config$scalarAliases$inputScalars <- modelIn[[scalarsFileName]]$alias
     }
   }
+  if(length(modelOut[[scalarsOutName]])){
+    modelOut[[scalarsOutName]]$alias <- lang$nav$scalarAliases$scalarsOut
+    modelOut[[scalarsOutName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
+    modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
+    modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
+  }
+  
   if(!is.null(config$scalarAliases$outputScalars) && 
      nchar(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
     modelOut[[scalarsOutName]]$alias <- config$scalarAliases$outputScalars

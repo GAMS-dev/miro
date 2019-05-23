@@ -1,5 +1,14 @@
 {  
   "nav":{  
+    "scalarAliases":{
+      "scalars": "Skalare",
+      "scalarsOut": "Ergebnisskalare",
+      "cols":{
+        "name": "Skalarname",
+        "desc": "Skalarbeschreibung",
+        "value": "Skalarwert"
+      }
+    },
     "sidebarMenu":{  
       "inputScreen":"Eingabedaten",
       "outputScreen":"Ergebnisse",
