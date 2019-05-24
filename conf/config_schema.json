@@ -153,6 +153,62 @@
          "default":true,
          "required":false
       },
+      "inputGroups":{
+         "description": "Specify input tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{  
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input tables)",
+                "type":"array",
+                "uniqueItems":true,
+                "minItems":2,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
+      "outputGroups":{
+         "description": "Specify output tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "uniqueItems":true,
+         "minItems":1,
+         "items":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{  
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (output tables)",
+                "type":"array",
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
       "scalarAliases":{  
          "description":"Specify the aliases for the input and output scalar tables",
          "type":"object",

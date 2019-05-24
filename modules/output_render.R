@@ -4,8 +4,7 @@ renderOutputData <- function(){
   on.exit(progress$close())
   progress$set(message = lang$progressBar$renderOutput$title, value = 0)
   errMsg <- NULL
-  lapply(modelOutToDisplay, function(sheetName){
-    i <- match(sheetName, tolower(names(modelOut)))[1]
+  lapply(unlist(outputTabs, use.names = FALSE), function(i){
     tryCatch({
       callModule(renderData, "tab_" %+% i, type = configGraphsOut[[i]]$outType, data = scenData[["scen_1_"]][[i]],
                  configData = scalarData[["scen_1_"]], dtOptions = config$datatable, graphOptions = configGraphsOut[[i]]$graph, 

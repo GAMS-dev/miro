@@ -388,45 +388,83 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     rm(outScalarTmp, isValidScalar)
   }
   # declare input sheets as they will be displayed in UI
-  if(identical(config$aggregateWidgets, FALSE)){
-    # every input element on its own tab
-    inputTabs      <- seq_along(modelIn)
-    inputTabTitles <- modelInAlias
-  }else{
-    # aggregate input widgets on a single tab
-    widgetIds <- lapply(seq_along(modelIn), function(i){
-      if(modelIn[[i]]$type %in% c("hot", "dt")){
-        return(NULL)
-      }else{
-        return(i)
-      }
-    })
-    widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null, numeric(1L))])
-    # id of tab with aggregated widgets
+  getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL, 
+                      isOutput = FALSE){
+    j              <- 1L
+    tabs     <- vector("list", length(names))
+    tabTitles<- vector("list", length(names))
+    isAssigned     <- vector("logical", length(names))
     widgetId     <- NULL
-    j            <- 1L
-    inputTabs <- vector("list", length(modelIn))
-    inputTabTitles<- vector("list", length(modelIn))
-    
-    lapply(seq_along(modelIn), function(i){
-      if(modelIn[[i]]$type %in% c("hot", "dt")){
-        inputTabs[[i]] <<- i
-        inputTabTitles[[i]]<<- modelInAlias[[i]]
-      }else{
-        if(is.null(widgetId)){
-          widgetId         <<- i
-          inputTabs[[i]] <<- widgetIds
-          inputTabTitles[[i]]<<- lang$nav$inputScreen$widgetTabTitle
-        }
-      }
-    })
-    inputTabs   <- inputTabs[!vapply(inputTabs, is.null, numeric(1L))]
-    inputTabTitles  <- inputTabTitles[!vapply(inputTabTitles, is.null, numeric(1L))]
-    if(!is.null(widgetId) && identical(length(inputTabs[[widgetId]]), 1L)){
-      # if there is only a single widget in widget tab use alias of this widget
-      inputTabTitles[[widgetId]] <- modelInAlias[[widgetId]]
+    if(is.null(idsToDisplay)){
+      idsToDisplay <- seq_along(names)
     }
+    for(i in idsToDisplay){
+      if(identical(isOutput, TRUE) || modelIn[[i]]$type %in% c("hot", "dt")){
+        if(isAssigned[i]){
+          next
+        }
+        if(length(groups)){
+          groupId <- vapply(seq_along(groups), 
+                            function(gId){ 
+                              if(names[i] %in% groups[[gId]]$members)
+                                return(gId)
+                              else
+                                return(NA_integer_)}, integer(1L), USE.NAMES = FALSE)
+          if(any(!is.na(groupId))){
+            groupId <- groupId[!is.na(groupId)]
+            if(length(groupId) > 1L){
+              flog.warn("Dataset: '%s' appears in more than one group. Only the first group will be used.", aliases[i])
+            }
+            groupMemberIds      <- match(groups[[groupId]]$members, names)
+            if(any(is.na(groupMemberIds))){
+              flog.warn("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
+                        paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
+                        groups[[groupId]]$name)
+              groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
+            }
+            tabs[[j]]      <-  groupMemberIds
+            tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
+            isAssigned[groupMemberIds] <- TRUE 
+            j <- j + 1L
+            next
+          }
+        }
+        tabs[[j]]      <-  i
+        tabTitles[[j]] <-  aliases[[i]]
+        j <- j + 1L
+        next
+      }else if(!length(widgetId)){
+        widgetId     <- j
+        if(identical(length(widgetIds), 1L)){
+          tabs[[j]]      <-  widgetIds
+          tabTitles[[j]] <-  aliases[[widgetIds[[1]]]]
+        }else if(!identical(config$aggregateWidgets, FALSE)){
+          tabTitles[[j]] <-  lang$nav$inputScreen$widgetTabTitle
+          tabs[[j]]      <-  widgetIds
+        }else{
+          tabTitles[[j]] <-  c(lang$nav$inputScreen$widgetTabTitle, aliases[widgetIds])
+          tabs[[j]] <-  widgetIds
+        }
+        j <- j + 1L
+      }
+    }
+    return(list(tabs = tabs[!vapply(tabs, is.null, logical(1L), USE.NAMES = FALSE)],
+           tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)]))
   }
+  widgetIds    <- lapply(seq_along(modelIn), function(i){
+    if(modelIn[[i]]$type %in% c("hot", "dt")){
+      return(NULL)
+    }else{
+      return(i)
+    }
+  })
+  widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null,
+                                           numeric(1L), USE.NAMES = FALSE)], 
+                         use.names = FALSE)
+  inputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
+                          widgetIds = widgetIds)
+  inputTabTitles <- inputTabs$tabTitles
+  inputTabs    <- inputTabs$tabs
   
   # read graph data for input and output sheets
   strictMode        <- config$activateModules$strictmode
@@ -923,7 +961,7 @@ if(is.null(errMsg)){
   })
   modelOutTemplate <- vector(mode = "list", length = length(modelOut))
   # declare set of output sheets that should be displayed in webUI
-  modelOutToDisplay <- names(modelOut)[vapply(seq_along(modelOut), function(i){
+  modelOutToDisplay <- vapply(seq_along(modelOut), function(i){
     headers   <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers   <- lapply(modelOut[[i]]$headers, function(header){
       switch(header$type,
@@ -947,7 +985,13 @@ if(is.null(errMsg)){
       return(FALSE)
     else
       return(TRUE)
-  }, logical(1L), USE.NAMES = FALSE)]
+  }, logical(1L), USE.NAMES = FALSE)
+  # declare output sheets as they will be displayed in UI
+  outputTabs <- getTabs(names(modelOut), modelOutAlias, config$outputGroups,
+                        idsToDisplay = seq_along(modelOut)[modelOutToDisplay], isOutput = TRUE)
+  outputTabTitles <- outputTabs$tabTitles
+  outputTabs <- outputTabs$tabs
+  
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
   scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
   
@@ -988,7 +1032,7 @@ if(is.null(errMsg)){
   scenTableNames    <- c(names(modelOut), inputDsNames)
   scenTableNames    <- gsub("_", "", modelName, fixed = TRUE) %+% "_" %+% scenTableNames
   # define scenario tables to display in interface
-  scenTableNamesToDisplay <- c(modelOutToDisplay, inputDsNames[vapply(inputDsNames, function(el){
+  scenTableNamesToDisplay <- c(names(modelOut)[modelOutToDisplay], inputDsNames[vapply(inputDsNames, function(el){
     if(identical(modelIn[[el]]$dropdown$single, TRUE) || 
        identical(modelIn[[el]]$dropdown$checkbox, TRUE)) 
       return(FALSE) 

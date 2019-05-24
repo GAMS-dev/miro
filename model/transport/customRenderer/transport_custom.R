@@ -10,7 +10,6 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
 }
 
 renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL){
-print(data)
   #generate map
   map <- leaflet() %>%
          addTiles() %>%

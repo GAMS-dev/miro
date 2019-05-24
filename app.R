@@ -515,7 +515,7 @@ if(!is.null(errMsg)){
   }
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
-    save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, modelOutToDisplay,
+    save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, outputTabs, outputTabTitles,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
@@ -577,6 +577,7 @@ if(!is.null(errMsg)){
   }
   close(pb)
   pb <- NULL
+  
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -660,10 +661,14 @@ if(!is.null(errMsg)){
       observeEvent(input$tabsetShortcutNest, {
         if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
           shortcutNest <<- TRUE
+        }else if(isolate(input$sidebarMenuId) %in% c("inputData", "outputData")){
+          shortcutNest <<- TRUE
         }
       })
       observeEvent(input$tabsetShortcutUnnest, {
         if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
+          shortcutNest <<- FALSE
+        }else if(isolate(input$sidebarMenuId) %in% c("inputData", "outputData")){
           shortcutNest <<- FALSE
         }
       })
@@ -672,12 +677,24 @@ if(!is.null(errMsg)){
     observeEvent(input$tabsetShortcutNext, {
       if(isolate(input$sidebarMenuId) == "inputData"){
         flog.debug("Navigated to next input tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentSheet + 1))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
+        if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("inputTabset", currentGroup), 
+                            paste0("inputTabset", currentGroup, "_", currentSheet + 1))
+        }else{
+          updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentGroup + 1))
+        }
       }else if(isolate(input$sidebarMenuId) == "outputData"){
         flog.debug("Navigated to next output tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
-        updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentSheet + 1))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
+        if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentCurrent", currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("contentCurrent", currentGroup), 
+                            paste0("contentCurrent", currentGroup, "_", currentSheet + 1))
+        }else{
+          updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentGroup + 1))
+        }
       }else if(isolate(input$sidebarMenuId) == "scenarios"){
         if(!is.null(sidCompOrder) && !isInSplitView){
           currentScen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
@@ -724,12 +741,24 @@ if(!is.null(errMsg)){
     observeEvent(input$tabsetShortcutPrev,{
       if(isolate(input$sidebarMenuId) == "inputData"){
         flog.debug("Navigated to previous input tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentSheet - 1))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
+        if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("inputTabset", currentGroup), 
+                            paste0("inputTabset", currentGroup, "_", currentSheet - 1))
+        }else{
+          updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentGroup - 1))
+        }
       }else if(isolate(input$sidebarMenuId) == "outputData"){
         flog.debug("Navigated to previous output tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
-        updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentSheet - 1))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
+        if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentCurrent", currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("contentCurrent", currentGroup), 
+                            paste0("contentCurrent", currentGroup, "_", currentSheet - 1))
+        }else{
+          updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentGroup - 1))
+        }
       }else if(isolate(input$sidebarMenuId) == "scenarios"){
         if(!is.null(sidCompOrder) && !isInSplitView){
           currentScen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
@@ -835,10 +864,10 @@ if(!is.null(errMsg)){
 
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
+      # reset nest level
+      shortcutNest <<- FALSE
       if((config$activateModules$scenario || config$activateModules$hcubeMode)
           && input$sidebarMenuId == "scenarios"){
-        # reset nest level
-        shortcutNest <<- FALSE
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
         rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
