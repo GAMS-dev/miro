@@ -16,25 +16,10 @@ getScenTabData <- function(sheetName){
     }
   }else{
     # sheet is input sheet
-    if(is.null(configGraphsIn[[i]]$outType)){
-      configGraphsIn[[i]]$outType <- "pivot"
-      # prepopulate scalar table
-      if(inputDsNames[i] == scalarsFileName && !length(configGraphsIn[[i]]$pivottable)){
-        configGraphsIn[[i]]$pivottable$rows <- c("Scalar")
-        configGraphsIn[[i]]$pivottable$aggregatorName <- "Sum"
-        configGraphsIn[[i]]$pivottable$vals <- "Value"
-      }
-    }
     tabData$graphConfig   <- configGraphsIn[[i]]
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
+    tabData$sheetName     <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
     tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
-    if(inputDsNames[i] == scalarsFileName){
-      tabData$sheetName <- config$scalarAliases$inputScalars
-      tabData$headerAliases <- scalarsFileHeaders
-    }else{
-      tabData$sheetName <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
-      tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
-    }
   }
   # get data index
   tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),
@@ -48,48 +33,107 @@ getScenTabData <- function(sheetName){
 generateScenarioTabset <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
                                    noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId){
   errMsg <- NULL
+  noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
   scenTabset <- do.call(tabBox, c(id = paste0("contentScen_", scenId), width = 12, 
-                                  lapply(scenTableNamesToDisplay, function(sheetName) {
-                                    # get sheet configuration information
-                                    tabData <- getScenTabData(sheetName)
+                                  lapply(seq_len(length(outputTabs) + length(inputTabs)), 
+                                  function(groupId) {
+                                    if(sheetIdx > length(outputTabs)){
+                                      # input dataset
+                                      groupId     <- groupId - length(outputTabs)
+                                      tabSheetIds <- inputTabs[[groupId]]
+                                      tabTitles   <- inputTabTitles[[groupId]]
+                                      tooltip     <- lang$nav$scen$tooltips$inputSheet
+                                      isOutputGroup <- FALSE
+                                    }else{
+                                      tabSheetIds   <- outputTabs[[groupId]]
+                                      tabTitles     <- outputTabTitles[[groupId]]
+                                      tooltip       <- lang$nav$scen$tooltips$outputSheet
+                                      isOutputGroup <- TRUE
+                                    }
+                                    content <- lapply(tabSheetIds, function(sheetId){
+                                      if(isOutputGroup){
+                                        sheetName <- names(modelOut)[sheetId]
+                                        graphConfig <- configGraphsOut[[sheetId]]
+                                      }else{
+                                        sheetName <- names(modelIn)[sheetId]
+                                        graphConfig <- configGraphsIn[[sheetId]]
+                                      }
+                                      tabContent <- NULL
+                                      tabId <- match(sheetName, 
+                                                     scenTableNamesToDisplay)
+                                      if(is.na(tabId)){
+                                        flog.error("Invalid dataset! Please contact GAMS!")
+                                        tabContent <- noDataDiv
+                                      }
+                                      
+                                      if(is.null(tabContent)){
+                                        if(noData[tabId]){
+                                          tabContent <- noDataDiv
+                                        }else{
+                                          tabContent <- tagList(
+                                            tags$div(id= paste0("scenGraph_", scenId, "_", tabId), 
+                                                     class = "render-output", 
+                                                     style = if(!is.null(graphConfig$height)) 
+                                                       sprintf("min-height: %s;", addCssDim(graphConfig$height, 5)),{
+                                                         tryCatch({
+                                                           renderDataUI(paste0("tab_", scenCounter,
+                                                                               "_", tabId), 
+                                                                        type = graphConfig$outType, 
+                                                                        graphTool = graphConfig$graph$tool, 
+                                                                        customOptions = graphConfig$options,
+                                                                        height = graphConfig$height, modelDir = modelDir, 
+                                                                        noDataTxt = noDataTxt)
+                                                         }, error = function(e) {
+                                                           flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
+                                                                      sheetName, e)
+                                                           errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, 
+                                                                                            sheetName), sep = "\n")
+                                                         })
+                                                       }),
+                                            tags$div(id= paste0("scenTable_", scenId, "_", tabId), 
+                                                     style = "display:none;",
+                                                     class = "render-output",{
+                                                       tryCatch({
+                                                         renderDataUI(paste0("table_tab_", scenCounter, "_",
+                                                                             tabId), type = "datatable",
+                                                                      noDataTxt = noDataTxt)
+                                                       }, error = function(e) {
+                                                         flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", sheetName, e)
+                                                         errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, sheetName), sep = "\n")
+                                                       })
+                                                     })
+                                          )
+                                        }
+                                      }
+                                      
+                                      if(length(tabTitles) > 1L){
+                                        titleId <- match(sheetId, tabSheetIds) + 1L
+                                        return(tabPanel(
+                                          title = tabTitles[titleId],
+                                          value = paste0("contentScen_", scenId, "_", 
+                                                         groupId, "_", titleId - 1L),
+                                          tags$div(class="space"),
+                                          tabContent,
+                                          tags$div(class="space")
+                                        ))
+                                      }
+                                      return(tabContent)
+                                    })
                                     
-                                    tabPanel(value = "contentScen_" %+% scenId %+% "_" %+% tabData$tabId,
-                                             title = span(tabData$sheetName, title = tabData$tooltip), 
-                                             tags$div(class="space"),
-                                             if(noData[tabData$tabId]){
-                                               tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
-                                             }else{
-                                               tagList(
-                                                 tags$div(id= paste0("scenGraph_", scenId, "_", tabData$tabId), class = "render-output", 
-                                                          style = if(!is.null(tabData$graphConfig$height)) sprintf("min-height: %s;", 
-                                                                                                                   addCssDim(tabData$graphConfig$height, 5)),{
-                                                            tryCatch({
-                                                              renderDataUI("tab_" %+% scenCounter %+% "_" %+% tabData$tabId, 
-                                                                           type = tabData$graphConfig$outType, 
-                                                                            graphTool = tabData$graphConfig$graph$tool, 
-                                                                           customOptions = tabData$graphConfig$options,
-                                                                            height = tabData$graphConfig$height, modelDir = modelDir, 
-                                                                            noDataTxt = noDataTxt)
-                                                            }, error = function(e) {
-                                                              flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
-                                                                         tabData$sheetName, e)
-                                                              errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
-                                                            })
-                                                          }),
-                                               tags$div(id= paste0("scenTable_", scenId, "_", tabData$tabId), style = "display:none;",
-                                                        class = "render-output",{
-                                                 tryCatch({
-                                                   renderDataUI("table_tab_" %+% scenCounter %+% "_" %+% tabData$tabId, type = "datatable",
-                                                                 noDataTxt = noDataTxt)
-                                                 }, error = function(e) {
-                                                   flog.error("Problems rendering table for scenario dataset: '%s'. Error message: %s.", tabData$sheetName, e)
-                                                   errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, tabData$sheetName), sep = "\n")
-                                                 })
-                                               })
-                                               )
-                                             },
-                                             tags$div(class="space")
-                                    )
+                                    return(tabPanel(
+                                      title = span(tabTitles[1], title = tooltip),
+                                      value = paste0("contentScen_", scenId, 
+                                                     "_", groupId),
+                                      if(length(tabTitles) > 1L){
+                                        do.call(tabsetPanel, 
+                                                c(id = paste0("contentScen_", scenId,
+                                                              "_", groupId), content))
+                                      }else{
+                                        tagList(tags$div(class="space"), 
+                                                content,
+                                                tags$div(class="space"))
+                                      }
+                                    ))
                                   })))
   if(!is.null(errMsg)){
     stop(errMsg, call. = FALSE)
