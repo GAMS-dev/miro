@@ -389,11 +389,12 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   }
   # declare input sheets as they will be displayed in UI
   getTabs <- function(names, aliases, groups, idsToDisplay = NULL, widgetIds = NULL, 
-                      isOutput = FALSE){
+                      isOutput = FALSE, mergeScalars = FALSE, widgetIdsMultiDim = integer(0L)){
     j              <- 1L
     tabs     <- vector("list", length(names))
     tabTitles<- vector("list", length(names))
     isAssigned     <- vector("logical", length(names))
+    scalarAssigned <- FALSE
     widgetId     <- NULL
     if(is.null(idsToDisplay)){
       idsToDisplay <- seq_along(names)
@@ -423,22 +424,59 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
               groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
             }
             tabs[[j]]      <-  groupMemberIds
+            if(mergeScalars){
+              groupScalarId <- match(scalarsFileName, names[groupMemberIds])
+              if(!is.na(groupScalarId)){
+                if(scalarAssigned){
+                  if(length(groupMemberIds) <= 1L){
+                    next
+                  }
+                  groupMemberIds <- groupMemberIds[-groupScalarId]
+                }else{
+                  groupMemberIds[groupScalarId] <- 0L
+                  scalarAssigned <- TRUE
+                }
+              }
+            }
             tabTitles[[j]] <-  c(groups[[groupId]]$name, aliases[groupMemberIds])
             isAssigned[groupMemberIds] <- TRUE 
             j <- j + 1L
             next
           }
         }
-        tabs[[j]]      <-  i
+        sheetId <- i
+        if(mergeScalars && identical(names(modelIn)[i], scalarsFileName)){
+          if(scalarAssigned){
+            next
+          }
+          sheetId <- 0L
+        }
+        tabs[[j]]      <-  sheetId
         tabTitles[[j]] <-  aliases[[i]]
         j <- j + 1L
         next
       }else if(!length(widgetId)){
+        if(mergeScalars){
+          if(scalarAssigned){
+            if(!length(widgetIdsMultiDim)){
+              next
+            }
+            widgetIds <- widgetIdsMultiDim
+          }else{
+            if(!identical(length(widgetIds), length(widgetIdsMultiDim))){
+              scalarAssigned <- TRUE
+              tabTitles[[j]] <-  lang$nav$scalarAliases$scalars
+              tabs[[j]]      <-  c(0L, widgetIdsMultiDim)
+              j <- j + 1L
+              next
+            }
+          }
+        }
         widgetId     <- j
         if(identical(length(widgetIds), 1L)){
           tabs[[j]]      <-  widgetIds
           tabTitles[[j]] <-  aliases[[widgetIds[[1]]]]
-        }else if(!identical(config$aggregateWidgets, FALSE)){
+        }else if(identical(config$aggregateWidgets, TRUE)){
           tabTitles[[j]] <-  lang$nav$inputScreen$widgetTabTitle
           tabs[[j]]      <-  widgetIds
         }else{
@@ -458,6 +496,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       return(i)
     }
   })
+  
   widgetIds    <- unlist(widgetIds[!vapply(widgetIds, is.null,
                                            numeric(1L), USE.NAMES = FALSE)], 
                          use.names = FALSE)
@@ -465,6 +504,22 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                           widgetIds = widgetIds)
   inputTabTitles <- inputTabs$tabTitles
   inputTabs    <- inputTabs$tabs
+  
+  # get input tabs where scalars are merged to single table (scenario comparison mode)
+  widgetIdsMultiDim <- vapply(seq_along(modelIn), function(i){
+    if(identical(modelIn[[i]]$dropdown$multiple, TRUE) && 
+       !identical(modelIn[[i]]$dropdown$checkbox, TRUE) && 
+       !identical(modelIn[[i]]$dropdown$single, TRUE)){
+      return(i)
+    }
+    return(NA_integer_)
+  }, integer(1L), USE.NAMES = FALSE)
+  widgetIdsMultiDim <- widgetIdsMultiDim[!is.na(widgetIdsMultiDim)]
+  scenInputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
+                              widgetIds = widgetIds, mergeScalars = TRUE, 
+                              widgetIdsMultiDim = widgetIdsMultiDim)
+  scenInputTabTitles <- scenInputTabs$tabTitles
+  scenInputTabs    <- scenInputTabs$tabs
   
   # read graph data for input and output sheets
   strictMode        <- config$activateModules$strictmode
@@ -991,7 +1046,17 @@ if(is.null(errMsg)){
                         idsToDisplay = seq_along(modelOut)[modelOutToDisplay], isOutput = TRUE)
   outputTabTitles <- outputTabs$tabTitles
   outputTabs <- outputTabs$tabs
-  
+  isGroupOfSheets <- vapply(seq_len(length(outputTabTitles) + length(scenInputTabTitles)), function(tabId){
+    if(tabId > length(outputTabTitles)){
+      if(length(scenInputTabTitles[[tabId - length(outputTabTitles)]]) > 1L){
+        return(TRUE)
+      }
+    }else if(length(outputTabTitles[[tabId]]) > 1L){
+      return(TRUE)
+    }
+    return(FALSE)
+  }, logical(1L), USE.NAMES = FALSE)
+    
   scenDataTemplate <- c(modelOutTemplate, modelInTemplate)
   scenDataTemplate <- scenDataTemplate[!vapply(scenDataTemplate, is.null, logical(1L))]
   
@@ -1037,6 +1102,21 @@ if(is.null(errMsg)){
        identical(modelIn[[el]]$dropdown$checkbox, TRUE)) 
       return(FALSE) 
     return(TRUE)}, logical(1L), USE.NAMES = FALSE)])
+  groupSheetToTabIdMap <- lapply(seq_len(length(outputTabs) + length(scenInputTabs)), function(groupId){
+    if(groupId > length(outputTabs)){
+      return(lapply(scenInputTabs[[groupId - length(outputTabs)]], function(sheetId){
+        if(identical(sheetId, 0L)){
+          tabName <- scalarsFileName
+        }else{
+          tabName <- names(modelIn)[[sheetId]]
+        }
+        return(match(tabName, scenTableNamesToDisplay))
+      }))
+    }
+    return(lapply(outputTabs[[groupId]], function(sheetId){
+      return(match(names(modelOut)[[sheetId]], scenTableNamesToDisplay))
+    }))
+  })
   # get the operating system that shiny is running on
   serverOS          <- getOS()
   installPackage    <- list()

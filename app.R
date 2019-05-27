@@ -519,7 +519,9 @@ if(!is.null(errMsg)){
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
-         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, colsWithDep,
+         inputTabs, inputTabTitles, scenInputTabs, scenInputTabTitles, 
+         isGroupOfSheets, groupSheetToTabIdMap,
+         modelInWithDep, modelOutAlias, colsWithDep,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
@@ -660,11 +662,7 @@ if(!is.null(errMsg)){
     # trigger navigation through tabs by shortcuts
     shortcutNest     <- 0L
     nestTabsetsViaShortcuts <- function(direction){
-      if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
-        shortcutNest <<- min(2L, shortcutNest + direction)
-      }else if(isolate(input$sidebarMenuId) %in% c("inputData", "outputData")){
-        shortcutNest <<- min(2L, shortcutNest + direction)
-      }
+      shortcutNest <<- min(2L, shortcutNest + direction)
     }
     observeEvent(input$tabsetShortcutNest, {
       nestTabsetsViaShortcuts(direction = +1L)
@@ -704,14 +702,14 @@ if(!is.null(errMsg)){
         if(isInSplitView){
           flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
           currentScen <- 2
-          currentSheet <- strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-                                   "_", fixed = TRUE)[[1L]][[3L]]
-          if(isGroupOfSheets[[currentSheet]]){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                              "_", fixed = TRUE)[[1L]][[3L]])
+          if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
             # nest to group of sheets
             currentGroup <- currentSheet
-            currentSheet <- strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
-                                                           currentGroup)]]),
-                                     "_", fixed = TRUE)[[1L]][[4L]]
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                      currentGroup)]]),
+                                                "_", fixed = TRUE)[[1L]][[4L]])
             updateTabsetPanel(session, paste0("contentScen_", currentScen, 
                                               "_", currentGroup), 
                               paste0("contentScen_", currentScen, "_", 
@@ -729,20 +727,20 @@ if(!is.null(errMsg)){
                               paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
           }
         }else{
-          if(!is.null(sidCompOrder)){
+          if(is.null(sidCompOrder)){
             return()
           }
-          currentScen <- as.numeric(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
+          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
           if(shortcutNest > 0L){
             flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
-            currentSheet <- strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
-                                     "_", fixed = TRUE)[[1L]][[3L]]
-            if(isGroupOfSheets[[currentSheet]]){
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                                "_", fixed = TRUE)[[1L]][[3L]])
+            if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
               # nest to group of sheets
               currentGroup <- currentSheet
-              currentSheet <- strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
-                                                             currentGroup)]]),
-                                       "_", fixed = TRUE)[[1L]][[4L]]
+              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                        currentGroup)]]),
+                                                  "_", fixed = TRUE)[[1L]][[4L]])
               updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
                                 paste0("contentScen_", currentScen, "_", 
                                        currentGroup, "_", currentSheet + direction))
@@ -755,9 +753,6 @@ if(!is.null(errMsg)){
             flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
             # go to next scenario tab
             idx <- which(sidCompOrder == currentScen)[1]
-            if(identical(idx, length(sidCompOrder))){
-              return(NULL)
-            }
             updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
           }
         }
@@ -1016,17 +1011,15 @@ if(!is.null(errMsg)){
       skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
       
       scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
-        if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
-                      paste0("contentScen_", scenId, "_", sheetId)))
-          skipScenCompObserve[scenId] <<- TRUE
         if(is.null(groupId)){
-          if(!skipScenCompObserve[scenId] &&
-             !identical(isolate(input[[paste0("contentScen_", scenId, "_", groupId)]]), 
-                        paste0("contentScen_", scenId, "_", groupId, "_", sheetId)))
+          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
+                        paste0("contentScen_", scenId, "_", sheetId)))
             skipScenCompObserve[scenId] <<- TRUE
           updateTabsetPanel(session, paste0("contentScen_", scenId),
                             paste0("contentScen_", scenId, "_", sheetId))
         }else{
+          updateTabsetPanel(session, paste0("contentScen_", scenId),
+                            paste0("contentScen_", scenId, "_", groupId))
           updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
                             paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
         }
@@ -1050,12 +1043,12 @@ if(!is.null(errMsg)){
             skipScenCompObserve[i] <<- FALSE
             return(NULL)
           }
-          j <- strsplit(isolate(input[[paste0("contentScen_", i)]]), 
-                        "_", fixed = TRUE)[[1]][[3L]]
+          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                   "_", fixed = TRUE)[[1]][[3L]])
           groupId <- NULL
           if(isGroupOfSheets[[j]]){
             groupId <- j
-            j <- strsplit(isolate(input[[paste0("contentScen_", i, "_", group)]]), 
+            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
                           "_", fixed = TRUE)[[1L]][[4L]]
           }
           if(identical(i, 2L)){
@@ -1064,7 +1057,7 @@ if(!is.null(errMsg)){
             scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
           }else{
             lapply(names(scenData), function(scen){
-              scenCompUpdateTab(scenId = strsplit(scen, "_")[[1]][[2L]], 
+              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
                                 sheetId = j, groupId = groupId)
             })
           }

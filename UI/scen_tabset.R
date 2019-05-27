@@ -16,10 +16,22 @@ getScenTabData <- function(sheetName){
     }
   }else{
     # sheet is input sheet
-    tabData$graphConfig   <- configGraphsIn[[i]]
+    if(identical(inputDsNames[[i]], scalarsFileName) && 
+       !scalarsFileName %in% names(modelIn)){
+      tabData$sheetName     <- lang$nav$scalarAliases$scalars
+      tabData$headerAliases <- c(lang$nav$scalarAliases$cols$name,
+                                 lang$nav$scalarAliases$cols$desc,
+                                 lang$nav$scalarAliases$cols$value)
+      tabData$graphConfig$outType <- "pivot"
+      tabData$graphConfig$pivottable$rows <- scalarsFileHeaders[1]
+      tabData$graphConfig$pivottable$aggregatorName <- "Sum"
+      tabData$graphConfig$pivottable$vals <- scalarsFileHeaders[3]
+    }else{
+      tabData$sheetName     <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
+      tabData$graphConfig   <- configGraphsIn[[i]]
+      tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
+    }
     tabData$tooltip       <- lang$nav$scen$tooltips$inputSheet
-    tabData$sheetName     <- modelInAlias[match(inputDsNames[i], names(modelIn))[1]]
-    tabData$headerAliases <- attr(modelInTemplate[[i]], "aliases")
   }
   # get data index
   tabData$scenTableId <- match(tolower(paste0(gsub("_", "", modelName, fixed = TRUE),
@@ -35,13 +47,12 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
   scenTabset <- do.call(tabBox, c(id = paste0("contentScen_", scenId), width = 12, 
-                                  lapply(seq_len(length(outputTabs) + length(inputTabs)), 
+                                  lapply(seq_len(length(outputTabs) + length(scenInputTabs)), 
                                   function(groupId) {
-                                    if(sheetIdx > length(outputTabs)){
+                                    if(groupId > length(outputTabs)){
                                       # input dataset
-                                      groupId     <- groupId - length(outputTabs)
-                                      tabSheetIds <- inputTabs[[groupId]]
-                                      tabTitles   <- inputTabTitles[[groupId]]
+                                      tabSheetIds <- scenInputTabs[[groupId - length(outputTabs)]]
+                                      tabTitles   <- scenInputTabTitles[[groupId - length(outputTabs)]]
                                       tooltip     <- lang$nav$scen$tooltips$inputSheet
                                       isOutputGroup <- FALSE
                                     }else{
@@ -54,6 +65,10 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                       if(isOutputGroup){
                                         sheetName <- names(modelOut)[sheetId]
                                         graphConfig <- configGraphsOut[[sheetId]]
+                                      }else if(identical(sheetId, 0L)){
+                                        sheetName <- scalarsFileName
+                                        graphConfig <- getScenTabData(scalarsFileName)
+                                        graphConfig <- graphConfig$graphConfig
                                       }else{
                                         sheetName <- names(modelIn)[sheetId]
                                         graphConfig <- configGraphsIn[[sheetId]]
