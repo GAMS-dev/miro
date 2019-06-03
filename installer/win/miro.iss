@@ -55,6 +55,9 @@ DisableProgramGroupPage=no
 
 
 [Files]
+Source: miro_lang\en.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallEnglishMIRO;
+Source: miro_lang\de.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallGermanMIRO;
+Source: miro_lang\cn.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallChineseMIRO;
 Source: innofiles\*.*; DestDir: {app}; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -109,8 +112,9 @@ var
    LicenseStr: String;
    wpAdvancedOptions: Integer;
    wpFileAssociation: Integer;
+   wpMIROLang: Integer;
    IsAdmin: Boolean;
-   CLB_License, CLB_FileAssociation: TNewCheckListBox;
+   CLB_License, CLB_FileAssociation, CLB_MIROLang: TNewCheckListBox;
    ST_License, ST_FileAssociation: TNewStaticText;
    CLB_License_Last_Checked: Integer;
  
@@ -146,6 +150,21 @@ begin
       SetIniString('PROJECT', 'ACTIVE', FileProj, FileGamsIni);
       SaveStringToFile(FileProj,'[Project]', false);
       end;
+end;
+
+function InstallEnglishMIRO: Boolean;
+begin
+  Result := CLB_MIROLang.Checked[1]
+end;
+
+function InstallGermanMIRO: Boolean;
+begin
+  Result := CLB_MIROLang.Checked[2]
+end;
+
+function InstallChineseMIRO: Boolean;
+begin
+  Result := CLB_MIROLang.Checked[3]
 end;
 
 function ShouldRunStudio: Boolean;
@@ -602,6 +621,31 @@ begin
   Result := Page.ID;
 end;
 
+{Create a page for choosing the language of GAMS MIRO}
+function CreateMIROlanguagePage(): Integer;
+var
+  Page: TWizardPage;
+begin
+  Page := CreateCustomPage(wpSelectTasks, 'GAMS MIRO language', 'Choose the default language for GAMS MIRO');
+  
+  CLB_MIROLang := TNewCheckListBox.Create(Page);
+  CLB_MIROLang.Flat := True;
+  CLB_MIROLang.BorderStyle := bsNone;
+  CLB_MIROLang.ParentColor := True;
+  CLB_MIROLang.Parent := Page.Surface;
+  CLB_MIROLang.Width := Page.SurfaceWidth;
+  CLB_MIROLang.Height := ScaleY(100);
+  
+  CLB_MIROLang.AddGroup('Which default language should be chosen for GAMS MIRO? ' + #13#10 , '', 0, nil);
+  CLB_MIROLang.AddRadioButton('English', '', 1, True, True, nil);
+  CLB_MIROLang.AddRadioButton('German', '', 1, False, True, nil);
+  CLB_MIROLang.AddRadioButton('Chinese', '', 1, False, True, nil);
+  CLB_MIROLang.ShowLines := False;
+  CLB_MIROLang.WantTabs := True;
+                                                          
+  Result := Page.ID;
+end;
+
 {Create a page for choosing the file association GAMS IDE vs GAMS Studio}
 function CreateFileAssociationPage(): Integer;
 var
@@ -649,6 +693,9 @@ begin
     if (CB_Shortcut_Studio.Checked) or (not CB_Advanced.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS Studio');
     if (CLB_FileAssociation.Checked[1]) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS IDE');
     if (CLB_FileAssociation.Checked[2]) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS Studio');
+    if (CLB_MIROLang.Checked[1]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to English');
+    if (CLB_MIROLang.Checked[2]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to German');
+    if (CLB_MIROLang.Checked[3]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to Chinese');
 
     // show a warning, that a GAMSDIR from a previous installation exists but is not updated
     Hive := HKCU
@@ -737,6 +784,7 @@ begin
 
   wpAdvancedOptions := CreateAdvancedOptionPage;
   wpFileAssociation := CreateFileAssociationPage;
+  wpMIROLang := CreateMIROlanguagePage;
   PageFromID(wpSelectProgramGroup).OnShouldSkipPage := @ShouldSkip;
   ModifyWelcomePage();
   ModifyFinishedPage();                            

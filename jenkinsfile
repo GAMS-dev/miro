@@ -29,7 +29,7 @@ pipeline {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
-                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
+                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/windows/windows_x64_64.exe', userName: '')])
                         copyArtifacts filter: '*x86_64.zip', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         bat '''
                             for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
@@ -77,6 +77,17 @@ pipeline {
                             %GBIN_DIR%\\cp    %WORKSPACE%\\LICENSE miro
                             %GBIN_DIR%\\cp    %WORKSPACE%\\app.R miro
                             %GBIN_DIR%\\cp    %WORKSPACE%\\global.R miro
+                            
+                            cd %WORKSPACE%\\installer\\win
+                            mkdir miro_lang
+                            %GBIN_DIR%\\rm -f %GAMS_DIR%\\conf\\config_schema.json
+                            %GBIN_DIR%\\cp %WORKSPACE%\\conf\\config_schema.json miro_lang\\en.json
+                            cd miro_lang
+                            echo 1,/"default":"en"/ s/"default":"en"/"default":"de"/ > x.sed
+                            %GBIN_DIR%\\sed -f x.sed en.json > de.json
+                            echo 1,/"default":"en"/ s/"default":"en"/"default":"cn"/ > x.sed
+                            %GBIN_DIR%\\sed -f x.sed en.json > cn.json
+                            cd %GAMS_DIR%
 
                             rem APILIB Example models
                             cd %WORKSPACE%\\model\\kport
@@ -141,17 +152,17 @@ pipeline {
                         step([$class: 'WsCleanup'])
                         checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
-                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'GAMS26.1.0.dmg', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GAMS26.1.0.dmg', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'cmex_deg.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_deg.zip', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'mac-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/mac-lib.zip', userName: username)])
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         }
+                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'GAMS.dmg', targetLocation: '', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/macosx/GAMS27.2.0.dmg', userName: '')])
                         copyArtifacts filter: '*x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
                             MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
-                            DMG_NAME=$(find GAMS26*.dmg)
+                            DMG_NAME=$(find GAMS*.dmg)
                             DMG_NAME_TMP="GAMS_MIRO_TMP.dmg"
                             GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
                             GMS_VER_LONG=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\\\.[[:digit:]]\\)\\\\.dmg/\\\\1/)
