@@ -520,7 +520,7 @@ if(!is.null(errMsg)){
          sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
          inputTabs, inputTabTitles, scenInputTabs, scenInputTabTitles, 
-         isGroupOfSheets, groupSheetToTabIdMap,
+         isGroupOfSheets, groupSheetToTabIdMap, scalarsInTemplate,
          modelInWithDep, modelOutAlias, colsWithDep, scalarsInMetaData,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
@@ -537,13 +537,14 @@ if(!is.null(errMsg)){
         
         modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
         dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
+        modelInTemplateTmp <- modelInTemplate[!vapply(modelInTemplate, is.null, logical(1L), USE.NAMES = FALSE)]
         if(scalarsFileName %in% names(modelInRaw)){
           dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
+          modelInTemplateTmp <- c(modelInTemplateTmp, list(scalarsInTemplate))
         }
-        
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
-          flog.info("New data: '%s' is being stored in the database. Please wait a while until the import is finished.", miroDataFile)
+          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
           if(dataFileExt[i] %in% c("xls", "xlsx")){
             method <- "xls"
           }else{
@@ -553,7 +554,7 @@ if(!is.null(errMsg)){
           dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
-                                  modelInTemplate, method = method, fileName = miroDataFile)$tabular
+                                  modelInTemplateTmp, method = method, fileName = miroDataFile)$tabular
           if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))

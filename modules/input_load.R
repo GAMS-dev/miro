@@ -9,13 +9,7 @@ if(!identical(loadMode, "scen")){
     if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
       tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
       namesScenInputData <- c(namesScenInputData, scalarsFileName)
-      scalarsTemplate    <- tibble('a' = character(0L), 'b' = character(0L), 'c' = character(0L))
-      names(scalarsTemplate) <- scalarsFileHeaders
-      attr(scalarsTemplate, "type") <- "set"
-      attr(scalarsTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
-                                            lang$scalarAliases$cols$desc,
-                                            lang$scalarAliases$cols$value)
-      modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsTemplate
+      modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsInTemplate
       metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
     }
     scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 

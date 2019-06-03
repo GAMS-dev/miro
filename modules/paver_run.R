@@ -74,7 +74,7 @@ observeEvent(input$btPaver, {
     return()
   }else{
     errMsg <- NULL
-    paverDir <- paste0(workDir, "paver", .Platform$file.sep)
+    paverDir <- paste0(workDir, "paver")
     paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){
@@ -83,8 +83,8 @@ observeEvent(input$btPaver, {
         dir.create(traceFileDir, showWarnings = FALSE)
       }
       if(dir.exists(paverDir)){
-        unlink(file.path(paverDir,"*"), recursive = TRUE, force = TRUE)
-        unlink(file.path(paverDir,"*.png"), recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir, "*"), recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir, "*.png"), recursive = TRUE, force = TRUE)
       }
       dir.create(paverDir, showWarnings = FALSE)
     }, error = function(e){

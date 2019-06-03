@@ -1187,6 +1187,14 @@ if(is.null(errMsg)){
     )
     names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
     names(scalarsInMetaData) <- scalarsFileName
+    scalarsInTemplate        <- tibble('a' = character(0L), 
+                                       'b' = character(0L), 
+                                       'c' = character(0L))
+    names(scalarsInTemplate) <- scalarsFileHeaders
+    attr(scalarsInTemplate, "type") <- "set"
+    attr(scalarsInTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
+                                            lang$scalarAliases$cols$desc,
+                                            lang$scalarAliases$cols$value)
   }
   # generate GAMS return code map
   GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
