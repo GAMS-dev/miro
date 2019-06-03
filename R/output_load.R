@@ -7,6 +7,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       stop(sprintf("File: '%s' could not be found."), xlsPath, call. = FALSE)
     }
     xlsSheetNames <- tolower(excel_sheets(xlsPath))
+    xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), "[[", character(1L), 1L)
   }else if(identical(method, "gdx")){
     gdxPath <- file.path(workDir, fileName)
     if(!file.exists(gdxPath)){
@@ -20,6 +21,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   }
   ret         <- list(tabular = NULL, scalar = NULL)
   # read scalar data in case it exists
+  isNewGdx <- TRUE
   tryCatch({
     switch(method,
            csv = {
@@ -39,7 +41,8 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
            },
            gdx = {
              if(scalarsName %in% names(metaData)){
-               ret$scalar <- gdxio$rgdx(gdxPath, scalarsName, isNewGdx = TRUE)
+               ret$scalar <- gdxio$rgdx(gdxPath, scalarsName, isNewGdx = isNewGdx)
+               isNewGdx <- FALSE
              }
            })
     
@@ -70,7 +73,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   # fetch results from csv files
   lapply(seq_along(metaData), function(i){
     if(identical(names(metaData)[[i]], scalarsName)){
-      if(!is.null(ret$scalar)){
+      if(length(ret$scalar)){
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
@@ -117,7 +120,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                    }
                    ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
                                                    names = names(metaData[[i]]$headers),
-                                                   pivotHeaders = pivotHeaders)
+                                                   pivotHeaders = pivotHeaders, isNewGdx = isNewGdx)
                  }, error = function(e){
                    ret$tabular[[i]] <<- templates[[i]]
                  })

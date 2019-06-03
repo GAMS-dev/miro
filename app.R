@@ -521,7 +521,7 @@ if(!is.null(errMsg)){
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
          inputTabs, inputTabTitles, scenInputTabs, scenInputTabTitles, 
          isGroupOfSheets, groupSheetToTabIdMap,
-         modelInWithDep, modelOutAlias, colsWithDep,
+         modelInWithDep, modelOutAlias, colsWithDep, scalarsInMetaData,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,

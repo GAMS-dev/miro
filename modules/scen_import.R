@@ -106,6 +106,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
       flog.error("Some error occurred reading the file: '%s'. Error message: %s.", as.character(isolate(input$localInput$name)), e)
       errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, as.character(isolate(input$localInput$name)))
     })
+    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
     if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       return()
     }

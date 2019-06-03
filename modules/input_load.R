@@ -3,16 +3,32 @@ errMsg <- NULL
 if(!identical(loadMode, "scen")){
   tryCatch({
     tabularDatasetsToFetch <- datasetsToFetch[tolower(datasetsToFetch) %in% modelInTabularData]
-    scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = modelIn[names(modelIn) %in% tabularDatasetsToFetch], 
+    metaDataTmp            <- modelIn[names(modelIn) %in% tabularDatasetsToFetch]
+    namesScenInputData     <- names(modelIn)[names(modelIn) %in% tabularDatasetsToFetch]
+    modelInTemplateTmp     <- modelInTemplate
+    if(length(scalarsInMetaData) && !scalarsFileName %in% tabularDatasetsToFetch){
+      tabularDatasetsToFetch <- c(tabularDatasetsToFetch, scalarsFileName)
+      namesScenInputData <- c(namesScenInputData, scalarsFileName)
+      scalarsTemplate    <- tibble('a' = character(0L), 'b' = character(0L), 'c' = character(0L))
+      names(scalarsTemplate) <- scalarsFileHeaders
+      attr(scalarsTemplate, "type") <- "set"
+      attr(scalarsTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
+                                            lang$scalarAliases$cols$desc,
+                                            lang$scalarAliases$cols$value)
+      modelInTemplateTmp[[length(metaDataTmp) + 1L]] <- scalarsTemplate
+      metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
+    }
+    scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
                                   workDir = dirname(isolate(input$localInput$datapath)), 
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
-                                  templates = modelInTemplate, method = loadMode,
+                                  templates = modelInTemplateTmp, method = loadMode,
                                   fileName = basename(isolate(input$localInput$datapath)))$tabular
-    names(scenInputData) <- names(modelIn)[names(modelIn) %in% tabularDatasetsToFetch]
+    names(scenInputData) <- namesScenInputData
+    rm(metaDataTmp, namesScenInputData, modelInTemplateTmp)
   }, error = function(e){
     flog.error("Problems loading input data. Error message: %s.", e)
-    errMsg <<- conditionMessage(e)
+    errMsg <<- lang$errMsg$dataError$desc
   })
 }
 if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
@@ -76,15 +92,14 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
         
         # check whether scalar dataset has already been imported
         if(is.null(scalarDataset)){
-          dataTmp <- scenInputData[[dataset]]
-          
+          dataTmp <- scenInputData[[scalarsFileName]]
           # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
           # rather than setting them to NULL
           if(!is.null(dataTmp)){
             scalarDataset <<- dataTmp
           }
         }
-        if(!is.null(scalarDataset) && nrow(scalarDataset)){
+        if(length(scalarDataset) && nrow(scalarDataset)){
           # double slider has two scalar values saved
           if((modelIn[[i]]$type == "slider" && length(modelIn[[i]]$slider$default) > 1) || 
              (modelIn[[i]]$type == "daterange")){
@@ -112,7 +127,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           }else{
             dataTmp <- unlist(scalarDataset[tolower(scalarDataset[[colId]]) == rowName, 
                                             colValue, drop = FALSE], use.names = FALSE)
-            if(!is.null(dataTmp) && length(dataTmp)){
+            if(length(dataTmp) && length(dataTmp)){
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
             }

@@ -43,6 +43,7 @@ getScalarValue <- function(data, operator){
 getData     <- vector(mode = "list", length = length(modelInWithDep))
 getSelected <- vector(mode = "list", length = length(modelIn))
 inputInitialized <- vector(mode = "logical", length = length(modelInWithDep))
+newDefaultValue <- vector(mode = "list", length = length(modelInWithDep))
 
 lapply(seq_along(modelIn), function(id){
   i    <- match(names(modelIn)[[id]], names(modelInWithDep))[1]
@@ -546,6 +547,7 @@ lapply(seq_along(modelIn), function(id){
                #if(!is.null(value) && !identical(value, as.numeric(isolate(input[["slider_" %+% id]])))){
                  noCheck[id] <<- TRUE
                #}
+               newDefaultValue[[i]] <<- value
                updateSliderInput(session, inputId = paste0("slider_", id), value = value, min = getData[[i]]()$min, 
                                         max = getData[[i]]()$max, step = getData[[i]]()$step)
                if(!inputInitialized[i]){
@@ -565,9 +567,17 @@ lapply(seq_along(modelIn), function(id){
              # update slider default value
              observe({
                value <- getSelected[[id]]()
-               if(!is.null(value) && !identical(value, as.numeric(isolate(input[[paste0("slider_", id)]])))){
-                 noCheck[id] <<- TRUE
-                 updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+               if(!is.null(value)){
+                 if(length(newDefaultValue[[i]])){
+                   if(!identical(value, newDefaultValue[[i]])){
+                     noCheck[id] <<- TRUE
+                     updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+                   }
+                   newDefaultValue[[i]] <<- numeric(0L)
+                 }else if(!identical(value, as.numeric(isolate(input[[paste0("slider_", id)]])))){
+                   noCheck[id] <<- TRUE
+                   updateSliderInput(session, inputId = paste0("slider_", id), value = value)
+                 }
                }
              }, priority = -1)
              

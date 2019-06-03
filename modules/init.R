@@ -424,6 +424,14 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
               groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
             }
             tabs[[j]]      <-  groupMemberIds
+            groupMemberIdsInWidgets <- match(groupMemberIds, widgetIds)
+            
+            if(any(!is.na(groupMemberIdsInWidgets))){
+              #groupMemberIdsInWidgets <- groupMemberIdsInWidgets[!is.na(groupMemberIdsInWidgets)]
+              #widgetIds <- widgetIds[-groupMemberIdsInWidgets]
+              flog.error("It is currently not possible to specify widgets and tables in the same group!")
+              errMsg <<- paste(errMsg, "It is currently not possible to specify widgets and tables in the same group!", sep = "\n")
+            }
             if(mergeScalars){
               groupScalarId <- match(scalarsFileName, names[groupMemberIds])
               if(!is.na(groupScalarId)){
@@ -450,26 +458,25 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
             next
           }
           sheetId <- 0L
+          scalarAssigned <- TRUE
         }
         tabs[[j]]      <-  sheetId
         tabTitles[[j]] <-  aliases[[i]]
         j <- j + 1L
         next
-      }else if(!length(widgetId)){
+      }else if(!length(widgetId) && length(widgetIds)){
         if(mergeScalars){
           if(scalarAssigned){
             if(!length(widgetIdsMultiDim)){
               next
             }
             widgetIds <- widgetIdsMultiDim
-          }else{
-            if(!identical(length(widgetIds), length(widgetIdsMultiDim))){
-              scalarAssigned <- TRUE
-              tabTitles[[j]] <-  lang$nav$scalarAliases$scalars
-              tabs[[j]]      <-  c(0L, widgetIdsMultiDim)
-              j <- j + 1L
-              next
-            }
+          }else if(!identical(length(widgetIds), length(widgetIdsMultiDim))){
+            scalarAssigned <- TRUE
+            tabTitles[[j]] <-  lang$nav$scalarAliases$scalars
+            tabs[[j]]      <-  c(0L, widgetIdsMultiDim)
+            j <- j + 1L
+            next
           }
         }
         widgetId     <- j
@@ -520,7 +527,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                               widgetIdsMultiDim = widgetIdsMultiDim)
   scenInputTabTitles <- scenInputTabs$tabTitles
   scenInputTabs    <- scenInputTabs$tabs
-  
   # read graph data for input and output sheets
   strictMode        <- config$activateModules$strictmode
   configGraphsIn    <- vector(mode = "list", length = length(modelIn))
@@ -1168,6 +1174,20 @@ if(is.null(errMsg)){
   dbSchema$colNames  <- c(dbSchema$colNames, scenColNamesTmp)
   dbSchema$colTypes  <- c(dbSchema$colTypes, unlist(scenColTypesTmp))
   rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
+  
+  scalarsInMetaData <- NULL
+  if(scalarsFileName %in% inputDsNames){
+    scalarsInMetaData <- list(list(alias = "Input Scalars",
+                                   colTypes = "ccc",
+                                   headers = list(
+                                     'a' = list(type = "set"),
+                                     'b' = list(type = "set"),
+                                     'c' = list(type = "set")
+                                   ))
+    )
+    names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
+    names(scalarsInMetaData) <- scalarsFileName
+  }
   # generate GAMS return code map
   GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
                          '1' = "Solver is to be called, the system should never return this number", 
