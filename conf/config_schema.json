@@ -1122,7 +1122,7 @@
             "manualColumnResize":{  
                "description":"Defines whether columns can be manually resized.",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "colWidths":{  

@@ -212,5 +212,8 @@
                 }
             }
 		}
-	}
+	},
+    "handsontable": {
+       "colWidths": 150
+    }
 }

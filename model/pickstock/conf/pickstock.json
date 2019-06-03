@@ -38,6 +38,10 @@
         "selected": "CPLEX"
       }
     },
+    "outputGroups":[{
+        "name":"Dow Jones vs. Index Fund 🙀",
+        "members":["dowvsindex","abserror"]
+    }],
     "dataRendering"      : {
 		"price"   	: {
 			"outType"               : "graph",
@@ -262,5 +266,8 @@
 				}
 			}
 		}
-	}
+	},
+    "handsontable": {
+       "colWidths": 150
+    }
 }
