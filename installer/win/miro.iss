@@ -55,9 +55,9 @@ DisableProgramGroupPage=no
 
 
 [Files]
-Source: miro_lang\en.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallEnglishMIRO;
-Source: miro_lang\de.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallGermanMIRO;
-Source: miro_lang\cn.json DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallChineseMIRO;
+Source: miro_lang\en.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallEnglishMIRO;
+Source: miro_lang\de.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallGermanMIRO;
+Source: miro_lang\cn.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallChineseMIRO;
 Source: innofiles\*.*; DestDir: {app}; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

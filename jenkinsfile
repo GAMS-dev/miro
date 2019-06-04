@@ -157,7 +157,7 @@ pipeline {
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
                         }
-                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'GAMS.dmg', targetLocation: '', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/macosx/GAMS27.2.0.dmg', userName: '')])
+                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'GAMS27.2.dmg', targetLocation: '', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/macosx/GAMS27.2.0.dmg', userName: '')])
                         copyArtifacts filter: '*x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         sh '''
                             MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
