@@ -27,7 +27,7 @@ pipeline {
                         
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
-                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_win.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/windows/windows_x64_64.exe', userName: '')])
                         copyArtifacts filter: '*x86_64.zip', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
