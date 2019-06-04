@@ -11,7 +11,8 @@
          "default":"en",
          "enum":[  
             "de",
-            "en"
+            "en",
+            "cn"
          ],
          "required":false
       },
