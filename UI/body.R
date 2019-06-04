@@ -39,7 +39,7 @@ tabItemList <- list(
             box(title = list(
               tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                        icon("exclamation-triangle")),
-              textOutput("inputDataTitle", inline = TRUE),
+              uiOutput("inputDataTitle", inline = TRUE),
               tags$div(style = "float: right;", 
                        HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
                                    onclick="confirmModalShow(\'', 
@@ -290,7 +290,7 @@ tabItemList <- list(
           fluidRow(
             tags$div(id = "scen-split-view",
                      box(width = 6, solidHeader = TRUE, status="primary", title = 
-                           tagList(textOutput("title_2", inline = T), 
+                           tagList(uiOutput("title_2", inline = T), 
                                    tags$div(style = "float: right;", 
                                             actionButton(inputId = "btScenSplit1_close", 
                                                          class = "bt-icon",
@@ -301,7 +301,7 @@ tabItemList <- list(
                          genSplitCompButtons(1)
                          ),
                      box(width = 6, solidHeader = TRUE, status="primary", 
-                         title = tagList(textOutput("title_3", inline = T), 
+                         title = tagList(uiOutput("title_3", inline = T), 
                                          tags$div(style = "float: right;", 
                                                   actionButton(inputId = "btScenSplit2_close", 
                                                                class = "bt-icon", icon = icon("times"), label = NULL))),
@@ -408,7 +408,7 @@ if(config$activateModules$hcubeMode){
     tabItem(tabName="gamsinter",
             fluidRow(
               box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                  textOutput("modelStatus"))
+                  uiOutput("modelStatus"))
             ),
             if(any(config$activateModules$logFile, config$activateModules$lstFile)){
               if(config$activateModules$logFile && config$activateModules$lstFile){
@@ -444,7 +444,7 @@ if(config$activateModules$hcubeMode){
               box(title = list(
                 tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
                          icon("exclamation-triangle")),
-                textOutput("outputDataTitle", inline = TRUE),
+                uiOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
                                    onclick="confirmModalShow(\'', 

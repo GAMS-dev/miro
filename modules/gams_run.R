@@ -612,7 +612,7 @@ observeEvent(input$btSolve, {
   # reset listing file when new solve is started
   output$listFile <- renderText("")
   # print model status
-  output$modelStatus <- renderText({
+  output$modelStatus <- renderUI({
     
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
@@ -746,7 +746,7 @@ observeEvent(input$btSolve, {
       }
     }
     # print model status
-    return(statusText)
+    return(htmltools::htmlEscape(statusText))
   })
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)

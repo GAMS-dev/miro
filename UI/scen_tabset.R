@@ -164,7 +164,7 @@ generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", lengt
     stop(conditionMessage(e))
   })
 
-  tabPanel(textOutput("title_" %+% scenId, inline = TRUE), value = "scen_" %+% scenId %+% "_",
+  tabPanel(uiOutput("title_" %+% scenId, inline = TRUE), value = "scen_" %+% scenId %+% "_",
            tags$div(class="scen-header", 
                     tags$div(class = "scen-date-wrapper", textOutput("date_" %+% scenId, inline = TRUE)),
                     tags$div(class = "scen-buttons-wrapper",

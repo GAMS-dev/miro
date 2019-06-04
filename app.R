@@ -933,8 +933,8 @@ if(!is.null(errMsg)){
         return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
       }
     )
-    output$inputDataTitle <- renderText(getScenTitle())
-    output$outputDataTitle <- renderText(getScenTitle())
+    output$inputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
+    output$outputDataTitle <- renderText(htmltools::htmlEscape(getScenTitle()))
     
     # activate solve button once all model input files are imported
     observe({

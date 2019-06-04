@@ -77,7 +77,7 @@ observeEvent(input$btScenSplit1_close, {
     return(NULL)
   }
   
-  output$title_2                                     <- renderText(character(0))
+  output$title_2                                     <- renderUI(character(0))
   scenIdLong                                         <- "scen_2_"
   scenData[[scenIdLong]]                             <<- list(NULL)
   scalarData[[scenIdLong]]                           <<- list(NULL)
@@ -95,7 +95,7 @@ observeEvent(input$btScenSplit2_close, {
     return(NULL)
   }
   
-  output$title_3                                     <- renderText(character(0))
+  output$title_3                                     <- renderUI(character(0))
   scenIdLong                                         <- "scen_3_"
   scenData[[scenIdLong]]                             <<- list(NULL)
   scalarData[[scenIdLong]]                           <<- list(NULL)

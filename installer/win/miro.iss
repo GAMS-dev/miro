@@ -6,8 +6,8 @@
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 ;AppName=GAMS MIRO {#MIROVersion} BETA
-AppName=GAMS
-AppVerName=GAMS win{code:BitnessToStr} {#MIROVersion}
+AppName=GAMS MIRO
+AppVerName=GAMS MIRO win{code:BitnessToStr} {#MIROVersion}
 AppPublisher=GAMS Development
 AppSupportURL=http://www.gams.com
 AppPublisherURL=http://www.gams.com

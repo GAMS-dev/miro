@@ -195,7 +195,6 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
         scenNameTmp <- db$importDataset(tableName = db$getTableNameMetadata(), 
                                         tibble(sidIdentifier, sidsToLoad[[1]]),
                                         colNames = snameIdentifier)[[1]]
-      print(scenNameTmp)
       if(db$checkSnameExists(scenNameTmp, uid)){
         flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
         if(config$activateModules$hcubeMode){
