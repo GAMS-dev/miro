@@ -605,7 +605,7 @@ begin
   CB_Shortcut.Top     := CB_Path.Top + CB_Path.Height;
   CB_Shortcut.Left    := ScaleY(10);
   CB_Shortcut.Caption := 'Create a desktop icon for GAMS IDE';
-  CB_Shortcut.Checked := True;
+  CB_Shortcut.Checked := False;
   CB_Shortcut.Parent  := Page.Surface;
 
   CB_Shortcut_Studio := TNewCheckBox.Create(Page);
@@ -657,7 +657,7 @@ begin
                                   Wizardform.ReadyMemo.Lines.Add(#13#10 + 'Additional Tasks:');
     if CB_AllUsers.Checked and CB_Advanced.Checked then Wizardform.ReadyMemo.Lines.Add('    Install for all users');
     if CB_Path.Checked and CB_Advanced.Checked then Wizardform.ReadyMemo.Lines.Add('    Add GAMS directory to PATH environment variable');
-    if (CB_Shortcut.Checked) or (not CB_Advanced.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS IDE');
+    if (CB_Shortcut.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS IDE');
     if (CB_Shortcut_Studio.Checked) or (not CB_Advanced.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS Studio');
     if (True) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS Studio');
     if (CLB_MIROLang.Checked[1]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to English');
@@ -691,7 +691,7 @@ begin
     if CB_Path.Checked then UpdatePath(CB_AllUsers.Checked);
     
     // if user selected to create shortcut or default mode -> create shortcut
-    if (CB_Shortcut.Checked) or (not CB_Advanced.Checked) then CreateShortcut();
+    if (CB_Shortcut.Checked) then CreateShortcut();
     if (CB_Shortcut_Studio.Checked) or (not CB_Advanced.Checked) then CreateShortcutStudio();
 
     writeReg((CB_AllUsers.Checked) or (IsAdmin and (not CB_Advanced.Checked)));

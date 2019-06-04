@@ -163,7 +163,88 @@ pipeline {
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'GAMS27.2.0.dmg', targetLocation: '', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/macosx/GAMS27.2.0.dmg', userName: '')])
                         copyArtifacts filter: '*x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         sh '''
-                            echo "asd12"
+                            MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                            MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
+                            DMG_NAME=$(find GAMS*.dmg)
+                            DMG_NAME_TMP="GAMS_MIRO_TMP.dmg"
+                            GMS_VER=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\)\\\\.[[:digit:]]\\\\.dmg/\\\\1/)
+                            GMS_VER_LONG=$(echo $DMG_NAME | sed -E s/GAMS\\([[:digit:]]+\\\\.[[:digit:]]\\\\.[[:digit:]]\\)\\\\.dmg/\\\\1/)
+                            DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
+                            
+                            DMG_ROOT=volume
+                            mkdir $DMG_ROOT
+                            hdiutil convert $DMG_NAME -format UDRW -o $DMG_NAME_TMP
+                            mount
+                            hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME_TMP
+                            
+                            STUDIO_ROOT=studio
+                            mkdir $STUDIO_ROOT
+                            mv *x86_64.dmg studio.dmg
+                            hdiutil attach -mountpoint ./$STUDIO_ROOT studio.dmg
+                            rm -fr $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/GAMS\\ Studio.app
+                            cp -R studio/* $WORKSPACE/$DMG_ROOT/GAMS$GMS_VER
+                            
+                            TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
+                            
+                            cd "$TARGET/GMSPython/bin"
+                            "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            cd "$WORKSPACE"
+                            mkdir -p "$TARGET/GMSR"
+                            mkdir "$TARGET/miro/"
+                            mv library "$TARGET/GMSR"
+                            cp -r app.R conf global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
+                            cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
+                            
+                            cd "$WORKSPACE/model/kport"
+                            "$TARGET/gmszip" -r kport_conf.zip conf/kport.json static customRenderer
+                            cp kport_conf.zip kport.gms "$TARGET/datalib_ml"
+                            rm -f kport_conf.zip
+                            
+                            cd "$WORKSPACE/model/pickstock"
+                            "$TARGET/gmszip" -r pickstock_conf.zip conf/pickstock.json static customRenderer
+                            cp pickstock_conf.zip pickstock.gms dowjones2016.csv "$TARGET/datalib_ml"
+                            rm -f pickstock_conf.zip
+                            
+                            cd "$WORKSPACE/model/pickstock_live"
+                            "$TARGET/gmszip" -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
+                            cp pickstock_live_conf.zip pickstock_live.gms "$TARGET/datalib_ml"
+                            rm -f pickstock_live_conf.zip
+                            
+                            cd "$WORKSPACE/model/transport"
+                            "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static customRenderer
+                            cp transport_conf.zip transport.gms "$TARGET/datalib_ml"
+                            rm -f transport_conf.zip
+                            
+                            cd "$WORKSPACE/model/transport_live"
+                            "$TARGET/gmszip" -r transport_live_conf.zip conf/transport_live.json static customRenderer
+                            cp transport_live_conf.zip transport_live.gms "$TARGET/datalib_ml"
+                            rm -f transport_live_conf.zip
+                            
+                            cd "$TARGET/datalib_ml"
+                            echo \\$include mkconfig.inc >> kport.gms
+                            echo \\$include mkconfig.inc >> pickstock.gms
+                            echo \\$include mkconfig.inc >> pickstock_live.gms
+                            echo \\$include mkconfig.inc >> transport.gms
+                            echo \\$include mkconfig.inc >> transport_live.gms
+                            
+                            cp -f "$WORKSPACE/mkconfig.inc" "$WORKSPACE/datalib.glb" "$TARGET/datalib_ml"
+                            mv "$WORKSPACE/cmex_deg.zip" "$TARGET/cmex_deg.zip"
+                            cd "$TARGET"
+                            unzip -o "$TARGET/cmex_deg.zip"
+                            rm "$TARGET/cmex_deg.zip"
+                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO$MIRO_VER_SHORT/"
+                            
+                            mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
+                            SetFile -a C "$WORKSPACE/$DMG_ROOT"
+                            
+                            diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO $MIRO_VER_SHORT"
+                            
+                            cd "$WORKSPACE"
+                            hdiutil detach -verbose $STUDIO_ROOT
+                            hdiutil detach -verbose $DMG_ROOT
+                            hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
+                            rm studio.dmg
+                            rm $DMG_NAME
                         '''
                     }
                 }
@@ -188,6 +269,24 @@ pipeline {
                         archiveArtifacts artifacts: '**/GAMS_MIRO-*.exe', fingerprint: true
                     }
                 }
+                stage ('macos') {
+                    agent { label 'macos' }
+                    steps {
+                        withCredentials([string(credentialsId: '2e590f95-5e30-4101-93be-31a1b7402da4', variable: 'MACOS_KEYCHAIN_PASSWD')]) {
+                              sh '''
+                                  MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R | cut -f3 -d" " | xargs)
+                                  MIRO_VER_SHORT=$(echo $MIRO_VERSION  | sed -E s/\\([[:digit:]]+\\\\.[[:digit:]]+\\).*/\\\\1/)
+                                  DMG_NAME_FINAL="GAMS_MIRO-${MIRO_VER_SHORT}.dmg"
+                                  
+                                  security unlock-keychain -p ${MACOS_KEYCHAIN_PASSWD}
+                                  codesign -s DP4M4YHKF2 $DMG_NAME_FINAL --force --verbose
+                                  security lock-keychain
+                                  codesign --verify --verbose "$DMG_NAME_FINAL"
+                              '''
+                          }
+                        archiveArtifacts artifacts: '**/GAMS_MIRO-*.dmg', fingerprint: true
+                }
+              }
             }
         }       
     }
