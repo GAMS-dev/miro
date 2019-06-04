@@ -55,9 +55,9 @@ DisableProgramGroupPage=no
 
 
 [Files]
-Source: miro_lang\en.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallEnglishMIRO;
-Source: miro_lang\de.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallGermanMIRO;
-Source: miro_lang\cn.json; DestDir: {app}\miro\conf\config_schema.json; Flags: ignoreversion; Check: InstallChineseMIRO;
+Source: miro_lang\en\config_schema.json; DestDir: {app}\miro\conf; Flags: ignoreversion; Check: InstallEnglishMIRO;
+Source: miro_lang\de\config_schema.json; DestDir: {app}\miro\conf; Flags: ignoreversion; Check: InstallGermanMIRO;
+Source: miro_lang\cn\config_schema.json; DestDir: {app}\miro\conf; Flags: ignoreversion; Check: InstallChineseMIRO;
 Source: innofiles\*.*; DestDir: {app}; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -111,11 +111,10 @@ var
    CB_Advanced: TNewCheckBox;
    LicenseStr: String;
    wpAdvancedOptions: Integer;
-   wpFileAssociation: Integer;
    wpMIROLang: Integer;
    IsAdmin: Boolean;
-   CLB_License, CLB_FileAssociation, CLB_MIROLang: TNewCheckListBox;
-   ST_License, ST_FileAssociation: TNewStaticText;
+   CLB_License, CLB_MIROLang: TNewCheckListBox;
+   ST_License: TNewStaticText;
    CLB_License_Last_Checked: Integer;
  
 
@@ -169,12 +168,12 @@ end;
 
 function ShouldRunStudio: Boolean;
 begin
-  Result := CLB_FileAssociation.Checked[2];
+  Result := True;
 end;
 
 function ShouldRunIDE: Boolean;
 begin
-  Result := CLB_FileAssociation.Checked[1];
+  Result := False;
 end;
 
 {Copy a license file}
@@ -396,7 +395,7 @@ Success := RegWriteStringValue(Hive, SubKey, '', Data);
 if Success then SetIniString('registry', 'key2', SubKey, ExpandConstant('{#UnInstInfo}')) 
 
 //Root: HKLM; SubKey: gamside.file\Shell\Open\Command; ValueType: string; ValueData: """{app}\gamside.exe"" ""%1"""; Flags: uninsdeletevalue createvalueifdoesntexist
-if CLB_FileAssociation.Checked[1] then Data := ExpandConstant('"{app}\gamside.exe" "%1"')
+if False then Data := ExpandConstant('"{app}\gamside.exe" "%1"')
 else Data := ExpandConstant('"{app}\studio\studio.exe" "%1"');
 SubKey := 'gamside.file\Shell\Open\Command';
 Success := RegWriteStringValue(Hive, SubKey, '', Data);
@@ -646,37 +645,6 @@ begin
   Result := Page.ID;
 end;
 
-{Create a page for choosing the file association GAMS IDE vs GAMS Studio}
-function CreateFileAssociationPage(): Integer;
-var
-  Page: TWizardPage;
-begin
-  Page := CreateCustomPage(wpSelectTasks, 'File Association of GAMS Files', 'Choose a program to be associated with GAMS files (.gms)');
-  
-  CLB_FileAssociation := TNewCheckListBox.Create(Page);
-  CLB_FileAssociation.Flat := True;
-  CLB_FileAssociation.BorderStyle := bsNone;
-  CLB_FileAssociation.ParentColor := True;
-  CLB_FileAssociation.Parent := Page.Surface;
-  CLB_FileAssociation.Width := Page.SurfaceWidth;
-  CLB_FileAssociation.Height := ScaleY(100);
-  
-  CLB_FileAssociation.AddGroup('This distribution includes, additionally to the GAMS IDE, an early preview version of GAMS Studio, a new development environment for GAMS. Should GAMS files (.gms) be associated with the GAMS IDE or with GAMS Studio?' + #13#10 , '', 0, nil);
-  CLB_FileAssociation.AddRadioButton('Use GAMS IDE', '', 1, True, True, nil);
-  CLB_FileAssociation.AddRadioButton('Use GAMS Studio', '', 1, False, True, nil);
-  CLB_FileAssociation.ShowLines := False;
-  CLB_FileAssociation.WantTabs := True;
-
-  ST_FileAssociation := TNewStaticText.Create(Page);
-  ST_FileAssociation.Caption := 'Note, that this choice only affects the default file type association. Both programs can be used to open .gms files manually.';
-  ST_FileAssociation.Top :=   CLB_FileAssociation.Top + CLB_FileAssociation.Height;
-  ST_FileAssociation.Parent := Page.Surface;
-  ST_FileAssociation.Width := Page.SurfaceWidth;
-  ST_FileAssociation.WordWrap := True;
-                                                          
-  Result := Page.ID;
-end;
-
 {called when a wizard page changes}
 procedure CurPageChanged(CurPage: Integer);
 var
@@ -691,8 +659,7 @@ begin
     if CB_Path.Checked and CB_Advanced.Checked then Wizardform.ReadyMemo.Lines.Add('    Add GAMS directory to PATH environment variable');
     if (CB_Shortcut.Checked) or (not CB_Advanced.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS IDE');
     if (CB_Shortcut_Studio.Checked) or (not CB_Advanced.Checked) then Wizardform.ReadyMemo.Lines.Add('    Create a desktop icon for GAMS Studio');
-    if (CLB_FileAssociation.Checked[1]) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS IDE');
-    if (CLB_FileAssociation.Checked[2]) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS Studio');
+    if (True) then Wizardform.ReadyMemo.Lines.Add('    Associate .gms files with GAMS Studio');
     if (CLB_MIROLang.Checked[1]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to English');
     if (CLB_MIROLang.Checked[2]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to German');
     if (CLB_MIROLang.Checked[3]) then Wizardform.ReadyMemo.Lines.Add('    Set default language for GAMS MIRO to Chinese');
@@ -783,7 +750,6 @@ begin
   else IsAdmin := False
 
   wpAdvancedOptions := CreateAdvancedOptionPage;
-  wpFileAssociation := CreateFileAssociationPage;
   wpMIROLang := CreateMIROlanguagePage;
   PageFromID(wpSelectProgramGroup).OnShouldSkipPage := @ShouldSkip;
   ModifyWelcomePage();
