@@ -422,6 +422,52 @@ function addArrayEl(arrayID, elements, options){
   });
 }
 
+function createSelectDepInput(arrayID, elID, options, label, choices){
+  var id = arrayID + elID;
+  if(options === undefined) options = {};
+  if(options.label === undefined) options.label = "I am the second input";
+  
+  var aliases  = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : choices;
+  var selected = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
+  
+  var firstInput = createSelectInput(arrayID, elID, label, choices, aliases, selected);
+  switch(options.type){
+    case 'select':
+      var secondInput = createSelectInput(arrayID + '_alt', elID, options.label, 
+      options.choices, options.aliases, options.selected);
+    break;
+    case 'text':
+      var secondInput = createTextInput(arrayID + '_alt', elID, options.label, 
+      options.value);
+    break;
+    case 'numeric':
+      var secondInput = createNumericInput(arrayID + '_alt', elID, options.label, 
+      options.value, options.min, options.max);
+    break;
+    case 'checkbox':
+      var secondInput = createCheckboxInput(arrayID + '_alt', elID, options.label, 
+      options.value);
+      break;
+    case 'color':
+      var secondInput = createColorPickerInput(arrayID + '_alt', elID, options.label, 
+      options.value);
+      break;
+    default:
+      throw "Unknown element type: " + options.type;
+  }
+  var checkboxInput = '<div class="form-group col-sm-4">\n' +
+  '<div class="checkbox">\n' +
+    '<label>\n' +
+      '<input type="checkbox" onclick="$(this).closest(\'.dep-group\').children(\'.dep-el\').toggle();"/>\n' +
+      '<span>' + options.cbLabel + '</span>\n' +
+    '</label>\n' +
+  '</div>\n' +
+'</div>'
+  
+  return('<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8">\n' +
+  firstInput + '\n</div>\n<div class="dep-el col-sm-8" style="display:none">\n' + secondInput + 
+  '\n</div>\n<div>\n'+ checkboxInput + '\n</div>\n</div>');
+}
 function createSelectInput(arrayID, elID, label, choices){
   var id = arrayID + elID;
   var aliases  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : choices;
@@ -488,8 +534,6 @@ function removeElAtomic(element, idx){
   var arrayLabel = null;
   
   $.each(element, function(k,v){
-    console.log(k);
-    console.log(idx);
     if($(v).children('input[type="number"]').length){
       el = $(v).children('input[type="number"]');
       if(idx === 0){
