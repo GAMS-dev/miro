@@ -1,6 +1,6 @@
 #version number
 MIROVersion <- "0.5.9"
-MIRORDate   <- "Jun 4 2019"
+MIRORDate   <- "Jun 5 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -934,7 +934,7 @@ if(!is.null(errMsg)){
       }
     )
     output$inputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
-    output$outputDataTitle <- renderText(htmltools::htmlEscape(getScenTitle()))
+    output$outputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
     
     # activate solve button once all model input files are imported
     observe({
