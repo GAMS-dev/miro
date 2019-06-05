@@ -113,7 +113,7 @@ function addDyEvent(){
 }
 function addDyLimit(){
   var arrayID      = 'dy_dyLimit';
-  var elements     = {'dy_dyLimit' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
+  var elements     = {'dy_dyLimit' : ['selectDep', ['Use static limit?', 'numeric', 'Set a numeric value for the limit', 0, 0], 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
   'dyLimit_limit': ['numeric', 'Set a numeric value for the limit', 0, 0],
   'dyLimit_label': ['text', 'What label should be used?'],
   'dyLimit_labelLoc': ['select', 'Select marker symbol', ['left', 'right']],
@@ -358,7 +358,27 @@ function addCustomTimeEl(){
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
-
+function toggleDepContainer(el, arrayID, elID, rAddID){
+  var depGroup = $(el).closest('.dep-group');
+  depGroup.children('.dep-el').toggle();
+  var activeEl = depGroup.children('.dep-el:visible').first().children('.form-group');
+  var value = undefined;
+  
+  $.each(activeEl, function(k,v){
+    if($(v).children('input[type="number"]').length){
+      value = $(v).children('input[type="number"]').val();
+    }else if($(v).children('.miro-color-picker').length){
+      value = $(v).children('.miro-color-picker').val();
+    }else if($(v).children('input[type="text"]').length){
+      value = $(v).children('input[type="text"]').val();
+    }else if($(v).find('input[type="checkbox"]').length){
+      value = $(v).find('input[type="checkbox"]').val();
+    }else if($(v).find('select').length){
+      value  = $(v).find('select').get(0).selectize.items[0];
+    }
+  });
+  Shiny.setInputValue(rAddID, [elID, value, arrayID, "change"], {priority: "event"});
+}
 function addArrayDataEl(arrayID){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
@@ -444,6 +464,78 @@ function addLabelEl(arrayID, label){
   elInArray[arrayID] = [label];
 }
 
+function registerChangeHandlers(elements, rAddID, elID, options){
+  var idx = 0;
+  var htmlID = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : elID;
+  
+  $.each(elements, function( k, v ) {
+    if(v[0] === 'select' || v[0] === 'selectDep'){
+      if(idx === 0){
+        $('#' + k + htmlID).selectize({
+      	  onChange: function(value) {
+      	    if(options.updateTxtWithLabel.length){
+      	      var alias = outputScalarAliases[outputScalars.findIndex(function(val){
+                            return val === value;
+                          })];
+      	      for(var i = 0; i < options.updateTxtWithLabel.length; i++){
+        	      $(options.updateTxtWithLabel[i]).val(alias);
+        	    }
+      	    }
+      	    
+      	    Shiny.setInputValue(rAddID, [elID, value, k, "change"], {priority: "event"});
+          }
+      	});
+      }else{
+        $('#' + k + htmlID).selectize({
+      	  onChange: function(value) {
+      	    Shiny.setInputValue(k, [elID, value], {priority: "event"});
+          }
+      	});
+      }
+      if(v[0] === 'selectDep'){
+    	  var alt_elements = {};
+    	  alt_elements[k] = v[2];
+    	  
+    	  registerChangeHandlers(alt_elements, rAddID, elID, options, '_alt' + elID);
+    	}
+    }else if(v[0] === 'checkbox'){
+      if(idx === 0){
+        $('#' + k + htmlID).on('change', function(){
+          Shiny.setInputValue(rAddID, [elID, $(this).prop('checked'), k, "change"], {priority: "event"});
+        });
+      }else{
+        $('#' + k + htmlID).on('change', function(){
+          Shiny.setInputValue(k, [elID, $(this).prop('checked')], {priority: "event"});
+        });
+      }
+    }else if(v[0] === 'color'){
+      $('#' + k + htmlID).colorpicker({
+        align: "left"
+      });
+      if(idx === 0){
+        $('#' + k + htmlID).on('change', $.debounce(500, function(){
+          Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
+        }));
+      }else{
+        $('#' + k + htmlID).on('change', $.debounce(500, function(){
+          Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
+        }));
+      }
+    }else{
+      if(idx === 0){
+        $('#' + k + htmlID).on('change', $.debounce(250, function(){
+          Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
+        }));
+      }else{
+        $('#' + k + htmlID).on('change', $.debounce(250, function(){
+          Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
+        }));
+      }
+    }
+    idx++;
+  });
+}
+
 function addArrayEl(arrayID, elements, options){
   if(options === undefined) options = {};
   if(options.elRequired === undefined) options.elRequired = true;
@@ -486,6 +578,17 @@ function addArrayEl(arrayID, elements, options){
           var selected = v[4];
         }
         arrayContent += createSelectInput(k, elID, v[1], v[2], v[3], selected, v[5]);
+      break;
+      case 'selectDep':
+        var selected = v[3][0];
+        if(v[5] !== undefined){
+          selected = v[5];
+        }
+        if(idx === 0){
+          // tell R that new element was addded to array: (ID)
+          Shiny.setInputValue(rAddID, [elID, selected, k], {priority: "event"});
+        }
+        arrayContent += createSelectDepInput(k, elID, rAddID, v[1], v[2], v[3], v[4], selected, v[6]);
       break;
       case 'text':
         var value = v[2]; 
@@ -536,98 +639,9 @@ function addArrayEl(arrayID, elements, options){
   
   $('#' + arrayID + '_wrapper .array-wrapper').append(arrayContent);
   
-  idx = 0;
-  $.each(elements, function( k, v ) {
-    if(v[0] === 'select'){
-      if(idx === 0){
-        $('#' + k + elID).selectize({
-      	  onChange: function(value) {
-      	    if(options.updateTxtWithLabel.length){
-      	      var alias = outputScalarAliases[outputScalars.findIndex(function(val){
-                            return val === value;
-                          })];
-      	      for(var i = 0; i < options.updateTxtWithLabel.length; i++){
-        	      $(options.updateTxtWithLabel[i]).val(alias);
-        	    }
-      	    }
-      	    
-      	    Shiny.setInputValue(rAddID, [elID, value, k, "change"], {priority: "event"});
-          }
-      	});
-      }else{
-        $('#' + k + elID).selectize({
-      	  onChange: function(value) {
-      	    Shiny.setInputValue(k, [elID, value], {priority: "event"});
-          }
-      	});
-      }
-    }else if(v[0] === 'checkbox'){
-      $('#' + k + elID).on('change', function(){
-        Shiny.setInputValue(k, [elID, $(this).prop('checked')], {priority: "event"});
-      });
-    }else if(v[0] === 'color'){
-       $('#' + k + elID).colorpicker({
-         align: "left"
-       });
-       $('#' + k + elID).on('change', $.debounce(500, function(){
-        Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
-      }));
-    }else{
-      $('#' + k + elID).on('change', $.debounce(250, function(){
-        console.log(k);
-        Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
-      }));
-    }
-    idx++;
-  });
+  registerChangeHandlers(elements, rAddID, elID, options);
 }
 
-function createSelectDepInput(arrayID, elID, options, label, choices){
-  var id = arrayID + elID;
-  if(options === undefined) options = {};
-  if(options.label === undefined) options.label = "I am the second input";
-  
-  var aliases  = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : choices;
-  var selected = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
-  
-  var firstInput = createSelectInput(arrayID, elID, label, choices, aliases, selected);
-  switch(options.type){
-    case 'select':
-      var secondInput = createSelectInput(arrayID + '_alt', elID, options.label, 
-      options.choices, options.aliases, options.selected);
-    break;
-    case 'text':
-      var secondInput = createTextInput(arrayID + '_alt', elID, options.label, 
-      options.value);
-    break;
-    case 'numeric':
-      var secondInput = createNumericInput(arrayID + '_alt', elID, options.label, 
-      options.value, options.min, options.max);
-    break;
-    case 'checkbox':
-      var secondInput = createCheckboxInput(arrayID + '_alt', elID, options.label, 
-      options.value);
-      break;
-    case 'color':
-      var secondInput = createColorPickerInput(arrayID + '_alt', elID, options.label, 
-      options.value);
-      break;
-    default:
-      throw "Unknown element type: " + options.type;
-  }
-  var checkboxInput = '<div class="form-group col-sm-4">\n' +
-  '<div class="checkbox">\n' +
-    '<label>\n' +
-      '<input type="checkbox" onclick="$(this).closest(\'.dep-group\').children(\'.dep-el\').toggle();"/>\n' +
-      '<span>' + options.cbLabel + '</span>\n' +
-    '</label>\n' +
-  '</div>\n' +
-'</div>'
-  
-  return('<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8">\n' +
-  firstInput + '\n</div>\n<div class="dep-el col-sm-8" style="display:none">\n' + secondInput + 
-  '\n</div>\n<div>\n'+ checkboxInput + '\n</div>\n</div>');
-}
 function createSelectInput(arrayID, elID, label, choices){
   var id = arrayID + elID;
   var aliases  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : choices;
@@ -642,6 +656,51 @@ function createSelectInput(arrayID, elID, label, choices){
   '<label class="control-label" for="' +
   id + '">' + label + '</label>\n' +
   '<div><select id="' + id + '"' + (multiple === true? ' multiple="multiple"' : '') + '>' + optionsHTML + '</select>\n</div>\n</div>');
+}
+function createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices){
+  var id = arrayID + elID;
+  
+  var aliases  = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : choices;
+  var selected = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : '';
+  
+  var firstInput = createSelectInput(arrayID, elID, label, choices, aliases, selected);
+  switch(altEl[1]){
+    case 'select':
+      var secondInput = createSelectInput(arrayID + '_alt', elID, altEl[2], 
+      altEl[3], altEl[4], altEl[5]);
+    break;
+    case 'text':
+      var secondInput = createTextInput(arrayID + '_alt', elID, altEl[2], 
+      altEl[3]);
+    break;
+    case 'numeric':
+      var secondInput = createNumericInput(arrayID + '_alt', elID, altEl[2], 
+      altEl[3], altEl[4], altEl[5]);
+    break;
+    case 'checkbox':
+      var secondInput = createCheckboxInput(arrayID + '_alt', elID, altEl[2], 
+      altEl[3]);
+      break;
+    case 'color':
+      var secondInput = createColorPickerInput(arrayID + '_alt', elID, altEl[2], 
+      altEl[3]);
+      break;
+    default:
+      throw "Unknown element type: " + altEl[1];
+  }
+  var checkboxInput = '<div class="form-group col-sm-4">\n' +
+  '<div class="checkbox">\n' +
+    '<label>\n' +
+      '<input type="checkbox" onclick="toggleDepContainer(this, \'' + arrayID + 
+      '\', \'' + elID + '\', \'' + rAddID + '\');"/>\n' +
+      '<span>' + altEl[0] + '</span>\n' +
+    '</label>\n' +
+  '</div>\n' +
+'</div>'
+  
+  return('<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8">\n' +
+  firstInput + '\n</div>\n<div class="dep-el col-sm-8" style="display:none">\n' + secondInput + 
+  '\n</div>\n<div>\n'+ checkboxInput + '\n</div>\n</div>');
 }
 function createTextInput(arrayID, elID, label){
   var id = arrayID + elID;
@@ -718,6 +777,13 @@ function removeElAtomic(element, idx, elID){
         arrayLabel = elID;
       }
       el.remove();
+    }else if($(v).children('.dep-el').length){
+      var depEl = $(v).children('.dep-el');
+      if(idx === 0){
+        arrayLabel = elID;
+      }
+      removeElAtomic(depEl.eq(0).children(".form-group"), idx, elID);
+      removeElAtomic(depEl.eq(1).children(".form-group"), idx, elID);
     }else if($(v).find('input[type="checkbox"]').length){
       el = $(v).find('input[type="checkbox"]');
       if(idx === 0){
