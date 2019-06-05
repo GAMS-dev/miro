@@ -367,8 +367,9 @@ observeEvent({input$widget_type
                             heatmap = identical(currentConfig$heatmap, TRUE))
     insertUI(selector = "#widget_options",
              tagList(
-               textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                         (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
+               tags$div(style = "max-width:400px;",
+                        textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                         (no live preview available)", value = rv$widgetConfig$alias)),
                tags$div(class = "shiny-input-container",
                         tags$label(class = "cb-label", "for" = "table_readonly", "Should table be readonly?"),
                         tags$div(
@@ -376,10 +377,11 @@ observeEvent({input$widget_type
                                      checkboxInput("table_readonly", 
                                                    value = rv$widgetConfig$readonly, label = NULL)
                           ))
-                        ),
-               selectInput("table_readonlyCols", "Select certain columns to be readonly", 
-                           choices = inputSymHeaders[[input$widget_symbol]], 
-                           selected = rv$widgetConfig$readonlyCols, multiple = TRUE),
+               ),
+               tags$div(style = "max-width:400px;",
+                        selectInput("table_readonlyCols", "Select certain columns to be readonly", 
+                                    choices = inputSymHeaders[[input$widget_symbol]], 
+                                    selected = rv$widgetConfig$readonlyCols, multiple = TRUE)),
                tags$div(class = "shiny-input-container",
                         tags$label(class = "cb-label", "for" = "table_heatmap", "Turn table into a heatmap?"),
                         tags$div(
@@ -409,14 +411,17 @@ observeEvent({input$widget_type
            
            insertUI(selector = "#widget_options",
                     tagList(
-                      textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
-                      textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
+                      tags$div(style = "max-width:400px;",
+                               textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
+                                (no live preview available)", value = rv$widgetConfig$alias)),
+                      tags$div(style = "max-width:400px;",
+                               textInput("widget_label", "Choose a label", value = rv$widgetConfig$label)),
                       tags$div(class = "shiny-input-container",
                         tags$div(class = "col-sm-8",
                                  conditionalPanel(condition = "input.slider_min_dep_selector===true",
+                                                  tags$div(style = "max-width:400px;",
                                                   numericInput("slider_min", "Minimum value", 
-                                                               value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)
+                                                               value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L))
                                  ),
                                  conditionalPanel(condition = "input.slider_min_dep_selector!==true",
                                                   selectInput("slider_min_dep", "Select symbol and header to depend upon", 
@@ -444,8 +449,9 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_max_dep_selector===true",
-                                                         numericInput("slider_max", "Maximum value", 
-                                                                      value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L)
+                                                         tags$div(style = "max-width:400px;",
+                                                                  numericInput("slider_max", "Maximum value", 
+                                                                               value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L))
                                         ),
                                         conditionalPanel(condition = "input.slider_max_dep_selector!==true",
                                                          selectInput("slider_max_dep", "Select symbol and header to depend upon", 
@@ -473,8 +479,9 @@ observeEvent({input$widget_type
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.slider_def_dep_selector===true",
-                                                         numericInput("slider_def", "Default value", 
-                                                                      value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L)
+                                                         tags$div(style = "max-width:400px;",
+                                                                  numericInput("slider_def", "Default value", 
+                                                                               value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L))
                                         ),
                                         conditionalPanel(condition = "input.slider_def_dep_selector!==true",
                                                          selectInput("slider_def_dep", "Select symbol and header to depend upon", 
@@ -499,7 +506,8 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      numericInput("slider_step", "Step size", value = rv$widgetConfig$step, min = 0L),
+                      tags$div(style = "max-width:400px;",
+                               numericInput("slider_step", "Step size", value = rv$widgetConfig$step, min = 0L)),
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "slider_ticks", "Show tick marks?"),
                                tags$div(
@@ -542,7 +550,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                                (note that changing this setting does currently not reflect in the live preview)", 
+                                (no live preview available)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
@@ -647,7 +655,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                                (note that changing this setting does currently not reflect in the live preview)", 
+                                (no live preview available)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
@@ -723,7 +731,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                                (note that changing this setting does currently not reflect in the live preview)", 
+                                (no live preview available)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container",
@@ -775,7 +783,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO 
-                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
+                                (no live preview available)", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
@@ -901,7 +909,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO
-                                (note that changing this setting does currently not reflect in the live preview)", value = rv$widgetConfig$alias),
+                                (no live preview available)", value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
                                tags$div(class = "col-sm-8",
@@ -1034,7 +1042,7 @@ observeEvent({input$widget_type
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", "Enter the element name as it should be displayed in GAMS MIRO
-                                (note that changing this setting does currently not reflect in the live preview)", 
+                                (no live preview available)", 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", "Choose a label", value = rv$widgetConfig$label),
                       textInput("widget_value", "Choose a default value", value = rv$widgetConfig$value),

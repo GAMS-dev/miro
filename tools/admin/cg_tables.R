@@ -23,8 +23,9 @@ observeEvent(input$table_type, {
 
 getHotOptions <- reactive({
   tagList(
-    numericInput("hot_height", "Height of input tables (in px)", min = 0L,
-                 value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else 700L),
+    tags$div(style = "max-width:400px;",
+      numericInput("hot_height", "Height of input tables (in px)", min = 0L,
+                 value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else 700L)),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_readonly",
                         "Restrict editing of tables? If activated, tables can not be modified by the user."),
@@ -34,7 +35,7 @@ getHotOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "Highlight the column of current active cell (note that changing this setting does currently not reflect in the live preview)."),
+             tags$label(class = "cb-label", "Highlight the column of current active cell (no live preview available)."),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("hot_highcol", value = if(identical(configJSON$handsontable$highlightCol, FALSE)) FALSE else TRUE, label = NULL)
@@ -42,25 +43,26 @@ getHotOptions <- reactive({
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_highrow",
-                        "Highlight the row of current active cell (note that changing this setting does currently not reflect in the live preview)."),
+                        "Highlight the row of current active cell (no live preview available)."),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("hot_highrow", value = if(identical(configJSON$handsontable$highlightRow, FALSE)) FALSE else TRUE, label = NULL)
                ))
     ),
-    selectInput("hot_strech", "Default scenario comparison mode.", 
-                choices = c("No strech" = "none", "Strech last column" = "last", 
-                            "Strech all columns" = "all"),
-                selected = if(length(configJSON$handsontable$stretchH)) configJSON$handsontable$stretchH else "all"
-    ),
+    tags$div(style = "max-width:400px;",
+             selectInput("hot_strech", "Default column stretching.", 
+                         choices = c("No strech" = "none", "Strech last column" = "last", 
+                                     "Strech all columns" = "all"),
+                         selected = if(length(configJSON$handsontable$stretchH)) configJSON$handsontable$stretchH else "all"
+             )),
     conditionalPanel(
       condition = "input.hot_strech !== 'all'",
-      numericInput("hot_colwidth", "Width of a single column", min = 0L, 
+      numericInput("hot_colwidth", "Width of a single column.", min = 0L, 
                    value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 10L)),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_sort",
                         "Enable column sorting in ascending/descending order 
-                        (by clicking on column name in header row)"),
+                        (by clicking on column name in header row)."),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("hot_sort", value = if(identical(configJSON$handsontable$columnSorting, FALSE)) FALSE else TRUE, label = NULL)
@@ -143,16 +145,19 @@ getHotOptions <- reactive({
 
 getDtOptions <- reactive({
   tagList(
-    selectInput("dt_class", "Table style", 
-               choices = c("display", "cell-border", "compact", "hover", "nowrap", "order-column", "row-border", "stripe"), 
-               selected = if(length(configJSON$datatable$class)) configJSON$datatable$class else "display"),
-    selectInput("dt_filter", "Include column filters", 
-                choices = c("No column filters" = "none", "Position: bottom" = "bottom", 
-                            "Position: top" = "top"),
-                selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else "bottom"
-    ),
-    numericInput("dt_pagelength", "Number of items to display per page", 
-                 value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength else 15L),
+    tags$div(style = "max-width:400px;",
+             selectInput("dt_class", "Table style", 
+                         choices = c("display", "cell-border", "compact", "hover", "nowrap", "order-column", "row-border", "stripe"), 
+                         selected = if(length(configJSON$datatable$class)) configJSON$datatable$class else "display")),
+    tags$div(style = "max-width:400px;",
+             selectInput("dt_filter", "Include column filters", 
+                         choices = c("No column filters" = "none", "Position: bottom" = "bottom", 
+                                     "Position: top" = "top"),
+                         selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else "bottom"
+             )),
+    tags$div(style = "max-width:400px;",
+             numericInput("dt_pagelength", "Number of items to display per page", 
+                          value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength else 15L)),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "dt_rownames", "Show row numbers?"),
              tags$div(
@@ -336,8 +341,6 @@ observe({
       })
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
-      print(dtOptions)
-      #print(dtOptions)
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)

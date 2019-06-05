@@ -35,6 +35,13 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
                  column(6, leafletOutput(ns("graph")), height = height, style = "overflow-x:auto;")
         )
       )
+    }else if(graphTool == "timevis"){
+      data <- tagList(
+        tags$div(style = "overflow-x:hidden;",
+                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
+                 column(6, timevisOutput(ns("graph")), height = height, style = "overflow-x:auto;")
+        )
+      )
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
@@ -45,6 +52,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       data <- dygraphOutput(ns("graph"), height = height)
     }else if(graphTool == "leaflet"){
       data <- leafletOutput(ns("graph"), height = height)
+    }else if(graphTool == "timevis"){
+      data <- timevisOutput(ns("graph"), height = height)
     }else{
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }

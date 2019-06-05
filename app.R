@@ -209,7 +209,8 @@ if(is.null(errMsg)){
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
                         if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"))
+                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
@@ -435,7 +436,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "Copyright (c) 2019 GAMS Development Corp. <support@gams.com><br/><br/>",
                           "This program is free software: you can redistribute it and/or modify ",
                           "it under the terms of the GNU General Public License as published by ",
-                          "the Free Software Foundation, either version 2 of the License, or ",
+                          "the Free Software Foundation, either version 3 of the License, or ",
                           "(at your option) any later version.<br/><br/>",
                           "This program is distributed in the hope that it will be useful, ", 
                           "but WITHOUT ANY WARRANTY; without even the implied warranty of ",

@@ -29,7 +29,7 @@ pipeline {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSCMEX_win.zip', userName: username)])
                         }
-                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.1.0/windows/windows_x64_64.exe', userName: '')])
+                        fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/26.1.0/windows/windows_x64_64.exe', userName: '')])
                         copyArtifacts filter: '*x86_64.zip', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
                         bat '''
                             for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i

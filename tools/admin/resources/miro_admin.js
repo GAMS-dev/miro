@@ -80,9 +80,27 @@ var nonScalarIndices   = [];
 var nonScalarIndexAliases = [];
 var outputScalars      = [];
 var outputScalarAliases = [];
+var inputSymbols        = [];
+var inputSymbolsAliases = [];
+var outputSymbols        = [];
+var outputSymbolsAliases = [];
 var elInArrayCounter   = {};
 var elInArray          = {};
 
+function addInputGroup(){
+  var arrayID      = 'symbol_Inputgroups';
+  var elements     = {'symbol_Inputgroups' : ['text', 'Name of the input group?'],
+  'group_memberIn': ['select', 'Select group members', inputSymbols, inputSymbolsAliases, , true ]
+  };
+  addArrayEl(arrayID, elements, {elRequired: false}, 'general');
+}
+function addOutputGroup(){
+  var arrayID      = 'symbol_Outputgroups';
+  var elements     = {'symbol_Outputgroups' : ['text', 'Name of the output group?'],
+  'group_memberOut': ['select', 'Select group members', outputSymbols, outputSymbolsAliases, , true ]
+  };
+  addArrayEl(arrayID, elements, {elRequired: false}, 'general');
+}
 function addDyEvent(){
   var arrayID      = 'dy_dyEvent';
   var elements     = {'dy_dyEvent' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
@@ -90,6 +108,17 @@ function addDyEvent(){
   'dyEvent_labelLoc': ['select', 'Select marker symbol', ['top', 'bottom']],
   'dyEvent_color': ['color', 'What color should the event line have?', 'rgb(0,0,0)'],
   'dyEvent_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+function addDyLimit(){
+  var arrayID      = 'dy_dyLimit';
+  var elements     = {'dy_dyLimit' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
+  'dyLimit_limit': ['numeric', 'Set a numeric value for the limit', 0, 0],
+  'dyLimit_label': ['text', 'What label should be used?'],
+  'dyLimit_labelLoc': ['select', 'Select marker symbol', ['left', 'right']],
+  'dyLimit_color': ['color', 'What color should the limit line have?', 'rgb(0,0,0)'],
+  'dyLimit_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
@@ -110,7 +139,7 @@ function addDyShading(){
   var elements     = {'dy_dyShading' : ['select', 'Which symbol shall be used as lower bound for shading?', outputScalars, outputScalarAliases],
   'dyShading_up' : ['select', 'Which symbol shall be used as upper bound for shading?', outputScalars, outputScalarAliases],
   'dyShading_axis': ['select', 'Select axis where shading shall be applied to', ['x', 'y']],
-  'dyShading_color': ['color', 'What color should the event line have?', '#EFEFEF']
+  'dyShading_color': ['color', 'What color should the shading have?', '#EFEFEF']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
@@ -139,16 +168,34 @@ function addLeafletFlows(){
   'leafFlow_flow': ['select', 'Select flow data', scalarIndices, scalarIndexAliases],
   'leafFlow_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
   'leafFlow_label': ['text', 'Choose a label'],
-  'optionsStart': ['optionsStart', 'Additional options'],
+  'optionsStart': ['optionsStart', 'Additional flow options'],
   'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
   'leafFlow_maxThickness': ['numeric', 'Choose the maximum thickness', 20, 0],
-  'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
-
+function addLeafletMinicharts(){
+  var arrayID      = 'leaflet_minicharts';
+  var elements     = {'leaflet_minicharts' : ['select', 'Select latitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
+  'leafChart_lng': ['select', 'Select longitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
+  'leafChart_chartdata': ['select', 'Select chart data', scalarIndices, scalarIndexAliases, scalarIndices[0], true],
+  'leafChart_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafChart_type': ['select', 'Select chart type', ['bar', 'pie', 'polar-area', 'polar-radius', 'auto']], 
+  'optionsStart': ['optionsStart', 'Additional chart options'],
+  'leafChart_width': ['numeric', 'Choose the maximal width of the created elements', 30, 0],
+  'leafChart_height': ['numeric', 'Choose the maximal height of the created elements', 30, 0],
+  'leafChart_opacity': ['numeric', 'Opacity of the chart?', 1, 0, 1, 0.1],
+  'leafChart_showlabels': ['checkbox', 'Should values be displayed above chart elements?'],
+  'leafChart_transitionTime': ['numeric', 'Choose the duration in milliseconds of the transitions when a property of a chart is updated', 750, 0],
+  'leafChart_layerId': ['select', 'Select layer ID', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafChart_legend': ['checkbox', 'Should a legend (data column names) be visible?', true],
+  'leafChart_legendPosition': ['select', 'Legend position', ['topright', 'topleft', 'bottomright', 'bottomleft']],
+  'optionsEnd': ['optionsEnd']
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
@@ -185,7 +232,8 @@ function addScatterDataEl(){
                                                         'octagon-open-dot', 'star', 'star-open', 'star-dot', 'star-open-dot', 'hexagram',
                                                         'hexagram-open', 'hexagram-dot', 'hexagram-open-dot', 'star-triangle-up',
                                                         'star-triangle-up-open', 'star-triangle-up-dot', 'star-triangle-up-open-dot',
-                                                        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot', 'star-triangle-down-open-dot',
+                                                        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot', 
+                                                        'star-triangle-down-open-dot',
                                                         'star-square', 'star-square-open', 'star-square-dot', 'star-square-open-dot', 'star-diamond', 
                                                         'star-diamond-open', 'star-diamond-dot', 'star-diamond-open-dot', 'diamond-tall',
                                                         'diamond-tall-open', 'diamond-tall-dot', 'diamond-tall-open-dot', 'diamond-wide',
@@ -198,10 +246,11 @@ function addScatterDataEl(){
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
                                                         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
   'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
-  'marker_opacity' : ['numeric', 'Select marker opacity', 1, 0, 1],
   'marker_size' : ['numeric', 'Select marker size', 6, 0],
   'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
-  'marker_line_color' : ['color', 'Select marker outline color']
+  'marker_line_color' : ['color', 'Select marker outline color'],
+  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
+  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
@@ -209,10 +258,61 @@ function addLineDataEl(){
   var arrayID      = 'chart_ydataline';
   var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
   'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'line_color' : ['text', 'Select line color', 'rgb(0,0,0)'],
+  'line_color' : ['color', 'Select line color', 'rgb(0,0,0)'],
   'line_width' : ['numeric', 'Select line width', 2, 0],
   'line_shape' : ['select', 'Select line shape', ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']],
-  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']]
+  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']],
+  'line_fill' : ['select', 'Fill area chart?',['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'], ['none', 'to zero y', 'to zero x', 'to next y', 'to next x', 'to self', 'to next']],
+  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
+  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
+  };
+  addArrayEl(arrayID, elements);
+}
+function addBubbleDataEl(){
+  var arrayID      = 'chart_ydatabubble';
+  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?',  scalarIndices, scalarIndexAliases], 
+  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
+  'marker_symbol': ['select', 'Select marker symbol', ['circle', 'circle-open', 'circle-dot', 
+                                                        'circle-open-dot', 'square', 'square-open',
+                                                        'square-dot', 'square-open-dot', 'diamond',
+                                                        'diamond-open', 'diamond-dot', 'diamond-open-dot',
+                                                        'cross', 'cross-open', 'cross-dot', 'cross-open-dot',
+                                                        'x', 'x-open', 'x-dot', 'x-open-dot', 'triangle-up',
+                                                        'triangle-up-open', 'triangle-up-dot', 'triangle-up-open-dot',
+                                                        'triangle-down', 'triangle-down-open', 'triangle-down-dot',
+                                                        'triangle-down-open-dot', 'triangle-left', 'triangle-left-open', 
+                                                        'triangle-left-dot', 'triangle-left-open-dot', 'triangle-right',
+                                                        'triangle-right-open', 'triangle-right-dot', 'triangle-right-open-dot',
+                                                        'triangle-ne', 'triangle-ne-open', 'triangle-ne-dot', 'triangle-ne-open-dot',
+                                                        'triangle-se', 'triangle-se-open', 'triangle-se-dot', 'triangle-se-open-dot',
+                                                        'triangle-sw', 'triangle-sw-open', 'triangle-sw-dot', 'triangle-sw-open-dot',
+                                                        'triangle-nw', 'triangle-nw-open', 'triangle-nw-dot', 'triangle-nw-open-dot',
+                                                        'pentagon', 'pentagon-open', 'pentagon-dot', 'pentagon-open-dot', 'hexagon',
+                                                        'hexagon-open', 'hexagon-dot', 'hexagon-open-dot', 'hexagon2', 'hexagon2-open', 
+                                                        'hexagon2-dot', 'hexagon2-open-dot', 'octagon', 'octagon-open', 'octagon-dot',
+                                                        'octagon-open-dot', 'star', 'star-open', 'star-dot', 'star-open-dot', 'hexagram',
+                                                        'hexagram-open', 'hexagram-dot', 'hexagram-open-dot', 'star-triangle-up',
+                                                        'star-triangle-up-open', 'star-triangle-up-dot', 'star-triangle-up-open-dot',
+                                                        'star-triangle-down', 'star-triangle-down-open', 'star-triangle-down-dot', 
+                                                        'star-triangle-down-open-dot',
+                                                        'star-square', 'star-square-open', 'star-square-dot', 'star-square-open-dot', 'star-diamond', 
+                                                        'star-diamond-open', 'star-diamond-dot', 'star-diamond-open-dot', 'diamond-tall',
+                                                        'diamond-tall-open', 'diamond-tall-dot', 'diamond-tall-open-dot', 'diamond-wide',
+                                                        'diamond-wide-open', 'diamond-wide-dot', 'diamond-wide-open-dot', 'hourglass',
+                                                        'hourglass-open', 'bowtie', 'bowtie-open', 'circle-cross', 'circle-cross-open', 
+                                                        'circle-x', 'circle-x-open', 'square-cross', 'square-cross-open', 'square-x', 'square-x-open',
+                                                        'diamond-cross', 'diamond-cross-open', 'diamond-x', 'diamond-x-open', 'cross-thin',
+                                                        'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
+                                                        'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
+                                                        'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
+                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
+  'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
+  'marker_size' : ['select', 'Select marker size', scalarIndices, scalarIndexAliases],
+  'marker_maxsize': ['numeric', 'Select maximum marker size (optional)', 0, 0],
+  'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
+  'marker_line_color' : ['color', 'Select marker outline color'],
+  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
+  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
@@ -220,8 +320,7 @@ function addHistDataEl(){
   var arrayID      = 'hist_xdata';
   var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
   'hist_label' : ['text', 'What label should be used?', 'label'],
-  'hist_color' : ['color', 'Select bar color', '#000000'],
-  'hist_alpha' : ['numeric', 'Choose bar transparency', 1, 0, 1]
+  'hist_color' : ['color', 'Select bar color', '#000000']
   };
   addArrayEl(arrayID, elements);
 }
@@ -239,11 +338,38 @@ function addDyDataEl(){
   };
   addArrayEl(arrayID, elements);
 }
+function addTimevisDataEl(){
+  var arrayID      = 'timevis_series';
+  var elements     = {'timevis_series' : ['select', 'The contents of the items?', indices, indexAliases],
+  'timedata_start' : ['select', 'The start date of the items?', indices, indexAliases],
+  'timedata_end' : ['select', 'The end date of the items.', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_type' : ['select', 'The type of the item. Note: Types box and point need only a start date, types range and background need both a start and end date.', ['box', 'point', 'range', 'background']],
+  'timedata_title' : ['select', 'Add a title for each item, displayed when hovering the mouse over it?', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_group' : ['select', 'Group ID. When a group is provided, all items with the same group are placed on one line.', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_subgroup' : ['select', 'Subgroup ID. Groups all items within a group per subgroup, and positions them on the same height instead of stacking them on top of each other.', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_grouptitle' : ['select', 'Add a title for each group, displayed when hovering the mouse over it?', ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_subgrouporder' : ['select', ' Order the subgroups by a field name. By default, groups are ordered by first-come, first-show.', ['_'].concat(indices), ['_'].concat(indexAliases)]
+  };
+  addArrayEl(arrayID, elements);
+}
+function addCustomTimeEl(){
+  var arrayID      = 'timevis_custom';
+  var elements     = {'timevis_custom' : ['text', 'The date/time to add', "", "e.g. 2016-08-21"]
+  };
+  addArrayEl(arrayID, elements, {elRequired: false});
+}
+
 function addArrayDataEl(arrayID){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
   }
   switch(arrayID){
+    case 'symbol_Inputgroups':
+      addInputGroup();
+    break;
+    case 'symbol_Outputgroups':
+      addOutputGroup();
+    break;
     case 'chart_ydatabar':
       addBarDataEl();
     break;
@@ -253,6 +379,9 @@ function addArrayDataEl(arrayID){
     case 'chart_ydataline':
       addLineDataEl();
     break;
+    case 'chart_ydatabubble':
+      addBubbleDataEl();
+    break;
     case 'hist_xdata':
       addHistDataEl();
     break;
@@ -261,6 +390,9 @@ function addArrayDataEl(arrayID){
     break;
     case 'dy_dyEvent':
       addDyEvent();
+    break;
+    case 'dy_dyLimit':
+      addDyLimit();
     break;
     case 'dy_dyAnnotation':
       addDyAnnotation();
@@ -273,6 +405,15 @@ function addArrayDataEl(arrayID){
     break;
     case 'leaflet_flows':
       addLeafletFlows();
+    break;
+    case 'leaflet_minicharts':
+      addLeafletMinicharts();
+    break;
+    case 'timevis_series':
+      addTimevisDataEl();
+    break;
+    case 'timevis_custom':
+      addCustomTimeEl();
     break;
   }
 }
@@ -307,6 +448,8 @@ function addArrayEl(arrayID, elements, options){
   if(options === undefined) options = {};
   if(options.elRequired === undefined) options.elRequired = true;
   if(options.updateTxtWithLabel === undefined) options.updateTxtWithLabel = [];
+  var rObserveID = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'array_el';
+  var rAddID     = 'add_' + rObserveID;
   
   var elID         = incElCount(arrayID);
   var label        = '';
@@ -316,8 +459,8 @@ function addArrayEl(arrayID, elements, options){
   $.each(elements, function( k, v ) {
     switch(v[0]){
       case 'select':
-        var selected = undefined;
         if(idx === 0){
+          var selected = undefined;
           if(options.elRequired === true){
             // as labels need to be unique, set default to option that is not already in use
             var noElInArray = (elInArray[arrayID] !== undefined? elInArray[arrayID].length: 0);
@@ -338,22 +481,38 @@ function addArrayEl(arrayID, elements, options){
           }
           
           // tell R that new element was addded to array: (ID, label of element)
-          Shiny.setInputValue("add_array_el", [elID, selected, k], {priority: "event"});
+          Shiny.setInputValue(rAddID, [elID, selected, k], {priority: "event"});
+        }else{
+          var selected = v[4];
         }
-        arrayContent += createSelectInput(k, elID, v[1], v[2], v[3], selected);
+        arrayContent += createSelectInput(k, elID, v[1], v[2], v[3], selected, v[5]);
       break;
       case 'text':
         var value = v[2]; 
+        if(idx === 0 && options.elRequired === false){
+          // tell R that new element was addded to array: (ID)
+          Shiny.setInputValue(rAddID, [elID, value, k], {priority: "event"});
+        }
         if(value === 'label'){
           value = label;
           options.updateTxtWithLabel.push('#' + k + elID);
         }
-        arrayContent += createTextInput(k, elID, v[1], value);
+        arrayContent += createTextInput(k, elID, v[1], value, v[3]);
       break;
       case 'numeric':
-        arrayContent += createNumericInput(k, elID, v[1], v[2], v[3], v[4]);
+        if(idx === 0 && options.elRequired === false){
+          selected = v[2];
+          
+          // tell R that new element was addded to array: (ID)
+          Shiny.setInputValue(rAddID, [elID, selected, k], {priority: "event"});
+        }
+        arrayContent += createNumericInput(k, elID, v[1], v[2], v[3], v[4], v[5]);
       break;
       case 'checkbox':
+        if(idx === 0 && options.elRequired === false){
+          // tell R that new element was addded to array: (ID)
+          Shiny.setInputValue(rAddID, [elID, v[2], k], {priority: "event"});
+        }
         arrayContent += createCheckboxInput(k, elID, v[1], v[2]);
         break;
       case 'color':
@@ -372,7 +531,7 @@ function addArrayEl(arrayID, elements, options){
     }
     idx++;
   });
-  arrayContent += ((!options.elRequired || elID > 1)? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID +
+  arrayContent += ((!options.elRequired || elID > 1)? '<button type="button" onclick="removeArrayEl(\'' + arrayID + '\',\'' + elID + '\',\'' + rObserveID +
   '\')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n': '') + '<hr></div>';
   
   $('#' + arrayID + '_wrapper .array-wrapper').append(arrayContent);
@@ -392,7 +551,7 @@ function addArrayEl(arrayID, elements, options){
         	    }
       	    }
       	    
-      	    Shiny.setInputValue("add_array_el", [elID, value, k, "change"], {priority: "event"});
+      	    Shiny.setInputValue(rAddID, [elID, value, k, "change"], {priority: "event"});
           }
       	});
       }else{
@@ -415,6 +574,7 @@ function addArrayEl(arrayID, elements, options){
       }));
     }else{
       $('#' + k + elID).on('change', $.debounce(250, function(){
+        console.log(k);
         Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
       }));
     }
@@ -472,8 +632,8 @@ function createSelectInput(arrayID, elID, label, choices){
   var id = arrayID + elID;
   var aliases  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : choices;
   var selected = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '';
+  var multiple = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
   optionsHTML  = '';
-  
   for (var i = 0, itemLen = choices.length; i < itemLen; 
   optionsHTML += '<option value="' + choices[i] + '"' + (choices[i] === selected? ' selected' : '') + 
   '>' + aliases[i++] + '</option>\n');
@@ -481,28 +641,32 @@ function createSelectInput(arrayID, elID, label, choices){
   return('<div class="form-group">\n' +
   '<label class="control-label" for="' +
   id + '">' + label + '</label>\n' +
-  '<div><select id="' + id + '">' + optionsHTML + '</select>\n</div>\n</div>');
+  '<div><select id="' + id + '"' + (multiple === true? ' multiple="multiple"' : '') + '>' + optionsHTML + '</select>\n</div>\n</div>');
 }
 function createTextInput(arrayID, elID, label){
   var id = arrayID + elID;
   var value = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var placeholder = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
   Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
   
   return('<div class="form-group">\n' +
   '<label for="' + id + '">' + label + '</label>\n' +
-  '<input id="' + id + '" type="text" class="form-control" value="' + value + '"/>\n' +
+  '<input id="' + id + '" type="text" class="form-control" value="' + value + '"' + (placeholder !== null ? ' placeholder="' + placeholder + '"': '') + '/>\n' +
 '</div>');
 }
 function createNumericInput(arrayID, elID, label, value){
   var id = arrayID + elID;
   var min   = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
   var max   = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+  var step  = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : null;
+  
   Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
   
   return('<div class="form-group">\n' +
   '<label for="' + id + '">' + label + '</label>\n' +
   '<input id="' + id + '" type="number" class="form-control" value="' + value + '"' + 
-  (min === null ? ' min="' + min + '"': '') + (max === null ? ' max="' + max + '"': '') + '/>\n' +
+  (min !== null ? ' min="' + min + '"': '') + (max !== null ? ' max="' + max + '"': '') + 
+  (step !== null ? ' step="' + step + '"': '') + '/>\n' +
 '</div>');
 }
 function createCheckboxInput(arrayID, elID, label){
@@ -529,7 +693,7 @@ function createColorPickerInput(arrayID, elID, label){
   '<input id="' + id + '" type="text" class="form-control miro-color-picker" value="' + value + '"/>\n' +
 '</div>');
 }
-function removeElAtomic(element, idx){
+function removeElAtomic(element, idx, elID){
   var el = null;
   var arrayLabel = null;
   
@@ -537,27 +701,27 @@ function removeElAtomic(element, idx){
     if($(v).children('input[type="number"]').length){
       el = $(v).children('input[type="number"]');
       if(idx === 0){
-        arrayLabel = el.val();
+        arrayLabel = elID;
       }
       el.remove();
     }else if($(v).children('.miro-color-picker').length){
       el = $(v).children('.miro-color-picker');
       if(idx === 0){
-        arrayLabel = el.val();
+        arrayLabel = elID;
       }
       el.colorpicker('destroy');
     }else if($(v).children('.option-section').length){
-      removeElAtomic($(v).children('.option-section').first().children(".form-group"), idx);
+      removeElAtomic($(v).children('.option-section').first().children(".form-group"), idx, elID);
     }else if($(v).children('input[type="text"]').length){
       el = $(v).children('input[type="text"]');
       if(idx === 0){
-        arrayLabel = el.val();
+        arrayLabel = elID;
       }
       el.remove();
     }else if($(v).find('input[type="checkbox"]').length){
       el = $(v).find('input[type="checkbox"]');
       if(idx === 0){
-        arrayLabel = $(el).prop('checked');
+        arrayLabel = elID;
       }
       el.remove();
     }else if($(v).find('select').length){
@@ -573,11 +737,11 @@ function removeElAtomic(element, idx){
   });
   return arrayLabel;
 }
-function removeArrayEl(arrayID, elID){
+function removeArrayEl(arrayID, elID, rObserveID){
   
   
   var idx   = 0;
-  var arrayLabel = removeElAtomic($('#' + arrayID + elID + '_wrapper').children(".form-group"), idx);
+  var arrayLabel = removeElAtomic($('#' + arrayID + elID + '_wrapper').children(".form-group"), idx, elID);
   
   if(arrayLabel.length === 0){
     throw "Failed to remove array element: Could not find identifier for array element: " +
@@ -588,7 +752,7 @@ function removeArrayEl(arrayID, elID){
     elInArray[arrayID].splice($.inArray(arrayLabel, elInArray[arrayID]), 1);
   }
   $('#' + arrayID + '_wrapper .btn-add-array-el:disabled').prop('disabled', false);
-  Shiny.setInputValue('remove_array_el', [arrayID, arrayLabel, elID], {
+  Shiny.setInputValue('remove_' + rObserveID, [arrayID, arrayLabel, elID], {
     priority: "event"
   });
   
@@ -617,6 +781,17 @@ $(document).ready(function () {
     scalarIndexAliases = indicesFromR.scalarAliases;
     nonScalarIndices = arr_diff(indices, scalarIndices);
     nonScalarIndexAliases = arr_diff(indexAliases, scalarIndexAliases);
+  });
+  Shiny.addCustomMessageHandler('gms-setGAMSSymbols', function (symData) {
+    $.each(symData, function(key, val) {
+      if(!$.isArray(val)){
+        symData[key] = [val];
+      }
+    });
+    inputSymbols         = symData.inSym;
+    inputSymbolsAliases  = symData.inAlias;
+    outputSymbols        = symData.outSym;
+    outputSymbolsAliases = symData.outAlias;
   });
   Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
     setTimeout(addArrayDataElWrapper, 200, arrayID);

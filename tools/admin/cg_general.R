@@ -13,62 +13,39 @@ insertUI(selector = "#general_wrapper",
            radioButtons("general_language", label = "Language",
                         choices = c("English" = "en", "German" = "de"), 
                         selected = if(length(configJSON$language)) configJSON$language else "en"),
-           selectInput("general_skin", "Skin to use for dashboard", 
-                       choices = c("black", "blue", "purple", "green", "red", "yellow"),
-                       selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else "black"),
-           tags$label(class = "cb-label", "for" = "general_parent",
-                      "Include parent directory of the model folder 
-           in your model runs (e.g. because several models share files)?"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_parent", value = configJSON$includeParentDir, label = NULL)
-             )),
-           tags$div(title = "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
-                    tags$label(class = "cb-label", "for" = "general_meta",
-                               "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_meta", value = if(identical(configJSON$excelIncludeMeta, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
-                    tags$label(class = "cb-label", "for" = "general_empty",
-                               "Include empty sheets in the Excel file"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           textInput("general_default_scen_name", "Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
-                     value = configJSON$defaultScenName),
-           fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
-                     width = "100%",
-                     multiple = FALSE,
-                     accept = c(".png", ".PNG", ".jpg", ".JPG")),
-           tags$div(style="margin-bottom: 15px;",
-             imageOutput("general_logo_preview", height = "50px", width = "230px")
-           ),
-           tags$label(class = "cb-label", "for" = "general_auto",
-                      "Generate graphs for each input sheet automatically (pivot tool)"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_auto", value = if(identical(configJSON$autoGenInputGraphs, FALSE)) FALSE else TRUE, label = NULL)
-             )),
-           sliderInput("general_save_duration", label = "Duration the GAMS log and lst files are stored in the database (in days). 
-            0 means files are not stored at all, 999 means files are stored indefinitely. 
-            This setting is ignored when the attachment module is not active. Note that this is currently 
-            only supported in the MIRO base mode.",
-                       min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else 7L
-           ),
-           selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)", 
-                          choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, multiple = TRUE, options = list(
-                            'create' = TRUE,
-                            'persist' = FALSE)),
-           selectInput("general_scen", "Default scenario comparison mode.", 
-                       choices = c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
+           tags$div(style = "max-width:400px;",
+                    selectInput("general_skin", "Skin to use for dashboard", 
+                                choices = c("black", "blue", "purple", "green", "red", "yellow"),
+                                selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else "black")),
+           
+           tags$label("for" = "logo_option_wrapper", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)"),
+           tags$div(id = "logo_option_wrapper",
+                    tags$div(style = "max-width:400px; display:inline-block;",
+                             fileInput("widget_general_logo_upload", label = NULL,
+                                       multiple = FALSE,
+                                       accept = c(".png", ".PNG", ".jpg", ".JPG"))
+                    ),
+                    tags$div(style = "display:inline-block; margin-left: 25px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
+                             imageOutput("general_logo_preview", height = "50px", width = "230px")
+                    )),
+           
+           
+           
+           
+           #fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
+           #          width = "100%",
+           #          multiple = FALSE,
+           #          accept = c(".png", ".PNG", ".jpg", ".JPG")),
+           #tags$div(style="margin-bottom: 15px;",
+           #         imageOutput("general_logo_preview", height = "50px", width = "230px")
+           #),
+           
+           tags$div(style = "max-width:400px;",
+                    selectInput("general_scen", "Default scenario comparison mode.", 
+                                choices = c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
                         (suited for > 2 scenarios to compare)" = "tab"),
-                       selected = configJSON$defCompMode
-           ),
+                                selected = configJSON$defCompMode
+                    )),
            tags$div(title = "Save, delete and compare scenarios",
                     tags$label(class = "cb-label", "for" = "general_act_scen", "Activate scenario functionality"),
                     tags$div(
@@ -77,7 +54,7 @@ insertUI(selector = "#general_wrapper",
                       ))
            ),
            tags$label(class = "cb-label", "for" = "general_act_strict", "Launch App in strict mode? This results in throwing 
-           error messages instead of accepting possibly faulty user entries."),
+                      error messages instead of accepting possibly faulty user entries."),
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_act_strict", value = if(identical(configJSON$activateModules$strictmode, FALSE)) FALSE else TRUE, label = NULL)
@@ -122,14 +99,35 @@ insertUI(selector = "#general_wrapper",
            ),
            tags$div(title = "If not activated, each input widget is displayed in a separate page.",
                     tags$label(class = "cb-label", "for" = "general_aggregate", "Should all input widgets (slider, dropdown menu, etc.) be
-                    aggregated on a single page?"),
+                               aggregated on a single page?"),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_aggregate", value = if(identical(configJSON$aggregateWidgets, FALSE)) FALSE else TRUE, label = NULL)
                       ))
+                    ),
+           tags$label(class = "cb-label", "for" = "general_parent",
+                      "Include parent directory of the model folder 
+           in your model runs (e.g. because several models share files)?"),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_parent", value = configJSON$includeParentDir, label = NULL)
+             )),
+           tags$div(title = "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
+                    tags$label(class = "cb-label", "for" = "general_meta",
+                               "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_meta", value = if(identical(configJSON$excelIncludeMeta, FALSE)) FALSE else TRUE, label = NULL)
+                      ))
            ),
-           textInput("general_input_scalars", "Alias for the input scalars table", value = configJSON$scalarAliases$inputScalars),
-           textInput("general_output_scalars", "Alias for the output scalars table", value = configJSON$scalarAliases$outputScalars),
+           tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
+                    tags$label(class = "cb-label", "for" = "general_empty",
+                               "Include empty sheets in the Excel file"),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
+                      ))
+           ),
            tags$div(title = "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
                     tags$label(class = "cb-label", "for" = "general_save_trace", "Save trace file with each GAMS run (Hypercube mode)"),
                     tags$div(
@@ -137,19 +135,47 @@ insertUI(selector = "#general_wrapper",
                                  checkboxInput("general_save_trace", value = if(identical(configJSON$saveTraceFile, FALSE)) FALSE else TRUE, label = NULL)
                       ))
            ),
+           tags$label(class = "cb-label", "for" = "general_auto",
+                      "Generate graphs for each input sheet automatically (pivot tool)"),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_auto", value = if(identical(configJSON$autoGenInputGraphs, FALSE)) FALSE else TRUE, label = NULL)
+             )),
+           tags$div(style = "max-width:400px;",
+                    colorPickerInput("general_pivotcolor", label = "Background color of row and column headers in pivot tables.",
+                                     value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
+                    )),
+           tags$div(style = "max-width:400px;",
+                    sliderInput("general_save_duration", label = "Duration the GAMS log and lst files are stored in the database (in days). 
+            0 means files are not stored at all, 999 means files are stored indefinitely. 
+            This setting is ignored when the attachment module is not active. Note that this is currently 
+            only supported in the MIRO base mode.",
+                                min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else 7L
+                    )),
+           tags$div(style = "max-width:400px;",
+                    textInput("general_default_scen_name", "Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
+                              value = configJSON$defaultScenName)),
+           tags$div(style = "max-width:400px;",
+                    selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)", 
+                                   choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, multiple = TRUE, options = list(
+                                     'create' = TRUE,
+                                     'persist' = FALSE))),
+           tags$div(style = "max-width:400px;",
+                    textInput("general_input_scalars", "Alias for the input scalars table", value = configJSON$scalarAliases$inputScalars)),
+           tags$div(style = "max-width:400px;",
+                    textInput("general_output_scalars", "Alias for the output scalars table", value = configJSON$scalarAliases$outputScalars)),
            if(length(modelOut[[scalarsOutName]])){
-             tags$div(selectInput("general_hidden", "Scalars that should not be displayed in the scalars table 
+             tags$div(style = "max-width:400px;",
+                      tags$div(selectInput("general_hidden", "Scalars that should not be displayed in the scalars table 
                      but can be used in graphs etc.",
-                                  choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
-                                  selected = configJSON$hiddenOutputScalars, multiple = TRUE)
-             )
+                                           choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                           selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+                      ))
            },
-           sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
-                       min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
-           ),
-           colorPickerInput("general_pivotcolor", label = "Background color of row and column headers in pivot tables.",
-                            value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
-           )
+           tags$div(style = "max-width:400px;",
+                    sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
+                                min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
+                    ))
          ), 
          where = "beforeEnd")
 
