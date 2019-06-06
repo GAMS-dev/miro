@@ -13,7 +13,7 @@ renderOutputData <- function(){
       callModule(renderData, "table-out_" %+% i, type = "datatable", data = scenData[["scen_1_"]][[i]],
                  dtOptions = config$datatable, roundPrecision = roundPrecision)
     }, error = function(e) {
-      flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.", sheetName, e)
+      flog.error("Problems rendering output charts/tables of dataset: '%s'. Error message: %s.", modelOutAlias[i], e)
       errMsg <<- paste(errMsg, sprintf(lang$errMsg$renderTable$desc, modelOutAlias[i]), sep = "\n")
       showEl(session, paste0("#tab_", i, "-noData"))
       hideEl(session, paste0("#tab_", i, "-data"))

@@ -376,7 +376,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           if(identical(i, idxScalarOut)){
             # scalar data exists
             removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
-            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
+            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]]
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
           }
         }
@@ -442,7 +442,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
           # scalar data exists
           rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]][rowIdsToRemove, ]
+          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]]
           scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
         }else{
           scalarData[[scenIdLong]]               <<- tibble()

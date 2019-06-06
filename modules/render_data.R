@@ -88,7 +88,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       output$graph <- renderGraph(data, configData = configData, options = graphOptions)
     }
   }else if(type == "valuebox"){
-    lapply(seq_len(customOptions$count), function(i){
+    lapply(seq_len(min(length(data[[1]]), customOptions$count)), function(i){
       scalarDataTmp <- suppressWarnings(as.numeric(data[[3]][[i]]))
       if(is.na(scalarDataTmp)){
         scalarData <- data[[3]][[i]]

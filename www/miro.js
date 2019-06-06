@@ -18,7 +18,15 @@ function isInputEl(id) {
     return false;
   }
 }
+function rerenderDygraph(){
+  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
+  try {
+    setTimeout(function () {
+      HTMLWidgets.getInstance($(".dygraphs:visible").get(0)).dygraph.resize();
+    }, delay);
+  } catch (e) {}
+}
 function rerenderHot() {
   var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
 
@@ -206,6 +214,9 @@ $(document).ready(function () {
   });
   $("a[data-value='scenarios']").click(function () {
     changeActiveButtons('scenarios');
+  });
+  $("#scenTabset").on("click", "a[data-toggle='tab']", function () {
+    rerenderDygraph();
   });
   $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='hcubeAnalyze']").click(function () {
     changeActiveButtons('default');
