@@ -6447,7 +6447,17 @@
                       },
                       "required":true
                     },
-                    "color":{ 
+                    "colorCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "colorCheckTrue":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "colorCheckFalse":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
