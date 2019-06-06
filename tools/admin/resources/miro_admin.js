@@ -72,6 +72,8 @@ function arr_diff (a1, a2) {
     return diff;
 }
 
+var lang = {};
+
 var indices            = [];
 var indexAliases       = [];
 var scalarIndices      = [];
@@ -88,130 +90,130 @@ var elInArrayCounter   = {};
 var elInArray          = {};
 
 function addInputGroup(){
-  var arrayID      = 'symbol_Inputgroups';
-  var elements     = {'symbol_Inputgroups' : ['text', 'Name of the input group?'],
-  'group_memberIn': ['select', 'Select group members', inputSymbols, inputSymbolsAliases, , true ]
+  var arrayID      = 'symbol_inputGroups';
+  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups],
+  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, , true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
 function addOutputGroup(){
-  var arrayID      = 'symbol_Outputgroups';
-  var elements     = {'symbol_Outputgroups' : ['text', 'Name of the output group?'],
-  'group_memberOut': ['select', 'Select group members', outputSymbols, outputSymbolsAliases, , true ]
+  var arrayID      = 'symbol_outputGroups';
+  var elements     = {'symbol_outputGroups' : ['text', lang.addOutputGroup.symbolOutputgroups],
+  'group_memberOut': ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, , true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
 function addDyEvent(){
   var arrayID      = 'dy_dyEvent';
-  var elements     = {'dy_dyEvent' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
-  'dyEvent_label': ['text', 'What label should be used?'],
-  'dyEvent_labelLoc': ['select', 'Select marker symbol', ['top', 'bottom']],
-  'dyEvent_color': ['color', 'What color should the event line have?', 'rgb(0,0,0)'],
-  'dyEvent_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
+  var elements     = {'dy_dyEvent' : ['select', lang.addDyEvent.dyDyEvent, outputScalars, outputScalarAliases],
+  'dyEvent_label': ['text', lang.addDyEvent.label],
+  'dyEvent_labelLoc': ['select', lang.addDyEvent.labelLoc, ['top', 'bottom'], lang.addDyEvent.labelLocChoices],
+  'dyEvent_color': ['color', lang.addDyEvent.color, 'rgb(0,0,0)'],
+  'dyEvent_strokePattern': ['select', lang.addDyEvent.strokePattern, ['dashed', 'dotted', 'dotdash', 'solid'], lang.addDyEvent.strokePatternChoices]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 function addDyLimit(){
   var arrayID      = 'dy_dyLimit';
-  var elements     = {'dy_dyLimit' : ['select', 'Which symbol shall be plotted?', outputScalars, outputScalarAliases],
-  'dyLimit_limit': ['numeric', 'Set a numeric value for the limit', 0, 0],
-  'dyLimit_label': ['text', 'What label should be used?'],
-  'dyLimit_labelLoc': ['select', 'Select marker symbol', ['left', 'right']],
-  'dyLimit_color': ['color', 'What color should the limit line have?', 'rgb(0,0,0)'],
-  'dyLimit_strokePattern': ['select', 'Select marker symbol', ['dashed', 'dotted', 'dotdash', 'solid']]
+  var elements     = {'dy_dyLimit' : ['select', lang.addDyEvent.dyDyLimit, outputScalars, outputScalarAliases],
+  'dyLimit_limit': ['numeric', lang.addDyEvent.limit, 0, 0],
+  'dyLimit_label': ['text', lang.addDyEvent.label],
+  'dyLimit_labelLoc': ['select', lang.addDyEvent.labelLoc, ['left', 'right'], lang.addDyEvent.labelLocChoices],
+  'dyLimit_color': ['color', lang.addDyEvent.color, 'rgb(0,0,0)'],
+  'dyLimit_strokePattern': ['select', lang.addDyEvent.strokePattern, ['dashed', 'dotted', 'dotdash', 'solid'], lang.addDyEvent.strokePatternChoices]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 function addDyAnnotation(){
   var arrayID      = 'dy_dyAnnotation';
-  var elements     = {'dy_dyAnnotation' : ['select', 'What shall be annotated?', outputScalars, outputScalarAliases],
-  'dyAnnotation_text': ['text', 'What text should be used?', outputScalarAliases[1]],
-  'dyAnnotation_tooltip': ['text', 'What tooltip should be used?'],
-  'dyAnnotation_width': ['numeric', 'Specify annotation width', 0, 0],
-  'dyAnnotation_height': ['numeric', 'Specify annotation height', 0, 0],
-  'dyAnnotation_attachAtBottom': ['checkbox', 'Should annotation be attached to x axis?']
+  var elements     = {'dy_dyAnnotation' : ['select', lang.addDyAnnotation.dyDyAnnotation, outputScalars, outputScalarAliases],
+  'dyAnnotation_text': ['text', lang.addDyAnnotation.text, outputScalarAliases[1]],
+  'dyAnnotation_tooltip': ['text', lang.addDyAnnotation.tooltip],
+  'dyAnnotation_width': ['numeric', lang.addDyAnnotation.width, 0, 0],
+  'dyAnnotation_height': ['numeric', lang.addDyAnnotation.height, 0, 0],
+  'dyAnnotation_attachAtBottom': ['checkbox', lang.addDyAnnotation.attachAtBottom]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 
 function addDyShading(){
   var arrayID      = 'dy_dyShading';
-  var elements     = {'dy_dyShading' : ['select', 'Which symbol shall be used as lower bound for shading?', outputScalars, outputScalarAliases],
-  'dyShading_up' : ['select', 'Which symbol shall be used as upper bound for shading?', outputScalars, outputScalarAliases],
-  'dyShading_axis': ['select', 'Select axis where shading shall be applied to', ['x', 'y']],
-  'dyShading_color': ['color', 'What color should the shading have?', '#EFEFEF']
+  var elements     = {'dy_dyShading' : ['select', lang.addDyShading.dyDyShading, outputScalars, outputScalarAliases],
+  'dyShading_up' : ['select', lang.addDyShading.up, outputScalars, outputScalarAliases],
+  'dyShading_axis': ['select', lang.addDyShading.axis, ['x', 'y'], lang.addDyShading.axisChoices],
+  'dyShading_color': ['color', lang.addDyShading.color, '#EFEFEF']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 
 function addLeafletMarkers(){
   var arrayID      = 'leaflet_markers';
-  var elements     = {'leaflet_markers' : ['select', 'Select column with latitude data', scalarIndices, scalarIndexAliases],
-  'leafMark_lng': ['select', 'Select column with longitude data', scalarIndices, scalarIndexAliases],
-  'leafMark_groupName': ['text', 'Choose a group name for these markers'],
-  'leafMark_label': ['text', 'Choose a label'],
-  'optionsStart': ['optionsStart', 'Label options'],
-  'leafMark_labelPermanent': ['checkbox', 'Display labels only on hover?', true],
-  'leafMark_labelcolor': ['color', 'Choose a font color for the label'],
-  'leafMark_labelbgcolor': ['color', 'Choose a background color for the label'],
-  'leafMark_labelsize': ['numeric', 'Choose a font size for the label [in px]', 12, 0],
+  var elements     = {'leaflet_markers' : ['select', lang.addLeafletMarkers.leafletMarkers, scalarIndices, scalarIndexAliases],
+  'leafMark_lng': ['select', lang.addLeafletMarkers.lng, scalarIndices, scalarIndexAliases],
+  'leafMark_groupName': ['text', lang.addLeafletMarkers.groupName],
+  'leafMark_label': ['text', lang.addLeafletMarkers.label],
+  'optionsStart': ['optionsStart', lang.addLeafletMarkers.options],
+  'leafMark_labelPermanent': ['checkbox', lang.addLeafletMarkers.labelPermanent, true],
+  'leafMark_labelcolor': ['color', lang.addLeafletMarkers.labelcolor],
+  'leafMark_labelbgcolor': ['color', lang.addLeafletMarkers.labelbgcolor],
+  'leafMark_labelsize': ['numeric', lang.addLeafletMarkers.labelsize, 12, 0],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 function addLeafletFlows(){
   var arrayID      = 'leaflet_flows';
-  var elements     = {'leaflet_flows' : ['select', 'Select latitude data where flow originates', scalarIndices, scalarIndexAliases],
-  'leafFlow_lng': ['select', 'Select longitude data where flow originates', scalarIndices, scalarIndexAliases],
-  'leafFlow_lat1': ['select', 'Select latitude data where flow ends', scalarIndices, scalarIndexAliases],
-  'leafFlow_lng1': ['select', 'Select longitude data where flow ends', scalarIndices, scalarIndexAliases],
-  'leafFlow_flow': ['select', 'Select flow data', scalarIndices, scalarIndexAliases],
-  'leafFlow_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
-  'leafFlow_label': ['text', 'Choose a label'],
-  'optionsStart': ['optionsStart', 'Additional flow options'],
-  'leafFlow_color': ['color', 'Choose a color', '#0000ff'],
-  'leafFlow_minThickness': ['numeric', 'Choose the minimum thickness', 1, 0],
-  'leafFlow_maxThickness': ['numeric', 'Choose the maximum thickness', 20, 0],
+  var elements     = {'leaflet_flows' : ['select', lang.addLeafletFlows.leafletFlows, scalarIndices, scalarIndexAliases],
+  'leafFlow_lng': ['select', lang.addLeafletFlows.lng, scalarIndices, scalarIndexAliases],
+  'leafFlow_lat1': ['select', lang.addLeafletFlows.lat1, scalarIndices, scalarIndexAliases],
+  'leafFlow_lng1': ['select', lang.addLeafletFlows.lng1, scalarIndices, scalarIndexAliases],
+  'leafFlow_flow': ['select', lang.addLeafletFlows.flow, scalarIndices, scalarIndexAliases],
+  'leafFlow_time': ['select', lang.addLeafletFlows.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafFlow_label': ['text', lang.addLeafletFlows.label],
+  'optionsStart': ['optionsStart', lang.addLeafletFlows.options],
+  'leafFlow_color': ['color', lang.addLeafletFlows.color, '#0000ff'],
+  'leafFlow_minThickness': ['numeric', lang.addLeafletFlows.minThickness, 1, 0],
+  'leafFlow_maxThickness': ['numeric', lang.addLeafletFlows.maxThickness, 20, 0],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 function addLeafletMinicharts(){
   var arrayID      = 'leaflet_minicharts';
-  var elements     = {'leaflet_minicharts' : ['select', 'Select latitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
-  'leafChart_lng': ['select', 'Select longitude data where minichart should be plotted', scalarIndices, scalarIndexAliases],
-  'leafChart_chartdata': ['select', 'Select chart data', scalarIndices, scalarIndexAliases, scalarIndices[0], true],
-  'leafChart_time': ['select', 'Select time data', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
-  'leafChart_type': ['select', 'Select chart type', ['bar', 'pie', 'polar-area', 'polar-radius', 'auto']], 
-  'optionsStart': ['optionsStart', 'Additional chart options'],
-  'leafChart_width': ['numeric', 'Choose the maximal width of the created elements', 30, 0],
-  'leafChart_height': ['numeric', 'Choose the maximal height of the created elements', 30, 0],
-  'leafChart_opacity': ['numeric', 'Opacity of the chart?', 1, 0, 1, 0.1],
-  'leafChart_showlabels': ['checkbox', 'Should values be displayed above chart elements?'],
-  'leafChart_transitionTime': ['numeric', 'Choose the duration in milliseconds of the transitions when a property of a chart is updated', 750, 0],
-  'leafChart_layerId': ['select', 'Select layer ID', ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
-  'leafChart_legend': ['checkbox', 'Should a legend (data column names) be visible?', true],
-  'leafChart_legendPosition': ['select', 'Legend position', ['topright', 'topleft', 'bottomright', 'bottomleft']],
+  var elements     = {'leaflet_minicharts' : ['select', lang.addLeafletMinicharts.leafletMinicharts, scalarIndices, scalarIndexAliases],
+  'leafChart_lng': ['select', lang.addLeafletMinicharts.lng, scalarIndices, scalarIndexAliases],
+  'leafChart_chartdata': ['select', lang.addLeafletMinicharts.chartdata, scalarIndices, scalarIndexAliases, scalarIndices[0], true],
+  'leafChart_time': ['select', lang.addLeafletMinicharts.time, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafChart_type': ['select', lang.addLeafletMinicharts.type, ['bar', 'pie', 'polar-area', 'polar-radius', 'auto'], lang.addLeafletMinicharts.typeChoices], 
+  'optionsStart': ['optionsStart', lang.addLeafletMinicharts.options],
+  'leafChart_width': ['numeric', lang.addLeafletMinicharts.width, 30, 0],
+  'leafChart_height': ['numeric', lang.addLeafletMinicharts.height, 30, 0],
+  'leafChart_opacity': ['numeric', lang.addLeafletMinicharts.opacity, 1, 0, 1, 0.1],
+  'leafChart_showlabels': ['checkbox', lang.addLeafletMinicharts.showlabels],
+  'leafChart_transitionTime': ['numeric', lang.addLeafletMinicharts.transitionTime, 750, 0],
+  'leafChart_layerId': ['select', lang.addLeafletMinicharts.layerId, ['_'].concat(nonScalarIndices), ['_'].concat(nonScalarIndexAliases)],
+  'leafChart_legend': ['checkbox', lang.addLeafletMinicharts.legend, true],
+  'leafChart_legendPosition': ['select', lang.addLeafletMinicharts.legendPosition, ['topright', 'topleft', 'bottomright', 'bottomleft'], lang.addLeafletMinicharts.legendPositionChoices],
   'optionsEnd': ['optionsEnd']
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
 function addBarDataEl(){
   var arrayID      = 'chart_ydatabar';
-  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', indices, indexAliases], 
-  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'marker_color' : ['color', 'Select bar color', 'rgb(0,0,0)'],
-  'marker_line_width': ['numeric', 'Select bar outline width', 0, 0],
-  'marker_line_color' : ['color', 'Select bar outline color']
+  var elements     = {'chart_ydata' : ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases], 
+  'chart_ylabel' : ['text', lang.addBarDataEl.chartYlabel, 'label'],
+  'marker_color' : ['color', lang.addBarDataEl.color, 'rgb(0,0,0)'],
+  'marker_line_width': ['numeric', lang.addBarDataEl.lineWidth, 0, 0],
+  'marker_line_color' : ['color', lang.addBarDataEl.lineColor]
   };
   
   addArrayEl(arrayID, elements);
 }
 function addScatterDataEl(){
   var arrayID      = 'chart_ydatascatter';
-  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
-  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'marker_symbol': ['select', 'Select marker symbol', ['circle', 'circle-open', 'circle-dot', 
+  var elements     = {'chart_ydata' : ['select', lang.addScatterDataEl.chartYdata, scalarIndices, scalarIndexAliases], 
+  'chart_ylabel' : ['text', lang.addScatterDataEl.chartYlabel, 'label'],
+  'marker_symbol': ['select', lang.addScatterDataEl.symbol, ['circle', 'circle-open', 'circle-dot', 
                                                         'circle-open-dot', 'square', 'square-open',
                                                         'square-dot', 'square-open-dot', 'diamond',
                                                         'diamond-open', 'diamond-dot', 'diamond-open-dot',
@@ -244,35 +246,35 @@ function addScatterDataEl(){
                                                         'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
                                                         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
-                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
-  'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
-  'marker_size' : ['numeric', 'Select marker size', 6, 0],
-  'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
-  'marker_line_color' : ['color', 'Select marker outline color'],
-  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
-  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
+                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addScatterDataEl.symbolChoices],
+  'marker_color' : ['color', lang.addScatterDataEl.color, 'rgb(0,0,0)'],
+  'marker_size' : ['numeric', lang.addScatterDataEl.size, 6, 0],
+  'marker_line_width': ['numeric', lang.addScatterDataEl.lineWidth, 0, 0],
+  'marker_line_color' : ['color', lang.addScatterDataEl.lineColor],
+  'trace_legend' : ['checkbox', lang.addScatterDataEl.legend],
+  'trace_frame' : ['select', lang.addScatterDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
 function addLineDataEl(){
   var arrayID      = 'chart_ydataline';
-  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?', scalarIndices, scalarIndexAliases], 
-  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'line_color' : ['color', 'Select line color', 'rgb(0,0,0)'],
-  'line_width' : ['numeric', 'Select line width', 2, 0],
-  'line_shape' : ['select', 'Select line shape', ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv']],
-  'line_dash' : ['select', 'Select line dash type', ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']],
-  'line_fill' : ['select', 'Fill area chart?',['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'], ['none', 'to zero y', 'to zero x', 'to next y', 'to next x', 'to self', 'to next']],
-  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
-  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
+  var elements     = {'chart_ydata' : ['select', lang.addLineDataEl.chartYdata, scalarIndices, scalarIndexAliases], 
+  'chart_ylabel' : ['text', lang.addLineDataEl.chartYlabel, 'label'],
+  'line_color' : ['color', lang.addLineDataEl.color, 'rgb(0,0,0)'],
+  'line_width' : ['numeric', lang.addLineDataEl.width, 2, 0],
+  'line_shape' : ['select', lang.addLineDataEl.shape, ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'], lang.addLineDataEl.shapeChoices],
+  'line_dash' : ['select', lang.addLineDataEl.dash, ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'], lang.addLineDataEl.dashChoices],
+  'line_fill' : ['select', lang.addLineDataEl.fill,['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'], lang.addLineDataEl.fillChoices],
+  'trace_legend' : ['checkbox', lang.addLineDataEl.legend],
+  'trace_frame' : ['select', lang.addLineDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
 function addBubbleDataEl(){
   var arrayID      = 'chart_ydatabubble';
-  var elements     = {'chart_ydata' : ['select', 'What should be plotted on the y axis?',  scalarIndices, scalarIndexAliases], 
-  'chart_ylabel' : ['text', 'What label should be used?', 'label'],
-  'marker_symbol': ['select', 'Select marker symbol', ['circle', 'circle-open', 'circle-dot', 
+  var elements     = {'chart_ydata' : ['select', lang.addBubbleDataEl.chartYdata,  scalarIndices, scalarIndexAliases], 
+  'chart_ylabel' : ['text', lang.addBubbleDataEl.chartYlabel, 'label'],
+  'marker_symbol': ['select', lang.addBubbleDataEl.symbol, ['circle', 'circle-open', 'circle-dot', 
                                                         'circle-open-dot', 'square', 'square-open',
                                                         'square-dot', 'square-open-dot', 'diamond',
                                                         'diamond-open', 'diamond-dot', 'diamond-open-dot',
@@ -305,56 +307,56 @@ function addBubbleDataEl(){
                                                         'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
                                                         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
-                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open']],
-  'marker_color' : ['color', 'Select marker color', 'rgb(0,0,0)'],
-  'marker_size' : ['select', 'Select marker size', scalarIndices, scalarIndexAliases],
-  'marker_maxsize': ['numeric', 'Select maximum marker size (optional)', 0, 0],
-  'marker_line_width': ['numeric', 'Select marker outline width', 0, 0],
-  'marker_line_color' : ['color', 'Select marker outline color'],
-  'trace_legend' : ['checkbox', 'Show legend? (this option could be overwritten by the by the global show legend option)'],
-  'trace_frame' : ['select', 'Use a data dimension for animation (as frames)?', ['_'].concat(indices), ['_'].concat(indexAliases)]
+                                                        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addBubbleDataEl.symbolChoices],
+  'marker_color' : ['color', lang.addBubbleDataEl.color, 'rgb(0,0,0)'],
+  'marker_size' : ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases],
+  'marker_maxsize': ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
+  'marker_line_width': ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
+  'marker_line_color' : ['color', lang.addBubbleDataEl.lineColor],
+  'trace_legend' : ['checkbox', lang.addBubbleDataEl.legend],
+  'trace_frame' : ['select', lang.addBubbleDataEl.frame, ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
 function addHistDataEl(){
   var arrayID      = 'hist_xdata';
-  var elements     = {'hist_xdata' : ['select', 'What should be plotted?', scalarIndices, scalarIndexAliases], 
-  'hist_label' : ['text', 'What label should be used?', 'label'],
-  'hist_color' : ['color', 'Select bar color', '#000000']
+  var elements     = {'hist_xdata' : ['select', lang.addHistDataEl.histXdata, scalarIndices, scalarIndexAliases], 
+  'hist_label' : ['text', lang.addHistDataEl.label, 'label'],
+  'hist_color' : ['color', lang.addHistDataEl.color, '#000000']
   };
   addArrayEl(arrayID, elements);
 }
 function addDyDataEl(){
   var arrayID      = 'dy_ydata';
-  var elements     = {'chart_ydata' : ['select', 'What index do you want to plot on the y-axis?', scalarIndices, scalarIndexAliases], 
-  'dyser_color' : ['color', 'What color should be used for this series?'],
-  'dyopt_stepPlot' : ['checkbox', 'Do you want the series to be a step plot?'],
-  'dyopt_stemPlot' : ['checkbox', 'Do you want the series to be a stem plot?'],
-  'dyopt_fillGraph' : ['checkbox', 'Should the area underneath the graph be filled?'],
-  'dyopt_drawPoints' : ['checkbox', 'Should points be drawn?'],
-  'dyopt_pointShape' : ['select', 'What shape should points have?',['dot', 'triangle', 'square', 'diamond', 'pentagon', 'hexagon', 
-                              'circle', 'star', 'plus', 'ex']],
-  'dyopt_pointSize' : ['numeric', 'What size should points be?', 2, 0]
+  var elements     = {'chart_ydata' : ['select', lang.addDyDataEl.chartYdata, scalarIndices, scalarIndexAliases], 
+  'dyser_color' : ['color', lang.addDyDataEl.color],
+  'dyopt_stepPlot' : ['checkbox', lang.addDyDataEl.stepPlot],
+  'dyopt_stemPlot' : ['checkbox', lang.addDyDataEl.stemPlot],
+  'dyopt_fillGraph' : ['checkbox', lang.addDyDataEl.fillGraph],
+  'dyopt_drawPoints' : ['checkbox', lang.addDyDataEl.drawPoints],
+  'dyopt_pointShape' : ['select', lang.addDyDataEl.pointShape,['dot', 'triangle', 'square', 'diamond', 'pentagon', 'hexagon', 
+                              'circle', 'star', 'plus', 'ex'], lang.addDyDataEl.pointShapeChoices],
+  'dyopt_pointSize' : ['numeric', lang.addDyDataEl.pointSize, 2, 0]
   };
   addArrayEl(arrayID, elements);
 }
 function addTimevisDataEl(){
   var arrayID      = 'timevis_series';
-  var elements     = {'timevis_series' : ['select', 'The contents of the items?', indices, indexAliases],
-  'timedata_start' : ['select', 'The start date of the items?', indices, indexAliases],
-  'timedata_end' : ['select', 'The end date of the items.', ['_'].concat(indices), ['_'].concat(indexAliases)],
-  'timedata_type' : ['select', 'The type of the item. Note: Types box and point need only a start date, types range and background need both a start and end date.', ['box', 'point', 'range', 'background']],
-  'timedata_title' : ['select', 'Add a title for each item, displayed when hovering the mouse over it?', ['_'].concat(indices), ['_'].concat(indexAliases)],
-  'timedata_group' : ['select', 'Group ID. When a group is provided, all items with the same group are placed on one line.', ['_'].concat(indices), ['_'].concat(indexAliases)],
-  'timedata_subgroup' : ['select', 'Subgroup ID. Groups all items within a group per subgroup, and positions them on the same height instead of stacking them on top of each other.', ['_'].concat(indices), ['_'].concat(indexAliases)],
-  'timedata_grouptitle' : ['select', 'Add a title for each group, displayed when hovering the mouse over it?', ['_'].concat(indices), ['_'].concat(indexAliases)],
-  'timedata_subgrouporder' : ['select', ' Order the subgroups by a field name. By default, groups are ordered by first-come, first-show.', ['_'].concat(indices), ['_'].concat(indexAliases)]
+  var elements     = {'timevis_series' : ['select', lang.addTimevisDataEl.timevisSeries, indices, indexAliases],
+  'timedata_start' : ['select', lang.addTimevisDataEl.start, indices, indexAliases],
+  'timedata_end' : ['select', lang.addTimevisDataEl.end, ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_type' : ['select', lang.addTimevisDataEl.type, ['box', 'point', 'range', 'background'], lang.addTimevisDataEl.typeChoices],
+  'timedata_title' : ['select', lang.addTimevisDataEl.title, ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_group' : ['select', lang.addTimevisDataEl.group, ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_subgroup' : ['select', lang.addTimevisDataEl.subgroup, ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_grouptitle' : ['select', lang.addTimevisDataEl.grouptitle, ['_'].concat(indices), ['_'].concat(indexAliases)],
+  'timedata_subgrouporder' : ['select', lang.addTimevisDataEl.subgrouporder, ['_'].concat(indices), ['_'].concat(indexAliases)]
   };
   addArrayEl(arrayID, elements);
 }
 function addCustomTimeEl(){
   var arrayID      = 'timevis_custom';
-  var elements     = {'timevis_custom' : ['text', 'The date/time to add', "", "e.g. 2016-08-21"]
+  var elements     = {'timevis_custom' : ['text', lang.addCustomTimeEl.timevisCustom, "", lang.addCustomTimeEl.placeholder]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
@@ -364,10 +366,10 @@ function addArrayDataEl(arrayID){
     return;
   }
   switch(arrayID){
-    case 'symbol_Inputgroups':
+    case 'symbol_inputGroups':
       addInputGroup();
     break;
-    case 'symbol_Outputgroups':
+    case 'symbol_outputGroups':
       addOutputGroup();
     break;
     case 'chart_ydatabar':
@@ -736,7 +738,10 @@ $(document).ready(function () {
     nonScalarIndices = arr_diff(indices, scalarIndices);
     nonScalarIndexAliases = arr_diff(indexAliases, scalarIndexAliases);
   });
-  Shiny.addCustomMessageHandler('gms-setGAMSSymbols', function (symData) {
+  Shiny.addCustomMessageHandler('gms-setGAMSSymbols', function (data) {
+    var symData = data.gamsSymbols;
+    lang = data.lang;
+    console.log(lang);
     $.each(symData, function(key, val) {
       if(!$.isArray(val)){
         symData[key] = [val];
