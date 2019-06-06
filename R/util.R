@@ -974,3 +974,53 @@ Set <- R6Class("Set", inherit = CharArray, public = list(
     }
     super$update(old, new)
 }))
+IdIdxMap <- R6Class("IdIdxMap", public = list(
+  push = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    if(elID %in% private$items[[arrayID]]){
+      return(self$get(arrayID, elID))
+    }
+    private$items[[arrayID]] <- append(private$items[[arrayID]], elID)
+    self$get(arrayID, elID)
+  },
+  pop = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    
+    if(identical(self$size(arrayID), 0L)){
+      return(integer(0L))
+    }
+    arrIdx <- match(elID, private$items[[arrayID]])
+    if(is.na(arrIdx)){
+      return(integer(0L))
+    }
+    private$items[[arrayID]] <- private$items[[arrayID]][-arrIdx]
+    return(arrIdx)
+  },
+  get = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    
+    if(!arrayID %in% names(private$items)){
+      return(integer(0L))
+    }
+    arrIdx <- match(elID, private$items[[arrayID]])
+    if(is.na(arrIdx)){
+      return(integer(0L))
+    }
+    return(arrIdx)
+  },
+  initialize = function(){
+    invisible(self)
+  },
+  size = function(arrayID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    if(arrayID %in% names(private$items)){
+      return(length(private$items[[arrayID]]))
+    }
+    return(0L)
+  }
+), private = list(
+  items = list()
+))
