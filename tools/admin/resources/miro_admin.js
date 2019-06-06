@@ -95,7 +95,6 @@ function addInputGroup(defaults){
     name = defaults.name;
     members = defaults.members;
   }
-  console.log(members);
   var arrayID      = 'symbol_inputGroups';
   var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, name],
   'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true ]
@@ -318,7 +317,7 @@ function addBubbleDataEl(){
                                                         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left', 
                                                         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns', 
                                                         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addBubbleDataEl.symbolChoices],
-  'marker_color' : ['color', lang.addBubbleDataEl.color, 'rgb(0,0,0)'],
+  'marker_colorDep' : ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue, 'rgb(0,0,0)'], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases],
   'marker_size' : ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases],
   'marker_maxsize': ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
   'marker_line_width': ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
@@ -486,7 +485,6 @@ function addLabelEl(arrayID, label){
 function registerChangeHandlers(elements, rAddID, elID, options){
   var idx = 0;
   var htmlID = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : elID;
-  
   $.each(elements, function( k, v ) {
     if(v[0] === 'select' || v[0] === 'selectDep'){
       if(idx === 0){
@@ -513,7 +511,8 @@ function registerChangeHandlers(elements, rAddID, elID, options){
       }
       if(v[0] === 'selectDep'){
     	  var alt_elements = {};
-    	  alt_elements[k] = v[2];
+    	  alt_elements[k] = v[1];
+    	  alt_elements[k].shift();
     	  
     	  registerChangeHandlers(alt_elements, rAddID, elID, options, '_alt' + elID);
     	}

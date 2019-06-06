@@ -68,7 +68,7 @@ observeEvent(input$btPaver, {
     return()
   }else{
     errMsg <- NULL
-    paverDir <- paste0(workDir, "paver", .Platform$file.sep)
+    paverDir <- paste0(workDir, "paver")
     paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){

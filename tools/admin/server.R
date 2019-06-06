@@ -5,14 +5,14 @@ configJSONFileName <- paste0(currentModelDir, configDir,
                              modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
-addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = list()){
+addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL){
   arrayID <- paste0(arrayID, plotlyChartType)
   session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults))
 }
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
   arrayID <- paste0(arrayID, plotlyChartType)
   if(autoCreate)
-    session$sendCustomMessage("gms-createArray", arrayID)
+    addArrayEl(session, arrayID, plotlyChartType)
   HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container" style="margin:20px;">\n
  <hr>\n
  <div class="array-wrapper"></div>\n

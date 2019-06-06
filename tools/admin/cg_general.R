@@ -1,9 +1,7 @@
 rowtmp <- list()
 isolate({
-  groupIndexMap <- IdIdxMap$new(list(inputGroups = vapply(configJSON$inputGroups, "[[", 
-                                                          character(1L), "name", USE.NAMES = FALSE),
-                                     outputGroups = vapply(configJSON$outputGroups, "[[", 
-                                                           character(1L), "name", USE.NAMES = FALSE)))
+  groupIndexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
+                                     outputGroups = seq_along(configJSON$outputGroups)))
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
 })
