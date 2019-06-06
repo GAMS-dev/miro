@@ -1,5 +1,12 @@
 rowtmp <- list()
-groupIndexMap <- IdIdxMap$new()
+isolate({
+  groupIndexMap <- IdIdxMap$new(list(inputGroups = vapply(configJSON$inputGroups, "[[", 
+                                                          character(1L), "name", USE.NAMES = FALSE),
+                                     outputGroups = vapply(configJSON$outputGroups, "[[", 
+                                                           character(1L), "name", USE.NAMES = FALSE)))
+  rv$generalConfig$inputGroups <- configJSON$inputGroups
+  rv$generalConfig$outputGroups <- configJSON$outputGroups
+})
 scalarSymbols <- setNames(c(names(modelIn), 
                             if(length(modelIn[[scalarsFileName]])) 
                               modelIn[[scalarsFileName]]$symnames),  
@@ -91,7 +98,10 @@ insertUI(selector = "#general_wrapper",
                     ))
          ), 
          where = "beforeEnd")
+# set default values for input and output groups
 addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
+addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
+
 insertUI(selector = "#general_wrapper2",
          tagList(
            tags$div(title = lang$adminMode$general$actScen$title,
@@ -319,10 +329,8 @@ observeEvent(input$general_pivotcolor, {
   rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
 })
 observeEvent(c(input$group_memberIn, input$add_general), {
-  print(input$add_general)
   if(length(input$add_general) > 2L && length(input$group_memberIn) > 1L){
     arrayIdx <- groupIndexMap$push('inputGroups', input$add_general[1])
-    print(arrayIdx)
     rv$generalConfig$inputGroups[[arrayIdx]] <<- list(name = input$add_general[2], 
                                                       members = input$group_memberIn[2:length(input$group_memberIn)])
   }else{

@@ -89,17 +89,28 @@ var outputSymbolsAliases = [];
 var freeElIDs          = {};
 var elInArray          = {};
 
-function addInputGroup(){
+function addInputGroup(defaults){
+  var name, members;
+  if(defaults !== undefined){
+    name = defaults.name;
+    members = defaults.members;
+  }
+  console.log(members);
   var arrayID      = 'symbol_inputGroups';
-  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, defaults.name],
-  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, defaults.members, true ]
+  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, name],
+  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
-function addOutputGroup(){
+function addOutputGroup(defaults){
+  var name, members;
+  if(defaults !== undefined){
+    name = defaults.name;
+    members = defaults.members;
+  }
   var arrayID      = 'symbol_outputGroups';
-  var elements     = {'symbol_outputGroups' : ['text', lang.addOutputGroup.symbolOutputgroups, defaults[0]],
-  'group_memberOut': ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, defaults[1], true ]
+  var elements     = {'symbol_outputGroups' : ['text', lang.addOutputGroup.symbolOutputgroups, name],
+  'group_memberOut': ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
@@ -656,9 +667,12 @@ function createSelectInput(arrayID, elID, label, choices){
   var aliases  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : choices;
   var selected = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '';
   var multiple = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
+  if(!$.isArray(selected)){
+    selected = [selected];
+  }
   optionsHTML  = '';
   for (var i = 0, itemLen = choices.length; i < itemLen; 
-  optionsHTML += '<option value="' + choices[i] + '"' + (choices[i] === selected? ' selected' : '') + 
+  optionsHTML += '<option value="' + choices[i] + '"' + ($.inArray(choices[i], selected) !== -1 ? ' selected' : '') + 
   '>' + aliases[i++] + '</option>\n');
   
   return('<div class="form-group">\n' +
