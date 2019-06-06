@@ -115,12 +115,11 @@ function addDyEvent(){
 }
 function addDyLimit(){
   var arrayID      = 'dy_dyLimit';
-  var elements     = {'dy_dyLimit' : ['selectDep', [lang.addDyEvent.dyDyLimitCheck, 'numeric', lang.addDyEvent.dyDyLimitTrue, 0, 0], lang.addDyEvent.dyDyLimitFalse, outputScalars, outputScalarAliases],
-  'dyLimit_limit': ['numeric', lang.addDyEvent.limit, 0, 0],
-  'dyLimit_label': ['text', lang.addDyEvent.label],
-  'dyLimit_labelLoc': ['select', lang.addDyEvent.labelLoc, ['left', 'right'], lang.addDyEvent.labelLocChoices],
-  'dyLimit_color': ['color', lang.addDyEvent.color, 'rgb(0,0,0)'],
-  'dyLimit_strokePattern': ['select', lang.addDyEvent.strokePattern, ['dashed', 'dotted', 'dotdash', 'solid'], lang.addDyEvent.strokePatternChoices]
+  var elements     = {'dy_dyLimit' : ['selectDep', [lang.addDyLimit.dyDyLimitCheck, 'numeric', lang.addDyLimit.dyDyLimitTrue, 0, 0], lang.addDyLimit.dyDyLimitFalse, outputScalars, outputScalarAliases],
+  'dyLimit_label': ['text', lang.addDyLimit.label],
+  'dyLimit_labelLoc': ['select', lang.addDyLimit.labelLoc, ['left', 'right'], lang.addDyLimit.labelLocChoices],
+  'dyLimit_color': ['color', lang.addDyLimit.color, 'rgb(0,0,0)'],
+  'dyLimit_strokePattern': ['select', lang.addDyLimit.strokePattern, ['dashed', 'dotted', 'dotdash', 'solid'], lang.addDyLimit.strokePatternChoices]
   };
   addArrayEl(arrayID, elements, {elRequired: false});
 }
