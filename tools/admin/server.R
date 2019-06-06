@@ -4,10 +4,10 @@ twoLayerEl <- c("pie", "hist")
 configJSONFileName <- paste0(currentModelDir, configDir, 
                              modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
-addArrayEl <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
+createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
   arrayID <- paste0(arrayID, plotlyChartType)
   if(autoCreate)
-    session$sendCustomMessage("gms-addArrayEl", arrayID)
+    session$sendCustomMessage("gms-createArray", arrayID)
   HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container" style="margin:20px;">\n
  <hr>\n
  <div class="array-wrapper"></div>\n
@@ -32,7 +32,6 @@ colorPickerInput <- function(id, label = NULL, value = NULL){
     </div>'))
 }
 inputSymMultiDim <- setNames(names(modelInRaw), vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE))
-
 inputSymHeaders <- lapply(inputSymMultiDim, function(el){
   headers <- modelInRaw[[el]]$headers
   return(setNames(names(headers), vapply(headers, "[[", character(1L), "alias", USE.NAMES = FALSE)))
@@ -45,11 +44,16 @@ server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
                        graphConfig = list(outType = "graph", graph = list()), 
                        widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
-                       initData = FALSE, widget_type = 0L, widget_symbol = 0L, saveWidgetConfirm = 0L,
-                       updateLeafletGroups = 0L)
+                       initData = FALSE, refreshContent = 0L, widget_type = 0L, widget_symbol = 0L, 
+                       saveWidgetConfirm = 0L, updateLeafletGroups = 0L)
   configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
                                                     simplifyDataFrame = FALSE, 
                                                     simplifyMatrix = FALSE))
+  session$sendCustomMessage("gms-setGAMSSymbols", list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
+                                                                          inAlias = names(inputSymMultiDim),
+                                                                          outSym = names(modelOut),
+                                                                          outAlias = modelOutAlias),
+                                                       lang = lang$adminMode$graphs$js))
   # ------------------------------------------------------
   #     General settings
   # ------------------------------------------------------
