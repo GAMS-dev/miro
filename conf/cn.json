@@ -12,19 +12,19 @@
     "sidebarMenu":{
       "inputScreen": "输入",
       "outputScreen": "输出",
-      "gams":"GAMS互动",
-      "scen":"比较情景",
+      "gams":"GAMS交互",
+      "scen":"场景比较",
       "hcube":{
-        "configureRun":"配置超立方体作业",
-        "import":"进口工作",
-        "load":"加载方案",
+        "configureRun":"配置Hypercube作业",
+        "import":"导入作业",
+        "load":"加载场景",
         "analyze":"分析场景"
       }
     },
     "sidebarButtons":{
       "importInput":"加载数据",
-      "solve":"解决模型",
-      "solveHcube":"提交工作",
+      "solve":"求解模型",
+      "solveHcube":"提交作业",
       "splitView":"拆分视图",
       "tabView":"标签视图",
       "compareStart":"比较模式",
@@ -34,12 +34,12 @@
     },
     "header":{
       "scenario":{
-        "title":"方案",
-        "titleHC":"HC工作",
+        "title":"场景选项",
+        "titleHC":"HC作业",
         "edit":"编辑元数据",
         "save":"保存",
         "saveAs":"另存为",
-        "export":"出口",
+        "export":"导出",
         "delete":"删除"
       },
       "help":{
@@ -48,7 +48,7 @@
         "about":"关于"
       },
       "tooltips":{
-        "switchToHcube":"切换到超立方体模式"
+        "switchToHcube":"切换到Hypercube模式"
       }
     },
     "inputScreen":{
@@ -71,195 +71,195 @@
     "outputScreen":{
       "boxResults":{
         "title":"结果",
-        "noData":"没有数据"
+        "noData":"无数据"
       }
     },
     "scen":{
-      "noScen":"没有选择任何情景",
-      "btLoad": "装载",
+      "noScen":"未选择任何场景",
+      "btLoad": "加载",
       "tooltips":{
-        "btExport":"出口情景",
+        "btExport":"导出场景",
         "btTableView":"切换视图",
         "btClose":"关闭场景",
         "btDownloadTmpFiles":"临时文件",
         "inputSheet":"模型输入",
         "outputSheet":"模型输出",
-        "load":"加载保存的场景",
-        "loadActive":"加载活动场景（最新保存状态）"
+        "load":"加载已有的场景",
+        "loadActive":"加载活跃场景（最新保存）"
       },
       "split":{
-        "load":"加载方案",
-        "loadActive":"加载活动"
+        "load":"加载场景",
+        "loadActive":"加载活跃的场景"
       }
     },
     "hcubeImport":{
-      "title":"导入工作",
+      "title":"导入作业",
       "btManualImport":"手动导入",
       "btShowHistory":"显示历史"
     },
     "hcubeLoad":{
-      "title":"加载方案",
-      "noData":"您的查询未返回任何数据",
-      "showHashButton":"显示哈希",
-      "msgOnlyOneHash":"请只选择一种方案。",
-      "msgNoHashFound":"找不到所选方案的哈希。显然,在超立方体模式下没有解决该方案。",
-      "chooseSelectedButton":"选择所选方案",
-      "chooseCurrentButton":"选择当前页面",
-      "chooseAllButton":"全选",
+      "title":"加载场景",
+      "noData":"查询未返回任何数据",
+      "showHashButton":"显示哈希值",
+      "msgOnlyOneHash":"请只选择一种场景。",
+      "msgNoHashFound":"未找到该场景的哈希值。该场景在Hypercube模式下可能未解决。",
+      "chooseSelectedButton":"仅选中的场景",
+      "chooseCurrentButton":"当前页面的场景",
+      "chooseAllButton":"所有场景",
       "orButton":"或",
       "andButton":"和",
       "queryButton":"获取结果",
       "showHashDialog":{
-        "title":"场景哈希",
-        "desc":"所选方案具有以下哈希值。您可以使用此方法在基本模式下导入它。"
+        "title":"场景的哈希值",
+        "desc":"所选场景具有以下哈希值，您可以在基本模式下导入该哈希值。"
       },
       "metaColAliases":{
         "uid": "所有者",
-        "stime":"创造时间",
-        "stag":"工作标签"
+        "stime":"创建时间",
+        "stag":"作业标签"
       }
     },
     "hcubeAnalyze":{
       "title":"分析场景",
-      "loadMsg":"请等待计算结果。这可能需要一段时间。",
-      "failMsg":"试图运行摊铺机时出了点问题。",
+      "loadMsg":"正在计算，请等待。",
+      "failMsg":"试图运行paver时出现错误。",
       "duplicatesMsg":"Paver发现了一个重复的实例:'%s'。请确保您没有选择重复项。",
 "btCancel":"取消",
 "btNew":"选择场景"
     },
     "gamsModelStatus":{
       "exec":"模型执行阶段",
-      "success":"运行成功终止。",
-      "error":"运行没有成功终止:"
+      "success":"运行已终止。",
+      "error":"运行未终止:"
     },
     "notificationNewInput":{
-      "new":"已导入%s数据集。",
-      "noNew":"没有导入数据集。"
+      "new":"已导入%s个数据集。",
+      "noNew":"未导入任何数据集。"
     },
     "dialogExportScen":{
-      "title":"出口情景",
+      "title":"导出场景",
       "desc":"选择文件类型",
       "cancelButton":"取消",
-      "okButton":"出口"
+      "okButton":"导出"
     },
     "dialogSaveSuccess":{
-      "title":"成功",
-      "desc":"%d数据集已成功保存。"
+      "title":"保存成功",
+      "desc":"%d个数据集已保存。"
     },
     "dialogNewScen":{
-      "title":"新情景",
-      "desc":"请输入方案的名称:",
-      "tags":"为您的场景添加标签（可选）:",
-      "newScenName":"新场景",
-      "badName":"请为新方案选择有效名称。",
-      "scenExits":"您选择的方案名称已经存在。您要覆盖现有数据吗？",
-      "btNewName":"选择不同的名字",
-      "btOverwrite": "覆盖",
+      "title":"新建场景",
+      "desc":"请输入场景的名称:",
+      "tags":"请为场景添加标签（可选）:",
+      "newScenName":"新建场景",
+      "badName":"请输入正确的名称。",
+      "scenExits":"输入的名称已存在，要替换它吗？",
+      "btNewName":"选择不同的名称",
+      "btOverwrite": "替换",
       "cancelButton": "取消",
-      "okButton": "好"
+      "okButton": "确认"
     },
     "dialogNewHCJob":{
-      "title":"新的超立方体作业",
-      "desc":"请输入超立方体作业配置的名称:",
-      "tags":"将标签添加到您的HC作业（可选）:",
-      "newScenName":"新的超立方体作业",
-      "badName":"请为新的H​​ypercube作业配置选择有效名称。",
-      "scenExits":"您选择的HC作业名称已经存在。您要覆盖现有数据吗？",
-      "btNewName":"选择不同的名字",
-      "btOverwrite": "覆盖",
+      "title":"新建Hypercube作业",
+      "desc":"请输入Hypercube作业配置的名称:",
+      "tags":"请为HC作业添加标签（可选）:",
+      "newScenName":"新建Hypercube作业",
+      "badName":"请输入正确的名称。",
+      "scenExits":"输入的名称已存在，要替换它吗？",
+      "btNewName":"选择不同的名称",
+      "btOverwrite": "替换",
       "cancelButton": "取消",
-      "okButton": "好"
+      "okButton": "确认"
     },
     "dialogEditMeta":{
       "title":"编辑元数据",
-      "success":"元数据成功更新。",
-      "newName":"新名称",
-      "badName":"您选择的名称无效（太长或太短）。请选择其他名称。",
-      "newTags":"新标签",
-      "scenExits":"已经存在一个带有您选择名称的场景。",
+      "success":"元数据已更新。",
+      "newName":"新建名称",
+      "badName":"该名称无效（太长或太短），请选择其他名称。",
+      "newTags":"新建标签",
+      "scenExits":"带有该名称的场景已存在。",
       "attachmentsLabel":"附件",
       "attachmentsAdd":"添加附件",
       "attachmentsExecPerm":"允许模型读取此文件",
-      "attachSuccess":"附件已成功更新",
-      "attachMaxSizeError":"您的附件超过%s字节的最大附件大小。",
-      "attachMaxNoError":"已达到最大附件数。请先上传附件,然后再上传新附件。",
-      "attachDuplicateError":"已存在具有相同名称的附件。请选择其他名称,然后重试。",
-      "attachForbiddenFnameError":"您尝试上传的附件使用禁用的文件名。请选择其他文件名,然后重试。",
-      "errMsg":"Prolems更新方案元数据。如果此问题仍然存在,请与系统管理员联系。",
+      "attachSuccess":"附件已更新",
+      "attachMaxSizeError":"该附件已超过允许的最大附件大小（%s字节）。",
+      "attachMaxNoError":"已达最大附件数。请先删除附件,再上传新附件。",
+      "attachDuplicateError":"已存在相同名称的附件。请选择其他名称,再重试。",
+      "attachForbiddenFnameError":"您尝试上传的附件使用禁用的文件名。请选择其他文件名,再重试。",
+      "errMsg":"更新场景元数据中遇到错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
     },
     "dialogEditMetaHC":{
       "title":"编辑元数据",
-      "success":"元数据成功更新。",
-      "newName":"新名称",
-      "badName":"您选择的名称无效（太长或太短）。请选择其他名称。",
-      "newTags":"新标签",
-      "scenExits":"已存在超级多维数据集作业配置,其中包含您选择的名称。",
+      "success":"元数据已更新。",
+      "newName":"新建名称",
+      "badName":"该名称无效（太长或太短），请选择其他名称。",
+      "newTags":"新建标签",
+      "scenExits":"已存在该名称的Hypercube作业配置。",
       "attachmentsLabel":"附件",
       "attachmentsAdd":"添加附件",
       "attachmentsExecPerm":"允许模型读取此文件",
-      "attachSuccess":"附件已成功更新",
-      "attachMaxSizeError":"您的附件超过%s字节的最大附件大小。",
-      "attachMaxNoError":"已达到最大附件数。请先上传附件,然后再上传新附件。",
-      "attachDuplicateError":"已存在具有相同名称的附件。请选择其他名称,然后重试。",
-      "attachForbiddenFnameError":"您尝试上传的附件使用禁用的文件名。请选择其他文件名,然后重试。",
-      "errMsg":"Prolems更新超立方体作业元数据。如果此问题仍然存在,请与系统管理员联系。",
+      "attachSuccess":"附件已更新",
+      "attachMaxSizeError":"附件超过最大附件大小（%s字节）。",
+      "attachMaxNoError":"已达到最大附件数。请先删除附件,再上传新附件。",
+      "attachDuplicateError":"目标已存在相同名称的附件。请选择其他名称,再重试。",
+      "attachForbiddenFnameError":"尝试上传的附件使用了禁用的文件名。请选择其他文件名,再重试。",
+      "errMsg":"更新Hypercube作业元数据出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
     },
     "dialogDeleteScen":{
-      "title":"删除方案",
-      "desc":"您确定要从数据库中删除所选方案吗？",
+      "title":"删除场景",
+      "desc":"确定要从数据库中删除该场景吗？",
       "cancelButton": "取消",
-      "okButton": "是的",
+      "okButton": "确认",
       "removeFromUI":{
         "title":"从编辑器中删除场景",
-        "desc":"你想从编辑器中删除场景吗？未保存的数据会丢失！",
+        "desc":"确定要从编辑器中删除该场景吗？未保存的数据会丢失！",
         "cancelButton": "取消",
         "okButton":"从编辑器中删除"
       }
     },
     "dialogDeleteHCJob":{
-      "title":"删除超立方体作业",
-      "desc":"您确定要从数据库中删除所选的超立方体作业配置吗？",
+      "title":"删除Hypercube作业",
+      "desc":"确定要从数据库中删除所选的Hypercube作业配置吗？",
       "cancelButton": "取消",
-      "okButton": "是的",
+      "okButton": "确认",
       "removeFromUI":{
-        "title":"从编辑器中删除超立方体作业",
-        "desc":"您是否要从编辑器中删除超立方体作业配置？未保存的数据将丢失！",
+        "title":"从编辑器中删除Hypercube作业",
+        "desc":"确定要从编辑器中删除Hypercube作业配置？未保存的数据会丢失！",
         "cancelButton": "取消",
         "okButton":"从编辑器中删除"
       }
     },
     "dialogRemoveScen":{
       "title":"关闭场景",
-      "desc":"您确定要关闭当前活动的场景吗？未保存的数据可能会丢失！",
+      "desc":"确定要关闭当前活跃的场景吗？未保存的数据可能会丢失！",
       "cancelButton": "否",
       "okButton": "是"
     },
     "dialogRemoveHCJob":{
-      "title":"关闭超立方体作业",
-      "desc":"您确定要关闭当前活动的Hypercube作业配置吗？未保存的数据可能会丢失！",
+      "title":"关闭Hypercube作业",
+      "desc":"确定要关闭当前活跃的Hypercube作业配置吗？未保存的数据可能会丢失！",
       "cancelButton": "否",
       "okButton": "是"
     },
     "dialogCloseScen":{
       "title":"关闭场景",
-      "desc":"您确定要关闭所选方案吗？",
+      "desc":"确定要关闭所选的场景吗？",
       "cancelButton": "否",
       "okButton": "是"
     },
     "dialogExistingOutput":{
-      "title":"输出数据存在",
-      "desc":"您要保存的方案包含可能与当前输入数据不对应的输出数据。是否要丢弃输出数据？",
+      "title":"已存在输出数据",
+      "desc":"要保存的场景包含与当前输入数据不对应的输出数据，丢弃该输出数据？",
       "cancelButton":"取消",
       "saveOutputButton":"保存输出数据",
       "discardOutputButton":"丢弃输出数据"
     },
     "dialogSaveScen":{
-      "title":"保存方案",
-      "desc":"您确定要将所选方案保存在数据库中吗？",
+      "title":"保存场景",
+      "desc":"确定要保存所选场景到数据库吗？",
       "cancelButton": "否",
       "okButton": "是"
     },
@@ -267,53 +267,53 @@
       "title":"加载数据",
       "tabLocal": "本地",
       "tabDatabase": "数据库",
-      "tabHcube": "超立方体",
-      "hcubeHashDesc":"输入您希望从超立方体模式加载的场景的哈希值。然后只需单击场景加载它。",
+      "tabHcube": "Hypercube",
+      "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
       "hcubeHashButton":"搜索",
-      "hcubeHashNoMatch":"找不到与您输入的哈希匹配的方案。",
+      "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
       "selInputData":"选择要加载的数据集",
       "descLocal":"选择要加载数据的文件",
-      "newScenName":"为新方案选择一个名称",
-      "badScenName":"请指定有效名称",
-      "scenNameExistsErr":"您选择的方案名称已存在。",
-      "scenNameExists":"您选择的方案名称已经存在。您要覆盖现有数据吗？",
-      "descOverwriteInput":"你已经加载了输入数据。你确定要覆盖这些数据吗？",
+      "newScenName":"为新场景选择一个名称",
+      "badScenName":"请指定一个有效的名称",
+      "scenNameExistsErr":"该场景名称已存在。",
+      "scenNameExists":"该场景名称已存在，要覆盖现有数据吗？",
+      "descOverwriteInput":"已加载过该输入数据，要覆盖这些数据吗？",
       "cbSelectManually":"手动选择数据集",
-      "overwriteWarning":"如果您没有保存导入的数据集,可能会丢失！",
+      "overwriteWarning":"已导入的数据集,可能会丢失！",
       "cancelButton": "取消",
-      "okButton": "装载",
+      "okButton": "加载",
       "overwriteButton":"覆盖现有数据",
-      "newNameButton":"新名字"
+      "newNameButton":"新建名称"
     },
     "dialogImportHC":{
       "title":"导入数据",
       "tabLocal": "本地",
-      "tabDatabase": "超立方体",
+      "tabDatabase": "Hypercube",
       "tabBase":"基本模式",
       "selInputData":"选择要导入的数据集",
       "descLocal":"选择要导入数据的文件",
       "newScenName":"为新的Hypercube作业配置选择一个名称",
-      "badScenName":"请指定有效名称",
-      "scenNameExists":"您选择的名称已经存在。您要覆盖现有数据吗？",
-      "descOverwriteInput":"你已经加载了输入数据。你确定要覆盖这些数据吗？",
+      "badScenName":"请指定一个有效的名称",
+      "scenNameExists":"该名称已存在，要覆盖现有数据吗？",
+      "descOverwriteInput":"已加载过该输入数据，确定要覆盖这些数据吗？",
       "cbSelectManually":"手动选择数据集",
-      "overwriteWarning":"如果您没有保存导入的数据集,可能会丢失！",
+      "overwriteWarning":"导入的未保存的数据集,可能会丢失！",
       "cancelButton": "取消",
       "okButton": "导入",
       "overwriteButton":"覆盖现有数据",
-      "newNameButton":"新名字"
+      "newNameButton":"新建名称"
     },
     "dialogLoadScen":{
-      "title":"加载方案",
+      "title":"加载场景",
       "tabDB":"数据库",
       "tabUI":"本地",
-      "titleNoScen":"找不到任何情景",
-      "descNoScen":"找不到保存的方案。",
-      "selLoadScen":"选择要加载的方案",
-      "selTags":"仅显示带标记的方案:",
+      "titleNoScen":"未找到任何场景",
+      "descNoScen":"未找到任何保存过的场景。",
+      "selLoadScen":"选择要加载的场景",
+      "selTags":"仅显示带标签的场景:",
       "titleDataError":"数据已损坏",
-      "descDataError":"方案数据似乎已损坏。加载失败。",
-      "maxNoScenExceeded":"已超出可显示的最大方案数。仅显示一个子集。",
+      "descDataError":"场景数据似乎已损坏，加载失败。",
+      "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
       "sortBy":"排序依据:",
       "btSortNameASC":"名称（ASC）",
       "btSortTimeASC":"时间（ASC）",
@@ -323,20 +323,20 @@
       "okButton": "导入"
     },
     "dialogNewCol":{
-      "title":"新栏目",
+      "title":"新建列",
       "desc":"请输入新列的名称:",
       "cancelButton": "取消",
-      "okButton": "好"
+      "okButton": "确认"
     },
     "excelExport":{
       "metadataSheet":{
         "title":"信息",
         "uid": "用户",
         "sname":"场景名称",
-        "stime":"创造时间",
-        "stag":"Scenario tags",
+        "stime":"创建时间",
+        "stag":"场景标签",
         "readPerm":"读取权限",
-        "writePerm":"写权限"
+        "writePerm":"保存权限"
       },
       "inputPrefix": "",
       "inputSuffix":"（输入）",
@@ -344,186 +344,186 @@
       "outputSuffix":"（输出）"
     },
     "dialogLockScen":{
-      "title":"情景锁定",
-      "desc":"用户当前正在访问您要加载的方案:'%s'。请稍后再试。"
+      "title":"场景锁定",
+      "desc":"用户'%s'正在访问您要加载的场景，请稍后重试。"
     },
     "dialogReadonly":{
-      "title":"没有写权限",
-      "desc":"您没有此方案的写入权限。是否要将方案另存为新方案？",
+      "title":"无保存权限",
+      "desc":"没有该场景的保存权限，另存为新场景？",
       "okButton":"另存为",
       "cancelButton":"取消"
     },
     "dialogReadonlyHC":{
-      "title":"没有写权限",
-      "desc":"您没有此超级多维数据集作业配置的写入权限。是否要将其另存为新配置？",
+      "title":"无保存权限",
+      "desc":"没有该Hypercube作业配置的保存权限，另存为新配置？",
       "okButton":"另存为",
       "cancelButton":"取消"
     },
     "dialogDownloadTmp":{
       "title":"下载临时文件",
       "desc":"选择您要下载的文件",
-      "noFiles":"找不到文件",
+      "noFiles":"未找到文件",
       "downloadZipButton":"全部下载为zip",
-      "downloadButton":"下载文件",
+      "downloadButton":"下载",
       "cancelButton": "取消"
     },
     "dialogHcube":{
-      "title":"超立方体配置",
-      "desc":"您选择了在超立方体模式下解决的%d场景。其中,%d场景已由您自己或其他人解决。",
-      "descSolveAgain":"你想再次解决所有情况,还是只想解决尚未解决的问题？",
-      "newTags":"为您的工作分配一个或多个标签:",
+      "title":"Hypercube配置",
+      "desc":"您选择了%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
+      "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
+      "newTags":"为作业分配一个或多个标签:",
       "manualSwitch":"手动处理作业？",
       "cancelButton": "取消",
       "processAllButton":"处理所有",
       "processUnsolvedButton":"仅处理未解决的",
-      "successMsg":"您的超立方体作业已成功安排。您可以在作业完成后立即检索结果。",
-      "waitTime":"请在提交新工作前等几秒钟。",
+      "successMsg":"Hypercube作业已安排，您可以在作业完成后立即查看结果。",
+      "waitTime":"提交新作业前，请等待几秒钟。",
       "waitDialog":{
-        "title":"正在配置超立方体作业",
-        "desc":"请在配置超立方体作业时等待。"
+        "title":"正在配置Hypercube作业",
+        "desc":"正在配置Hypercube作业，请等待。"
       },
       "exceedMaxNoDialog":{
-        "title":"超出最大数量方案",
-        "desc":"您已选择解决超立方体运行的%e场景。这超出了每次运行可以解决的最大允许数量（%d）。请减少场景数量,然后重试。"
+        "title":"超出最大允许场景数量",
+        "desc":"在Hypercube运行中，您已选择%e个场景，这超出每次运行最大允许量（%d个）。请减少场景数量,再重试。"
       },
       "noScenSelectedDialog":{
-        "title":"没有选择任何情景",
-        "desc":"你首先需要选择至少一个你要解决的场景。"
+        "title":"未选择任何场景",
+        "desc":"至少选择一个要求解的场景。"
       },
       "badStepSizeDialog":{
-        "title":"步长不好",
-        "desc":"您指定了无法处理的步长。请选择有效的步长,然后重试。"
+        "title":"错误的步长大小",
+        "desc":"您指定了无法处理的步长大小。请选择有效的步长,再重试。"
       }
     },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
-      "checkboxAliases":["没有","是"],
+      "checkboxAliases":["否","是"],
       "configPaverDialog":{
-        "title":"选择场景比较方法",
-        "selectMethod":"您想使用哪种方法来比较您的方案？",
-        "maxScenWarning1":"您最多只能选择:'%d'场景一次加载到交互模式。",
-        "maxScenWarning2":"选择较少的场景或使用Paver模块进行比较。",
+        "title":"选择场景的比较方法",
+        "selectMethod":"使用哪种方法来比较场景？",
+        "maxScenWarning1":"一次最多选择'%d'个场景加载到交互模式。",
+        "maxScenWarning2":"减少场景数或使用Paver模块进行比较。",
         "cancelButton":"取消",
         "paverButton":"分析",
-        "desc":"请选择您要比较的属性。",
-        "delTrace":"注意:启动摊铺机时,将删除当前工作目录中的现有跟踪文件。",
-        "tooManySolvers":"您选择的属性相当于太多场景无法比较（不超过%s场景可以比较）。请减少场景数量。",
-        "noTrc":"至少有一个选定的方案没有找到跟踪数据。",
-        "removeConfirm":"您确定要从数据库中删除%s选定的方案吗？此操作无法撤消！",
-        "removeSuccess":"已成功删除所选方案。",
+        "desc":"请选择要比较的属性。",
+        "delTrace":"注意:使用Paver模块时,当前工作目录中的trace文件将被删除。",
+        "tooManySolvers":"太多场景均有该属性，无法比较（不超过%s个场景），请减少场景数量。",
+        "noTrc":"至少有一个所选方案无法找到trace数据。",
+        "removeConfirm":"确定要从数据库中删除选定的%s个场景吗？此操作无法撤消！",
+        "removeSuccess":"已删除所选场景。",
         "selAttribs":"要选择的属性:",
-        "selIgnoreAttribs":"选择要忽略的属性:",
+        "selIgnoreAttribs":"要忽略的属性:",
         "selClArgs":"指定其他参数来调用PAVER。",
-        "runButton":"启动摊铺机",
+        "runButton":"启动Paver",
         "interactiveButton": "比较",
         "downloadButton":"下载数据",
-        "removeButton":"删除方案"
+        "removeButton":"删除场景"
       },
       "invalidScenDialog":{
-        "title":"无效的场景",
-        "desc":"你要上传的场景的%d无效（%s）。你还想继续吗？",
+        "title":"无效场景",
+        "desc":"上传的场景中%d个无效，分别是第%s个场景。要继续上传吗？",
         "okButton":"继续",
         "cancelButton":"中止"
       },
       "duplicatedScenDialog":{
-        "title":"找到重复的方案",
-        "allDuplicated":"您要导入的所有场景已经存在于带有标签的数据库中:'%s'。您还想继续吗？",
-        "someDuplicated":"您要导入的方案的%d已经存在于带有标记的数据库中:'%s'。您是否仍想继续或仅导入那些尚不存在的方案。",
+        "title":"发现重复场景",
+        "allDuplicated":"目标已包含标签为:'%s'的所有场景，要继续导入吗？",
+        "someDuplicated":"%d个要导入的场景已存在，标签为'%s'。要继续导入吗？或者仅导入新的场景。",
         "cancelButton": "中止",
-        "importNewButton":"仅导入新",
+        "importNewButton":"仅导入新场景",
         "importAllButton":"全部导入"
       },
       "importJobsDialog":{
-        "title":"当前活动的Hypercube作业",
-        "noJobs":"目前没有超立方体作业处于活动状态",
-        "noJobsHist":"找不到丢弃或导入的Hypercube作业",
-        "discardSuccess":"工作被丢弃",
-        "importSuccess":"作业已成功导入",
-        "histTitle":"工作历史",
+        "title":"当前活跃的Hypercube作业",
+        "noJobs":"当前没有 Hypercube 作业处于活跃状态",
+        "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
+        "discardSuccess":"作业已丢弃",
+        "importSuccess":"作业已导入",
+        "histTitle":"作业历史",
         "ttips":{
-          "importedManual":"作业是手动导入的。",
-          "discardedCorrupted":"这份工作已经腐败了。",
-          "discardedActive":"工作仍然活跃。",
-          "discardedScheduled":"工作已经安排好了。",
-          "discardedCompleted":"工作已经完成。",
-          "corruptedNoDir":"无法找到作业的工作目录。",
-          "corruptedNoProcess":"作业已终止,但未找到任何结果。",
-          "corruptedManual":"手动作业导入失败。"
+          "importedManual":"作业已手动导入。",
+          "discardedCorrupted":"该作业已损坏。",
+          "discardedActive":"该作业仍然活跃。",
+          "discardedScheduled":"该作业已安排。",
+          "discardedCompleted":"该作业已完成。",
+          "corruptedNoDir":"未找到该作业的工作目录。",
+          "corruptedNoProcess":"作业已终止,但未发现任何结果。",
+          "corruptedManual":"手动导入作业失败。"
         },
         "header":{
           "owner":"所有者",
           "date":"提交日期",
-          "tags":"工作标签",
+          "tags":"作业标签",
           "status":"状态",
           "action":"行动"
         },
         "buttons":{
-          "import":"Import",
+          "import":"导入",
           "log":"显示日志",
           "discard":"丢弃"
         },
         "importConfirm":{
           "title":"确认导入",
-          "desc":"您确定要导入所选的超立方体作业吗？",
+          "desc":"确定要导入所选的Hypercube作业吗？",
           "cancelButton":"取消",
           "confirmButton":"确认"
         },
         "discardConfirm":{
           "title":"确认丢弃",
-          "desc":"您确定要丢弃所选的超立方体作业吗？将停止正在运行的作业。",
+          "desc":"确定要丢弃所选的Hypercube作业吗？当前运行的作业将停止。",
           "cancelButton":"取消",
           "confirmButton":"确认"
         }
       },
       "manualJobImportDialog":{
-        "title":"手动超立方体作业导入",
+        "title":"手动导入Hypercube作业",
         "uploadZip":"上传带有结果的zip文件",
         "hcubeTags":"作业标签（以逗号分隔）",
         "uploadButton": "导入",
         "cancelButton":"取消"
       },
       "showLogFileDialog":{
-        "title":"超立方体作业日志文件",
-        "noContent":"无法访问日志文件或不包含任何数据。",
-        "fileSize":"日志文件包含太多要显示的数据。"
+        "title":"Hypercube作业的日志文件",
+        "noContent":"无法访问日志文件或该日志文件不包含任何数据。",
+        "fileSize":"日志文件包含过多要显示的数据。"
       },
       "jobsCompletedDialog":{
-        "title":"已完成的工作",
-        "desc":"超立方体作业已经完成,现在可以进口了。"
+        "title":"已完成的作业",
+        "desc":"Hypercube作业已完成,现在可以导入。"
       }
     },
     "dialogPaverInUse":{
-      "title":"摊铺机已经在使用",
-      "desc":"请等到这个过程结束。",
+      "title":"正在使用Paver",
+      "desc":"请等待。",
       "closeButton":"关闭"
     }
   },
   "progressBar":{
     "renderOutput":{
-      "title":"渲染输出图",
-      "progress":"渲染输出"
+      "title":"绘制输出图",
+      "progress":"正在绘制输出"
     },
     "prepRun":{
-      "title":"准备优化运行",
+      "title":"正在准备优化",
       "sendInput":"发送输入数据",
-      "downloadAttach":"下载附件"
+      "downloadAttach":"正在下载附件"
     },
     "loadScenDb":{
-      "title":"从数据库加载方案数据",
-      "progress":"加载数据集"
+      "title":"从数据库加载场景数据",
+      "progress":"正在加载数据集"
     },
     "saveScenDb":{
-      "title":"在数据库中保存方案数据",
-      "progress":"保存数据集"
+      "title":"在数据库中保存场景数据",
+      "progress":"正在保存数据集"
     },
     "hcubeImport":{
-      "title":"导入超立方体作业",
+      "title":"正在导入Hypercube作业",
       "unzip":"提取zip文件",
       "zipValidation":"验证zip文件",
-      "scenValidation":"验证方案数据",
+      "scenValidation":"验证场景数据",
       "duplicateCheck":"检查重复的场景",
-      "scenRead":"阅读情景数据",
-      "dbUpload":"将方案上传到数据库",
+      "scenRead":"读取场景的数据",
+      "dbUpload":"将场景上传到数据库",
       "success":"导入成功"
     }
   },
@@ -532,148 +532,148 @@
     "permErr":"操作失败,因为您没有足够的权限。",
     "fileRead":{
       "title":"读取文件时出错",
-      "desc":"读取文件时发生了一些错误:'%s'。"
+      "desc":"读取以下文件时出现错误:'%s'。"
     },
     "fileWrite":{
-      "title":"写入文件时出错",
-      "desc":"写入文件时发生了一些错误:'%s'。"
+      "title":"保存文件时出错",
+      "desc":"保存以下文件时出现错误:'%s'。"
     },
     "initErrors":{
       "title":"发生了一些错误",
       "desc":"请修正下面提到的错误并重新启动MIRO:"
     },
     "fetchScenData":{
-      "title":"获取方案元数据时出错",
-      "desc":"无法检索方案元数据。"
+      "title":"获取场景元数据时出错",
+      "desc":"无法检索场景元数据。"
     },
     "renderSlider":{
       "title":"滑块的输入数据不正确",
-      "desc":"滑块的值'%s':'%s'不是数字类型。"
+      "desc":"滑块的值'%s'不是数字类型。"
     },
     "saveInput":{
       "title":"保存输入数据时出错",
-      "desc":"将数据保存到数据库时发生了一些错误。"
+      "desc":"将数据保存到数据库时出现错误。"
     },
     "readOutput":{
       "title":"读取结果时出错",
-      "desc":"读取从GAMS返回的结果时出现了一些错误。"
+      "desc":"读取从GAMS返回的结果时出现错误。"
     },
     "dataError":{
       "title":"数据错误",
-      "desc":"发生了一些数据错误。如果此问题仍然存在,请与系统管理员联系。"
+      "desc":"数据出现错误。如果此问题仍然存在,请与系统管理员联系。"
     },
     "ddLenMismatch":{
       "title":"别名和值的数量不匹配",
-      "desc":"下拉菜单的别名数:'%s'与值的数量不匹配。"
+      "desc":"下拉菜单的别名数'%s'与值的数量不匹配。"
     },
     "fetchDataset":{
       "title":"读取数据集时出错",
-      "desc":"从数据库中获取数据集时发生了一些错误:'%s'。",
-      "badColName":"在数据集中找不到列'%s':'%s'",
-      "noData":"数据集:'%s'无法加载。请确保数据集实际包含数据。"
+      "desc":"从数据库中获取数据集时出现错误:'%s'来自数据库。",
+      "badColName":"在数据集中找不到列'%s'",
+      "noData":"数据集'%s'无法加载。请确保该数据集包含数据。"
     },
     "GAMSInput":{
-      "title":"写入输入文件时出错",
-      "desc":"编写GAMS输入文件时出现了一些错误。",
-      "excelRead":"读取文件时发生了一些错误:'%s'。",
-      "badColName":"在数据集中找不到列'%s':'%s'",
-      "noData":"数据集:'%s'无法加载。请确保数据集实际包含数据。",
-      "badInputData":"GAMS输入数据集:'%s'无效。请检查您要导入的数据的格式。",
-      "writeCsv":"编写csv文件时发生了一些错误:'%s'。"
+      "title":"保存输入文件时出错",
+      "desc":"编写GAMS输入文件时出现错误。",
+      "excelRead":"读取文件时出现错误:'%s'。",
+      "badColName":"在数据集中找不到列'%s'",
+      "noData":"数据集'%s'无法加载。请确保数据集实际包含数据。",
+      "badInputData":"GAMS输入数据集:'%s'无效。请检查导入数据的格式。",
+      "writeCsv":"编写csv文件时出现错误:'%s'。"
     },
     "GAMSOutput":{
-      "title":"读取输出文件的错误",
-      "badOutputData":"GAMS输出数据集:'%s'无效。请检查您要导入的数据的格式。"
+      "title":"读取输出文件时出误",
+      "badOutputData":"GAMS输出数据集:'%s'无效。请检查导入数据的格式。"
     },
     "gamsExec":{
-      "title":"执行GAMS时出错",
-      "desc":"执行GAMS时发生了一些错误。"
+      "title":"执行GAMS中出错",
+      "desc":"执行GAMS过程中出现错误。"
     },
     "gamsTerm":{
       "title":"终止gams.exe时出错",
-      "desc":"终止GAMS时发生了一些错误。"
+      "desc":"终止GAMS时出现错误。"
     },
     "readLog":{
       "title":"读取日志文件时出错",
-      "desc":"读取GAMS日志文件时发生了一些错误。"
+      "desc":"读取GAMS日志文件时出现错误。"
     },
     "readLst":{
       "title":"读取列表文件时出错",
-      "desc":"读取GAMS列表文件时发生了一些错误。",
-      "fileSize":"您尝试读取的第一个文件太大而无法显示。请下载lst文件以访问它。"
+      "desc":"读取GAMS列表文件时出现错误。",
+      "fileSize":"尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。"
     },
     "saveScen":{
-      "title":"错误保存方案",
-      "desc":"尝试保存方案时发生错误。"
+      "title":"保存场景时出错",
+      "desc":"尝试保存场景时出现错误。"
     },
     "loadScen":{
-      "title":"加载方案错误",
-      "desc":"加载所选方案时发生了一些错误。"
+      "title":"加载场景时错误",
+      "desc":"加载所选场景时出现错误。"
     },
     "deleteScen":{
-      "title":"删除方案时出错",
-      "desc":"删除方案时出现了一些错误。如果此错误仍然存​​在,请联系系统管理员。"
+      "title":"删除场景时出错",
+      "desc":"删除场景时出现错误。如果此错误仍然存​​在,请联系系统管理员。"
     },
     "renderTable":{
-      "title":"错误渲染表",
-      "desc":"输出数据的渲染表发生了一些错误:'%s'。"
+      "title":"绘制图表时出错",
+      "desc":"绘制输出数据的图表时出现错误:'%s'。"
     },
     "renderGraph":{
-      "title":"呈现图形时出错",
-      "desc":"为输出数据渲染图形时发生了一些错误:'%s'。"
+      "title":"绘制图形时出错",
+      "desc":"绘制输出数据的图形时出现错误:'%s'。"
     },
     "blankScenName":{
-      "title":"没有输入名字",
-      "desc":"请为要保存的方案选择有效名称。"
+      "title":"未键入名称",
+      "desc":"请为要保存的场景输入有效的名称。"
     },
     "maxScen":{
-      "title":"达到的最大场景数",
-      "desc":"您已达到可以同时加载的最大场景数。请先导入一些场景,然后再导入新场景。"
+      "title":"已达到场景个数上限",
+      "desc":"已达到可加载场景数的上限，在添加新场景前请先删除部分已存在的场景。"
     },
     "lockScen":{
       "title":"设置/删除场景锁定时出错",
-      "desc":"在锁定或解锁当前活动的场景时发生了一些错误。"
+      "desc":"在锁定或解锁当前活跃的场景时发生了一些错误。"
     },
     "hcubeImport":{
       "extract":{
         "title":"提取存档时出错",
-        "desc":"提取存档时出现问题。请确保上传有效的zip文件。",
-        "invalidFiles":"您尝试导入的存档包含无效文件。只允许跟踪和csv文件！"
+        "desc":"提取存档时出现错误，请确保上传有效的zip文件。",
+        "invalidFiles":"要导入的存档包含无效文件，只允许trace和csv文件！"
       },
       "scenRead":{
         "title":"读取文件时出错",
-        "desc":"读取方案数据时出现问题。如果此问题仍然存在,请与系统管理员联系。"
+        "desc":"读取场景数据时出现错误。如果此问题仍然存在,请与系统管理员联系。"
       },
       "invalidJob":{
-        "title":"无效的超立方体作业",
-        "desc":"您的存档中没有有效的方案。请上传有效的超立方体作业数据。"
+        "title":"无效的Hypercube作业",
+        "desc":"存档中没有有效的场景。请上传有效的Hypercube作业数据。"
       },
       "duplicateFetch":{
         "title":"数据库错误",
-        "desc":"从数据库中获取现有方案时出现问题。如果此问题仍然存在,请与系统管理员联系。"
+        "desc":"从数据库中获取现有场景时出现错误。如果此问题仍然存在,请与系统管理员联系。"
       },
       "dbUpload":{
         "title":"数据库错误",
-        "desc":"将方案上传到数据库时出现问题。请稍后再试。"
+        "desc":"将场景上传到数据库时出现错误，请稍后再试。"
       }
     },
     "hcubeLaunch":{
-      "hcubeRunning":"超立方体模式已经在运行。",
-      "launchError":"尝试启动超立方体模式时发生错误。如果此问题仍然存在,请与系统管理员联系。"
+      "hcubeRunning":"Hypercube模式已经在运行。",
+      "launchError":"尝试启动Hypercube模式时发生错误。如果此问题仍然存在,请与系统管理员联系。"
     },
     "paverFileLoad":{
       "desc":"无法为此类别加载数据。"
     },
     "paverExec":{
       "title":"执行Python时出错",
-      "desc":"执行Python时发生了一些错误。"
+      "desc":"执行Python时出现错误。"
     },
     "paverTerm":{
       "title":"终止python时出错",
-      "desc":"终止python时发生了一些错误。"
+      "desc":"终止python时出现错误。"
     },
     "saveGAMSLog":{
-       "title":"保存GAMS日志/ lst文件时出错",
+       "title":"保存GAMS日志文件或lst文件时出错",
        "noFileAccess":"无法访问一个或多个GAMS输出文件（.log / .lst）。",
        "fileSizeExceeded":"一个或多个GAMS输出文件（.log / .lst）超过允许存储的最大文件大小。"
     }

@@ -388,7 +388,7 @@
       },
       "noScenSelectedDialog":{
         "title": "No scenarios selected",
-        "desc": "You first need to select atleast one scenario that you want to solve."
+        "desc": "You first need to select at least one scenario that you want to solve."
       },
       "badStepSizeDialog":{
         "title": "Bad step size",
