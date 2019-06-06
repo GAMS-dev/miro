@@ -78,13 +78,13 @@ var scalarIndices      = [];
 var scalarIndexAliases = [];
 var nonScalarIndices   = [];
 var nonScalarIndexAliases = [];
-var outputScalars      = [];
+var outputScalars       = [];
 var outputScalarAliases = [];
 var inputSymbols        = [];
 var inputSymbolsAliases = [];
-var outputSymbols        = [];
+var outputSymbols       = [];
 var outputSymbolsAliases = [];
-var elInArrayCounter   = {};
+var freeElIDs          = {};
 var elInArray          = {};
 
 function addInputGroup(){
@@ -450,8 +450,10 @@ function incElCount(arrayID){
   if(count === 0){
     delete elInArray[arrayID];
   }
-  elInArrayCounter[arrayID] = count + 1;
-  return(elInArrayCounter[arrayID]);
+  if(freeElIDs[arrayID] !== undefined && freeElIDs[arrayID].length){
+    return(freeElIDs[arrayID].pop());
+  }
+  return(count + 1);
 }
 function addLabelEl(arrayID, label){
   if(arrayID in elInArray){
@@ -689,14 +691,15 @@ function createSelectDepInput(arrayID, elID, rAddID, altEl, label, choices){
       throw "Unknown element type: " + altEl[1];
   }
   var checkboxInput = '<div class="form-group col-sm-4">\n' +
-  '<div class="checkbox">\n' +
-    '<label>\n' +
-      '<input type="checkbox" onclick="toggleDepContainer(this, \'' + arrayID + 
-      '\', \'' + elID + '\', \'' + rAddID + '\');"/>\n' +
-      '<span>' + altEl[0] + '</span>\n' +
+  '<label class="cb-label" for="depCb_' + arrayID + elID + '">' + altEl[0] + '</label>\n' +
+  '<div>\n<label class="checkbox-material" for="depCb_' + arrayID + elID + 
+  '">\n<div class="checkbox">\n<label>\n' +
+      '<input id="depCb_' + arrayID + elID + '" type="checkbox" onclick="toggleDepContainer(this, \'' 
+      + arrayID + '\', \'' + elID + '\', \'' + rAddID + '\');"/>\n' +
+      '<span></span>\n' +
     '</label>\n' +
   '</div>\n' +
-'</div>'
+'</div>\n</label>\n</div>'
   
   return('<div class="form-group dep-group" style="width:100%;display:inline-block;">\n<div class="dep-el col-sm-8">\n' +
   firstInput + '\n</div>\n<div class="dep-el col-sm-8" style="display:none">\n' + secondInput + 
@@ -734,13 +737,14 @@ function createCheckboxInput(arrayID, elID, label){
   Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
   
   return('<div class="form-group">\n' +
-  '<div class="checkbox">\n' +
+  '<label class="cb-label" for="' + id + '">' + label + '</label>\n' +
+  '<div>\n<label class="checkbox-material" for="' + id + '">\n<div class="checkbox">\n' +
     '<label>\n' +
       '<input id="' + id + '" type="checkbox"' + (value === true? ' checked="checked"': '') + '/>\n' +
-      '<span>' + label + '</span>\n' +
+      '<span></span>\n' +
     '</label>\n' +
   '</div>\n' +
-'</div>');
+'</div>\n</label>\n</div>');
 }
 function createColorPickerInput(arrayID, elID, label){
   var id = arrayID + elID;
@@ -821,7 +825,10 @@ function removeArrayEl(arrayID, elID, rObserveID){
   Shiny.setInputValue('remove_' + rObserveID, [arrayID, arrayLabel, elID], {
     priority: "event"
   });
-  
+  if(freeElIDs[arrayID] === undefined){
+    freeElIDs[arrayID] = [];
+  }
+  freeElIDs[arrayID].push(elID);
   $('#' + arrayID + elID + '_wrapper').remove();
 }
 
