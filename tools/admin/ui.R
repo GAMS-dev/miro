@@ -1,24 +1,31 @@
 ## UI body
+langSpecificUI <- list()
+langSpecificUI$tableType <- c("input table" = "hot", "output table" = "dt")
+names(langSpecificUI$tableType) <- lang$adminMode$tables$ui$choices
+langSpecificUI$symbolType <- c("Symbol" = "gams", "New GAMS option" = "go", 
+                              "New double dash parameter" = "dd")
+names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
+
 header_admin <- dashboardHeader(
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
-                 "Help", tags$span(class="caret")),
+                 lang$adminMode$uiR$help, tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
                   tags$li(tags$a(href = "https://www.gams.com/miro/", 
-                                 target = "_blank", "Documentation")),
+                                 target = "_blank", lang$adminMode$uiR$documentation)),
                   tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
                                       'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
                   )))),
-  title=paste0("GAMS MIRO admin panel (", modelName, ")"), disable = FALSE)
+  title=paste0(lang$adminMode$uiR$adminPanel," (", modelName, ")"), disable = FALSE)
 
 sidebar_admin <- dashboardSidebar(
   sidebarMenu(id="sidebarMenuId",
-              menuItem("General settings", tabName = "new_gen", icon = icon("cogs")),
-              menuItem("Table settings", tabName="tables_gen", icon = icon("table")),
-              menuItem("Configure graphs", tabName = "new_graph", icon = icon("chart-bar")),
-              menuItem("Configure widgets", tabName="new_widget", icon = icon("sliders-h")),
-              menuItem("Database management", tabName="db_management", icon = icon("database"))
+              menuItem(lang$adminMode$uiR$general, tabName = "new_gen", icon = icon("cogs")),
+              menuItem(lang$adminMode$uiR$table, tabName="tables_gen", icon = icon("table")),
+              menuItem(lang$adminMode$uiR$widgets, tabName="new_widget", icon = icon("sliders-h")),
+              menuItem(lang$adminMode$uiR$graphs, tabName = "new_graph", icon = icon("chart-bar")),
+              menuItem(lang$adminMode$uiR$database, tabName="db_management", icon = icon("database"))
   )
 )
 
@@ -55,41 +62,41 @@ body_admin <- dashboardBody({
     tabItems(
       tabItem(tabName = "db_management",
               fluidRow(
-                box(title = "Database management", status="primary", solidHeader = TRUE, width = 12,
+                box(title = lang$adminMode$database$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
-                             "Database tables removed successfully"),
+                             lang$adminMode$database$removeSuccess),
                     tags$div(id = "restoreSuccess", class = "gmsalert gmsalert-success",
-                             "Data restored successfully"),
+                             lang$adminMode$database$restoreSuccess),
                     tags$div(id = "restoreNoData", class = "gmsalert gmsalert-error",
-                             "No csv files found in the archive provided. Nothing was restored."),
+                             lang$adminMode$database$restoreNoData),
                     tags$div(id = "restoreInvalidData", class = "gmsalert gmsalert-error",
-                             "At least one of the tables is invalid. Nothing was restored."),
+                             lang$adminMode$database$restoreInvalidData),
                     tags$div(id = "maxRowError", class = "gmsalert gmsalert-error",
-                             "The maximum number of rows to export was exceeded for atleast 1 table. Please back up the database manually!"),
+                             lang$adminMode$database$maxRowError),
                     tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. Maybe your database is not empty?"),
+                             lang$adminMode$database$unknownError),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_backup_wrapper", "Database backup"),
-                    tags$div(id = "db_backup_wrapper", "You want to create a backup of the database? Click the button below to get a zip archive with all the database tables saved into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!"),
-                    downloadButton("dbSaveAll", label = "Save database tables"),
+                    tags$label("for" = "db_backup_wrapper", lang$adminMode$database$backup),
+                    tags$div(id = "db_backup_wrapper", lang$adminMode$database$backupWrapper),
+                    downloadButton("dbSaveAll", label = lang$adminMode$database$dbSaveAll),
                     tags$div(class = "space"),
                     tags$hr(),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_restore_wrapper", "Restore database"),
-                    tags$div(id = "db_restore_wrapper", "You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
+                    tags$label("for" = "db_restore_wrapper", lang$adminMode$database$restore),
+                    tags$div(id = "db_restore_wrapper", lang$adminMode$database$restoreWrapper,
                              tags$div(style = "max-width:400px;",
                                       fileInput("dbBackupZip", label = NULL, 
                                                 accept = c(".zip", "application/zip", 
                                                            "application/octet-stream", 
                                                            "application/x-zip-compressed", 
                                                            "multipart/x-zip"))),
-                             actionButton("restoreDb", "Restore")
+                             actionButton("restoreDb", lang$adminMode$database$restoreDb)
                     ),
                     tags$div(class = "space"),
                     tags$hr(),
                     tags$div(class = "space"),
-                    tags$label("for" = "db_remove_wrapper", "Delete data"),
-                    tags$div(id = "db_remove_wrapper", "You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
+                    tags$label("for" = "db_remove_wrapper", lang$adminMode$database$remove),
+                    tags$div(id = "db_remove_wrapper", lang$adminMode$database$removeWrapper,
                              HTML(paste0('<br><button type="button" class="btn btn-default"', 
                                          ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
                                          'This can not be undone! You might want to save the database first before proceeding.\', \'Cancel\', ',
@@ -101,28 +108,28 @@ body_admin <- dashboardBody({
       ),
       tabItem(tabName = "new_graph",
               fluidRow(
-                box(title = "Configure graphs", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success", "Graph configuration was updated successfully"),
+                box(title = lang$adminMode$graphs$ui$title, status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "graphUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$graphs$ui$graphUpdateSuccess),
                     tags$div(id = "graphValidationErr", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorGraphs", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+                             lang$adminMode$graphs$ui$unknownErrorGraphs),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
                              tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      fileInput("localInput", "Upload an Excel spreadsheet with data that will be used for preview purposes",
+                                      fileInput("localInput", lang$adminMode$graphs$ui$localInput,
                                                 width = "100%",
                                                 multiple = FALSE,
                                                 accept = c("application/vnd.ms-excel", 
                                                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                                                            ".xlsx")),
                                       tags$div(id = "preview_wrapper", style = "display:none;",
-                                               selectInput("gams_symbols", "Select which GAMS symbol to plot",
+                                               selectInput("gams_symbols", lang$adminMode$graphs$ui$gamsSymbols,
                                                            choices = NULL),
-                                               textInput("chart_title", "Choose a title for your chart"),
-                                               numericInput("chart_height", "Choose a height for your chart (px)", min = 0L, value = 700),
-                                               selectInput("chart_tool", "Select the charting tool you want to use", 
-                                                           setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot"), 
-                                                                    c("Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table"))),
+                                               textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
+                                               numericInput("chart_height", lang$adminMode$graphs$ui$height, min = 0L, value = 700),
+                                               selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
+                                                           setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot", "valuebox"), 
+                                                                    lang$adminMode$graphs$ui$choices)),
                                                tags$div(id = "tool_options"),
                                                tags$div(style = "height:100px;")
                                       )
@@ -149,11 +156,16 @@ body_admin <- dashboardBody({
                                       renderDataUI("preview_output_pivot", type = "pivot",
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
-                             tags$div(id = "preview-content-timevis", style = "display:none;",
+                             tags$div(id = "preview-content-timevis", style = "display:none; overflow:auto;",
                                       renderDataUI("preview_output_timevis", type = "graph", 
                                                    graphTool = "timevis", 
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             if(scalarsOutName %in% names(modelOut)){
+                               tags$div(id = "preview-content-valuebox", style = "display:none;",
+                                        renderDataUI("preview_output_valuebox", type = "valuebox", 
+                                                     height = 400, customOptions = configGraphsOut[[match(scalarsOutName,names(modelOut))]]$options,
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData))},
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",
                                       actionButton("saveGraph", "Save", icon("save")))
                     )
@@ -162,40 +174,45 @@ body_admin <- dashboardBody({
       ),
       tabItem(tabName = "new_widget",
               fluidRow(
-                box(title = "Configure input widgets", status="primary", solidHeader = TRUE, width = 12,
-                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-success", "Widget configuration was updated successfully"),
+                box(title = lang$adminMode$widgets$ui$title, status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "widgetUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$widgets$ui$widgetUpdateSuccess),
                     tags$div(id = "widgetValidationErr", class = "gmsalert gmsalert-error"),
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
-                             "An unexpected error occurred. If this problem persists, please contact the system administrator."),
+                             lang$adminMode$widgets$ui$widgetError),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
                              tags$div(style = "padding-bottom: 20px;",
-                                      radioButtons("widget_symbol_type", label = "Symbol type to configure",
-                                                   choices = list("Symbol" = "gams", "GAMS option" = "go", 
-                                                                  "Double dash parameter" = "dd"), 
+                                      radioButtons("widget_symbol_type", label = lang$adminMode$widgets$ui$symbolType,
+                                                   choices = langSpecificUI$symbolType, 
                                                    selected = "gams", inline = TRUE)),
-                             tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: orange;display: none;", 
-                                      "Currently, there is no widget configured for this symbol"),
+                             tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      lang$adminMode$widgets$ui$noWidgetConfigMsg),
+                             tags$div(id = "optionConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      lang$adminMode$widgets$ui$optionConfigMsg),
+                             tags$div(id = "doubledashConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      lang$adminMode$widgets$ui$doubledashConfigMsg),
                              tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'gams'",
                                         tags$div(style = "max-width:400px;",
-                                                 selectInput("widget_symbol", "Which input symbol would you like to create a widget for?", 
+                                                 selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
                                                              choices = c()))
                                       ),
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'go'",
                                         tags$div(style = "max-width:400px;",
-                                                 textInput("widget_go", "Name of the GAMS option (e.g. 'LP' or 'OptCR')"))
+                                                 textInput("widget_go", lang$adminMode$widgets$ui$widgetGo))
                                       ),
                                       conditionalPanel(
                                         condition = "input.widget_symbol_type == 'dd'",
                                         tags$div(style = "max-width:400px;",
-                                                 textInput("widget_dd", "Name of the double-dash parameter (without '--')"))
+                                                 textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd))
                                       ),
                                       tags$div(style = "max-width:400px;",
-                                               selectInput("widget_type", "Select the type of widget you want to use", choices = c())),
+                                               selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c())),
                                       tags$div(id = "widget_options"),
                                       tags$div(style = "height:100px;")
                              )
@@ -212,30 +229,38 @@ body_admin <- dashboardBody({
       ),
       tabItem(tabName = "new_gen",
               fluidRow(
-                box(title = "General settings", status="primary", solidHeader = TRUE, width = 12,
+                box(title = lang$adminMode$general$ui$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
-                    tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
-                            tags$div(id = "general_wrapper"),
-                            tags$div(style = "height:100px;")
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                      tags$div(id = "general_wrapper"),
+                                      tags$div(style = "height:100px;")
+                             )
+                    ),
+                    tags$div(class = "col-sm-6",
+                             tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                      tags$div(id = "general_wrapper2"),
+                                      tags$div(style = "height:100px;")
+                             )      
                     )
                 )
-              )
+                )
       ),
       tabItem(tabName = "tables_gen",
         fluidRow(
-          box(title = "General table settings", status="primary", solidHeader = TRUE, width = 12,
+          box(title = lang$adminMode$tables$ui$title, status="primary", solidHeader = TRUE, width = 12,
               tags$div(class = "space"),
               tags$div(class = "col-sm-6",
                        tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                                 tags$div(style = "padding-bottom: 20px;",
-                                  radioButtons("table_type", label = "Which table type would you like to configure?", inline = TRUE,
-                                               choices = c("input table" = "hot", "output table" = "dt"), 
+                                  radioButtons("table_type", label = lang$adminMode$tables$ui$tableType, inline = TRUE,
+                                               choices = langSpecificUI$tableType, 
                                                selected = "hot")),
                                 tags$div(id = "table_wrapper"),
                                 tags$div(style = "height:100px;")
                        )
               ),
-              tags$div(class = "col-sm-6", style = "text-align:right;",
+              tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
                       tags$div(id = "preview-output-hot", 
                                rHandsontableOutput("table_preview_hot")),
                       tags$div(id = "preview-output-dt", style = "display:none;",
