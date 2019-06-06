@@ -4,6 +4,11 @@ twoLayerEl <- c("pie", "hist")
 configJSONFileName <- paste0(currentModelDir, configDir, 
                              modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
+
+addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = list()){
+  arrayID <- paste0(arrayID, plotlyChartType)
+  session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults))
+}
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
   arrayID <- paste0(arrayID, plotlyChartType)
   if(autoCreate)

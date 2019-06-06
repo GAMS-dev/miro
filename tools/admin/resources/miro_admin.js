@@ -89,17 +89,28 @@ var outputSymbolsAliases = [];
 var freeElIDs          = {};
 var elInArray          = {};
 
-function addInputGroup(){
+function addInputGroup(defaults){
+  var name, members;
+  if(defaults !== undefined){
+    name = defaults.name;
+    members = defaults.members;
+  }
+  console.log(members);
   var arrayID      = 'symbol_inputGroups';
-  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups],
-  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, , true ]
+  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, name],
+  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, members, true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
-function addOutputGroup(){
+function addOutputGroup(defaults){
+  var name, members;
+  if(defaults !== undefined){
+    name = defaults.name;
+    members = defaults.members;
+  }
   var arrayID      = 'symbol_outputGroups';
-  var elements     = {'symbol_outputGroups' : ['text', lang.addOutputGroup.symbolOutputgroups],
-  'group_memberOut': ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, , true ]
+  var elements     = {'symbol_outputGroups' : ['text', lang.addOutputGroup.symbolOutputgroups, name],
+  'group_memberOut': ['select', lang.addOutputGroup.groupMemberOut, outputSymbols, outputSymbolsAliases, members, true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
@@ -380,69 +391,74 @@ function toggleDepContainer(el, arrayID, elID, rAddID){
   });
   Shiny.setInputValue(rAddID, [elID, value, arrayID, "change"], {priority: "event"});
 }
-function addArrayDataEl(arrayID){
+function addArrayDataEl(arrayID, defaults){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
   }
-  switch(arrayID){
-    case 'symbol_inputGroups':
-      addInputGroup();
-    break;
-    case 'symbol_outputGroups':
-      addOutputGroup();
-    break;
-    case 'chart_ydatabar':
-      addBarDataEl();
-    break;
-    case 'chart_ydatascatter':
-      addScatterDataEl();
-    break;
-    case 'chart_ydataline':
-      addLineDataEl();
-    break;
-    case 'chart_ydatabubble':
-      addBubbleDataEl();
-    break;
-    case 'hist_xdata':
-      addHistDataEl();
-    break;
-    case 'dy_ydata':
-      addDyDataEl();
-    break;
-    case 'dy_dyEvent':
-      addDyEvent();
-    break;
-    case 'dy_dyLimit':
-      addDyLimit();
-    break;
-    case 'dy_dyAnnotation':
-      addDyAnnotation();
-    break;
-    case 'dy_dyShading':
-      addDyShading();
-    break;
-    case 'leaflet_markers':
-      addLeafletMarkers();
-    break;
-    case 'leaflet_flows':
-      addLeafletFlows();
-    break;
-    case 'leaflet_minicharts':
-      addLeafletMinicharts();
-    break;
-    case 'timevis_series':
-      addTimevisDataEl();
-    break;
-    case 'timevis_custom':
-      addCustomTimeEl();
-    break;
+  if(defaults === undefined){
+    defaults = [undefined];
   }
+  $.each(defaults, function( i, l ) {
+    switch(arrayID){
+      case 'symbol_inputGroups':
+        addInputGroup(l);
+      break;
+      case 'symbol_outputGroups':
+        addOutputGroup(l);
+      break;
+      case 'chart_ydatabar':
+        addBarDataEl(l);
+      break;
+      case 'chart_ydatascatter':
+        addScatterDataEl(l);
+      break;
+      case 'chart_ydataline':
+        addLineDataEl(l);
+      break;
+      case 'chart_ydatabubble':
+        addBubbleDataEl(l);
+      break;
+      case 'hist_xdata':
+        addHistDataEl(l);
+      break;
+      case 'dy_ydata':
+        addDyDataEl(l);
+      break;
+      case 'dy_dyEvent':
+        addDyEvent(l);
+      break;
+      case 'dy_dyLimit':
+        addDyLimit(l);
+      break;
+      case 'dy_dyAnnotation':
+        addDyAnnotation(l);
+      break;
+      case 'dy_dyShading':
+        addDyShading(l);
+      break;
+      case 'leaflet_markers':
+        addLeafletMarkers(l);
+      break;
+      case 'leaflet_flows':
+        addLeafletFlows(l);
+      break;
+      case 'leaflet_minicharts':
+        addLeafletMinicharts(l);
+      break;
+      case 'timevis_series':
+        addTimevisDataEl(l);
+      break;
+      case 'timevis_custom':
+        addCustomTimeEl(l);
+      break;
+    }
+  });
 }
-function addArrayDataElWrapper(arrayID){
+function addArrayDataElWrapper(arrayID, defaults){
   if($('#' + arrayID + '_wrapper').is(':visible')){
-    addArrayDataEl(arrayID);
+    addArrayDataEl(arrayID, defaults);
   }else{
-    setTimeout(addArrayDataElWrapper, 200, arrayID);
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
   }
 }
 
@@ -650,9 +666,12 @@ function createSelectInput(arrayID, elID, label, choices){
   var aliases  = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : choices;
   var selected = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '';
   var multiple = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
+  if(!$.isArray(selected)){
+    selected = [selected];
+  }
   optionsHTML  = '';
   for (var i = 0, itemLen = choices.length; i < itemLen; 
-  optionsHTML += '<option value="' + choices[i] + '"' + (choices[i] === selected? ' selected' : '') + 
+  optionsHTML += '<option value="' + choices[i] + '"' + ($.inArray(choices[i], selected) !== -1 ? ' selected' : '') + 
   '>' + aliases[i++] + '</option>\n');
   
   return('<div class="form-group">\n' +
@@ -859,7 +878,6 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-setGAMSSymbols', function (data) {
     var symData = data.gamsSymbols;
     lang = data.lang;
-    console.log(lang);
     $.each(symData, function(key, val) {
       if(!$.isArray(val)){
         symData[key] = [val];
@@ -870,8 +888,8 @@ $(document).ready(function () {
     outputSymbols        = symData.outSym;
     outputSymbolsAliases = symData.outAlias;
   });
-  Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
-    setTimeout(addArrayDataElWrapper, 200, arrayID);
+  Shiny.addCustomMessageHandler('gms-addArrayEl', function(data){
+    setTimeout(addArrayDataElWrapper, 200, data.arrayID, data.defaults);
   });
   var colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {

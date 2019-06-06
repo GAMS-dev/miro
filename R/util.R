@@ -1011,7 +1011,10 @@ IdIdxMap <- R6Class("IdIdxMap", public = list(
     }
     return(arrIdx)
   },
-  initialize = function(){
+  initialize = function(el = NULL){
+    if(length(el)){
+      private$items <- el
+    }
     invisible(self)
   },
   size = function(arrayID){
