@@ -2,6 +2,19 @@ data <- tibble("Column 1" = 1:10, "Column 2" = 11:20, "Column 3" = letters[1:10]
 attr(data, "aliases") <- c("Column 1", "Column 2", "Column 3", "Column 4")
 dtExtensions <- Set$new()
 
+langSpecificTable <- list()
+langSpecificTable$stretch <- c("No stretch" = "none", "Stretch last column" = "last", "Stretch all columns" = "all")
+names(langSpecificTable$stretch) <- lang$adminMode$tables$hot$stretchChoices
+langSpecificTable$class <- c("display" = "display", "cell-border" = "cell-border", "compact" = "compact", 
+                               "hover" = "hover", "nowrap" = "nowrap", "order-column" = "order-column", 
+                               "row-border" = "row-border", "stripe" = "stripe")
+names(langSpecificTable$class) <- lang$adminMode$tables$dt$class$choices
+langSpecificTable$filter <- c("No column filters" = "none", "Position: bottom" = "bottom", 
+                             "Position: top" = "top")
+names(langSpecificTable$filter) <- lang$adminMode$tables$dt$filter$choices
+langSpecificTable$buttons <- c("copy" = "copy", "csv" = "csv", "excel" = "excel", "pdf" = "pdf", "print" = "print")
+names(langSpecificTable$buttons) <- lang$adminMode$tables$dt$buttons$choices
+
 observeEvent(input$table_type, {
   req(length(input$table_type) > 0L)
   
@@ -24,82 +37,89 @@ observeEvent(input$table_type, {
 getHotOptions <- reactive({
   tagList(
     tags$div(style = "max-width:400px;",
-      numericInput("hot_height", "Height of input tables (in px)", min = 0L,
-                 value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else 700L)),
+      numericInput("hot_height", lang$adminMode$tables$hot$height, min = 0L,
+                 value = if(length(configJSON$handsontable$height)) configJSON$handsontable$height else config$handsontable$height)),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_readonly",
-                        "Restrict editing of tables? If activated, tables can not be modified by the user."),
+                        lang$adminMode$tables$hot$readonly),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_readonly", value = configJSON$handsontable$readonly, label = NULL)
+                          checkboxInput("hot_readonly", value = if(length(configJSON$handsontable$readonly)) configJSON$handsontable$readonly 
+                                        else config$handsontable$readonly, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "Highlight the column of current active cell (no live preview available)."),
+             tags$label(class = "cb-label", lang$adminMode$tables$hot$highcol),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_highcol", value = if(identical(configJSON$handsontable$highlightCol, FALSE)) FALSE else TRUE, label = NULL)
+                          checkboxInput("hot_highcol", value = if(length(configJSON$handsontable$highlightCol)) configJSON$handsontable$highlightCol 
+                                        else config$handsontable$highlightCol, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_highrow",
-                        "Highlight the row of current active cell (no live preview available)."),
+                        lang$adminMode$tables$hot$highrow),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_highrow", value = if(identical(configJSON$handsontable$highlightRow, FALSE)) FALSE else TRUE, label = NULL)
+                          checkboxInput("hot_highrow", value = if(length(configJSON$handsontable$highlightRow)) configJSON$handsontable$highlightRow 
+                                        else config$handsontable$highlightRow, label = NULL)
                ))
     ),
     tags$div(style = "max-width:400px;",
-             selectInput("hot_strech", "Default column stretching.", 
-                         choices = c("No strech" = "none", "Strech last column" = "last", 
-                                     "Strech all columns" = "all"),
-                         selected = if(length(configJSON$handsontable$stretchH)) configJSON$handsontable$stretchH else "all"
+             selectInput("hot_stretch", lang$adminMode$tables$hot$stretch, 
+                         choices = langSpecificTable$stretch,
+                         selected = if(length(configJSON$handsontable$stretchH)) configJSON$handsontable$stretchH else config$handsontable$stretchH
              )),
     conditionalPanel(
-      condition = "input.hot_strech !== 'all'",
-      numericInput("hot_colwidth", "Width of a single column.", min = 0L, 
-                   value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 10L)),
+      condition = "input.hot_stretch !== 'all'",
+      tags$div(class = "shiny-input-container",
+               tags$label(class = "cb-label", "for" = "hot_customWidth",
+                          lang$adminMode$tables$hot$stretchCustom),
+               tags$div(
+                 tags$label(class = "checkbox-material", 
+                            checkboxInput("hot_customWidth", label = NULL, value = if(length(configJSON$handsontable$colWidths)) TRUE else FALSE)
+                 ))
+      )),
+    conditionalPanel(
+      condition = "input.hot_customWidth===true && input.hot_stretch !== 'all'",
+      tags$div(style = "padding-left:40px;max-width:440px;",
+               numericInput("hot_colwidth", lang$adminMode$tables$hot$colwidth, min = 0L, 
+                            value = if(length(configJSON$handsontable$colWidths) && !identical(configJSON$handsontable$colWidths, "[]")) configJSON$handsontable$colWidths else 0L))),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_sort",
-                        "Enable column sorting in ascending/descending order 
-                        (by clicking on column name in header row)."),
+                        lang$adminMode$tables$hot$sort),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_sort", value = if(identical(configJSON$handsontable$columnSorting, FALSE)) FALSE else TRUE, label = NULL)
+                          checkboxInput("hot_sort", value = if(length(configJSON$handsontable$columnSorting)) configJSON$handsontable$columnSorting 
+                                        else config$handsontable$columnSorting, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_move",
-                        "Enable manual column moving. When active, the 
-                        column positions can be manually changed."),
+                        lang$adminMode$tables$hot$move),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_move", value = configJSON$handsontable$manualColumnMove, label = NULL)
+                          checkboxInput("hot_move", value = if(length(configJSON$handsontable$manualColumnMove)) configJSON$handsontable$manualColumnMove 
+                                        else config$handsontable$manualColumnMove, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_resize",
-                        "Enable manual column resizing."),
+                        lang$adminMode$tables$hot$resize),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_resize", value = configJSON$handsontable$manualColumnResize, label = NULL)
-               ))
-    ),
-    tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_resize_cow",
-                        "Enable manual row resizing."),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_resize_row", value = configJSON$handsontable$manualRowResize, label = NULL)
+                          checkboxInput("hot_resize", value = if(length(configJSON$handsontable$manualColumnResize)) configJSON$handsontable$manualColumnResize 
+                                        else config$handsontable$manualColumnResize, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_context_enable",
-                        "Enable table context menu (accessible via right mouse click)."),
+                        lang$adminMode$tables$hot$enable),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("hot_context_enable", 
-                                        value = if(identical(configJSON$handsontable$contextMenu$enabled, FALSE)) FALSE else TRUE, label = NULL)
+                                        value = if(length(configJSON$handsontable$contextMenu$enabled)) configJSON$handsontable$contextMenu$enabled 
+                                        else config$handsontable$contextMenu$enabled, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
@@ -107,35 +127,39 @@ getHotOptions <- reactive({
              conditionalPanel(
                condition = "input.hot_context_enable == true",
                tags$div(tags$label(class = "cb-label", "for" = "hot_context_rowedit",
-                                   "Enable row editing"),
+                                   lang$adminMode$tables$hot$contextRowedit),
                         tags$div(
                           tags$label(class = "checkbox-material",
                                      checkboxInput("hot_context_rowedit", 
-                                                   value = if(identical(configJSON$handsontable$contextMenu$allowRowEdit, FALSE)) FALSE else TRUE, label = NULL)
+                                                   value = if(length(configJSON$handsontable$contextMenu$allowRowEdit)) configJSON$handsontable$contextMenu$allowRowEdit 
+                                                   else config$handsontable$contextMenu$allowRowEdit, label = NULL)
                           ))
                ),
                tags$div(tags$label(class = "cb-label", "for" = "hot_context_coledit",
-                                   "Enable column editing"),
+                                   lang$adminMode$tables$hot$contextColedit),
                         tags$div(
                           tags$label(class = "checkbox-material", 
                                      checkboxInput("hot_context_coledit", 
-                                                   value = if(identical(configJSON$handsontable$contextMenu$allowColEdit, FALSE)) FALSE else TRUE, label = NULL)
+                                                   value = if(length(configJSON$handsontable$contextMenu$allowColEdit)) configJSON$handsontable$contextMenu$allowColEdit 
+                                                   else config$handsontable$contextMenu$allowColEdit, label = NULL)
                           ))
                ),
                tags$div(tags$label(class = "cb-label", "for" = "hot_context_readonly",
-                                   "Enable read-only toggle"),
+                                   lang$adminMode$tables$hot$contextReadonly),
                         tags$div(
                           tags$label(class = "checkbox-material", 
                                      checkboxInput("hot_context_readonly", 
-                                                   value = configJSON$handsontable$contextMenu$allowReadOnly, label = NULL)
+                                                   value = if(length(configJSON$handsontable$contextMenu$allowReadOnly)) configJSON$handsontable$contextMenu$allowReadOnly 
+                                                   else config$handsontable$contextMenu$allowReadOnly, label = NULL)
                           ))
                ),
                tags$div(tags$label(class = "cb-label", "for" = "hot_context_comments",
-                                   "Enable comments in table. Will be ignored when solving the model and are not saved in database."),
+                                   lang$adminMode$tables$hot$contextComments),
                         tags$div(
                           tags$label(class = "checkbox-material", 
                                      checkboxInput("hot_context_comments", 
-                                                   value = configJSON$handsontable$contextMenu$allowComments, label = NULL)
+                                                   value = if(length(configJSON$handsontable$contextMenu$allowComments)) configJSON$handsontable$contextMenu$allowComments 
+                                                   else config$handsontable$contextMenu$allowComments, label = NULL)
                           ))
                )
              )
@@ -146,34 +170,35 @@ getHotOptions <- reactive({
 getDtOptions <- reactive({
   tagList(
     tags$div(style = "max-width:400px;",
-             selectInput("dt_class", "Table style", 
-                         choices = c("display", "cell-border", "compact", "hover", "nowrap", "order-column", "row-border", "stripe"), 
-                         selected = if(length(configJSON$datatable$class)) configJSON$datatable$class else "display")),
+             selectInput("dt_class", lang$adminMode$tables$dt$class$label, 
+                         choices = langSpecificTable$class, 
+                         selected = if(length(configJSON$datatable$class)) configJSON$datatable$class else config$datatable$class)),
     tags$div(style = "max-width:400px;",
-             selectInput("dt_filter", "Include column filters", 
-                         choices = c("No column filters" = "none", "Position: bottom" = "bottom", 
-                                     "Position: top" = "top"),
-                         selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else "bottom"
+             selectInput("dt_filter", lang$adminMode$tables$dt$filter$label, 
+                         choices = langSpecificTable$filter,
+                         selected = if(length(configJSON$datatable$filter)) configJSON$datatable$filter else configJSON$datatable$filter
              )),
     tags$div(style = "max-width:400px;",
-             numericInput("dt_pagelength", "Number of items to display per page", 
-                          value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength else 15L)),
+             numericInput("dt_pagelength", lang$adminMode$tables$dt$pagelength$label, 
+                          value = if(length(configJSON$datatable$options$pageLength)) configJSON$datatable$options$pageLength 
+                          else config$datatable$options$pageLength)),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_rownames", "Show row numbers?"),
+             tags$label(class = "cb-label", "for" = "dt_rownames", lang$adminMode$tables$dt$rownames$label),
              tags$div(
                tags$label(class = "checkbox-material", 
-                          checkboxInput("dt_rownames", value = configJSON$datatable$rownames, label = NULL)
+                          checkboxInput("dt_rownames", value = if(length(configJSON$datatable$rownames)) configJSON$datatable$rownames 
+                                        else config$datatable$rownames, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_colReorder", "Allow reordering of columns?"),
+             tags$label(class = "cb-label", "for" = "dt_colReorder", lang$adminMode$tables$dt$colReorder$label),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("dt_colReorder", value = "ColReorder" %in% configJSON$datatable$extensions, label = NULL)
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "dt_buttons", "Add export buttons?"),
+             tags$label(class = "cb-label", "for" = "dt_buttons", lang$adminMode$tables$dt$buttons$label),
              tags$div(
                tags$label(class = "checkbox-material", 
                           checkboxInput("dt_buttons", value = "Buttons" %in% configJSON$datatable$extensions, label = NULL)
@@ -184,9 +209,9 @@ getDtOptions <- reactive({
              conditionalPanel(
                condition = "input.dt_buttons == true",
                selectInput("dt_buttons_select", 
-                           choices = c("copy", "csv", "excel", "pdf", "print"), selected = configJSON$datatable$options$buttons,
-                           multiple = TRUE, label = "Select the buttons to use. Note: All button functions only affect the 
-                           visible table page.")
+                           choices = langSpecificTable$buttons, 
+                           selected = configJSON$datatable$options$buttons,
+                           multiple = TRUE, label = lang$adminMode$tables$dt$buttons$select)
              )
     )
   )
@@ -205,8 +230,11 @@ observeEvent(input$hot_highcol, {
 observeEvent(input$hot_highrow, {
   rv$tableConfig$handsontable$highlightRow <<- input$hot_highrow
 })
-observeEvent(input$hot_strech, {
-  rv$tableConfig$handsontable$stretchH <<- input$hot_strech
+observeEvent(input$hot_stretch, {
+  rv$tableConfig$handsontable$stretchH <<- input$hot_stretch
+  if(identical(input$hot_stretch, "all")){
+    updateCheckboxInput(session, "hot_customWidth", value=FALSE)
+  }
 })
 observeEvent(input$hot_sort, {
   rv$tableConfig$handsontable$columnSorting <<- input$hot_sort
@@ -217,11 +245,16 @@ observeEvent(input$hot_move, {
 observeEvent(input$hot_resize, {
   rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
 })
-observeEvent(input$hot_resize_row, {
-  rv$tableConfig$handsontable$manualRowResize <<- input$hot_resize_row
+observeEvent(input$hot_customWidth, {
+  if(identical(input$hot_customWidth, FALSE))
+    updateNumericInput(session, "hot_colwidth", value = 0L)
 })
+
 observeEvent(input$hot_colwidth, {
-  rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
+  if(!is.na(input$hot_colwidth) && input$hot_colwidth != 0)
+    rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
+  else
+    rv$tableConfig$handsontable$colWidths <<- "[]"
 })
 observeEvent(input$hot_context_enable, {
   rv$tableConfig$handsontable$contextMenu$enabled <<- input$hot_context_enable
@@ -261,8 +294,10 @@ observeEvent(input$dt_pagelength, {
   rv$tableConfig$datatable$options$pageLength <<- input$dt_pagelength
 })
 observeEvent(input$dt_buttons, {
-  if(input$dt_buttons){
-    rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
+  if(identical(isolate({input$dt_buttons}), TRUE)){
+    isolate({
+      rv$tableConfig$datatable$options$buttons <<- input$dt_buttons_select
+    })
     if(length(input$dt_buttons_select)){
       dtExtensions$push("Buttons")
       rv$tableConfig$datatable$options$dom <<- 'Bfrtip'
@@ -316,6 +351,7 @@ observe({
   tryCatch({
     if(isolate(rv$tableConfig$tableType) == "hot"){
       hotOptions        <- rv$tableConfig$handsontable
+      print("++++++++++++++++++++++++++")
       #print(hotOptions)
       output[["table_preview_hot"]] <- renderRHandsontable({
         ht <- rhandsontable(data = data, height = hotOptions$height, 
@@ -341,6 +377,8 @@ observe({
       })
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
+      print("++++++++++++++++++++++++++")
+      #print(dtOptions)
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)
@@ -372,5 +410,5 @@ observeEvent(rv$tableConfig, {
          {
            return()
          })
-  write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
 })
