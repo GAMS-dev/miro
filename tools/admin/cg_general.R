@@ -1,3 +1,5 @@
+rowtmp <- list()
+groupIndexMap <- IdIdxMap$new()
 scalarSymbols <- setNames(c(names(modelIn), 
                             if(length(modelIn[[scalarsFileName]])) 
                               modelIn[[scalarsFileName]]$symnames),  
@@ -7,175 +9,174 @@ scalarSymbols <- setNames(c(names(modelIn),
 scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 updateSelectInput(session, "general_hidden", choices = scalarSymbols)
 
+langSpecific <- list()
+langSpecific$language <- c("English" = "en", "German" = "de", "Chinese" = "cn")
+names(langSpecific$language) <- lang$adminMode$general$language$choices
+langSpecific$skin <- c("black" = "black", "blue" = "blue", "purple" = "purple", "green" = "green", "red" = "red", "yellow" = "yellow")
+names(langSpecific$skin) <- lang$adminMode$general$skin$choices
+langSpecific$scen <- c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
+                        (suited for > 2 scenarios to compare)" = "tab")
+names(langSpecific$scen) <- lang$adminMode$general$scen$choices
+
 removeUI(selector = "#general_wrapper .shiny-input-container", multiple = TRUE)
+removeUI(selector = "#general_wrapper2 .shiny-input-container", multiple = TRUE)
+print(configJSON$inputGroups)
 insertUI(selector = "#general_wrapper",
          tagList(
-           radioButtons("general_language", label = "Language",
-                        choices = c("English" = "en", "German" = "de"), 
-                        selected = if(length(configJSON$language)) configJSON$language else "en"),
+           createArray(session, "symbol_inputGroups", "Divide input symbols into groups", autoCreate = FALSE),
+           createArray(session, "symbol_outputGroups", "Divide output symbols into groups", autoCreate = FALSE),
+           radioButtons("general_language", label = lang$adminMode$general$language$label,
+                        choices = langSpecific$language, 
+                        selected = if(length(configJSON$language)) configJSON$language else config$language),
            tags$div(style = "max-width:400px;",
-                    selectInput("general_skin", "Skin to use for dashboard", 
-                                choices = c("black", "blue", "purple", "green", "red", "yellow"),
-                                selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else "black")),
-           
-           tags$label("for" = "logo_option_wrapper", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)"),
-           tags$div(id = "logo_option_wrapper",
-                    tags$div(style = "max-width:400px; display:inline-block;",
-                             fileInput("widget_general_logo_upload", label = NULL,
-                                       multiple = FALSE,
-                                       accept = c(".png", ".PNG", ".jpg", ".JPG"))
-                    ),
-                    tags$div(style = "display:inline-block; margin-left: 25px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
-                             imageOutput("general_logo_preview", height = "50px", width = "230px")
+                    selectInput("general_skin", lang$adminMode$general$skin$label, 
+                                choices = langSpecific$skin,
+                                selected = if(length(configJSON$pageSkin)) configJSON$pageSkin else config$pageSkin)),
+           tags$div(style = "max-width:400px;",
+                    selectInput("general_scen", lang$adminMode$general$scen$label, 
+                                choices = langSpecific$scen,
+                                selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
                     )),
-           
-           
-           
-           
-           #fileInput("widget_general_logo_upload", "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)",
-           #          width = "100%",
-           #          multiple = FALSE,
-           #          accept = c(".png", ".PNG", ".jpg", ".JPG")),
-           #tags$div(style="margin-bottom: 15px;",
-           #         imageOutput("general_logo_preview", height = "50px", width = "230px")
-           #),
-           
+           tags$div(class = "shiny-input-container",
+                    tags$label(class = "cb-label", "for" = "default_scen_check",
+                               lang$adminMode$general$defaultScenName$checkbox),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("default_scen_check", label = NULL, value = if(length(configJSON$defaultScenName) && nchar(configJSON$defaultScenName)) TRUE else FALSE)
+                      ))
+           ),
+           conditionalPanel(
+             condition = "input.default_scen_check===true",
+             tags$div(style = "max-width:400px;padding-right:30px;padding-left:40px;",
+                      textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
+                                value = if(length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL))),
            tags$div(style = "max-width:400px;",
-                    selectInput("general_scen", "Default scenario comparison mode.", 
-                                choices = c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
-                        (suited for > 2 scenarios to compare)" = "tab"),
-                                selected = configJSON$defCompMode
-                    )),
-           tags$div(title = "Save, delete and compare scenarios",
-                    tags$label(class = "cb-label", "for" = "general_act_scen", "Activate scenario functionality"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_scen", value = if(identical(configJSON$activateModules$scenario, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$label(class = "cb-label", "for" = "general_act_strict", "Launch App in strict mode? This results in throwing 
-                      error messages instead of accepting possibly faulty user entries."),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_strict", value = if(identical(configJSON$activateModules$strictmode, FALSE)) FALSE else TRUE, label = NULL)
-             )),
-           tags$div(title = "Enables the user to use local data for GAMS runs",
-                    tags$label(class = "cb-label", "for" = "general_act_upload", "Activate local data upload module?"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_upload", value = if(identical(configJSON$activateModules$loadLocal, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$div(
-             tags$label(class = "cb-label", "for" = "general_act_share_scen", "Enable scenario sharing between different users"),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("general_act_share_scen", value = if(identical(configJSON$activateModules$sharedScenarios, FALSE)) FALSE else TRUE, label = NULL)
-               ))
-           ),
-           tags$div(title = "Efficient generation of multiple scenarios. Designed for scenario runs and sensitivity analisis.",
-                    tags$label(class = "cb-label", "for" = "general_act_hcube", "Activate Hypercube mode"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_hcube", value = configJSON$activateModules$hcubeMode, label = NULL)
-                      ))
-           ),
-           tags$label(class = "cb-label", "for" = "general_act_log", "Show log file in UI"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_log", value = if(identical(configJSON$activateModules$logFile, FALSE)) FALSE else TRUE, label = NULL)
-             )),
-           tags$label(class = "cb-label", "for" = "general_act_lst", "Show lst file in UI"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_lst", value = if(identical(configJSON$activateModules$lstFile, FALSE)) FALSE else TRUE, label = NULL)
-             )),
-           tags$div(title = "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
-                    tags$label(class = "cb-label", "for" = "general_act_attach", "Should users be allowed to add attachments to scenarios?"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_attach", value = if(identical(configJSON$activateModules$attachments, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$div(title = "If not activated, each input widget is displayed in a separate page.",
-                    tags$label(class = "cb-label", "for" = "general_aggregate", "Should all input widgets (slider, dropdown menu, etc.) be
-                               aggregated on a single page?"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_aggregate", value = if(identical(configJSON$aggregateWidgets, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-                    ),
-           tags$label(class = "cb-label", "for" = "general_parent",
-                      "Include parent directory of the model folder 
-           in your model runs (e.g. because several models share files)?"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_parent", value = configJSON$includeParentDir, label = NULL)
-             )),
-           tags$div(title = "Metadata contains information about the user name, the scenario name and the creation time of the scenario",
-                    tags$label(class = "cb-label", "for" = "general_meta",
-                               "Include a metadata sheet in the Excel file (when exporting a scenario)?"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_meta", value = if(identical(configJSON$excelIncludeMeta, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$div(title = "Sheets can be empty e.g. when the exported scenario only contains input data.",
-                    tags$label(class = "cb-label", "for" = "general_empty",
-                               "Include empty sheets in the Excel file"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$div(title = "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
-                    tags$label(class = "cb-label", "for" = "general_save_trace", "Save trace file with each GAMS run (Hypercube mode)"),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_save_trace", value = if(identical(configJSON$saveTraceFile, FALSE)) FALSE else TRUE, label = NULL)
-                      ))
-           ),
-           tags$label(class = "cb-label", "for" = "general_auto",
-                      "Generate graphs for each input sheet automatically (pivot tool)"),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_auto", value = if(identical(configJSON$autoGenInputGraphs, FALSE)) FALSE else TRUE, label = NULL)
-             )),
-           tags$div(style = "max-width:400px;",
-                    colorPickerInput("general_pivotcolor", label = "Background color of row and column headers in pivot tables.",
-                                     value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
-                    )),
-           tags$div(style = "max-width:400px;",
-                    sliderInput("general_save_duration", label = "Duration the GAMS log and lst files are stored in the database (in days). 
-            0 means files are not stored at all, 999 means files are stored indefinitely. 
-            This setting is ignored when the attachment module is not active. Note that this is currently 
-            only supported in the MIRO base mode.",
-                                min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else 7L
-                    )),
-           tags$div(style = "max-width:400px;",
-                    textInput("general_default_scen_name", "Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
-                              value = configJSON$defaultScenName)),
-           tags$div(style = "max-width:400px;",
-                    selectizeInput("general_args", "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)", 
+                    selectizeInput("general_args", lang$adminMode$general$args$label, 
                                    choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, multiple = TRUE, options = list(
                                      'create' = TRUE,
                                      'persist' = FALSE))),
            tags$div(style = "max-width:400px;",
-                    textInput("general_input_scalars", "Alias for the input scalars table", value = configJSON$scalarAliases$inputScalars)),
+                    textInput("general_input_scalars", lang$adminMode$general$inputScalars$label, value = configJSON$scalarAliases$inputScalars,
+                              placeholder = lang$adminMode$general$inputScalars$placeholder)),
            tags$div(style = "max-width:400px;",
-                    textInput("general_output_scalars", "Alias for the output scalars table", value = configJSON$scalarAliases$outputScalars)),
+                    textInput("general_output_scalars", lang$adminMode$general$outputScalars$label, value = configJSON$scalarAliases$outputScalars,
+                              placeholder = lang$adminMode$general$outputScalars$placeholder)),
            if(length(modelOut[[scalarsOutName]])){
              tags$div(style = "max-width:400px;",
-                      tags$div(selectInput("general_hidden", "Scalars that should not be displayed in the scalars table 
-                     but can be used in graphs etc.",
+                      tags$div(selectInput("general_hidden", lang$adminMode$general$hidden$label,
                                            choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
                                            selected = configJSON$hiddenOutputScalars, multiple = TRUE)
                       ))
            },
            tags$div(style = "max-width:400px;",
-                    sliderInput("general_decimal", label = "Number of decimal places used for rounding output values.",
-                                min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else 2L
+                    colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
+                                     value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
+                    )),
+           tags$div(style = "max-width:400px;",
+                    sliderInput("general_save_duration", label = lang$adminMode$general$saveDuration$label,
+                                min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else config$storeLogFilesDuration
+                    )),
+           tags$div(style = "max-width:400px;",
+                    sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
+                                min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
+                    )),
+           tags$div(id = "logo_option_wrapper",
+                    tags$div(style = "max-width:400px; display:inline-block; margin-bottom: 5px;",
+                             fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
+                                       width = "100%",
+                                       multiple = FALSE,
+                                       accept = c(".png", ".PNG", ".jpg", ".JPG"))),
+                    tags$div(style = "display:inline-block; margin: 15px 15px 15px 25px; margin-bottom: 15px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
+                             imageOutput("general_logo_preview", height = "50px", width = "230px")
                     ))
+         ), 
+         where = "beforeEnd")
+insertUI(selector = "#general_wrapper2",
+         tagList(
+           tags$div(title = lang$adminMode$general$actScen$title,
+                    tags$label(class = "cb-label", "for" = "general_act_scen", lang$adminMode$general$actScen$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_act_scen", value = if(length(configJSON$activateModules$scenario)) configJSON$activateModules$scenario else config$activateModules$scenario, label = NULL)
+                      ))
+           ),
+           tags$label(class = "cb-label", "for" = "general_act_strict", lang$adminMode$general$actStrict$label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_act_strict", value = if(length(configJSON$activateModules$strictmode)) configJSON$activateModules$strictmode else config$activateModules$strictmode, label = NULL)
+             )),
+           tags$div(title = lang$adminMode$general$actUpload$title,
+                    tags$label(class = "cb-label", "for" = "general_act_upload", lang$adminMode$general$actUpload$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_act_upload", value = if(length(configJSON$activateModules$loadLocal)) configJSON$activateModules$loadLocal else config$activateModules$loadLocal, label = NULL)
+                      ))
+           ),
+           tags$div(
+             tags$label(class = "cb-label", "for" = "general_act_share_scen", lang$adminMode$general$actShareScen$label),
+             tags$div(
+               tags$label(class = "checkbox-material", 
+                          checkboxInput("general_act_share_scen", value = if(length(configJSON$activateModules$sharedScenarios)) configJSON$activateModules$sharedScenarios else config$activateModules$sharedScenarios, label = NULL)
+               ))
+           ),
+           tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_act_log", value = if(length(configJSON$activateModules$logFile)) configJSON$activateModules$logFile else config$activateModules$logFile, label = NULL)
+             )),
+           tags$label(class = "cb-label", "for" = "general_act_lst", lang$adminMode$general$actLst$label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_act_lst", value = if(length(configJSON$activateModules$lstFile)) configJSON$activateModules$lstFile else config$activateModules$lstFile, label = NULL)
+             )),
+           tags$div(title = lang$adminMode$general$actAttach$title,
+                    tags$label(class = "cb-label", "for" = "general_act_attach", lang$adminMode$general$actAttach$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_act_attach", value = if(length(configJSON$activateModules$attachments)) configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
+                      ))
+           ),
+           tags$div(title = lang$adminMode$general$aggregate$title,
+                    tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_aggregate", value = if(length(configJSON$aggregateWidgets)) configJSON$aggregateWidgets else config$aggregateWidgets, label = NULL)
+                      ))
+           ),
+           tags$label(class = "cb-label", "for" = "general_parent", lang$adminMode$general$parent$label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_parent", value = if(length(configJSON$includeParentDir)) configJSON$includeParentDir else config$includeParentDir, label = NULL)
+             )),
+           tags$div(title = lang$adminMode$general$meta$title,
+                    tags$label(class = "cb-label", "for" = "general_meta",
+                               lang$adminMode$general$meta$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_meta", value = if(length(configJSON$excelIncludeMeta)) configJSON$excelIncludeMeta else config$excelIncludeMeta, label = NULL)
+                      ))
+           ),
+           tags$div(title = lang$adminMode$general$empty$title,
+                    tags$label(class = "cb-label", "for" = "general_empty",
+                               lang$adminMode$general$empty$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_empty", value = if(identical(configJSON$excelIncludeEmptySheets, FALSE)) FALSE else TRUE, label = NULL)
+                      ))
+           ),
+           tags$div(title = lang$adminMode$general$saveTrace$title,
+                    tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_save_trace", value = if(length(configJSON$saveTraceFile)) configJSON$saveTraceFile else config$saveTraceFile, label = NULL)
+                      ))
+           ),
+           tags$label(class = "cb-label", "for" = "general_auto",
+                      lang$adminMode$general$auto$label),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_auto", value = if(length(configJSON$autoGenInputGraphs)) configJSON$autoGenInputGraphs else config$autoGenInputGraphs, label = NULL)
+             ))
          ), 
          where = "beforeEnd")
 
@@ -207,8 +208,11 @@ observeEvent(input$general_meta, {
 observeEvent(input$general_empty, {
   rv$generalConfig$excelIncludeEmptySheets <<- input$general_empty
 })
-observeEvent(input$general_default_scen_name, {
-  rv$generalConfig$defaultScenName <<- input$general_default_scen_name
+observeEvent(c(input$default_scen_check, input$general_default_scen_name), {
+  if(nchar(input$general_default_scen_name) && identical(input$default_scen_check, TRUE))
+    rv$generalConfig$defaultScenName <<- input$general_default_scen_name
+  else
+    rv$generalConfig$defaultScenName <<- ""
 })
 observeEvent(input$general_logo, {
   if(identical(input$general_logo, FALSE)){
@@ -223,7 +227,7 @@ observeEvent(input$widget_general_logo_upload, {
   if(!dir.exists(file.path(currentModelDir, "static"))){
     if(!dir.create(file.path(currentModelDir, "static"))){
       flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", file.path(currentModelDir, "static"))
-      showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+      showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
       return()
     }
   }else{
@@ -231,13 +235,13 @@ observeEvent(input$widget_general_logo_upload, {
     filesFailedToDelete <- !file.remove(filesToDelete)
     if(any(filesFailedToDelete)){
       flog.error("Problems removing files: '%s'. Do you lack the necessary permissions?", paste(filesToDelete[filesFailedToDelete], collapse = "', '"))
-      showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+      showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
       return()
     }
   }
   if(!file.copy(filePath, file.path(currentModelDir, "static", fileName))){
     flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", filePath, file.path(currentModelDir, "static"))
-    showModal(modalDialog("Error copying image", "A problem occurred copying image. If this problem persists, please contact a system administrator."))
+    showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
     return()
   }
   rv$generalConfig$UILogo <<- fileName
@@ -313,12 +317,39 @@ observeEvent(input$general_decimal, {
 observeEvent(input$general_pivotcolor, {
   rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
 })
+observeEvent(c(input$group_memberIn, input$add_general), {
+  print(input$add_general)
+  if(length(input$add_general) > 2L && length(input$group_memberIn) > 1L){
+    arrayIdx <- groupIndexMap$push('inputGroups', input$add_general[1])
+    print(arrayIdx)
+    rv$generalConfig$inputGroups[[arrayIdx]] <<- list(name = input$add_general[2], 
+                                                      members = input$group_memberIn[2:length(input$group_memberIn)])
+  }else{
+    arrayIdx <- groupIndexMap$pop('arrayIdx', input$add_general[1])
+    
+    if(length(arrayIdx)){
+      rv$generalConfig$inputGroups[[arrayIdx]] <<- NULL
+    }
+  }
+})
+observeEvent(input$remove_general, {
+  arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
+  arrayIdx <- groupIndexMap$pop(arrayID, 
+                                input$remove_general[2])
+  
+  if(length(arrayIdx)){
+    rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+  }
+})
+
 
 #  =======================================
 #          SAVE JSON (automatically)
 #  =======================================
 observeEvent(rv$generalConfig, {
   req(length(rv$generalConfig))
+  configJSON$inputGroups <<- NULL
+  configJSON$outputGroups <<- NULL
   configJSON <<- modifyList(configJSON, rv$generalConfig)
-  write(toJSON(configJSON, pretty = TRUE, auto_unbox = TRUE), configJSONFileName)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
 })
