@@ -938,7 +938,8 @@
                               "enum":[  
                                  "plotly",
                                  "dygraphs",
-                                 "leaflet"
+                                 "leaflet",
+                                 "timevis"
                               ],
                               "required":true
                            }
@@ -1100,7 +1101,10 @@
             },
             "colWidths":{  
                "description":"Width of columns.",
-               "type":"integer",
+               "type":[  
+                  "string",
+                  "integer"
+               ],
                "exclusiveMinimum":0,
                "default":null,
                "required":false
@@ -1234,7 +1238,7 @@
                   },
                   "buttons":{  
                      "description":"Buttons or groups of buttons to insert",
-                     "type":["array","string"],
+                     "type":["array", "string"],
                      "uniqueItems":true,
                      "items":{
                          "type": "string",
@@ -1294,6 +1298,62 @@
                   }
                }
             }
+         }
+      },
+      "inputGroups":{
+         "description": "Specify input tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "minItems":2,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
+      "outputGroups":{
+         "description": "Specify output tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "uniqueItems":true,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (output tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
          }
       }
    }
