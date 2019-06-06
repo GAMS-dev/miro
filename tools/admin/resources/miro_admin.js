@@ -87,17 +87,17 @@ var outputSymbolsAliases = [];
 var freeElIDs          = {};
 var elInArray          = {};
 
-function addInputGroup(){
+function addInputGroup(defaults){
   var arrayID      = 'symbol_Inputgroups';
-  var elements     = {'symbol_Inputgroups' : ['text', 'Name of the input group?'],
-  'group_memberIn': ['select', 'Select group members', inputSymbols, inputSymbolsAliases, , true ]
+  var elements     = {'symbol_Inputgroups' : ['text', 'Name of the input group?', defaults[0]],
+  'group_memberIn': ['select', 'Select group members', inputSymbols, inputSymbolsAliases, defaults[1], true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
-function addOutputGroup(){
+function addOutputGroup(defaults){
   var arrayID      = 'symbol_Outputgroups';
-  var elements     = {'symbol_Outputgroups' : ['text', 'Name of the output group?'],
-  'group_memberOut': ['select', 'Select group members', outputSymbols, outputSymbolsAliases, , true ]
+  var elements     = {'symbol_Outputgroups' : ['text', 'Name of the output group?', defaults[0]],
+  'group_memberOut': ['select', 'Select group members', outputSymbols, outputSymbolsAliases, defaults[1], true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
@@ -379,69 +379,74 @@ function toggleDepContainer(el, arrayID, elID, rAddID){
   });
   Shiny.setInputValue(rAddID, [elID, value, arrayID, "change"], {priority: "event"});
 }
-function addArrayDataEl(arrayID){
+function addArrayDataEl(arrayID, defaults){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
   }
-  switch(arrayID){
-    case 'symbol_Inputgroups':
-      addInputGroup();
-    break;
-    case 'symbol_Outputgroups':
-      addOutputGroup();
-    break;
-    case 'chart_ydatabar':
-      addBarDataEl();
-    break;
-    case 'chart_ydatascatter':
-      addScatterDataEl();
-    break;
-    case 'chart_ydataline':
-      addLineDataEl();
-    break;
-    case 'chart_ydatabubble':
-      addBubbleDataEl();
-    break;
-    case 'hist_xdata':
-      addHistDataEl();
-    break;
-    case 'dy_ydata':
-      addDyDataEl();
-    break;
-    case 'dy_dyEvent':
-      addDyEvent();
-    break;
-    case 'dy_dyLimit':
-      addDyLimit();
-    break;
-    case 'dy_dyAnnotation':
-      addDyAnnotation();
-    break;
-    case 'dy_dyShading':
-      addDyShading();
-    break;
-    case 'leaflet_markers':
-      addLeafletMarkers();
-    break;
-    case 'leaflet_flows':
-      addLeafletFlows();
-    break;
-    case 'leaflet_minicharts':
-      addLeafletMinicharts();
-    break;
-    case 'timevis_series':
-      addTimevisDataEl();
-    break;
-    case 'timevis_custom':
-      addCustomTimeEl();
-    break;
+  if(defaults === undefined){
+    defaults = [undefined];
   }
+  $.each(defaults, function( i, l ) {
+    switch(arrayID){
+      case 'symbol_Inputgroups':
+        addInputGroup(l);
+      break;
+      case 'symbol_Outputgroups':
+        addOutputGroup(l);
+      break;
+      case 'chart_ydatabar':
+        addBarDataEl(l);
+      break;
+      case 'chart_ydatascatter':
+        addScatterDataEl(l);
+      break;
+      case 'chart_ydataline':
+        addLineDataEl(l);
+      break;
+      case 'chart_ydatabubble':
+        addBubbleDataEl(l);
+      break;
+      case 'hist_xdata':
+        addHistDataEl(l);
+      break;
+      case 'dy_ydata':
+        addDyDataEl(l);
+      break;
+      case 'dy_dyEvent':
+        addDyEvent(l);
+      break;
+      case 'dy_dyLimit':
+        addDyLimit(l);
+      break;
+      case 'dy_dyAnnotation':
+        addDyAnnotation(l);
+      break;
+      case 'dy_dyShading':
+        addDyShading(l);
+      break;
+      case 'leaflet_markers':
+        addLeafletMarkers(l);
+      break;
+      case 'leaflet_flows':
+        addLeafletFlows(l);
+      break;
+      case 'leaflet_minicharts':
+        addLeafletMinicharts(l);
+      break;
+      case 'timevis_series':
+        addTimevisDataEl(l);
+      break;
+      case 'timevis_custom':
+        addCustomTimeEl(l);
+      break;
+    }
+  });
 }
-function addArrayDataElWrapper(arrayID){
+function addArrayDataElWrapper(arrayID, defaults){
   if($('#' + arrayID + '_wrapper').is(':visible')){
-    addArrayDataEl(arrayID);
+    addArrayDataEl(arrayID, defaults);
   }else{
-    setTimeout(addArrayDataElWrapper, 200, arrayID);
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
   }
 }
 
@@ -866,8 +871,8 @@ $(document).ready(function () {
     outputSymbols        = symData.outSym;
     outputSymbolsAliases = symData.outAlias;
   });
-  Shiny.addCustomMessageHandler('gms-addArrayEl', function(arrayID){
-    setTimeout(addArrayDataElWrapper, 200, arrayID);
+  Shiny.addCustomMessageHandler('gms-addArrayEl', function(data){
+    setTimeout(addArrayDataElWrapper, 200, data.arrayID, data.defaults);
   });
   var colorPickerBinding = new Shiny.InputBinding();
   $.extend(colorPickerBinding, {
