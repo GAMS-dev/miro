@@ -91,8 +91,8 @@ var elInArray          = {};
 
 function addInputGroup(){
   var arrayID      = 'symbol_inputGroups';
-  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, defaults[0]],
-  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, defaults[1], true ]
+  var elements     = {'symbol_inputGroups' : ['text', lang.addInputGroup.symbolInputgroups, defaults.name],
+  'group_memberIn': ['select', lang.addInputGroup.groupMemberIn, inputSymbols, inputSymbolsAliases, defaults.members, true ]
   };
   addArrayEl(arrayID, elements, {elRequired: false}, 'general');
 }
@@ -865,7 +865,6 @@ $(document).ready(function () {
   Shiny.addCustomMessageHandler('gms-setGAMSSymbols', function (data) {
     var symData = data.gamsSymbols;
     lang = data.lang;
-    console.log(lang);
     $.each(symData, function(key, val) {
       if(!$.isArray(val)){
         symData[key] = [val];

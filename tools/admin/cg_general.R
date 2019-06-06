@@ -20,7 +20,7 @@ names(langSpecific$scen) <- lang$adminMode$general$scen$choices
 
 removeUI(selector = "#general_wrapper .shiny-input-container", multiple = TRUE)
 removeUI(selector = "#general_wrapper2 .shiny-input-container", multiple = TRUE)
-print(configJSON$inputGroups)
+
 insertUI(selector = "#general_wrapper",
          tagList(
            createArray(session, "symbol_inputGroups", "Divide input symbols into groups", autoCreate = FALSE),
@@ -91,6 +91,7 @@ insertUI(selector = "#general_wrapper",
                     ))
          ), 
          where = "beforeEnd")
+addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
 insertUI(selector = "#general_wrapper2",
          tagList(
            tags$div(title = lang$adminMode$general$actScen$title,
