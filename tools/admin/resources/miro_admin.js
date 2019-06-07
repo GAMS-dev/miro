@@ -485,9 +485,10 @@ function addLabelEl(arrayID, label){
 function registerChangeHandlers(elements, rAddID, elID, options){
   var idx = 0;
   var htmlID = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : elID;
+  var notFirstIdx = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
   $.each(elements, function( k, v ) {
     if(v[0] === 'select' || v[0] === 'selectDep'){
-      if(idx === 0){
+      if(!notFirstIdx && idx === 0){
         $('#' + k + htmlID).selectize({
       	  onChange: function(value) {
       	    if(options.updateTxtWithLabel.length){
@@ -514,10 +515,10 @@ function registerChangeHandlers(elements, rAddID, elID, options){
     	  alt_elements[k] = v[1];
     	  alt_elements[k].shift();
     	  
-    	  registerChangeHandlers(alt_elements, rAddID, elID, options, '_alt' + elID);
+    	  registerChangeHandlers(alt_elements, rAddID, elID, options, '_alt' + elID, idx !== 0);
     	}
     }else if(v[0] === 'checkbox'){
-      if(idx === 0){
+      if(!notFirstIdx && idx === 0){
         $('#' + k + htmlID).on('change', function(){
           Shiny.setInputValue(rAddID, [elID, $(this).prop('checked'), k, "change"], {priority: "event"});
         });
@@ -530,7 +531,7 @@ function registerChangeHandlers(elements, rAddID, elID, options){
       $('#' + k + htmlID).colorpicker({
         align: "left"
       });
-      if(idx === 0){
+      if(!notFirstIdx && idx === 0){
         $('#' + k + htmlID).on('change', $.debounce(500, function(){
           Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
         }));
@@ -540,7 +541,7 @@ function registerChangeHandlers(elements, rAddID, elID, options){
         }));
       }
     }else{
-      if(idx === 0){
+      if(!notFirstIdx && idx === 0){
         $('#' + k + htmlID).on('change', $.debounce(250, function(){
           Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
         }));

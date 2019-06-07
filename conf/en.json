@@ -872,17 +872,11 @@
         "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
         "val35": "No valid widget type"
       },
-      "widgetOptionsInput":{
-        "choices": ["Slider", "Dropdown menu", "Checkbox"]
-      },
-      "widgetOptionsAll":{
-        "choices": ["Slider", "Slider range", "Dropdown menu", "Checkbox", "Date", "Date range", "Text box"]
-      },
-      "widgetOptionsTable":{
-        "choices": ["Table"]
-      },
-      "widgetOptionsDate":{
-        "choices": ["Date"]
+      "widgetOptions":{
+        "input": ["Slider", "Dropdown menu", "Checkbox"],
+        "all": ["Slider", "Slider range", "Dropdown menu", "Checkbox", "Date", "Date range", "Text box"],
+        "table": ["Table"],
+        "date": ["Date"]
       },
       "table":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
@@ -914,7 +908,7 @@
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
         "defDepSelector": "Static default?",
-        "step": "Step size",
+        "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },

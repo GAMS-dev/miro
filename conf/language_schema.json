@@ -3976,12 +3976,12 @@
                 }
               }
             },
-            "widgetOptionsInput":{  
+            "widgetOptions":{  
               "type":"object",
               "additionalProperties":false,
               "required":true,
               "properties":{  
-                "choices":{  
+                "input":{  
                   "type":"array",
                   "uniqueItems": true,
                   "minItems":3,
@@ -3991,15 +3991,8 @@
                       "minLength": 1
                   },
                   "required":true
-                }
-              }
-            },
-            "widgetOptionsAll":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "choices":{  
+                },
+                "all":{  
                   "type":"array",
                   "uniqueItems": true,
                   "minItems":7,
@@ -4009,15 +4002,8 @@
                       "minLength": 1
                   },
                   "required":true
-                }
-              }
-            },
-            "widgetOptionsTable":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "choices":{  
+                },
+                "table":{  
                   "type":"array",
                   "uniqueItems": true,
                   "minItems":1,
@@ -4027,15 +4013,8 @@
                       "minLength": 1
                   },
                   "required":true
-                }
-              }
-            },
-            "widgetOptionsDate":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "choices":{  
+                },
+                "date":{  
                   "type":"array",
                   "uniqueItems": true,
                   "minItems":1,
