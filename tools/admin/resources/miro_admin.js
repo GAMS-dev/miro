@@ -394,7 +394,7 @@ function addArrayDataEl(arrayID, defaults){
   if($('#' + arrayID + '_wrapper .btn-add-array-el').is(':disabled')){
     return;
   }
-  if(defaults === undefined){
+  if(defaults == null){
     defaults = [undefined];
   }
   $.each(defaults, function( i, l ) {
@@ -528,16 +528,18 @@ function registerChangeHandlers(elements, rAddID, elID, options){
         });
       }
     }else if(v[0] === 'color'){
-      $('#' + k + htmlID).colorpicker({
-        align: "left"
-      });
+      
       if(!notFirstIdx && idx === 0){
-        $('#' + k + htmlID).on('change', $.debounce(500, function(){
-          Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
+        $('#' + k + htmlID).colorpicker({
+          align: "left"
+        }).on('changeColor', $.debounce(500, function(){
+            Shiny.setInputValue(rAddID, [elID, $(this).val(), k, "change"], {priority: "event"});
         }));
       }else{
-        $('#' + k + htmlID).on('change', $.debounce(500, function(){
-          Shiny.setInputValue(k, [elID, $(this).val()], {priority: "event"});
+        $('#' + k + htmlID).colorpicker({
+          align: "left"
+        }).on('changeColor', $.debounce(500, function(){
+            Shiny.setInputValue(k, [elID, $(this).val()]);
         }));
       }
     }else{

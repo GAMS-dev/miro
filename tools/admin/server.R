@@ -10,9 +10,9 @@ addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL){
   session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults))
 }
 createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
-  arrayID <- paste0(arrayID, plotlyChartType)
   if(autoCreate)
     addArrayEl(session, arrayID, plotlyChartType)
+  arrayID <- paste0(arrayID, plotlyChartType)
   HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container" style="margin:20px;">\n
  <hr>\n
  <div class="array-wrapper"></div>\n

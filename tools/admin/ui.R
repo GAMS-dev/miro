@@ -164,7 +164,7 @@ body_admin <- dashboardBody({
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;",
                                         renderDataUI("preview_output_valuebox", type = "valuebox", 
-                                                     height = 400, customOptions = configGraphsOut[[match(scalarsOutName,names(modelOut))]]$options,
+                                                     height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
                                                      noDataTxt = lang$nav$outputScreen$boxResults$noData))},
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",
                                       actionButton("saveGraph", "Save", icon("save")))

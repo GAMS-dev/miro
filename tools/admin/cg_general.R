@@ -2,6 +2,8 @@ rowtmp <- list()
 isolate({
   groupIndexMap <- IdIdxMap$new(list(inputGroups = seq_along(configJSON$inputGroups),
                                      outputGroups = seq_along(configJSON$outputGroups)))
+
+  groupTemp <- list(inputGroups = list(), outputGroups = list())
   rv$generalConfig$inputGroups <- configJSON$inputGroups
   rv$generalConfig$outputGroups <- configJSON$outputGroups
 })
@@ -97,8 +99,10 @@ insertUI(selector = "#general_wrapper",
          ), 
          where = "beforeEnd")
 # set default values for input and output groups
-addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
-addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
+if(length(configJSON$inputGroups))
+  addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
+if(length(configJSON$outputGroups))
+  addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
 
 insertUI(selector = "#general_wrapper2",
          tagList(
@@ -326,18 +330,80 @@ observeEvent(input$general_decimal, {
 observeEvent(input$general_pivotcolor, {
   rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
 })
-observeEvent(c(input$group_memberIn, input$add_general), {
-  if(length(input$add_general) > 2L && length(input$group_memberIn) > 1L){
-    arrayIdx <- groupIndexMap$push('inputGroups', input$add_general[1])
-    rv$generalConfig$inputGroups[[arrayIdx]] <<- list(name = input$add_general[2], 
-                                                      members = input$group_memberIn[2:length(input$group_memberIn)])
+observeEvent(input$add_general, {
+  if(length(input$add_general) < 3L){
+    return()
+  }
+  arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
+  arrayIdx <- groupIndexMap$push(arrayID, input$add_general[1])
+  print(input$add_general)
+  print(arrayIdx)
+  if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
+    # name has no characters
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+      if(!length(rv$generalConfig[[arrayID]])){
+        rv$generalConfig[[arrayID]] <<- NULL
+      }
+    }
+    newName <- NULL
   }else{
-    arrayIdx <- groupIndexMap$pop('arrayIdx', input$add_general[1])
-    
-    if(length(arrayIdx)){
-      rv$generalConfig$inputGroups[[arrayIdx]] <<- NULL
+    newName <- input$add_general[2]
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]][[arrayIdx]]$name <- newName
+    }else if(length(groupTemp[[arrayID]][[arrayIdx]]) && 
+             length(groupTemp[[arrayID]][[arrayIdx]]$members)){
+      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
+                                                      members = groupTemp[[arrayID]][[arrayIdx]]$members)
     }
   }
+  print(newName)
+  if(arrayIdx > length(groupTemp[[arrayID]])){
+    groupTemp[[arrayID]][[arrayIdx]] <<- list(name = newName)
+  }else{
+    groupTemp[[arrayID]][[arrayIdx]]$name <<- newName
+  }
+  print(groupTemp)
+})
+changeAndValidateGroupMembers <- function(arrayID, groupMembers){
+  arrayIdx <- groupIndexMap$push(arrayID, groupMembers[1])
+  print(arrayIdx)
+  print(groupMembers)
+  print(rv$generalConfig[[arrayID]])
+  if(length(groupMembers) > 2L && 
+     !any(groupMembers %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
+    newMembers <- groupMembers[2:length(groupMembers)]
+    print(newMembers)
+    print(rv$generalConfig[[arrayID]])
+    print(groupTemp[[arrayID]][[arrayIdx]])
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]][[arrayIdx]]$members <- newMembers
+    }else if(length(groupTemp[[arrayID]][[arrayIdx]]) && 
+             length(groupTemp[[arrayID]][[arrayIdx]]$name)){
+      rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = groupTemp[[arrayID]][[arrayIdx]]$name, 
+                                                      members = newMembers)
+    }
+  }else{
+    print("invalid groups")
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+      if(!length(rv$generalConfig[[arrayID]])){
+        rv$generalConfig[[arrayID]] <<- NULL
+      }
+    }
+    newMembers <- NULL
+  }
+  if(arrayIdx > length(groupTemp[[arrayID]])){
+    groupTemp[[arrayID]][[arrayIdx]] <<- list(members = newMembers)
+  }else{
+    groupTemp[[arrayID]][[arrayIdx]]$members <<- newMembers
+  }
+}
+observeEvent(input$group_memberIn, {
+  changeAndValidateGroupMembers('inputGroups', input$group_memberIn)
+})
+observeEvent(input$group_memberOut, {
+  changeAndValidateGroupMembers('outputGroups', input$group_memberOut)
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
@@ -345,7 +411,15 @@ observeEvent(input$remove_general, {
                                 input$remove_general[2])
   
   if(length(arrayIdx)){
-    rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+      rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
+      if(!length(rv$generalConfig[[arrayID]])){
+        rv$generalConfig[[arrayID]] <<- NULL
+      }
+    }
+    if(arrayIdx <= length(groupTemp[[arrayID]])){
+      groupTemp[[arrayID]][[arrayIdx]] <<- NULL
+    }
   }
 })
 

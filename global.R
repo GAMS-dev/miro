@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "transport"
+modelName <- "pickstock"
 # turn debug mode on or off
 debugMode <- TRUE
 # name of the environment variable used in shiny proxy to identify model name to use
