@@ -336,7 +336,7 @@ observeEvent(input$add_general, {
   }
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
   arrayIdx <- groupIndexMap$push(arrayID, input$add_general[1])
-  print(input$add_general)
+  print(arrayID)
   print(arrayIdx)
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
@@ -347,17 +347,26 @@ observeEvent(input$add_general, {
       }
     }
     newName <- NULL
+    showElReplaceTxt(session, paste0("#", input$add_general[3], input$add_general[1], "_err"), 
+                     lang$adminMode$widgets$validate$val36)
   }else{
     newName <- input$add_general[2]
-    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$name <- newName
-    }else if(length(groupTemp[[arrayID]][[arrayIdx]]) && 
-             length(groupTemp[[arrayID]][[arrayIdx]]$members)){
+    }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
+             length(groupTemp[[arrayID]][[arrayIdx]]$members) > 1L &&
+             !any(groupTemp[[arrayID]][[arrayIdx]]$members %in% 
+                  unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = newName, 
                                                       members = groupTemp[[arrayID]][[arrayIdx]]$members)
+    }else{
+      showElReplaceTxt(session, paste0("#group_member", 
+                                       if(identical(arrayID, "inputGroups")) "In" else "Out", 
+                                       input$add_general[1], "_err"), 
+                       lang$adminMode$widgets$validate$val37)
     }
+    hideEl(session, paste0("#", input$add_general[3], input$add_general[1], "_err"))
   }
-  print(newName)
   if(arrayIdx > length(groupTemp[[arrayID]])){
     groupTemp[[arrayID]][[arrayIdx]] <<- list(name = newName)
   }else{
@@ -365,26 +374,26 @@ observeEvent(input$add_general, {
   }
   print(groupTemp)
 })
-changeAndValidateGroupMembers <- function(arrayID, groupMembers){
+changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
   arrayIdx <- groupIndexMap$push(arrayID, groupMembers[1])
   print(arrayIdx)
   print(groupMembers)
   print(rv$generalConfig[[arrayID]])
   if(length(groupMembers) > 2L && 
-     !any(groupMembers %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
+     !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
-    print(newMembers)
-    print(rv$generalConfig[[arrayID]])
-    print(groupTemp[[arrayID]][[arrayIdx]])
-    if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
+    if(arrayIdx <= length(rv$generalConfig[[arrayID]]) && length(rv$generalConfig[[arrayID]][[arrayIdx]])){
       rv$generalConfig[[arrayID]][[arrayIdx]]$members <- newMembers
-    }else if(length(groupTemp[[arrayID]][[arrayIdx]]) && 
+    }else if(arrayIdx <= length(groupTemp[[arrayID]]) && 
              length(groupTemp[[arrayID]][[arrayIdx]]$name)){
       rv$generalConfig[[arrayID]][[arrayIdx]] <- list(name = groupTemp[[arrayID]][[arrayIdx]]$name, 
                                                       members = newMembers)
+    }else{
+      showElReplaceTxt(session, paste0("#symbol_", arrayID, input$add_general[1], "_err"), 
+                       lang$adminMode$widgets$validate$val36)
     }
+    hideEl(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"))
   }else{
-    print("invalid groups")
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
       rv$generalConfig[[arrayID]][[arrayIdx]] <<- NULL
       if(!length(rv$generalConfig[[arrayID]])){
@@ -392,6 +401,8 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers){
       }
     }
     newMembers <- NULL
+    showElReplaceTxt(session, paste0("#", HTMLarrayID, groupMembers[1], "_err"), 
+                     lang$adminMode$widgets$validate$val37)
   }
   if(arrayIdx > length(groupTemp[[arrayID]])){
     groupTemp[[arrayID]][[arrayIdx]] <<- list(members = newMembers)
@@ -400,10 +411,12 @@ changeAndValidateGroupMembers <- function(arrayID, groupMembers){
   }
 }
 observeEvent(input$group_memberIn, {
-  changeAndValidateGroupMembers('inputGroups', input$group_memberIn)
+  changeAndValidateGroupMembers('inputGroups', input$group_memberIn, 
+                                "group_memberIn")
 })
 observeEvent(input$group_memberOut, {
-  changeAndValidateGroupMembers('outputGroups', input$group_memberOut)
+  changeAndValidateGroupMembers('outputGroups', input$group_memberOut, 
+                                "group_memberOut")
 })
 observeEvent(input$remove_general, {
   arrayID <- strsplit(input$remove_general[1], "_")[[1]][2]
@@ -431,6 +444,15 @@ observeEvent(rv$generalConfig, {
   req(length(rv$generalConfig))
   configJSON$inputGroups <<- NULL
   configJSON$outputGroups <<- NULL
-  configJSON <<- modifyList(configJSON, rv$generalConfig)
+  if(length(rv$generalConfig$inputGroups) || 
+     length(rv$generalConfig$outputGroups)){
+    newGeneralJSON <- rv$generalConfig
+    newGeneralJSON$inputGroups[vapply(newGeneralJSON$inputGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL
+    newGeneralJSON$outputGroups[vapply(newGeneralJSON$outputGroups, is.null, logical(1L), USE.NAMES = FALSE)] <- NULL
+    configJSON <<- modifyList(configJSON, newGeneralJSON)
+  }else{
+    configJSON <<- modifyList(configJSON, rv$generalConfig)
+  }
+  
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
 })

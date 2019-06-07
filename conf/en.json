@@ -870,7 +870,9 @@
         "val32": "The readonly identifier must be a logical!",
         "val33": "The heatmap identifier must be a logical!",
         "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
-        "val35": "No valid widget type"
+        "val35": "No valid widget type",
+        "val36": "The group name must be at least 1 character long.",
+        "val37": "Each group must have at least 2 members and every element may only appear in a single group!"
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],

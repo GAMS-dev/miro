@@ -566,7 +566,7 @@ function addArrayEl(arrayID, elements, options){
   
   var elID         = incElCount(arrayID);
   var label        = '';
-  var arrayContent = '<div id="' + arrayID + elID + '_wrapper" class="config-array-el">';
+  var arrayContent = '<div id="' + arrayID + elID + '_wrapper" class="config-array-el">\n';
   var idx          = 0;
   
   $.each(elements, function( k, v ) {
@@ -612,7 +612,7 @@ function addArrayEl(arrayID, elements, options){
         arrayContent += createSelectDepInput(k, elID, rAddID, v[1], v[2], v[3], v[4], selected, v[6]);
       break;
       case 'text':
-        var value = v[2]; 
+        var value = (v[2] !== undefined? v[2]: ''); 
         if(idx === 0 && options.elRequired === false){
           // tell R that new element was addded to array: (ID)
           Shiny.setInputValue(rAddID, [elID, value, k], {priority: "event"});
@@ -676,7 +676,8 @@ function createSelectInput(arrayID, elID, label, choices){
   optionsHTML += '<option value="' + choices[i] + '"' + ($.inArray(choices[i], selected) !== -1 ? ' selected' : '') + 
   '>' + aliases[i++] + '</option>\n');
   
-  return('<div class="form-group">\n' +
+  return('<div class="config-array-err" id="' + id + '_err" style="display:none;"></div>' +
+  '<div class="form-group">\n' +
   '<label class="control-label" for="' +
   id + '">' + label + '</label>\n' +
   '<div><select id="' + id + '"' + (multiple === true? ' multiple="multiple"' : '') + '>' + optionsHTML + '</select>\n</div>\n</div>');
@@ -733,7 +734,8 @@ function createTextInput(arrayID, elID, label){
   var placeholder = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
   Shiny.setInputValue(arrayID, [elID, value], {priority: "event"});
   
-  return('<div class="form-group">\n' +
+  return('<div class="config-array-err" id="' + id + '_err" style="display:none;"></div>\n' +
+  '<div class="form-group">\n' +
   '<label for="' + id + '">' + label + '</label>\n' +
   '<input id="' + id + '" type="text" class="form-control" value="' + value + '"' + (placeholder !== null ? ' placeholder="' + placeholder + '"': '') + '/>\n' +
 '</div>');
