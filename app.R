@@ -891,17 +891,13 @@ if(!is.null(errMsg)){
           return()
         }
         isolate(rv$datasetsModified[i] <- TRUE)
-        if(isolate(rv$unsavedFlag)){
-          return()
-        }
-        # set unsaved flag
-        rv$unsavedFlag <<- TRUE
         # if scenario includes output data set dirty flag
         if(!noOutputData){
           dirtyFlag <<- TRUE
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
         }
+        rv$unsavedFlag <<- TRUE
       }, priority = 1000L)
     })
     
