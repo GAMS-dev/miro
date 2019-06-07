@@ -68,8 +68,8 @@ if(length(newPackages)){
 }
 
 tryCatch({
-  suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
-                          quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath))
+  suppressWarnings(suppressMessages(lapply(requiredPackages, library, character.only = TRUE, 
+                          quietly = TRUE, verbose = FALSE, warn.conflicts = FALSE, lib.loc = RLibPath)))
 
   }, error = function(e){
   if(exists("flog.fatal")){
