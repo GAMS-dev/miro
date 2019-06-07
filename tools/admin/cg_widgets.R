@@ -4,15 +4,15 @@ modelInWithPrefix <- names(modelIn)
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
-names(langSpecificWidget$widgetOptionsInput) <- lang$adminMode$widgets$widgetOptionsInput$choices
+names(langSpecificWidget$widgetOptionsInput) <- lang$adminMode$widgets$widgetOptions$input
 langSpecificWidget$widgetOptionsAll <- c("Slider" = "slider", "Slider range" = "sliderrange", "Dropdown menu" = "dropdown", 
                                            "Checkbox" = "checkbox", "Date" = "date", "Date range" = "daterange", 
                                            "Text box" = "textinput")
-names(langSpecificWidget$widgetOptionsAll) <- lang$adminMode$widgets$widgetOptionsAll$choices
+names(langSpecificWidget$widgetOptionsAll) <- lang$adminMode$widgets$widgetOptions$all
 langSpecificWidget$widgetOptionsTable <- c("Table" = "table")
-names(langSpecificWidget$widgetOptionsTable) <- lang$adminMode$widgets$widgetOptionsTable$choices
+names(langSpecificWidget$widgetOptionsTable) <- lang$adminMode$widgets$widgetOptions$table
 langSpecificWidget$widgetOptionsDate <- c("Date" = "date")
-names(langSpecificWidget$widgetOptionsDate) <- lang$adminMode$widgets$widgetOptionsDate$choices
+names(langSpecificWidget$widgetOptionsDate) <- lang$adminMode$widgets$widgetOptions$date
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
                                           "Mean" = "mean", "Median" = "median", "Variance" = "var", 
                                           "Standard Deviation" = "sd")
@@ -70,14 +70,14 @@ validateWidgetConfig <- function(widgetJSON){
   }
   if(startsWith(currentWidgetSymbolName, prefixDDPar)){ 
     symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixDDPar)+1L, nchar(currentWidgetSymbolName))
-    if(any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym)){
+    if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
       return(lang$adminMode$widgets$validate$val4)
     }
     rm(symbolNameTmp)
   } 
   if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){ 
     symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixGMSOpt)+1L, nchar(currentWidgetSymbolName))
-    if(any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym)){
+    if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
       return(lang$adminMode$widgets$validate$val5)
     }
     rm(symbolNameTmp)
@@ -91,8 +91,14 @@ validateWidgetConfig <- function(widgetJSON){
               length(widgetJSON$default) > 2L){
              return(lang$adminMode$widgets$validate$val6)
            }
-           if(any(widgetJSON$default < widgetJSON$min) || 
-              any(widgetJSON$max < widgetJSON$default)){
+           if(widgetJSON$default < widgetJSON$min && 
+              identical(input$slider_min_dep_selector, TRUE) &&
+              identical(input$slider_def_dep_selector, TRUE)){
+             return(lang$adminMode$widgets$validate$val7)
+           }
+           if(widgetJSON$max < widgetJSON$default && 
+              identical(input$slider_max_dep_selector, TRUE) && 
+              identical(input$slider_def_dep_selector, TRUE)){
              return(lang$adminMode$widgets$validate$val7)
            }
            if(!is.logical(widgetJSON$tick)){
@@ -103,6 +109,9 @@ validateWidgetConfig <- function(widgetJSON){
            }
          },
          dropdown = {
+           if(!length(widgetJSON$choices)){
+             return(lang$adminMode$widgets$validate$val36)
+           }
            if(!identical(length(widgetJSON$aliases), 0L) && 
               !identical(length(widgetJSON$choices), length(widgetJSON$aliases))){
              return(lang$adminMode$widgets$validate$val10)
@@ -394,16 +403,24 @@ observeEvent({input$widget_type
   rv$widget_type}, {
     req(length(input$widget_type) > 0L, nchar(currentWidgetSymbolName) > 0L)
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
-  rv$widgetConfig <- list()
+    if(!is.null(currentConfig$label)){
+      rv$widgetConfig <- list(label = currentConfig$label)
+    }else{
+      rv$widgetConfig <- list()
+    }
   currentConfig <- NULL
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
   }
   if(identical(input$widget_type, "table")){
+    if(!is.null(currentConfig$readonlyCols)){
+      rv$widgetConfig <- list(readonlyCols = currentConfig$readonlyCols)
+    }else{
+      rv$widgetConfig <- list()
+    }
     rv$widgetConfig <- list(widgetType = "table",
                             alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
                             readonly = identical(currentConfig$readonly, TRUE),
-                            readonlyCols = currentConfig$readonlyCols,
                             heatmap = identical(currentConfig$heatmap, TRUE))
     insertUI(selector = "#widget_options",
              tagList(
@@ -437,13 +454,13 @@ observeEvent({input$widget_type
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = if(length(currentConfig$default)) currentConfig$default else 2L,
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$def)
@@ -569,7 +586,6 @@ observeEvent({input$widget_type
          sliderrange = {
            rv$widgetConfig <- list(widgetType = "slider",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$widget_label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = if(length(currentConfig$default) > 1L) currentConfig$default else c(2L, 5L),
@@ -670,11 +686,14 @@ observeEvent({input$widget_type
            })
          },
          dropdown = {
+           if(!is.null(currentConfig$aliases)){
+             rv$widgetConfig <- list(aliases = currentConfig$aliases)
+           }else{
+             rv$widgetConfig <- list()
+           }
            rv$widgetConfig <- list(widgetType = "dropdown",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    choices = currentConfig$choices,
-                                   aliases = currentConfig$aliases,
                                    selected = currentConfig$selected,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
@@ -749,7 +768,6 @@ observeEvent({input$widget_type
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    value = identical(currentConfig$value, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    class =  "checkbox-material")
@@ -794,7 +812,6 @@ observeEvent({input$widget_type
          date = {
            rv$widgetConfig <- list(widgetType = "date",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    value = currentConfig$value,
                                    min   = currentConfig$min,
                                    max   = currentConfig$max,
@@ -916,7 +933,6 @@ observeEvent({input$widget_type
          daterange = {
            rv$widgetConfig <- list(widgetType = "daterange",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    start = currentConfig$start,
                                    end   = currentConfig$end,
                                    min   = currentConfig$min,
@@ -1056,7 +1072,6 @@ observeEvent({input$widget_type
          textinput = {
            rv$widgetConfig <- list(widgetType = "textinput",
                                    alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
-                                   label = currentConfig$label,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
            insertUI(selector = "#widget_options",
@@ -1082,7 +1097,10 @@ observeEvent(input$widget_alias, {
   rv$widgetConfig$alias <<- input$widget_alias
 })
 observeEvent(input$widget_label, {
-  rv$widgetConfig$label <<- input$widget_label
+  if(nchar(input$widget_label))
+    rv$widgetConfig$label <<- input$widget_label
+  else
+    rv$widgetConfig$label <<- NULL
 })
 observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube
@@ -1267,29 +1285,24 @@ observeEvent(input$text_placeholder, {
 #  ==============================
 observeEvent(input$saveWidget, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
-  
-  errMsg <- validateWidgetConfig(rv$widgetConfig)
-  if(nchar(errMsg)){
-    showHideEl(session, "#widgetValidationErr", 5000L, errMsg)
-    return()
-  }
-  rv$saveWidgetConfirm <- rv$saveWidgetConfirm + 1L
-})
-observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
-  req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
-  
   if(rv$widgetConfig$widgetType %in% c("slider", "sliderrange")){
     if(identical(input$slider_min_dep_selector, FALSE)){
       rv$widgetConfig$min <<- paste0(input$slider_min_dep_op, "(", input$slider_min_dep, 
                                      "$", input$slider_min_dep_header, ")")
+    }else{
+      rv$widgetConfig$min <<- input$slider_min
     }
     if(identical(input$slider_max_dep_selector, FALSE)){
       rv$widgetConfig$max <<- paste0(input$slider_max_dep_op, "(", input$slider_max_dep, 
                                      "$", input$slider_max_dep_header, ")")
+    }else{
+      rv$widgetConfig$max <<- input$slider_max
     }
     if(identical(rv$widgetConfig$widgetType, "slider") && identical(input$slider_def_dep_selector, FALSE)){
       rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
                                          "$", input$slider_def_dep_header, ")")
+    }else{
+      rv$widgetConfig$def <<- input$slider_def
     }
   }else if(identical(rv$widgetConfig$widgetType, "dropdown")){
     if(identical(input$dd_choice_dep_selector, FALSE)){
@@ -1308,9 +1321,18 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
              })
     }
   }
-  
+  errMsg <- validateWidgetConfig(rv$widgetConfig)
+  if(nchar(errMsg)){
+    showHideEl(session, "#widgetValidationErr", 5000L, errMsg)
+    return()
+  }
+  rv$saveWidgetConfirm <- rv$saveWidgetConfirm + 1L
+})
+observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
+  req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
-  
+  print("++++++++++++++++++++++++++++++++++++")
+  print(configJSON$inputWidgets[[currentWidgetSymbolName]])
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
     widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, rv$widgetConfig$alias))
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
