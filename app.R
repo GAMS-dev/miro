@@ -335,6 +335,7 @@ if(is.null(errMsg)){
     })
   }
   if(config$activateModules$hcubeMode){
+    hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
     requiredPackages <- c("openssl", "DT")
     source("./R/install_packages.R", local = TRUE)
     source("./R/hcube.R")
