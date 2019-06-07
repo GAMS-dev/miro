@@ -471,6 +471,7 @@ if not os.path.exists(confdir):
    os.makedirs(confdir)
 with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w', encoding='utf-8') as f:
    json.dump(config, f, indent=4, sort_keys=False)
+db.__del__()
 $offembeddedCode
    
 $include "%fp%%fn%_miro.gms"
