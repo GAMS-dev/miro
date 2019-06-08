@@ -58,7 +58,7 @@ pipeline {
 
                             rem Python modules
                             cd %GAMS_DIR%\\GMSPython\\Scripts
-                            pip install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy
+                            pip install matplotlib pandas numpy pandas_datareader geocoder geopy
                             cd %WORKSPACE%\\installer\\win\\innofiles
 
                             rem miro libinclude
@@ -187,7 +187,7 @@ pipeline {
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
                             cd "$TARGET/GMSPython/bin"
-                            "./pip" install matplotlib pandas numpy xlsxwriter pandas_datareader geocoder geopy Pillow
+                            "./pip" install matplotlib pandas numpy pandas_datareader geocoder geopy Pillow
                             cd "$WORKSPACE"
                             mkdir -p "$TARGET/GMSR"
                             mkdir "$TARGET/miro/"
