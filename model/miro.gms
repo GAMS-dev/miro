@@ -645,6 +645,8 @@ tryCatch({{
    logFiles <- list.files('logs', full.names = TRUE)
    zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
    suppressWarnings(shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE))
+}}, interrupt = function(e){{
+   q('no')
 }})
 q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/"), '%fn%'.lower()))
 

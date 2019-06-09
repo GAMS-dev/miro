@@ -185,6 +185,15 @@
         },
         "scalarsve_out": {
             "alias": "Output Variable/Equation Scalars",
+            "symnames": [
+                "ctotal"
+            ],
+            "symtext": [
+                "total  costs"
+            ],
+            "symtypes": [
+                "variable"
+            ],
             "headers": {
                 "type": {
                     "type": "set",
