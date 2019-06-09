@@ -626,7 +626,7 @@ library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.co
 tryCatch({{
    withCallingHandlers({{
        on.exit(q('no'))
-       shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)
+       suppressWarnings(shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE))
     }}, warning = function(w){{
        if(!startsWith(conditionMessage(w), "Error"))
           return()
@@ -644,7 +644,7 @@ tryCatch({{
    try(futile.logger::flog.fatal('%s', e), silent = TRUE)
    logFiles <- list.files('logs', full.names = TRUE)
    zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
-   shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE)
+   suppressWarnings(shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE))
 }})
 q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/"), '%fn%'.lower()))
 
