@@ -26,7 +26,7 @@ MIRORDate   <- "Jun 5 2019"
 # RPostgres (Scenario mode) #GPL-2
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
-# openssl (Hypercube mode) #MIT
+# digest (Hypercube mode) #GPL >=2
 
 
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
@@ -336,7 +336,7 @@ if(is.null(errMsg)){
   }
   if(config$activateModules$hcubeMode){
     hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
-    requiredPackages <- c("openssl", "DT")
+    requiredPackages <- c("digest", "DT")
     source("./R/install_packages.R", local = TRUE)
     source("./R/hcube.R")
     source("./R/db_hcubeimport.R")

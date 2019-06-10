@@ -50,7 +50,6 @@ these components are included below):
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
 - xts https://github.com/joshuaulrich/xts or https://cran.r-project.org/web/packages/xts/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
-- openssl https://github.com/jeroen/openssl or https://cran.r-project.org/web/packages/openssl/
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
@@ -1969,7 +1968,6 @@ Public License instead of this License.
         - rpivotTable, Copyright (c) 2015 Enzo Martoglio
         - dygraphs, Copyright (c) 2015-2016 Dan Vanderkam; RStudio, Inc.
         - tidyr, Copyright (c) 2014 Hadley Wickham and RStudio
-        - openssl, Copyright (c) 2018 Jeroen Ooms
         - plogr, Copyright (c) 2016 Kirill Müller [aut, cre], 
           Sergey Podobry [cph] (Author of the bundled plog library)
         - sourcetools, Copyright (c) 2015-2017 Kevin Ushey 

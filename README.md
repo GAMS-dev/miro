@@ -42,7 +42,7 @@ In order to launch GAMS MIRO you need R (v. 3.5.1 or later) with the following p
 * tidyr
 * DBI
 * RSQLite
-* openssl
+* digest
 
 To start the application, run the following command from an R console:
 ```
