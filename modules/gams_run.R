@@ -11,12 +11,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
               quote_escape = "double")
     flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
-    return(getHcubeStaticElMd5(filePath))
-  }
-  getHcubeStaticElMd5 <- function(filePath){
-    con <- file(filePath, open = "r")
-    on.exit(close(con), add = TRUE)
-    return(as.character(openssl::md5(con)))
+    return(digest(file = filePath, algo = "md5"))
   }
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
@@ -184,12 +179,12 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       filePaths     <- filePaths[match(basename(filePaths), sort(basename(filePaths)))]
       if(length(filePaths)){
         gmsString <- paste(gmsString, paste(vapply(seq_along(filePaths), function(i){
-          return(paste0("--HCUBE_STATIC_", i, "=", getHcubeStaticElMd5(filePaths[i])))
+          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = filePaths[i], algo = "md5")))
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    scenIds <- as.character(sha256(gmsString))
+    scenIds <- digest(gmsString, algo = "sha256", serialize = FALSE)
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- paste0(scenIds, ": ", gmsString)
     
