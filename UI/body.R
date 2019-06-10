@@ -539,7 +539,6 @@ body <- dashboardBody({
       )
     },
     tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
-    tags$script(src = "mirosc.js", type = "application/javascript"),
     tags$script(src = "miro.js", type = "application/javascript"),
     tags$script(src = "jquery.slimscroll.min.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
