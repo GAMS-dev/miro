@@ -19,7 +19,7 @@ optionSection <- function(title, ..., collapsed = FALSE){
            tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer", 
                    onclick = "$(this).next().toggle();"),
            tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
-           )
+  )
 }
 
 server_admin <- function(input, output, session){
@@ -139,8 +139,6 @@ server_admin <- function(input, output, session){
       prog$inc(amount = 0.2, detail = "Validating files...")
       validatedTables <- vector("list", length(unzippedFiles))
       validatedTables <- lapply(seq_along(unzippedFiles), function(i){
-        data      <- read_csv(unzippedFiles[i], col_names = TRUE, 
-                              col_types = cols(), na = character())
         tableName <- tableNames[i]
         if(!tableName %in% scenTableNames){
           tabID    <- match(tableName, dbSchema$tabName)[[1L]]
@@ -157,6 +155,8 @@ server_admin <- function(input, output, session){
           colNames <- c(sidIdentifier, dbSchema$colNames[[tabID]])
           colTypes <- "i" %+% dbSchema$colTypes[[tabID]]
         }
+        data      <- read_csv(unzippedFiles[i], col_names = TRUE, 
+                              col_types = colTypes, na = character())
         if(!validateHeaders(data, colNames,
                             headerTypes = colTypes)){
           flog.warn("Dataset: '%s' has invalid headers.\nHeaders are: '%s'.\nHeaders should be: '%s'.\n
@@ -166,7 +166,7 @@ server_admin <- function(input, output, session){
                     paste(vapply(data, function(el) return(class(el)[[1L]]), 
                                  character(1L), USE.NAMES = FALSE), collapse = "', '"),
                     colTypes)
-                    
+          
           stop("valErr", call. = FALSE)
         }
         
