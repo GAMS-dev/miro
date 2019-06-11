@@ -75,6 +75,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     # tabular data
     wgdxDotList <- lapply(seq_along(data), function(i){
+      if(!length(data[[i]]) || !nrow(data[[i]])){
+        return(NA)
+      }
       symName   <- names(data)[i]
       if(symName %in% c(scalarsFileName, scalarsOutName, scalarEquationsOutName)){
         return(NULL)
@@ -138,10 +141,12 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     })
     isScalarData <- vapply(wgdxDotList, is.null, 
                            logical(1L), USE.NAMES = FALSE)
-    wgdxDotList  <- wgdxDotList[!isScalarData]
-    
+    isEmptySymbol <- is.na(wgdxDotList)
     # scalar data
     scalarSymList <- unlist(lapply(which(isScalarData), function(i){
+      if(identical(isEmptySymbol[[i]], TRUE)){
+        return(NA)
+      }
       df       <- data[[i]]
       nc       <- length(df)
       if(identical(nc, 3L)){
@@ -193,6 +198,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         return(ret)
       })
     }), use.names = FALSE, recursive = FALSE)
+    
+    scalarSymList <- scalarSymList[!is.na(scalarSymList)]
+    wgdxDotList  <- wgdxDotList[!(isScalarData | isEmptySymbol)]
     do.call(gdxrrw::wgdx, c(gdxName, wgdxDotList, scalarSymList))
     return(invisible(self))
   }
