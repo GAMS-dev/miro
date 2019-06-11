@@ -156,7 +156,9 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
   checkNameTmp <- FALSE
   scenNameTmp  <- character(0L)
   flog.debug("Confirm load scenario button clicked.")
-  if(identical(isolate(input$tb_importData), "tb_importData_hcube")){
+  
+  if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
+     identical(isolate(input$tb_importData), "tb_importData_hcube")){
     checkNameTmp <- TRUE
     scenNameTmp  <- isolate(input$hcube_newScenName)
     if(isBadScenName(scenNameTmp)){
@@ -172,9 +174,11 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
       return()
     }
   }else{
-    if(identical(isolate(input$tabsetLoadScen), "loadScenUI")){
+    if(identical(isolate(input$sidebarMenuId), "scenarios") &&
+       identical(isolate(input$tabsetLoadScen), "loadScenUI")){
       scenSelected <- isolate(input$selLoadScenUI)
-    }else if(identical(isolate(input$tb_importData), "tb_importData_base")){
+    }else if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
+             identical(isolate(input$tb_importData), "tb_importData_base")){
       scenSelected <- isolate(input[["selLoadScen_base"]])
       checkNameTmp <- TRUE
     }else{
