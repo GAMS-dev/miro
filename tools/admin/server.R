@@ -113,7 +113,7 @@ server_admin <- function(input, output, session){
       grepEx <- "^((?!\\.\\.).)*\\.csv$"
       prog$inc(amount = 0.2, detail = "Decompressing files...")
       zipFilePath <- isolate(input$dbBackupZip$datapath)
-      filesToUnzip <- grep(grepEx, unzip(zipFilePath, list = TRUE)$Name, 
+      filesToUnzip <- grep(grepEx, zip_list(zipFilePath)$filename, 
                            ignore.case = TRUE, value = TRUE, perl = TRUE)
       if(!length(filesToUnzip)){
         stop("noData", call. = FALSE)
