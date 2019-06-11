@@ -1151,7 +1151,7 @@ Db <- R6Class("Db",
                   }else{
                     bsEscaped <- gsub("\\", "\\\\", pattern, fixed = TRUE)
                     return(gsub("([.|()\\^{}+$*?'\"]|\\[|\\])", 
-                                "\\\\\\1", bsEscaped))
+                                "\\\\\\\\\\1", bsEscaped))
                   }
                 },
                 escapePattern = function(pattern){
