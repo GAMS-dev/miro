@@ -267,12 +267,11 @@ $(document).ready(() => {
   $('.sidebar-toggle').click(() => {
     rerenderHot(400);
   });
-  $(window).on('beforeunload', (e) => {
+  window.addEventListener('beforeunload', (e) => {
     if ($('#shiny-disconnected-overlay').length === 0) {
       e.preventDefault();
-      return 'Are you sure you want to leave? Unsaved changes will be lost!';
+      e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
-    return null;
   });
   Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     if (isInputEl(id)) {
