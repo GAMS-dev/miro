@@ -602,7 +602,7 @@ class Paver :
         'using the <A href="http://www.gamsworld.org/performance/paver2/" target="_blank">PAVER 2 tools</A>.', file=index);
         print('</p>', file=index);
         print('<p>', file=index);
-        print("<A href='#' onclick = 'changeTab($(this), 1, 6)'>Documentation</A>", file=index)
+        print("<A href='#' onclick = 'Miro.changeTab($(this), 1, 6)'>Documentation</A>", file=index)
         print('</p>', file=index);
 
         print('<HR>', file=index);
@@ -643,7 +643,7 @@ class Paver :
             self._solvedatawriter.writeHTML(self.solvedata, solvedata, dirname);
             print("</BODY>", "</HTML>", file=solvedata);
             solvedata.close();
-            print("<P><b><a href='#' onclick = 'changeTab($(this), 1, 5)'>Detailed Instance and Solving Data</a></b></P>", file=index);
+            print("<P><b><a href='#' onclick = 'Miro.changeTab($(this), 1, 5)'>Detailed Instance and Solving Data</a></b></P>", file=index);
 
         # print aggregated solve and instance data
         if self._solvedatawriter is not None and self.aggregated :
@@ -693,7 +693,7 @@ class Paver :
                 self._solvestat.writeHTML(self, c, dirname, "stat_" + ct, args);
                 #print('<LI><a href="stat_' + ct + '.html">', c, '</a>', file=index);
                 print(n);
-                print("<LI><a href='#' onclick = 'changeTab($(this), 1, ", n, ")'>", c, "</a>", file=index);
+                print("<LI><a href='#' onclick = 'Miro.changeTab($(this), 1, ", n, ")'>", c, "</a>", file=index);
                 n+=1;
             print('</UL></P>', file=index);
         

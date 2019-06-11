@@ -6,7 +6,7 @@ header_admin <- dashboardHeader(
           tags$ul(class = "dropdown-menu", role="menu",
                   tags$li(tags$a(href = "https://www.gams.com/miro/", 
                                  target = "_blank", "Documentation")),
-                  tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
+                  tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                       'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
                   )))),
@@ -79,7 +79,7 @@ body_admin <- dashboardBody({
                     tags$div(class = "space"),
                     tags$div("You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
                              HTML(paste0('<button type="button" class="btn btn-default"', 
-                                         ' onclick="confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
+                                         ' onclick="Miro.confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
                                          'This can not be undone! You might want to save the database first before proceeding.\', \'Cancel\', ',
                                          '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
                              ))

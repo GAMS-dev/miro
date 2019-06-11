@@ -1,180 +1,106 @@
-import 'jquery-slimscroll';
+/* global $:false Shiny: false HTMLWidgets:false MathJax:false */
 
-function changeTab(object, idActive, idRefer) {
-  var tabPane = object.closest(".tabbable");
-  tabPane.find("li:nth-of-type(" + idActive + ")").removeClass();
-  tabPane.find("li:nth-of-type(" + idRefer + ")").addClass("active");
-  tabPane.find(".tab-content div:nth-child(" + idActive + ")").removeClass("active");
-  tabPane.find(".tab-content div:nth-child(" + idRefer + ")").addClass("active");
-}
-function showNewNameBaseDialog(){
-  $("#base-overwrite-container").hide();
-  $("#loadBase_snameExistsMsg").hide();
-  $("#loadBase_newName").show();
-  $("#btCheckSnameBase").show();
-}
-function isInputEl(id) {
-  if ($(id).parents(".form-group").length) {
-    return true;
-  } else {
-    return false;
-  }
-}
-function rerenderDygraph(){
-  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
+const spinnerActive = {};
 
-  try {
-    setTimeout(function () {
-      HTMLWidgets.getInstance($(".dygraphs:visible").get(0)).dygraph.resize();
-    }, delay);
-  } catch (e) {}
-}
-function rerenderHot() {
-  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
-
-  try {
-    setTimeout(function () {
-      HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render();
-    }, delay);
-  } catch (e) {}
-}
-
-var spinnerActive = {};
-
-function showSpinnerIcon(el) {
-  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3000;
-
+export function showSpinnerIcon(el, delay = 3000) {
   if (spinnerActive[$(el).prop('id')]) {
     return;
   }
 
   spinnerActive[$(el).prop('id')] = true;
-  var content = $(el).html();
+  const content = $(el).html();
   $(el).html('<i class="fa fa-refresh fa-spin"></i>');
-  setTimeout(function () {
+  setTimeout(() => {
     $(el).html(content);
     spinnerActive[$(el).prop('id')] = false;
   }, delay);
 }
 
-function changeActiveButtons(tabId) {
-  switch (tabId) {
-    case 'inputData':
-      $("#btImport").show();
-      $("#btSolve").show();
-      $("#btInterrupt").hide();
-      $("#btSplitView").hide();
-      $("#btCompareScen").hide();
-      break;
-
-    case 'outputData':
-      $("#btImport").hide();
-      $("#btSolve").hide();
-      $("#btInterrupt").hide();
-      $("#btSplitView").hide();
-      $("#btCompareScen").hide();
-      break;
-
-    case 'gamsinter':
-      $("#btImport").hide();
-      $("#btSolve").hide();
-      $("#btInterrupt").show();
-      $("#btSplitView").hide();
-      $("#btCompareScen").hide();
-      break;
-
-    case 'scenarios':
-      $("#btImport").hide();
-      $("#btSolve").hide();
-      $("#btInterrupt").hide();
-      $("#btSplitView").show();
-      $("#btCompareScen").show();
-      break;
-
-    default:
-      $("#btImport").hide();
-      $("#btSolve").hide();
-      $("#btInterrupt").hide();
-      $("#btSplitView").hide();
-      $("#btCompareScen").hide();
-  }
+export function changeTab(object, idActive, idRefer) {
+  const tabPane = object.closest('.tabbable');
+  tabPane.find(`li:nth-of-type(${idActive})`).removeClass();
+  tabPane.find(`li:nth-of-type(${idRefer})`).addClass('active');
+  tabPane.find(`.tab-content div:nth-child(${idActive})`).removeClass('active');
+  tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
 }
 
-function confirmModalShow(title, desc, cancelTxt) {
-  var confirmTxt = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  var confirmCall = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
-  var btDataDismiss = '<button type="button" class="btn btn-default" data-dismiss="modal">' + cancelTxt + '</button>';
-  var btDataConfirm = '';
+export function showNewNameBaseDialog() {
+  $('#base-overwrite-container').hide();
+  $('#loadBase_snameExistsMsg').hide();
+  $('#loadBase_newName').show();
+  $('#btCheckSnameBase').show();
+}
+
+export function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, confirmCall = null) {
+  const btDataDismiss = `<button type="button" class="btn btn-default" data-dismiss="modal">${cancelTxt}</button>`;
+  let btDataConfirm = '';
 
   if (confirmCall !== null) {
-    btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" id="" onclick="' + confirmCall + '" data-dismiss="modal">' + confirmTxt + '</button>';
+    btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" '
+    + `id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
   }
 
-  btData = btDataDismiss + btDataConfirm;
-  cModal = $('#confirmModal');
+  const cModal = $('#confirmModal');
   cModal.find('.modal-title').html(title);
   cModal.find('.modal-body').html(desc);
-  cModal.find('.modal-footer').html(btData);
+  cModal.find('.modal-footer').html(btDataDismiss + btDataConfirm);
   cModal.modal('show');
 }
 
-function removeAttachment(elId) {
-  $('#btRemoveAttachment_' + elId).parent().parent().remove();
-  Shiny.setInputValue("btRemoveAttachment_" + elId, 1, {
-    priority: "event"
+export function removeAttachment(elId) {
+  $(`#btRemoveAttachment_${elId}`).parent().parent().remove();
+  Shiny.setInputValue(`btRemoveAttachment_${elId}`, 1, {
+    priority: 'event',
   });
 }
 
-function showHypercubeLog(jID) {
-  Shiny.setInputValue("showHypercubeLog", jID, {
-    priority: "event"
+export function showHypercubeLog(jID) {
+  Shiny.setInputValue('showHypercubeLog', jID, {
+    priority: 'event',
   });
 }
 
-function importHypercubeJob(jID) {
-  Shiny.setInputValue("importHypercubeJob", jID, {
-    priority: "event"
+export function importHypercubeJob(jID) {
+  Shiny.setInputValue('importHypercubeJob', jID, {
+    priority: 'event',
   });
 }
 
-function discardHypercubeJob(jID) {
-  Shiny.setInputValue("discardHypercubeJob", jID, {
-    priority: "event"
+export function discardHypercubeJob(jID) {
+  Shiny.setInputValue('discardHypercubeJob', jID, {
+    priority: 'event',
   });
 }
 
-function renderMathJax() {
-  MathJax.Hub.Queue(["Typeset", MathJax.Hub, "wrapper-documentation"]);
+export function renderMathJax() {
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'wrapper-documentation']);
 }
 
-function validateSname(el) {
-  var inputID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "btCheckSnameLocalConfirm";
+export function validateSname(el, inputID = 'btCheckSnameLocalConfirm') {
   if (/^[a-f0-9]{64}$/i.test($(el).val()) !== true && /^\s*$/.test($(el).val()) !== true) {
     $(el).removeClass('invalidInput');
-    if(inputID === "internal"){
+    if (inputID === 'internal') {
       return true;
-    }else{
-      Shiny.setInputValue(inputID, 1, {
-        priority: "event"
-      });
-      return;
     }
-  } else {
-    $(el).addClass('invalidInput');
-    return false;
+    Shiny.setInputValue(inputID, 1, {
+      priority: 'event',
+    });
+    return true;
   }
+  $(el).addClass('invalidInput');
+  return false;
 }
 
-function validateHcubeHash() {
-  var hashVal = $('#hcHashLookup').val();
+export function validateHcubeHash() {
+  const hashVal = $('#hcHashLookup').val();
 
   if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
-    if(!validateSname("#hcube_newScenName", "internal")){
+    if (!validateSname('#hcube_newScenName', 'internal')) {
       return;
     }
     $('#hcHashLookup').removeClass('invalidInput');
-    Shiny.setInputValue("hcHashLookup", hashVal, {
-      priority: "event"
+    Shiny.setInputValue('hcHashLookup', hashVal, {
+      priority: 'event',
     });
     return;
   }
@@ -182,175 +108,248 @@ function validateHcubeHash() {
   $('#hcHashLookup').addClass('invalidInput');
 }
 
-function hcHashImport(sid) {
-  if(!validateSname("#hcube_newScenName", "internal")){
+export function hcHashImport(sid) {
+  if (!validateSname('#hcube_newScenName', 'internal')) {
     return;
   }
-  Shiny.setInputValue("loadHcubeHashSid", sid, {
-    priority: "event"
+  Shiny.setInputValue('loadHcubeHashSid', sid, {
+    priority: 'event',
   });
+}
+
+function isInputEl(id) {
+  if ($(id).parents('.form-group').length) {
+    return true;
+  }
+  return false;
+}
+function rerenderDygraph(delay = 100) {
+  try {
+    setTimeout(() => {
+      HTMLWidgets.getInstance($('.dygraphs:visible').get(0)).dygraph.resize();
+    }, delay);
+  } catch (e) {
+    // continue regardless of error
+  }
+}
+function rerenderHot(delay = 100) {
+  try {
+    setTimeout(() => {
+      HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.render();
+    }, delay);
+  } catch (e) {
+    // continue regardless of error
+  }
 }
 
 function showHideEl(el, delay) {
   $(el).show().delay(delay).fadeOut();
 }
 
-$(document).ready(function () {
-  $("body").addClass("fixed"); // besides these updates, gms-switchTab (see below) has always has to be considered as well
+function changeActiveButtons(tabId) {
+  switch (tabId) {
+    case 'inputData':
+      $('#btImport').show();
+      $('#btSolve').show();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
 
-  $("#btImport").show();
-  $("#btSolve").show();
-  $("#btInterrupt").hide();
-  $("#btSplitView").hide();
-  $("#btCompareScen").hide();
-  $("#btLoadScen").hide();
-  $("a[data-value='inputData']").click(function () {
+    case 'outputData':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'gamsinter':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').show();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'scenarios':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').show();
+      $('#btCompareScen').show();
+      break;
+
+    default:
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+  }
+}
+
+$(document).ready(() => {
+  $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
+
+  $('#btImport').show();
+  $('#btSolve').show();
+  $('#btInterrupt').hide();
+  $('#btSplitView').hide();
+  $('#btCompareScen').hide();
+  $('#btLoadScen').hide();
+  $('a[data-value="inputData"]').click(() => {
     changeActiveButtons('inputData');
     rerenderHot();
   });
-  $("a[data-value='outputData']").click(function () {
+  $('a[data-value="outputData"]').click(() => {
     changeActiveButtons('outputData');
   });
-  $("a[data-value='gamsinter']").click(function () {
+  $('a[data-value="gamsinter"]').click(() => {
     changeActiveButtons('gamsinter');
   });
-  $("a[data-value='scenarios']").click(function () {
+  $('a[data-value="scenarios"]').click(() => {
     changeActiveButtons('scenarios');
   });
-  $("#scenTabset").on("click", "a[data-toggle='tab']", function () {
+  $('#scenTabset').on('click', 'a[data-toggle="tab"]', () => {
     rerenderDygraph();
   });
-  $("a[data-value='advanced'],a[data-value='importData'],a[data-value='loadResults'],a[data-value='hcubeAnalyze']").click(function () {
+  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"],a[data-value="hcubeAnalyze"]').click(() => {
     changeActiveButtons('default');
   });
-  $("#inputTabset li").click(function () {
+  $('#inputTabset li').click(() => {
     rerenderHot();
   });
-  $("#scenTabset").append("<li id=\"scenTabsetAdd\"><a href=\"#\" id=\"btLoadScen\" data-value=\"scen_add\" " + "onclick=\"Shiny.setInputValue('btLoadScen', 1, {priority: 'event\'});\">" + "<i class=\"far fa-plus-square\" style=\"font-size:13pt;\"></i></a></li>"); // show/hide buttons after (R triggered) tab switch.
+  $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
+  + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
+  + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
-  Shiny.addCustomMessageHandler('gms-switchTab', function (el) {
+  Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switch (el) {
-      case "input":
+      case 'input':
         changeActiveButtons('inputData');
         break;
 
-      case "output":
+      case 'output':
         changeActiveButtons('outputData');
         break;
 
-      case "gamsinter":
+      case 'gamsinter':
         changeActiveButtons('gamsinter');
         break;
 
-      case "hcubeAna":
+      case 'hcubeAna':
         changeActiveButtons('default');
         break;
 
-      case "scenComp":
+      case 'scenComp':
         changeActiveButtons('scenarios');
+        break;
+      default:
         break;
     }
   });
-  $("body").on("click", ".bt-highlight-1, .bt-highlight-2, .bt-highlight-3", function () {
-    var btn = $(this);
+  $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
+    const btn = $(this);
     btn.prop('disabled', true);
-    setTimeout(function () {
+    setTimeout(() => {
       btn.prop('disabled', false);
     }, 1500);
   }); // hide pivot filter boxes when clicked outside of box
 
-  $(document).click(function (e) {
-    var target = e.target;
+  $(document).click((e) => {
+    const { target } = e;
 
     if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length) {
       $('.pvtFilterBox').hide();
     }
   });
-  $(".sidebar-toggle").click(function (e) {
+  $('.sidebar-toggle').click(() => {
     rerenderHot(400);
   });
-  $(window).on('beforeunload', function () {
-    if ($("#shiny-disconnected-overlay").length === 0) {
-      return "Are you sure you want to leave? Unsaved changes will be lost!";
+  $(window).on('beforeunload', (e) => {
+    if ($('#shiny-disconnected-overlay').length === 0) {
+      e.preventDefault();
+      return 'Are you sure you want to leave? Unsaved changes will be lost!';
     }
+    return null;
   });
-  Shiny.addCustomMessageHandler('gms-showEl', function (id) {
+  Shiny.addCustomMessageHandler('gms-showEl', (id) => {
     if (isInputEl(id)) {
-      $(id).closest(".shiny-input-container").show();
+      $(id).closest('.shiny-input-container').show();
     } else {
       $(id).show();
     }
   });
-  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', function (data) {
+  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
     $(data.id).text(data.txt).show();
   });
-  Shiny.addCustomMessageHandler('gms-hideEl', function (id) {
+  Shiny.addCustomMessageHandler('gms-hideEl', (id) => {
     if (isInputEl(id)) {
-      $(id).closest(".shiny-input-container").hide();
+      $(id).closest('.shiny-input-container').hide();
     } else {
       $(id).hide();
     }
   });
-  Shiny.addCustomMessageHandler('gms-showHideEl', function (data) {
+  Shiny.addCustomMessageHandler('gms-showHideEl', (data) => {
     showHideEl(data.id, data.delay);
   });
-  Shiny.addCustomMessageHandler('gms-enableEl', function (id) {
-    $(id).prop("disabled", false);
+  Shiny.addCustomMessageHandler('gms-enableEl', (id) => {
+    $(id).prop('disabled', false);
   });
-  Shiny.addCustomMessageHandler('gms-disableEl', function (id) {
-    $(id).prop("disabled", true);
+  Shiny.addCustomMessageHandler('gms-disableEl', (id) => {
+    $(id).prop('disabled', true);
   });
-  Shiny.addCustomMessageHandler('gms-toggleEl', function (id) {
-    if ($(id).is(":visible")) {
+  Shiny.addCustomMessageHandler('gms-toggleEl', (id) => {
+    if ($(id).is(':visible')) {
       $(id).toggle();
-      $(id).trigger("shown");
+      $(id).trigger('shown');
     } else {
       $(id).fadeToggle(600);
-      $(id).trigger("hidden");
+      $(id).trigger('hidden');
     }
   });
-  Shiny.addCustomMessageHandler('gms-addClassEl', function (el) {
+  Shiny.addCustomMessageHandler('gms-addClassEl', (el) => {
     $(el.id).addClass(el.newclass);
   });
-  Shiny.addCustomMessageHandler('gms-removeClassEl', function (el) {
+  Shiny.addCustomMessageHandler('gms-removeClassEl', (el) => {
     $(el.id).removeClass(el.oldclass);
   });
-  Shiny.addCustomMessageHandler('gms-scrollDown', function (id) {
-    setTimeout(function () {
+  Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
+    setTimeout(() => {
       $(id).animate({
-        scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight
+        scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
       }, 300);
     }, 500);
   });
-  Shiny.addCustomMessageHandler('gms-hideModal', function (delay) {
-    setTimeout(function () {
+  Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
+    setTimeout(() => {
       $('#shiny-modal-wrapper').find('.modal').modal('hide');
     }, delay * 1000);
   });
-  Shiny.addCustomMessageHandler('gms-updateAttachList', function (el) {
-    el.id = $.makeArray(el.id);
-    el.name = $.makeArray(el.name);
+  Shiny.addCustomMessageHandler('gms-updateAttachList', (el) => {
+    const { id } = $.makeArray(el.id);
+    const { name } = $.makeArray(el.name);
 
-    for (i = 0; i < el.id.length; i++) {
+    for (let i = 0; i < id.length; i += 1) {
+      let checkBoxHTML = '';
       if (el.allowExec) {
-        checkBoxHTML = '<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_' + el.id[i] + '\', $(this).is(\':checked\'));" checked="checked"><span>' + el.labelCb + '</span></label></div></div></div>';
-      } else {
-        checkBoxHTML = '';
+        checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
       }
 
-      $('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_' + el.id[i] + '" type="button" onclick="removeAttachment(' + el.id[i] + ')"><i class="fa fa-times-circle"></i></button> ' + el.name[i] + '</div>' + checkBoxHTML + '</div>').insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button> ${name[i]}</div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
-  Shiny.addCustomMessageHandler('gms-fitTitleInBox', function (id) {
-    setTimeout(function () {
-      var el = $(id);
-      var parentEl = el.parent()[0];
-      el.css("font-size", "18px");
-      var currSize = 18;
+  Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {
+    setTimeout(() => {
+      const el = $(id);
+      const parentEl = el.parent()[0];
+      el.css('font-size', '18px');
+      let currSize = 18;
 
       while (parentEl.scrollWidth > parentEl.clientWidth && currSize >= 10) {
         currSize -= 2;
-        el.css("font-size", currSize + "px");
+        el.css('font-size', `${currSize}px`);
       }
     }, 500);
   });
@@ -359,161 +358,172 @@ $(document).ready(function () {
 // counter
 let count = 1; // maximum number of scenarios that can be loaded in compare view
 
-let maxNumScen = 50;
-$(document).keyup(function (event) {
-  // ENTER will confirm modal dialogues
-  if (event.keyCode == 13 && !event.ctrlKey) {
-    if ($("#shiny-modal").find(".selectize-input.input-active").length > 0 || $("#shiny-modal").find("*[data-dismiss='modal']").is(":focus")) {
+const maxNumScen = 50;
+$(document).keyup((event) => {
+  if (event.keyCode === 13 && !event.ctrlKey) {
+    if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
+        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
       return;
     }
 
-    $(".bt-gms-confirm:visible:enabled").click();
-  } // ESC will close modal dialogues
-
+    $('.bt-gms-confirm:visible:enabled').click();
+    return;
+  } // ENTER will confirm modal dialogues
 
   if (event.keyCode === 27) {
     $('.modal').modal('hide');
+    return;
+  } // ESC will close modal dialogues
+
+  if (!event.ctrlKey || !event.altKey) {
+    return;
+  }
+
+  if (event.keyCode === 73) {
+    if ($('#btImport').is(':visible')) {
+      $('#btImport').click();
+    } else if ($('#btLoadScen').is(':visible')) {
+      $('#btLoadScen').click();
+    }
+    return;
   } // Import shortcut: CTRL + ALT + I
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 73) {
-    if ($("#btImport").is(":visible")) {
-      $("#btImport").click();
-    } else if ($("#btLoadScen").is(":visible")) {
-      $("#btLoadScen").click();
-    }
+  if (event.keyCode === 83) {
+    Shiny.setInputValue('btSave', 1, {
+      priority: 'event',
+    });
+    return;
   } // SAVE shortcut: CTRL + ALT + S
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 83) {
-    Shiny.setInputValue("btSave", 1, {
-      priority: "event"
-    });
+  if (event.keyCode === 13) {
+    $('#btSolve:visible:enabled').click();
+    return;
   } // Solve shortcut: CTRL + ALT + ENTER
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 13 && $("#btSolve").is(":enabled") && $("#btSolve").is(":visible")) {
-    $("#btSolve").click();
+  if (event.keyCode === 82) {
+    Shiny.setInputValue('btDelete', 1, {
+      priority: 'event',
+    });
+    return;
   } // Remove shortcut: CTRL + ALT + R
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 82) {
-    Shiny.setInputValue("btDelete", 1, {
-      priority: "event"
-    });
+  if (event.keyCode === 67) {
+    $('.btRemove:visible').click();
+    return;
   } // Close shortcut (remove button in input sheet): CTRL + ALT + C
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 67 && $(".btRemove").is(":visible")) {
-    $(".btRemove:visible").click();
+  if (event.keyCode === 67) {
+    for (let i = 2; i <= maxNumScen; i += 1) {
+      $(`#close_${i}:visible`).click();
+    }
+    return;
   } // Close shortcut (remove button in output sheet): CTRL + ALT + C
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 67) {
-    for (i = 2; i <= maxNumScen; i++) {
-      id = '#close_' + i;
-
-      if ($(id).is(":visible")) {
-        $(id).click();
-      }
-    }
+  if (event.keyCode === 70) {
+    $('body').toggleClass('sidebar-collapse');
+    rerenderHot(400);
+    return;
   } // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 70) {
-    $("body").toggleClass("sidebar-collapse");
-    rerenderHot(400);
+  if (event.keyCode === 49) {
+    $('a[href="#shiny-tab-inputData"]').click();
+    return;
   } // Select input menu shortcut: CTRL + ALT + 1
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 49) {
-    $("a[href='#shiny-tab-inputData']").click();
+  if (event.keyCode === 50) {
+    const tab = $('a[href="#shiny-tab-outputData"]');
+
+    if (tab.length > 0) {
+      tab.click();
+    } else {
+      $('a[href="#shiny-tab-importData"]').click();
+    }
+    return;
   } // Select output menu shortcut: CTRL + ALT + 2
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 50) {
-    tab = $("a[href='#shiny-tab-outputData']");
+  if (event.keyCode === 51) {
+    const tab = $('a[href="#shiny-tab-gamsinter"]');
 
     if (tab.length > 0) {
       tab.click();
     } else {
-      $("a[href='#shiny-tab-importData']").click();
+      $('a[href="#shiny-tab-loadResults"]').click();
     }
+    return;
   } // Select gams interaction menu shortcut: CTRL + ALT + 3
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 51) {
-    tab = $("a[href='#shiny-tab-gamsinter']");
+  if (event.keyCode === 52) {
+    $('a[href="#shiny-tab-scenarios"]').click();
+    return;
+  }// Select scenario menu shortcut: CTRL + ALT + 4
 
-    if (tab.length > 0) {
-      tab.click();
-    } else {
-      $("a[href='#shiny-tab-loadResults']").click();
-    }
-  } // Select scenario menu shortcut: CTRL + ALT + 4
-
-
-  if (event.ctrlKey && event.altKey && event.keyCode === 52) {
-    tab = $("a[href='#shiny-tab-scenarios']").click();
-  }
-
-  if (event.ctrlKey && event.altKey && event.keyCode === 53) {
-    tab = $("a[href='#shiny-tab-hcubeAnalyze']");
+  if (event.keyCode === 53) {
+    const tab = $('a[href="#shiny-tab-hcubeAnalyze"]');
 
     if (tab.length > 0) {
       tab.click();
     }
+    return;
+  } // Select scenario menu shortcut: CTRL + ALT + 5
+
+
+  if (event.keyCode === 84) {
+    if ($('#btGraphIn').is(':visible')) {
+      $('#btGraphIn:enabled').click();
+      return;
+    }
+
+    if ($('#outputTableView').is(':visible')) {
+      $('#outputTableView').click();
+      return;
+    }
+
+    for (let i = 2; i <= maxNumScen + 3; i += 1) {
+      $(`#table_${i}:visible`).click();
+    }
+    return;
   } // Table view (scenario compare mode) shortcut: CTRL + ALT + T
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 84) {
-    id = '#btGraphIn';
-
-    if ($(id).is(":visible") && $(id).is(":enabled")) {
-      $(id).click();
-    }
-
-    id = '#outputTableView';
-
-    if ($(id).is(":visible")) {
-      $(id).click();
-    }
-
-    for (i = 2; i <= maxNumScen + 3; i++) {
-      id = '#table_' + i;
-
-      if ($(id).is(":visible")) {
-        $(id).click();
-      }
-    }
+  if (event.keyCode === 39) {
+    Shiny.onInputChange('tabsetShortcutNext', count);
+    count += 1;
+    return;
   } // Select next tab shortcut: CTRL + ALT + arrow right
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 39) {
-    Shiny.onInputChange("tabsetShortcutNext", count);
-    count++;
+  if (event.keyCode === 37) {
+    Shiny.onInputChange('tabsetShortcutPrev', count);
+    count += 1;
+    return;
   } // Select previous tab shortcut: CTRL + ALT + arrow left
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 37) {
-    Shiny.onInputChange("tabsetShortcutPrev", count);
-    count++;
+  if (event.keyCode === 40) {
+    Shiny.onInputChange('tabsetShortcutNest', count);
+    count += 1;
+    return;
   } // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 40) {
-    Shiny.onInputChange("tabsetShortcutNest", count);
-    count++;
+  if (event.keyCode === 38) {
+    Shiny.onInputChange('tabsetShortcutUnnest', count);
+    count += 1;
+    return;
   } // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
 
 
-  if (event.ctrlKey && event.altKey && event.keyCode === 38) {
-    Shiny.onInputChange("tabsetShortcutUnnest", count);
-    count++;
-  } // Activate/deactivate scenario comparison mode: CTRL + ALT + space
-
-
-  if (event.ctrlKey && event.altKey && event.keyCode === 32 && $("#btCompareScen").is(":enabled") && $("#btCompareScen").is(":visible")) {
-    $("#btCompareScen").click();
-  }
+  if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
+    $('#btCompareScen').click();
+  }// Activate/deactivate scenario comparison mode: CTRL + ALT + space
 });

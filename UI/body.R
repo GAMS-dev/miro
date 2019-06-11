@@ -42,7 +42,7 @@ tabItemList <- list(
               uiOutput("inputDataTitle", inline = TRUE),
               tags$div(style = "float: right;", 
                        HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
-                                   onclick="confirmModalShow(\'', 
+                                   onclick="Miro.confirmModalShow(\'', 
                                    lang$nav$dialogRemoveScen$title, '\', \'', 
                                    lang$nav$dialogRemoveScen$desc, '\', \'', 
                                    lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
@@ -447,7 +447,7 @@ if(config$activateModules$hcubeMode){
                 uiOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                   onclick="confirmModalShow(\'', 
+                                   onclick="Miro.confirmModalShow(\'', 
                                      lang$nav$dialogRemoveScen$title, '\', \'', 
                                      lang$nav$dialogRemoveScen$desc, '\', \'', 
                                      lang$nav$dialogRemoveScen$cancelButton, '\', \'', 

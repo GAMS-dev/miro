@@ -31,3 +31,5 @@ tests/*_kport.R
 tests/*_transport*.R
 tests/*_pickstock*.R
 node_modules/
+libraries/
+packages/

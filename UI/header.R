@@ -8,7 +8,7 @@ header <- dashboardHeader(
                        label = NULL,
                        icon("cube"),
                        icon("arrow-right"),
-                       onclick = "showSpinnerIcon(this, 5000)"))
+                       onclick = "Miro.showSpinnerIcon(this, 5000)"))
   },
   if(config$activateModules$scenario){
   tags$li(class = "dropdown", 
@@ -32,7 +32,7 @@ header <- dashboardHeader(
             tags$ul(class = "dropdown-menu", role="menu",
                     tags$li(tags$a(href = "https://www.gams.com/miro/", 
                            target = "_blank", lang$nav$header$help$doc)),
-                    tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
+                    tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                         'About GAMS MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
                                         lang$nav$header$help$about, '</a>'))
