@@ -1149,9 +1149,9 @@ Db <- R6Class("Db",
                   if(inherits(private$conn, "PqConnection")){
                     return(self$escapePattern(pattern))
                   }else{
-                    bsEscaped <- gsub("\\", "\\\\", pattern, fixed = TRUE)
-                    return(gsub("([.|()\\^{}+$*?'\"]|\\[|\\])", 
-                                "\\\\\\\\\\1", bsEscaped))
+                    bsEscaped <- gsub("\\", "\\\\\\\\", pattern, fixed = TRUE)
+                    return(gsub("([.|()^{}+$*?'\"]|\\[|\\])", 
+                                "\\\\\\\\\\1", stringi::stri_escape_unicode(bsEscaped)))
                   }
                 },
                 escapePattern = function(pattern){
