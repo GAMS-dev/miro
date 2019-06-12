@@ -219,7 +219,7 @@
                    },
                    "label":{  
                      "description":"Label of considered inputdata",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "min":{  
@@ -290,7 +290,7 @@
                    },
                    "label":{  
                       "description":"display label for the dropdown menu",
-                      "type":"string",
+                      "type":["string","null"],
                       "minLength":1
                     },
                     "choices":{  
@@ -317,7 +317,8 @@
                     "aliases":{  
                       "type":[  
                         "array",
-                        "string"
+                        "string",
+                        "null"
                       ],
                       "minLength":1,
                       "uniqueItems":true,
@@ -331,7 +332,8 @@
                       "description":"The initially selected value.",
                       "type":[  
                         "string",
-                        "number"
+                        "number",
+                        "null"
                       ]
                     },
                    "additionalProperties":false,
@@ -363,24 +365,24 @@
                    },
                    "label":{  
                      "description":"display label for the date selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -407,7 +409,7 @@
                    },
                    "daysofweekdisabled":{
                      "description":"disallow certain days of week to be selected",
-                     "type": "array",
+                     "type": ["array", "null"],
                      "uniqueItems":true,
                      "minItems":1,
                      "items":{  
@@ -466,30 +468,30 @@
                    },
                    "label":{  
                      "description":"display label for the daterange selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "start":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "end":{  
                      "description":"initial end date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -560,7 +562,7 @@
                    },
                    "label":{  
                      "description":"display label for the checkbox",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
@@ -612,17 +614,17 @@
                    },
                    "label":{  
                      "description":"display label for the textinput",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"default value",
-                     "type": "string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "placeholder":{  
                      "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "width":{  
@@ -671,7 +673,7 @@
                     },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
-                      "type":["array", "string"],
+                      "type":["array", "string", "null"],
                       "minLength":1,
                       "items":{
                         "type":"string",

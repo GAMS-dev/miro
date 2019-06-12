@@ -3983,6 +3983,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "val38":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
