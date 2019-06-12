@@ -114,6 +114,42 @@ getInputToImport <- function(data, keywordsNoImport){
   return(dataToImport)
 }
 
+getWidgetDependencies <- function(widgetType, depString){
+  if(!is.character(depString) || length(depString) != 1L){
+    return(character(0L))
+  }
+  switch(widgetType,
+         slider = {
+           widgetDepTmp <- strsplit(substr(depString, 1L, 
+                                           nchar(depString) - 1L), "(", fixed = TRUE)[[1]]
+           return(c(widgetDepTmp[1], strsplit(widgetDepTmp[2], "$", fixed = TRUE)[[1]]))
+         },
+         dropdown = {
+           if(!grepl("([^\\$]+\\$[^\\$]+)|(^\\$[^\\$]+)|([^\\$]+\\$$)", depString)){
+             # no dependencies
+             return(character(0L))
+           }
+           if(startsWith(depString, "$")){
+             if(endsWith(depString, "$")){
+               depString <- substr(depString, 2L, nchar(depString) - 1L)
+               depID <- 2L
+             }else{
+               depString <- substr(depString, 2L, nchar(depString))
+               depID <- 0L
+             }
+           }else if(endsWith(depString, "$")){
+             depString <- substr(depString, 1L, nchar(depString) - 1L)
+             depID <- 1L
+           }else{
+             depID <- 0L
+           }
+           return(c(depID, strsplit(depString, "$", fixed = TRUE)[[1]]))
+         },
+         {
+           return(character(0L))
+         })
+}
+
 getInputType <- function(data, keywordsType){
   # Retrieves input type from JSOn file based on keyword list
   #
@@ -622,17 +658,17 @@ vector2Csv <- function(vector){
     return(vector)
   }
 }
-showEl <- function(session, id, text = NULL){
+showEl <- function(session, id){
   session$sendCustomMessage("gms-showEl", id)
 }
 showElReplaceTxt <- function(session, id, txt){
-  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = txt))
+  session$sendCustomMessage("gms-showElReplaceTxt", list(id = id, txt = htmltools::htmlEscape(txt)))
 }
 hideEl <- function(session, id){
   session$sendCustomMessage("gms-hideEl", id)
 }
-showHideEl <- function(session, id, delay = 2000){
-  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay))
+showHideEl <- function(session, id, delay = 2000, msg = NULL){
+  session$sendCustomMessage("gms-showHideEl", list(id = id, delay = delay, msg = msg))
 }
 enableEl <- function(session, id){
   session$sendCustomMessage("gms-enableEl", id)
@@ -858,3 +894,144 @@ uploadFile <- function(file, url, userpwd){
   })
   curl::curl_fetch_memory(url, handle = h)
 }
+CharArray <- R6Class("CharArray", public = list(
+  push = function(el){
+    stopifnot(length(el) > 0L, is.character(el))
+    private$items[[self$size() + 1L]] <- el
+    invisible(self)
+  },
+  pop = function(){
+    stopifnot(self$size() > 0L)
+    private$items[[self$size()]]
+    invisible(self)
+  },
+  delete = function(el){
+    stopifnot(identical(length(el), 1L), is.character(el))
+    
+    idx <- match(el, private$items)[[1L]]
+    if(is.na(idx)){
+      return(FALSE)
+    }
+    private$items[[idx]] <- NULL
+    return(TRUE)
+  },
+  reset = function(){
+    private$items <- private$initialItems
+    invisible(self)
+  },
+  update = function(old, new){
+    if(length(old)){
+      stopifnot(identical(length(old), 1L), is.character(old))
+    }else{
+      self$push(new)
+      return(TRUE)
+    }
+    if(length(new)){
+      stopifnot(identical(length(new), 1L), is.character(new))
+    }else if(self$delete(old)){
+      return(TRUE)
+    }else{
+      return(FALSE)
+    }
+    
+    idx <- match(old, private$items)[[1L]]
+    if(is.na(idx)){
+      return(FALSE)
+    }
+    private$items[[idx]] <- new
+    return(TRUE)
+  },
+  get = function(){
+    unlist(private$items, use.names = FALSE)
+  },
+  initialize = function(el = NULL){
+    if(length(el)){
+      stopifnot(is.character(el))
+      private$initialItems <- as.list(el)
+      private$items <- private$initialItems
+    }
+    invisible(self)
+  },
+  size = function(){
+    length(private$items)
+  }
+), private = list(
+  initialItems = list(),
+  items = list()
+))
+Set <- R6Class("Set", inherit = CharArray, public = list(
+  push = function(el){
+    el <- as.character(el)
+    stopifnot(identical(length(el), 1L))
+    if(!el %in% private$items){
+      private$items[[self$size() + 1L]] <- el
+    }
+    invisible(self)
+  },
+  initialize = function(el = NULL){
+    if(length(el)){
+      el <- unique(as.character(el))
+      private$initialItems <- as.list(el)
+      private$items <- private$initialItems
+    }
+    invisible(self)
+  },
+  update = function(old, new){
+    if(length(new) && new %in% private$items){
+      return(invisible(self))
+    }
+    super$update(old, new)
+}))
+IdIdxMap <- R6Class("IdIdxMap", public = list(
+  push = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    if(elID %in% private$items[[arrayID]]){
+      return(self$get(arrayID, elID))
+    }
+    private$items[[arrayID]] <- append(private$items[[arrayID]], elID)
+    self$get(arrayID, elID)
+  },
+  pop = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    
+    if(identical(self$size(arrayID), 0L)){
+      return(integer(0L))
+    }
+    arrIdx <- match(elID, private$items[[arrayID]])
+    if(is.na(arrIdx)){
+      return(integer(0L))
+    }
+    private$items[[arrayID]] <- private$items[[arrayID]][-arrIdx]
+    return(arrIdx)
+  },
+  get = function(arrayID, elID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    stopifnot(identical(length(elID),  1L))
+    
+    if(!arrayID %in% names(private$items)){
+      return(integer(0L))
+    }
+    arrIdx <- match(elID, private$items[[arrayID]])
+    if(is.na(arrIdx)){
+      return(integer(0L))
+    }
+    return(arrIdx)
+  },
+  initialize = function(el = NULL){
+    if(length(el)){
+      private$items <- el
+    }
+    invisible(self)
+  },
+  size = function(arrayID){
+    stopifnot(identical(length(arrayID), 1L), is.character(arrayID))
+    if(arrayID %in% names(private$items)){
+      return(length(private$items[[arrayID]]))
+    }
+    return(0L)
+  }
+), private = list(
+  items = list()
+))

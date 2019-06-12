@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "transport"
+modelName <- "pickstock"
 # turn debug mode on or off
 debugMode <- TRUE
 # miro data folder prefix
@@ -9,7 +9,7 @@ spModelPathEnvVar <- "GMSMODELNAME"
 spModelModeEnvVar <- "GMSMODE"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noImport")
-# keywords that define data MUST not be imported in order to run the model
+# keywords that define data does not HAVE TO BE imported in order to run the model
 keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput",
                           "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")

@@ -12,24 +12,23 @@ renderGraph <- function(data, configData, options, height = NULL){
   
   if(options$tool == 'plotly'){
     if(options$type == 'pie'){
-      # set defaults (no axes in pie chart)
       # pie chart
-      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', height = height)
+      p <- plot_ly(data, labels = ~try(get(options$labels)), values = ~try(get(options$values)), type = 'pie', 
+                   height = height, hole = if(!is.null(options$hole)){options$hole})
     }else if(options$type == 'bar'){
       # bar plot
       p <- NULL
       lapply(seq_along(options$ydata), function(j){
         if(j==1){
-          p <<- plot_ly(data, x = ~try(get(options$xdata)), 
+          p <<- plot_ly(data, x = ~try(get(options$xdata)), type = 'bar', 
                         y = ~try(get(names(options$ydata)[[1]])), 
                         name = options$ydata[[j]]$label, height = height, 
                         color=if(!is.null(options$color)){~try(get(options$color))},
                         marker = list(color = options$ydata[[1]]$marker$color,
                                       line = list(color = options$ydata[[1]]$marker$line$color,
-                                                  width = options$ydata[[1]]$marker$line$width))) %>% 
-            add_bars(
-              width=if(!is.null(options$width)){~try(get(options$width))},
-              orientation = options$orientation)
+                                                  width = options$ydata[[1]]$marker$line$width)),
+                        width=if(!is.null(options$width)){~try(get(options$width))},
+                        orientation = options$orientation) 
         }else{
           p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label,
                           marker = list(color = options$ydata[[j]]$marker$color,
@@ -46,19 +45,23 @@ renderGraph <- function(data, configData, options, height = NULL){
                         name = options$ydata[[1]]$label, 
                         mode = options$ydata[[1]]$mode, 
                         marker = list(symbol = options$ydata[[1]]$marker$symbol,
-                                    opacity = options$ydata[[1]]$marker$opacity,
-                                    size = options$ydata[[1]]$marker$size,
-                                    color = options$ydata[[1]]$marker$color,
-                                    line = list(color = options$ydata[[1]]$marker$line$color,
-                                                width = options$ydata[[1]]$marker$line$width)),
+                                      opacity = options$ydata[[1]]$marker$opacity,
+                                      size = options$ydata[[1]]$marker$size,
+                                      color = options$ydata[[1]]$marker$color,
+                                      line = list(color = options$ydata[[1]]$marker$line$color,
+                                                  width = options$ydata[[1]]$marker$line$width)),
                         line = list(color = options$ydata[[1]]$line$color,
                                     width = options$ydata[[1]]$line$width,
                                     shape = options$ydata[[1]]$line$shape,
                                     dash = options$ydata[[1]]$line$dash),
+                        fill = options$ydata[[1]]$fill,
+                        showlegend = options$ydata[[j]]$showlegend,
                         color = if(!is.null(options$color)){~try(get(options$color))}, 
                         symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                         colors = options$colors, symbols = options$symbols, 
-                        size = options$ydata[[1]]$size, type = 'scatter', height = height)
+                        size = options$ydata[[1]]$size, type = 'scatter', height = height,
+                        frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
+          
         }else{
           p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
                           mode = options$ydata[[j]]$mode, 
@@ -72,12 +75,104 @@ renderGraph <- function(data, configData, options, height = NULL){
                                       width = options$ydata[[j]]$line$width,
                                       shape = options$ydata[[j]]$line$shape,
                                       dash = options$ydata[[j]]$line$dash),
+                          fill = options$ydata[[j]]$fill,
+                          showlegend = options$ydata[[j]]$showlegend,
                           color = if(!is.null(options$ydata[[j]]$color)){~try(get(options$ydata[[j]]$color))}, 
                           symbol= if(!is.null(options$ydata[[j]]$symbol)){~try(get(options$ydata[[j]]$symbol))}, 
                           colors = options$ydata[[j]]$colors,
-                          symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size)
+                          symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size,
+                          frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))})
         }
       })
+      if(!is.null(options$animation)){
+        p <- animation_opts(p, frame = if(!is.null(options$animation$frame)){try(options$animation$frame)},
+                            transition = if(!is.null(options$animation$transition)){try(options$animation$transition)},
+                            easing = if(!is.null(options$animation$easing)){try(options$animation$easing)},
+                            redraw = if(!is.null(options$animation$redraw)){try(options$animation$redraw)},
+                            mode = if(!is.null(options$animation$mode)){try(options$animation$mode)})
+      } 
+      if(!is.null(options$animation$slider)){
+        p <- animation_slider(p, hide = if(!is.null(options$animation$slider$hide)){try(options$animation$slider$hide)},
+                              label = if(!is.null(options$animation$slider$label)){try(options$animation$slider$label)},
+                              currentvalue = list(prefix = if(!is.null(options$animation$slider$prefix)){try(options$animation$slider$prefix)},
+                                                  font = list(color=if(!is.null(options$animation$slider$fontcolor)){try(options$animation$slider$fontcolor)})))
+      }
+    }else if(options$type=='bubble'){
+      # bubble chart
+      p <- NULL
+      lapply(seq_along(options$ydata), function(j){
+        if(j==1){
+          maxsize <- if(!is.null(options$ydata[[1]]$marker$maxsize)){options$ydata[[1]]$marker$maxsize}
+          sizevalues <- if(!is.null(options$ydata[[1]]$marker$size)){data[[options$ydata[[1]]$marker$size]]}
+          if(!is.null(maxsize) && !is.null(sizevalues))
+            sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
+          else
+            sizeref <- 1
+          
+          p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
+                        name = options$ydata[[1]]$label, 
+                        mode = options$ydata[[1]]$mode, 
+                        marker = list(symbol = options$ydata[[1]]$marker$symbol,
+                                      opacity = options$ydata[[1]]$marker$opacity,
+                                      size = if(!is.null(options$ydata[[1]]$marker$size)){~try(get(options$ydata[[1]]$marker$size))}, 
+                                      sizemode = if(!is.null(maxsize)){'area'}, sizeref = if(!is.null(sizeref)){sizeref},
+                                      color = if(!is.null(options$ydata[[1]]$marker$color)){~try(get(options$ydata[[1]]$marker$color))},
+                                      #color = options$ydata[[1]]$marker$colorDep,
+                                      line = list(color = options$ydata[[1]]$marker$line$color,
+                                                  width = options$ydata[[1]]$marker$line$width)),
+                        line = list(color = options$ydata[[1]]$line$color,
+                                    width = options$ydata[[1]]$line$width,
+                                    shape = options$ydata[[1]]$line$shape,
+                                    dash = options$ydata[[1]]$line$dash),
+                        showlegend = options$ydata[[j]]$showlegend,
+                        color = if(!is.null(options$color)){~try(get(options$color))}, 
+                        symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
+                        colors = options$colors, symbols = options$symbols, 
+                        size = options$ydata[[1]]$size, type = 'scatter', height = height,
+                        frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))}) 
+          
+        }else{
+          maxsize <- if(!is.null(options$ydata[[j]]$marker$maxsize)){options$ydata[[j]]$marker$maxsize}
+          sizevalues <- if(!is.null(options$ydata[[j]]$marker$size)){data[[options$ydata[[j]]$marker$size]]}
+          if(!is.null(maxsize) && !is.null(sizevalues))
+            sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
+          else
+            sizeref <- 1
+          p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
+                          mode = options$ydata[[j]]$mode, 
+                          marker = list(symbol = options$ydata[[j]]$marker$symbol,
+                                        opacity = options$ydata[[j]]$marker$opacity,
+                                        size = if(!is.null(options$ydata[[1]]$marker$size)){~try(get(options$ydata[[1]]$marker$size))}, 
+                                        sizemode = if(!is.null(maxsize)){'area'}, sizeref = if(!is.null(sizeref)){sizeref},
+                                        color = if(!is.null(options$ydata[[1]]$marker$color)){~try(get(options$ydata[[1]]$marker$color))},
+                                        #color = options$ydata[[1]]$marker$colorDep,
+                                        line = list(color = options$ydata[[j]]$marker$line$color, 
+                                                    width = options$ydata[[j]]$marker$line$width)),
+                          line = list(color = options$ydata[[j]]$line$color, 
+                                      width = options$ydata[[j]]$line$width,
+                                      shape = options$ydata[[j]]$line$shape,
+                                      dash = options$ydata[[j]]$line$dash),
+                          showlegend = options$ydata[[j]]$showlegend,
+                          color = if(!is.null(options$ydata[[j]]$color)){~try(get(options$ydata[[j]]$color))}, 
+                          symbol= if(!is.null(options$ydata[[j]]$symbol)){~try(get(options$ydata[[j]]$symbol))}, 
+                          colors = options$ydata[[j]]$colors,
+                          symbols = options$ydata[[j]]$symbols, size=options$ydata[[j]]$size,
+                          frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))})
+        }
+      })
+      if(!is.null(options$animation)){
+        p <- animation_opts(p, frame = if(!is.null(options$animation$frame)){try(options$animation$frame)},
+                            transition = if(!is.null(options$animation$transition)){try(options$animation$transition)},
+                            easing = if(!is.null(options$animation$easing)){try(options$animation$easing)},
+                            redraw = if(!is.null(options$animation$redraw)){try(options$animation$redraw)},
+                            mode = if(!is.null(options$animation$mode)){try(options$animation$mode)})
+      } 
+      if(!is.null(options$animation$slider)){
+        p <- animation_slider(p, hide = if(!is.null(options$animation$slider$hide)){try(options$animation$slider$hide)},
+                              label = if(!is.null(options$animation$slider$label)){try(options$animation$slider$label)},
+                              currentvalue = list(prefix = if(!is.null(options$animation$slider$prefix)){try(options$animation$slider$prefix)},
+                                                  font = list(color=if(!is.null(options$animation$slider$fontcolor)){try(options$animation$slider$fontcolor)})))
+      }
     }else if(options$type == 'hist'){
       # histogram
       #first calculate the width of the bins
@@ -103,12 +198,13 @@ renderGraph <- function(data, configData, options, height = NULL){
     }else{
       stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
     }
-    
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
-                xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid, 
-                             zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels),
+                xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
+                             zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
+                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto)),
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
-                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels),
+                             zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
+                             range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),
                 paper_bgcolor = options$paper_bgcolor,
                 plot_bgcolor = options$plot_bgcolor,
                 showlegend = options$showlegend,
@@ -116,7 +212,6 @@ renderGraph <- function(data, configData, options, height = NULL){
     return(renderPlotly(p))
     
   }else if(options$tool == 'dygraphs'){
-    # set defaults
     # time series chart
     p <- NULL
     lapply(seq_along(options$ydata), function(j){
@@ -127,7 +222,11 @@ renderGraph <- function(data, configData, options, height = NULL){
           key   <- match(tolower(options$color), tolower(colnames(data)))
           value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
+          if(length(unique(data[[key]])) > 50L){
+            stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", call. = FALSE)
+          }
           xts_data <- spread(data, key, value)
+          
           if(length(options$xdata)){
             xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
             if(is.na(xtsIdx))
@@ -162,7 +261,8 @@ renderGraph <- function(data, configData, options, height = NULL){
                          color = options$ydata[[1]]$color, axis = "y",
                          stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
                          fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
-                         pointSize = options$ydata[[1]]$pointSize, strokeWidth = options$ydata[[1]]$strokeWidth, 
+                         pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
+                         strokeWidth = options$ydata[[1]]$strokeWidth, 
                          strokePattern = options$ydata[[1]]$strokePattern,
                          strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
                          strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
@@ -171,7 +271,8 @@ renderGraph <- function(data, configData, options, height = NULL){
       }else{
         p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
                        stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                       pointSize = options$ydata[[j]]$pointSize, strokeWidth = options$ydata[[j]]$strokeWidth, strokePattern = options$ydata[[j]]$strokePattern,
+                       pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
+                       strokePattern = options$ydata[[j]]$strokePattern,
                        strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
       }
     })
@@ -182,14 +283,6 @@ renderGraph <- function(data, configData, options, height = NULL){
     # lenged options
     if(!is.null (options$dylegend)){
       p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
-    }
-    # add shading to dygraph
-    if(!is.null (options$dyShading)){
-      p <- do.call(dyShading, c(list(dygraph = p), options$dyShading))
-    }
-    # add horizontal limit line
-    if(!is.null (options$dyLimit)){
-      p <- do.call(dyLimit, c(list(dygraph = p), options$dyLimit))
     }
     # highlighting options - highlight hovered series
     if(!is.null (options$dyHighlight)){
@@ -208,18 +301,203 @@ renderGraph <- function(data, configData, options, height = NULL){
     }
     # Event lines to note points within a time series. 
     if(!is.null (options$dyEvent)){
-      lapply(seq_along(names(options$dyEvent)), function(j){
+      lapply(seq_along(options$dyEvent), function(j){
         event <- getEvent(configData, names(options$dyEvent)[[j]])
         p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
       })
     }
+    # Limit lines to highlight data levels. 
+    if(!is.null (options$dyLimit)){
+      lapply(seq_along(options$dyLimit), function(j){
+        options$dyLimit[[j]]$limit <- getEvent(configData, options$dyLimit[[j]]$limit)
+        p <<- do.call(dyLimit, c(list(dygraph = p), options$dyLimit[[j]]))
+      })
+    }
+    # Annotations to note points within a time series. 
+    if(!is.null (options$dyAnnotation)){
+      lapply(seq_along(options$dyAnnotation), function(j){
+        event <- getEvent(configData, names(options$dyAnnotation)[[j]])
+        p <<- do.call(dyAnnotation, c(list(dygraph = p, x = event), options$dyAnnotation[[j]]))
+      })
+    }
     # Add a shading effect to the graph background for one or more time ranges. 
-    if(!is.null (options$dyShading)){
+    if(length(options$dyShading)){
       lapply(seq_along(options$dyShading), function(j){
+        options$dyShading[[j]]$from <- getEvent(configData, options$dyShading[[j]]$from)
+        options$dyShading[[j]]$to <- getEvent(configData, options$dyShading[[j]]$to)
         p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
       })
     }
     return(renderDygraph(p))
+  }else if(options$tool == 'leaflet'){
+    p   <- leaflet(data) %>% addTiles()
+    
+    lapply(seq_along(options$markers), function(j){
+      p <<- addAwesomeMarkers(p, lng = data[[options$markers[[j]]$lng]], 
+                             lat = data[[options$markers[[j]]$lat]], layerId = j,
+                             group = options$markers[[j]]$group,
+                             label = if(length(options$markers[[j]]$label)) eval(parseLabel(options$markers[[j]]$label, names(data))),
+                             labelOptions = options$markers[[j]]$labelOptions)
+    })
+    if(length(options$hideGroups)){
+      p <- leaflet::hideGroup(p, options$hideGroups)
+    }
+    lapply(seq_along(options$flows), function(j){
+      p <<- addFlows(p, lng0 = data[[options$flows[[j]]$lng0]], 
+                    lat0 = data[[options$flows[[j]]$lat0]], lng1 = data[[options$flows[[j]]$lng1]], 
+                    lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
+                    flow = data[[options$flows[[j]]$flow]], opacity = options$flows[[j]]$opacity,
+                    minThickness = options$flows[[j]]$minThickness, 
+                    layerId = if(length(options$flows[[j]]$layerId)) eval(parseLabel(options$flows[[j]]$layerId, names(data))),
+                    time = if(length(options$flows[[j]]$time)) data[[options$flows[[j]]$time]], 
+                    maxThickness = options$flows[[j]]$maxThickness,
+                    initialTime = options$flows[[j]]$initialTime,
+                    dir = options$flows[[j]]$dir)
+    })
+    lapply(seq_along(options$minicharts), function(j){
+      p <<- addMinicharts(p, lng = data[[options$minicharts[[j]]$lng]],
+                          lat = data[[options$minicharts[[j]]$lat]],
+                          chartdata = data[, options$minicharts[[j]]$chartdata],
+                          time = if(length(options$minicharts[[j]]$time)) data[[options$minicharts[[j]]$time]],
+                          #maxValues = options$minicharts[[j]]$maxValues,
+                          type = options$minicharts[[j]]$type,
+                          fillColor = d3.schemeCategory10[1],
+                          colorPalette = d3.schemeCategory10,
+                          width = options$minicharts[[j]]$width,
+                          height = options$minicharts[[j]]$height,
+                          opacity = options$minicharts[[j]]$opacity,
+                          showLabels = options$minicharts[[j]]$showLabels,
+                          labelText = NULL, labelMinSize = 8,
+                          labelMaxSize = 24, labelStyle = NULL,
+                          transitionTime = if(length(options$minicharts[[j]]$transitionTime)) options$minicharts[[j]]$transitionTime,
+                          popup = popupArgs(), 
+                          layerId = if(length(options$minicharts[[j]]$layerId)) data[[options$minicharts[[j]]$layerId]],
+                          legend = options$minicharts[[j]]$legend,
+                          legendPosition = options$minicharts[[j]]$legendPosition,
+                          timeFormat = NULL, initialTime = NULL,
+                          onChange = NULL
+      )
+    })
+    if(length(options$layersControl$baseGroups) + length(options$layersControl$overlayGroups) > 0L){
+      p <- addLayersControl(p, baseGroups = if(length(options$layersControl$baseGroups)) options$layersControl$baseGroups else character(0L),
+                            overlayGroups = if(length(options$layersControl$overlayGroups)) options$layersControl$overlayGroups else character(0L), 
+                            position = options$layersControl$position,
+                            options = if(length(options$layersControl$options)) 
+                              do.call(layersControlOptions, options$layersControl$options) else
+                              layersControlOptions())
+    }
+    
+    return(renderLeaflet(p))
+  }else if(options$tool == 'timevis'){
+    p <- timevis()
+    suppressWarnings(try({
+      #GANTT chart
+      
+      #timevis items
+      if(!length(options$series[[1]]$start)){
+        stop('No start data found!')
+      }
+      id       <- seq_along(data[[options$series[[1]]$start]])
+      content  <- data[[options$series[[1]]$content]]
+      start    <- data[[options$series[[1]]$start]]
+      end      <- NULL
+      type     <- NULL
+      title    <- NULL
+      group    <- NULL
+      subgroup <- NULL
+      
+      if(length(options$series[[1]]$end)){
+        end <- data[[options$series[[1]]$end]]
+      }
+      if(!identical(length(end), length(start))){
+        end <- vector("numeric", length(id))
+        end[] <- NA_real_
+      }
+      if(length(options$series[[1]]$title)){
+        title     <- data[[options$series[[1]]$title]]
+      }
+      if(!identical(length(title), length(start))){
+        title <- vector("numeric", length(id))
+        title[] <- NA_real_
+      }
+      if(length(options$series[[1]]$group)){
+        group     <- data[[options$series[[1]]$group]]
+      }
+      if(!identical(length(group), length(start))){
+        group <- vector("numeric", length(id))
+        group[] <- NA_real_
+      }
+      if(length(options$series[[1]]$subgroup)){
+        subgroup     <- data[[options$series[[1]]$subgroup]]
+      }
+      if(!identical(length(subgroup), length(start))){
+        subgroup <- vector("numeric", length(id))
+        subgroup[] <- NA_real_
+      }
+      if(length(options$series[[1]]$type)){
+        type <- vector("character", length(id))
+        type[] <- options$series[[1]]$type
+      }
+      data <- tibble(id = id,content = content, start = start, end = end, type = type,   
+                     title = title, group = group, subgroup = subgroup)
+      
+      #timevis groups
+      groups         <- NULL
+      gId            <- NULL
+      gContent       <- NULL
+      gTitle         <- NULL
+      gSubgroupOrder <- NULL
+      
+      if(!is.null(group) && all(!is.na(group))){
+        gId <- unique(group)
+      }
+      if(length(options$series[[1]]$gContent)){
+        gContent <- data[[options$series[[1]]$gContent]]
+        if(!identical(length(gContent), length(gId))){
+          gContent <- vector("numeric", length(gId))
+          gContent[] <- "group"
+        }
+      }else{
+        gContent <- gId
+      }
+      if(length(options$series[[1]]$groupTitle)){
+        gTitle <- unique(data[[options$series[[1]]$groupTitle]])
+      }
+      if(!identical(length(gTitle), length(gId))){
+        gTitle <- vector("numeric", length(gId))
+        gTitle[] <- NA_real_
+      }
+      if(length(options$series[[1]]$subgroupOrder)){
+        gSubgroupOrder <- unique(data[[options$series[[1]]$subgroupOrder]])
+      }
+      if(!identical(length(gSubgroupOrder), length(gId))){
+        gSubgroupOrder <- vector("numeric", length(gId))
+        gSubgroupOrder[] <- NA_real_
+      }
+      if(!is.null(gId) && all(!is.na(gId))){
+        groups <- tibble(id = gId, content = gContent, title = gTitle, subgroupOrder = gSubgroupOrder)
+      }
+      
+      p <- timevis(data, 
+                   groups = groups,
+                   showZoom = options$showZoom, 
+                   zoomFactor = options$zoomFactor, 
+                   fit = options$fit,
+                   width = options$width, 
+                   height = options$height, 
+                   elementId = options$elementId,
+                   options = list(selectable = options$editable,
+                                  editable = options$editable, 
+                                  multiselect = options$multiselect,
+                                  showCurrentTime = options$showCurrentTime))
+      for(j in seq_along(options$custom)){
+        p <- addCustomTime(p, 
+                           time = options$custom[[j]]$time, 
+                           itemId = paste0("timeline_", j))
+      }
+    }))
+    
+    return(renderTimevis(p))
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
   }
@@ -233,7 +511,6 @@ getEvent <- function(configData, eventId){
   #
   # returns:
   # string with event information extracted from configData
-
   if(length(configData)){
     idx <- match(tolower(eventId), tolower(configData[[1]]))
     if(is.na(idx)){
@@ -246,4 +523,15 @@ getEvent <- function(configData, eventId){
     # config data does not exist, so return string
     return(eventId)
   }
+}
+parseLabel <- function(label, colNames){
+  if(!nchar(label))
+    return(NULL)
+  label <- gsub("\\", "\\\\", label, fixed = TRUE)
+  label <- gsub('"', '\\"', label, fixed = TRUE)
+  for(colName in colNames){
+    label <- gsub(paste0("[", colName, "]"), paste0('",data$', colName, ',"'), 
+                  label, fixed = TRUE)
+  }
+  return(parse(text = paste0('paste0("', label, '")')))
 }

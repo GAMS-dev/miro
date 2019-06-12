@@ -65,9 +65,9 @@ $endif
 
 $offExternalInput
 
-$if not set FROM_TO_LO $set FROM_TO_LO   0
-$if not set FROM_TO_UP $set FROM_TO_UP 100
-$if not set RESOLUTION  $set RESOLUTION    1
+$if not set FROM_TO_LO $set FROM_TO_LO   5
+$if not set FROM_TO_UP $set FROM_TO_UP  50
+$if not set RESOLUTION  $set RESOLUTION    24
 
 $if  not set NBREGIONS            $eval NBREGIONS         card(rr)
 $if  not set FROM                 $eval FROM              %FROM_TO_LO%/100

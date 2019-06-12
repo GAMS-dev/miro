@@ -1,2 +1,662 @@
-var Miro=function(e){var t={};function n(i){if(t[i])return t[i].exports;var a=t[i]={i:i,l:!1,exports:{}};return e[i].call(a.exports,a,a.exports,n),a.l=!0,a.exports}return n.m=e,n.c=t,n.d=function(e,t,i){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:i})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var i=Object.create(null);if(n.r(i),Object.defineProperty(i,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var a in e)n.d(i,a,function(t){return e[t]}.bind(null,a));return i},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";n.r(t),n.d(t,"showSpinnerIcon",function(){return a}),n.d(t,"changeTab",function(){return o}),n.d(t,"showNewNameBaseDialog",function(){return s}),n.d(t,"confirmModalShow",function(){return c}),n.d(t,"removeAttachment",function(){return r}),n.d(t,"showHypercubeLog",function(){return l}),n.d(t,"importHypercubeJob",function(){return d}),n.d(t,"discardHypercubeJob",function(){return u}),n.d(t,"renderMathJax",function(){return h}),n.d(t,"validateSname",function(){return b}),n.d(t,"validateHcubeHash",function(){return f}),n.d(t,"hcHashImport",function(){return p});var i={};function a(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:3e3;if(!i[$(e).prop("id")]){i[$(e).prop("id")]=!0;var n=$(e).html();$(e).html('<i class="fa fa-refresh fa-spin"></i>'),setTimeout(function(){$(e).html(n),i[$(e).prop("id")]=!1},t)}}function o(e,t,n){var i=e.closest(".tabbable");i.find("li:nth-of-type(".concat(t,")")).removeClass(),i.find("li:nth-of-type(".concat(n,")")).addClass("active"),i.find(".tab-content div:nth-child(".concat(t,")")).removeClass("active"),i.find(".tab-content div:nth-child(".concat(n,")")).addClass("active")}function s(){$("#base-overwrite-container").hide(),$("#loadBase_snameExistsMsg").hide(),$("#loadBase_newName").show(),$("#btCheckSnameBase").show()}function c(e,t,n){var i=arguments.length>3&&void 0!==arguments[3]?arguments[3]:null,a=arguments.length>4&&void 0!==arguments[4]?arguments[4]:null,o='<button type="button" class="btn btn-default" data-dismiss="modal">'.concat(n,"</button>"),s="";null!==a&&(s='<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" '+'id="" onclick="'.concat(a,'" data-dismiss="modal">').concat(i,"</button>"));var c=$("#confirmModal");c.find(".modal-title").html(e),c.find(".modal-body").html(t),c.find(".modal-footer").html(o+s),c.modal("show")}function r(e){$("#btRemoveAttachment_".concat(e)).parent().parent().remove(),Shiny.setInputValue("btRemoveAttachment_".concat(e),1,{priority:"event"})}function l(e){Shiny.setInputValue("showHypercubeLog",e,{priority:"event"})}function d(e){Shiny.setInputValue("importHypercubeJob",e,{priority:"event"})}function u(e){Shiny.setInputValue("discardHypercubeJob",e,{priority:"event"})}function h(){MathJax.Hub.Queue(["Typeset",MathJax.Hub,"wrapper-documentation"])}function b(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"btCheckSnameLocalConfirm";return!0!==/^[a-f0-9]{64}$/i.test($(e).val())&&!0!==/^\s*$/.test($(e).val())?($(e).removeClass("invalidInput"),"internal"===t||(Shiny.setInputValue(t,1,{priority:"event"}),!0)):($(e).addClass("invalidInput"),!1)}function f(){var e=$("#hcHashLookup").val();if(!0===/^[a-f0-9]{64}$/i.test(e)){if(!b("#hcube_newScenName","internal"))return;return $("#hcHashLookup").removeClass("invalidInput"),void Shiny.setInputValue("hcHashLookup",e,{priority:"event"})}$("#hcHashLookup").addClass("invalidInput")}function p(e){b("#hcube_newScenName","internal")&&Shiny.setInputValue("loadHcubeHashSid",e,{priority:"event"})}function m(e){return!!$(e).parents(".form-group").length}function v(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:100;try{setTimeout(function(){HTMLWidgets.getInstance($(".rhandsontable:visible").get(0)).hot.render()},e)}catch(e){}}function y(e){switch(e){case"inputData":$("#btImport").show(),$("#btSolve").show(),$("#btInterrupt").hide(),$("#btSplitView").hide(),$("#btCompareScen").hide();break;case"outputData":$("#btImport").hide(),$("#btSolve").hide(),$("#btInterrupt").hide(),$("#btSplitView").hide(),$("#btCompareScen").hide();break;case"gamsinter":$("#btImport").hide(),$("#btSolve").hide(),$("#btInterrupt").show(),$("#btSplitView").hide(),$("#btCompareScen").hide();break;case"scenarios":$("#btImport").hide(),$("#btSolve").hide(),$("#btInterrupt").hide(),$("#btSplitView").show(),$("#btCompareScen").show();break;default:$("#btImport").hide(),$("#btSolve").hide(),$("#btInterrupt").hide(),$("#btSplitView").hide(),$("#btCompareScen").hide()}}$(document).ready(function(){$("body").addClass("fixed"),$("#btImport").show(),$("#btSolve").show(),$("#btInterrupt").hide(),$("#btSplitView").hide(),$("#btCompareScen").hide(),$("#btLoadScen").hide(),$('a[data-value="inputData"]').click(function(){y("inputData"),v()}),$('a[data-value="outputData"]').click(function(){y("outputData")}),$('a[data-value="gamsinter"]').click(function(){y("gamsinter")}),$('a[data-value="scenarios"]').click(function(){y("scenarios")}),$("#scenTabset").on("click",'a[data-toggle="tab"]',function(){!function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:100;try{setTimeout(function(){HTMLWidgets.getInstance($(".dygraphs:visible").get(0)).dygraph.resize()},e)}catch(e){}}()}),$('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"],a[data-value="hcubeAnalyze"]').click(function(){y("default")}),$("#inputTabset li").click(function(){v()}),$("#scenTabset").append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});"><i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'),Shiny.addCustomMessageHandler("gms-switchTab",function(e){switch(e){case"input":y("inputData");break;case"output":y("outputData");break;case"gamsinter":y("gamsinter");break;case"hcubeAna":y("default");break;case"scenComp":y("scenarios")}}),$("body").on("click",".bt-highlight-1, .bt-highlight-2, .bt-highlight-3",function(){var e=$(this);e.prop("disabled",!0),setTimeout(function(){e.prop("disabled",!1)},1500)}),$(document).click(function(e){var t=e.target;$(t).is(".pvtAttr")||$(t).parents(".pvtAttr").length||$(t).is(".pvtFilterBox")||$(t).parents(".pvtFilterBox").length||$(".pvtFilterBox").hide()}),$(".sidebar-toggle").click(function(){v(400)}),window.addEventListener("beforeunload",function(e){0===$("#shiny-disconnected-overlay").length&&(e.preventDefault(),e.returnValue="Are you sure you want to leave? Unsaved changes will be lost!")}),Shiny.addCustomMessageHandler("gms-showEl",function(e){m(e)?$(e).closest(".shiny-input-container").show():$(e).show()}),Shiny.addCustomMessageHandler("gms-showElReplaceTxt",function(e){$(e.id).text(e.txt).show()}),Shiny.addCustomMessageHandler("gms-hideEl",function(e){m(e)?$(e).closest(".shiny-input-container").hide():$(e).hide()}),Shiny.addCustomMessageHandler("gms-showHideEl",function(e){var t,n;t=e.id,n=e.delay,$(t).show().delay(n).fadeOut()}),Shiny.addCustomMessageHandler("gms-enableEl",function(e){$(e).prop("disabled",!1)}),Shiny.addCustomMessageHandler("gms-disableEl",function(e){$(e).prop("disabled",!0)}),Shiny.addCustomMessageHandler("gms-toggleEl",function(e){$(e).is(":visible")?($(e).toggle(),$(e).trigger("shown")):($(e).fadeToggle(600),$(e).trigger("hidden"))}),Shiny.addCustomMessageHandler("gms-addClassEl",function(e){$(e.id).addClass(e.newclass)}),Shiny.addCustomMessageHandler("gms-removeClassEl",function(e){$(e.id).removeClass(e.oldclass)}),Shiny.addCustomMessageHandler("gms-scrollDown",function(e){setTimeout(function(){$(e).animate({scrollTop:$(e)[0].scrollHeight-$(e)[0].clientHeight},300)},500)}),Shiny.addCustomMessageHandler("gms-hideModal",function(e){setTimeout(function(){$("#shiny-modal-wrapper").find(".modal").modal("hide")},1e3*e)}),Shiny.addCustomMessageHandler("gms-updateAttachList",function(e){for(var t=$.makeArray(e.id).id,n=$.makeArray(e.name).name,i=0;i<t.length;i+=1){var a="";e.allowExec&&(a='<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_'.concat(t[i],"', $(this).is(':checked'));\" checked=\"checked\"><span>").concat(e.labelCb,"</span></label></div></div></div>")),$('<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_'.concat(t[i],'" type="button" onclick="Miro.removeAttachment(').concat(t[i],')"><i class="fa fa-times-circle"></i></button> ').concat(n[i],"</div>").concat(a,"</div>")).insertBefore("#endAttachList")}}),Shiny.addCustomMessageHandler("gms-fitTitleInBox",function(e){setTimeout(function(){var t=$(e),n=t.parent()[0];t.css("font-size","18px");for(var i=18;n.scrollWidth>n.clientWidth&&i>=10;)i-=2,t.css("font-size","".concat(i,"px"))},500)})});var g=1;$(document).keyup(function(e){if(13!==e.keyCode||e.ctrlKey)if(27!==e.keyCode){if(e.ctrlKey&&e.altKey)if(73!==e.keyCode)if(83!==e.keyCode)if(13!==e.keyCode)if(82!==e.keyCode)if(67!==e.keyCode)if(67!==e.keyCode){if(70===e.keyCode)return $("body").toggleClass("sidebar-collapse"),void v(400);if(49!==e.keyCode)if(50!==e.keyCode)if(51!==e.keyCode)if(52!==e.keyCode)if(53!==e.keyCode){if(84!==e.keyCode)return 39===e.keyCode?(Shiny.onInputChange("tabsetShortcutNext",g),void(g+=1)):37===e.keyCode?(Shiny.onInputChange("tabsetShortcutPrev",g),void(g+=1)):40===e.keyCode?(Shiny.onInputChange("tabsetShortcutNest",g),void(g+=1)):38===e.keyCode?(Shiny.onInputChange("tabsetShortcutUnnest",g),void(g+=1)):void(32===e.keyCode&&$("#btCompareScen").is(":enabled")&&$("#btCompareScen").is(":visible")&&$("#btCompareScen").click());if($("#btGraphIn").is(":visible"))return void $("#btGraphIn:enabled").click();if($("#outputTableView").is(":visible"))return void $("#outputTableView").click();for(var t=2;t<=53;t+=1)$("#table_".concat(t,":visible")).click()}else{var n=$('a[href="#shiny-tab-hcubeAnalyze"]');n.length>0&&n.click()}else $('a[href="#shiny-tab-scenarios"]').click();else{var i=$('a[href="#shiny-tab-gamsinter"]');i.length>0?i.click():$('a[href="#shiny-tab-loadResults"]').click()}else{var a=$('a[href="#shiny-tab-outputData"]');a.length>0?a.click():$('a[href="#shiny-tab-importData"]').click()}else $('a[href="#shiny-tab-inputData"]').click()}else for(var o=2;o<=50;o+=1)$("#close_".concat(o,":visible")).click();else $(".btRemove:visible").click();else Shiny.setInputValue("btDelete",1,{priority:"event"});else $("#btSolve:visible:enabled").click();else Shiny.setInputValue("btSave",1,{priority:"event"});else $("#btImport").is(":visible")?$("#btImport").click():$("#btLoadScen").is(":visible")&&$("#btLoadScen").click()}else $(".modal").modal("hide");else{if($("#shiny-modal").find(".selectize-input.input-active").length>0||$("#shiny-modal").find('*[data-dismiss="modal"]').is(":focus"))return;$(".bt-gms-confirm:visible:enabled").click()}})}]);
+var Miro =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./srcjs/miro.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./srcjs/miro.js":
+/*!***********************!*\
+  !*** ./srcjs/miro.js ***!
+  \***********************/
+/*! exports provided: showSpinnerIcon, changeTab, showNewNameBaseDialog, confirmModalShow, removeAttachment, showHypercubeLog, importHypercubeJob, discardHypercubeJob, renderMathJax, validateSname, validateHcubeHash, hcHashImport */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showSpinnerIcon", function() { return showSpinnerIcon; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "changeTab", function() { return changeTab; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showNewNameBaseDialog", function() { return showNewNameBaseDialog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "confirmModalShow", function() { return confirmModalShow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeAttachment", function() { return removeAttachment; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showHypercubeLog", function() { return showHypercubeLog; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "importHypercubeJob", function() { return importHypercubeJob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "discardHypercubeJob", function() { return discardHypercubeJob; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderMathJax", function() { return renderMathJax; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateSname", function() { return validateSname; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateHcubeHash", function() { return validateHcubeHash; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hcHashImport", function() { return hcHashImport; });
+/* global $:false Shiny: false HTMLWidgets:false MathJax:false */
+var spinnerActive = {};
+function showSpinnerIcon(el) {
+  var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3000;
+
+  if (spinnerActive[$(el).prop('id')]) {
+    return;
+  }
+
+  spinnerActive[$(el).prop('id')] = true;
+  var content = $(el).html();
+  $(el).html('<i class="fa fa-refresh fa-spin"></i>');
+  setTimeout(function () {
+    $(el).html(content);
+    spinnerActive[$(el).prop('id')] = false;
+  }, delay);
+}
+function changeTab(object, idActive, idRefer) {
+  var tabPane = object.closest('.tabbable');
+  tabPane.find("li:nth-of-type(".concat(idActive, ")")).removeClass();
+  tabPane.find("li:nth-of-type(".concat(idRefer, ")")).addClass('active');
+  tabPane.find(".tab-content div:nth-child(".concat(idActive, ")")).removeClass('active');
+  tabPane.find(".tab-content div:nth-child(".concat(idRefer, ")")).addClass('active');
+}
+function showNewNameBaseDialog() {
+  $('#base-overwrite-container').hide();
+  $('#loadBase_snameExistsMsg').hide();
+  $('#loadBase_newName').show();
+  $('#btCheckSnameBase').show();
+}
+function confirmModalShow(title, desc, cancelTxt) {
+  var confirmTxt = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var confirmCall = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+  var btDataDismiss = "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">".concat(cancelTxt, "</button>");
+  var btDataConfirm = '';
+
+  if (confirmCall !== null) {
+    btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" ' + "id=\"\" onclick=\"".concat(confirmCall, "\" data-dismiss=\"modal\">").concat(confirmTxt, "</button>");
+  }
+
+  var cModal = $('#confirmModal');
+  cModal.find('.modal-title').html(title);
+  cModal.find('.modal-body').html(desc);
+  cModal.find('.modal-footer').html(btDataDismiss + btDataConfirm);
+  cModal.modal('show');
+}
+function removeAttachment(elId) {
+  $("#btRemoveAttachment_".concat(elId)).parent().parent().remove();
+  Shiny.setInputValue("btRemoveAttachment_".concat(elId), 1, {
+    priority: 'event'
+  });
+}
+function showHypercubeLog(jID) {
+  Shiny.setInputValue('showHypercubeLog', jID, {
+    priority: 'event'
+  });
+}
+function importHypercubeJob(jID) {
+  Shiny.setInputValue('importHypercubeJob', jID, {
+    priority: 'event'
+  });
+}
+function discardHypercubeJob(jID) {
+  Shiny.setInputValue('discardHypercubeJob', jID, {
+    priority: 'event'
+  });
+}
+function renderMathJax() {
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'wrapper-documentation']);
+}
+function validateSname(el) {
+  var inputID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'btCheckSnameLocalConfirm';
+
+  if (/^[a-f0-9]{64}$/i.test($(el).val()) !== true && /^\s*$/.test($(el).val()) !== true) {
+    $(el).removeClass('invalidInput');
+
+    if (inputID === 'internal') {
+      return true;
+    }
+
+    Shiny.setInputValue(inputID, 1, {
+      priority: 'event'
+    });
+    return true;
+  }
+
+  $(el).addClass('invalidInput');
+  return false;
+}
+function validateHcubeHash() {
+  var hashVal = $('#hcHashLookup').val();
+
+  if (/^[a-f0-9]{64}$/i.test(hashVal) === true) {
+    if (!validateSname('#hcube_newScenName', 'internal')) {
+      return;
+    }
+
+    $('#hcHashLookup').removeClass('invalidInput');
+    Shiny.setInputValue('hcHashLookup', hashVal, {
+      priority: 'event'
+    });
+    return;
+  }
+
+  $('#hcHashLookup').addClass('invalidInput');
+}
+function hcHashImport(sid) {
+  if (!validateSname('#hcube_newScenName', 'internal')) {
+    return;
+  }
+
+  Shiny.setInputValue('loadHcubeHashSid', sid, {
+    priority: 'event'
+  });
+}
+
+function isInputEl(id) {
+  if ($(id).parents('.form-group').length) {
+    return true;
+  }
+
+  return false;
+}
+
+function rerenderDygraph() {
+  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
+
+  try {
+    setTimeout(function () {
+      HTMLWidgets.getInstance($('.dygraphs:visible').get(0)).dygraph.resize();
+    }, delay);
+  } catch (e) {// continue regardless of error
+  }
+}
+
+function rerenderHot() {
+  var delay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 100;
+
+  try {
+    setTimeout(function () {
+      HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.render();
+    }, delay);
+  } catch (e) {// continue regardless of error
+  }
+}
+
+function showHideEl(el, delay) {
+  var msg = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+  if (msg !== null) {
+    $(el).text(msg);
+  }
+
+  $(el).show().delay(delay).fadeOut();
+}
+
+function changeActiveButtons(tabId) {
+  switch (tabId) {
+    case 'inputData':
+      $('#btImport').show();
+      $('#btSolve').show();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'outputData':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'gamsinter':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').show();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'scenarios':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').show();
+      $('#btCompareScen').show();
+      break;
+
+    default:
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+  }
+}
+
+$(document).ready(function () {
+  $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
+
+  $('#btImport').show();
+  $('#btSolve').show();
+  $('#btInterrupt').hide();
+  $('#btSplitView').hide();
+  $('#btCompareScen').hide();
+  $('#btLoadScen').hide();
+  $('a[data-value="inputData"]').click(function () {
+    changeActiveButtons('inputData');
+    rerenderHot();
+  });
+  $('a[data-value="outputData"]').click(function () {
+    changeActiveButtons('outputData');
+  });
+  $('a[data-value="gamsinter"]').click(function () {
+    changeActiveButtons('gamsinter');
+  });
+  $('a[data-value="scenarios"]').click(function () {
+    changeActiveButtons('scenarios');
+  });
+  $('#scenTabset').on('click', 'a[data-toggle="tab"]', function () {
+    rerenderDygraph();
+  });
+  $('a[data-value="advanced"],a[data-value="importData"],a[data-value="loadResults"],a[data-value="hcubeAnalyze"]').click(function () {
+    changeActiveButtons('default');
+  });
+  $('#inputTabset li').click(function () {
+    rerenderHot();
+  });
+  $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" ' + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">' + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+
+  Shiny.addCustomMessageHandler('gms-switchTab', function (el) {
+    switch (el) {
+      case 'input':
+        changeActiveButtons('inputData');
+        break;
+
+      case 'output':
+        changeActiveButtons('outputData');
+        break;
+
+      case 'gamsinter':
+        changeActiveButtons('gamsinter');
+        break;
+
+      case 'hcubeAna':
+        changeActiveButtons('default');
+        break;
+
+      case 'scenComp':
+        changeActiveButtons('scenarios');
+        break;
+
+      default:
+        break;
+    }
+  });
+  $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
+    var btn = $(this);
+    btn.prop('disabled', true);
+    setTimeout(function () {
+      btn.prop('disabled', false);
+    }, 1500);
+  }); // hide pivot filter boxes when clicked outside of box
+
+  $(document).click(function (e) {
+    var target = e.target;
+
+    if (!$(target).is('.pvtAttr') && !$(target).parents('.pvtAttr').length && !$(target).is('.pvtFilterBox') && !$(target).parents('.pvtFilterBox').length) {
+      $('.pvtFilterBox').hide();
+    }
+  });
+  $('.sidebar-toggle').click(function () {
+    rerenderHot(400);
+  });
+  window.addEventListener('beforeunload', function (e) {
+    if ($('#shiny-disconnected-overlay').length === 0) {
+      e.preventDefault();
+      e.returnValue = 'Are you sure you want to leave? Unsaved changes will be lost!';
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-showEl', function (id) {
+    if (isInputEl(id)) {
+      $(id).closest('.shiny-input-container').show();
+    } else {
+      $(id).show();
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-showElReplaceTxt', function (data) {
+    $(data.id).text(data.txt).show();
+  });
+  Shiny.addCustomMessageHandler('gms-hideEl', function (id) {
+    if (isInputEl(id)) {
+      $(id).closest('.shiny-input-container').hide();
+    } else {
+      $(id).hide();
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-showHideEl', function (data) {
+    showHideEl(data.id, data.delay, data.msg);
+  });
+  Shiny.addCustomMessageHandler('gms-enableEl', function (id) {
+    $(id).prop('disabled', false);
+  });
+  Shiny.addCustomMessageHandler('gms-disableEl', function (id) {
+    $(id).prop('disabled', true);
+  });
+  Shiny.addCustomMessageHandler('gms-toggleEl', function (id) {
+    if ($(id).is(':visible')) {
+      $(id).toggle();
+      $(id).trigger('shown');
+    } else {
+      $(id).fadeToggle(600);
+      $(id).trigger('hidden');
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-addClassEl', function (el) {
+    $(el.id).addClass(el.newclass);
+  });
+  Shiny.addCustomMessageHandler('gms-removeClassEl', function (el) {
+    $(el.id).removeClass(el.oldclass);
+  });
+  Shiny.addCustomMessageHandler('gms-scrollDown', function (id) {
+    setTimeout(function () {
+      $(id).animate({
+        scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight
+      }, 300);
+    }, 500);
+  });
+  Shiny.addCustomMessageHandler('gms-hideModal', function (delay) {
+    setTimeout(function () {
+      $('#shiny-modal-wrapper').find('.modal').modal('hide');
+    }, delay * 1000);
+  });
+  Shiny.addCustomMessageHandler('gms-updateAttachList', function (el) {
+    var _$$makeArray = $.makeArray(el.id),
+        id = _$$makeArray.id;
+
+    var _$$makeArray2 = $.makeArray(el.name),
+        name = _$$makeArray2.name;
+
+    for (var i = 0; i < id.length; i += 1) {
+      var checkBoxHTML = '';
+
+      if (el.allowExec) {
+        checkBoxHTML = "<div class=\"col-sm-6\"><div class=\"form-group shiny-input-container\"><div class=\"checkbox\"><label><input type=\"checkbox\" onchange=\"Shiny.setInputValue('execPermAttachment_".concat(id[i], "', $(this).is(':checked'));\" checked=\"checked\"><span>").concat(el.labelCb, "</span></label></div></div></div>");
+      }
+
+      $("<div class=\"row attachment-line\"><div class=\"col-sm-6\"><button class=\"btn btn-default bt-icon\" id=\"btRemoveAttachment_".concat(id[i], "\" type=\"button\" onclick=\"Miro.removeAttachment(").concat(id[i], ")\"><i class=\"fa fa-times-circle\"></i></button> ").concat(name[i], "</div>").concat(checkBoxHTML, "</div>")).insertBefore('#endAttachList');
+    }
+  });
+  Shiny.addCustomMessageHandler('gms-fitTitleInBox', function (id) {
+    setTimeout(function () {
+      var el = $(id);
+      var parentEl = el.parent()[0];
+      el.css('font-size', '18px');
+      var currSize = 18;
+
+      while (parentEl.scrollWidth > parentEl.clientWidth && currSize >= 10) {
+        currSize -= 2;
+        el.css('font-size', "".concat(currSize, "px"));
+      }
+    }, 500);
+  });
+}); // counter
+
+var count = 1; // maximum number of scenarios that can be loaded in compare view
+
+var maxNumScen = 50;
+$(document).keyup(function (event) {
+  if (event.keyCode === 13 && !event.ctrlKey) {
+    if ($('#shiny-modal').find('.selectize-input.input-active').length > 0 || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
+      return;
+    }
+
+    $('.bt-gms-confirm:visible:enabled').click();
+    return;
+  } // ENTER will confirm modal dialogues
+
+
+  if (event.keyCode === 27) {
+    $('.modal').modal('hide');
+    return;
+  } // ESC will close modal dialogues
+
+
+  if (!event.ctrlKey || !event.altKey) {
+    return;
+  }
+
+  if (event.keyCode === 73) {
+    if ($('#btImport').is(':visible')) {
+      $('#btImport').click();
+    } else if ($('#btLoadScen').is(':visible')) {
+      $('#btLoadScen').click();
+    }
+
+    return;
+  } // Import shortcut: CTRL + ALT + I
+
+
+  if (event.keyCode === 83) {
+    Shiny.setInputValue('btSave', 1, {
+      priority: 'event'
+    });
+    return;
+  } // SAVE shortcut: CTRL + ALT + S
+
+
+  if (event.keyCode === 13) {
+    $('#btSolve:visible:enabled').click();
+    return;
+  } // Solve shortcut: CTRL + ALT + ENTER
+
+
+  if (event.keyCode === 82) {
+    Shiny.setInputValue('btDelete', 1, {
+      priority: 'event'
+    });
+    return;
+  } // Remove shortcut: CTRL + ALT + R
+
+
+  if (event.keyCode === 67) {
+    $('.btRemove:visible').click();
+    return;
+  } // Close shortcut (remove button in input sheet): CTRL + ALT + C
+
+
+  if (event.keyCode === 67) {
+    for (var i = 2; i <= maxNumScen; i += 1) {
+      $("#close_".concat(i, ":visible")).click();
+    }
+
+    return;
+  } // Close shortcut (remove button in output sheet): CTRL + ALT + C
+
+
+  if (event.keyCode === 70) {
+    $('body').toggleClass('sidebar-collapse');
+    rerenderHot(400);
+    return;
+  } // Fullscreen mode (hide sidebar) shortcut: CTRL + ALT + F
+
+
+  if (event.keyCode === 49) {
+    $('a[href="#shiny-tab-inputData"]').click();
+    return;
+  } // Select input menu shortcut: CTRL + ALT + 1
+
+
+  if (event.keyCode === 50) {
+    var tab = $('a[href="#shiny-tab-outputData"]');
+
+    if (tab.length > 0) {
+      tab.click();
+    } else {
+      $('a[href="#shiny-tab-importData"]').click();
+    }
+
+    return;
+  } // Select output menu shortcut: CTRL + ALT + 2
+
+
+  if (event.keyCode === 51) {
+    var _tab = $('a[href="#shiny-tab-gamsinter"]');
+
+    if (_tab.length > 0) {
+      _tab.click();
+    } else {
+      $('a[href="#shiny-tab-loadResults"]').click();
+    }
+
+    return;
+  } // Select gams interaction menu shortcut: CTRL + ALT + 3
+
+
+  if (event.keyCode === 52) {
+    $('a[href="#shiny-tab-scenarios"]').click();
+    return;
+  } // Select scenario menu shortcut: CTRL + ALT + 4
+
+
+  if (event.keyCode === 53) {
+    var _tab2 = $('a[href="#shiny-tab-hcubeAnalyze"]');
+
+    if (_tab2.length > 0) {
+      _tab2.click();
+    }
+
+    return;
+  } // Select scenario menu shortcut: CTRL + ALT + 5
+
+
+  if (event.keyCode === 84) {
+    if ($('#btGraphIn').is(':visible')) {
+      $('#btGraphIn:enabled').click();
+      return;
+    }
+
+    if ($('#outputTableView').is(':visible')) {
+      $('#outputTableView').click();
+      return;
+    }
+
+    for (var _i = 2; _i <= maxNumScen + 3; _i += 1) {
+      $("#table_".concat(_i, ":visible")).click();
+    }
+
+    return;
+  } // Table view (scenario compare mode) shortcut: CTRL + ALT + T
+
+
+  if (event.keyCode === 39) {
+    Shiny.onInputChange('tabsetShortcutNext', count);
+    count += 1;
+    return;
+  } // Select next tab shortcut: CTRL + ALT + arrow right
+
+
+  if (event.keyCode === 37) {
+    Shiny.onInputChange('tabsetShortcutPrev', count);
+    count += 1;
+    return;
+  } // Select previous tab shortcut: CTRL + ALT + arrow left
+
+
+  if (event.keyCode === 40) {
+    Shiny.onInputChange('tabsetShortcutNest', count);
+    count += 1;
+    return;
+  } // Nest to next lower tabset shortcut: CTRL + ALT + arrow down
+
+
+  if (event.keyCode === 38) {
+    Shiny.onInputChange('tabsetShortcutUnnest', count);
+    count += 1;
+    return;
+  } // Unnest to next higher tabset shortcut: CTRL + ALT + arrow up
+
+
+  if (event.keyCode === 32 && $('#btCompareScen').is(':enabled') && $('#btCompareScen').is(':visible')) {
+    $('#btCompareScen').click();
+  } // Activate/deactivate scenario comparison mode: CTRL + ALT + space
+
+});
+
+/***/ })
+
+/******/ });
 //# sourceMappingURL=miro.js.map

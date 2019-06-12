@@ -4,7 +4,7 @@ GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in 
 
 You can find the documentation with examples [here](http://gams.com/miro).
 
-If you have any questions about MIRO, please contact us via [mail](support@gams.com). For bug reports, please use the [issue tracker](https://git.gams.com/fproske/gmswebui/issues).
+If you have any questions about MIRO, please contact us via [mail](miro@gams.com). For bug reports, please use the [issue tracker](https://git.gams.com/fproske/gmswebui/issues).
 
 ## Features
 

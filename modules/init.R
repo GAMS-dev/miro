@@ -50,7 +50,7 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "GMSIO_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
-      config$db <<- c(config, eval[[1]])
+      config$db <<- eval[[1]]
     }else if(!is.null(eval[[2]])){
       errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
                            basename(jsonFilesWithSchema[i]), 
@@ -144,8 +144,8 @@ if(is.null(errMsg)){
   modelOut          <- config$gamsOutputFiles
   names(modelOut)   <- tolower(names(modelOut))
   
-  modelIn             <- config$gamsInputFiles
-  names(modelIn)      <- tolower(names(modelIn))
+  modelIn           <- config$gamsInputFiles
+  names(modelIn)    <- tolower(names(modelIn))
   modelInRaw        <- modelIn
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
@@ -311,11 +311,16 @@ if(is.null(errMsg)){
   # declare GAMS compile time variables and GAMS options
   tmpDDPar            <- getGMSPar(names(modelIn), prefixDDPar)
   names(modelIn)      <- tmpDDPar[[1]]
+
   DDPar               <- tmpDDPar[[2]]
   rm(tmpDDPar)
   tmpGMSOpt           <- getGMSPar(names(modelIn), prefixGMSOpt)
   names(modelIn)      <- tmpGMSOpt[[1]]
   GMSOpt              <- tmpGMSOpt[[2]]
+  if(any(vapply(names(modelIn), function(el){ identical(nchar(trimws(el)), 0L)}, 
+                logical(1L), USE.NAMES = FALSE))){
+    errMsg <- "Unnamed GAMS command line parameter(s) detected. Empty names are not allowed!"
+  }
   rm(tmpGMSOpt)
   
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
@@ -1128,12 +1133,18 @@ if(is.null(errMsg)){
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
-  installPackage$plotly <- any(vapply(c(configGraphsIn, configGraphsOut), 
-                                      function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
-                                      logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
-  installPackage$dygraphs <- any(vapply(c(configGraphsIn, configGraphsOut), 
-                                        function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
-                                        logical(1L), USE.NAMES = FALSE)) || LAUNCHADMINMODE
+  installPackage$plotly <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                         function(conf){if(identical(conf$graph$tool, "plotly")) TRUE else FALSE}, 
+                                                         logical(1L), USE.NAMES = FALSE))
+  installPackage$dygraphs <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                           function(conf){if(identical(conf$graph$tool, "dygraphs")) TRUE else FALSE}, 
+                                                           logical(1L), USE.NAMES = FALSE))
+  installPackage$leaflet <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                           function(conf){if(identical(conf$graph$tool, "leaflet")) TRUE else FALSE}, 
+                                                           logical(1L), USE.NAMES = FALSE))
+  installPackage$timevis <- LAUNCHADMINMODE || any(vapply(c(configGraphsIn, configGraphsOut), 
+                                                          function(conf){if(identical(conf$graph$tool, "timevis")) TRUE else FALSE}, 
+                                                          logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
                                '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,

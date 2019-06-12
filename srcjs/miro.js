@@ -142,7 +142,10 @@ function rerenderHot(delay = 100) {
   }
 }
 
-function showHideEl(el, delay) {
+function showHideEl(el, delay, msg = null) {
+  if (msg !== null) {
+    $(el).text(msg);
+  }
   $(el).show().delay(delay).fadeOut();
 }
 
@@ -291,7 +294,7 @@ $(document).ready(() => {
     }
   });
   Shiny.addCustomMessageHandler('gms-showHideEl', (data) => {
-    showHideEl(data.id, data.delay);
+    showHideEl(data.id, data.delay, data.msg);
   });
   Shiny.addCustomMessageHandler('gms-enableEl', (id) => {
     $(id).prop('disabled', false);

@@ -97,7 +97,7 @@
          "description":"Activate/deactivate certain modules",
          "type":"object",
          "additionalProperties":false,
-         "properties":{  
+         "properties":{
             "scenario":{  
                "description":"Activate scenario functionality?",
                "type":"boolean",
@@ -276,7 +276,7 @@
                    },
                    "label":{  
                      "description":"Label of considered inputdata",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "min":{  
@@ -295,6 +295,7 @@
                    },
                    "default":{  
                      "description":"Default/starting value of inputdata",
+                     "required": true,
                      "type":[  
                        "number",
                        "string",
@@ -346,7 +347,7 @@
                    },
                    "label":{  
                       "description":"display label for the dropdown menu",
-                      "type":"string",
+                      "type":["string","null"],
                       "minLength":1
                     },
                     "choices":{  
@@ -373,7 +374,8 @@
                     "aliases":{  
                       "type":[  
                         "array",
-                        "string"
+                        "string",
+                        "null"
                       ],
                       "minLength":1,
                       "uniqueItems":true,
@@ -387,7 +389,8 @@
                       "description":"The initially selected value.",
                       "type":[  
                         "string",
-                        "number"
+                        "number",
+                        "null"
                       ]
                     }
                   },
@@ -419,24 +422,24 @@
                    },
                    "label":{  
                      "description":"display label for the date selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -460,6 +463,32 @@
                      "type":"integer",
                      "minimum":0,
                      "maximum":6
+                   },
+                   "daysofweekdisabled":{
+                     "description":"disallow certain days of week to be selected",
+                     "type": ["array", "null"],
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"integer",
+                       "minimum":0,
+                       "maximum":6
+                     }
+                   },
+                   "datesdisabled":{
+                     "description":"disallow certain dates to be selected",
+                     "type": "array",
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"string",
+                       "minLength":10,
+                       "maxLength":10
+                     }
+                   },
+                   "autoclose":{  
+                     "description":"Whether or not to close the datepicker immediately when a date is selected",
+                     "type":"boolean"
                    },
                    "width":{  
                      "description":"width of the input",
@@ -499,30 +528,30 @@
                    },
                    "label":{  
                      "description":"display label for the daterange selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "start":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "end":{  
                      "description":"initial end date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -593,7 +622,7 @@
                    },
                    "label":{  
                      "description":"display label for the checkbox",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
@@ -645,17 +674,17 @@
                    },
                    "label":{  
                      "description":"display label for the textinput",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"default value",
-                     "type": "string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "placeholder":{  
                      "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "width":{  
@@ -698,9 +727,13 @@
                         "description":"Either true or false for entire table to be readonly",
                         "type":"boolean"
                     },
+                    "heatmap":{
+                        "description":"Turn table into a heatmap?",
+                        "type":"boolean"
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
-                      "type":["array", "string"],
+                      "type":["array", "string", "null"],
                       "minLength":1,
                       "items":{
                         "type":"string",
@@ -966,7 +999,9 @@
                               "type":"string",
                               "enum":[  
                                  "plotly",
-                                 "dygraphs"
+                                 "dygraphs",
+                                 "leaflet",
+                                 "timevis"
                               ],
                               "required":true
                            }
@@ -1128,7 +1163,10 @@
             },
             "colWidths":{  
                "description":"Width of columns.",
-               "type":"integer",
+               "type":[  
+                  "string",
+                  "integer"
+               ],
                "exclusiveMinimum":0,
                "default":null,
                "required":false
@@ -1221,22 +1259,15 @@
                "required":false,
                "default":false
             },
+            "autoHideNavigation":{  
+               "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
+               "type":"boolean",
+               "required":false,
+               "default":true
+            },
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
                "type":["array", "string"],
-               "enum":[  
-                   "AutoFill",
-                   "Buttons",
-                   "ColReorder",
-                   "ColVis",
-                   "FixedColumns",
-                   "FixedHeader",
-                   "KeyTable",
-                   "Responsive",
-                   "RowReorder",
-                   "Scroller",
-                   "Select"
-               ],
                "uniqueItems":true,
                "required":false,
                "items":{  
@@ -1269,9 +1300,13 @@
                   },
                   "buttons":{  
                      "description":"Buttons or groups of buttons to insert",
-                     "type":"object",
-                     "required":false,
-                     "default":null
+                     "type":["array", "string"],
+                     "uniqueItems":true,
+                     "items":{
+                         "type": "string",
+                         "enum":["copy", "csv", "excel", "pdf", "print"]
+                     },
+                     "required":false
                   },
                   "pageLength":{  
                      "description":"Number of items to display per page",
@@ -1325,6 +1360,62 @@
                   }
                }
             }
+         }
+      },
+      "inputGroups":{
+         "description": "Specify input tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "minItems":2,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
+      "outputGroups":{
+         "description": "Specify output tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "uniqueItems":true,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (output tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
          }
       }
    }

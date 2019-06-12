@@ -8,7 +8,7 @@ body{
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 
 }
-.err-msg{
+.err-msg, .config-array-err{
   margin: 5px;
   color: #F39619;
   font-weight: bold;

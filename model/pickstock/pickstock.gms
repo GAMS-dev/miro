@@ -85,7 +85,9 @@ Parameter
        stock_weight(symbol)            'weight'   
        dowVSindex(date,fHdr)           'dow jones vs. index fund [MIRO:table]'     
        abserror(date,errHdr)           'absolute error [MIRO:table]'               
-Singleton Set lastDayTraining(date)    'last date of training period' ;
+Singleton Set
+firstDayTraining(date)   'first date of training period'
+lastDayTraining(date)    'last date of training period' ;
 $offExternalOutput
 
 stock_weight(s)                        = w.l(s);
@@ -94,6 +96,7 @@ dowVSindex(d,'index fund')             = fund(d);
 abserror(td, 'absolute error train')   = error(td);
 abserror(ntd,'absolute error test')    = error(ntd);
 lastDayTraining(td)                    = td.pos=card(td);
+firstDayTraining(td)                   = td.pos=1; 
 error_train                            = obj.l;
 error_test                             = sum(ntd, error(ntd));
 if(error_train > 0,

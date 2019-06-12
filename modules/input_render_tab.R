@@ -176,10 +176,11 @@ lapply(modelInTabularData, function(sheet){
              }, character(1L), USE.NAMES = FALSE)
              colsReadonly <- colsReadonly[!is.na(colsReadonly)]
              if(length(colsReadonly)){
-               return(hot_col(ht, colsReadonly, readOnly = TRUE))
-             }else{
-               return(ht)
+               ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
              }
+             if(identical(modelIn[[i]]$heatmap, TRUE))
+               return(hot_heatmap(ht))
+             return(ht)
            })
          },
          dt = {
