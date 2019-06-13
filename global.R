@@ -121,3 +121,5 @@ attachMaxNo           <- 5L
 # bug report URL
 bugReportUrl <- list(url = "https://cloud.gams.com/public.php/webdav/", dir = "4raJTCgwfoyi2HK")
 
+TIMEVIS_MAX_EVENTS <- 50L
+

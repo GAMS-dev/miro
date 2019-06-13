@@ -409,9 +409,21 @@ observeEvent({input$widget_type
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
   }
+  
+  widgetAlias <- ''
+  
+  if(length(currentConfig$alias) && nchar(currentConfig$alias)){
+    widgetAlias <- currentConfig$alias
+  }else{
+    widgetSymbolID <- match(isolate(input$widget_symbol), widgetSymbols)
+    if(!is.na(widgetSymbolID)){
+      widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
+    }
+  }
+  
   if(identical(input$widget_type, "table")){
     rv$widgetConfig <- list(widgetType = "table",
-                            alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                            alias = widgetAlias,
                             readonly = identical(currentConfig$readonly, TRUE),
                             readonlyCols = currentConfig$readonlyCols,
                             heatmap = identical(currentConfig$heatmap, TRUE))
@@ -443,10 +455,11 @@ observeEvent({input$widget_type
     showEl(session, "#table_preview")
     return()
   }
+  
   switch(input$widget_type,
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
@@ -579,7 +592,7 @@ observeEvent({input$widget_type
          },
          sliderrange = {
            rv$widgetConfig <- list(widgetType = "slider",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$widget_label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
@@ -682,7 +695,7 @@ observeEvent({input$widget_type
          },
          dropdown = {
            rv$widgetConfig <- list(widgetType = "dropdown",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    choices = currentConfig$choices,
                                    aliases = currentConfig$aliases,
@@ -759,7 +772,7 @@ observeEvent({input$widget_type
          },
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    value = identical(currentConfig$value, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE),
@@ -804,7 +817,7 @@ observeEvent({input$widget_type
          },
          date = {
            rv$widgetConfig <- list(widgetType = "date",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    value = currentConfig$value,
                                    min   = currentConfig$min,
@@ -926,7 +939,7 @@ observeEvent({input$widget_type
          },
          daterange = {
            rv$widgetConfig <- list(widgetType = "daterange",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    start = currentConfig$start,
                                    end   = currentConfig$end,
@@ -1066,7 +1079,7 @@ observeEvent({input$widget_type
          },
          textinput = {
            rv$widgetConfig <- list(widgetType = "textinput",
-                                   alias = if(length(currentConfig$alias)) currentConfig$alias else isolate(input$widget_symbol),
+                                   alias = widgetAlias,
                                    label = currentConfig$label,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
@@ -1330,16 +1343,24 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   print("++++++++++++++++++++++++++++++++++++")
   print(configJSON$inputWidgets[[currentWidgetSymbolName]])
   
+  symbolDDNeedsUpdate <- FALSE
+  
+  currentSymbolID <- match(currentWidgetSymbolName, widgetSymbols)
+  if(!is.na(currentSymbolID) && 
+     !identical(names(widgetSymbols)[[currentSymbolID]], rv$widgetConfig$alias)){
+    names(widgetSymbols)[[currentSymbolID]] <<- rv$widgetConfig$alias
+    symbolDDNeedsUpdate <- TRUE
+  }
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
     widgetSymbols <<- c(widgetSymbols, setNames(currentWidgetSymbolName, rv$widgetConfig$alias))
-    updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+    symbolDDNeedsUpdate <- TRUE
   }else if(currentWidgetSymbolName %in% scalarInputSymWithAliases){
     if(all(scalarInputSymWithAliases %in% names(configJSON$inputWidgets))){
       widgetSymbols <<- widgetSymbols[widgetSymbols != scalarsFileName]
       if(scalarsFileName %in% names(configJSON$inputWidgets)){
         configJSON$inputWidgets[[scalarsFileName]] <<- NULL
       }
-      updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+      symbolDDNeedsUpdate <- TRUE
     }else{
       hideEl(session, "#noWidgetConfigMsg")
       hideEl(session, "#optionConfigMsg")
@@ -1347,6 +1368,11 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     }
   }
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  
+  if(symbolDDNeedsUpdate){
+    updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
+  }
+  
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
 })

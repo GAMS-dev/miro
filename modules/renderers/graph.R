@@ -196,7 +196,7 @@ renderGraph <- function(data, configData, options, height = NULL){
         }
       })
     }else{
-      stop("The plot type you selected is currently not supported for tool plotly.", call. = F)
+      stop("The plot type you selected is currently not supported for tool plotly.", call. = FALSE)
     }
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
                 xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
@@ -223,14 +223,15 @@ renderGraph <- function(data, configData, options, height = NULL){
           value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
           # bring data into right matrix format
           if(length(unique(data[[key]])) > 50L){
-            stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", call. = FALSE)
+            stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
+                 call. = FALSE)
           }
           xts_data <- spread(data, key, value)
           
           if(length(options$xdata)){
             xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
             if(is.na(xtsIdx))
-              stop(sprintf("Could not find x data column: '%s'.", options$xdata))
+              stop(sprintf("Could not find x data column: '%s'.", options$xdata), call. = FALSE)
             xts_idx <- NULL
             tryCatch({
               xts_idx  <- as.Date(xts_data[[xtsIdx]])
@@ -390,116 +391,119 @@ renderGraph <- function(data, configData, options, height = NULL){
     return(renderLeaflet(p))
   }else if(options$tool == 'timevis'){
     p <- timevis()
-    suppressWarnings(try({
-      #GANTT chart
-      
-      #timevis items
-      if(!length(options$series[[1]]$start)){
-        stop('No start data found!')
+    
+    #GANTT chart
+    
+    #timevis items
+    if(!length(options$series[[1]]$start)){
+      stop('No start data found!', call. = FALSE)
+    }
+    id       <- seq_along(data[[options$series[[1]]$start]])
+    if(length(id) > TIMEVIS_MAX_EVENTS){
+      stop(sprintf("No more than %d events can be plotted. Please reduce the number of events.", TIMEVIS_MAX_EVENTS), 
+           call. = FALSE)
+    }
+    content  <- data[[options$series[[1]]$content]]
+    start    <- data[[options$series[[1]]$start]]
+    end      <- NULL
+    type     <- NULL
+    title    <- NULL
+    group    <- NULL
+    subgroup <- NULL
+    
+    if(length(options$series[[1]]$end)){
+      end <- data[[options$series[[1]]$end]]
+    }
+    if(!identical(length(end), length(start))){
+      end <- vector("numeric", length(id))
+      end[] <- NA_real_
+    }
+    if(length(options$series[[1]]$title)){
+      title     <- data[[options$series[[1]]$title]]
+    }
+    if(!identical(length(title), length(start))){
+      title <- vector("numeric", length(id))
+      title[] <- NA_real_
+    }
+    if(length(options$series[[1]]$group)){
+      group     <- data[[options$series[[1]]$group]]
+    }
+    if(!identical(length(group), length(start))){
+      group <- vector("numeric", length(id))
+      group[] <- NA_real_
+    }
+    if(length(options$series[[1]]$subgroup)){
+      subgroup     <- data[[options$series[[1]]$subgroup]]
+    }
+    if(!identical(length(subgroup), length(start))){
+      subgroup <- vector("numeric", length(id))
+      subgroup[] <- NA_real_
+    }
+    if(length(options$series[[1]]$type)){
+      type <- vector("character", length(id))
+      type[] <- options$series[[1]]$type
+    }
+    data <- tibble(id = id,content = content, start = start, end = end, type = type,   
+                   title = title, group = group, subgroup = subgroup)
+    
+    #timevis groups
+    groups         <- NULL
+    gId            <- NULL
+    gContent       <- NULL
+    gTitle         <- NULL
+    gSubgroupOrder <- NULL
+    
+    if(!is.null(group) && all(!is.na(group))){
+      gId <- unique(group)
+    }
+    if(length(options$series[[1]]$gContent)){
+      gContent <- data[[options$series[[1]]$gContent]]
+      if(!identical(length(gContent), length(gId))){
+        gContent <- vector("numeric", length(gId))
+        gContent[] <- "group"
       }
-      id       <- seq_along(data[[options$series[[1]]$start]])
-      content  <- data[[options$series[[1]]$content]]
-      start    <- data[[options$series[[1]]$start]]
-      end      <- NULL
-      type     <- NULL
-      title    <- NULL
-      group    <- NULL
-      subgroup <- NULL
-      
-      if(length(options$series[[1]]$end)){
-        end <- data[[options$series[[1]]$end]]
-      }
-      if(!identical(length(end), length(start))){
-        end <- vector("numeric", length(id))
-        end[] <- NA_real_
-      }
-      if(length(options$series[[1]]$title)){
-        title     <- data[[options$series[[1]]$title]]
-      }
-      if(!identical(length(title), length(start))){
-        title <- vector("numeric", length(id))
-        title[] <- NA_real_
-      }
-      if(length(options$series[[1]]$group)){
-        group     <- data[[options$series[[1]]$group]]
-      }
-      if(!identical(length(group), length(start))){
-        group <- vector("numeric", length(id))
-        group[] <- NA_real_
-      }
-      if(length(options$series[[1]]$subgroup)){
-        subgroup     <- data[[options$series[[1]]$subgroup]]
-      }
-      if(!identical(length(subgroup), length(start))){
-        subgroup <- vector("numeric", length(id))
-        subgroup[] <- NA_real_
-      }
-      if(length(options$series[[1]]$type)){
-        type <- vector("character", length(id))
-        type[] <- options$series[[1]]$type
-      }
-      data <- tibble(id = id,content = content, start = start, end = end, type = type,   
-                     title = title, group = group, subgroup = subgroup)
-      
-      #timevis groups
-      groups         <- NULL
-      gId            <- NULL
-      gContent       <- NULL
-      gTitle         <- NULL
-      gSubgroupOrder <- NULL
-      
-      if(!is.null(group) && all(!is.na(group))){
-        gId <- unique(group)
-      }
-      if(length(options$series[[1]]$gContent)){
-        gContent <- data[[options$series[[1]]$gContent]]
-        if(!identical(length(gContent), length(gId))){
-          gContent <- vector("numeric", length(gId))
-          gContent[] <- "group"
-        }
-      }else{
-        gContent <- gId
-      }
-      if(length(options$series[[1]]$groupTitle)){
-        gTitle <- unique(data[[options$series[[1]]$groupTitle]])
-      }
-      if(!identical(length(gTitle), length(gId))){
-        gTitle <- vector("numeric", length(gId))
-        gTitle[] <- NA_real_
-      }
-      if(length(options$series[[1]]$subgroupOrder)){
-        gSubgroupOrder <- unique(data[[options$series[[1]]$subgroupOrder]])
-      }
-      if(!identical(length(gSubgroupOrder), length(gId))){
-        gSubgroupOrder <- vector("numeric", length(gId))
-        gSubgroupOrder[] <- NA_real_
-      }
-      if(!is.null(gId) && all(!is.na(gId))){
-        groups <- tibble(id = gId, content = gContent, title = gTitle, subgroupOrder = gSubgroupOrder)
-      }
-      
-      p <- timevis(data, 
-                   groups = groups,
-                   showZoom = options$showZoom, 
-                   zoomFactor = options$zoomFactor, 
-                   fit = options$fit,
-                   width = options$width, 
-                   height = options$height, 
-                   elementId = options$elementId,
-                   options = list(selectable = options$editable,
-                                  editable = options$editable, 
-                                  multiselect = options$multiselect,
-                                  showCurrentTime = options$showCurrentTime))
-      for(j in seq_along(options$custom)){
-        p <- addCustomTime(p, 
-                           time = options$custom[[j]]$time, 
-                           itemId = paste0("timeline_", j))
-      }
-    }))
+    }else{
+      gContent <- gId
+    }
+    if(length(options$series[[1]]$groupTitle)){
+      gTitle <- unique(data[[options$series[[1]]$groupTitle]])
+    }
+    if(!identical(length(gTitle), length(gId))){
+      gTitle <- vector("numeric", length(gId))
+      gTitle[] <- NA_real_
+    }
+    if(length(options$series[[1]]$subgroupOrder)){
+      gSubgroupOrder <- unique(data[[options$series[[1]]$subgroupOrder]])
+    }
+    if(!identical(length(gSubgroupOrder), length(gId))){
+      gSubgroupOrder <- vector("numeric", length(gId))
+      gSubgroupOrder[] <- NA_real_
+    }
+    if(!is.null(gId) && all(!is.na(gId))){
+      groups <- tibble(id = gId, content = gContent, title = gTitle, subgroupOrder = gSubgroupOrder)
+    }
+    
+    p <- timevis(data, 
+                 groups = groups,
+                 showZoom = options$showZoom, 
+                 zoomFactor = options$zoomFactor, 
+                 fit = options$fit,
+                 width = options$width, 
+                 height = options$height, 
+                 elementId = options$elementId,
+                 options = list(selectable = options$editable,
+                                editable = options$editable, 
+                                multiselect = options$multiselect,
+                                showCurrentTime = options$showCurrentTime))
+    for(j in seq_along(options$custom)){
+      p <- addCustomTime(p, 
+                         time = options$custom[[j]]$time, 
+                         itemId = paste0("timeline_", j))
+    }
     
     return(renderTimevis(p))
   }else{
-    stop("The tool you selected for plotting graphs is not currently supported.", call. = F)
+    stop("The tool you selected for plotting graphs is not currently supported.", call. = FALSE)
   }
 }
 getEvent <- function(configData, eventId){
