@@ -414,7 +414,10 @@ if(config$activateModules$hcubeMode){
               if(config$activateModules$logFile && config$activateModules$lstFile){
                 logTabset <- tabsetPanel(
                   tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus")),
+                           verbatimTextOutput("logStatus"),
+                           checkboxInput("logUpdate", 
+                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                         value = TRUE)),
                   tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
                            verbatimTextOutput("listFile"))
                 )
@@ -426,15 +429,16 @@ if(config$activateModules$hcubeMode){
               }else{
                 logTabset <- tabsetPanel(
                   tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus"))
+                           verbatimTextOutput("logStatus"),
+                           checkboxInput("logUpdate", 
+                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                         value = TRUE))
                 )
               }
               fluidRow(
                 box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
                     width=12, collapsible = TRUE,
-                    logTabset,
-                    checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                  value = T)
+                    logTabset
                 )
               )
             }

@@ -598,7 +598,7 @@ observeEvent(input$btSolve, {
       if(!is.null(modelStatus())){
         return(logText)
       }
-      if(input$logUpdate){
+      if(identical(input$logUpdate, TRUE)){
         scrollDown(session, "#logStatus")
       }
       return(logText)

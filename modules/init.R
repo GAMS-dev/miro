@@ -62,12 +62,16 @@ if(is.null(errMsg)){
   })
 }
 if(is.null(errMsg)){
-  if(identical(config$activateModules$sharedScenarios, TRUE) &&
-     identical(config$activateModules$scenario, FALSE)){
-    flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
-    config$activateModules$sharedScenarios <- FALSE
-  }
-  if(config$activateModules$scenario && !identical(config$db$type, "sqlite")){
+  if(identical(config$activateModules$scenario, FALSE)){
+    if(identical(config$activateModules$sharedScenarios, TRUE)){
+      flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
+      config$activateModules$sharedScenarios <- FALSE
+    }
+    if(identical(config$activateModules$attachments, TRUE)){
+      flog.info("Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated.")
+      config$activateModules$attachments <- FALSE
+    }
+  }else if(!identical(config$db$type, "sqlite")){
     pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
     if(is.na(pg_user)){
       if(!length(config$db$username)){
@@ -97,6 +101,7 @@ if(is.null(errMsg)){
       config$db$name <- pg_dbname
     }
   }
+  
   if(!is.null(config$db$name) && nchar(config$db$name) &&
      identical(config$db$type, "sqlite")){
     if(identical(gamsSysDir, "")){
@@ -111,22 +116,26 @@ lang <- NULL
 if(is.null(errMsg)){
   # read JSON language file
   if(!file.exists(paste0('./conf/', config$language, ".json"))){
-    errMsg <- "The JSON language file: '" %+% config$language %+% ".json' could not be located. Please make sure file is available and accessible."
+    errMsg <- paste0("The JSON language file: '", config$language,
+                     ".json' could not be located. Please make sure file is available and accessible.")
     flog.fatal(errMsg)
   }else{
     eval <- list(character(), character())
     tryCatch({
-      eval <- validateJson(configDir %+% config$language %+% ".json", configDir %+% languageSchemaName, addDefaults = F)
+      eval <- validateJson(paste0(configDir, config$language, ".json"), 
+                           configDir %+% languageSchemaName, addDefaults = FALSE)
     }, error = function(e){
-      errMsg <<- "Some error occurred validating language file: '" %+% config$language %+% ".json'. Error message: " %+% e
+      errMsg <<- paste0("Some error occurred validating language file: '",
+                        config$language, ".json'. Error message: ", e)
       flog.fatal(errMsg)
     })
     if(is.null(eval[[2]])){
       lang <- eval[[1]]
     }else{
-      errMsg <- paste(errMsg, paste0("Some error occurred parsing JSON language file: '",
-                                     config$language, ".json'. See below for more detailed information."), sep = "\n")
-      flog.fatal(errMsg)
+      errMsgTmp <- paste0("Some error occurred parsing JSON language file: '",
+                          config$language, ".json'. See below for more detailed information.")
+      errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+      flog.fatal(errMsgTmp)
       jsonErrors <- rbind(jsonErrors, cbind(file_name = paste0(config$language, ".json"), eval[[2]]))
     }
   }

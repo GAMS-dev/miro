@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$hcubeMode || isShinyProxy){
+  if(config$activateModules$hcubeMode || isShinyProxy || !config$activateModules$scenario){
     tags$li(class = "dropdown")
   }else{
     tags$li(title = lang$nav$header$tooltips$switchToHcube, class = "dropdown", 
