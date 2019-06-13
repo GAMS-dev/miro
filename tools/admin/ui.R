@@ -30,15 +30,14 @@ sidebar_admin <- dashboardSidebar(
 )
 
 body_admin <- dashboardBody({
-  addResourcePath("admin", "tools/admin/resources")
   tagList(
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
-      tags$link(type = "text/css", rel = "stylesheet", href = "admin/bootstrap-colorpicker.min.css"),
-      tags$script(src = "mirosc.js", type = "application/javascript"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
+      tags$script(src = "jquery.slimscroll.min.js", type = "application/javascript"),
+      tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro.js", type = "application/javascript"),
-      tags$script(src = "admin/miro_admin.js", type = "application/javascript"),
-      tags$script(src = "admin/bootstrap-colorpicker.min.js", type = "application/javascript"),
+      tags$script(src = "miro_admin.js", type = "application/javascript"),
       tags$style(HTML(paste0('
 .main-header .logo {
                              background-image: url("gams_logo.png");

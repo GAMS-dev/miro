@@ -209,7 +209,6 @@ observeEvent(input$localInput, {
                                       workDir = dirname(isolate(input$localInput$datapath)), 
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                       scalarsFileHeaders = scalarsFileHeaders, 
-                                      colTypes = db$getDbSchema()$colTypes,
                                       templates = modelOutTemplate, method = "xls", 
                                       hiddenOutputScalars = config$hiddenOutputScalars,
                                       fileName = basename(isolate(input$localInput$datapath)))

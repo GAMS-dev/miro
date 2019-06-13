@@ -16,7 +16,7 @@ createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreat
   HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container" style="margin:20px;">\n
  <hr>\n
  <div class="array-wrapper"></div>\n
-   <div onclick="addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
+   <div onclick="Miro.addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
      <button type="button" class="btn btn-default bt-icon btn-add-array-el" style="font-size:20px;">\n
        <i class="far fa-plus-square"></i>\n
      </button>\n', label, '\n
@@ -70,11 +70,11 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   #     CUSTOMIZE GRAPHS
   # ------------------------------------------------------
-  #source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
+  source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
   # ------------------------------------------------------
   #     Input widgets
   # ------------------------------------------------------
-  #source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
+  source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
   
   # ------------------------------------------------------
   #     DB MANAGEMENT
