@@ -194,7 +194,6 @@ function () {
     this.rObserveID = void 0;
     this.options = void 0;
     this.elInArray = void 0;
-    this.label = '';
     this.freeElIDs = [];
     this.isNewElement = true;
     this.arrayID = arrayID;
@@ -225,6 +224,7 @@ function () {
       var elID = this.incElCount();
       var arrayContent = "<div id=\"".concat(this.arrayID).concat(elID, "_wrapper\" class=\"config-array-el\">\n");
       var idx = 0;
+      var label = '';
       $.each(this.elements, function (k, v) {
         var selected;
         var value;
@@ -243,12 +243,12 @@ function () {
                 for (var i = 0; i < v[2].length; i++) {
                   if ($.inArray(v[2][i], _this.elInArray) === -1) {
                     selected = v[2][i];
-                    _this.label = v[3][i];
+                    label = v[3][i];
                     break;
                   }
                 }
 
-                _this.addLabelEl();
+                _this.addLabelEl(selected);
               } else {
                 var _v = _slicedToArray(v, 4);
 
@@ -258,7 +258,7 @@ function () {
 
                 var _v$2 = _slicedToArray(_v[3], 1);
 
-                _this.label = _v$2[0];
+                label = _v$2[0];
               }
 
               if (_this.resetDefault()) {
@@ -322,7 +322,7 @@ function () {
             }
 
             if (value === 'label') {
-              value = _this.label;
+              value = label;
 
               _this.options.updateTxtWithLabel.push("#".concat(k).concat(elID));
             }
@@ -601,17 +601,17 @@ function () {
     }
   }, {
     key: "addLabelEl",
-    value: function addLabelEl() {
+    value: function addLabelEl(newLabel) {
       if (this.elInArray !== undefined) {
-        if ($.inArray(this.label, this.elInArray) !== -1) {
-          throw new Error("Label: ".concat(this.label, " already in use."));
+        if ($.inArray(newLabel, this.elInArray) !== -1) {
+          throw new Error("Label: ".concat(newLabel, " already in use."));
         }
 
-        this.elInArray.push(this.label);
+        this.elInArray.push(newLabel);
         return;
       }
 
-      this.elInArray = [this.label];
+      this.elInArray = [newLabel];
     }
   }], [{
     key: "createSelectInput",
@@ -729,7 +729,9 @@ function () {
   _createClass(InputArrayFactory, [{
     key: "add",
     value: function add(arrayID, elements, options, rObserveID) {
-      if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
+      var reinitialize = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+
+      if (reinitialize === false && Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
         this.inputArrays[arrayID].createEl();
         return;
       }
@@ -1062,6 +1064,8 @@ var arrayTypes = {
   }
 };
 function addArrayDataEl(arrayID, defaultsRaw) {
+  var reinitialize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
   if ($("#".concat(arrayID, "_wrapper .btn-add-array-el")).is(':disabled')) {
     return;
   }
@@ -1083,13 +1087,13 @@ function addArrayDataEl(arrayID, defaultsRaw) {
         options = _arrayTypes$arrayID2[1],
         rObserveID = _arrayTypes$arrayID2[2];
 
-    inputArrayFactory.add(arrayID, elements, options, rObserveID);
+    inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
   });
 }
 
 function addArrayDataElWrapper(arrayID, defaults) {
   if ($("#".concat(arrayID, "_wrapper")).is(':visible')) {
-    addArrayDataEl(arrayID, defaults);
+    addArrayDataEl(arrayID, defaults, true);
   } else {
     setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
   }

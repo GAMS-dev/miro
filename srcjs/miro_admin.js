@@ -321,7 +321,7 @@ const arrayTypes = {
   },
 };
 
-export function addArrayDataEl(arrayID, defaultsRaw) {
+export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
   if ($(`#${arrayID}_wrapper .btn-add-array-el`).is(':disabled')) {
     return;
   }
@@ -334,12 +334,13 @@ export function addArrayDataEl(arrayID, defaultsRaw) {
       throw new ReferenceError(`Array ID: ${arrayID} not defined.`);
     }
     const [elements, options, rObserveID] = arrayTypes[arrayID](def);
-    inputArrayFactory.add(arrayID, elements, options, rObserveID);
+
+    inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
   });
 }
 function addArrayDataElWrapper(arrayID, defaults) {
   if ($(`#${arrayID}_wrapper`).is(':visible')) {
-    addArrayDataEl(arrayID, defaults);
+    addArrayDataEl(arrayID, defaults, true);
   } else {
     setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
   }

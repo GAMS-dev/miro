@@ -172,23 +172,29 @@ observeEvent(input$localInput, {
   errMsg <- NULL
   scalarDataset <- NULL
   rv$initData <- FALSE
-  # read Excel file
-  tryCatch({
-    xlsWbNames <- excel_sheets(input$localInput$datapath)
-  }, error = function(e) {
-    flog.error("Some error occurred reading the file: '%s'. Error message: %s.", 
-               as.character(isolate(input$localInput$name)), e)
-    errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, 
-                       as.character(isolate(input$localInput$name)))
-  })
-  xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
+  
+  fileType <- tolower(tools::file_ext(isolate(input$localInput$datapath)))
+  if(identical(fileType, "gdx")){
+    loadMode <- "gdx"
+    datasetsToFetch <- c(modelInTabularData, scalarsFileName)
+  }else if(fileType %in% c("xls", "xlsx")){
+    loadMode <- "xls"
+    tryCatch({
+      xlsWbNames <- excel_sheets(input$localInput$datapath)
+    }, error = function(e) {
+      flog.error("Some error occurred reading the file: '%s'. Error message: %s.", 
+                 as.character(isolate(input$localInput$name)), e)
+      errMsg <<- sprintf(lang$errMsg$GAMSInput$excelRead, 
+                         as.character(isolate(input$localInput$name)))
+    })
+    xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
+    # extract only sheets which are also in list of input parameters
+    datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% modelInTabularData]
+  }
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
   }
-  # extract only sheets which are also in list of input parameters
-  datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% modelInTabularData]
   # load input data 
-  loadMode <- "xls"
   overwriteInput <- TRUE
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
@@ -203,13 +209,13 @@ observeEvent(input$localInput, {
   tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
                                    modelInAlias[!isEmptyInput])
   tabularOutputWithData <- NULL
-  if(any(names(modelOut) %in% xlsWbNames)){
+  if(identical(loadMode, "gdx") || any(names(modelOut) %in% xlsWbNames)){
     tryCatch({
         outputDataTmp <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, 
                                       workDir = dirname(isolate(input$localInput$datapath)), 
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
                                       scalarsFileHeaders = scalarsFileHeaders, 
-                                      templates = modelOutTemplate, method = "xls", 
+                                      templates = modelOutTemplate, method = loadMode, 
                                       hiddenOutputScalars = config$hiddenOutputScalars,
                                       fileName = basename(isolate(input$localInput$datapath)))
     }, error = function(e){
@@ -946,14 +952,14 @@ observeEvent(input$dyAnnotation_tooltip, {
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_tooltip[1])]]]]$tooltip <<- NULL
 })
 observeEvent(input$dyAnnotation_width, {
-  if(identical(input$dyAnnotation_width[2], "0")){
+  if(input$dyAnnotation_width[2] == 0L){
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- NULL
   }else{
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_width[1])]]]]$width <<- input$dyAnnotation_width[2]
   }
 })
 observeEvent(input$dyAnnotation_height, {
-  if(identical(input$dyAnnotation_width[2], "0")){
+  if(input$dyAnnotation_width[2] == 0L){
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- NULL
   }else{
     rv$graphConfig$graph$dyAnnotation[[idLabelMap$dy_dyAnnotation[[as.integer(input$dyAnnotation_height[1])]]]]$height <<- input$dyAnnotation_height[2]
@@ -1659,6 +1665,7 @@ getDygraphsOptions <- reactive({
                                             fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
                                             pointSize = 2L)
     rv$graphConfig$graph$dyHighlight <<- NULL
+    rv$graphConfig$graph$color <<- NULL
     if(length(scalarIndices)){
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
     }else{
@@ -1843,7 +1850,7 @@ observe({
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   print("+++++++++++++++++++++++++++++++++++++++")
-  #print(rv$graphConfig$graph)
+  print(rv$graphConfig$graph)
   #print(rv$graphConfig$pivottable)
   #print(rv$graphConfig$options)
   if(activeSymbol$id > length(modelIn)){

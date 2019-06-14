@@ -22,8 +22,6 @@ class InputArray {
 
     elInArray;
 
-    label = '';
-
     freeElIDs = [];
 
     isNewElement = true;
@@ -51,6 +49,7 @@ class InputArray {
 
       let arrayContent = `<div id="${this.arrayID}${elID}_wrapper" class="config-array-el">\n`;
       let idx = 0;
+      let label = '';
 
       $.each(this.elements, (k, v) => {
         let selected;
@@ -69,13 +68,13 @@ class InputArray {
                 for (let i = 0; i < v[2].length; i++) {
                   if ($.inArray(v[2][i], this.elInArray) === -1) {
                     selected = v[2][i];
-                    this.label = v[3][i];
+                    label = v[3][i];
                     break;
                   }
                 }
-                this.addLabelEl();
+                this.addLabelEl(selected);
               } else {
-                [,, [selected], [this.label]] = v;
+                [,, [selected], [label]] = v;
               }
               if (this.resetDefault()) {
                 selected = '';
@@ -117,7 +116,7 @@ class InputArray {
               Shiny.setInputValue(rAddID, [elID, value, k], { priority: 'event' });
             }
             if (value === 'label') {
-              value = this.label;
+              value = label;
               this.options.updateTxtWithLabel.push(`#${k}${elID}`);
             }
 
@@ -333,15 +332,15 @@ class InputArray {
       return (count + 1);
     }
 
-    addLabelEl() {
+    addLabelEl(newLabel) {
       if (this.elInArray !== undefined) {
-        if ($.inArray(this.label, this.elInArray) !== -1) {
-          throw new Error(`Label: ${this.label} already in use.`);
+        if ($.inArray(newLabel, this.elInArray) !== -1) {
+          throw new Error(`Label: ${newLabel} already in use.`);
         }
-        this.elInArray.push(this.label);
+        this.elInArray.push(newLabel);
         return;
       }
-      this.elInArray = [this.label];
+      this.elInArray = [newLabel];
     }
 
     static createSelectInput(arrayID, elID, label, choices, aliases = choices, selectedRaw = '', multiple = false) {
@@ -465,8 +464,9 @@ class InputArray {
 export default class InputArrayFactory {
   inputArrays = {};
 
-  add(arrayID, elements, options, rObserveID) {
-    if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
+  add(arrayID, elements, options, rObserveID, reinitialize = false) {
+    if (reinitialize === false
+      && Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
       this.inputArrays[arrayID].createEl();
       return;
     }
