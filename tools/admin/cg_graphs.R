@@ -676,7 +676,6 @@ observeEvent(input$marker_color, {
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_color[1])]]]]$marker$color <<- NULL
 }, priority = -500)
 observeEvent(input$marker_colorDep, {
-  print(input$marker_colorDep)
   if(nchar(input$marker_colorDep[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_colorDep[1])]]]]$marker$color <<- input$marker_colorDep[2]
   else
@@ -1204,7 +1203,7 @@ observeEvent(input$add_array_el, {
                         color = "rgb(0,0,0)", 
                         strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyAnnotation")){
-    newContent <- list(text = scalarOutputData[[2]][1], tooltip = "", attachAtBottom = FALSE)
+    newContent <- list(text = scalarOutputData[[2]][1], attachAtBottom = FALSE)
   }else if(identical(el_id, "dy_dyShading")){
     newContent <- list(from = input$add_array_el[2], 
                        to = input$add_array_el[2], 
@@ -1850,7 +1849,7 @@ observe({
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   print("+++++++++++++++++++++++++++++++++++++++")
-  print(rv$graphConfig$graph)
+  #print(rv$graphConfig$graph)
   #print(rv$graphConfig$pivottable)
   #print(rv$graphConfig$options)
   if(activeSymbol$id > length(modelIn)){
