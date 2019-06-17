@@ -716,6 +716,10 @@
       "args":{
         "label": "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)"
       },
+      "groups":{
+        "input": "Divide input symbols into groups",
+        "output": "Divide output symbols into groups"
+      },
       "inputScalars":{
         "label": "Alias for the input scalars table",
         "placeholder": "Input scalars"
@@ -1058,7 +1062,7 @@
         "title": "Configure graphs",
         "graphUpdateSuccess": "Graph configuration was updated successfully",
         "unknownErrorGraphs": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
-        "localInput": "Upload an Excel spreadsheet with data that will be used for preview purposes",
+        "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "Select which GAMS symbol to plot",
         "chartTitle": "Choose a title for your chart",
         "height": "Choose a height for your chart (px)",

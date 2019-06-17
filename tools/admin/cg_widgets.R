@@ -470,7 +470,7 @@ observeEvent({input$widget_type
            
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
-           dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$def)
+           dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
            
            insertUI(selector = "#widget_options",
                     tagList(
@@ -1311,7 +1311,7 @@ observeEvent(input$saveWidget, {
       rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
                                          "$", input$slider_def_dep_header, ")")
     }else{
-      rv$widgetConfig$def <<- input$slider_def
+      rv$widgetConfig$default <<- input$slider_def
     }
   }else if(identical(rv$widgetConfig$widgetType, "dropdown")){
     if(identical(input$dd_choice_dep_selector, FALSE)){

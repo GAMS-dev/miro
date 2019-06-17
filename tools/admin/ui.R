@@ -120,7 +120,7 @@ body_admin <- dashboardBody({
                                                 multiple = FALSE,
                                                 accept = c("application/vnd.ms-excel", 
                                                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                           ".xlsx")),
+                                                           ".xlsx", ".gdx")),
                                       tags$div(id = "preview_wrapper", style = "display:none;",
                                                selectInput("gams_symbols", lang$adminMode$graphs$ui$gamsSymbols,
                                                            choices = NULL),

@@ -30,8 +30,6 @@ removeUI(selector = "#general_wrapper2 .shiny-input-container", multiple = TRUE)
 
 insertUI(selector = "#general_wrapper",
          tagList(
-           createArray(session, "symbol_inputGroups", "Divide input symbols into groups", autoCreate = FALSE),
-           createArray(session, "symbol_outputGroups", "Divide output symbols into groups", autoCreate = FALSE),
            radioButtons("general_language", label = lang$adminMode$general$language$label,
                         choices = langSpecific$language, 
                         selected = if(length(configJSON$language)) configJSON$language else config$language),
@@ -62,6 +60,10 @@ insertUI(selector = "#general_wrapper",
                                    choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, multiple = TRUE, options = list(
                                      'create' = TRUE,
                                      'persist' = FALSE))),
+           tags$div(style = "max-width:440px;",
+                    createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
+           tags$div(style = "max-width:440px;",
+                    createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE)),
            tags$div(style = "max-width:400px;",
                     textInput("general_input_scalars", lang$adminMode$general$inputScalars$label, value = configJSON$scalarAliases$inputScalars,
                               placeholder = lang$adminMode$general$inputScalars$placeholder)),
@@ -87,15 +89,15 @@ insertUI(selector = "#general_wrapper",
                     sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
                                 min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
                     )),
-           tags$div(id = "logo_option_wrapper",
-                    tags$div(style = "max-width:400px; display:inline-block; margin-bottom: 5px;",
-                             fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
-                                       width = "100%",
-                                       multiple = FALSE,
-                                       accept = c(".png", ".PNG", ".jpg", ".JPG"))),
-                    tags$div(style = "display:inline-block; margin: 15px 15px 15px 25px; margin-bottom: 15px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
-                             imageOutput("general_logo_preview", height = "50px", width = "230px")
-                    ))
+           tags$div(style = "max-width:400px; margin-bottom: 5px;",
+                    fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
+                              width = "100%",
+                              multiple = FALSE,
+                              accept = c(".png", ".PNG", ".jpg", ".JPG"))),
+           tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", "Logo preview:",
+                      tags$div(style = "max-width:230px; max-height:50px; margin-left: 25px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
+                               imageOutput("general_logo_preview", height = "50px", width = "230px")
+                      ))
          ), 
          where = "beforeEnd")
 # set default values for input and output groups

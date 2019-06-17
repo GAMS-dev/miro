@@ -3250,6 +3250,23 @@
                 }
               }
             },
+            "groups":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "input":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "inputScalars":{          
               "type":"object",
               "additionalProperties":false,
