@@ -21,6 +21,9 @@ const inputArrayFactory = new InputArrayFactory();
 export function removeArrayEl(arrayID, elID) {
   inputArrayFactory.remove(arrayID, elID);
 }
+export function updateArrayEl(arrayID, elID, newVal) {
+  inputArrayFactory.update(arrayID, elID, newVal);
+}
 
 export function toggleDepContainer(el, arrayID, elID, rAddID) {
   const depGroup = $(el).closest('.dep-group');
@@ -290,6 +293,7 @@ const arrayTypes = {
   dy_ydata() {
     const elements = {
       chart_ydata: ['select', lang.addDyDataEl.chartYdata, scalarIndices, scalarIndexAliases],
+      chart_ylabel: ['text', lang.addDyDataEl.label, 'label'],
       dyser_color: ['color', lang.addDyDataEl.color],
       dyopt_stepPlot: ['checkbox', lang.addDyDataEl.stepPlot],
       dyopt_stemPlot: ['checkbox', lang.addDyDataEl.stemPlot],
@@ -329,20 +333,22 @@ export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
   if (defaults == null) {
     defaults = [undefined];
   }
+  console.log('++++++++++++++');
+  console.log(defaults);
   defaults.forEach((def) => {
     if (typeof (arrayTypes[arrayID]) === 'undefined') {
       throw new ReferenceError(`Array ID: ${arrayID} not defined.`);
     }
     const [elements, options, rObserveID] = arrayTypes[arrayID](def);
-
+    console.log(arrayID);
     inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
   });
 }
-function addArrayDataElWrapper(arrayID, defaults) {
+function addArrayDataElWrapper(arrayID, defaults, cnt = 1) {
   if ($(`#${arrayID}_wrapper`).is(':visible')) {
     addArrayDataEl(arrayID, defaults, true);
-  } else {
-    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
+  } else if (cnt <= 6) {
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, cnt + 1);
   }
 }
 

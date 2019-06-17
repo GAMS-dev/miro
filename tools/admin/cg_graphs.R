@@ -676,7 +676,6 @@ observeEvent(input$marker_color, {
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_color[1])]]]]$marker$color <<- NULL
 }, priority = -500)
 observeEvent(input$marker_colorDep, {
-  print(input$marker_colorDep)
   if(nchar(input$marker_colorDep[2]))
     rv$graphConfig$graph$ydata[[idLabelMap$chart_ydata[[as.integer(input$marker_colorDep[1])]]]]$marker$color <<- input$marker_colorDep[2]
   else
@@ -1183,7 +1182,7 @@ observeEvent(input$add_array_el, {
                             line = list(width = 0L)
                           ),
                           showlegend = FALSE)
-    }else{
+    }else if(identical(input$plotly_type, "line")){
       newContent  <- list(label = label, 
                           mode = "lines",
                           line = list(
@@ -1192,6 +1191,12 @@ observeEvent(input$add_array_el, {
                             shape = "linear",
                             dash = "solid"),
                           showlegend = FALSE)
+    }else{
+      newContent  <- list(label = label, 
+                          stemPlot = FALSE, stepPlot = FALSE, 
+                          fillGraph = FALSE, drawPoints = FALSE, 
+                          pointShape = "dot",
+                          pointSize = 2L)
     }
   }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
@@ -1651,20 +1656,21 @@ getDygraphsOptions <- reactive({
     rv$graphConfig$graph$xdata <<- unname(indices[1])
     rv$graphConfig$graph$ydata <<- NULL
     rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = unname(scalarIndices[1]), 
-                                                            mode = if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "bubble"))
-                                                              "markers" else "lines", 
                                                             stemPlot = FALSE, stepPlot = FALSE, 
-                                                            fillGraph = FALSE, drawPoints = FALSE, pointShape = "dot",
+                                                            fillGraph = FALSE, drawPoints = FALSE, 
+                                                            pointShape = "dot",
                                                             pointSize = 2L)
     rv$graphConfig$graph$dyEvent <<- NULL
     rv$graphConfig$graph$dyLimit <<- NULL
     rv$graphConfig$graph$dyAnnotation <<- NULL
     rv$graphConfig$graph$dyShading <<- NULL
-    rv$graphConfig$graph$dyOptions <<- list(includeZero = FALSE, logscale = FALSE, drawGrid = FALSE,
+    rv$graphConfig$graph$dyOptions <<- list(includeZero = FALSE, logscale = FALSE, drawGrid = TRUE,
                                             stepPlot = FALSE, stemPlot = FALSE, fillGraph = FALSE,
                                             fillAlpha = 0.15, drawPoints = FALSE, pointShape = "dot",
                                             pointSize = 2L)
-    rv$graphConfig$graph$dyHighlight <<- NULL
+    rv$graphConfig$graph$dyHighlight <<- list(highlightSeriesBackgroundAlpha = 0.5,
+                                              hideOnMouseOut = TRUE, 
+                                              highlightCircleSize = 3L)
     rv$graphConfig$graph$color <<- NULL
     if(length(scalarIndices)){
       idLabelMap$chart_ydata[[1]] <<- scalarIndices[[1]]
