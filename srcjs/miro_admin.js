@@ -91,7 +91,7 @@ const arrayTypes = {
   dy_dyAnnotation() {
     const elements = {
       dy_dyAnnotation: ['select', lang.addDyAnnotation.dyDyAnnotation, outputScalars, outputScalarAliases],
-      dyAnnotation_text: ['text', lang.addDyAnnotation.text, outputScalarAliases[1]],
+      dyAnnotation_text: ['text', lang.addDyAnnotation.text, outputScalarAliases[0]],
       dyAnnotation_tooltip: ['text', lang.addDyAnnotation.tooltip],
       dyAnnotation_width: ['numeric', lang.addDyAnnotation.width, 0, 0],
       dyAnnotation_height: ['numeric', lang.addDyAnnotation.height, 0, 0],
