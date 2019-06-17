@@ -13,7 +13,7 @@ pipeline {
                     agent { label 'master' }
                         steps {
                             step([$class: 'WsCleanup'])
-                            checkout([$class: 'GitSCM', branches: [[name: '1cf1bfe66d44c3a1a91a7becdef259b4f0525434']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
+                            checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                             sh '''
                                 echo "Do the linux packaging stuff here."
                             '''
@@ -23,7 +23,7 @@ pipeline {
                     agent { label 'windowsX64' }
                     steps {
                         step([$class: 'WsCleanup'])
-                        checkout([$class: 'GitSCM', branches: [[name: '1cf1bfe66d44c3a1a91a7becdef259b4f0525434']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
+                        checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Share/Freddy/libraries/GMSR_win.zip', userName: username)])
@@ -153,7 +153,7 @@ pipeline {
                     agent { label 'macos' }
                     steps {
                         step([$class: 'WsCleanup'])
-                        checkout([$class: 'GitSCM', branches: [[name: '1cf1bfe66d44c3a1a91a7becdef259b4f0525434']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
+                        checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/'+env.BRANCH_NAME]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'GitLFSPull']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'd60edbb5-9329-4eba-81b2-448d800c4002', url: 'git@git.gams.com:fproske/gmswebui.git']]])
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'cmex_deg.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_deg.zip', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'mac-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/mac-lib.zip', userName: username)])
