@@ -111,7 +111,9 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-/* global $:false Shiny:false outputScalars outputScalarAliases */
+/* global $:false Shiny:false outputScalars outputScalarAliases outputSymbols */
+
+/* global outputSymbolsAliases Miro:false */
 
 /*eslint-disable */
 
@@ -193,7 +195,9 @@ function () {
     this.elements = void 0;
     this.rObserveID = void 0;
     this.options = void 0;
-    this.elInArray = void 0;
+    this.indexEl = void 0;
+    this.elCount = 0;
+    this.elInArray = [];
     this.freeElIDs = [];
     this.isNewElement = true;
     this.arrayID = arrayID;
@@ -228,37 +232,65 @@ function () {
       $.each(this.elements, function (k, v) {
         var selected;
         var value;
+        var choices = [];
+        var aliases = [];
 
         switch (v[0]) {
           case 'select':
             if (idx === 0) {
               if (_this.options.elRequired === true) {
                 // as labels need to be unique, set default to option that is not already in use
-                var noElInArray = _this.elInArray !== undefined ? _this.elInArray.length : 0;
+                _this.indexEl = k;
 
-                if (v[2].length - 1 === noElInArray) {
+                if (v[2].length - 1 === _this.elCount) {
                   $("#".concat(_this.arrayID, "_wrapper .btn-add-array-el")).prop('disabled', true);
                 }
 
                 for (var i = 0; i < v[2].length; i++) {
-                  if ($.inArray(v[2][i], _this.elInArray) === -1) {
-                    selected = v[2][i];
-                    label = v[3][i];
-                    break;
+                  if (_this.elInArray.indexOf(v[2][i]) === -1) {
+                    choices.push(v[2][i]);
+
+                    if (typeof v[3] !== 'undefined') {
+                      aliases.push(v[3][i]);
+                    }
                   }
                 }
 
-                _this.addLabelEl(selected);
+                var _choices = choices;
+
+                var _choices2 = _slicedToArray(_choices, 1);
+
+                selected = _choices2[0];
+                var _aliases = aliases;
+
+                var _aliases2 = _slicedToArray(_aliases, 1);
+
+                label = _aliases2[0];
+
+                for (var _i2 = 1; _i2 < elID; _i2++) {
+                  var labelEl = $("#".concat(k).concat(_i2));
+
+                  if (labelEl.length) {
+                    labelEl[0].selectize.disable();
+                  }
+                }
+
+                _this.addLabelEl(elID, selected);
               } else {
                 var _v = _slicedToArray(v, 4);
 
-                var _v$ = _slicedToArray(_v[2], 1);
+                choices = _v[2];
+                aliases = _v[3];
+                var _choices3 = choices;
 
-                selected = _v$[0];
+                var _choices4 = _slicedToArray(_choices3, 1);
 
-                var _v$2 = _slicedToArray(_v[3], 1);
+                selected = _choices4[0];
+                var _aliases3 = aliases;
 
-                label = _v$2[0];
+                var _aliases4 = _slicedToArray(_aliases3, 1);
+
+                label = _aliases4[0];
               }
 
               if (_this.resetDefault()) {
@@ -271,26 +303,33 @@ function () {
               });
             } else if (_this.resetDefault()) {
               selected = '';
-            } else {
-              var _v2 = _slicedToArray(v, 5);
 
-              selected = _v2[4];
+              var _v2 = _slicedToArray(v, 4);
+
+              choices = _v2[2];
+              aliases = _v2[3];
+            } else {
+              var _v3 = _slicedToArray(v, 5);
+
+              choices = _v3[2];
+              aliases = _v3[3];
+              selected = _v3[4];
             }
 
-            arrayContent += InputArray.createSelectInput(k, elID, v[1], v[2], v[3], selected, v[5]);
+            arrayContent += InputArray.createSelectInput(k, elID, v[1], choices, aliases, selected, v[5]);
             break;
 
           case 'selectDep':
-            var _v3 = _slicedToArray(v, 4);
+            var _v4 = _slicedToArray(v, 4);
 
-            var _v3$ = _slicedToArray(_v3[3], 1);
+            var _v4$ = _slicedToArray(_v4[3], 1);
 
-            selected = _v3$[0];
+            selected = _v4$[0];
 
             if (v[5] !== undefined) {
-              var _v4 = _slicedToArray(v, 6);
+              var _v5 = _slicedToArray(v, 6);
 
-              selected = _v4[5];
+              selected = _v5[5];
             }
 
             if (_this.resetDefault()) {
@@ -334,9 +373,9 @@ function () {
             if (_this.resetDefault()) {
               value = '';
             } else {
-              var _v5 = _slicedToArray(v, 3);
+              var _v6 = _slicedToArray(v, 3);
 
-              value = _v5[2];
+              value = _v6[2];
             }
 
             if (idx === 0 && _this.options.elRequired === false) {
@@ -353,9 +392,9 @@ function () {
             if (_this.resetDefault()) {
               value = false;
             } else {
-              var _v6 = _slicedToArray(v, 3);
+              var _v7 = _slicedToArray(v, 3);
 
-              value = _v6[2];
+              value = _v7[2];
             }
 
             if (idx === 0 && _this.options.elRequired === false) {
@@ -372,9 +411,9 @@ function () {
             if (_this.resetDefault()) {
               value = '';
             } else {
-              var _v7 = _slicedToArray(v, 3);
+              var _v8 = _slicedToArray(v, 3);
 
-              value = _v7[2];
+              value = _v8[2];
             }
 
             arrayContent += InputArray.createColorPickerInput(k, elID, v[1], value);
@@ -398,6 +437,7 @@ function () {
       $("#".concat(this.arrayID, "_wrapper .array-wrapper")).append(arrayContent);
       this.registerChangeHandlers(this.elements, rAddID, elID, this.options);
       this.isNewElement = false;
+      this.elCount += 1;
     }
   }, {
     key: "removeElAtomic",
@@ -438,7 +478,7 @@ function () {
           var depEl = $(v).children('.dep-el');
 
           if (idx === 0) {
-            arrayLabel = _this2.elID;
+            arrayLabel = elID;
           }
 
           _this2.removeElAtomic(depEl.eq(0).children('.form-group'), idx, elID);
@@ -478,8 +518,15 @@ function () {
         throw new Error("Failed to remove array element: Could not find identifier for array element: ".concat(this.arrayID, " (label ID: ").concat(this.arrayID).concat(elID, ")."));
       }
 
-      if (this.elInArray !== undefined) {
-        this.elInArray.splice($.inArray(arrayLabel, this.elInArray), 1);
+      this.elCount -= 1;
+      delete this.elInArray[elID];
+
+      if (this.elCount === 1 && this.indexEl !== undefined) {
+        var labelEl = $("#".concat(this.indexEl, "1"));
+
+        if (labelEl.length) {
+          labelEl[0].selectize.enable();
+        }
       }
 
       $("#".concat(this.arrayID, "_wrapper .btn-add-array-el:disabled")).prop('disabled', false);
@@ -490,6 +537,13 @@ function () {
       $("#".concat(this.arrayID).concat(elID, "_wrapper")).remove();
     }
   }, {
+    key: "updateArrayEl",
+    value: function updateArrayEl(elID, newVal) {
+      if (this.elInArray[elID] !== undefined) {
+        this.elInArray[elID] = newVal;
+      }
+    }
+  }, {
     key: "registerChangeHandlers",
     value: function registerChangeHandlers(elements, rAddID, elID, options) {
       var _this3 = this;
@@ -497,18 +551,23 @@ function () {
       var htmlID = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : elID;
       var notFirstIdx = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
       var idx = 0;
+      var arrayID = this.arrayID;
       $.each(elements, function (k, v) {
         if (v[0] === 'select' || v[0] === 'selectDep') {
           if (!notFirstIdx && idx === 0) {
             $("#".concat(k).concat(htmlID)).selectize({
               onChange: function onChange(value) {
-                if (options.updateTxtWithLabel.length) {
-                  var alias = outputScalarAliases[outputScalars.findIndex(function (val) {
-                    return val === value;
-                  })];
+                if (options.elRequired) {
+                  Miro.updateArrayEl(arrayID, elID, value);
+                }
 
-                  for (var i = 0; i < options.updateTxtWithLabel.length; i++) {
-                    $(options.updateTxtWithLabel[i]).val(alias);
+                if (options.updateTxtWithLabel.length) {
+                  var alias = $("#".concat(k).concat(htmlID)).text();
+
+                  if (typeof alias !== 'undefined') {
+                    for (var i = 0; i < options.updateTxtWithLabel.length; i++) {
+                      $(options.updateTxtWithLabel[i]).val(alias);
+                    }
                   }
                 }
 
@@ -530,9 +589,9 @@ function () {
           if (v[0] === 'selectDep') {
             var altElements = {};
 
-            var _v8 = _slicedToArray(v, 2);
+            var _v9 = _slicedToArray(v, 2);
 
-            altElements[k] = _v8[1];
+            altElements[k] = _v9[1];
             altElements[k].shift();
 
             _this3.registerChangeHandlers(altElements, rAddID, elID, options, "_alt".concat(elID), idx !== 0);
@@ -589,10 +648,6 @@ function () {
     value: function incElCount() {
       var count = $("#".concat(this.arrayID, "_wrapper .array-wrapper")).children('.config-array-el').length;
 
-      if (count === 0) {
-        delete this.elInArray;
-      }
-
       if (this.freeElIDs.length) {
         return this.freeElIDs.pop();
       }
@@ -601,17 +656,12 @@ function () {
     }
   }, {
     key: "addLabelEl",
-    value: function addLabelEl(newLabel) {
-      if (this.elInArray !== undefined) {
-        if ($.inArray(newLabel, this.elInArray) !== -1) {
-          throw new Error("Label: ".concat(newLabel, " already in use."));
-        }
-
-        this.elInArray.push(newLabel);
-        return;
+    value: function addLabelEl(elID, newLabel) {
+      if (this.elInArray.indexOf(newLabel) !== -1) {
+        throw new Error("Label: ".concat(newLabel, " already in use."));
       }
 
-      this.elInArray = [newLabel];
+      this.elInArray[elID] = newLabel;
     }
   }], [{
     key: "createSelectInput",
@@ -749,6 +799,16 @@ function () {
 
       return false;
     }
+  }, {
+    key: "update",
+    value: function update(arrayID, elID, newVal) {
+      if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
+        this.inputArrays[arrayID].updateArrayEl(elID, newVal);
+        return true;
+      }
+
+      return false;
+    }
   }]);
 
   return InputArrayFactory;
@@ -762,12 +822,13 @@ function () {
 /*!*****************************!*\
   !*** ./srcjs/miro_admin.js ***!
   \*****************************/
-/*! exports provided: removeArrayEl, toggleDepContainer, addArrayDataEl */
+/*! exports provided: removeArrayEl, updateArrayEl, toggleDepContainer, addArrayDataEl */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeArrayEl", function() { return removeArrayEl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrayEl", function() { return updateArrayEl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toggleDepContainer", function() { return toggleDepContainer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addArrayDataEl", function() { return addArrayDataEl; });
 /* harmony import */ var _input_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input_array */ "./srcjs/input_array.js");
@@ -798,6 +859,9 @@ var outputSymbolsAliases = [];
 var inputArrayFactory = new _input_array__WEBPACK_IMPORTED_MODULE_0__["default"]();
 function removeArrayEl(arrayID, elID) {
   inputArrayFactory.remove(arrayID, elID);
+}
+function updateArrayEl(arrayID, elID, newVal) {
+  inputArrayFactory.update(arrayID, elID, newVal);
 }
 function toggleDepContainer(el, arrayID, elID, rAddID) {
   var depGroup = $(el).closest('.dep-group');
@@ -887,7 +951,7 @@ var arrayTypes = {
   dy_dyAnnotation: function dy_dyAnnotation() {
     var elements = {
       dy_dyAnnotation: ['select', lang.addDyAnnotation.dyDyAnnotation, outputScalars, outputScalarAliases],
-      dyAnnotation_text: ['text', lang.addDyAnnotation.text, outputScalarAliases[1]],
+      dyAnnotation_text: ['text', lang.addDyAnnotation.text, 'label'],
       dyAnnotation_tooltip: ['text', lang.addDyAnnotation.tooltip],
       dyAnnotation_width: ['numeric', lang.addDyAnnotation.width, 0, 0],
       dyAnnotation_height: ['numeric', lang.addDyAnnotation.height, 0, 0],
@@ -1030,6 +1094,7 @@ var arrayTypes = {
   dy_ydata: function dy_ydata() {
     var elements = {
       chart_ydata: ['select', lang.addDyDataEl.chartYdata, scalarIndices, scalarIndexAliases],
+      chart_ylabel: ['text', lang.addDyDataEl.label, 'label'],
       dyser_color: ['color', lang.addDyDataEl.color],
       dyopt_stepPlot: ['checkbox', lang.addDyDataEl.stepPlot],
       dyopt_stemPlot: ['checkbox', lang.addDyDataEl.stemPlot],
@@ -1092,10 +1157,12 @@ function addArrayDataEl(arrayID, defaultsRaw) {
 }
 
 function addArrayDataElWrapper(arrayID, defaults) {
+  var cnt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
   if ($("#".concat(arrayID, "_wrapper")).is(':visible')) {
     addArrayDataEl(arrayID, defaults, true);
-  } else {
-    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults);
+  } else if (cnt <= 6) {
+    setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, cnt + 1);
   }
 }
 

@@ -1,4 +1,5 @@
-/* global $:false Shiny:false outputScalars outputScalarAliases */
+/* global $:false Shiny:false outputScalars outputScalarAliases outputSymbols */
+/* global outputSymbolsAliases Miro:false */
 /*eslint-disable */
 /*
  * jQuery throttle / debounce - v1.1 - 3/7/2010
@@ -20,7 +21,11 @@ class InputArray {
 
     options;
 
-    elInArray;
+    indexEl;
+
+    elCount = 0;
+
+    elInArray = [];
 
     freeElIDs = [];
 
@@ -54,27 +59,40 @@ class InputArray {
       $.each(this.elements, (k, v) => {
         let selected;
         let value;
+        let choices = [];
+        let aliases = [];
+
         switch (v[0]) {
           case 'select':
             if (idx === 0) {
               if (this.options.elRequired === true) {
                 // as labels need to be unique, set default to option that is not already in use
-                const noElInArray = (this.elInArray !== undefined
-                  ? this.elInArray.length : 0);
+                this.indexEl = k;
 
-                if (v[2].length - 1 === noElInArray) {
+                if (v[2].length - 1 === this.elCount) {
                   $(`#${this.arrayID}_wrapper .btn-add-array-el`).prop('disabled', true);
                 }
                 for (let i = 0; i < v[2].length; i++) {
-                  if ($.inArray(v[2][i], this.elInArray) === -1) {
-                    selected = v[2][i];
-                    label = v[3][i];
-                    break;
+                  if (this.elInArray.indexOf(v[2][i]) === -1) {
+                    choices.push(v[2][i]);
+                    if (typeof v[3] !== 'undefined') {
+                      aliases.push(v[3][i]);
+                    }
                   }
                 }
-                this.addLabelEl(selected);
+                [selected] = choices;
+                [label] = aliases;
+                for (let i = 1; i < elID; i++) {
+                  const labelEl = $(`#${k}${i}`);
+                  if (labelEl.length) {
+                    labelEl[0].selectize.disable();
+                  }
+                }
+                this.addLabelEl(elID, selected);
               } else {
-                [,, [selected], [label]] = v;
+                [,, choices, aliases] = v;
+                [selected] = choices;
+                [label] = aliases;
               }
               if (this.resetDefault()) {
                 selected = '';
@@ -83,10 +101,12 @@ class InputArray {
               Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
             } else if (this.resetDefault()) {
               selected = '';
+              [,, choices, aliases] = v;
             } else {
-              [,,,, selected] = v;
+              [,, choices, aliases, selected] = v;
             }
-            arrayContent += InputArray.createSelectInput(k, elID, v[1], v[2], v[3], selected, v[5]);
+            arrayContent += InputArray.createSelectInput(k, elID, v[1],
+              choices, aliases, selected, v[5]);
             break;
           case 'selectDep':
             [,,, [selected]] = v;
@@ -177,6 +197,7 @@ class InputArray {
 
       this.registerChangeHandlers(this.elements, rAddID, elID, this.options);
       this.isNewElement = false;
+      this.elCount += 1;
     }
 
     removeElAtomic(element, idxRaw, elID) {
@@ -208,7 +229,7 @@ class InputArray {
         } else if ($(v).children('.dep-el').length) {
           const depEl = $(v).children('.dep-el');
           if (idx === 0) {
-            arrayLabel = this.elID;
+            arrayLabel = elID;
           }
           this.removeElAtomic(depEl.eq(0).children('.form-group'), idx, elID);
           this.removeElAtomic(depEl.eq(1).children('.form-group'), idx, elID);
@@ -241,8 +262,14 @@ class InputArray {
           this.arrayID} (label ID: ${this.arrayID}${elID}).`);
       }
 
-      if (this.elInArray !== undefined) {
-        this.elInArray.splice($.inArray(arrayLabel, this.elInArray), 1);
+      this.elCount -= 1;
+      delete this.elInArray[elID];
+
+      if (this.elCount === 1 && this.indexEl !== undefined) {
+        const labelEl = $(`#${this.indexEl}1`);
+        if (labelEl.length) {
+          labelEl[0].selectize.enable();
+        }
       }
       $(`#${this.arrayID}_wrapper .btn-add-array-el:disabled`).prop('disabled', false);
       Shiny.setInputValue(`remove_${this.rObserveID}`, [this.arrayID, arrayLabel, elID], {
@@ -252,18 +279,29 @@ class InputArray {
       $(`#${this.arrayID}${elID}_wrapper`).remove();
     }
 
+    updateArrayEl(elID, newVal) {
+      if (this.elInArray[elID] !== undefined) {
+        this.elInArray[elID] = newVal;
+      }
+    }
+
     registerChangeHandlers(elements, rAddID, elID, options, htmlID = elID, notFirstIdx = false) {
       let idx = 0;
-
+      const { arrayID } = this;
       $.each(elements, (k, v) => {
         if (v[0] === 'select' || v[0] === 'selectDep') {
           if (!notFirstIdx && idx === 0) {
             $(`#${k}${htmlID}`).selectize({
               onChange(value) {
+                if (options.elRequired) {
+                  Miro.updateArrayEl(arrayID, elID, value);
+                }
                 if (options.updateTxtWithLabel.length) {
-                  const alias = outputScalarAliases[outputScalars.findIndex(val => val === value)];
-                  for (let i = 0; i < options.updateTxtWithLabel.length; i++) {
-                    $(options.updateTxtWithLabel[i]).val(alias);
+                  const alias = $(`#${k}${htmlID}`).text();
+                  if (typeof (alias) !== 'undefined') {
+                    for (let i = 0; i < options.updateTxtWithLabel.length; i++) {
+                      $(options.updateTxtWithLabel[i]).val(alias);
+                    }
                   }
                 }
 
@@ -323,24 +361,17 @@ class InputArray {
 
     incElCount() {
       const count = $(`#${this.arrayID}_wrapper .array-wrapper`).children('.config-array-el').length;
-      if (count === 0) {
-        delete this.elInArray;
-      }
       if (this.freeElIDs.length) {
         return (this.freeElIDs.pop());
       }
       return (count + 1);
     }
 
-    addLabelEl(newLabel) {
-      if (this.elInArray !== undefined) {
-        if ($.inArray(newLabel, this.elInArray) !== -1) {
-          throw new Error(`Label: ${newLabel} already in use.`);
-        }
-        this.elInArray.push(newLabel);
-        return;
+    addLabelEl(elID, newLabel) {
+      if (this.elInArray.indexOf(newLabel) !== -1) {
+        throw new Error(`Label: ${newLabel} already in use.`);
       }
-      this.elInArray = [newLabel];
+      this.elInArray[elID] = newLabel;
     }
 
     static createSelectInput(arrayID, elID, label, choices, aliases = choices, selectedRaw = '', multiple = false) {
@@ -477,6 +508,14 @@ export default class InputArrayFactory {
   remove(arrayID, elID) {
     if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
       this.inputArrays[arrayID].removeArrayEl(elID);
+      return (true);
+    }
+    return (false);
+  }
+
+  update(arrayID, elID, newVal) {
+    if (Object.prototype.hasOwnProperty.call(this.inputArrays, arrayID)) {
+      this.inputArrays[arrayID].updateArrayEl(elID, newVal);
       return (true);
     }
     return (false);

@@ -253,9 +253,16 @@ renderGraph <- function(data, configData, options, height = NULL){
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
                         elementId = NULL)
         }else{
-          idxVector <- match(tolower(names(options$ydata)), tolower(colnames(data)))
-          xts_data <- as.matrix(data[, idxVector])
-          row.names(xts_data) <- as.character(data[[1]])
+          idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
+          dataColId <- 1L
+          if(length(options$xdata)){
+            dataColId <- match(tolower(options$xdata[1]), tolower(names(data)))
+            if(is.na(dataColId)){
+              dataColId <- 1L
+            }
+          }
+          
+          xts_data <- xts(data[, idxVector], order.by = data[[dataColId]])
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
           p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 

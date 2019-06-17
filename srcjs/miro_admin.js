@@ -94,7 +94,7 @@ const arrayTypes = {
   dy_dyAnnotation() {
     const elements = {
       dy_dyAnnotation: ['select', lang.addDyAnnotation.dyDyAnnotation, outputScalars, outputScalarAliases],
-      dyAnnotation_text: ['text', lang.addDyAnnotation.text, outputScalarAliases[0]],
+      dyAnnotation_text: ['text', lang.addDyAnnotation.text, 'label'],
       dyAnnotation_tooltip: ['text', lang.addDyAnnotation.tooltip],
       dyAnnotation_width: ['numeric', lang.addDyAnnotation.width, 0, 0],
       dyAnnotation_height: ['numeric', lang.addDyAnnotation.height, 0, 0],
@@ -333,14 +333,11 @@ export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
   if (defaults == null) {
     defaults = [undefined];
   }
-  console.log('++++++++++++++');
-  console.log(defaults);
   defaults.forEach((def) => {
     if (typeof (arrayTypes[arrayID]) === 'undefined') {
       throw new ReferenceError(`Array ID: ${arrayID} not defined.`);
     }
     const [elements, options, rObserveID] = arrayTypes[arrayID](def);
-    console.log(arrayID);
     inputArrayFactory.add(arrayID, elements, options, rObserveID, reinitialize);
   });
 }

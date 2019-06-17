@@ -1156,6 +1156,14 @@ observeEvent(input$add_array_el, {
       if(length(input$add_array_el) > 3L){
         # when label is merely changed not added, we must preserve the previous config
         currentContent <- rv$graphConfig$graph[[JSON_id]][[labelID]]
+        # change labels
+        if(identical(el_id, "chart_ydata")){
+          currentContent$label <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
+        }else if(identical(el_id, "hist_xdata")){
+          currentContent$labels <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
+        }else if(identical(el_id, "dy_dyAnnotation")){
+          currentContent$text <- scalarOutputData[[2]][match(chart_label, scalarOutputData[[1]])][1]
+        }
       }
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
     }
@@ -1170,27 +1178,29 @@ observeEvent(input$add_array_el, {
   
   if(identical(el_id, "chart_ydata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "bubble")){
-      newContent  <- list(label = label, 
-                          mode = "markers",
-                          fill = "none",
-                          marker = list(
-                            symbol = "circle",
-                            color = "rgb(0,0,0)",
-                            opacity = 1L,
-                            size = 6L,
-                            line = list(width = 0L)
-                          ),
-                          showlegend = FALSE)
-    }else if(identical(input$plotly_type, "line")){
-      newContent  <- list(label = label, 
-                          mode = "lines",
-                          line = list(
-                            color = "rgb(0,0,0)",
-                            width = 2L,
-                            shape = "linear",
-                            dash = "solid"),
-                          showlegend = FALSE)
+    if(identical(input$chart_tool, "plotly")){
+      if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "bubble")){
+        newContent  <- list(label = label, 
+                            mode = "markers",
+                            fill = "none",
+                            marker = list(
+                              symbol = "circle",
+                              color = "rgb(0,0,0)",
+                              opacity = 1L,
+                              size = 6L,
+                              line = list(width = 0L)
+                            ),
+                            showlegend = FALSE)
+      }else if(identical(input$plotly_type, "line")){
+        newContent  <- list(label = label, 
+                            mode = "lines",
+                            line = list(
+                              color = "rgb(0,0,0)",
+                              width = 2L,
+                              shape = "linear",
+                              dash = "solid"),
+                            showlegend = FALSE)
+      }
     }else{
       newContent  <- list(label = label, 
                           stemPlot = FALSE, stepPlot = FALSE, 
@@ -1655,7 +1665,7 @@ getDygraphsOptions <- reactive({
   isolate({
     rv$graphConfig$graph$xdata <<- unname(indices[1])
     rv$graphConfig$graph$ydata <<- NULL
-    rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = unname(scalarIndices[1]), 
+    rv$graphConfig$graph$ydata[[scalarIndices[1]]] <<- list(label = names(scalarIndices)[[1]], 
                                                             stemPlot = FALSE, stepPlot = FALSE, 
                                                             fillGraph = FALSE, drawPoints = FALSE, 
                                                             pointShape = "dot",
@@ -1856,7 +1866,7 @@ observe({
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
   print("+++++++++++++++++++++++++++++++++++++++")
-  #print(rv$graphConfig$graph)
+  print(rv$graphConfig$graph)
   #print(rv$graphConfig$pivottable)
   #print(rv$graphConfig$options)
   if(activeSymbol$id > length(modelIn)){
