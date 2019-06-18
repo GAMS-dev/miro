@@ -9,10 +9,10 @@ names(langSpecificUI$symbolType) <- lang$adminMode$widgets$ui$choices
 header_admin <- dashboardHeader(
   tags$li(class = "dropdown", 
           tags$a(href="#", class="dropdown-toggle", "data-toggle" = "dropdown", 
-                 lang$adminMode$uiR$help, tags$span(class="caret")),
+                 lang$nav$header$help$title, tags$span(class="caret")),
           tags$ul(class = "dropdown-menu", role="menu",
                   tags$li(tags$a(href = "https://www.gams.com/miro/", 
-                                 target = "_blank", lang$adminMode$uiR$documentation)),
+                                 target = "_blank", lang$nav$header$help$doc)),
                   tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                       'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')
@@ -36,7 +36,6 @@ body_admin <- dashboardBody({
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
       tags$script(src = "jquery.slimscroll.min.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
-      tags$script(src = "miro.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
       tags$style(HTML(paste0('
 .main-header .logo {
@@ -97,9 +96,12 @@ body_admin <- dashboardBody({
                     tags$label("for" = "db_remove_wrapper", lang$adminMode$database$remove),
                     tags$div(id = "db_remove_wrapper", lang$adminMode$database$removeWrapper,
                              HTML(paste0('<br><button type="button" class="btn btn-default"', 
-                                         ' onclick="Miro.confirmModalShow(\'Remove database tables\', \'Are you sure that you want to delete all database tables? ',
-                                         'This can not be undone! You might want to save the database first before proceeding.\', \'Cancel\', ',
-                                         '\'Remove tables\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">Delete all database tables</button>'
+                                         ' onclick="Miro.confirmModalShow(\'', lang$adminMode$database$removeDialogTitle, 
+                                         '\', \'', lang$adminMode$database$removeDialogDesc,
+                                         '\', \'', lang$adminMode$database$removeDialogCancel, '\', ',
+                                         '\'', lang$adminMode$database$removeDialogConfirm, 
+                                         '\', \'Shiny.setInputValue(\\\'removeDbTables\\\', 1, {priority: \\\'event\\\'});\')">',
+                                         lang$adminMode$database$removeDialogBtn, '</button>'
                              ))
                     )
                 )

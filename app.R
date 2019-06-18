@@ -347,6 +347,7 @@ if(is.null(errMsg)){
     source("./R/db_hcubeload.R")
   }
 }
+showRemoveDbTablesBtn <- FALSE
 if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(LAUNCHADMINMODE, FALSE)){
   # checking database inconsistencies
   local({
@@ -377,6 +378,7 @@ This could be caused because you used a different database schema in the past (e
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(inconsistentTables$names)){
+      showRemoveDbTablesBtn <<- TRUE
       flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
 Those tables are: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
@@ -462,10 +464,10 @@ if(!is.null(errMsg)){
   }
   close(pb)
   pb <- NULL
-  
   ui_initError <- fluidPage(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
+      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
+      tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(
       if(!exists("lang") || is.null(lang$errMsg$initErrors$title)){
@@ -474,6 +476,18 @@ if(!is.null(errMsg)){
         lang$errMsg$initErrors$title
       }),
     fluidRow(align="center",
+             tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
+                      if(!exists("lang") || is.null(lang$adminMode$database$removeSuccess)){
+                        "Database tables removed successfully"
+                      }else{
+                        lang$adminMode$database$removeSuccess
+                      }),
+             tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
+                      if(!exists("lang") || is.null(lang$errMsg$unknownError)){
+                        "An unexpected error occurred."
+                      }else{
+                        lang$errMsg$unknownError
+                      }),
              HTML("<br>"),
              div(
                if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
@@ -484,10 +498,49 @@ if(!is.null(errMsg)){
                , class = "initErrors"),
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
+             if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+               actionButton("removeDbTablesPre", lang$adminMode$database$remove)
+               tagList(
+                 tags$div(id = "db_remove_wrapper",
+                          if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
+                            "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
+                          }else{
+                            lang$adminMode$database$removeWrapper
+                          },
+                          actionButton("removeDbTablesPre", 
+                                       if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
+                                         "Delete all database tables"
+                                       }else{
+                                         lang$adminMode$database$removeDialogBtn
+                                       })
+                 )
+               )
+             },
              tableOutput("JSONErrorMessages")
     )
   )
   server_initError <- function(input, output, session){
+    if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+      if(!exists("lang") || is.null(lang$adminMode$database$removeDialogTitle)){
+        removeDbTabLang <- list(title = "Remove database tables",
+                                desc = "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
+                                cancel = "Cancel",
+                                confirm = "")
+      }else{
+        removeDbTabLang <- list(title = lang$adminMode$database$removeDialogTitle,
+                                desc = lang$adminMode$database$removeDialogDesc,
+                                cancel = lang$adminMode$database$removeDialogCancel,
+                                confirm = lang$adminMode$database$removeDialogConfirm)
+      }
+      observeEvent(input$removeDbTablesPre, {
+        showModal(modalDialog(title = removeDbTabLang$title,
+                              removeDbTabLang$desc, footer = tagList(
+                      modalButton(removeDbTabLang$cancel),
+                      actionButton("removeDbTables", label = removeDbTabLang$confirm, 
+                                   class = "bt-highlight-1"))))
+      })
+      source(file.path('tools', 'admin', 'db_management.R'), local = TRUE)
+    }
     output$errorMessages <- renderText(
       errMsg
     )

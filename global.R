@@ -1,5 +1,5 @@
 # gams model name
-modelName <- "pickstock"
+modelName <- "pickstock_groups"
 # turn debug mode on or off
 debugMode <- TRUE
 # miro data folder prefix

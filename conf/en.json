@@ -680,8 +680,6 @@
   },
   "adminMode":{
     "uiR":{
-      "help": "Help",
-      "documentation": "Documentation",
       "adminPanel": "GAMS MIRO admin panel",
       "general": "General settings",
       "table": "Table settings",
@@ -1055,7 +1053,12 @@
       "restoreWrapper": "You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
       "restoreDb": "Restore",
       "remove": "Delete data",
-      "removeWrapper": "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
+      "removeWrapper": "You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
+      "removeDialogBtn": "Delete all database tables",
+      "removeDialogTitle": "Remove database tables",
+      "removeDialogDesc": "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
+      "removeDialogCancel": "Cancel",
+      "removeDialogConfirm": "Remove tables"
     },
     "graphs":{
       "ui":{

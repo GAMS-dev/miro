@@ -3075,17 +3075,7 @@
           "type":"object",
           "additionalProperties":false,
           "required":true,
-          "properties":{  
-            "help":{ 
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
-            "documentation":{ 
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
+          "properties":{
             "adminPanel":{ 
               "type":"string",
               "minLength":1,
@@ -4907,6 +4897,31 @@
               "required":true
             },
             "removeWrapper":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeDialogBtn":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeDialogTitle":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeDialogDesc":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeDialogCancel":{ 
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "removeDialogConfirm":{ 
               "type":"string",
               "minLength":1,
               "required":true
