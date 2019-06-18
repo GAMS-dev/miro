@@ -261,8 +261,13 @@ renderGraph <- function(data, configData, options, height = NULL){
               dataColId <- 1L
             }
           }
+          dateCol <- data[[dataColId]]
           
-          xts_data <- xts(data[, idxVector], order.by = data[[dataColId]])
+          if (!inherits(dateCol, "POSIXct"))
+            dateCol <- as.POSIXct(dateCol, tz = "GMT")
+          
+          xts_data <- xts(data[, idxVector], order.by = dateCol)
+          
           p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                         ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
           p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
