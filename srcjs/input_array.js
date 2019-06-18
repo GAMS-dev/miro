@@ -54,6 +54,7 @@ class InputArray {
       let arrayContent = `<div id="${this.arrayID}${elID}_wrapper" class="config-array-el">\n`;
       let idx = 0;
       let label = '';
+      let labelID;
 
       $.each(this.elements, (k, v) => {
         let selected;
@@ -80,6 +81,7 @@ class InputArray {
                   }
                 }
                 [selected] = choices;
+                labelID = selected;
                 [label] = aliases;
                 for (let i = 1; i < elID; i++) {
                   const labelEl = $(`#${k}${i}`);
@@ -103,7 +105,11 @@ class InputArray {
               [,, choices, aliases] = v;
             } else {
               [,, choices, aliases, selected] = v;
+              if (selected === '.index') {
+                selected = labelID;
+              }
             }
+
             arrayContent += InputArray.createSelectInput(k, elID, v[1],
               choices, aliases, selected, v[5]);
             break;
@@ -115,6 +121,8 @@ class InputArray {
             }
             if (this.resetDefault()) {
               selected = '';
+            } else if (selected === '.index') {
+              selected = labelID;
             }
             if (idx === 0) {
               // tell R that new element was addded to array: (ID)

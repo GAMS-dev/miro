@@ -780,6 +780,15 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE){
       div(style = "background:#000;")
   )
 }
+checkboxInput_MIRO <- function(inputId, label, value = FALSE){
+  tags$div(class = "shiny-input-container",
+    tags$label(class = "cb-label", "for" = inputId, label),
+    tags$div(
+      tags$label(class = "checkbox-material", 
+                 checkboxInput(inputId, label = NULL, value)
+      ))
+  )
+}
 filterDf <- function(df, filterCondition){
   filterCondition <- unlist(filterCondition)
   if(length(filterCondition) == 1L){

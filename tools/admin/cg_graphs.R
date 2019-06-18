@@ -290,58 +290,13 @@ observeEvent(input$plotly_type, {
     rv$graphConfig$graph$type <<- "bubble"
     insertUI(selector = "#plotly_options", getBubbleOptions(), where = "beforeEnd")
     allDataAvailable <<- TRUE
-  }
-
-  
-  
-  #else if(identical(isolate(input$plotly_type), "chart")){
-  #  rv$resetRE <- rv$resetRE + 1L
-  #  rv$graphConfig$graph$type <<- "bar"
-  #  insertUI(selector = "#plotly_options",
-  #           tagList(
-  #             selectInput("plotly_chart_type", "Select a chart type", 
-  #                         setNames(c("bar", "scatter", "line"), 
-  #                                  c("Bar chart", "Scatter plot", "Line chart"))),
-  #             tags$div(id = "plotly_chart_options", class = "shiny-input-container",
-  #                      getBarOptions()),
-  #             tags$div(id = "plotly_animation_options", class = "shiny-input-container")
-  #           ), where = "beforeEnd")
-  #}
-  
-  
-  else if(identical(isolate(input$plotly_type), "hist")){
+  }else if(identical(isolate(input$plotly_type), "hist")){
     rv$graphConfig$graph$type <<- "hist"
     insertUI(selector = "#plotly_options", getHistOptions(), where = "beforeEnd")
     allDataAvailable <<- TRUE
   }
   rv$refreshContent <- rv$refreshContent + 1L
 })
-
-
-
-#observeEvent(input$plotly_chart_type, {
-#  saveAndReload("plotly", "chart", input$plotly_chart_type)
-#  removeUI(selector = "#plotly_chart_options .shiny-input-container", multiple = TRUE)
-#  rv$resetRE <- rv$resetRE + 1L
-#  allDataAvailable <<- FALSE
-#  
-#  if(identical(input$plotly_chart_type, "bar")){
-#    rv$graphConfig$graph$type <<- "bar"
-#    insertUI(selector = "#plotly_chart_options",
-#             getBarOptions(), where = "beforeEnd")
-#  }else if(identical(input$plotly_chart_type, "scatter")){
-#    rv$graphConfig$graph$type <<- "scatter"
-#    insertUI(selector = "#plotly_chart_options",
-#             getScatterOptions(), where = "beforeEnd")
-#  }else{
-#    rv$graphConfig$graph$type <<- "scatter"
-#    insertUI(selector = "#plotly_chart_options",
-#             getLineOptions(), where = "beforeEnd")
-#  }
-#  allDataAvailable <<- TRUE
-#})
-
-
 
 observeEvent(input$leafFlow_lng, {
   rv$graphConfig$graph$flows[[idLabelMap$leaflet_flows[[as.integer(input$leafFlow_lng[1])]]]]$lng0 <<- input$leafFlow_lng[2]
@@ -604,12 +559,6 @@ observeEvent(input$timevis_zoomFactor, {
 observeEvent(input$timevis_fit, {
   rv$graphConfig$graph$fit <<- input$timevis_fit
 })
-#observeEvent(input$timevis_custom, {
-# if(!identical(input$timevis_custom, ""))
-#   rv$graphConfig$graph$custom[[idLabelMap$timevis_custom[[as.integer(input$timevis_custom[1])]]]]$time <<- input$timevis_custom[2]
-# else
-#   rv$graphConfig$graph$custom[[idLabelMap$timevis_custom[[as.integer(input$timevis_custom[1])]]]]$time <<- NULL
-#})
 observeEvent(input$timevis_editable, {
   rv$graphConfig$graph$editable <<- input$timevis_editable
 })
@@ -1169,7 +1118,7 @@ observeEvent(input$add_array_el, {
   if(identical(el_id, "chart_ydata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
     if(identical(input$chart_tool, "plotly")){
-      if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "bubble")){
+      if(identical(input$plotly_type, "scatter")){
         newContent  <- list(label = label, 
                             mode = "markers",
                             fill = "none",
@@ -1177,6 +1126,17 @@ observeEvent(input$add_array_el, {
                               symbol = "circle",
                               opacity = 1L,
                               size = 6L,
+                              line = list(width = 0L)
+                            ),
+                            showlegend = FALSE)
+      }else if(identical(input$plotly_type, "bubble")){
+        newContent  <- list(label = label, 
+                            mode = "markers",
+                            marker = list(
+                              symbol = "circle",
+                              opacity = 1L,
+                              size = label,
+                              color = label,
                               line = list(width = 0L)
                             ),
                             showlegend = FALSE)
@@ -1188,6 +1148,10 @@ observeEvent(input$add_array_el, {
                               shape = "linear",
                               dash = "solid"),
                             showlegend = FALSE)
+      }else{
+        newContent <- list(label = label,
+                           mode = "lines",
+                           marker = list(line = list(width = 0L)))
       }
     }else{
       newContent  <- list(label = label, 
@@ -1378,11 +1342,7 @@ getPieOptions <- reactive({
     tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
              tags$div(class = "col-sm-4", style = "padding: inherit;",
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", style="display:block;" ,"for" = "pie_donut", lang$adminMode$graphs$pieOptions$donut),
-                               tags$label(class = "checkbox-material", 
-                                          checkboxInput("pie_donut", 
-                                                        value = FALSE, label = NULL)
-                               )
+                               checkboxInput_MIRO("pie_donut", lang$adminMode$graphs$pieOptions$donut)
                       )),
              tags$div(class = "col-sm-8", style = "padding: inherit;",
                       conditionalPanel(condition = "input.pie_donut===true",
@@ -1411,26 +1371,10 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   }
   tagList(
     textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$title, id), value = title),
-    checkboxInput(id %+% "_showgrid", sprintf(lang$adminMode$graphs$axisOptions$showgrid, id)),
-    checkboxInput(id %+% "_zeroline", sprintf(lang$adminMode$graphs$axisOptions$zeroline, id)),
-    checkboxInput(id %+% "_showticklabels", sprintf(lang$adminMode$graphs$axisOptions$showticklabels, id), TRUE),
+    checkboxInput_MIRO(id %+% "_showgrid", sprintf(lang$adminMode$graphs$axisOptions$showgrid, id)),
+    checkboxInput_MIRO(id %+% "_zeroline", sprintf(lang$adminMode$graphs$axisOptions$zeroline, id)),
+    checkboxInput_MIRO(id %+% "_showticklabels", sprintf(lang$adminMode$graphs$axisOptions$showticklabels, id), TRUE),
     if(identical(input$plotly_type, "scatter") || identical(input$plotly_type, "line") || identical(input$plotly_type, "bubble")){
-      #tags$div(style = "width:100%;",
-      #         tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
-      #         tags$div(
-      #         tags$div(id = "range-wrapper", class = "col-sm-7 shiny-input-container", style = "padding-left:0px;", 
-      #                  div(style="display:inline-block", textInput(id %+% "_rangefrom", sprintf(lang$adminMode$graphs$axisOptions$rangeFrom, id), value = NULL)),
-      #                  div(style="display:inline-block", textInput(id %+% "_rangeto", sprintf(lang$adminMode$graphs$axisOptions$rangeTo, id), value = NULL))
-      #         ),
-      #         tags$div(class = "col-sm-5",
-      #                  tags$div(class = "shiny-input-container",
-      #                           tags$label(class = "cb-label", style="display:block;" ,"for" = "animation_data_format_selector", lang$adminMode$graphs$axisOptions$animationDataFormatSelector),
-      #                           tags$label(class = "checkbox-material", 
-      #                                      checkboxInput(id %+% "_data_format_selector", 
-      #                                                    value = FALSE, label = NULL)
-      #                           )
-      #                  )))
-      #)
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
                tags$div(style = "padding-top: 10px;",
@@ -1463,8 +1407,8 @@ getChartOptions <- reactive({
     optionSection(title = lang$adminMode$graphs$chartOptions$options$title, collapsed = TRUE,
                   colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
                   colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
-                  checkboxInput("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend),
-                  checkboxInput("outType", lang$adminMode$graphs$chartOptions$options$outType, value = FALSE)
+                  checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend),
+                  checkboxInput_MIRO("outType", lang$adminMode$graphs$chartOptions$options$outType, value = FALSE)
     ),
     tags$div(id = "plotly_animation_options", class = "shiny-input-container")
   )
@@ -1474,6 +1418,7 @@ getBarOptions  <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
   isolate({
     rv$graphConfig$graph$barmode <<- "group"
+    rv$graphConfig$graph$ydata   <<- list()
     rv$graphConfig$graph$ydata[[indices[[1]]]] <<- list(label = names(indices)[1],
                                                         mode = "lines",
                                                         marker = list(line = list(width = 0L)))
@@ -1521,6 +1466,7 @@ getBubbleOptions  <- reactive({
                                                                   symbol = "circle",
                                                                   opacity = 1L,
                                                                   size = scalarIndices[1],
+                                                                  color = scalarIndices[1],
                                                                   line = list(width = 0L)
                                                                 ),
                                                                 showlegend = FALSE)
@@ -1563,12 +1509,7 @@ getValueboxOptions  <- reactive({
           selectInput("valuebox_color", lang$adminMode$graphs$valueboxOptions$color,
                       choices = langSpecificGraphs$valueboxColor, 
                       selected = "aqua"),
-          
-          tags$label(class = "cb-label", "for" = "valuebox_use_icon", lang$adminMode$graphs$valueboxOptions$useIcon),
-          tags$div(
-            tags$label(class = "checkbox-material", 
-                       checkboxInput("valuebox_use_icon", label = NULL, value = FALSE)
-            )),
+          checkboxInput_MIRO("valuebox_use_icon", lang$adminMode$graphs$valueboxOptions$useIcon),
           conditionalPanel(condition = 'input.valuebox_use_icon===true',
                            tags$div(class = "shiny-input-container", style = "padding-left: 20px;",
                                     selectInput("valuebox_icon_lib", lang$adminMode$graphs$valueboxOptions$iconLib,
@@ -1595,7 +1536,7 @@ getAnimationOptions  <- reactive({
                   numericInput("animation_frame", lang$adminMode$graphs$animationOptions$frame, min = 0L, value = 500L), 
                   numericInput("animation_transition", lang$adminMode$graphs$animationOptions$transition, min = 0L, value = 500L),
                   selectInput("animation_easing", lang$adminMode$graphs$animationOptions$easing, choices = langSpecificGraphs$easingChoices),
-                  checkboxInput("animation_redraw", lang$adminMode$graphs$animationOptions$redraw, value = TRUE),
+                  checkboxInput_MIRO("animation_redraw", lang$adminMode$graphs$animationOptions$redraw, value = TRUE),
                   selectInput("animation_mode", lang$adminMode$graphs$animationOptions$mode, choices = langSpecificGraphs$modeChoices),
                   getAnimationSliderOptions()))
 })
@@ -1604,7 +1545,7 @@ getAnimationSliderOptions  <- reactive({
     rv$graphConfig$graph$animation$slider$fontcolor <- "#000000"
     rv$graphConfig$graph$animation$slider$hide <- FALSE
   })
-  tagList(checkboxInput("animation_slider_hide", lang$adminMode$graphs$animationSliderOptions$hide), 
+  tagList(checkboxInput_MIRO("animation_slider_hide", lang$adminMode$graphs$animationSliderOptions$hide), 
           textInput("animation_slider_label", lang$adminMode$graphs$animationSliderOptions$label),
           textInput("animation_slider_prefix", lang$adminMode$graphs$animationSliderOptions$prefix),
           colorPickerInput("animation_slider_font_color", lang$adminMode$graphs$animationSliderOptions$fontColor, "#000000"))
@@ -1689,22 +1630,22 @@ getDygraphsOptions <- reactive({
       )
     },
     optionSection(title = lang$adminMode$graphs$dygraphsOptions$rngSelOpts$title, collapsed = TRUE,
-                  checkboxInput("dyrange_activate", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$activate),
+                  checkboxInput_MIRO("dyrange_activate", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$activate),
                   numericInput("dyrange_height", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$height, min = 0L, value = 40L),
-                  checkboxInput("dyrange_retainDateWindow", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$retainDateWindow, FALSE),
-                  checkboxInput("dyrange_keepMouseZoom", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$keepMouseZoom, TRUE),
+                  checkboxInput_MIRO("dyrange_retainDateWindow", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$retainDateWindow, FALSE),
+                  checkboxInput_MIRO("dyrange_keepMouseZoom", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$keepMouseZoom, TRUE),
                   colorPickerInput("dyrange_fillColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$fillColor, "#A7B1C4"),
                   colorPickerInput("dyrange_strokeColor", lang$adminMode$graphs$dygraphsOptions$rngSelOpts$strokeColor, "#808FAB")
     ),
     optionSection(title = lang$adminMode$graphs$dygraphsOptions$generalOpts$title, collapsed = TRUE,
-                  checkboxInput("dyopt_incZero", lang$adminMode$graphs$dygraphsOptions$generalOpts$incZero),
-                  checkboxInput("dyopt_logscale", lang$adminMode$graphs$dygraphsOptions$generalOpts$logscale),
-                  checkboxInput("dyopt_drawGrid", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawGrid, TRUE),
-                  checkboxInput("dyopt_stepPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stepPlot),
-                  checkboxInput("dyopt_stemPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stemPlot),
-                  checkboxInput("dyopt_fillGraph", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillGraph),
+                  checkboxInput_MIRO("dyopt_incZero", lang$adminMode$graphs$dygraphsOptions$generalOpts$incZero),
+                  checkboxInput_MIRO("dyopt_logscale", lang$adminMode$graphs$dygraphsOptions$generalOpts$logscale),
+                  checkboxInput_MIRO("dyopt_drawGrid", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawGrid, TRUE),
+                  checkboxInput_MIRO("dyopt_stepPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stepPlot),
+                  checkboxInput_MIRO("dyopt_stemPlot", lang$adminMode$graphs$dygraphsOptions$generalOpts$stemPlot),
+                  checkboxInput_MIRO("dyopt_fillGraph", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillGraph),
                   numericInput("dyopt_fillAlpha", lang$adminMode$graphs$dygraphsOptions$generalOpts$fillAlpha, min = 0L, max = 1L, value = 0.15),
-                  checkboxInput("dyopt_drawPoints", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawPoints),
+                  checkboxInput_MIRO("dyopt_drawPoints", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawPoints),
                   selectInput("dyopt_pointShape", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointShape, 
                               choices = langSpecificGraphs$pointShapeChoices),
                   numericInput("dyopt_pointSize", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointSize, min = 0L, value = 2L)
@@ -1713,7 +1654,7 @@ getDygraphsOptions <- reactive({
                   numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
                   sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
                               min = 0L, max = 1L, step = 0.1, value = 0.5),
-                  checkboxInput("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
+                  checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
     ),
     getAxisOptions("x", names(indices)[1], labelOnly = TRUE),
     getAxisOptions("y", names(scalarIndices)[1], labelOnly = TRUE)
@@ -1746,7 +1687,7 @@ getLeafletOptions <- reactive({
                                 choices = c(), multiple = TRUE),
                     selectInput("leaflc_position", lang$adminMode$graphs$leafletOptions$layer$position, 
                                 choices = langSpecificGraphs$positionChoices),
-                    checkboxInput("leaflc_collapsed", lang$adminMode$graphs$leafletOptions$layer$collapsed, value = TRUE)
+                    checkboxInput_MIRO("leaflc_collapsed", lang$adminMode$graphs$leafletOptions$layer$collapsed, value = TRUE)
       )
     )
   )
@@ -1777,32 +1718,12 @@ getTimevisOptions<- reactive({
       createArray(session, "timevis_series", lang$adminMode$graphs$timevisOptions$series),
       createArray(session, "timevis_custom", lang$adminMode$graphs$timevisOptions$custom, autoCreate = FALSE),
       optionSection(title = lang$adminMode$graphs$timevisOptions$options$title, collapsed = TRUE,
-                    tags$label(class = "cb-label", "for" = "timevis_showZoom", lang$adminMode$graphs$timevisOptions$options$showZoom),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("timevis_showZoom", label = NULL, value = TRUE)
-                      )),
+                    checkboxInput_MIRO("timevis_showZoom", lang$adminMode$graphs$timevisOptions$options$showZoom, TRUE),
                     numericInput("timevis_zoomFactor", lang$adminMode$graphs$timevisOptions$options$zoomFactor, min = 0, max = 1, value = 0.5, step = 0.1),
-                    tags$label(class = "cb-label", "for" = "timevis_fit", lang$adminMode$graphs$timevisOptions$options$fit),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("timevis_fit", label = NULL, value = TRUE)
-                      )),
-                    tags$label(class = "cb-label", "for" = "timevis_editable", lang$adminMode$graphs$timevisOptions$options$editable),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("timevis_editable", label = NULL, value = FALSE)
-                      )),
-                    tags$label(class = "cb-label", "for" = "timevis_multiselect", lang$adminMode$graphs$timevisOptions$options$multiselect),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("timevis_multiselect", label = NULL, value = FALSE)
-                      )),
-                    tags$label(class = "cb-label", "for" = "timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("timevis_showCurrentTime", label = NULL, value = TRUE)
-                      )))
+                    checkboxInput_MIRO("timevis_fit", lang$adminMode$graphs$timevisOptions$options$fit, TRUE),
+                    checkboxInput_MIRO("timevis_editable", lang$adminMode$graphs$timevisOptions$options$editable),
+                    checkboxInput_MIRO("timevis_multiselect", lang$adminMode$graphs$timevisOptions$options$multiselect),
+                    checkboxInput_MIRO("timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime))
     )
   )
 })
@@ -1841,7 +1762,7 @@ getPivotOptions <- reactive({
     optionSection(title = lang$adminMode$graphs$pivotOptions$options$title, collapsed = TRUE,
                   selectInput("pivot_locale", lang$adminMode$graphs$pivotOptions$options$locale, choices = langSpecificGraphs$localeChoices, 
                               selected = "en"),
-                  checkboxInput("pivot_subtotals", span(lang$adminMode$graphs$pivotOptions$options$subtotals, tags$a(href="http://nagarajanchinnasamy.com/subtotal/", target = "_blank", "http://nagarajanchinnasamy.com/subtotal/")), 
+                  checkboxInput_MIRO("pivot_subtotals", span(lang$adminMode$graphs$pivotOptions$options$subtotals, tags$a(href="http://nagarajanchinnasamy.com/subtotal/", target = "_blank", "http://nagarajanchinnasamy.com/subtotal/")), 
                                 value = FALSE)
     )
     

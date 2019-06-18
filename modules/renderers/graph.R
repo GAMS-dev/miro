@@ -101,21 +101,26 @@ renderGraph <- function(data, configData, options, height = NULL){
       # bubble chart
       p <- NULL
       lapply(seq_along(options$ydata), function(j){
-        if(j==1){
-          maxsize <- if(!is.null(options$ydata[[1]]$marker$maxsize)){options$ydata[[1]]$marker$maxsize}
-          sizevalues <- if(!is.null(options$ydata[[1]]$marker$size)){data[[options$ydata[[1]]$marker$size]]}
-          if(!is.null(maxsize) && !is.null(sizevalues))
-            sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
-          else
-            sizeref <- 1
+        maxsize <- NULL
+        sizeref <- 1L
+        if(!is.null(options$ydata[[j]]$marker$maxsize)){
+          maxsize <- options$ydata[[j]]$marker$maxsize
+        }
+        if(!is.null(options$ydata[[j]]$marker$size)){
+          sizevalues <- data[[options$ydata[[j]]$marker$size]]
+        }
+        if(!is.null(maxsize) && !is.null(sizevalues)){
+          sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
+        }
           
+        if(j==1){
           p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
                         name = options$ydata[[1]]$label, 
                         mode = options$ydata[[1]]$mode, 
                         marker = list(symbol = options$ydata[[1]]$marker$symbol,
                                       opacity = options$ydata[[1]]$marker$opacity,
                                       size = if(!is.null(options$ydata[[1]]$marker$size)){~try(get(options$ydata[[1]]$marker$size))}, 
-                                      sizemode = if(!is.null(maxsize)){'area'}, sizeref = if(!is.null(sizeref)){sizeref},
+                                      sizemode = if(!is.null(maxsize)){'area'}, sizeref = sizeref,
                                       color = if(!is.null(options$ydata[[1]]$marker$color)){~try(get(options$ydata[[1]]$marker$color))},
                                       #color = options$ydata[[1]]$marker$colorDep,
                                       line = list(color = options$ydata[[1]]$marker$line$color,
@@ -124,27 +129,21 @@ renderGraph <- function(data, configData, options, height = NULL){
                                     width = options$ydata[[1]]$line$width,
                                     shape = options$ydata[[1]]$line$shape,
                                     dash = options$ydata[[1]]$line$dash),
-                        showlegend = options$ydata[[j]]$showlegend,
+                        showlegend = options$ydata[[1]]$showlegend,
                         color = if(!is.null(options$color)){~try(get(options$color))}, 
                         symbol = if(!is.null(options$symbol)){~try(get(options$symbol))}, 
                         colors = options$colors, symbols = options$symbols, 
                         size = options$ydata[[1]]$size, type = 'scatter', height = height,
-                        frame = if(!is.null(options$ydata[[j]]$frame)){~try(get(options$ydata[[j]]$frame))}) 
+                        frame = if(!is.null(options$ydata[[1]]$frame)){~try(get(options$ydata[[1]]$frame))}) 
           
         }else{
-          maxsize <- if(!is.null(options$ydata[[j]]$marker$maxsize)){options$ydata[[j]]$marker$maxsize}
-          sizevalues <- if(!is.null(options$ydata[[j]]$marker$size)){data[[options$ydata[[j]]$marker$size]]}
-          if(!is.null(maxsize) && !is.null(sizevalues))
-            sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
-          else
-            sizeref <- 1
           p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label, 
                           mode = options$ydata[[j]]$mode, 
                           marker = list(symbol = options$ydata[[j]]$marker$symbol,
                                         opacity = options$ydata[[j]]$marker$opacity,
-                                        size = if(!is.null(options$ydata[[1]]$marker$size)){~try(get(options$ydata[[1]]$marker$size))}, 
-                                        sizemode = if(!is.null(maxsize)){'area'}, sizeref = if(!is.null(sizeref)){sizeref},
-                                        color = if(!is.null(options$ydata[[1]]$marker$color)){~try(get(options$ydata[[1]]$marker$color))},
+                                        size = if(!is.null(options$ydata[[j]]$marker$size)){~try(get(options$ydata[[j]]$marker$size))}, 
+                                        sizemode = if(!is.null(maxsize)){'area'}, sizeref = sizeref,
+                                        color = if(!is.null(options$ydata[[j]]$marker$color)){~try(get(options$ydata[[j]]$marker$color))},
                                         #color = options$ydata[[1]]$marker$colorDep,
                                         line = list(color = options$ydata[[j]]$marker$line$color, 
                                                     width = options$ydata[[j]]$marker$line$width)),
