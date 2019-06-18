@@ -766,8 +766,8 @@
         "label": "Should users be allowed to add attachments to scenarios?"
       },
       "aggregate":{
-        "title": "If not activated, each input widget is displayed in a separate page.",
-        "label": "Should all input widgets (slider, dropdown menu, etc.) beaggregated on a single page?"
+        "title": "If not activated, each input widget is displayed in a separate tab.",
+        "label": "Should all input widgets (slider, dropdown menu, etc.) bea ggregated on a single tab?"
       },
       "parent":{
         "label": "Include parent directory of the model folder in your model runs (e.g. because several models share files)?"
@@ -778,7 +778,7 @@
       },
       "empty":{
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
-        "label": "Include empty sheets in the Excel file"
+        "label": "Include empty sheets in the Excel file?"
       },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
