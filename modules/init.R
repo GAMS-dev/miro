@@ -1196,6 +1196,7 @@ if(is.null(errMsg)){
   rm(dsIsNoTable, scenColNamesTmp, scenColTypesTmp)
   
   scalarsInMetaData <- NULL
+  scalarsInTemplate <- NULL
   if(scalarsFileName %in% inputDsNames){
     scalarsInMetaData <- list(list(alias = "Input Scalars",
                                    colTypes = "ccc",
