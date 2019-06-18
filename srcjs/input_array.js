@@ -1,5 +1,4 @@
-/* global $:false Shiny:false outputScalars outputScalarAliases outputSymbols */
-/* global outputSymbolsAliases Miro:false */
+/* global $:false Shiny:false Miro:false */
 /*eslint-disable */
 /*
  * jQuery throttle / debounce - v1.1 - 3/7/2010
@@ -121,7 +120,8 @@ class InputArray {
               // tell R that new element was addded to array: (ID)
               Shiny.setInputValue(rAddID, [elID, selected, k], { priority: 'event' });
             }
-            arrayContent += InputArray.createSelectDepInput(k, elID, rAddID,
+            arrayContent += InputArray.createSelectDepInput(k, elID,
+              (idx !== 0 ? '' : rAddID),
               v[1], v[2], v[3], v[4],
               selected, v[6]);
             break;
@@ -194,7 +194,6 @@ class InputArray {
       arrayContent += `${(!this.options.elRequired || elID > 1) ? `<button type="button" onclick="Miro.removeArrayEl('${this.arrayID}','${elID}')" class="btn btn-default bt-icon"><i class="far fa-minus-square"></i></button>\n` : ''}<hr></div>`;
 
       $(`#${this.arrayID}_wrapper .array-wrapper`).append(arrayContent);
-
       this.registerChangeHandlers(this.elements, rAddID, elID, this.options);
       this.isNewElement = false;
       this.elCount += 1;
@@ -318,7 +317,7 @@ class InputArray {
           if (v[0] === 'selectDep') {
             const altElements = {};
             [, altElements[k]] = v;
-            altElements[k].shift();
+            altElements[k] = altElements[k].slice(1);
 
             this.registerChangeHandlers(altElements, rAddID, elID, options, `_alt${elID}`, idx !== 0);
           }

@@ -6067,12 +6067,32 @@
                   "additionalProperties":false,
                   "required":true,
                   "properties":{ 
-                    "dyDyShading":{ 
+                    "dyDyShadingCheck":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
                     },
-                    "up":{ 
+                    "dyDyShadingTrue":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyShadingFalse":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyShadingUpCheck":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyShadingUpTrue":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "dyDyShadingUpFalse":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

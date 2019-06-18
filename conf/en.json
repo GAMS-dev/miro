@@ -1280,8 +1280,12 @@
           "attachAtBottom": "Should annotation be attached to x axis?"
         },
         "addDyShading":{
-          "dyDyShading": "Which symbol shall be used as lower bound for shading?",
-          "up": "Which symbol shall be used as upper bound for shading?",
+          "dyDyShadingCheck": "Use static lower bound?",
+          "dyDyShadingTrue": "Specify the lower bound for shading.",
+          "dyDyShadingFalse": "Which symbol shall be used as lower bound for shading?",
+          "dyDyShadingUpCheck": "Use static upper bound?",
+          "dyDyShadingUpTrue": "Specify the upper bound for shading.",
+          "dyDyShadingUpFalse": "Which symbol shall be used as upper bound for shading?",
           "axis": "Select axis where shading shall be applied to",
           "axisChoices": ["x", "y"],
           "color": "What color should the shading have?"

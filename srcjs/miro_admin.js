@@ -1,5 +1,7 @@
 import InputArrayFactory from './input_array';
 
+export { confirmModalShow } from './miro';
+
 /* global $:false Shiny:false */
 
 let lang = {};
@@ -17,6 +19,7 @@ let outputSymbols = [];
 let outputSymbolsAliases = [];
 
 const inputArrayFactory = new InputArrayFactory();
+
 
 export function removeArrayEl(arrayID, elID) {
   inputArrayFactory.remove(arrayID, elID);
@@ -44,7 +47,11 @@ export function toggleDepContainer(el, arrayID, elID, rAddID) {
       [value] = $(v).find('select').get(0).selectize.items;
     }
   });
-  Shiny.setInputValue(rAddID, [elID, value, arrayID, 'change'], { priority: 'event' });
+  if (rAddID.length) {
+    Shiny.setInputValue(rAddID, [elID, value, arrayID, 'change'], { priority: 'event' });
+  } else {
+    Shiny.setInputValue(arrayID, [elID, value], { priority: 'event' });
+  }
 }
 const arrayTypes = {
   symbol_inputGroups(defaults) {
@@ -104,8 +111,8 @@ const arrayTypes = {
   },
   dy_dyShading() {
     const elements = {
-      dy_dyShading: ['select', lang.addDyShading.dyDyShading, outputScalars, outputScalarAliases],
-      dyShading_up: ['select', lang.addDyShading.up, outputScalars, outputScalarAliases],
+      dy_dyShading: ['selectDep', [lang.addDyShading.dyDyShadingCheck, 'text', lang.addDyShading.dyDyShadingTrue], lang.addDyShading.dyDyShadingFalse, outputScalars, outputScalarAliases],
+      dyShading_up: ['selectDep', [lang.addDyShading.dyDyShadingUpCheck, 'text', lang.addDyShading.dyDyShadingUpTrue], lang.addDyShading.dyDyShadingUpFalse, outputScalars, outputScalarAliases],
       dyShading_axis: ['select', lang.addDyShading.axis, ['x', 'y'], lang.addDyShading.axisChoices],
       dyShading_color: ['color', lang.addDyShading.color, '#EFEFEF'],
     };

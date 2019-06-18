@@ -1,7 +1,7 @@
 activeSymbol <- list(id = integer(1L), name = character(1L), 
                      alias = character(1L), indices = c())
 
-
+newChartTool     <- character(0L)
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
 scalarOutputData <- tibble()
@@ -915,9 +915,6 @@ observeEvent(input$dyEvent_strokePattern, {
   rv$graphConfig$graph$dyEvent[[idLabelMap$dy_dyEvent[[as.integer(input$dyEvent_strokePattern[1])]]]]$strokePattern <<- input$dyEvent_strokePattern[2]
 })
 
-#observeEvent(input$dyLimit_limit, {
-#  rv$graphConfig$graph$dyLimit[[idLabelMap$dy_dyLimit[[as.integer(input$dyLimit_limit[1])]]]]$limit <<- as.numeric(input$dyLimit_limit[2])
-#})
 observeEvent(input$dyLimit_label, {
   if(identical(input$dyLimit_label[2], "")){
     limitLabel <- NULL
@@ -1298,13 +1295,18 @@ observeEvent(input$gams_symbols, {
     symbolID <- match(isolate(input$gams_symbols), names(modelOut)) + length(modelIn)
   }
   changeActiveSymbol(symbolID)
+  
+  rv$graphConfig$graph$title <- activeSymbol$alias
   updateTextInput(session, "chart_title", value = activeSymbol$alias)
+  
   if(identical(input$gams_symbols, scalarsOutName)){
     updateSelectInput(session, "chart_tool", choices = setNames(c("valuebox"),
                                                                 lang$adminMode$graphs$updateToolScalars))
+    newChartTool <<- "valuebox"
   }else{
     updateSelectInput(session, "chart_tool", choices = setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot"),
                                                                 lang$adminMode$graphs$updateToolNoScalars))
+    newChartTool <<- "plotly"
   }
 })
 observeEvent({
@@ -1312,16 +1314,22 @@ observeEvent({
   rv$initData}, {
     req(rv$initData)
     allDataAvailable <<- FALSE
-    if(!identical(input$chart_tool, "pivot"))
+    if(length(newChartTool)){
+      chartTool <- newChartTool
+      newChartTool <<- character(0L)
+    }else{
+      chartTool <- input$chart_tool
+    }
+    if(!identical(chartTool, "pivot"))
       rv$graphConfig$pivottable <<- NULL
-    if(!identical(input$chart_tool, "leaflet"))
+    if(!identical(chartTool, "leaflet"))
       rv$graphConfig$graph$layersControl <<- NULL
-    if(!identical(input$chart_tool, "valuebox"))
+    if(!identical(chartTool, "valuebox"))
       rv$graphConfig$options <<- NULL
-    saveAndReload(isolate(input$chart_tool), "pie")
+    saveAndReload(isolate(chartTool), "pie")
     removeUI(selector = "#tool_options div", multiple = TRUE)
-    rv$graphConfig$graph$tool <<- input$chart_tool
-    if(identical(isolate(input$chart_tool), "plotly")){
+    rv$graphConfig$graph$tool <<- chartTool
+    if(identical(isolate(chartTool), "plotly")){
       insertUI(selector = "#tool_options",
                tags$div(id = "plotly_type_container",
                         selectInput("plotly_type", lang$adminMode$graphs$chartTypePlotly$title,
@@ -1329,27 +1337,27 @@ observeEvent({
                                                        lang$adminMode$graphs$chartTypePlotly$choices)),
                         tags$div(id = "plotly_options", getPieOptions())
                ), where = "beforeEnd")
-    }else if(identical(input$chart_tool, "dygraphs")){
+    }else if(identical(chartTool, "dygraphs")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "dygraph_options", getDygraphsOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }else if(identical(input$chart_tool, "leaflet")){
+    }else if(identical(chartTool, "leaflet")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "leaflet_options", getLeafletOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }else if(identical(input$chart_tool, "timevis")){
+    }else if(identical(chartTool, "timevis")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "timevis_options", getTimevisOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }else if(identical(input$chart_tool, "pivot")){
+    }else if(identical(chartTool, "pivot")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
-    }else if(identical(input$chart_tool, "valuebox")){
+    }else if(identical(chartTool, "valuebox")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
                tags$div(id = "valuebox_options", getValueboxOptions()), where = "beforeEnd")
