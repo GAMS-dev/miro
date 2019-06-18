@@ -1016,27 +1016,24 @@ observeEvent(input$x_zeroline, {
 observeEvent(input$x_showticklabels, {
   rv$graphConfig$graph$xaxis$showticklabels <<- input$x_showticklabels
 })
-observeEvent(c(input$x_rangefrom,input$x_data_format_selector), {
+observeEvent(input$x_rangefrom, {
+  val <- NULL
   if(nchar(input$x_rangefrom)){
-    if(identical(input$x_data_format_selector, FALSE))
-      xfromtmp <<- suppressWarnings(as.numeric(as.character(input$x_rangefrom)))
-    else
-      xfromtmp <<- input$x_rangefrom
-  }else{
-    xfromtmp <<- NULL
+    val <- suppressWarnings(as.numeric(input$x_rangefrom))
+    if(is.na(val))
+      val <- input$x_rangefrom
   }
-  rv$graphConfig$graph$xaxis$rangefrom <<- xfromtmp
+  rv$graphConfig$graph$xaxis$rangefrom <<- val
 })
-observeEvent(c(input$x_rangeto,input$x_data_format_selector), {
+observeEvent(input$x_rangeto, {
+  val <- NULL
   if(nchar(input$x_rangeto)){
-    if(identical(input$x_data_format_selector, FALSE))
-      xtotmp <<- suppressWarnings(as.numeric(as.character(input$x_rangeto)))
-    else
-      xtotmp <<- input$x_rangeto
-  }else{
-    xtotmp <<- NULL
+    val <- suppressWarnings(as.numeric(input$x_rangeto))
+    if(is.na(val)){
+      val <- input$x_rangeto
+    }
   }
-  rv$graphConfig$graph$xaxis$rangeto <<- xtotmp
+  rv$graphConfig$graph$xaxis$rangeto <<- val
 })
 observeEvent(input$y_title, {
   rv$graphConfig$graph$yaxis$title <<- input$y_title
@@ -1050,27 +1047,23 @@ observeEvent(input$y_zeroline, {
 observeEvent(input$y_showticklabels, {
   rv$graphConfig$graph$yaxis$showticklabels <<- input$y_showticklabels
 })
-observeEvent(c(input$y_rangefrom,input$y_data_format_selector), {
+observeEvent(input$y_rangefrom, {
+  val <- NULL
   if(nchar(input$y_rangefrom)){
-    if(identical(input$y_data_format_selector, FALSE))
-      yfromtmp <<- suppressWarnings(as.numeric(as.character(input$y_rangefrom)))
-    else
-      yfromtmp <<- input$y_rangefrom
-  }else{
-    yfromtmp <<- NULL
+    val <- suppressWarnings(as.numeric(input$y_rangefrom))
+    if(is.na(val))
+      val <- input$y_rangefrom
   }
-  rv$graphConfig$graph$yaxis$rangefrom <<- yfromtmp
+  rv$graphConfig$graph$yaxis$rangefrom <<- val
 })
-observeEvent(c(input$y_rangeto,input$y_data_format_selector), {
+observeEvent(input$y_rangeto, {
+  val <- NULL
   if(nchar(input$y_rangeto)){
-    if(identical(input$y_data_format_selector, FALSE))
-      ytotmp <<- suppressWarnings(as.numeric(as.character(input$y_rangeto)))
-    else
-      ytotmp <<- input$y_rangeto
-  }else{
-    ytotmp <<- NULL
+    val <- suppressWarnings(as.numeric(input$y_rangeto))
+    if(is.na(val))
+      val <- input$y_rangeto
   }
-  rv$graphConfig$graph$yaxis$rangeto <<- ytotmp
+  rv$graphConfig$graph$yaxis$rangeto <<- val
 })
 observeEvent(input$hist_label, {
   if(nchar(input$hist_label[[2]]))
@@ -1182,7 +1175,6 @@ observeEvent(input$add_array_el, {
                             fill = "none",
                             marker = list(
                               symbol = "circle",
-                              color = "rgb(0,0,0)",
                               opacity = 1L,
                               size = 6L,
                               line = list(width = 0L)
@@ -1192,7 +1184,6 @@ observeEvent(input$add_array_el, {
         newContent  <- list(label = label, 
                             mode = "lines",
                             line = list(
-                              color = "rgb(0,0,0)",
                               width = 2L,
                               shape = "linear",
                               dash = "solid"),
@@ -1443,20 +1434,11 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
       tags$div(class = "shiny-input-container", style = "display:inline-block;",
                tags$label(class = "cb-label shiny-input-container", "for" = "range-wrapper", lang$adminMode$graphs$axisOptions$range),
                tags$div(style = "padding-top: 10px;",
-                 tags$div(id = "range-wrapper", class = "col-sm-5",
+                 tags$div(id = "range-wrapper",
                           tags$div(style = "max-width:400px;",
                                    tags$div(style="display:inline-block", textInput(id %+% "_rangefrom", sprintf(lang$adminMode$graphs$axisOptions$rangeFrom, id), value = NULL)),
                                    tags$div(style="display:inline-block", textInput(id %+% "_rangeto", sprintf(lang$adminMode$graphs$axisOptions$rangeTo, id), value = NULL)))
-                 ),
-                 tags$div(class = "col-sm-7",
-                          tags$div(class = "shiny-input-container",
-                                   tags$label(class = "cb-label", style="display:block;" ,"for" = "animation_data_format_selector", lang$adminMode$graphs$axisOptions$animationDataFormatSelector),
-                                   tags$div(
-                                     tags$label(class = "checkbox-material", 
-                                                checkboxInput(id %+% "_data_format_selector", 
-                                                              value = FALSE, label = NULL)
-                                     ))
-                          )))
+                 ))
       )
     }
   )
@@ -1494,8 +1476,7 @@ getBarOptions  <- reactive({
     rv$graphConfig$graph$barmode <<- "group"
     rv$graphConfig$graph$ydata[[indices[[1]]]] <<- list(label = names(indices)[1],
                                                         mode = "lines",
-                                                        marker = list(color = "rgb(0,0,0)", 
-                                                                      line = list(width = 0L)))
+                                                        marker = list(line = list(width = 0L)))
     idLabelMap$chart_ydata[[1]] <<- indices[[1]]
   })
   tagList(selectInput("bar_mode", lang$adminMode$graphs$barOptions$mode, choices = langSpecificGraphs$barmode),
@@ -1516,7 +1497,6 @@ getScatterOptions  <- reactive({
                                                                 fill = "none",
                                                                 marker = list(
                                                                   symbol = "circle",
-                                                                  color = "rgb(0,0,0)",
                                                                   opacity = 1L,
                                                                   size = 6L,
                                                                   line = list(width = 0L)
@@ -1539,7 +1519,6 @@ getBubbleOptions  <- reactive({
                                                                 mode = "markers",
                                                                 marker = list(
                                                                   symbol = "circle",
-                                                                  color = "rgb(0,0,0)",
                                                                   opacity = 1L,
                                                                   size = scalarIndices[1],
                                                                   line = list(width = 0L)
@@ -1560,8 +1539,7 @@ getLineOptions  <- reactive({
     if(length(scalarIndices)){
       rv$graphConfig$graph$ydata[[scalarIndices[[1]]]] <<- list(label = names(scalarIndices)[1], 
                                                               mode = "lines",
-                                                              line = list(color = "rgb(0,0,0)",
-                                                                          width = 2L,
+                                                              line = list(width = 2L,
                                                                           shape = "linear",
                                                                           dash = "solid"),
                                                               showlegend = FALSE)

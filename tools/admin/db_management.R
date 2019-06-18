@@ -28,19 +28,16 @@ output$dbSaveAll <- downloadHandler(
     paste0("db_save_", tolower(modelName), ".zip")
   },
   content = function(file) {
+    prog <- Progress$new()
+    on.exit(prog$close(), add = TRUE)
+    prog$set(message = "Database is being saved...", value = 0.2)
     tryCatch({
-      prog <- Progress$new()
-      on.exit(prog$close(), add = TRUE)
-      prog$set(message = "Database is being saved...", value = 0.2)
       tempDir <- file.path(tempdir(), "db_save")
       dir.create(tempDir, showWarnings = FALSE, recursive = TRUE)
-      wd      <- getwd()
-      setwd(tempDir)
-      on.exit(setwd(wd), add = TRUE)
       on.exit(unlink(tempDir, recursive = TRUE), add = TRUE)
       db$saveTablesModel(tempDir)
       prog$inc(amount = 0.8, detail = "Compressing files...")
-      zip(file, list.files(recursive = FALSE), compression_level = 9)
+      zipr(file, list.files(tempDir, recursive = FALSE, full.names = TRUE), compression_level = 9)
     }, error = function(e){
       switch(conditionMessage(e),
              'maxRowException' = {

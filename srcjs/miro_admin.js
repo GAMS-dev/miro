@@ -174,7 +174,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addBarDataEl.chartYdatabar, indices, indexAliases],
       chart_ylabel: ['text', lang.addBarDataEl.chartYlabel, 'label'],
-      marker_color: ['color', lang.addBarDataEl.color, 'rgb(0,0,0)'],
+      marker_color: ['color', lang.addBarDataEl.color],
       marker_line_width: ['numeric', lang.addBarDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addBarDataEl.lineColor],
     };
@@ -218,7 +218,7 @@ const arrayTypes = {
         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left',
         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns',
         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addScatterDataEl.symbolChoices],
-      marker_color: ['color', lang.addScatterDataEl.color, 'rgb(0,0,0)'],
+      marker_color: ['color', lang.addScatterDataEl.color],
       marker_size: ['numeric', lang.addScatterDataEl.size, 6, 0],
       marker_line_width: ['numeric', lang.addScatterDataEl.lineWidth, 0, 0],
       marker_line_color: ['color', lang.addScatterDataEl.lineColor],
@@ -231,7 +231,7 @@ const arrayTypes = {
     const elements = {
       chart_ydata: ['select', lang.addLineDataEl.chartYdata, scalarIndices, scalarIndexAliases],
       chart_ylabel: ['text', lang.addLineDataEl.chartYlabel, 'label'],
-      line_color: ['color', lang.addLineDataEl.color, 'rgb(0,0,0)'],
+      line_color: ['color', lang.addLineDataEl.color],
       line_width: ['numeric', lang.addLineDataEl.width, 2, 0],
       line_shape: ['select', lang.addLineDataEl.shape, ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'], lang.addLineDataEl.shapeChoices],
       line_dash: ['select', lang.addLineDataEl.dash, ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'], lang.addLineDataEl.dashChoices],
@@ -279,7 +279,7 @@ const arrayTypes = {
         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left',
         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns',
         'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addBubbleDataEl.symbolChoices],
-      marker_colorDep: ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue, 'rgb(0,0,0)'], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases],
+      marker_colorDep: ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases],
       marker_size: ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases],
       marker_maxsize: ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],
       marker_line_width: ['numeric', lang.addBubbleDataEl.lineWidth, 0, 0],
