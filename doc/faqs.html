@@ -98,12 +98,6 @@
                                       Yes, but it should be noted that GAMS MIRO is very closely interwoven with GAMS. In order to be able to use MIRO without GAMS, adaptations to the code of GAMS MIRO are necessary.
                                         </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> Do I need Excel installed when running GAMS MIRO?</h3>
-                                    <div class="answer">
-                                      No. The spreadsheet created when starting a MIRO app is generated with the help of internal tools. Excel is not necessary for this.
-                                        </div>
-                                </div><!--//section-block-->
 
                             </section><!--//doc-section-->
 
@@ -129,9 +123,9 @@
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
-                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I use my own Excel spreadsheet for the input data or do I need to use the automatically generated one?</h3>
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> Can I use an Excel spreadsheet to import data?</h3>
                                         <div class="answer">
-                                            You can use your own spreadsheet. You only have to make sure that the format matches that of the generated file (especially the sheet names and header lines of a symbol).
+                                            Of course! You only have to make sure that you it is properly formatted. This means that you have to create a new sheet for every dataset and the data has to start in the cell A1 (upper left hand corner). Note further that the column headers are specified in the first row.
                                             </div>
                                     </div><!--//section-block-->
 
@@ -184,10 +178,10 @@
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
-                                <div id="file-xlsx" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.xlsx</h3>
+                                <div id="file-default" class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> default.gdx</h3>
                                     <div class="answer">
-                                        <p>Every time you start a MIRO app via GAMS Studio or the command line, a &lt;modelname&gt;.xlsx spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model and can be used to initially load data into GAMS MIRO. It is produced without the requirement of having Excel installed. </p>
+                                        <p>Every time you start a MIRO app via GAMS Studio or the command line (i.e. in development mode), a gdx container is created in the directory <span class="code">data_&lt;modelname&gt;</span>. This file contains data extracted from the GAMS model and will be stored in the MIRO database under the scenario name: <i>default</i> at the next start of your app. </p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
                                 <div id="file-mirogms" class="section-block">

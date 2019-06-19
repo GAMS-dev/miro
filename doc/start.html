@@ -59,7 +59,7 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="step1"  class="section-block">
                                     <p>This chapter shows the first steps of how to use GAMS MIRO and how to deploy your own GAMS models. For using this application a few components have to be installed first, see section <a href="./installation.html">Installation</a>.</p>
-                                    <p>In this and subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various graphic tools.
+                                    <p>In this as well as the subsequent sections we will mainly deal with the GAMS MIRO base mode. In the base mode, you can supply your models with input data, generate, display and save the results of your optimization as well as compare different scenarios with each other, everything visually supported by various plotting tools.
                                     The Hypercube mode will be the subject of an extra section, see <a href="./hypercube.html">here</a>.  </p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
@@ -67,7 +67,7 @@
                                 <h2 class="section-title">Start GAMS MIRO</h2>
                                 <div  id="demo-applications"  class="section-block">
                                     <h3 class="block-title">Demo Applications</h3>
-                                    <p>To get a feeling for the use of GAMS MIRO, it is recommended to have a look at the demo applications first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via Shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
+                                    <p>To get a feeling for the use of GAMS MIRO, it is recommended to have a look at the demo applications first. They can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via <i>GAMS</i> -> <i>Model Library Explorer</i> or via the shortcut <i>F6</i>. You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
                                             <i class="fas fa-info-circle"></i>
@@ -101,47 +101,12 @@
                                     <li>kport<br>
                                     This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
                                     </ul>
-                                    To start a demo application, you need to run the corresponding GAMS model with the command line parameter <span class="code" style="white-space:nowrap">miro=launch</span> set to compile-time. This can either be done from within the new GAMS Studio or the GAMSIDE:
+                                    To launch one of the demo applications from within GAMS Studio, simply click the <kbd>Launch MIRO</kbd> button or press F11.
                                     <div class="section-block" style="display:block; margin:auto; text-align:center;">
-                                        <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="miro=launch" />
+                                        <img class="img-fluid" src="assets/images/launch-miro-btn.png" alt="Launch MIRO button" />
                                     </div>
-                                    <p>or using the command prompt:</p>
-                                    <p style="display:block; text-align:center;"><kbd>cd path/to/model && gams transport.gms miro=launch</kbd></p>
-                                    <p><b>Note</b>: To use the command prompt, GAMS must be included in the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system!</p>
-
-                                    <div class="callout-block callout-warning">
-                                        <div class="icon-holder">
-                                            <i class="fas fa-info-circle"></i>
-                                        </div><!--//icon-holder-->
-                                        <div class="content">
-                                            <b class="callout-title">Note:</b>
-                                            <p>If you run a model with "<span class="code">miro=launch</span>", all required R packages will be loaded. When you start the application for the first time, the packages are installed. This may take a while.</p>
-                                        </div><!--//content-->
-                                    </div><!--//callout-block-->
-                                    <div class="content" id="pip_install">
-                                        <p>Some of the example models included in the GAMS MIRO installation require additional Python packages (this is not true for the beta version of GAMS MIRO). If you want to use any of these models, you may need to install them first: from the command line navigate to your GAMS installation folder and then to the subfolder: <span class="code">GMSPython\Scripts</span> (e.g.: <span style="white-space:nowrap"><kbd>cd C:\GAMS\win64\26.0\GMSPython\Scripts</kbd></span>). To install the respective package, enter: <span style="white-space:nowrap"><kbd>pip install &lt;package_name&gt;</kbd></span>. Below you find a table with the python packages required by the different example models.</p>
-                                        <div class="table-responsive" style="color:#000;">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Demo Application</th>
-                                                        <th>Python packages</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Pickstock_live</td>
-                                                        <td>pandas, pandas_datareader</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Transport_live</td>
-                                                        <td>geocoder</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div><!--//table-responsive-->
-                                    </div><!--//content-->
-                                   </p>
+                                    In order to launch MIRO from the old GAMS IDE or via the command line, the GAMS option statement <span class="code" style="white-space:nowrap">miro=launch</span> has to be added to the command line (e.g. <kbd style="white-space: nowrap;">cd path/to/model && gams transport.gms miro=launch</kbd>).
+                                    <p><b>Note</b>: To run GAMS MIRO from the command prompt, it has to be either added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system or called with an absolute path!</p>
                                 </div><!--//section-block-->
                                 <div  id="miro-structure"  class="section-block">
                                     <h3 class="block-title">Structure of GAMS MIRO</h3>
@@ -171,7 +136,7 @@
                                     <p>In addition, the buttons for loading input data and for starting a GAMS run are located here:</p>
                                     <ol class="fa-ul">
                                       <li><span style="color: #fff;" class="fa-li"><i class="fas fa-square"></i></span><b>Load data:</b><br/>
-                                        Load input data for a model run. This can be an Excel spreadsheet, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube mode</a>.
+                                        Load input data for a model run. This can be a local file, existing data from the database or scenarios coming from the <a href="./hypercube.html">Hypercube mode</a>.
                                       </li>
                                       <li><span style="color: #F39619;" class="fa-li"><i class="fas fa-square"></i></span><b>Solve model:</b><br/>
                                         Solve the GAMS model with the current set of input data. This will run your GAMS model and collect the results when it finished executing.
@@ -213,8 +178,8 @@
                                     </div>
                                     <div id="import-data"  class="section-block">
                                         <h3 class="block-title">Import data</h3>
-                                        <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. as tables, diagrams or other graphics. This applies to output data as well as input data.
-                                        Input data which should be visualized in MIRO can be (re-)imported either from existing scenarios in the database or locally via an Excel spreadsheet.
+                                        <p>A GAMS MIRO app is quite useful if there is data to be visualized, e.g. in the form of tables, diagrams or other charts. This applies to output data as well as input data.
+                                        Input data that is to be visualized in MIRO can be (re-)imported either from existing scenarios in the database or via a local file (currently, this can be either a gdx container or an Excel spreadsheet).
                                         To import such data, click on the <i>Load data</i> button in the navigation bar. The following window pops up:</p>
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -225,18 +190,19 @@
                                                 </div>
                                             </div>
                                         <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer.
-                                        When you start a GAMS MIRO app for a specific GAMS model for the first time, there is no data in the database yet, so you should start with a local file.
-                                        For the model shown here, there is an Excel spreadsheet in the directory from which the model was started, e.g. in <span style="white-space:nowrap;" class="code">C:\Users\&lt;user_Name&gt;\Documents\GAMSStudio\workspace\transport.xlsx</span>.</p>
+                                        When you start a GAMS MIRO app for a specific GAMS model for the first time, GAMS automatically extracts the data from your model and loads this data into the MIRO database. This happens every time you rebuild your MIRO app i.e. every time you launch it from GAMS Studio or via the GAMS option <kbd>miro=launch</kbd>. 
+                                        A special scenario with the name <i>default</i> is created for this purpose and overridden every time you rebuild your app!
+                                        </p>
                                         <div class="callout-block callout-warning" id="create-excel">
                                             <div class="icon-holder">
                                                 <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Note:</b>
-                                                <p>Every time you start a MIRO app, an Excel spreadsheet is created in the directory of the executed model. This file contains data extracted from the GAMS model.</p>
+                                                <p>Every time you start a MIRO app in development mode (via GAMS Studio or the GAMS option <kbd>miro=launch</kbd>), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>To load the Excel spreadsheet select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory of the currently running app and select the spreadsheet.
+                                        <p>To import a file from your local machine, either in the form of a gdx container or as an Excel spreadsheet, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
                                         Now assign a name for the new scenario and confirm the data import with a click on <i>import</i>. A new (currently still unsaved) scenario is now created under the name specified.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
@@ -244,7 +210,7 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>Instead of the whole spreadsheet you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
+                                              <p>Instead of importing all the datasets for your model, you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <p>Besides the local and the database import there is the third option: "Hypercube". This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
@@ -336,7 +302,7 @@
                                         You can also attach files to a scenario here, see the <a href="#file-attachment" class="scrollto">section below</a>.
                                         </li>
                                         <li><b>Export</b>
-                                        <br>Download of the scenario data in the form of an Excel spreadsheet. The spreadsheet contains all datasets of the currently active scenario.</li>
+                                        <br>Download of the scenario data in the form of a gdx container or as an Excel spreadsheet. The spreadsheet contains all datasets of the currently active scenario.</li>
                                         <li><b>Delete</b>
                                         <br>Delete a scenario from the database.</li>
                                         </ul>

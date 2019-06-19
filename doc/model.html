@@ -209,29 +209,29 @@ Positive Variable x;
                                             </div><!--//callout-block-->
                                           </li>
                                           <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
-                                            </br>The model folder also includes an Excel spreadsheet with the same name as your model file. In this Excel file, you find all the relevant input data that was extracted from your model. It is very useful when you run your MIRO app for the first time and have no data saved yet as you can use the Excel file to populate the tables.
+                                            </br>Additionally, you will find a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx container named <span class="code">default.gdx</span>. This gdx file holds all the data relevant to MIRO that GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch your app.
                                             <div class="callout-block callout-warning">
                                                 <div class="icon-holder">
                                                     <i class="fas fa-info-circle"></i>
                                                 </div><!--//icon-holder-->
                                                 <div class="content">
                                                     <b class="callout-title">Note:</b>
-                                                    <p>In case you don't find an Excel file, please make sure the <span class="code">xlsxwriter</span> Python module was successfully installed (c.f. <a href="./start.html#pip_install">here</a>).</p>
+                                                    <p>All gdx files inside the <span class="code">data_&lt;modelname&gt;</span> folder will be stored into the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the name of the scenario.</p>
                                                 </div><!--//content-->
                                             </div><!--//callout-block-->
                                           </li>
-                                          <li>The very basic configuration is now done. You can start GAMS MIRO by running the model again, this time with <span class="code" style="white-space:nowrap">miro=launch</span>.
+                                          <li>The very basic configuration is now done. You can start your GAMS MIRO app either by clicking the <kbd>Launch MIRO</kbd> button or by pressing F11. 
                                             <div class="section-block" style="text-align:center;">
-                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-launch.png" alt="miro=launch" />
+                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/launch-miro-btn.png" alt="miro=launch" />
                                             </div>
-                                            The first time you launch MIRO, all the required R packages are installed automatically. This may take a while. When the installation is complete, GAMS MIRO launches in the default browser of your operating system.
+                                            In case you are not launching MIRO from within GAMS Studio, the same can be accomplished by appending <span class="code" style="white-space:nowrap">miro=launch</span> to the command line.
                                           </li>
                                         </ul>
                                         <p><br>Congratulations! Your firtst MIRO app is now up and running!</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
                                         </div>
-                                        <p>With the basic configuration you can upload Excel files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined.
+                                        <p>With the basic configuration you can upload local files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined.
                                         Since MIRO is connected to a database, you can store results there, fetch previously saved results and modify them or use them to compare with other scenarios.</p>
                                     </div><!--//section-block-->
                                     <div id="create-app-executable" class="section-block">
@@ -309,7 +309,7 @@ $offExternalInput
                                     <p>The parameter <span class="code">price</span> is declared between the mentioned tags <code class="language-gams">$onExternalInput
                                     </code> and <code class="language-gams">$offExternalInput
                                     </code>.
-                                    <br>When we start GAMS MIRO via <span class="code">miro=launch</span> and load the <a href="./start.html#create-excel">Excel spreadsheet</a> that was automatically created, we see the following input screen:</p>
+                                    <br>When we start GAMS MIRO and load the default scenario that was automatically created, we see the following input screen:</p>
                                     <div class="section-block" style="text-align:center;" id="no-header">
                                         <img class="img-fluid" style="max-height:200pt;" src="assets/images/deploy_pickstock2.png" alt="Pickstock: imput symbols displayed in MIRO" />
                                     </div>

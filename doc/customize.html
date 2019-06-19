@@ -555,9 +555,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <p>When GAMS MIRO is started via GAMS Studio or the command line, it is launched in the so-called <i>development mode</i>. This development mode has the following characteristics:
                                       <ul>
                                         <li id="json-configuration-files">If not yet existing, a <i>conf/</i> directory with the files <a href="./faqs.html#file-io">&lt;modelname&gt;_io.json</i></a> and <a href="./faqs.html#file-config"><i>&lt;modelname&gt;.json</i></a> is created in the model directory.</li>
-                                        <li>The GAMS model is parsed and the <i>&lt;modelname&gt;_io.json</i> file is updated. </li>
-                                        <li>An <a href="./faqs.html#file-xlsx">Excel spreadsheet</a> containing data extracted from the GAMS model is created.</li>
-                                        <li>The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> is created containing some necessary information to launch your MIRO app.</li>
+                                        <li>Another directory: <span class="code">data_&lt;modelname&gt;</span> with a gdx file: <a href="./faqs.html#file-gdx">default.gdx</a> is created that contains the data extracted from your GAMS model.</li>
+                                        <li>The file <a href="./faqs.html#file-appR"><i>runapp.R</i></a> is created containing some code necessary to launch your MIRO app.</li>
                                         <li>A GAMS file: <a href="./faqs.html#file-mirogms"><i>&lt;modelname&gt;_miro.gms</i></a> is created that is necessary to run your model from GAMS MIRO.</li>
                                         <li>The <a href="./faqs.html#file-miroconf"></a>configuration files</a> <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;.miroconf</i></a> and <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_hcube.miroconf</i></a> of the MIRO app are updated. They contain the configuration and initialization steps of an app and can by used by an <a href="#file-executable" class="scrollto">executable</a> for a faster launch of your app.
                                         The following information is included in binary format:
