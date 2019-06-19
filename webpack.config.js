@@ -34,12 +34,12 @@ module.exports = {
                 "plugins": [
                   ["@babel/plugin-proposal-class-properties", { "loose": true }]
                 ],
-                presets: [
+                presets: [[
                     '@babel/preset-env',
                     {
                         "useBuiltIns": "entry"
                     }
-                ]
+                ]]
               }
             }
           }

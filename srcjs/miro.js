@@ -1,4 +1,5 @@
-import "@babel/polyfill";
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 /* global $:false Shiny: false HTMLWidgets:false MathJax:false */
 
 const spinnerActive = {};
