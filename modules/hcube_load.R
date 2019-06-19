@@ -362,8 +362,6 @@ output$btHcubeDownload <- downloadHandler(
       flog.warn("Maximum number of scenarios to download is exceeded.")
       return(downloadHandlerError(file))
     }
-    wd <- getwd()
-    on.exit(setwd(wd), add = TRUE)
     tmpDir      <- file.path(tempdir(), "scenDL")
     on.exit(unlink(tmpDir, recursive = TRUE, force = TRUE), add = TRUE)
     if(dir.exists(tmpDir)){
@@ -375,8 +373,6 @@ output$btHcubeDownload <- downloadHandler(
       return(downloadHandlerError(file))
     }
     
-    
-    setwd(tmpDir)
     prog <- Progress$new()
     on.exit(prog$close(), add = TRUE)
     prog$set(message = lang$nav$dialogHcube$waitDialog$title, value = 0)
@@ -385,7 +381,7 @@ output$btHcubeDownload <- downloadHandler(
     }
     tryCatch({
       hcubeLoad$genCsvFiles(sidsToLoad, tmpDir, prog)
-      return(zip(file, list.files(recursive = TRUE), compression_level = 6))
+      return(zipr(file, list.files(tmpDir, full.names = TRUE), compression_level = 6))
     }, error = function(e){
       flog.error(e)
     })
