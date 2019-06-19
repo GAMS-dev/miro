@@ -913,7 +913,7 @@
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "depSelector": "Static minimum?",
+        "depSelector": "Static value?",
         "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
@@ -927,7 +927,7 @@
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "depSelector": "Static minimum?",
+        "depSelector": "Static value?",
         "max": "Maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
