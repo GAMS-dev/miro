@@ -1,3 +1,4 @@
+import "@babel/polyfill";
 import InputArrayFactory from './input_array';
 
 export { confirmModalShow } from './miro';
