@@ -278,7 +278,7 @@ const arrayTypes = {
         'cross-thin-open', 'x-thin', 'x-thin-open', 'asterisk', 'asterisk-open', 'hash', 'hash-open',
         'hash-dot', 'hash-open-dot', 'y-up', 'y-up-open', 'y-down', 'y-down-open', 'y-left',
         'y-left-open', 'y-right', 'y-right-open', 'line-ew', 'line-ew-open', 'line-ns',
-        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addBubbleDataEl.symbolChoices],
+        'line-ns-open', 'line-ne', 'line-ne-open', 'line-nw', 'line-nw-open'], lang.addScatterDataEl.symbolChoices],
       marker_colorDep: ['selectDep', [lang.addBubbleDataEl.colorCheck, 'color', lang.addBubbleDataEl.colorCheckTrue], lang.addBubbleDataEl.colorCheckFalse, scalarIndices, scalarIndexAliases, '.index'],
       marker_size: ['select', lang.addBubbleDataEl.size, scalarIndices, scalarIndexAliases, '.index'],
       marker_maxsize: ['numeric', lang.addBubbleDataEl.maxsize, 0, 0],

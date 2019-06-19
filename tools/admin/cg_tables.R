@@ -95,15 +95,6 @@ getHotOptions <- reactive({
                ))
     ),
     tags$div(class = "shiny-input-container",
-             tags$label(class = "cb-label", "for" = "hot_move",
-                        lang$adminMode$tables$hot$move),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("hot_move", value = if(length(configJSON$handsontable$manualColumnMove)) configJSON$handsontable$manualColumnMove 
-                                        else config$handsontable$manualColumnMove, label = NULL)
-               ))
-    ),
-    tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_resize",
                         lang$adminMode$tables$hot$resize),
              tags$div(

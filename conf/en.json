@@ -804,7 +804,6 @@
         "stretchCustom": "Set custom column width.",
         "colwidth": "Width of a single (non-streched) column. Set value to 0 to fit column width to its content.",
         "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
-        "move": "Enable manual column moving. When active, the column positions can be manually changed.",
         "resize": "Enable manual column resizing.",
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
@@ -841,7 +840,6 @@
       "ui":{
         "title":"Configure input widgets",
         "widgetUpdateSuccess": "Widget configuration was updated successfully",
-        "widgetError": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
         "symbolType": "Symbol type to configure",
         "choices": ["Symbol", "New GAMS option", "New double dash parameter"],
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
@@ -860,11 +858,11 @@
         "val5": "The name of the GAMS option must not be the same as the name of another used GAMS symbol or command line parameter!",
         "val6": "The default value is falsy!",
         "val7": "The default value must be a number in the range [min, max]!",
-        "val8": "The tick identifier must be a logical!",
+        "val8": "The tick identifier must be boolean!",
         "val9": "The step size must be a number!",
         "val10": "Your dropdown menu must have the same number of aliases as choices or no aliases at all!",
         "val11": "The default value must be one of the choices you specified!",
-        "val12": "The value must be a logical!",
+        "val12": "The value must be boolean!",
         "val13": "Default date is invalid!",
         "val14": "Minimum date is invalid!",
         "val15": "Maximum date is invalid!",
@@ -884,8 +882,8 @@
         "val29": "Minimum length for custom date format is 1!",
         "val30": "The start date must be before the end date!",
         "val31": "The minimum date must be before the maximum date!",
-        "val32": "The readonly identifier must be a logical!",
-        "val33": "The heatmap identifier must be a logical!",
+        "val32": "The readonly identifier must be boolean!",
+        "val33": "The heatmap identifier must be boolean!",
         "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
         "val35": "No valid widget type",
         "val36": "The group name must be at least 1 character long.",
@@ -908,26 +906,14 @@
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "min": "Minimum value",
-        "minDep": "Select symbol and header to depend upon",
-        "minDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "minDepSelector": "Static minimum?",
         "max": "Maximum value",
-        "maxDep": "Select symbol and header to depend upon",
-        "maxDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "maxDepSelector": "Static maximum?",
         "default": "Default value",
-        "defDep": "Select symbol and header to depend upon",
-        "defDepOp":{
+        "dep": "Select symbol and header to depend upon",
+        "depOp":{
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "defDepSelector": "Static default?",
+        "depSelector": "Static minimum?",
         "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
@@ -936,19 +922,13 @@
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
         "min": "Minimum value",
-        "minDep": "Select symbol and header to depend upon",
-        "minDepOp":{
+        "dep": "Select symbol and header to depend upon",
+        "depOp":{
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
-        "minDepSelector": "Static minimum?",
+        "depSelector": "Static minimum?",
         "max": "Maximum value",
-        "maxDep": "Select symbol and header to depend upon",
-        "maxDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "maxDepSelector": "Static maximum?",
         "default1": "Lower default value",
         "default2": "Upper default value",
         "ticks": "Show tick marks?",
@@ -988,7 +968,7 @@
         "formatCustom": "Enter a custom date format",
         "formatCustomSelector": "Custom date format?",
         "startview":{
-          "label": "What date range is shown per default?",
+          "label": "What date range should be displayed per default?",
           "choices": ["Month", "Year", "Decade"]
         },
         "weekstart":{
@@ -1045,7 +1025,6 @@
       "restoreNoData": "No csv files found in the archive provided. Nothing was restored.",
       "restoreInvalidData": "At least one of the tables is invalid. Nothing was restored.",
       "maxRowError": "The maximum number of rows to export was exceeded for atleast 1 table. Please back up the database manually!",
-      "unknownError": "An unexpected error occurred. Maybe your database is not empty?",
       "backup": "Database backup",
       "backupWrapper": "You want to create a backup of the database? Click the button below to get a zip archive with all the database tables saved into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!",
       "dbSaveAll": "Save database tables",
@@ -1064,7 +1043,6 @@
       "ui":{
         "title": "Configure graphs",
         "graphUpdateSuccess": "Graph configuration was updated successfully",
-        "unknownErrorGraphs": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "Select which GAMS symbol to plot",
         "chartTitle": "Choose a title for your chart",
@@ -1077,12 +1055,12 @@
       },
       "errMsg":{
         "errTitle1": "No valid data",
-        "errContent1": "No valid datasets were found. Please upload a properly formatted Excel file with data."
+        "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
       },
       "updateToolScalars": ["Valuebox for scalar values"],
       "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table"],
       "chartTypePlotly":{
-        "title": "Select the type of chart you want to plot",
+        "title": "Select the chart type you want to use",
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram"]
       },
       "pieOptions":{
@@ -1127,10 +1105,9 @@
         "useIcon": "Use an icon for the valuebox?",
         "iconLib": "Select an icon library",
         "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "Specify an icon for the valuebox (optional). <br>See ",
-        "icon2": "and ",
-        "icon3": "for a list of possible icons.",
-        "placeholder": "dollar-sign"
+        "icon1": "Specify an icon for the valuebox (optional).",
+        "icon2": "and",
+        "icon3": "for a list of possible icons."
       },
       "animationOptions":{
         "title": "Animation options",
@@ -1214,8 +1191,8 @@
         "custom": "Add a vertical bar at a time point that can be dragged by the user (no preview available)",
         "options":{
           "title": "Gantt chart options",
-          "showZoom": "Include 'Zoom In' / 'Zoom Out' buttons? Zoom can also be done via ctrl+scroll",
-          "zoomFactor": "Zoomfaktor? Zooming out from 20 days with a zoomFactor of 1 will results in showing 40 days. No preview available.",
+          "showZoom": "Include 'Zoom In' / 'Zoom Out' buttons? Zoom can also be done via ctrl + mouse wheel",
+          "zoomFactor": "Zoom factor? Zooming out from 20 days with a zoom factor of 1 will results in showing 40 days. No preview available.",
           "fit": "Fit all data on the timeline when the timeline initializes? Otherwise, the timeline will be set to show the current date.",
           "editable": "Enable item editing?",
           "multiselect": "Enable multiselect of items (ctrl+click, shift+click)?",
@@ -1227,8 +1204,7 @@
         "cols": "Prepopulate columns of the pivot table",
         "aggregator": "Aggregator to use",
         "aggregatorChoices": ["Count","Count Unique Values","List Unique Values", "Sum","Integer Sum","Average","Median","Sample Variance","Sample Standard Deviation","Minimum","Maximum","First","Last","Sum over Sum","80% Upper Bound","80% Lower Bound","Sum as Fraction of Total","Sum as Fraction of Rows","Sum as Fraction of Columns","Count as Fraction of Total","Count as Fraction of Rows","Count as Fraction of Columns"],
-        "vals": "String name of the column in the dataset to use with aggregatorName.",
-        "vals2": "String name of the column in the dataset to use with aggregatorName.",
+        "vals": "Name of the column to aggregate.",
         "renderer": "Name of the renderer selected.",
         "rendererChoices": ["Table","Table Barchart","Heatmap","Row Heatmap","Col Heatmap","Treemap","Horizontal Bar Chart","Horizontal Stacked Bar Chart","Bar Chart","Stacked Bar Chart","Line Chart","Area Chart"],
         "options":{
@@ -1254,7 +1230,7 @@
           "groupMemberOut": "Select group members"
         },
         "addDyEvent":{
-          "dyDyEvent": "Which symbol shall be plotted?",
+          "dyDyEvent": "Which symbol shall be used?",
           "label": "What label should be used?",
           "labelLoc": "Select marker symbol",
           "labelLocChoices": ["top", "bottom"],
@@ -1265,7 +1241,7 @@
         "addDyLimit":{
           "dyDyLimitCheck": "Use static limit?",
           "dyDyLimitTrue": "Set a numeric value for the limit",
-          "dyDyLimitFalse": "Which symbol shall be plotted?",
+          "dyDyLimitFalse": "Which symbol shall be used?",
           "limit": "Set a numeric value for the limit",
           "label": "What label should be used?",
           "labelLoc": "Select marker symbol",
@@ -1290,7 +1266,7 @@
           "dyDyShadingUpTrue": "Specify the upper bound for shading.",
           "dyDyShadingUpFalse": "Which symbol shall be used as upper bound for shading?",
           "axis": "Select axis where shading shall be applied to",
-          "axisChoices": ["x", "y"],
+          "axisChoices": ["x axis", "y axis"],
           "color": "What color should the shading have?"
         },
         "addLeafletMarkers":{
@@ -1323,13 +1299,13 @@
           "chartdata": "Select chart data",
           "time": "Select time data",
           "type": "Select chart type",
-          "typeChoices": ["bar", "pie", "polar-area", "polar-radius", "auto"],
+          "typeChoices": ["bar chart", "pie chart", "polar-area chart", "polar-radius chart", "auto"],
           "options": "Additional chart options",
           "width": "Choose the maximal width of the created elements",
           "height": "Choose the maximal height of the created elements",
           "opacity": "Opacity of the chart?",
           "showlabels": "Should values be displayed above chart elements?",
-          "transitionTime": "Choose the duration in milliseconds of the transitions when a property of a chart is updated",
+          "transitionTime": "Select the duration of transitions when a property of a chart is updated (in milliseconds)",
           "layerId": "Select layer ID",
           "legend": "Should a legend (data column names) be visible?",
           "legendPosition": "Legend position",
@@ -1372,7 +1348,6 @@
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "What label should be used?",
           "symbol": "Select marker symbol",
-          "symbolChoices": ["circle", "circle-open", "circle-dot", "circle-open-dot", "square", "square-open","square-dot", "square-open-dot", "diamond","diamond-open", "diamond-dot", "diamond-open-dot","cross", "cross-open", "cross-dot", "cross-open-dot","x", "x-open", "x-dot", "x-open-dot", "triangle-up","triangle-up-open", "triangle-up-dot", "triangle-up-open-dot","triangle-down", "triangle-down-open", "triangle-down-dot","triangle-down-open-dot", "triangle-left", "triangle-left-open", "triangle-left-dot", "triangle-left-open-dot", "triangle-right","triangle-right-open", "triangle-right-dot", "triangle-right-open-dot","triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot","triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot","triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot","triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot","pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon","hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot","octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram","hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up","star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot","star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot","star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall","diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide","diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass","hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open","diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin","cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open","hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"],
           "colorCheck": "Use static color?",
           "colorCheckTrue": "Select marker color",
           "colorCheckFalse": "Select a Symbol on which the color should depend on.",

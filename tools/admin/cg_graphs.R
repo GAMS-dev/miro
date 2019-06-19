@@ -1515,12 +1515,12 @@ getValueboxOptions  <- reactive({
                                     selectInput("valuebox_icon_lib", lang$adminMode$graphs$valueboxOptions$iconLib,
                                                 choices = langSpecificGraphs$libChoices,
                                                 selected = "font-awesome"),
-                                    textInput("valuebox_icon", span(HTML(lang$adminMode$graphs$valueboxOptions$icon1), 
+                                    textInput("valuebox_icon", span(HTML(htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon1)), tags$br(), 
                                                                     tags$a(href="http://fontawesome.io/icons/", target = "_blank", "http://fontawesome.io/icons/"), 
-                                                                    lang$adminMode$graphs$valueboxOptions$icon2, tags$a(href="http://getbootstrap.com/components/#glyphicons", 
+                                                                    htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon2), tags$a(href="http://getbootstrap.com/components/#glyphicons", 
                                                                                                                         target = "_blank", "http://getbootstrap.com/components/#glyphicons"), 
-                                                                    lang$adminMode$graphs$valueboxOptions$icon3),
-                                              value = "", placeholder = lang$adminMode$graphs$valueboxOptions$placeholder)))
+                                                                    htmltools::htmlEscape(lang$adminMode$graphs$valueboxOptions$icon3)),
+                                              value = "", placeholder = "dollar-sign")))
   )
 })
 getAnimationOptions  <- reactive({
@@ -1756,7 +1756,7 @@ getPivotOptions <- reactive({
              ),  
              conditionalPanel(condition = "input.pivot_aggregatorName === 'Sum over Sum' || input.pivot_aggregatorName === '80% Upper Bound' || 
                      input.pivot_aggregatorName === '80% Lower Bound'",
-                              selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals2, choices = c("_", indices))
+                              selectInput("pivot_vals2", lang$adminMode$graphs$pivotOptions$vals, choices = c("_", indices))
              )),  
     selectInput("pivot_rendererName", lang$adminMode$graphs$pivotOptions$renderer, choices = langSpecificGraphs$rendererChoices, selected = "Table"),
     optionSection(title = lang$adminMode$graphs$pivotOptions$options$title, collapsed = TRUE,

@@ -3633,11 +3633,6 @@
                   "minLength":1,
                   "required":true
                 },
-                "move":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
                 "resize":{ 
                   "type":"string",
                   "minLength":1,
@@ -3805,11 +3800,6 @@
                   "required":true
                 },
                 "widgetUpdateSuccess":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "widgetError":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4162,12 +4152,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "minDep":{ 
+                "dep":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "minDepOp":{ 
+                "depOp":{ 
                   "type":"object",
                   "additionalProperties":false,
                   "required":true,
@@ -4190,7 +4180,7 @@
                     }
                   }
                 },
-                "minDepSelector":{ 
+                "depSelector":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4200,73 +4190,7 @@
                   "minLength":1,
                   "required":true
                 },
-                "maxDep":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "maxDepOp":{ 
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "label":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "choices":{  
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":7,
-                      "maxItems":7,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
-                      "required":true
-                    }
-                  }
-                },
-                "maxDepSelector":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
                 "default":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "defDep":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "defDepOp":{ 
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "label":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "choices":{  
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":7,
-                      "maxItems":7,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
-                      "required":true
-                    }
-                  }
-                },
-                "defDepSelector":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4308,12 +4232,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "minDep":{ 
+                "dep":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "minDepOp":{ 
+                "depOp":{ 
                   "type":"object",
                   "additionalProperties":false,
                   "required":true,
@@ -4336,45 +4260,12 @@
                     }
                   }
                 },
-                "minDepSelector":{ 
+                "depSelector":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
                 "max":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "maxDep":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "maxDepOp":{ 
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{
-                    "label":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "choices":{  
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":7,
-                      "maxItems":7,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
-                      "required":true
-                    }
-                  }
-                },
-                "maxDepSelector":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4856,11 +4747,6 @@
               "minLength":1,
               "required":true
             },
-            "unknownError":{ 
-              "type":"string",
-              "minLength":1,
-              "required":true
-            },
             "backup":{ 
               "type":"string",
               "minLength":1,
@@ -4944,11 +4830,6 @@
                   "required":true
                 },
                 "graphUpdateSuccess":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "unknownErrorGraphs":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5295,11 +5176,6 @@
                   "required":true
                 },
                 "icon3":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "placeholder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5791,11 +5667,6 @@
                   "required":true
                 },
                 "vals":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "vals2":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -6546,17 +6417,6 @@
                     "symbol":{ 
                       "type":"string",
                       "minLength":1,
-                      "required":true
-                    },
-                    "symbolChoices":{
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":142,
-                      "maxItems":142,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
                       "required":true
                     },
                     "colorCheck":{ 

@@ -547,7 +547,7 @@
       "desc":"Die Szenario-Metadaten konnten nicht geladen werden."
     },
     "renderSlider":{  
-      "title":"Falsche Daten für Slider",
+      "title":"Falsche Daten für den Schieberegler",
       "desc":"Szenario-Metadaten konnten nicht abgerufen werden."
     },
     "saveInput":{  
@@ -712,7 +712,7 @@
         "label": "Name des Standardszenarios"
       },
       "args":{
-        "label": "Geben Sie zusätzliche Kommandozeilenargumente an, mit denen GAMS aufgerufen wird (z.B. limrow=10,threads=4)"
+        "label": "Geben Sie zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen wird (z.B. limrow=10,threads=4)"
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
@@ -785,635 +785,610 @@
         "label": "Trace-Datei bei jedem GAMS-Lauf speichern (Hypercube-Modus)"
       },
       "auto":{
-        "label": "Automatisch Diagramme für jedes Eingabeblatt generieren (Pivot-Tabellen)"
+        "label": "Automatisch Pivot-Tabellen für jedes Eingabeblatt generieren"
       }
     },
     "tables":{
       "ui":{
-        "title": "General table settings",
-        "tableType": "Which table type would you like to configure?",
-        "choices": ["input table", "output table"]
+        "title": "Allgemeine Tabelleneinstellungen",
+        "tableType": "Welchen Tabellentyp möchten Sie konfigurieren?",
+        "choices": ["Eingabetabelle", "Ausgabetabelle"]
       },
       "hot":{
-        "height": "Height of input tables (in px)",
-        "readonly": "Restrict editing of tables? If activated, tables can not be modified by the user.",
-        "highcol": "Highlight the column of current active cell (no live preview available).",
-        "highrow": "Highlight the row of current active cell (no live preview available).",
-        "stretch": "Default column stretching.",
-        "stretchChoices": ["No stretch", "Stretch last column", "Stretch all columns"],
-        "stretchCustom": "Set custom column width.",
-        "colwidth": "Width of a single (non-streched) column. Set value to 0 to fit column width to its content.",
-        "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
-        "move": "Enable manual column moving. When active, the column positions can be manually changed.",
-        "resize": "Enable manual column resizing.",
-        "enable": "Enable table context menu (accessible via right mouse click).",
-        "contextRowedit": "Enable row editing",
-        "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable read-only toggle",
-        "contextComments": "Enable comments in table. Will be ignored when solving the model and are not saved in database."
+        "height": "Höhe der Eingabetabellen (in px)",
+        "readonly": "Bearbeitung von Tabellen verbieten? Wenn aktiviert, können Tabellen vom Benutzer nicht geändert werden.",
+        "highcol": "Markieren der aktiven Spalte (keine Live-Vorschau verfügbar).",
+        "highrow": "Markieren der aktiven Zeile (keine Live-Vorschau verfügbar).",
+        "stretch": "Standard-Spaltenstreckung.",
+        "stretchChoices": ["Nicht strecken", "Letzte Spalte strecken", "Alle Spalten strecken"],
+        "stretchCustom": "Benutzerdefinierte Spaltenbreite einstellen.",
+        "colwidth": "Breite einer einzelnen (nicht gestreckten) Spalte. Setzen Sie den Wert auf 0, um die Spaltenbreite an den Inhalt anzupassen.",
+        "sort": "Spaltensortierung in aufsteigender/absteigender Reihenfolge aktivieren (durch Klicken auf den Spaltennamen in der Kopfzeile).",
+        "resize": "Manuelle Spaltengrößenanpassung aktivieren.",
+        "enable": "Kontextmenü der Tabelle aktivieren (erreichbar über rechte Maustaste).",
+        "contextRowedit": "Zeilenbearbeitung aktivieren",
+        "contextColedit": "Spaltenbearbeitung aktivieren",
+        "contextReadonly": "schreibgeschützt-Toggle aktivieren",
+        "contextComments": "Kommentare in der Tabelle aktivieren. Wird bei der Lösung des Modells ignoriert und nicht in der Datenbank gespeichert."
       },
       "dt":{
         "class":{
-          "label":"Table style",
-          "choices": ["display", "cell-border", "compact", "hover", "nowrap", "order-column", "row-border", "stripe"]
+          "label":"Tabellenstil",
+          "choices": ["Display", "Spaltenrand", "kompakt", "hover", "kein wrap", "order-column", "Zeilenrand", "Streifen"]
         },
         "filter":{
-          "label":"Include column filters",
-          "choices": ["No column filters", "Position: bottom", "Position: top"]
+          "label":"Spaltenfilter anzeigen",
+          "choices": ["Keine Spaltenfilter", "Position: unten", "Position: oben"]
         },
         "pagelength":{
-          "label":"Number of items to display per page"
+          "label":"Anzahl der anzuzeigenden Zeilen pro Seite"
         },
         "rownames":{
-          "label":"Show row numbers?"
+          "label":"Zeilennummern anzeigen?"
         },
         "colReorder":{
-          "label":"Allow reordering of columns?"
+          "label":"Neuordnung von Spalten erlaubt?"
         },
         "buttons":{
-          "label":"Add export buttons?",
-          "choices": ["copy", "csv", "excel", "pdf", "print"],
-          "select": "Select the buttons to use (minimum of 2 buttons required). Note: All button functions only affect the visible table page."
+          "label":"Export-Buttons hinzufügen?",
+          "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck"],
+          "select": "Wählen Sie die zu verwendenden Buttons aus (mindestens 2 Buttons erforderlich). Hinweis: Alle Tastenfunktionen wirken sich nur auf die sichtbare Tabellenseite aus."
         }
       }
     },
     "widgets":{
       "ui":{
-        "title":"Configure input widgets",
-        "widgetUpdateSuccess": "Widget configuration was updated successfully",
-        "widgetError": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
-        "symbolType": "Symbol type to configure",
-        "choices": ["Symbol", "New GAMS option", "New double dash parameter"],
-        "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
-        "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
-        "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
-        "inputSymbol": "Which input symbol would you like to create a widget for?",
-        "widgetGo": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
-        "widgetDd": "Name of the double-dash parameter (without '--')",
-        "widgetType": "Select the type of widget you want to use"
+        "title":"Eingabe-Widgets konfigurieren",
+        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
+        "symbolType": "Zu konfigurierender Symboltyp",
+        "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
+        "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
+        "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option",
+        "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter",
+        "inputSymbol": "Für welches Eingabesymbol möchten Sie ein Widget erstellen?",
+        "widgetGo": "Name der GAMS-Option (z.B.'LP' oder'OptCR')",
+        "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
+        "widgetType": "Wählen Sie die Art des Widgets, das Sie verwenden möchten."
       },
       "validate":{
-        "val1": "The alias of the element must not be empty!",
-        "val2": "The name of the double-dash parameter must not be empty!",
-        "val3": "The name of the GAMS option must not be empty!",
-        "val4": "The name of the double-dash parameter must not be the same as the name of another used GAMS symbol or command line parameter! Please choose another name.",
-        "val5": "The name of the GAMS option must not be the same as the name of another used GAMS symbol or command line parameter!",
-        "val6": "The default value is falsy!",
-        "val7": "The default value must be a number in the range [min, max]!",
-        "val8": "The tick identifier must be a logical!",
-        "val9": "The step size must be a number!",
-        "val10": "Your dropdown menu must have the same number of aliases as choices or no aliases at all!",
-        "val11": "The default value must be one of the choices you specified!",
-        "val12": "The value must be a logical!",
-        "val13": "Default date is invalid!",
-        "val14": "Minimum date is invalid!",
-        "val15": "Maximum date is invalid!",
-        "val16": "The default date must be after the start date!",
-        "val17": "The default date must be before the end date!",
-        "val18": "The minimum date must be before the maximum date!",
-        "val19": "Minimum length for custom date format is 1!",
-        "val20": "Start date is invalid!",
-        "val21": "End date is invalid!",
-        "val22": "Minimum date is invalid!",
-        "val23": "Maximum date is invalid!",
-        "val24": "The start date must be after the minimum date!",
-        "val25": "The end date must be before the maximum date!",
-        "val26": "The start date must be after the minimum date!",
-        "val27": "The end date must be before the maximum date!",
-        "val28": "The minimum date must be before the maximum date!",
-        "val29": "Minimum length for custom date format is 1!",
-        "val30": "The start date must be before the end date!",
-        "val31": "The minimum date must be before the maximum date!",
-        "val32": "The readonly identifier must be a logical!",
-        "val33": "The heatmap identifier must be a logical!",
-        "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
-        "val35": "No valid widget type",
-        "val36": "The group name must be at least 1 character long.",
-        "val37": "Each group must have at least 2 members and every element may only appear in a single group!",
-        "val38": "At least one choice has to be specified!"
+        "val1": "Der Alias des Elements darf nicht leer sein!",
+        "val2": "Der Name des Double-Dash-Parameters darf nicht leer sein!",
+        "val3": "Der Name der GAMS-Option darf nicht leer sein!",
+        "val4": "Der Name des Double-Dash-Parameters darf nicht mit dem Namen eines anderen verwendeten GAMS-Symbols oder Kommandozeilenparameters übereinstimmen! Bitte wählen Sie einen anderen Namen.",
+        "val5": "Der Name der Option GAMS darf nicht mit dem Namen eines anderen verwendeten GAMS-Symbols oder Kommandoszeilenparameters übereinstimmen!",
+        "val6": "Der Standardwert ist fehlerhaft!",
+        "val7": "Der Standardwert muss eine Zahl im Bereich[min, max] sein!",
+        "val8": "Der Tick-Identifikator muss ein Boolean sein!",
+        "val9": "Die Schrittweite muss eine Zahl sein!",
+        "val10": "Dein Dropdown-Menü muss die gleiche Anzahl von Aliasen haben wie die Auswahl oder gar keine Aliase!",
+        "val11": "Der Standardwert muss eine der von Ihnen angegebenen Optionen sein!",
+        "val12": "Der Wert muss ein boolescher Wert sein!",
+        "val13": "Standarddatum ist ungültig!",
+        "val14": "Das minimale Datum ist ungültig!",
+        "val15": "Das maximale Datum ist ungültig!",
+        "val16": "Das Standarddatum muss nach dem Startdatum liegen!",
+        "val17": "Das Standarddatum muss vor dem Enddatum liegen!",
+        "val18": "Das minimale muss vor dem maximalen Datum liegen!",
+        "val19": "Die Mindestlänge für das benutzerdefinierte Datumsformat ist 1!",
+        "val20": "Startdatum ist ungültig!",
+        "val21": "Enddatum ist ungültig!",
+        "val22": "Das minimale Datum ist ungültig!",
+        "val23": "Das maximale Datum ist ungültig!",
+        "val24": "Das Startdatum muss nach dem Mindestdatum liegen!",
+        "val25": "Das Enddatum muss vor dem maximalen Datum liegen!",
+        "val26": "Das Startdatum muss nach dem minimalen Datum liegen!",
+        "val27": "Das Enddatum muss vor dem maximalen Datum liegen!",
+        "val28": "Das minimale muss vor dem maximalen Datum liegen!",
+        "val29": "Die Mindestlänge für das benutzerdefinierte Datumsformat ist 1!",
+        "val30": "Das Startdatum muss vor dem Enddatum liegen!",
+        "val31": "Das minimale muss vor dem maximalen Datum liegen!",
+        "val32": "Der Nur-Lese-Identifikator muss ein boolscher Wert sein!",
+        "val33": "Der Heatmap-Identifikator muss ein boolscher Wert sein!",
+        "val34": "Einige Spalten, die Sie als schreibgeschützt ausgewählt haben, existieren nicht in dem aktuell ausgewählten Symbol!",
+        "val35": "Kein gültiger Widget-Typ",
+        "val36": "Der Gruppenname muss mindestens 1 Zeichen lang sein.",
+        "val37": "Jede Gruppe muss mindestens 2 Mitglieder haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
+        "val38": "Es muss mindestens ein Element ausgewählt werden!"
       },
       "widgetOptions":{
-        "input": ["Slider", "Dropdown menu", "Checkbox"],
-        "all": ["Slider", "Slider range", "Dropdown menu", "Checkbox", "Date", "Date range", "Text box"],
-        "table": ["Table"],
-        "date": ["Date"]
+        "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
+        "all": ["Schieberegler", "Schiebereglerbereich", "Dropdown-Menü", "Kontrollkästchen", "Datum", "Datumsbereich", "Textfeld"],
+        "table": ["Tabelle"],
+        "date": ["Datum"]
       },
       "table":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "readonly": "Should table be readonly?",
-        "readonlyCols": "Select certain columns to be readonly",
-        "heatmap": "Turn table into a heatmap?"
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "readonly": "Soll die Tabelle schreibgeschützt sein?",
+        "readonlyCols": "Wählen Sie bestimmte Spalten aus, die schreibgeschützt sein sollen",
+        "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "min": "Minimum value",
-        "minDep": "Select symbol and header to depend upon",
-        "minDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "min": "Mindestwert",
+        "max": "Maximalwert",
+        "default": "Standardwert",
+        "dep": "Wählen Sie Symbol und Spalte aus, von der Sie abhängen möchten",
+        "depOp":{
+          "label": "Operator auswählen",
+          "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
         },
-        "minDepSelector": "Static minimum?",
-        "max": "Maximum value",
-        "maxDep": "Select symbol and header to depend upon",
-        "maxDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "maxDepSelector": "Static maximum?",
-        "default": "Default value",
-        "defDep": "Select symbol and header to depend upon",
-        "defDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "defDepSelector": "Static default?",
-        "step": "Step size (also decimal places possible)",
-        "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "depSelector": "Statischer Wert?",
+        "step": "Schrittweite (auch Dezimalstellen möglich)",
+        "ticks": "Zeige Häkchen?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "sliderrange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "min": "Minimum value",
-        "minDep": "Select symbol and header to depend upon",
-        "minDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "min": "Mindestwert",
+        "dep": "Wählen Sie Symbol und Spalte aus, von der Sie abhängen möchten",
+        "depOp":{
+          "label": "Operator auswählen",
+          "choices": ["Minimum", "Maximum", "Anzahl", "Mittel", "Median", "Varianz", "Standardabweichung"]
         },
-        "minDepSelector": "Static minimum?",
-        "max": "Maximum value",
-        "maxDep": "Select symbol and header to depend upon",
-        "maxDepOp":{
-          "label": "Select operator",
-          "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
-        },
-        "maxDepSelector": "Static maximum?",
-        "default1": "Lower default value",
-        "default2": "Upper default value",
-        "ticks": "Show tick marks?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "depSelector": "Statischer Wert?",
+        "max": "Maximalwert",
+        "default1": "Unterer Standardwert",
+        "default2": "Oberer Standardwert",
+        "ticks": "Zeige Häkchen?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "dropdown":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "choices": "Choices to select from",
-        "choicesAlias": "Aliases for choices (optional)",
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "choices": "Auswahlmöglichkeiten",
+        "choicesAlias": "Aliase für Wahlmöglichkeiten (optional)",
         "choiceDep":{
-          "label": "Select symbol and header to depend upon",
-          "depChoices": ["All"],
-          "type": "Select type of dependency",
-          "typeChoices": ["Forward", "Backward", "Forward and Backward"],
-          "selector": "Static choices?"
+          "label": "Wählen Sie Symbol und Spalte aus, von der Sie abhängen möchten",
+          "depChoices": ["Alle"],
+          "type": "Wählen Sie die Art der Abhängigkeit",
+          "typeChoices": ["Vorwärts", "Rückwärts", "Vorwärts und Rückwärts"],
+          "selector": "Statische Auswahlmöglichkeiten?"
         },
-        "default": "Default value",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "default": "Standardwert",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "checkbox":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "default": "Default value",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "default": "Standardwert",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "date":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "default": "Choose the default date",
-        "defOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
-        "format": "Choose how you want the date to be formatted.",
-        "formatCustom": "Enter a custom date format",
-        "formatCustomSelector": "Custom date format?",
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "default": "Standarddatum auswählen",
+        "defOff": "Aktuelles Datum benutzen",
+        "min": "Minimales Datum auswählen",
+        "minOff": "Kein Minimum?",
+        "max": "Maximales Datum auswählen",
+        "maxOff": "Kein Maximum?",
+        "format": "Wie soll das Datum formatiert werden?",
+        "formatCustom": "Geben Sie ein benutzerdefiniertes Datumsformat ein",
+        "formatCustomSelector": "Benutzerdefiniertes Datumsformat?",
         "startview":{
-          "label": "What date range is shown per default?",
-          "choices": ["Month", "Year", "Decade"]
+          "label": "Welcher Datumsbereich soll standardmäßig angezeigt werden?",
+          "choices": ["Monat", "Jahr", "Dekade"]
         },
         "weekstart":{
-          "label": "What day shall be the start of the week?",
-          "choices": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+          "label": "Welcher Tag soll der Beginn der Woche sein?",
+          "choices": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
         },
-        "daysDisabled": "Select weekdays that you want to disable",
-        "autoclose": "Should datepicker be closed immediately when a date is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "daysDisabled": "Wählen Sie Wochentage aus, die Sie deaktivieren möchten",
+        "autoclose": "Soll der Datepicker sofort geschlossen werden, wenn ein Datum ausgewählt wird?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "daterange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "defaultStart": "Choose the default start date",
-        "startOff": "Use current date",
-        "defaultEnd": "Choose the default end date",
-        "endOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
-        "format": "Choose how you want the date to be formatted.",
-        "formatCustom": "Enter a custom date format",
-        "formatCustomSelector": "Custom date format?",
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "defaultStart": "Wählen Sie das Standardstartdatum",
+        "startOff": "Aktuelles Datum verwenden",
+        "defaultEnd": "Wählen Sie das Standard-Enddatum",
+        "endOff": "Aktuelles Datum verwenden",
+        "min": "Wählen Sie das minimal zulässige Datum",
+        "minOff": "Kein Minimum?",
+        "max": "Wählen Sie das maximal zulässige Datum",
+        "maxOff": "Kein Maximum?",
+        "format": "Wählen Sie, wie das Datum formatiert werden soll.",
+        "formatCustom": "Geben Sie ein benutzerdefiniertes Datumsformat ein",
+        "formatCustomSelector": "Benutzerdefiniertes Datumsformat?",
         "startview":{
-          "label": "What date range is shown per default?",
-          "choices": ["Month", "Year", "Decade"]
+          "label": "Welcher Datumsbereich wird standardmäßig angezeigt?",
+          "choices": ["Monat", "Jahr", "Dekade"]
         },
         "weekstart":{
-          "label": "What day shall be the start of the week?",
-          "choices": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+          "label": "Welcher Tag soll der Beginn der Woche sein?",
+          "choices": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]
         },
-        "separator": "Select the separator between start and end date selector",
-        "autoclose": "Should datepicker be closed immediately when a date range is selected?",
-        "hcube": "Should element be expanded automatically in Hypercube mode?"
+        "separator": "Wählen Sie das Trennzeichen zwischen Start- und Enddatumswahlschalter",
+        "autoclose": "Soll der Datepicker sofort geschlossen werden, wenn ein Datumsbereich ausgewählt wird?",
+        "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "textinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
-        "label": "Choose a label",
-        "value": "Choose the default value",
-        "placeholder": "Choose a placeholder"
+        "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "label": "Wählen Sie eine Bezeichnung",
+        "value": "Wählen Sie einen Standardwert",
+        "placeholder": "Wählen Sie einen Platzhalter"
       },
       "modalDialog":{
-        "title": "Please confirm",
-        "message": "Are you sure that you want to delete the existing configuration for this symbol? This cannot be undone!",
-        "cancel": "Cancel",
-        "confirm": "Confirm"
+        "title": "Bitte bestätigen",
+        "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol löschen wollen? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
       }
     },
     "database":{
-      "title": "Database management",
-      "removeSuccess": "Database tables removed successfully",
-      "restoreSuccess": "Data restored successfully",
-      "restoreNoData": "No csv files found in the archive provided. Nothing was restored.",
-      "restoreInvalidData": "At least one of the tables is invalid. Nothing was restored.",
-      "maxRowError": "The maximum number of rows to export was exceeded for atleast 1 table. Please back up the database manually!",
-      "unknownError": "An unexpected error occurred. Maybe your database is not empty?",
-      "backup": "Database backup",
-      "backupWrapper": "You want to create a backup of the database? Click the button below to get a zip archive with all the database tables saved into csv files. Be aware that it is faster to backup your database using the native backup tool of your DBMS. This means that in case of big databases you should backup your database manually!",
-      "dbSaveAll": "Save database tables",
-      "restore": "Restore database",
-      "restoreWrapper": "You want to restore the database with data from an existing zip file? Please select the file you want to use to restore the database below.",
-      "restoreDb": "Restore",
-      "remove": "Delete data",
-      "removeWrapper": "You want to remove all the tables that belong to your model (e.g. because the schema changed)?",
-      "removeDialogBtn": "Delete all database tables",
-      "removeDialogTitle": "Remove database tables",
-      "removeDialogDesc": "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
-      "removeDialogCancel": "Cancel",
-      "removeDialogConfirm": "Remove tables"
+      "title": "Datenbankverwaltung",
+      "removeSuccess": "Datenbanktabellen erfolgreich entfernt",
+      "restoreSuccess": "Daten erfolgreich wiederhergestellt",
+      "restoreNoData": "Es wurden keine CSV-Dateien im Archiv gefunden. Nichts wurde wiederhergestellt.",
+      "restoreInvalidData": "Mindestens eine der Tabellen ist ungültig. Nichts wurde wiederhergestellt.",
+      "maxRowError": "Die maximale Anzahl der zu exportierenden Zeilen wurde für mindestens 1 Tabelle überschritten. Bitte sichern Sie die Datenbank manuell!",
+      "backup": "Datenbanksicherung",
+      "backupWrapper": "Sie möchten ein Backup der Datenbank erstellen? Klicken Sie auf die Schaltfläche unten, um ein Zip-Archiv mit allen in CSV-Dateien gespeicherten Datenbanktabellen zu erhalten. Beachten Sie, dass es schneller ist, Ihre Datenbank mit dem nativen Sicherungswerkzeug Ihres DBMS zu sichern. Das bedeutet, dass Sie bei großen Datenbanken Ihre Datenbank manuell sichern sollten!",
+      "dbSaveAll": "Datenbanktabellen speichern",
+      "restore": "Datenbank wiederherstellen",
+      "restoreWrapper": "Sie wollen die Datenbank mit Daten aus einer bestehenden Zip-Datei wiederherstellen? Bitte wählen Sie die Datei aus, die Sie für die Wiederherstellung der Datenbank verwenden möchten.",
+      "restoreDb": "Wiederherstellen",
+      "remove": "Daten löschen",
+      "removeWrapper": "Sie wollen alle Tabellen entfernen, die zu Ihrem Modell gehören (z.B. weil sich das Schema geändert hat)?",
+      "removeDialogBtn": "Alle Datenbanktabellen löschen",
+      "removeDialogTitle": "Datenbanktabellen entfernen",
+      "removeDialogDesc": "Sind Sie sicher, dass Sie alle Datenbanktabellen löschen wollen? Das kann nicht rückgängig gemacht werden! Möglicherweise möchten Sie zuerst die Datenbank speichern, bevor Sie fortfahren.",
+      "removeDialogCancel": "Abbrechen",
+      "removeDialogConfirm": "Tabellen entfernen"
     },
     "graphs":{
       "ui":{
-        "title": "Configure graphs",
-        "graphUpdateSuccess": "Graph configuration was updated successfully",
-        "unknownErrorGraphs": "An unexpected error occurred. If this problem persists, please contact the system administrator.",
-        "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
-        "gamsSymbols": "Select which GAMS symbol to plot",
-        "chartTitle": "Choose a title for your chart",
-        "height": "Choose a height for your chart (px)",
-        "tool": "Select the charting tool you want to use",
-        "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
+        "title": "Graphen konfigurieren",
+        "graphUpdateSuccess": "Die Grafikkonfiguration wurde erfolgreich aktualisiert",
+        "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
+        "gamsSymbols": "Wählen Sie aus, welches GAMS-Symbol geplottet werden soll",
+        "chartTitle": "Wählen Sie einen Titel für Ihr Diagramm",
+        "height": "Wählen Sie eine Höhe für Ihr Diagramm (px)",
+        "tool": "Wählen Sie das Charting-Tool aus, das Sie verwenden möchten",
+        "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte"]
       },
       "validate":{
-        "val1": "Could not set range for x axis. Check for correct data format!"
+        "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!"
       },
       "errMsg":{
-        "errTitle1": "No valid data",
-        "errContent1": "No valid datasets were found. Please upload a properly formatted Excel file with data."
+        "errTitle1": "Keine gültigen Daten",
+        "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
       },
-      "updateToolScalars": ["Valuebox for scalar values"],
-      "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table"],
+      "updateToolScalars": ["Wertebox für skalare Werte"],
+      "updateToolNoScalars": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle"],
       "chartTypePlotly":{
-        "title": "Select the type of chart you want to plot",
-        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram"]
+        "title": "Wählen Sie den Diagrammtyp aus, den Sie verwenden möchten",
+        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm"]
       },
       "pieOptions":{
-        "labels": "Labels",
-        "values": "Values",
-        "donut": "Donut chart?",
-        "donutHole": "Size of donut hole"
+        "labels": "Bezeichnung",
+        "values": "Werte",
+        "donut": "Donut-Diagramm?",
+        "donutHole": "Größe des Donutlochs"
       },
       "axisOptions":{
-        "title": "Axis label (%s axis)",
-        "showgrid": "Show grid (%s axis)?",
-        "zeroline": "Show zero line (%s axis)?",
-        "showticklabels": "Show tick labels (%s axis)?",
-        "range": "Set axis range. The format has to match the data format. When not specified, a default is used.",
-        "rangeFrom": "Range start (%s axis).",
-        "rangeTo": "Range end (%s axis).",
-        "animationDataFormatSelector": "Data in date format?"
+        "title": "Achsenbeschriftung (%s-Achse)",
+        "showgrid": "Gitter anzeigen (%s-Achse)?",
+        "zeroline": "Nulllinie anzeigen (%s-Achse)?",
+        "showticklabels": "Markerbeschriftung anzeigen (%s-Achse)?",
+        "range": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
+        "rangeFrom": "Bereichsanfang (%s-Achse).",
+        "rangeTo": "Bereichsende (%s-Achse).",
+        "animationDataFormatSelector": "Daten im Datumsformat?"
       },
       "chartOptions":{
-        "xdata": "What should be plotted on the x axis?",
-        "ydata": "Add data series",
-        "color": "Symbol that is used to select different colors. Note: The color is only valid, when no line or marker colors are set!",
+        "xdata": "Was soll auf der x-Achse dargestellt werden?",
+        "ydata": "Datenreihe hinzufügen",
+        "color": "Symbol, das zur Auswahl verschiedener Farben verwendet wird. Hinweis: Die Farbe ist nur gültig, wenn keine Linien- oder Markierungsfarben eingestellt sind!",
         "options":{
-          "title": "Options",
-          "paperBgColor": "What background color shall the paper have?",
-          "plotBgColor": "What background color shall the plot have?",
-          "showlegend": "Show legend?",
-          "outType": "Show graphic and data table in split screen? (no live preview available)"
+          "title": "Optionen",
+          "paperBgColor": "Welche Hintergrundfarbe soll das Papier haben?",
+          "plotBgColor": "Welche Hintergrundfarbe soll das Diagramm haben?",
+          "showlegend": "Legende zeigen?",
+          "outType": "Grafik- und Datentabelle im geteilten Bildschirm anzeigen? (keine Live-Vorschau verfügbar)"
         }
       },
       "barOptions":{
-        "mode": "Select barmode",
-        "choicesMode": ["group", "stack"],
-        "orientation": "Orientation",
-        "choicesOrientation": ["vertical", "horizontal"],
-        "width": "Symbol that is used to select different bar widths"
+        "mode": "Barmodus wählen",
+        "choicesMode": ["Gruppe", "Stapel"],
+        "orientation": "Orientierung",
+        "choicesOrientation": ["vertikal", "horizontal"],
+        "width": "Symbol, mit dem verschiedene Balkenbreiten ausgewählt werden"
       },
       "valueboxOptions":{
-        "width": "Select width of the valuebox",
-        "color": "Select color of the valuebox",
-        "colorChoices": ["red", "yellow", "aqua", "blue", "light-blue", "green", "navy", "teal", "olive", "lime", "orange", "fuchsia", "purple", "maroon", "black"],
-        "useIcon": "Use an icon for the valuebox?",
-        "iconLib": "Select an icon library",
+        "width": "Breite der Wertebox auswählen",
+        "color": "Wählen Sie die Farbe der Wertebox aus",
+        "colorChoices": ["rot", "gelb", "aqua", "blau", "hellblau", "grün", "marineblau", "blaugrün", "oliv", "limette", "orange", "fuchsia", "lila", "kastanienbraun", "schwarz"],
+        "useIcon": "Soll ein Icon angezeigt werden?",
+        "iconLib": "Wählen Sie eine Symbolbibliothek aus",
         "libChoices": ["Font-Awesome", "Glyphicons"],
-        "icon1": "Specify an icon for the valuebox (optional). <br>See ",
-        "icon2": "and ",
-        "icon3": "for a list of possible icons.",
-        "placeholder": "dollar-sign"
+        "icon1": "Geben Sie ein Symbol für die Wertebox an.",
+        "icon2": "und",
+        "icon3": "für eine Liste der möglichen Symbole."
       },
       "animationOptions":{
-        "title": "Animation options",
-        "frame": "Frames per second",
-        "transition": "Duration of the smooth transition between frames (in milliseconds).",
-        "easing": "Type of transition easing",
-        "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
-        "redraw": "Trigger a redraw of the plot at completion of the transition? (this may significantly impact performance, but may be necessary to update graphical elements that can't be transitioned.)",
-        "mode": "How shall new animate calls interact with currently-running animations?",
-        "modeChoices": ["immediate", "next", "afterall"]
+        "title": "Animationsoptionen",
+        "frame": "Bilder pro Sekunde",
+        "transition": "Dauer des sanften Übergangs zwischen den Bildern (in Millisekunden).",
+        "easing": "Art des Übergangs",
+        "easingChoices": ["linear", "quadratisch", "kubisch", "sin", "exp", "Kreis", "elastisch", "zurück", "springend", "linear-in", "quad-in", "kubisch-in", "sin-in", "exp-in", "circle-in", "elastic-in", "back-in", "bounce-in", "linear-out", "quad-out", "kubisch-out","sin-out", "exp-out", "circle-out", "elastic-out", "back-out", "bounce-out", "linear-in-out", "quad-in-out", "kubisch-in-out", "sin-in-out", "exp-in-out", "circle-in-out", "elastic-in-out", "back-in-out", "back-in-out", "bounce-in-out"],
+        "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
+        "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
+        "modeChoices": ["sofort", "als nächstes", "nach allem"]
       },
       "animationSliderOptions":{
-        "hide": "remove the animation slider?",
-        "label": "Label to appear on the slider",
-        "prefix": "Prefix of the label",
-        "fontColor": "What font color should be used for the slider label?"
+        "hide": "Entfernen des Animationsschiebereglers?",
+        "label": "Beschriftung, die auf dem Schieberegler erscheinen soll",
+        "prefix": "Präfix der Beschriftung",
+        "fontColor": "Welche Schriftfarbe sollte für die Schiebereglerbezeichnung verwendet werden?"
       },
       "histOptions":{
-        "xdata": "Add data series",
-        "norm": "Type of normalization to use",
-        "normChoices": ["Number of occurances", "Percentage of occurances", "Number of occurances/ Bin interval size"],
-        "nbins": "Number of bins",
-        "barmode": "How do you want the bars to be displayed?",
-        "barmodeChoices": ["overlay", "stack", "group", "relative"]
+        "xdata": "Datenreihe hinzufügen",
+        "norm": "Art der zu verwendenden Normalisierung",
+        "normChoices": ["Anzahl der Ereignisse", "Prozentsatz der Ereignisse", "Anzahl der Ereignisse/ Klassen n-Intervallgröße"],
+        "nbins": "Anzahl der Klassen",
+        "barmode": "Wie sollen die Balken angezeigt werden?",
+        "barmodeChoices": ["überlagern", "gesttapelt", "gruppiert", "relativ"]
       },
       "dygraphsOptions":{
-        "previewError": "No scalar indices found in your data.",
-        "xdata": "What index do you want to plot on the x-axis?",
-        "ydata": "Add data series",
-        "color": "What symbol do you want to use to plot different chart lines?",
-        "dyEvent": "Add event line",
-        "dyLimit": "Add limit line",
-        "dyAnnotation": "Add annotation",
-        "dyShading": "Add shading",
+        "previewError": "Keine skalaren Indizes in Ihren Daten gefunden.",
+        "xdata": "Welchen Index möchten Sie auf der x-Achse zeichnen?",
+        "ydata": "Datenreihe hinzufügen",
+        "color": "Welches Symbol möchten Sie verwenden, um verschiedene Diagrammlinientypen darzustellen?",
+        "dyEvent": "Ereignislinie hinzufügen",
+        "dyLimit": "Limitlinie hinzufügen",
+        "dyAnnotation": "Annotation hinzufügen",
+        "dyShading": "Schattierung hinzufügen",
         "rngSelOpts":{
-          "title": "Range selector options",
-          "activate": "Do you want to see a range selector?",
-          "height": "How high should it be (in px)?",
-          "retainDateWindow": "Should current date range be kept when graph is redrawn?",
-          "keepMouseZoom": "Do you still want to be able to zoom with the mouse?",
-          "fillColor": "What fill color should be used?",
-          "strokeColor": "What stroke color should be used?"
+          "title": "Optionen für den Bereichswahlschalter",
+          "activate": "Willst du einen Bereichswahlschalter sehen?",
+          "height": "Wie hoch sollte er sein (in px)?",
+          "retainDateWindow": "Soll der aktuelle Datumsbereich beibehalten werden, wenn die Grafik neu gezeichnet wird?",
+          "keepMouseZoom": "Willst du immer noch mit der Maus zoomen können?",
+          "fillColor": "Welche Füllfarbe sollte verwendet werden?",
+          "strokeColor": "Welche Strichfarbe sollte verwendet werden?"
         },
         "generalOpts":{
-          "title": "General options",
-          "incZero": "Should y-axis start at 0?",
-          "logscale": "Show y-axis in log scale?",
-          "drawGrid": "Should grid lines be displayed?",
-          "stepPlot": "Do you want a step plot?",
-          "stemPlot": "Do you want a stem plot?",
-          "fillGraph": "Should the area underneath the graph be filled?",
-          "fillAlpha": "Transparency for filled regions",
-          "drawPoints": "Should points be drawn?",
-          "pointShape": "What shape should points have?",
-          "pointShapeChoices": ["dot", "triangle", "square", "diamond", "pentagon", "hexagon", "circle", "star", "plus", "ex"],
-          "pointSize": "What size should points be?"
+          "title": "Allgemeine Optionen",
+          "incZero": "Soll die y-Achse bei 0 beginnen?",
+          "logscale": "Y-Achse in Log-Skala anzeigen?",
+          "drawGrid": "Sollen Gitterlinien angezeigt werden?",
+          "stepPlot": "Willst du ein Stufendiagramm?",
+          "stemPlot": "Willst du eine Stammplot?",
+          "fillGraph": "Soll der Bereich unter der Grafik ausgefüllt werden?",
+          "fillAlpha": "Transparenz für gefüllte Regionen",
+          "drawPoints": "Sollen Punkte gezeichnet werden?",
+          "pointShape": "Welche Form sollen Punkte haben?",
+          "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Fünfeck", "Sechseck", "Kreis", "Stern", "Plus", "ex"],
+          "pointSize": "Welche Größe sollten die Punkte haben?"
         },
         "highOpts":{
-          "title": "Highlighting options",
-          "circleSize": "What shall the circle size be (in px)?",
-          "seriesBackgroundAlpha": "Choose the opacity of the background",
-          "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"
+          "title": "Hervorhebungsoptionen",
+          "circleSize": "Wie groß soll der Kreis sein (in px)?",
+          "seriesBackgroundAlpha": "Wählen Sie die Deckkraft des Hintergrunds",
+          "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"
         }
       },
       "leafletOptions":{
-        "markers": "Add Markers",
-        "flows": "Add Flows",
-        "minicharts": "Add Charts",
-        "hideGroups": "Select groups that should be hidden on startup",
+        "markers": "Markierungen hinzufügen",
+        "flows": "Flows hinzufügen",
+        "minicharts": "Charts hinzufügen",
+        "hideGroups": "Wählen Sie Gruppen aus, die beim Start ausgeblendet werden sollen",
         "layer":{
-          "title": "Layer control options",
-          "baseGroups": "Which base groups shall be selectable?",
-          "overlayGroups": "Which overlay groups shall be selectable?",
-          "position": "Should grid lines be displayed?",
-          "positionChoices": ["Top right", "Bottom right", "Bottom left", "Top left"],
-          "collapsed": "Shall layer control panel be collapsed?"
+          "title": "Optionen für die Ebenensteuerung",
+          "baseGroups": "Welche Basisgruppen sollen auswählbar sein?",
+          "overlayGroups": "Welche Overlay-Gruppen sollen auswählbar sein?",
+          "position": "Sollen Gitterlinien angezeigt werden?",
+          "positionChoices": ["Oben rechts", "Unten rechts", "Unten links", "Oben links"],
+          "collapsed": "Soll das Ebenenauswahlmenü eingeklappt sein?"
         }
       },
       "timevisOptions":{
-        "series": "Add data series",
-        "custom": "Add a vertical bar at a time point that can be dragged by the user (no preview available)",
+        "series": "Datenreihe hinzufügen",
+        "custom": "Fügen Sie einen vertikalen Balken zu einem Zeitpunkt hinzu, der vom Benutzer gezogen werden kann (keine Vorschau verfügbar)",
         "options":{
-          "title": "Gantt chart options",
-          "showZoom": "Include 'Zoom In' / 'Zoom Out' buttons? Zoom can also be done via ctrl+scroll",
-          "zoomFactor": "Zoomfaktor? Zooming out from 20 days with a zoomFactor of 1 will results in showing 40 days. No preview available.",
-          "fit": "Fit all data on the timeline when the timeline initializes? Otherwise, the timeline will be set to show the current date.",
-          "editable": "Enable item editing?",
-          "multiselect": "Enable multiselect of items (ctrl+click, shift+click)?",
-          "showCurrentTime": "Show a vertical bar at the current time?"
+          "title": "Gantt-Diagramm-Optionen",
+          "showZoom": "Buttons: 'Zoom In' / 'Zoom Out' hinzufügen? Gezoomt werden kann alternativ per ctrl + Mausrad",
+          "zoomFactor": "Zoomfaktor? Wenn Sie mit einem Zoomfaktor von 1 aus 20 Tagen herauszoomen, werden 40 Tage angezeigt. Keine Vorschau verfügbar.",
+          "fit": "Alle Daten auf der Timeline anpassen, wenn die Timeline initialisiert wird? Andernfalls wird die Zeitachse so eingestellt, dass sie das aktuelle Datum anzeigt.",
+          "editable": "Elementbearbeitung aktivieren?",
+          "multiselect": "Mehrfachauswahl von Elementen aktivieren (Strg+Klick, Umschalt+Klick)?",
+          "showCurrentTime": "Einen vertikalen Balken zur aktuellen Zeit anzeigen?"
         }
       },
       "pivotOptions":{
-        "rows": "Prepopulate rows of the pivot table",
-        "cols": "Prepopulate columns of the pivot table",
-        "aggregator": "Aggregator to use",
-        "aggregatorChoices": ["Count","Count Unique Values","List Unique Values", "Sum","Integer Sum","Average","Median","Sample Variance","Sample Standard Deviation","Minimum","Maximum","First","Last","Sum over Sum","80% Upper Bound","80% Lower Bound","Sum as Fraction of Total","Sum as Fraction of Rows","Sum as Fraction of Columns","Count as Fraction of Total","Count as Fraction of Rows","Count as Fraction of Columns"],
-        "vals": "String name of the column in the dataset to use with aggregatorName.",
-        "vals2": "String name of the column in the dataset to use with aggregatorName.",
-        "renderer": "Name of the renderer selected.",
-        "rendererChoices": ["Table","Table Barchart","Heatmap","Row Heatmap","Col Heatmap","Treemap","Horizontal Bar Chart","Horizontal Stacked Bar Chart","Bar Chart","Stacked Bar Chart","Line Chart","Area Chart"],
+        "rows": "Zeilen der Pivot-Tabelle vorab füllen",
+        "cols": "Spalten der Pivot-Tabelle vorab füllen",
+        "aggregator": "Zu verwendender Aggregator",
+        "aggregatorChoices": ["Anzahl","Anzahl eindeutiger Werte","Liste eindeutiger Werte", "Summe", "Ganzzahlige Summe", "Mittelwert", "Median", "Stichprobenvarianz", "Stichprobenstandardabweichung", "Minimum", "Maximum", "Erster", "Letzter", "Summe über Summe","80% Obergrenze", "80% Untergrenze", "Summe als Bruchteil der Gesamtzahl", "Summe als Bruchteil der Zeilen", "Summe als Bruchteil der Spalten", "Anzahl als Bruchteil der Gesamtzahl", "Anzahl als Bruchteil der Zeilen", "Anzahl als Bruchteil der Spalten"],
+        "vals": "Name der zu aggregierenden Spalte",
+        "renderer": "Name des ausgewählten Renderers.",
+        "rendererChoices": ["Tabelle", "Tabellenbalkendiagramm", "Heatmap", "Zeilen-Wärmekarte", "Spalten-Heatmap", "Treemap", "Horizontales Balkendiagramm", "Horizontal gestapeltes Balkendiagramm", "Balkendiagramm", "Gestapeltes Balkendiagramm", "Liniendiagramm", "Flächendiagramm"],
         "options":{
-          "title": "Pivot table options",
-          "locale": "Localization options. A change from 'en' to another language will cause the configuration of the used graphic to be lost.",
-          "localeChoices": ["cs","da","de","en","es","fr","it","nl","pl","pt","ru","sq","tr","zh"],
-          "subtotals": "Should subtotal plugin be used? For examples, see: "
+          "title": "Pivot-Tabellen-Optionen",
+          "locale": "Lokalisierungsoptionen. Ein Wechsel von'en' in eine andere Sprache führt zum Verlust der Konfiguration der verwendeten Grafik.",
+          "localeChoices": ["cs", "da", "de", "en", "es", "fr", "it", "nl", "pl", "pt", "ru", "sq", "tr", "zh"],
+          "subtotals": "Soll das Zwischensummen-Plugin verwendet werden? Beispiele finden Sie unter: "
         }
       },
       "saveJson":{
-        "warnTitle": "Data exists",
-        "warnContent": "A graph configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!",
-        "cancel": "Cancel",
-        "overwrite": "Overwrite"
+        "warnTitle": "Daten existieren",
+        "warnContent": "Für das Symbol '%s' existiert bereits eine Grafikkonfiguration. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "overwrite": "Überschreiben"
       },
       "js":{
         "addInputGroup":{
-          "symbolInputgroups": "Name of the input group?",
-          "groupMemberIn": "Select group members"
+          "symbolInputgroups": "Name der Eingabegruppe?",
+          "groupMemberIn": "Gruppenmitglieder auswählen"
         },
         "addOutputGroup":{
-          "symbolOutputgroups": "Name of the output group?",
-          "groupMemberOut": "Select group members"
+          "symbolOutputgroups": "Name der Ausgabegruppe?",
+          "groupMemberOut": "Gruppenmitglieder auswählen"
         },
         "addDyEvent":{
-          "dyDyEvent": "Which symbol shall be plotted?",
-          "label": "What label should be used?",
-          "labelLoc": "Select marker symbol",
-          "labelLocChoices": ["top", "bottom"],
-          "color": "What color should the event line have?",
-          "strokePattern": "Select marker symbol",
-          "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
+          "dyDyEvent": "Welches Symbol soll verwendet werden?",
+          "label": "Welche Bezeichnung soll verwendet werden?",
+          "labelLoc": "Markersymbol auswählen",
+          "labelLocChoices": ["oben", "unten"],
+          "color": "Welche Farbe sollte die Ereignislinie haben?",
+          "strokePattern": "Markersymbol auswählen",
+          "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyLimit":{
-          "dyDyLimitCheck": "Use static limit?",
-          "dyDyLimitTrue": "Set a numeric value for the limit",
-          "dyDyLimitFalse": "Which symbol shall be plotted?",
-          "limit": "Set a numeric value for the limit",
-          "label": "What label should be used?",
-          "labelLoc": "Select marker symbol",
-          "labelLocChoices": ["left", "right"],
-          "color": "What color should the limit line have?",
-          "strokePattern": "Select marker symbol",
-          "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
+          "dyDyLimitCheck": "Statischen Grenzwert verwenden?",
+          "dyDyLimitTrue": "Numerischen Grenzwert festlegen",
+          "dyDyLimitFalse": "Welches Symbol soll verwendet werden?",
+          "limit": "Legen Sie den numerischen Grenzwert fest",
+          "label": "Welche Bezeichnung soll verwendet werden?",
+          "labelLoc": "Markersymbol auswählen",
+          "labelLocChoices": ["links", "rechts"],
+          "color": "Welche Farbe sollte die Grenzwertlinie haben?",
+          "strokePattern": "Markersymbol auswählen",
+          "strokePatternChoices": ["gestrichelt", "gepunktet", "gestrichpunktet", "durchgezogen"]
         },
         "addDyAnnotation":{
-          "dyDyAnnotation": "What shall be annotated?",
-          "text": "What text should be used?",
-          "tooltip": "What tooltip should be used?",
-          "width": "Specify annotation width",
-          "height": "Specify annotation height",
-          "attachAtBottom": "Should annotation be attached to x axis?"
+          "dyDyAnnotation": "Was soll beschriftet werden?",
+          "text": "Welcher Text soll verwendet werden?",
+          "tooltip": "Welcher Tooltip sollte verwendet werden?",
+          "width": "Geben Sie die Breite der Beschriftung an",
+          "height": "Geben Sie die Höhe der Beschriftung an",
+          "attachAtBottom": "Soll die Annotation an der x-Achse fixiert werden?"
         },
         "addDyShading":{
-          "dyDyShadingCheck": "Use static lower bound?",
-          "dyDyShadingTrue": "Specify the lower bound for shading.",
-          "dyDyShadingFalse": "Which symbol shall be used as lower bound for shading?",
-          "dyDyShadingUpCheck": "Use static upper bound?",
-          "dyDyShadingUpTrue": "Specify the upper bound for shading.",
-          "dyDyShadingUpFalse": "Which symbol shall be used as upper bound for shading?",
-          "axis": "Select axis where shading shall be applied to",
-          "axisChoices": ["x", "y"],
-          "color": "What color should the shading have?"
+          "dyDyShadingCheck": "Statische Untergrenze verwenden?",
+          "dyDyShadingTrue": "Geben Sie die untere Grenze für die Schattierung an.",
+          "dyDyShadingFalse": "Welches Symbol soll als untere Grenze für die Schattierung verwendet werden?",
+          "dyDyShadingUpCheck": "Statische Obergrenze verwenden?",
+          "dyDyShadingUpTrue": "Geben Sie die obere Grenze für die Schattierung an.",
+          "dyDyShadingUpFalse": "Welches Symbol soll als obere Grenze für die Schattierung verwendet werden?",
+          "axis": "Achse wählen, auf die die Schattierung angewendet werden soll",
+          "axisChoices": ["x-Achse", "y-Achse"],
+          "color": "Welche Farbe soll die Schattierung haben?"
         },
         "addLeafletMarkers":{
-          "leafletMarkers": "Select column with latitude data",
-          "lng": "Select column with longitude data",
-          "groupName": "Choose a group name for these markers",
-          "label": "Choose a label",
-          "options": "Label options",
-          "labelPermanent": "Display labels only on hover?",
-          "labelcolor": "Choose a font color for the label",
-          "labelbgcolor": "Choose a background color for the label",
-          "labelsize": "Choose a font size for the label [in px]"
+          "leafletMarkers": "Spalte mit Breitengraddaten auswählen",
+          "lng": "Spalte mit Längengraddaten auswählen",
+          "groupName": "Wählen Sie einen Gruppennamen für diese Marker",
+          "label": "Wählen Sie ein Label",
+          "options": "Label-Optionen",
+          "labelPermanent": "Label nur beim überfahren zeigen?",
+          "labelcolor": "Wählen Sie eine Schriftfarbe für das Label",
+          "labelbgcolor": "Wählen Sie eine Hintergrundfarbe für das Label",
+          "labelsize": "Wählen Sie eine Schriftgröße für das Label [in px]"
         },
         "addLeafletFlows":{
-          "leafletFlows": "Select latitude data where flow originates",
-          "lng": "Select longitude data where flow originates",
-          "lat1": "Select latitude data where flow ends",
-          "lng1": "Select longitude data where flow ends",
-          "flow": "Select flow data",
-          "time": "Select time data",
-          "label": "Choose a label",
-          "options": "Additional flow options",
-          "color": "Choose a color",
-          "minThickness": "Choose the minimum thickness",
-          "maxThickness": "Choose the maximum thickness"
+          "leafletFlows": "Wählen Sie die Breitenangaben aus, von denen der Fluss ausgeht",
+          "lng": "Wählen Sie die Längenangaben aus, von denen der Fluss ausgeht",
+          "lat1": "Wählen Sie die Breitenangaben, bei denen der Fluss endet",
+          "lng1": "Wählen Sie Längenangaben, bei denen der Fluss endet",
+          "flow": "Strömungsdaten auswählen",
+          "time": "Zeitdaten auswählen",
+          "label": "Wählen Sie eine Bezeichnung",
+          "options": "Zusätzliche Optionen",
+          "color": "Wählen Sie eine Farbe",
+          "minThickness": "Wählen Sie die Mindestdicke",
+          "maxThickness": "Wählen Sie die maximale Dicke"
         },
         "addLeafletMinicharts":{
-          "leafletMinicharts": "Select latitude data where minichart should be plotted",
-          "lng": "Select longitude data where minichart should be plotted",
-          "chartdata": "Select chart data",
-          "time": "Select time data",
-          "type": "Select chart type",
-          "typeChoices": ["bar", "pie", "polar-area", "polar-radius", "auto"],
-          "options": "Additional chart options",
-          "width": "Choose the maximal width of the created elements",
-          "height": "Choose the maximal height of the created elements",
-          "opacity": "Opacity of the chart?",
-          "showlabels": "Should values be displayed above chart elements?",
-          "transitionTime": "Choose the duration in milliseconds of the transitions when a property of a chart is updated",
-          "layerId": "Select layer ID",
-          "legend": "Should a legend (data column names) be visible?",
-          "legendPosition": "Legend position",
-          "legendPositionChoices": ["topright", "topleft", "bottomright", "bottomleft"]
+          "leafletMinicharts": "Wählen Sie Breitengrad-Daten aus, bei denen die Mini-Diagramme geplottet werden soll",
+          "lng": "Wählen Sie Längengrad-Daten aus, bei denen die Mini-Diagramme geplottet werden soll",
+          "chartdata": "Diagrammdaten auswählen",
+          "time": "Zeitdaten auswählen",
+          "type": "Diagrammtyp auswählen",
+          "typeChoices": ["Balkendiagramm", "Tortendiagramm", "Polarflächendiagramm", "Polar-Radius-Diagramm", "automatisch"],
+          "options": "Zusätzliche Chart-Optionen",
+          "width": "Wählen Sie die maximale Breite der erstellten Elemente",
+          "height": "Wählen Sie die maximale Höhe der erstellten Elemente",
+          "opacity": "Deckkraft des Diagramms?",
+          "showlabels": "Sollen Werte über den Diagrammen angezeigt werden?",
+          "transitionTime": "Wählen Sie die Dauer der Übergänge, wenn eine Eigenschaft eines Diagramms aktualisiert wird (in Millisekunden)",
+          "layerId": "Ebenen-ID auswählen",
+          "legend": "Soll eine Legende (Datenspaltennamen) sichtbar sein?",
+          "legendPosition": "Legendenposition",
+          "legendPositionChoices": ["oben rechts", "topleft", "unten rechts", "unten links"]
         },
         "addBarDataEl":{
-          "chartYdatabar": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
-          "color": "Select bar color",
-          "lineWidth": "Select bar outline width",
-          "lineColor": "Select bar outline color"
+          "chartYdatabar": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Welches Label soll verwendet werden?",
+          "color": "Balkenfarbe auswählen",
+          "lineWidth": "Balkenumrandungsbreite wählen",
+          "lineColor": "Balkenumrandungsfarbe wählen"
         },
         "addScatterDataEl":{
-          "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
-          "symbol": "Select marker symbol",
-          "symbolChoices": ["circle", "circle-open", "circle-dot", "circle-open-dot", "square", "square-open","square-dot", "square-open-dot", "diamond","diamond-open", "diamond-dot", "diamond-open-dot","cross", "cross-open", "cross-dot", "cross-open-dot","x", "x-open", "x-dot", "x-open-dot", "triangle-up","triangle-up-open", "triangle-up-dot", "triangle-up-open-dot","triangle-down", "triangle-down-open", "triangle-down-dot","triangle-down-open-dot", "triangle-left", "triangle-left-open", "triangle-left-dot", "triangle-left-open-dot", "triangle-right","triangle-right-open", "triangle-right-dot", "triangle-right-open-dot","triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot","triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot","triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot","triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot","pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon","hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot","octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram","hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up","star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot","star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot","star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall","diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide","diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass","hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open","diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin","cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open","hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"],
-          "color": "Select marker color",
-          "size": "Select marker size",
-          "lineWidth": "Select marker outline width",
-          "lineColor": "Select marker outline color",
-          "legend": "Show legend? (this option could be overwritten by the by the global show legend option)",
-          "frame": "Use a data dimension for animation (as frames)?"
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Welches Label soll verwendet werden?",
+          "symbol": "Markersymbol auswählen",
+          "symbolChoices": ["Kreis", "Kreis offen", "Kreispunkt", "Kreispunkt offen", "Quadrat", "Quadrat offen", "Quadratpunkt", "Quadratpunkt offen", "Diamant","Diamant offen", "Diamantpunkt", "Diamantpunkt offen","Kreuz", "Kreuz offen", "Kreuzpunkt", "Kreuzpunkt offen","x", "x offen", "xpunkt", "xpunkt offen", "Dreieck-oben","Dreieck-oben offen", "Dreieck-oben-Punkt", "Dreieck-oben-offen-Punkt","Dreieck-unten", "Dreieck-unten offen", "Dreieck-unten-Punkt","Dreieck-unten-offen-Punkt", "Dreieck-links", "Dreieck-links offen", "Dreieck-links-Punkt", "Dreieck-links-offen-Punkt", "Dreieck-rechts","Dreieck-rechts offen", "Dreieck-rechts-Punkt", "Dreieck-rechts-offen-Punkt","Dreieck-ne", "Dreieck-ne offen", "Dreieck-ne-Punkt", "Dreieck-ne-offen-Punkt","Dreieck-se", "Dreieck-se offen", "Dreieck-se-Punkt", "Dreieck-se-offen-Punkt","Dreieck-sw", "Dreieck-sw offen", "Dreieck-sw-Punkt", "Dreieck-sw-offen-Punkt","Dreieck-nw", "Dreieck-nw offen", "Dreieck-nw-Punkt", "Dreieck-nw-offen-Punkt","Pentagon", "Pentagon offen", "Pentagon-Punkt", "Pentagon-offen-Punkt", "Hexagon","Hexagon offen", "Hexagon-Punkt", "Hexagon-offen-Punkt", "Hexagon2", "Hexagon2 offen", "Hexagon2-Punkt", "Hexagon2-offen-Punkt", "Octagon", "Octagon offen", "Octagon-Punkt","Octagon-offen-Punkt", "Stern", "Stern offen", "Stern-Punkt", "Stern-offen-Punkt", "Hexagram","Hexagram offen", "Hexagram-Punkt", "Hexagram-offen-Punkt", "Stern-Dreieck-oben","Stern-Dreieck-oben offen", "Stern-Dreieck-oben-Punkt", "Stern-Dreieck-oben-offen-Punkt","Stern-Dreieck-unten", "Stern-Dreieck-unten offen", "Stern-Dreieck-unten-Punkt", "Stern-Dreieck-unten-offen-Punkt","Stern-Quadrat", "Stern-Quadrat offen", "Stern-Quadrat-Punkt", "Stern-Quadrat-offen-Punkt", "Stern-Diamant", "Stern-Diamant offen", "Stern-Diamant-Punkt", "Stern-Diamant-offen-Punkt", "Diamant-tall","Diamant-tall offen", "Diamant-tall-Punkt", "Diamant-tall-offen-Punkt", "Diamant-wide","Diamant-wide offen", "Diamant-wide-Punkt", "Diamant-wide-offen-Punkt", "hourglass","hourglass offen", "bowtie", "bowtie offen", "circle-cross", "circle-cross offen", "circle-x", "circle-x offen", "Quadrat-cross", "Quadrat-cross offen", "Quadrat-x", "Quadrat-x offen","Diamant-cross", "Diamant-cross offen", "Diamant-x", "Diamant-x offen", "cross-thin","cross-thin offen", "x-thin", "x-thin offen", "asterisk", "asterisk offen", "hash", "hash offen","hash-Punkt", "hash-offen-Punkt", "y-oben", "y-oben offen", "y-unten", "y-unten offen", "y-left", "y-left offen", "y-rechts", "y-rechts offen", "line-ew", "line-ew offen", "line-ns", "line-ns offen", "line-ne", "line-ne offen", "line-nw", "line-nw offen"],
+          "color": "Markerfarbe auswählen",
+          "size": "Markergröße auswählen",
+          "lineWidth": "Markerumriss-Breite wählen",
+          "lineColor": "Markerumriss-Farbe auswählen",
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
         },
         "addLineDataEl":{
-          "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
-          "color": "Select line color",
-          "width": "Select line width",
-          "shape": "Select line shape",
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Welches Label soll verwendet werden?",
+          "color": "Linienfarbe wählen",
+          "width": "Linienbreite wählen",
+          "shape": "Linienform wählen",
           "shapeChoices": ["linear", "spline", "hv", "vh", "hvh", "vhv"],
-          "dash": "Select line dash type",
-          "dashChoices": ["solid", "dot", "dash", "longdash", "dashdot", "longdashdot"],
-          "fill": "Fill area chart?",
-          "fillChoices": ["none", "to zero y", "to zero x", "to next y", "to next x", "to self", "to next"],
-          "legend": "Show legend? (this option could be overwritten by the by the global show legend option)",
-          "frame": "Use a data dimension for animation (as frames)?"
+          "dash": "Wählen Sie den Strichtyp der Linie",
+          "dashChoices": ["durchgezogen", "gepunktet", "gestrichelt", "gestrichelt (lange Linie)", "gestrichpunktet", "gestrichpunktet (lange Linie)"],
+          "fill": "Flächendiagramm ausfüllen?",
+          "fillChoices": ["keine", "zu Null y", "zu Null x", "zu nächster y", "zu nächster x", "zu sich selbst", "zu nächster"],
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
         },
         "addBubbleDataEl":{
-          "chartYdata": "What should be plotted on the y axis?",
-          "chartYlabel": "What label should be used?",
-          "symbol": "Select marker symbol",
-          "symbolChoices": ["circle", "circle-open", "circle-dot", "circle-open-dot", "square", "square-open","square-dot", "square-open-dot", "diamond","diamond-open", "diamond-dot", "diamond-open-dot","cross", "cross-open", "cross-dot", "cross-open-dot","x", "x-open", "x-dot", "x-open-dot", "triangle-up","triangle-up-open", "triangle-up-dot", "triangle-up-open-dot","triangle-down", "triangle-down-open", "triangle-down-dot","triangle-down-open-dot", "triangle-left", "triangle-left-open", "triangle-left-dot", "triangle-left-open-dot", "triangle-right","triangle-right-open", "triangle-right-dot", "triangle-right-open-dot","triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot","triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot","triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot","triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot","pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon","hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot","octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram","hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up","star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot","star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot","star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall","diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide","diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass","hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open","diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin","cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open","hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"],
-          "colorCheck": "Use static color?",
-          "colorCheckTrue": "Select marker color",
-          "colorCheckFalse": "Select a Symbol on which the color should depend on.",
-          "size": "Select marker size",
-          "maxsize": "Select maximum marker size (optional)",
-          "lineWidth": "Select marker outline width",
-          "lineColor": "Select marker outline color",
-          "legend": "Show legend? (this option could be overwritten by the by the global show legend option)",
-          "frame": "Use a data dimension for animation (as frames)?"
+          "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
+          "chartYlabel": "Welches Label soll verwendet werden?",
+          "symbol": "Markersymbol auswählen",
+          "colorCheck": "Statische Farbe verwenden?",
+          "colorCheckTrue": "Markerfarbe auswählen",
+          "colorCheckFalse": "Wählen Sie ein Symbol aus, von dem die Farbe abhängen soll.",
+          "size": "Markergröße wählen",
+          "maxsize": "Maximale Markergröße wählen (optional)",
+          "lineWidth": "Markerumriss-Breite wählen",
+          "lineColor": "Markerumriss-Farbe auswählen",
+          "legend": "Legende zeigen? (diese Option kann durch die globale Legende-zeigen-Option überschrieben werden)",
+          "frame": "Eine Datendimension für die Animation verwenden (als Frames)?"
         },
         "addHistDataEl":{
-          "histXdata": "What should be plotted?",
-          "label": "What label should be used?",
-          "color": "Select bar color"
+          "histXdata": "Was soll dargestellt werden?",
+          "label": "Welches Label soll verwendet werden?",
+          "color": "Balkenfarbe auswählen"
         },
         "addDyDataEl":{
-          "chartYdata": "What index do you want to plot on the y-axis?",
-          "color": "What color should be used for this series?",
-          "stepPlot": "Do you want the series to be a step plot?",
-          "stemPlot": "Do you want the series to be a stem plot?",
-          "fillGraph": "Should the area underneath the graph be filled?",
-          "drawPoints": "Should points be drawn?",
-          "pointShape": "What shape should points have?",
-          "pointShapeChoices": ["dot", "triangle", "square", "diamond", "pentagon", "hexagon", "circle", "star", "plus", "ex"],
-          "pointSize": "What size should points be?"
+          "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
+          "color": "Welche Farbe sollte für diese Serie verwendet werden?",
+          "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
+          "stemPlot": "Willst du die Serie als Stammplot darstellen?",
+          "fillGraph": "Soll der Bereich unter der Grafik ausgefüllt werden?",
+          "drawPoints": "Sollen Punkte gezeichnet werden?",
+          "pointShape": "Welche Form sollen Punkte haben?",
+          "pointShapeChoices": ["Punkt", "Dreieck", "Quadrat", "Diamant", "Pentagon", "Hexagon", "Kreis", "Stern", "Plus", "ex"],
+          "pointSize": "Welche Größe sollten die Punkte haben?"
         },
         "addTimevisDataEl":{
-          "timevisSeries": "The contents of the items?",
-          "start": "The start date of the items?",
-          "end": "The end date of the items?",
-          "type": "The type of the item? Note: Types box and point need only a start date, types range and background need both a start and end date.",
-          "typeChoices": ["box", "point", "range", "background"],
-          "title": "Add a title for each item, displayed when hovering the mouse over it?",
-          "group": "Group ID. When a group is provided, all items with the same group are placed on one line.",
-          "subgroup": "Subgroup ID. Groups all items within a group per subgroup, and positions them on the same height instead of stacking them on top of each other.",
-          "grouptitle": "Add a title for each group, displayed when hovering the mouse over it?",
-          "subgrouporder": "Order the subgroups by a field name. By default, groups are ordered by first-come, first-show."
+          "timevisSeries": "Inhalt der Elemente?",
+          "start": "Das Startdatum der Elemente?",
+          "end": "Das Enddatum der Elemente?",
+          "type": "Typ der Elemente? Hinweis: Typen Kasten und Punkt benötigen nur ein Startdatum, Typen Bereich und Hintergrund benötigen sowohl ein Start- als auch ein Enddatum.",
+          "typeChoices": ["Kasten", "Punkt", "Bereich", "Hintergrund"],
+          "title": "Einen Titel für jedes Element hinzufügen, der angezeigt wird, wenn mit der Maus darüber gefahren wird?",
+          "group": "Gruppen-ID. Wenn eine Gruppen-ID definiert wird, werden alle Elemente mit der gleichen Gruppe auf einer Zeile platziert.",
+          "subgroup": "Subgruppen-ID. Gruppiert alle Elemente innerhalb einer Gruppe pro Untergruppe und positioniert sie auf gleicher Höhe, anstatt sie übereinander zu stapeln.",
+          "grouptitle": "Einen Titel für jede Gruppe hinzufügen, der angezeigt wird, wenn mit der Maus darüber gefahren wird?",
+          "subgrouporder": "Ordnen Sie die Untergruppen nach einem Feldnamen an. Standardmäßig sind die Gruppen nach dem Prinzip erstes Kommen - erstes Erscheinen geordnet."
         },
         "addCustomTimeEl":{
-          "timevisCustom": "The date/time to add",
-          "placeholder": "e.g. 2016-08-21"
+          "timevisCustom": "Datum/Uhrzeit, das hinzugefügt werden soll",
+          "placeholder": "z.B. 2016-08-21"
         }
       }
     }
