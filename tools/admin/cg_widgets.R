@@ -414,7 +414,7 @@ output$table_preview <- renderRHandsontable({
 })
 observeEvent({input$widget_type
   rv$widget_type}, {
-    req(length(input$widget_type) > 0L)
+    req(length(input$widget_type) > 0L, req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L))
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     rv$widgetConfig <- list()
     
