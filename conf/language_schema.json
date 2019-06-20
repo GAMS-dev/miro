@@ -4051,6 +4051,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "val39":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -6494,6 +6499,11 @@
                   "required":true,
                   "properties":{ 
                     "chartYdata":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "label":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
