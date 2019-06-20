@@ -1012,7 +1012,7 @@
         "value": "Choose the default value",
         "placeholder": "Choose a placeholder"
       },
-      "modalDialog":{
+      "removeDialog":{
         "title": "Please confirm",
         "message": "Are you sure that you want to delete the existing configuration for this symbol? This cannot be undone!",
         "cancel": "Cancel",
@@ -1221,6 +1221,12 @@
         "cancel": "Cancel",
         "overwrite": "Overwrite"
       },
+      "removeDialog":{
+        "title": "Please confirm",
+        "message": "Are you sure that you want to delete the existing graph configuration for this symbol? This cannot be undone!",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      },
       "js":{
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
@@ -1367,6 +1373,7 @@
         "addDyDataEl":{
           "chartYdata": "What index do you want to plot on the y-axis?",
           "color": "What color should be used for this series?",
+          "label": "What label should be used?",
           "stepPlot": "Do you want the series to be a step plot?",
           "stemPlot": "Do you want the series to be a stem plot?",
           "fillGraph": "Should the area underneath the graph be filled?",

@@ -1263,6 +1263,11 @@ observeEvent(input$gams_symbols, {
                                                                 lang$adminMode$graphs$updateToolNoScalars))
     newChartTool <<- "plotly"
   }
+  if(tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
+    showEl(session, "#deleteGraph")
+  }else{
+    hideEl(session, "#deleteGraph")
+  }
 })
 observeEvent({
   input$chart_tool
@@ -1701,17 +1706,13 @@ getTimevisOptions<- reactive({
     rv$graphConfig$graph$showZoom <<- TRUE
     rv$graphConfig$graph$fit <<- TRUE
     rv$graphConfig$graph$zoomFactor <<- 0.5
-    rv$graphConfig$graph$series <- NULL
-    #rv$graphConfig$graph$series <- list()
-    #if(length(scalarIndices)){
-    #  rv$graphConfig$graph$series[[scalarIndices[[1]]]] <<- list(content = names(scalarIndices)[1], 
-    #                                                            start = names(scalarIndices)[1],
-    #                                                            id = "Count from 1",
-    #                                                            type = "box")
-    #  idLabelMap$timevis_series[[1]] <<- scalarIndices[[1]]
-    #}else{
-    #  idLabelMap$timevis_series[[1]] <<- "1"
-    #}
+    rv$graphConfig$graph$series <- list()
+    rv$graphConfig$graph$editable <- FALSE
+    rv$graphConfig$graph$multiselect <- FALSE
+    rv$graphConfig$graph$showCurrentTime <- FALSE
+    rv$graphConfig$graph$series[["1"]] <<- list(content = indices[[1]], 
+                                                start = indices[[1]],
+                                                type = "box")
   })
   tagList(
     tagList(
@@ -1907,4 +1908,27 @@ observeEvent(rv$saveGraphConfirm, {
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
+  showEl(session, "#deleteGraph")
+})
+
+observeEvent(input$deleteGraph, {
+  req(nchar(activeSymbol$name) > 0L)
+  
+  if(!tolower(activeSymbol$name) %in% tolower(names(configJSON$dataRendering))){
+    return()
+  }
+  showModal(modalDialog(title = lang$adminMode$graphs$removeDialog$title, lang$adminMode$graphs$removeDialog$message, 
+                        footer = tagList(modalButton(lang$adminMode$graphs$removeDialog$cancel), 
+                                         actionButton("deleteGraphConfirm", lang$adminMode$graphs$removeDialog$confirm))))
+})
+observeEvent(input$deleteGraphConfirm, {
+  graphId <- match(tolower(activeSymbol$name), tolower(names(configJSON$dataRendering)))
+  if(is.na(graphId)){
+    return()
+  }
+  configJSON$dataRendering[[graphId]] <<- NULL
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  removeModal()
+  showHideEl(session, "#graphUpdateSuccess", 4000L)
+  hideEl(session, "#deleteGraph")
 })

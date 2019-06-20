@@ -1012,7 +1012,7 @@
         "value": "Choose the default value",
         "placeholder": "Choose a placeholder"
       },
-      "modalDialog":{
+      "removeDialog":{
         "title": "Please confirm",
         "message": "Are you sure that you want to delete the existing configuration for this symbol? This cannot be undone!",
         "cancel": "Cancel",
@@ -1220,6 +1220,12 @@
         "warnContent": "A graph configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!",
         "cancel": "Cancel",
         "overwrite": "Overwrite"
+      },
+      "removeDialog":{
+        "title": "Please confirm",
+        "message": "Are you sure that you want to delete the existing graph configuration for this symbol? This cannot be undone!",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
       },
       "js":{
         "addInputGroup":{
