@@ -74,6 +74,7 @@ pipeline {
                             %GBIN_DIR%\\cp -r %WORKSPACE%\\resources miro
                             %GBIN_DIR%\\cp -r %WORKSPACE%\\tools miro
                             %GBIN_DIR%\\cp -r %WORKSPACE%\\www miro
+                            %GBIN_DIR%\\cp -r %WORKSPACE%\\srcjs miro
                             %GBIN_DIR%\\cp    %WORKSPACE%\\LICENSE miro
                             %GBIN_DIR%\\cp    %WORKSPACE%\\app.R miro
                             %GBIN_DIR%\\cp    %WORKSPACE%\\global.R miro
@@ -192,7 +193,7 @@ pipeline {
                             mkdir -p "$TARGET/GMSR"
                             mkdir "$TARGET/miro/"
                             mv library "$TARGET/GMSR"
-                            cp -r app.R conf global.R JS LICENSE modules R resources UI www tools "$TARGET/miro"
+                            cp -r app.R conf global.R JS LICENSE modules R resources UI www srcjs tools "$TARGET/miro"
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
                             cd "$WORKSPACE/model/kport"

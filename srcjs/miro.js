@@ -1,3 +1,5 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 /* global $:false Shiny: false HTMLWidgets:false MathJax:false */
 
 const spinnerActive = {};
@@ -37,7 +39,7 @@ export function confirmModalShow(title, desc, cancelTxt, confirmTxt = null, conf
 
   if (confirmCall !== null) {
     btDataConfirm = '<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" '
-    + `id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
+      + `id="" onclick="${confirmCall}" data-dismiss="modal">${confirmTxt}</button>`;
   }
 
   const cModal = $('#confirmModal');
@@ -224,8 +226,8 @@ $(document).ready(() => {
     rerenderHot();
   });
   $('#scenTabset').append('<li id="scenTabsetAdd"><a href="#" id="btLoadScen" data-value="scen_add" '
-  + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
-  + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
+    + 'onclick="Shiny.setInputValue(\'btLoadScen\', 1, {priority: \'event\'});">'
+    + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
     switch (el) {
@@ -364,7 +366,7 @@ const maxNumScen = 50;
 $(document).keyup((event) => {
   if (event.keyCode === 13 && !event.ctrlKey) {
     if ($('#shiny-modal').find('.selectize-input.input-active').length > 0
-        || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
+      || $('#shiny-modal').find('*[data-dismiss="modal"]').is(':focus')) {
       return;
     }
 
