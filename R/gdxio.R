@@ -241,7 +241,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
     dflist <- vector("list", symDim + 1L)
     if(identical(dim(sym$val)[1], 0L)){           # empty symbol - no elements
-      return(NULL)
+      return(tibble())
     }else{
       dflist[seq_len(symDim)] <- lapply(seq_len(symDim), function(d){
         # first arg to factor must be integer, not numeric: different as.character results
@@ -299,7 +299,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
     dflist <- vector("list", symDim + 1L)
     if(identical(dim(sym$val)[1], 0L)){           # empty symbol - no elements
-      return(NULL)
+      return(tibble())
     }else{
       dflist[seq_len(symDim)] <- lapply(seq_len(symDim), function(d){
         # first arg to factor must be integer, not numeric: different as.character results

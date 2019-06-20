@@ -85,6 +85,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       }else{
         ret$tabular[[i]] <<- templates[[i]]
       }
+      if(!length(ret$tabular[[i]])){
+        ret$tabular[[i]] <<- templates[[i]]
+      }
     }else{
       tryCatch({
         switch(method,
@@ -124,6 +127,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                  }, error = function(e){
                    ret$tabular[[i]] <<- templates[[i]]
                  })
+                 if(!length(ret$tabular[[i]])){
+                   ret$tabular[[i]] <<- templates[[i]]
+                 }
                })
       }, error = function(e) {
         stop(sprintf("Model file: '%s' could not be read (model: '%s'). Error message: %s", 

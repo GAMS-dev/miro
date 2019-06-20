@@ -590,6 +590,7 @@ if(!is.null(errMsg)){
     miroDataFiles <- list.files(miroDataDir)
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
     miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
+    newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
         
@@ -613,6 +614,7 @@ if(!is.null(errMsg)){
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
                                   modelInTemplateTmp, method = method, fileName = miroDataFile)$tabular
+          
           if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
             # additional command line parameters that are not GAMS symbols
             scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
@@ -629,6 +631,8 @@ if(!is.null(errMsg)){
       }
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+      rm(newScen)
+      gc()
     })
   })
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -638,7 +642,6 @@ if(!is.null(errMsg)){
   }
   close(pb)
   pb <- NULL
-  
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
