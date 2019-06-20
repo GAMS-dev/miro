@@ -889,7 +889,7 @@
         "val36": "The group name must be at least 1 character long.",
         "val37": "Each group must have at least 2 members and every element may only appear in a single group!",
         "val38": "At least one choice has to be specified!",
-        "val39": "No space allowed!"
+        "val39": "No space allowed in the name!"
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
