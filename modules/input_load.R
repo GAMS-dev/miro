@@ -18,6 +18,9 @@ if(!identical(loadMode, "scen")){
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
                                   fileName = basename(isolate(input$localInput$datapath)))$tabular
+    if(!length(scenInputData)){
+      return()
+    }
     names(scenInputData) <- namesScenInputData
     rm(metaDataTmp, namesScenInputData, modelInTemplateTmp)
   }, error = function(e){
