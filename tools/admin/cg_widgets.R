@@ -88,6 +88,10 @@ validateWidgetConfig <- function(widgetJSON){
     }
     rm(symbolNameTmp)
   }
+  if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
+    return(lang$adminMode$widgets$validate$val39)
+  }
+  
 
     
   switch(widgetJSON$widgetType, 
