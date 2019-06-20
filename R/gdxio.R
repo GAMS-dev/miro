@@ -70,9 +70,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
            call. = FALSE)
     }
   },
-  wgdx = function(gdxName, data){
+  wgdx = function(gdxName, data, squeezeZeros = c('y', 'n', 'e')){
     stopifnot(length(names(data)) > 0L)
-    
+    squeezeZeros <- match.arg(squeezeZeros)
     # tabular data
     wgdxDotList <- lapply(seq_along(data), function(i){
       if(!length(data[[i]]) || !nrow(data[[i]])){
@@ -201,7 +201,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     
     scalarSymList <- scalarSymList[!is.na(scalarSymList)]
     wgdxDotList  <- wgdxDotList[!(isScalarData | isEmptySymbol)]
-    do.call(gdxrrw::wgdx, c(gdxName, wgdxDotList, scalarSymList))
+    do.call(gdxrrw::wgdx, c(gdxName, wgdxDotList, scalarSymList, list(squeeze = squeezeZeros)))
     return(invisible(self))
   }
 ), private = list(

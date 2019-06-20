@@ -593,7 +593,6 @@ if(!is.null(errMsg)){
     newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
-        
         modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
         dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
         modelInTemplateTmp <- modelInTemplate[!vapply(modelInTemplate, is.null, logical(1L), USE.NAMES = FALSE)]
@@ -914,6 +913,8 @@ if(!is.null(errMsg)){
     lapply(seq_along(modelIn), function(i){
       if(modelIn[[i]]$type == "hot"){
         observeEvent(input[["in_" %+% i %+% "_select"]], {
+          hotInit[[i]] <<- TRUE
+          isEmptyInput[[i]] <<- FALSE
           if(noCheck[i]){
             noCheck[i] <<- FALSE
           }

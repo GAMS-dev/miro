@@ -36,7 +36,7 @@ output[["export_" %+% i]] <- downloadHandler(
     removeModal()
     if(identical(exportFileType, "gdx")){
       names(data) <- c(names(modelOut), inputDsNames)
-      return(gdxio$wgdx(file, data))
+      return(gdxio$wgdx(file, data, squeezeZeros = 'n'))
     }
     wsNamesTmp                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
                                                                 names(modelOut), 
