@@ -48,7 +48,11 @@ def extractDir(fdir):
 def getScalars(text):
    try:
       if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1].split(' MIRO=')[0]
+         text = text.split('.gms ')[1]
+         if text.startswith('MIRO='):
+            text = text.split('MIRO=')[0]
+         else:
+            text = text.split(' MIRO=')[0]
       textTmp = text.split()
       scalarsRaw = r"Scalar,Description,Value\n"
       scalars = scalarsRaw
