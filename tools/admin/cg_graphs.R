@@ -1773,10 +1773,7 @@ observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
     return()
-  print("+++++++++++++++++++++++++++++++++++++++")
-  print(rv$graphConfig$graph)
-  #print(rv$graphConfig$pivottable)
-  #print(rv$graphConfig$options)
+  
   if(activeSymbol$id > length(modelIn)){
     data <- modelOutputData[[activeSymbol$id - length(modelIn)]]
   }else{

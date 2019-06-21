@@ -342,8 +342,7 @@ observe({
   tryCatch({
     if(isolate(rv$tableConfig$tableType) == "hot"){
       hotOptions        <- rv$tableConfig$handsontable
-      print("++++++++++++++++++++++++++")
-      #print(hotOptions)
+
       output[["table_preview_hot"]] <- renderRHandsontable({
         ht <- rhandsontable(data = data, height = hotOptions$height, 
                             colHeaders = letters[1:4],
@@ -368,8 +367,7 @@ observe({
       })
     }else if(isolate(rv$tableConfig$tableType) == "dt"){
       dtOptions <- rv$tableConfig$datatable
-      print("++++++++++++++++++++++++++")
-      #print(dtOptions)
+
       callModule(renderData, "table_preview_dt", type = "datatable", 
                  data = data, dtOptions = dtOptions,
                  roundPrecision = 2, modelDir = modelDir)
