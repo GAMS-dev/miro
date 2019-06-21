@@ -158,8 +158,10 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'cmex_deg.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_deg.zip', userName: username)])
                         fileOperations([fileDownloadOperation(password: password, targetFileName: 'mac-lib.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/mac-lib.zip', userName: username)])
+                        fileOperations([fileDownloadOperation(password: password, targetFileName: 'modified_lib_sources.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/modified_lib_sources.zip', userName: username)])
                         unzip dir: '', glob: '', zipFile: 'cmex_deg.zip'
                         unzip dir: 'library', glob: '', zipFile: 'mac-lib.zip'
+                        unzip dir: '', glob: '', zipFile: 'modified_lib_sources.zip'
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'GAMS27.2.0.dmg', targetLocation: '', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/macosx/GAMS27.2.0.dmg', userName: '')])
                         copyArtifacts filter: '*x86_64.dmg', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
@@ -193,6 +195,7 @@ pipeline {
                             mkdir -p "$TARGET/GMSR"
                             mkdir "$TARGET/miro/"
                             mv library "$TARGET/GMSR"
+                            mv modified_lib_sources "$TARGET/GMSR"
                             cp -r app.R conf global.R JS LICENSE modules R resources UI www srcjs tools "$TARGET/miro"
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             

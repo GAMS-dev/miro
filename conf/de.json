@@ -1012,7 +1012,7 @@
         "value": "Wählen Sie einen Standardwert",
         "placeholder": "Wählen Sie einen Platzhalter"
       },
-      "modalDialog":{
+      "removeDialog":{
         "title": "Bitte bestätigen",
         "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol löschen wollen? Das kann nicht rückgängig gemacht werden!",
         "cancel": "Abbrechen",
@@ -1115,7 +1115,7 @@
         "frame": "Bilder pro Sekunde",
         "transition": "Dauer des sanften Übergangs zwischen den Bildern (in Millisekunden).",
         "easing": "Art des Übergangs",
-        "easingChoices": ["linear", "quadratisch", "kubisch", "sin", "exp", "Kreis", "elastisch", "zurück", "springend", "linear-in", "quad-in", "kubisch-in", "sin-in", "exp-in", "circle-in", "elastic-in", "back-in", "bounce-in", "linear-out", "quad-out", "kubisch-out","sin-out", "exp-out", "circle-out", "elastic-out", "back-out", "bounce-out", "linear-in-out", "quad-in-out", "kubisch-in-out", "sin-in-out", "exp-in-out", "circle-in-out", "elastic-in-out", "back-in-out", "back-in-out", "bounce-in-out"],
+        "easingChoices": ["linear", "quadratisch", "kubisch", "sin", "exp", "Kreis", "elastisch", "zurück", "springend", "linear-in", "quad-in", "kubisch-in", "sin-in", "exp-in", "circle-in", "elastic-in", "back-in", "bounce-in", "linear-out", "quad-out", "kubisch-out","sin-out", "exp-out", "circle-out", "elastic-out", "back-out", "bounce-out", "linear-in-out", "quad-in-out", "kubisch-in-out", "sin-in-out", "exp-in-out", "circle-in-out", "elastic-in-out", "back-in-out", "bounce-in-out"],
         "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
         "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
         "modeChoices": ["sofort", "als nächstes", "nach allem"]
@@ -1220,6 +1220,12 @@
         "warnContent": "Für das Symbol '%s' existiert bereits eine Grafikkonfiguration. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",
         "cancel": "Abbrechen",
         "overwrite": "Überschreiben"
+      },
+      "removeDialog":{
+        "title": "Bitte bestätigen",
+        "message": "Sind Sie sicher, dass Sie die bestehende Grafikkonfiguration für dieses Symbol löschen wollen? Das kann nicht rückgängig gemacht werden!",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
       },
       "js":{
         "addInputGroup":{
@@ -1366,6 +1372,7 @@
         },
         "addDyDataEl":{
           "chartYdata": "Welchen Index möchten Sie auf der y-Achse zeichnen?",
+          "label": "Welches Label soll verwendet werden?",
           "color": "Welche Farbe sollte für diese Serie verwendet werden?",
           "stepPlot": "Willst du die Serie als Stufendiagramm darstellen?",
           "stemPlot": "Willst du die Serie als Stammplot darstellen?",

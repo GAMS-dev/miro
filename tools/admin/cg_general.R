@@ -30,9 +30,6 @@ removeUI(selector = "#general_wrapper2 .shiny-input-container", multiple = TRUE)
 
 insertUI(selector = "#general_wrapper",
          tagList(
-           radioButtons("general_language", label = lang$adminMode$general$language$label,
-                        choices = langSpecific$language, 
-                        selected = if(length(configJSON$language)) configJSON$language else config$language),
            tags$div(style = "max-width:400px;",
                     selectInput("general_skin", lang$adminMode$general$skin$label, 
                                 choices = langSpecific$skin,

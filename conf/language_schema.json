@@ -4688,7 +4688,7 @@
                 }
               }
             },
-            "modalDialog":{  
+            "removeDialog":{  
               "type":"object",
               "additionalProperties":false,
               "required":true,
@@ -5752,6 +5752,33 @@
                   "minLength":1,
                   "required":true
                 }        
+              }
+            },
+            "removeDialog":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "title":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "message":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "cancel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "confirm":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
               }
             },
             "js":{  

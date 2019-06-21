@@ -1455,9 +1455,9 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
 observeEvent(input$deleteWidget, {
   req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L)
   
-  showModal(modalDialog(title = lang$adminMode$widgets$modalDialog$title, sprintf(lang$adminMode$widgets$modalDialog$message), 
-                          footer = tagList(modalButton(lang$adminMode$widgets$modalDialog$cancel), 
-                                           actionButton("deleteWidgetConfirm", lang$adminMode$widgets$modalDialog$confirm))))
+  showModal(modalDialog(title = lang$adminMode$widgets$removeDialog$title, lang$adminMode$widgets$removeDialog$message, 
+                          footer = tagList(modalButton(lang$adminMode$widgets$removeDialog$cancel), 
+                                           actionButton("deleteWidgetConfirm", lang$adminMode$widgets$removeDialog$confirm))))
 })
 observeEvent(input$deleteWidgetConfirm, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)

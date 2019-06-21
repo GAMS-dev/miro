@@ -168,6 +168,7 @@ body_admin <- dashboardBody({
                                                      height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
                                                      noDataTxt = lang$nav$outputScreen$boxResults$noData))},
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",
+                                      actionButton("deleteGraph", "Delete", icon("trash-alt")),
                                       actionButton("saveGraph", "Save", icon("save")))
                     )
                 )
