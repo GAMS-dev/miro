@@ -65,30 +65,171 @@
                             <section id="intro" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
-                                    <p>In this section you will learn how to customize GAMS MIRO. As you saw previously when creating your first app, MIRO works without any further configuration. However, you will notice that there are a multitude of configuration options that allow you to shape MIRO to fit your particular model.<br>
-                                    The entire configuration of MIRO is handled via JSON files. These files are located inside the folder <span class="code">&lt;modeldirectory&gt;/conf</span> of your GAMS model. Two JSON files are used: </p>
+                                    <p>In this section you will learn how to customize GAMS MIRO. As you saw previously when creating your first app, MIRO works without any further configuration. However, you will notice that there are a multitude of configuration options that allow you to shape MIRO to fit your particular model.</p>
+                                    <p>The configuration can be done via a <a href ="#configurationGen" class="scrollto">graphical configuration interface</a>, with which you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview.
+                                    In addition, the configuration can also be done <a href ="#configViaJson" class="scrollto">manually via JSON</a> files.</p>
+                                </div>
+                            </section>       
+                            <section id="configurationGen" class="doc-section">
+                                <h2 class="section-title">The configuration mode</h2>
+                                <div class="section-block">
+                                    This chapter shows how to configure MIRO using the graphical interface. 
+                                    For those who feel comfortable writing JSON, section <a href ="#configViaJson" class="scrollto">Configuration via JSON</a> shows in detail how to configure a MIRO app in the classic way without using the graphical help tool.</p>
+                                    
+                                    <p>The <i>Configuration mode</i> is direkctly accessible via the GAMS Studio version of the GAMS MIRO installation, see below.</p> 
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_studio.png" alt="start the configuration mode" />
+                                    </div>
+                                    <p>Alternatively, you can start the MIRO base mode and add the double-dash parameter <span class="code">--miromode=1</span>.
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_doubleDash.png" alt="start the configuration mode" />
+                                    </div>
+                                    <p>After the startup the following screen appears:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the configuration mode" />
+                                    </div>
+                                    Optically, this mode is very similar to a classic MIRO app. The overview on the left side leads to the following categories:</p>
+                                    <ul>
+                                    <li><a href="#general-settings" class="scrollto">General settings</a></li>
+                                    <li><a href="#table-settings" class="scrollto">Table settings</a></li>
+                                    <li><a href="#configure-widgets" class="scrollto">Configure widgets</a></li>
+                                    <li><a href="#configure-graphs" class="scrollto">Configure graphs</a></li>
+                                    <li><a href="#database-management" class="scrollto">Database management</a></li>
+                                    </ul>
+                                    <div class="callout-block callout-warning">
+                                         <div class="icon-holder">
+                                             <i class="fas fa-info-circle"></i>
+                                         </div><!--//icon-holder-->
+                                         <div class="content">
+                                             <b class="callout-title">Note:</b>
+                                             <p>Changes made in the configuration are only effective after a restart of the MIRO application.</p>
+                                         </div><!--//content-->
+                                     </div><!--//callout-block-->
+                                </div>
+                                <div class="section-block" id="general-settings">
+                                  <h3 class="block-title">General settings</h3>
+                                  <p>As the name suggests, general options can be set in this section. Since many of these options are self-explanatory, only a few of those that require clarification are addressed here.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default scenario comparison mode</h6>
+                                  <p style="display:none">This option sets the default comparison method for scenarios. 
+                                  Regardless of the selected option, you can always switch between split screen and tab view within the MIRO application.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use a default scenario that will be loaded on startup?</h6>
+                                  <p style="display:none">Allows you to pre-populate tables and widgets with data when starting MIRO. 
+                                  If this option is set and a scenario name is specified, MIRO looks for the corresponding scenario in the database at the application startup and automatically loads all data into the interface. 
+                                  If the same input data is always used as basic data, this option allows you to skip the data import step in MIRO.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Specify extra command line arguments that GAMS will be called with</h6>
+                                  <p style="display:none">With this option GAMS Command line arguments can be specified, which are set for the model with every GAMS run started out of MIRO.
+                                  This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double dash parameter. 
+                                  Note, that the command line arguments set with this option are not visible in MIRO.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide input symbols into groups</h6>
+                                  <p style="display:none">Multiple tabs of input symbols (also output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide ouput symbols into groups</h6>
+                                  <p style="display:none">Multiple tabs of output symbols (also input symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the input scalars table</h6>
+                                  <p style="display:none"><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> are special in the sense that they will not be displayed in one separate table for each scalar value. 
+                                  Instead, they are combined into a single table. You can specify a custom name for this table here.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the output scalars table</h6>
+                                  <p style="display:none">Like for input data, <a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> are special in the sense that they will not be displayed in one separate table for each scalar value. 
+                                  Instead, they are combined into a single table. You can specify a custom name for this table here.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Scalars that should not be displayed in the scalars table but can be used in graphs etc.</h6>
+                                  <div style="display:none"><p>For some graphs it may be useful to include scalar result data from another GAMS symbol. 
+                                  In the following example the scalar output value "End of training phase" has been integrated into the graph to identify exactly this phase.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:325pt;" src="assets/images/hidden_scalars.png" alt="Scalar value in graph" />
+                                  </div>
+                                  </div>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate scenario functionality</h6>
+                                  <p style="display:none">If disabled, scenario data can not be saved.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
+                                  <p style="display:none">If enabled, scenario data can be loaded via local files.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should users be allowed to add attachments to scenarios?</h6>
+                                  <p style="display:none">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachment">here</a>.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should all input widgets (slider, dropdown menu, etc.) be aggregated on a single tab?</h6>
+                                  <p style="display:none">If not enabled, all scalar input widgets are displayed in an own, separate tab.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include parent directory of the model folder in your model runs (e.g. because several models share files)</h6>
+                                  <p style="display:none">In general, GAMS searches for input and include files in the current working directory only. This option sets an include directory to the parent directory of the GAMS model.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
+                                  <p style="display:none">The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
+                                  <p style="display:none">The trace file gives performance information about a GAMS run. For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.</p>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Generate graphs for each input sheet automatically (pivot tool)</h6>
+                                  <p style="display:none">If this option is activated, a pivottable is generated for each input symbol apart from the tabular representation. 
+                                  If an additional graphic is configured for a symbol, then this graphic is displayed instead.</p>
+                                </div>
+                                <div class="section-block" id="table-settings">
+                                  <h3 class="block-title">Table settings</h3>
+                                  <p>Here you can define the general configuration of input and output tables, e.g. the design, (de-)activating the table search or the integration of certain add-ons. The settings made here always affect all input or output tables.
+                                  If, for example, the editing of input tables is disabled here, all input tables can no longer be edited. 
+                                  If instead only individual tables or even individual table columns shall be <i>readonly</i>, this must be configured in section <i>Configure widgets</i>.
+                                <div class="section-block">
+                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings.png" alt="start the configuration mode" />
+                                </div>
+                                </div>
+                                <div class="section-block" id="configure-widgets">
+                                  <h3 class="block-title">Configure widgets</h3>
+                                  <p>Input widgets are scalar input data, which are not displayed in tabular form, but for example using a slider, dropdown menu, date selector or a checkbox.
+                                  Not only scalar GAMS symbols but also GAMS command line parameters, i.e. GAMS options and double-dash parameters can be displayed as widgets in MIRO.                                   
+                                  Besides that, the tabular representation of individual GAMS symbols can be customized here.</p>
+                                <div class="section-block">
+                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_widgets.png" alt="start the configuration mode" />
+                                </div>
+                                </div>
+                                <div class="section-block" id="configure-graphs">
+                                  <h3 class="block-title">Configure graphs</h3>
+                                  <p>In addition to the always available tabular format, multidimensional GAMS symbols can be visualized as graphs. GAMS MIRO offers comprehensive visualization options. 
+                                  A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. 
+                                  The selection of these pre-implemented graphics currently includes scatter plots, line charts, bubble charts, histograms, pie charts, donut charts, gantt charts, pivot tables and maps and is constantly being expanded.</p>
+                                  <p>To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                    </p>
+                                <div class="section-block">
+                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_graphs.png" alt="start the configuration mode" />
+                                </div>
+                                </div>
+                                <div class="section-block" id="database-management">
+                                  <h3 class="block-title">Database management</h3>
+                                  <p>Create database backups, restore a database, remove database tables.</p>
+                                <div class="section-block">
+                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/database_management.png" alt="start the configuration mode" />
+                                </div>
+                                </div>
+                            </section>   
+                            <section id="jsonfiles" class="doc-section">
+                                <h2 class="section-title">Configuration via JSON files</h2>
+                                <div class="section-block">
+                                    <p>The entire configuration of MIRO can be done via JSON files. After the first start of a MIRO app for a GAMS model, the following files are located in <span class="code">&lt;modeldirectory&gt;/conf</span>: </p>
                                     <ol class="list">
                                       <li><h6>&lt;modelname&gt;_io.json</h6>
-                                    This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>.
-                                    It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
-                                    </code> / <code class="language-gams">$offExternalInput
-                                    </code> and <code class="language-gams">$onExternalOutput
-                                    </code> / <code class="language-gams">$offExternalOutput
-                                    </code> tags. You won't ever have to modify this file!
-                                  </li>
-                                  <li>
-                                    <h6>&lt;modelname&gt;.json</h6>
-                                    All the customization of MIRO happens via the other JSON file <a href="./faqs.html#file-config"><span class="code">&lt;modelname&gt;.json</span></a>, e.g. <span class="code">trnsport.json</span>. Here you can configure the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
-                                  </li>
-                                </ol>
+                                        This <a href="./faqs.html#file-io">file</a> is generated automatically each time a GAMS model is run with the command line parameter <span class="code" style="white-space:nowrap;">miro=build</span> or <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span>.
+                                        It lists those GAMS symbols that are marked in your GAMS model with the <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> and <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> tags. You won't ever have to modify this file!
+                                      </li>
+                                      <li>
+                                        <h6>&lt;modelname&gt;.json</h6>
+                                        All the configuration of MIRO happens in the other JSON file <a href="./faqs.html#file-config"><span class="code">&lt;modelname&gt;.json</span></a>, e.g. <span class="code">trnsport.json</span>. 
+                                        Here you can customize the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
+                                      </li>
+                                    </ol>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/config-img.png" alt="Custom visualization options"/>
                                     </div>
-                                  <p>GAMS MIRO offers comprehensive visualization options. Some basic diagram types are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data. The selection of these pre-implemented graphics currently includes charts (line charts, histograms, pie charts, pivot tables) and is constantly being expanded.</p>
-                                    <p>To create graphics that are perfectly tailored to your data, you can use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
+                                    <p>More precisely, the following can be configured in the <span class="code">&lt;modelname&gt;.json</span>:</p>
+                                    <ul>
+                                    <li>General settings <br>Such as setting the language or (de-)activating certain functions of MIRO.</li>
+                                    <li>Table settings <br>The configuration of input and output tables, e.g. the design, (de-)activating the table search or setting up the editability of tables. </li>
+                                    <li>Input widgets <br>Input widgets are scalar input data, which are not displayed in tabular form, but for example using a slider, dropdown menu, date selector or a checkbox. 
+                                    Besides scalar GAMS symbols, GAMS command line parameters, i.e. GAMS options and double-dash parameters can also be displayed as widgets in MIRO.</li>
+                                    <li>Graphs <br>In addition to the always available representation in tabular format, multidimensional GAMS symbols can also be visualized as graphics. 
+                                    GAMS MIRO offers comprehensive visualization options. A lot of plotting types are already pre-implemented and only need to be configured, i.e. adapted to your model-specific data.</li>
+                                    </ul>
+                                    <p>If you want to change the language of MIRO or display a scalar input symbol as a slider, this information must be stored in the <span class="code">&lt;modelname&gt;.json</span> file in JSON syntax. 
+                                    To ensure that the configuration is correct in terms of syntax and content, all JSON files are validated against schema in the background. 
+                                    Only if the validation is successful the application starts. If a schema is violated, an error message is displayed.</p>
+                                    <p>The schemas are located in <span class="code">&lt;GAMSRoot&gt;/miro/conf</span>. For the <span class="code">&lt;modelname&gt;_io.json</span> this is the schema <span class="code">&lt;GAMSRoot&gt;/miro/conf/GMSIO_config_schema.json</span> and for the <span class="code">&lt;modelname&gt;.json</span> the schema <span class="code">&lt;GAMSRoot&gt;/miro/conf/config_schema.json</span> is used. 
+                                    Since the latter file is used for the configuration, only the corresponding schema is of interest. You can have a look at it <a href="./schema.html" target="_blank">here</a>.
                                     </p>
-                                    <p>Before MIRO is started, both JSON files are validated in the background against a schema. If this schema is violated by either one of these files, an error message is displayed.</p>
-                                    </div><!--//section-block-->
+                                </div>
                             </section>
                             <section id="input-widgets" class="doc-section">
                                 <h2 class="section-title">Input widgets</h2>
@@ -119,21 +260,13 @@
   }
 }</code></pre>
                                       </div><!--//code-block-->
-                                      <p>There are two ways to get to this block of JSON data:</p>
-                                      <ol>
-                                        <li>By manually editing the <i>trnsport.json</i> file
-                                        <br>If you decide to use this method, you need to be careful that the content you add matches the schema.</li>
-                                        <li>Use of the <a href="./configgen.html">Configuration Generator</a>
-                                        <br>The Configuration Generator can be used to automatically generate the JSON code for the desired configuration. You can simply replace the file created by the configuration generator with your existing one; or copy code excerpts and merge them with your current configuration.</li>
-                                      </ol>
-                                      <p>When we add the configuration shown above, we will be able to see our model's distance matrix <span class="code">d</span>, but can not edit it.</p>
                                     <div class="callout-block callout-success">
                                         <div class="icon-holder">
                                             <i class="fas fa-thumbs-up"></i>
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Tip:</b>
-                                            <p>You can use our <a href="./configgen.html">Configuration Generator</a> to customize your input widgets.</p>
+                                            <p>You can use the <a href="./configgen.html">graphical configuration mode</a> to customize your input widgets.</p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
@@ -167,7 +300,7 @@
   }
 }</code></pre>
                                       </div><!--//code-block-->
-                                      <p>Again, this can be done either by manually editing the JSON file or via the Configuration Generator.</p>
+                                      <p>Again, this can be done either by manually editing the JSON file or via the configuration mode of GAMS MIRO.</p>
                                       <p>When we restart our app, the scalar is now automatically removed from the <i>Scalars</i> table and instead rendered as a separate widget:</p>
                                       <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:60pt;" src="assets/images/trnsport-slider.png" alt="Input widgets for scalar values"/>
@@ -233,7 +366,7 @@
                                        </div>
                                        <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. Those values are therefore available to the GAMS model at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.
                                        If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><span class="code">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</span></pre></p>
-                                       <p>You can generate the configuration for GAMS command line parameters the same way as scalar widgets for GAMS symbols manually or via our <a href="./configgen.html">Configuration Generator</a>.</p>
+                                       <p>You can generate the configuration for GAMS command line parameters the same way as scalar widgets for GAMS symbols manually or via the <a href="#configurationGen" class="scrollto">configuration mode</a>.</p>
                                        <div class="callout-block callout-warning">
                                            <div class="icon-holder">
                                                <i class="fas fa-info-circle"></i>
@@ -251,7 +384,7 @@
                                       <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
                                   </div>
                                   <p>Similar dependencies can also be considered for sliders. An example is the <i>pickstock</i> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
-                                  <p>Of course you can configure those dependencies just like you configure everything else via our <a href="./configgen.html">Configuration Generator</a>. A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
+                                  <p>A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
                                   <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
@@ -332,24 +465,9 @@ schedule(i,j,'cap')        = a(i);
 schedule(i,j,'demand')     = b(j);
 schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                 </div><!--//section-block-->
-                            </section>
-                            <section id="custom-graph" class="doc-section">
-                                <h2 class="section-title">Graphics Configuration</h2>
-                                <div class="section-block"  id="graphics-intro">
-                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run.
-                                  At first, we want to use a pre-implemented diagram. The following options are currently available for this purpose:</p>
-                                  <ul>
-                                    <li>datatable</li>
-                                    <li>histogram</li>
-                                    <li>pie chart</li>
-                                    <li>bar chart</li>
-                                    <li>line chart</li>
-                                    <li>scatter plot</li>
-                                    <li>pivot table</li>
-                                    </ul>
-                                </div><!--//section-block-->
                                 <div class="section-block" id="graphics-charts">
                                   <h3 class="block-title">Charts</h3>
+                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run.</p>
                                   <p>Let's create a bar chart that visualizes the trade relations between suppliers and markets.
                                   In order to do so we need to define a GAMS parameter that provides the data of those trade relations. We extend our GAMS model as follows:</p>
                                   <pre><code class="language-gams">[...]
@@ -378,9 +496,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   </code> / <code class="language-gams">$offExternalOutput
                                   </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the variable <span class="code">x</span>  ('<span class="code">quantities</span>').
                                   The latter is relevant for our desired graphic, the other two serve here only as additional information that we can work with.
-                                  <br>With this result parameter we can now generate a diagram. For any pre-implemented visualization options we can use the configuration generator.
-                                  There, we upload our <i>trnsport_io.json</i> file and choose <i>generate new configuration file"</i> Under the tab <i>Graphs</i> we select <i>graphs</i> again. Now we can configure the parameter <span class="code">schedule</span> as desired.
-                                  We leave all other configurations as they are, click on <i>next</i> and then on <i>Download json</i>. The resulting <i>trnsport.json</i> file looks as follows:</p>
+                                  <br>With this result parameter we can now generate a diagram. The JSON code in the <i>trnsport.json</i> file could look as follows:</p>
                                   <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
@@ -391,13 +507,6 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
         "type": "bar",
         "barmode": "stack",
         "color": "canning plants",
-        "margins": {
-          "b": 0,
-          "t": 0,
-          "l": 0,
-          "r": 0,
-          "pad": 0
-        },
         "xdata": "markets",
         "ydata": {
           "quantities":{
@@ -419,7 +528,6 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
       }
     }
 }</code></pre>
-                                  <p>Since we already have a <span class="code">trnsport.json</span> file in our model folder, we simply copy the newly generated code and paste it into the existing file at the appropriate location.</p>
                                   <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:275pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
@@ -427,21 +535,24 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   <p>That's it. We've created our first MIRO graph.</p>
                                   <p>Besides bar charts, we can create multiple other types of charts. Just try it out yourself! You are now able to explore the different options on your own. And if you are stuck, you can always visit our <a href="https://forum.gamsworld.org/" target="_blank">forum</a> and ask others for help.</p>
                                 </div><!--//section-block-->
-                                <div class="section-block" id="graphics-pivot">
-                                  <h3 class="block-title">Pivot Tables</h3>
-                                  <p>With the integrated pivot tool you can easily create and interactively process a variety of charts. Besides static tables, pivot tables and charts are the default tool to visualize your model input data. This means that when you launch a new MIRO app for the first time, you can already interactively explore your input data with the help of pivot tables and pivot charts. Note, however, that you should change this default setting when displaying large datasets. Pivot tables and charts do not perform well for parameters with more than 100,000 records.</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:325pt;" src="assets/images/pivot-pickstock.png" alt="Pivot" />
-                                  </div>
-                                  <p><br><br>In the next section we will show you how to create really sophisticated graphics like the map you find in the demo <i>transport</i> model that comes with your MIRO installation:</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
-                                  </div>
-                                </div><!--//section-block-->
-                            </section><!--//doc-section-->
+                            </section>
                             <section id="custom-renderers" class="doc-section">
                                 <h2 class="section-title">Custom Graphics</h2>
                                 <div class="section-block">
+                                
+                                  <p>In this section we will show you how to create really sophisticated graphics like the map you find in the demo <i>transport</i> model that comes with your MIRO installation:</p>
+                                  <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>Basic maps can now be configured in the new <a href="configurationGen" class="scrollto">configuration mode</a>. The following example nevertheless shows how to use the R API for customized graphics in general.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:250pt;" src="assets/images/output-data_raw1.png" alt="Result of custom renderer - Map with markers" />
+                                  </div>
                                     <p>GAMS MIRO allows you to use your own custom renderers for your datasets. Currently we only support the visualization of data, not the generation. We may add this feature at a later stage depending on the demand.</p>
                                     <p>In order to visualize a dataset, you will need to write two functions: a placeholder where your graphs etc. will later be rendered as well as the rendering function itself. To learn more about the concepts of this dual component approach, visit the website for the R Shiny framework that GAMS MIRO is based upon: <a href="https://shiny.rstudio.com/">https://shiny.rstudio.com/</a>. In particular, we are using <a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">Shiny Modules</a> to realize the interface between MIRO and your custom renderer functions. The template for the two components of every custom renderer is as follows:</p>
                                     <div class="code-block">
@@ -455,7 +566,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
                                         </code></pre>
                                     </div><!--//code-block-->
                                     <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>".
-                                      Let's get back to our <i>trnsport</i> example. We would like to see the flow of goods visualized on a map. As there is currently no out-of-the-box rendering function for visualizing data on a map in MIRO, we need to write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
+                                      Let's get back to our <i>trnsport</i> example. We would like to see the flow of goods visualized on a map. We now write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
                                     <div class="code-block">
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
@@ -512,8 +623,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
    }
 }</code></pre>
                                         </div><!--//code-block-->
-                                        <p>You can also use our <a href="./configgen.html">Configuration Generator</a> to generate the configuration file.
-                                      </p><p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
+                                        <p>As you can see we bound the GAMS parameter <span class="code">optSched</span> to our new custom renderer <span class="code">transportMap</span>. Furthermore, we specified a parameter: <span class="code">title</span> that can be accessed by our custom renderer via the <span class="code">options</span> list. </p>
                                       <p>If we decided to run our MIRO app now, we still would not be able to see anything other than a blank area. Thus, we will need to fill our renderer with some life:
                                         <div class="code-block">
                                             <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
@@ -545,7 +655,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                       <div class="section-block">
                                           <img class="img-fluid" src="assets/images/custom-renderer-map.png" alt="Result of custom renderer - Map with markers" />
                                       </div>
-                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you want to learn more, you can find a complete example of a custom renderer function in the <i>transport</i> model that comes with your MIRO installation. In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!
+                                      <p>You now know everything you need in order to get started writing your own custom renderers! Congratulations! In case you create a new renderer that you would like to share so that others can benefit from your work as well, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!
                                       </p>
                                 </div><!--//section-block-->
                               </section>
@@ -594,7 +704,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                               <section id="language-files" class="doc-section">
                                   <h2 class="section-title">Language Files</h2>
                                   <div class="section-block">
-                                      <p>GAMS MIRO comes with the ability to change the preferred language from within the <a href="./configgen.html">configuration file</a>. Setting your preferred language in the configuration results in MIRO embedding the corresponding language file where all the language specific components are specified via JSON syntax. MIRO currently ships with two of those language files: English and German. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/MIRO/conf/en.json</span> and are validated against the <a href="https://json-schema.org/" target="_blank">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/MIRO/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by MIRO. Thus, if you create a new language file, be sure to include these placeholders there!</p>
+                                      <p>GAMS MIRO comes with the ability to change the preferred language from within the <a href="./configgen.html">configuration file</a>. Setting your preferred language in the configuration results in MIRO embedding the corresponding language file where all the language specific components are specified via JSON syntax. MIRO currently ships with three of those language files: English, German and Chinese. If you would like to add another language to this list, you are more than welcome to translate one of the existing language files. The language files are located at: <span class="code">&lt;GAMSRoot&gt;/miro/conf/en.json</span> and are validated against the <a href="https://json-schema.org/" target="_blank">JSON Schema</a> file: <span class="code">&lt;GAMSRoot&gt;/miro/conf/language_schema.json</span>. Note that there are sometimes placeholders in the language files. Let's take the error message: <kbd>"The value '%s' for the slider: '%s' is not of numeric type."</kbd> for example. <kbd>%s</kbd> will then be replaced with the value and name of the slider by MIRO. Thus, if you create a new language file, be sure to include these placeholders there!</p>
                                       <p>If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.</p>
                                       </div><!--//section-block-->
                               </section>
@@ -604,18 +714,23 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#intro">Introduction</a>
-                                <a class="nav-link scrollto" href="#input-widgets">Input widgets</a>
+                                <a class="nav-link scrollto" href="#configurationGen">The configuration mode</a>
                                 <nav class="doc-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#general-settings">General settings</a>
+                                    <a class="nav-link scrollto" href="#table-settings">Table settings</a>
+                                    <a class="nav-link scrollto" href="#configure-widgets">Configure widgets</a>
+                                    <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
+                                    <a class="nav-link scrollto" href="#database-management">Database management</a>
+                                </nav>
+                                <a class="nav-link scrollto" href="#jsonfiles">Configuration via JSON files</a>
+                                <nav class="doc-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#input-widgets">Input widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-tables">Tables</a>
                                     <a class="nav-link scrollto" href="#widgets-scalars">Scalars</a>
                                     <a class="nav-link scrollto" href="#widgets-commandLine">Command line parameters</a>
-                                    <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies between Widgets</a>
+                                    <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies among Widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-advanced">Advanced topics</a>
-                                </nav>
-                                <a class="nav-link scrollto" href="#custom-graph">Graphics Configuration</a>
-                                <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#graphics-charts">Charts</a>
-                                    <a class="nav-link scrollto" href="#graphics-pivot">Pivot tables</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
                                 <a class="nav-link scrollto" href="#development-mode">Advanced: Development mode and compilation phase</a>
