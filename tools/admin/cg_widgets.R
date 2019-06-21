@@ -1413,8 +1413,6 @@ observeEvent(input$saveWidget, {
 observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
-  print("++++++++++++++++++++++++++++++++++++")
-  print(configJSON$inputWidgets[[currentWidgetSymbolName]])
   
   symbolDDNeedsUpdate <- FALSE
   

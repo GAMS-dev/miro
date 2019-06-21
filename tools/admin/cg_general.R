@@ -124,13 +124,6 @@ insertUI(selector = "#general_wrapper2",
                                  checkboxInput("general_act_upload", value = if(length(configJSON$activateModules$loadLocal)) configJSON$activateModules$loadLocal else config$activateModules$loadLocal, label = NULL)
                       ))
            ),
-           tags$div(
-             tags$label(class = "cb-label", "for" = "general_act_share_scen", lang$adminMode$general$actShareScen$label),
-             tags$div(
-               tags$label(class = "checkbox-material", 
-                          checkboxInput("general_act_share_scen", value = if(length(configJSON$activateModules$sharedScenarios)) configJSON$activateModules$sharedScenarios else config$activateModules$sharedScenarios, label = NULL)
-               ))
-           ),
            tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
            tags$div(
              tags$label(class = "checkbox-material", 
@@ -335,8 +328,7 @@ observeEvent(input$add_general, {
   }
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
   arrayIdx <- groupIndexMap$push(arrayID, input$add_general[1])
-  print(arrayID)
-  print(arrayIdx)
+  
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
@@ -371,13 +363,10 @@ observeEvent(input$add_general, {
   }else{
     groupTemp[[arrayID]][[arrayIdx]]$name <<- newName
   }
-  print(groupTemp)
 })
 changeAndValidateGroupMembers <- function(arrayID, groupMembers, HTMLarrayID){
   arrayIdx <- groupIndexMap$push(arrayID, groupMembers[1])
-  print(arrayIdx)
-  print(groupMembers)
-  print(rv$generalConfig[[arrayID]])
+  
   if(length(groupMembers) > 2L && 
      !any(groupMembers[-1] %in% unlist(lapply(rv$generalConfig[[arrayID]][-arrayIdx], "[[", "members"), use.names = FALSE))){
     newMembers <- groupMembers[2:length(groupMembers)]
