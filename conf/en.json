@@ -767,7 +767,7 @@
       },
       "aggregate":{
         "title": "If not activated, each input widget is displayed in a separate tab.",
-        "label": "Should all input widgets (slider, dropdown menu, etc.) bea ggregated on a single tab?"
+        "label": "Should all input widgets (slider, dropdown menu, etc.) be aggregated on a single tab?"
       },
       "parent":{
         "label": "Include parent directory of the model folder in your model runs (e.g. because several models share files)?"
