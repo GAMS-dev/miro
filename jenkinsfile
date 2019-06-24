@@ -104,11 +104,6 @@ pipeline {
                             %GBIN_DIR%\\cp pickstock_conf.zip pickstock.gms dowjones2016.csv %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f pickstock_conf.zip
 
-                            cd %WORKSPACE%\\model\\pickstock_live
-                            %GAMS_DIR%\\gmszip -r pickstock_live_conf.zip conf\\pickstock_live.json static customRenderer
-                            %GBIN_DIR%\\cp pickstock_live_conf.zip pickstock_live.gms %GAMS_DIR%\\datalib_ml
-                            %GBIN_DIR%\\rm -f pickstock_live_conf.zip
-
                             cd %WORKSPACE%\\model\\transport
                             %GAMS_DIR%\\gmszip -r transport_conf.zip conf\\transport.json static customRenderer
                             %GBIN_DIR%\\cp transport_conf.zip transport.gms %GAMS_DIR%\\datalib_ml
@@ -125,7 +120,6 @@ pipeline {
                             cd %GAMS_DIR%\\datalib_ml
                             echo $include mkconfig.inc >> kport.gms
                             echo $include mkconfig.inc >> pickstock.gms
-                            echo $include mkconfig.inc >> pickstock_live.gms
                             echo $include mkconfig.inc >> transport.gms
                             echo $include mkconfig.inc >> transport_live.gms
 
@@ -209,11 +203,6 @@ pipeline {
                             cp pickstock_conf.zip pickstock.gms dowjones2016.csv "$TARGET/datalib_ml"
                             rm -f pickstock_conf.zip
                             
-                            cd "$WORKSPACE/model/pickstock_live"
-                            "$TARGET/gmszip" -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
-                            cp pickstock_live_conf.zip pickstock_live.gms "$TARGET/datalib_ml"
-                            rm -f pickstock_live_conf.zip
-                            
                             cd "$WORKSPACE/model/transport"
                             "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static customRenderer
                             cp transport_conf.zip transport.gms "$TARGET/datalib_ml"
@@ -227,7 +216,6 @@ pipeline {
                             cd "$TARGET/datalib_ml"
                             echo \\$include mkconfig.inc >> kport.gms
                             echo \\$include mkconfig.inc >> pickstock.gms
-                            echo \\$include mkconfig.inc >> pickstock_live.gms
                             echo \\$include mkconfig.inc >> transport.gms
                             echo \\$include mkconfig.inc >> transport_live.gms
                             
