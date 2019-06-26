@@ -46,7 +46,7 @@
     },
     "dataRendering"      : {
         "schedule"			: {
-		    "outType"			: "trnsport1",
+		    "outType"			: "transport1",
 		    "height"			: 700,
 		    "packages"			: ["leaflet", "leaflet.minicharts"]
 	    },

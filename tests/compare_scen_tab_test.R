@@ -30,6 +30,6 @@ switch(Sys.getenv("GMSMODELNAME"),
        },
        "transport" = ,
        "transport_live" = {
-         app$snapshot(items = list(output = c("tab_5_1-custom-trnsport")), screenshot = TRUE)
+         app$snapshot(items = list(output = c("tab_5_1-custom-transport")), screenshot = TRUE)
        })
 app$stop()

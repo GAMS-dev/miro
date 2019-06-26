@@ -1,4 +1,4 @@
-trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
+transport1Output <- function(id, height = NULL, options = NULL, path = NULL){
   ns <- NS(id)
   
   # set default height
@@ -6,10 +6,10 @@ trnsport1Output <- function(id, height = NULL, options = NULL, path = NULL){
     height <- 800
   }
   
-  leaflet::leafletOutput(ns("trnsport"), height = height)
+  leaflet::leafletOutput(ns("transport"), height = height)
 }
 
-renderTrnsport1 <- function(input, output, session, data, options = NULL, path = NULL){
+renderTransport1 <- function(input, output, session, data, options = NULL, path = NULL){
   #generate map
   map <- leaflet() %>%
          addTiles() %>%
@@ -26,5 +26,5 @@ renderTrnsport1 <- function(input, output, session, data, options = NULL, path =
                   color = "indianred", flow = data$quantities, opacity = 1, minThickness = 0, 
                   maxThickness = 12, 
                   layerId = paste0("From ", data$i, " to ", data$j), popup = popupArgs())
-  output$trnsport <- leaflet::renderLeaflet(map)
+  output$transport <- leaflet::renderLeaflet(map)
 }

@@ -1,4 +1,4 @@
-RLibPath <- 'C:/GAMS/win64/miro05/GMSR/library'
+RLibPath <- '/Applications/MIRO0.6/sysdir/GMSR/library'
 
   if(RLibPath == ""){
      RLibPath <- NULL
@@ -38,13 +38,13 @@ RLibPath <- 'C:/GAMS/win64/miro05/GMSR/library'
   tryCatch({
      withCallingHandlers({
          on.exit(q('no'))
-         shiny::runApp(appDir = file.path("C:/GAMS/win64/miro05/miro"), launch.browser=TRUE)
+         suppressWarnings(shiny::runApp(appDir = file.path("/Applications/MIRO0.6/sysdir/miro"), launch.browser=TRUE))
       }, warning = function(w){
          if(!startsWith(conditionMessage(w), "Error"))
             return()
          currwd <- getwd()
          on.exit(setwd(currwd))
-         setwd("C:/Users/frepr/Documents/miro git/model/simple/")
+         setwd("/Users/fproske/Documents/products/miro/model/simple/")
          futile.logger::flog.fatal('%s', w)
          logFiles <- list.files('logs', full.names = TRUE)
          zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
@@ -52,10 +52,12 @@ RLibPath <- 'C:/GAMS/win64/miro05/GMSR/library'
   }, error = function(e){
      currwd <- getwd()
      on.exit(setwd(currwd))
-     setwd("C:/Users/frepr/Documents/miro git/model/simple/")
+     setwd("/Users/fproske/Documents/products/miro/model/simple/")
      try(futile.logger::flog.fatal('%s', e), silent = TRUE)
      logFiles <- list.files('logs', full.names = TRUE)
      zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('simple_io.json', 'simple.json'))), recurse = FALSE, compression_level = 9)
-     shiny::runApp(appDir = file.path("C:/GAMS/win64/miro05/miro", "tools", "crash_report"), launch.browser=TRUE)
+     suppressWarnings(shiny::runApp(appDir = file.path("/Applications/MIRO0.6/sysdir/miro", "tools", "crash_report"), launch.browser=TRUE))
+  }, interrupt = function(e){
+     q('no')
   })
   q("no")

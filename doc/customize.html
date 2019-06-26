@@ -207,7 +207,7 @@
                                       </li>
                                       <li>
                                         <h6>&lt;modelname&gt;.json</h6>
-                                        All the configuration of MIRO happens in the other JSON file <a href="./faqs.html#file-config"><span class="code">&lt;modelname&gt;.json</span></a>, e.g. <span class="code">trnsport.json</span>. 
+                                        All the configuration of MIRO happens in the other JSON file <a href="./faqs.html#file-config"><span class="code">&lt;modelname&gt;.json</span></a>, e.g. <span class="code">transport.json</span>. 
                                         Here you can customize the general appearance of MIRO, the functionality, the language and much more. Furthermore, all the graphics and widgets are specified here.
                                       </li>
                                     </ol>
@@ -234,8 +234,8 @@
                             <section id="input-widgets" class="doc-section">
                                 <h2 class="section-title">Input widgets</h2>
                                 <div class="section-block">
-                                  <p>Let's get back and extend our demo model <i>trnsport</i>. We will do this by adjusting the file <span class="code">trnsport.json</span> in order to to adapt MIRO to our needs.
-                                  When you first launch MIRO for a new model, the <span class="code">trnsport.json</span> file is almost empty:</p>
+                                  <p>Let's get back and extend our demo model <i>transport</i>. We will do this by adjusting the file <span class="code">transport.json</span> in order to to adapt MIRO to our needs.
+                                  When you first launch MIRO for a new model, the <span class="code">transport.json</span> file is almost empty:</p>
                                   <div class="code-block" id="config-start">
                                           <pre><code class="language-json">{}</code></pre>
                                   </div><!--//code-block-->
@@ -249,7 +249,7 @@
                                     </div>
                                     <p>The corresponding GAMS declaration statement looks like this: <code class="language-gams">Parameter d(i,j) 'distance in thousands of miles';</code>.
                                     By default, every cell in the table is editable and rows can be inserted and removed. If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter.
-                                    You do so by adding this kind of information to the <span class="code">trnsport.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
+                                    You do so by adding this kind of information to the <span class="code">transport.json</span> file. For example, if we decide that the table for our parameter <span class="code">d</span> should not be editable, this information needs to be added to your JSON file as follows:</p>
                                       <div class="code-block" id="table-readonly">
                                           <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
@@ -278,7 +278,7 @@
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/input-widgets2.png" alt="Input widgets for scalar values"/>
                                       </div>
                                       <p>As with all MIRO customizations, the information about the type of visualization of a GAMS scalar is configured via the file <span class="code">&lt;modelname&gt;.json</span>.
-                                      <br>Let's get back to our <i>trnsport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">trnsport.json</span> file.
+                                      <br>Let's get back to our <i>transport</i> app. In the <a href="#table-readonly" class="scrollto">previous section</a> we configured the table of parameter <span class="code">d</span> so that it is no longer editable. We achieved this by writing the corresponding information into the <span class="code">transport.json</span> file.
                                       Now we extend the configuration of our app further by adding information about how to display the scalar value <span class="code">f</span> ('<i>freight in dollars per case per thousand miles</i>'). Instead of displaying it in a table, we want to use a <i>slider</i>:
                                       </p>
                                       <div class="code-block" id="scalar-slider">
@@ -463,7 +463,7 @@
                                 </div><!--//section-block-->
                                 <div class="section-block" id="graphics-charts">
                                   <h3 class="block-title">Charts</h3>
-                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>trnsport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run.</p>
+                                  <p>In the section on <a href="./customize.html#input-widgets" class="scrollto">Input widgets</a>, we extended our demo model <i>transport</i> with a read-only table and a slider widget for a scalar value. Now we want to configure our first graph to visualize some results of a model run.</p>
                                   <p>Let's create a bar chart that visualizes the trade relations between suppliers and markets.
                                   In order to do so we need to define a GAMS parameter that provides the data of those trade relations. We extend our GAMS model as follows:</p>
                                   <pre><code class="language-gams">[...]
@@ -492,7 +492,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   </code> / <code class="language-gams">$offExternalOutput
                                   </code> tags. It is calculated using the parameters <span class="code">a</span> and <span class="code">b</span> and the final levels of the variable <span class="code">x</span>  ('<span class="code">quantities</span>').
                                   The latter is relevant for our desired graphic, the other two serve here only as additional information that we can work with.
-                                  <br>With this result parameter we can now generate a diagram. The JSON code in the <i>trnsport.json</i> file could look as follows:</p>
+                                  <br>With this result parameter we can now generate a diagram. The JSON code in the <i>transport.json</i> file could look as follows:</p>
                                   <pre><code class="language-json">{
   "dataRendering"      : {
     "schedule": {
@@ -524,7 +524,7 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
       }
     }
 }</code></pre>
-                                  <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>trnsport</i> model via <span class="code" style="white-space:nowrap;"><nobr>miro=launch</nobr></span> again and solve the model. In the results section we can find our new graph:</p>
+                                  <p>Let's see whether our new diagram looks as desired. We launch the MIRO app for our <i>transport</i> model again and solve the model. In the results section we can find our new graph:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:275pt; display: block; margin-left: auto; margin-right: auto;" src="assets/images/custom-graphic.png" alt="Bar chart showing shipment quantities over markets" />
                                   </div>
@@ -562,7 +562,7 @@ render&#x3C;rendererName&#x3E; &#x3C;- function(input, output, session, data, op
                                         </code></pre>
                                     </div><!--//code-block-->
                                     <p>Note that you need to replace <span class="code">&lt;rendererName&gt;</span> with your preferred name. Let's go through this code step by step. As mentioned, for each custom renderer we need to specify two functions: one that generates the the placeholder and one that fills this placeholder with data. The name of the placeholder function must be postfixed with "<span class="code">Output</span>" and the name of the function that specifies the actual rendering must be prefixed with the keyword "<span class="code">render</span>".
-                                      Let's get back to our <i>trnsport</i> example. We would like to see the flow of goods visualized on a map. We now write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
+                                      Let's get back to our <i>transport</i> example. We would like to see the flow of goods visualized on a map. We now write our own custom renderer which we name: <span class="code">transportMap</span>. Thus, our initial template looks like this:
                                     <div class="code-block">
                                         <pre><code class="language-r">transportMapOutput &#x3C;- function(id, height = NULL, options = NULL, path = NULL){
   ns &#x3C;- NS(id)
@@ -605,7 +605,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     </p><p>
                                       The data that you want to visualize is supplied to your rendering function by the <kbd>data</kbd> argument - an R <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a>, a data structure that is very similar to a Data Frame. The function argument <kbd>path</kbd> is a string (a one-dimensional character vector) that specifies the absolute path to your <span class="code">customRenderer</span> directory. This is useful if you want to include external files in your custom renderer functions. Optional parameters that you want to pass to the renderer can be accessed via the argument <kbd>options</kbd> - a (nested) list. </p>
                                       <p>Now that we are familiar with the template that every custom renderer builds upon, we are still missing one fundamental concept so that we can use our custom renderer: binding the renderer to dataset(s) we wish to visualize.</p>
-                                      <p>This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <span class="code">&lt;modelname&gt;.json</span> file; more precisely the <span class="code">dataRendering</span> section. Let's assume that in our transportation example the GAMS parameter that specifies the optimal schedule is defined as <span class="code">optSched(lngp, latp, lngm, latm, plant, market)</span> where <span class="code">(lngP,latP)</span> and <span class="code">(lngm, latm)</span> are the coordinates of the plants and markets respectively. Our <span class="code">trnsport.json</span> file should then look like this:
+                                      <p>This binding of GAMS parameter to renderer function is specified - just like any other renderer binding - in the <span class="code">&lt;modelname&gt;.json</span> file; more precisely the <span class="code">dataRendering</span> section. Let's assume that in our transportation example the GAMS parameter that specifies the optimal schedule is defined as <span class="code">optSched(lngp, latp, lngm, latm, plant, market)</span> where <span class="code">(lngP,latP)</span> and <span class="code">(lngm, latm)</span> are the coordinates of the plants and markets respectively. Our <span class="code">transport.json</span> file should then look like this:
                                         <div class="code-block">
                                             <pre><code class="language-json">{
    &#x22;dataRendering&#x22;:{
