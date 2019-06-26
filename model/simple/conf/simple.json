@@ -12,9 +12,9 @@
 					"b"						: 100
 					
 				},					
-				"xdata"     			:"Time Intervals",
+				"xdata"     			:"ttx",
 				"ydata" 				: {
-					"Demand"    				: {
+					"demand"    				: {
 						"label"					: "Demand",
 						"mode"      			: "lines"
 					},

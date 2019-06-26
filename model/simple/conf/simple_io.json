@@ -1,0 +1,149 @@
+{
+    "pageTitle": "Simplified Energy Systems Model",
+    "MIROSwitch": "MIRO=RUN",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "planttypedata": {
+            "alias": "Plant information",
+            "headers": {
+                "type": {
+                    "type": "set",
+                    "alias": "plant type"
+                },
+                "co2": {
+                    "type": "parameter",
+                    "alias": "CO2"
+                },
+                "cost": {
+                    "type": "parameter",
+                    "alias": "Cost"
+                },
+                "expansion cost": {
+                    "type": "parameter",
+                    "alias": "Expansion Cost"
+                }
+            }
+        },
+        "timeseries": {
+            "alias": "base case time series [GWh]",
+            "headers": {
+                "ttx": {
+                    "type": "set",
+                    "alias": "Time Intervals"
+                },
+                "photovoltaic": {
+                    "type": "parameter",
+                    "alias": "photovoltaic"
+                },
+                "wind": {
+                    "type": "parameter",
+                    "alias": "wind"
+                },
+                "demand": {
+                    "type": "parameter",
+                    "alias": "Demand"
+                }
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "rep_emix": {
+            "alias": "energy mix report",
+            "headers": {
+                "tt": {
+                    "type": "set",
+                    "alias": "time steps"
+                },
+                "rr": {
+                    "type": "set",
+                    "alias": "Regions"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
+                },
+                "lat": {
+                    "type": "parameter",
+                    "alias": "lat"
+                },
+                "total": {
+                    "type": "parameter",
+                    "alias": "Total"
+                },
+                "renewable": {
+                    "type": "parameter",
+                    "alias": "Renewable"
+                },
+                "fossil": {
+                    "type": "parameter",
+                    "alias": "Fossil"
+                }
+            }
+        },
+        "rep_flow": {
+            "alias": "flow report",
+            "headers": {
+                "tt": {
+                    "type": "set",
+                    "alias": "time steps"
+                },
+                "rr": {
+                    "type": "set",
+                    "alias": "Regions"
+                },
+                "rr_1": {
+                    "type": "set",
+                    "alias": "Regions"
+                },
+                "lng0": {
+                    "type": "parameter",
+                    "alias": "Lng0"
+                },
+                "lat0": {
+                    "type": "parameter",
+                    "alias": "Lat0"
+                },
+                "lng1": {
+                    "type": "parameter",
+                    "alias": "Lng1"
+                },
+                "lat1": {
+                    "type": "parameter",
+                    "alias": "Lat1"
+                },
+                "flow": {
+                    "type": "parameter",
+                    "alias": "Flow"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Output Scalars",
+            "symnames": [
+                "obj_rep"
+            ],
+            "symtext": [
+                "objective function value"
+            ],
+            "symtypes": [
+                "parameter"
+            ],
+            "count": 1,
+            "headers": {
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    }
+}
