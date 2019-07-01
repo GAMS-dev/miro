@@ -184,7 +184,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    scenIds <- digest(gmsString, algo = "sha256", serialize = FALSE)
+    scenIds <- vapply(gmsString, digest, character(1L), algo = "sha256", 
+                      serialize = FALSE, USE.NAMES = FALSE)
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- paste0(scenIds, ": ", gmsString)
     
