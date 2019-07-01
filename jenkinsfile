@@ -231,15 +231,14 @@ pipeline {
                             mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
                             SetFile -a C "$WORKSPACE/$DMG_ROOT"
                             
-                            
                             echo '
                                tell application "Finder"
-                                 tell disk "'${VOL_NAME}'"
+                                 tell disk "volume"
                                        open
                                        set current view of container window to icon view
                                        set toolbar visible of container window to false
                                        set statusbar visible of container window to false
-                                       set the bounds of container window to {400, 200, 1210, 710}
+                                       set the bounds of container window to {400, 200, 1200, 710}
                                        set theViewOptions to the icon view options of container window
                                        set background picture of theViewOptions to file ".bg.png"
                                        set arrangement of theViewOptions to not arranged
