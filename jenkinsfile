@@ -173,6 +173,8 @@ pipeline {
                             hdiutil convert $DMG_NAME -format UDRW -o $DMG_NAME_TMP
                             mount
                             hdiutil attach -mountpoint ./$DMG_ROOT $DMG_NAME_TMP
+                            VOL_NAME="GAMS ${GMS_VER}"
+                            APP_NAME="MIRO$MIRO_VER_SHORT"
                             
                             STUDIO_ROOT=studio
                             mkdir $STUDIO_ROOT
@@ -224,10 +226,35 @@ pipeline {
                             cd "$TARGET"
                             unzip -o "$TARGET/cmex_deg.zip"
                             rm "$TARGET/cmex_deg.zip"
-                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/MIRO$MIRO_VER_SHORT/"
+                            mv "$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/" "$WORKSPACE/$DMG_ROOT/$APP_NAME/"
                             
                             mv "$WORKSPACE/resources/macos/gmslogo.icns" "$WORKSPACE/$DMG_ROOT/.VolumeIcon.icns"
                             SetFile -a C "$WORKSPACE/$DMG_ROOT"
+                            
+                            
+                            echo '
+                               tell application "Finder"
+                                 tell disk "'${VOL_NAME}'"
+                                       open
+                                       set current view of container window to icon view
+                                       set toolbar visible of container window to false
+                                       set statusbar visible of container window to false
+                                       set the bounds of container window to {400, 200, 1210, 710}
+                                       set theViewOptions to the icon view options of container window
+                                       set background picture of theViewOptions to file ".bg.png"
+                                       set arrangement of theViewOptions to not arranged
+                                       set icon size of theViewOptions to 144  
+                                       set position of item "'${APP_NAME}'" of container window to {200, 280} 
+                                       set position of item "'.Trashes'" of container window to {100, 600} 
+                                       set position of item "'.bg.png'" of container window to {100, 600} 
+                                       set position of item "'.fseventsd'" of container window to {100, 600} 
+                                       set position of item "'.VolumeIcon.icns'" of container window to {100, 600} 
+                                       update without registering applications
+                                       delay 5
+                                       close
+                                 end tell
+                              end tell
+                           ' | osascript
                             
                             diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO $MIRO_VER_SHORT"
                             
