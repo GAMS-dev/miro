@@ -16,6 +16,8 @@ $include "%fp%%fn%_miro.gms"
 $exit
 
 $label MIRO_L1
+$set DEF_SCEN_NAME "default"
+$set MIRO_DATA_DIR_PREFIX "data_"
 
 * Export GDX file with all symbols and current data
 $setNames "%gams.input%" fp fn fe
@@ -77,11 +79,12 @@ def extractSymText(sym,level):
       text = text[uii:]
    elif text.startswith(output_tag):
       text = text[uio:]
-   if(len(text) == 0):
-      text = sym.name
    if level>0:
       text = text.replace(pivot_marker, '')
-   return text.strip().encode('utf-8', 'replace').decode('utf-8')
+   text = text.strip().encode('utf-8', 'replace').decode('utf-8')
+   if(len(text) == 0):
+      text = sym.name
+   return text
 
 # Iterate through all symbols
 for sym in db:
@@ -203,87 +206,21 @@ def headerList(s):
    return headers
 
 # Now write model specific MIRO driver
+datadir = r'%fp%%MIRO_DATA_DIR_PREFIX%%fn%'
+if not os.path.exists(datadir):
+   os.makedirs(datadir)
 with open(r'%fp%%fn%_miro.gms', 'w', encoding="utf-8") as f:
    f.write('$ifi %' + 'gams.MIRO%==run $goto MIRO_RUN\n')
    f.write('\n')
-   f.write('* Create csv files of existing data for Excel file creation\n')
-   for s in i_sym:
-      if (s[1]=='ps') or (s[1]=='ss'): # skip scalars
-         continue
-      sym = s[0]
-      stype = s[1]
-      symHeader = headerList(s)
-      htext = symHeader[0][0]
-      for h in symHeader[1:]:
-         htext = htext + ',' + h[0]
-      f.write('$ife card(' + sym.name + ')=0 $abort Need data for ' + sym.name + '\n')
-      if stype=='pp': # pivot
-         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields cdim=1 header="' + htext + '" format=csv > ' + sym.name.lower() + '.csv\n')
-      else:
-         f.write('$hiddencall gdxdump "' + gdxfn + '" epsout=0 symb=' + sym.name + ' csvsettext csvallfields header="' + htext + '"  format=csv > ' + sym.name.lower() + '.csv\n')
-      f.write('$if errorlevel 1 $abort Problems creating ' + sym.name.lower() + '.csv\n')
-   f.write('\n')
-   f.write('* Create scalars.csv (if necessary) and produce xlsx file\n')
-   f.write('$onembeddedCode Python:\n')
-   if have_i_scalar:
-      f.write('def getval(ssym,default):\n')
-      f.write('   try:\n')
-      f.write('     if isinstance(default, str):\n')
-      f.write('        return gams.db[ssym].first_record().key(0)\n')
-      f.write('     else:\n')
-      f.write('        return str(gams.db[ssym].first_record().value)\n')
-      f.write('   except:\n')
-      f.write('     return str(default)\n')
-      f.write('\n')    
-      f.write('with open("scalars.csv", "w", encoding="utf-8") as f:\n')
-      f.write('   f.write("scalar,description,value\\n")\n')
-      for s in i_sym:
-         if s[1]=='ss':
-            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '","") + "\\n")\n')
-         elif s[1]=='ps':
-            f.write('   f.write("' + s[0].name.lower() + '"+","+"' + extractSymText(s[0],2) + '"+","+getval("' + s[0].name + '",0) + "\\n")\n')
-            f.write('   f.closed\n')
-   f.write('fn = r"' + r'%fp%%fn%' + '.xlsx"\n')
-   f.write('icsvlist = ["none"')
-   if have_i_scalar:
-      f.write(',"scalars"')
-   for s in i_sym:
-      if not (s[1]=='ss' or s[1]=='ps'):
-         f.write(',"'+s[0].name.lower()+'"')
-   f.write(']\n')
-   f.write('\n')
-   f.write('# Create example XLSX file\n')
-   f.write('def is_number(s):\n')
-   f.write('  try:\n')
-   f.write('    float(s)\n')
-   f.write('    return True\n')
-   f.write('  except ValueError:\n')
-   f.write('    return False\n')
-   f.write('\n')
-   f.write('from xlsxwriter.workbook import Workbook\n')
-   f.write('import csv\n')
-   f.write('\n')       
-   f.write('workbook = Workbook(fn)\n')
-   f.write('\n')
-   f.write('for s in icsvlist[1:]:\n')
-   f.write('  worksheet = workbook.add_worksheet(s) #worksheet with symbol name\n')
-   f.write('  with open(s + ".csv", "r", encoding="utf-8") as f:\n')
-   f.write('    reader = csv.reader(f)\n')
-   f.write('    for r, row in enumerate(reader):\n')
-   f.write('      for c, col in enumerate(row):\n')
-   f.write('        if is_number(col):\n')
-   f.write('          worksheet.write(r, c, float(col)) #write the csv file content into it\n')
-   f.write('        else:\n')
-   f.write('          worksheet.write(r, c, col)\n')
-   f.write('workbook.close()\n')
-   f.write('$offembeddedCode\n')
-   f.write('$if not set MIRO_DEBUG $hiddencall rm -f "' + gdxfn + '" "' + savegdxfn + '"')
-   if have_i_scalar:
-      f.write(' scalars.csv')
-   for s in i_sym:
-      if not (s[1]=='ss' or s[1]=='ps'):
-         f.write(' '+s[0].name.lower()+'.csv')
-   f.write('\n')
+   if i_sym:
+       f.write('* Create initial data\n')
+       f.write('$gdxout "' + datadir + r'%system.dirsep%%DEF_SCEN_NAME%"' + '\n')
+       f.write('$unload ')
+       for s in i_sym:
+           f.write(s[0].name.lower() + ' ')
+       f.write('\n')
+       f.write('$gdxout\n')
+   f.write('$if not set MIRO_DEBUG $hiddencall rm -f "' + gdxfn + '" "' + savegdxfn + '"\n')
    f.write('$exit\n')
 
    # Now the run part
@@ -505,7 +442,19 @@ if have_o_scalar:
    io_dict['scalars_out'] = { 'alias':'Output Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'count':len(sn), 'headers':headers }
 
 if have_o_vescalar:
-   headers = {}   
+   sn = []
+   st = []
+   sty = []
+   headers = {}
+   for s in o_sym:
+      if not (s[1]=='vs' or s[1]=='es'):
+         continue
+      sn.append(s[0].name.lower())
+      st.append(extractSymText(s[0],1))
+      if s[1]=='vs':
+         sty.append('variable')
+      else:
+         sty.append('equation')
    headers['type'] = { 'type':'set', 'alias':'Type' }
    headers['scalar'] = { 'type':'set', 'alias':'Scalar Name' }
    headers['description'] = { 'type':'set', 'alias':'Scalar Description' }
@@ -514,7 +463,7 @@ if have_o_vescalar:
    headers['lower'] = { 'type':'parameter', 'alias':'Lower' }
    headers['upper'] = { 'type':'parameter', 'alias':'Upper' }
    headers['scale'] = { 'type':'parameter', 'alias':'Scale' }
-   io_dict['scalarsve_out'] = { 'alias':'Output Variable/Equation Scalars', 'headers':headers }
+   io_dict['scalarsve_out'] = { 'alias':'Output Variable/Equation Scalars', 'symnames':sn, 'symtext':st, 'symtypes':sty, 'headers':headers }
 config['gamsOutputFiles'] = io_dict
 
 confdir = r'%fp%conf'
@@ -522,6 +471,7 @@ if not os.path.exists(confdir):
    os.makedirs(confdir)
 with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w', encoding='utf-8') as f:
    json.dump(config, f, indent=4, sort_keys=False)
+db.__del__()
 $offembeddedCode
    
 $include "%fp%%fn%_miro.gms"
@@ -541,10 +491,10 @@ $   set mkApp 0
 $else.mk
 $   set mkApp 1
 $endif.mk
-$ifthen dExist %gams.sysdir%miro
-$  set MIRODIR %gams.sysdir%miro
+$ifthen dExist "%gams.sysdir%miro"
+$  set MIRODIR "%gams.sysdir%miro"
 $else
-$  set MIRODIR %fp%..%system.dirsep%..
+$  set MIRODIR "%fp%..%system.dirsep%.."
 $endif
 
 $onEmbeddedCode Python:
@@ -557,6 +507,7 @@ def get_r_path():
     try:
         with open(os.path.join(r"%gams.sysdir% ".strip(), 'miro', 'conf', 'rpath.conf')) as f:
             RPath = f.readline().strip()
+            
             return RPath
     except:
         pass
@@ -601,14 +552,18 @@ def get_r_path():
         latestR = major_minor_micro(latestRPath)
         latestRPath = latestRPath + os.sep + "bin" + os.sep
     elif system() == "Darwin":
-        RPath = r"/Library/Frameworks/R.framework/Versions"
-        try:
-           RVers = os.listdir(RPath)
-           latestRPath = max(RVers, key=major_minor)
-           latestR = major_minor(latestRPath)
-           latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
-        except OSError:
-           latestR = (0, 0)
+        RPaths = [r"/Library/Frameworks/R.framework/Versions", r"/usr/bin/R", r"/usr/local/bin/R", r"/opt/local/bin/R"]
+        for RPath in RPaths:
+           try:
+              RVers = os.listdir(RPath)
+              latestRPath = max(RVers, key=major_minor)
+              latestR = major_minor(latestRPath)
+              latestRPath = RPath + os.sep + latestRPath + os.sep + "Resources" + os.sep + "bin" + os.sep
+           except OSError:
+              latestR = (0, 0)
+              continue
+           if latestR[0] > 3 or latestR[0] == 3 and latestR[1] >= 5:
+              break
     else:
         RPath = subprocess.run(['which', 'Rscript'], stdout=subprocess.PIPE).stdout
         if not len(RPath):
@@ -616,7 +571,9 @@ def get_r_path():
         else:
            latestRPath = RPath.decode('utf-8').strip().strip('Rscript')
            latestR = major_minor_micro(str(subprocess.run(['Rscript', '--version'], stderr=subprocess.PIPE).stderr))
-
+    if latestR == (0,0):
+      os.environ["PYEXCEPT"] = "NORERROR"
+      raise FileNotFoundError('R not installed')
     if latestR[0] < 3 or latestR[0] == 3 and latestR[1] < 5:
       os.environ["PYEXCEPT"] = "RVERSIONERROR"
       raise FileNotFoundError('Bad R version')
@@ -669,7 +626,7 @@ library("shiny", character.only = TRUE, quietly = TRUE, verbose = FALSE, warn.co
 tryCatch({{
    withCallingHandlers({{
        on.exit(q('no'))
-       shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE)
+       suppressWarnings(shiny::runApp(appDir = file.path("{0}"), launch.browser=TRUE))
     }}, warning = function(w){{
        if(!startsWith(conditionMessage(w), "Error"))
           return()
@@ -678,7 +635,7 @@ tryCatch({{
        setwd("{1}")
        futile.logger::flog.fatal('%s', w)
        logFiles <- list.files('logs', full.names = TRUE)
-       zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
+       zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
     }})
 }}, error = function(e){{
    currwd <- getwd()
@@ -686,8 +643,10 @@ tryCatch({{
    setwd("{1}")
    try(futile.logger::flog.fatal('%s', e), silent = TRUE)
    logFiles <- list.files('logs', full.names = TRUE)
-   zip::zip('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
-   shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE)
+   zip::zipr('.crash.zip', c(logFiles[file.mtime(logFiles) == max(file.mtime(logFiles))], file.path('conf', c('{2}_io.json', '{2}.json'))), recurse = FALSE, compression_level = 9)
+   suppressWarnings(shiny::runApp(appDir = file.path("{0}", "tools", "crash_report"), launch.browser=TRUE))
+}}, interrupt = function(e){{
+   q('no')
 }})
 q("no")""".format(r"%MIRODIR% ".strip().replace("\\","/"), r"%fp% ".strip().replace("\\","/"), '%fn%'.lower()))
 
@@ -749,9 +708,10 @@ $offembeddedCode
 $hiddencall rm -rf __pycache__
 
 $ifthen not errorfree
+$ if %sysenv.PYEXCEPT% == "NORERROR" $abort "No R installation was found on your system. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif
-$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -modelPath="%fp%%fn%%fe%" -gamsSysDir="%gams.sysdir%" %MODEARG%
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -gamsSysDir="%gams.sysdir%" -modelPath="%fp%%fn%%fe%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate

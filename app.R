@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.4.0"
-MIRORDate   <- "Feb 19 2019"
+MIROVersion <- "0.6.1"
+MIRORDate   <- "Jun 21 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -22,11 +22,13 @@ MIRORDate   <- "Feb 19 2019"
 # shinydashboard  #GPL >= v2
 # writexl         #BSD-2-clause
 # stringi         #BSD-3-clause
+# leaflet         #GPL-3
+# leaflet.minicharts #GPL >=v2
 
 # RPostgres (Scenario mode) #GPL-2
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
-# openssl (Hypercube mode) #MIT
+# digest (Hypercube mode) #GPL >=2
 
 
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
@@ -41,20 +43,21 @@ tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/json.R", "./R/output_load.R", 
+filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
                     "./modules/render_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "zip", "tidyr")
+                      "futile.logger", "zip", "tidyr", "gdxrrw")
 LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
-  on.exit(close(pb))
+}else{
+  pb <- txtProgressBar(file = stderr())
 }
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
@@ -85,7 +88,9 @@ if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "libra
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 0.6, label= "Initialising GAMS MIRO")
+  setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
+}else{
+  setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
   # include custom functions and modules
@@ -206,7 +211,9 @@ if(is.null(errMsg)){
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
  
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
-                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs")) 
+                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
@@ -332,14 +339,16 @@ if(is.null(errMsg)){
     })
   }
   if(config$activateModules$hcubeMode){
-    requiredPackages <- c("openssl", "DT")
+    hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
+    requiredPackages <- c("digest", "DT")
     source("./R/install_packages.R", local = TRUE)
     source("./R/hcube.R")
     source("./R/db_hcubeimport.R")
     source("./R/db_hcubeload.R")
   }
 }
-if(is.null(errMsg) && debugMode && config$activateModules$scenario){
+showRemoveDbTablesBtn <- FALSE
+if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(LAUNCHADMINMODE, FALSE)){
   # checking database inconsistencies
   local({
     orphanedTables <- NULL
@@ -369,6 +378,7 @@ This could be caused because you used a different database schema in the past (e
                                        conditionMessage(e)), sep = '\n')
     })
     if(length(inconsistentTables$names)){
+      showRemoveDbTablesBtn <<- TRUE
       flog.error(sprintf("There are tables in your database that do not match the current database schema of your model.\n
 Those tables are: '%s'.\nError message: '%s'.",
                          paste(inconsistentTables$names, collapse = "', '"), inconsistentTables$errMsg))
@@ -394,10 +404,7 @@ Those tables are: '%s'.\nError message: '%s'.",
     }
   })
 }
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
-  close(pb)
-}
+
 MIROVersionLatest <- NULL
 if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
   try(
@@ -432,7 +439,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "Copyright (c) 2019 GAMS Development Corp. <support@gams.com><br/><br/>",
                           "This program is free software: you can redistribute it and/or modify ",
                           "it under the terms of the GNU General Public License as published by ",
-                          "the Free Software Foundation, either version 2 of the License, or ",
+                          "the Free Software Foundation, either version 3 of the License, or ",
                           "(at your option) any later version.<br/><br/>",
                           "This program is distributed in the hope that it will be useful, ", 
                           "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
@@ -442,14 +449,25 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
-if(identical(LAUNCHADMINMODE, TRUE)){
-  source("./tools/admin/server.R", local = TRUE)
-  source("./tools/admin/ui.R", local = TRUE)
-  shinyApp(ui = ui_admin, server = server_admin)
-}else if(!is.null(errMsg)){
+if(is.null(errMsg)){
+  tryCatch(gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut)),
+           error = function(e){
+             flog.error(e)
+             errMsg <<- paste(errMsg, e, sep = '\n')
+           })
+}
+if(!is.null(errMsg)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
+      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
+      tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(
       if(!exists("lang") || is.null(lang$errMsg$initErrors$title)){
@@ -458,6 +476,18 @@ if(identical(LAUNCHADMINMODE, TRUE)){
         lang$errMsg$initErrors$title
       }),
     fluidRow(align="center",
+             tags$div(id = "removeSuccess", class = "gmsalert gmsalert-success",
+                      if(!exists("lang") || is.null(lang$adminMode$database$removeSuccess)){
+                        "Database tables removed successfully"
+                      }else{
+                        lang$adminMode$database$removeSuccess
+                      }),
+             tags$div(id = "unknownError", class = "gmsalert gmsalert-error",
+                      if(!exists("lang") || is.null(lang$errMsg$unknownError)){
+                        "An unexpected error occurred."
+                      }else{
+                        lang$errMsg$unknownError
+                      }),
              HTML("<br>"),
              div(
                if(!exists("lang") || is.null(lang$errMsg$initErrors$desc)){
@@ -468,10 +498,49 @@ if(identical(LAUNCHADMINMODE, TRUE)){
                , class = "initErrors"),
              HTML("<br>"),
              verbatimTextOutput("errorMessages"),
+             if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+               actionButton("removeDbTablesPre", lang$adminMode$database$remove)
+               tagList(
+                 tags$div(id = "db_remove_wrapper",
+                          if(!exists("lang") || is.null(lang$adminMode$database$removeWrapper)){
+                            "You want to remove all the tables that belong to your model (e.g. because the schema changed)?"
+                          }else{
+                            lang$adminMode$database$removeWrapper
+                          },
+                          actionButton("removeDbTablesPre", 
+                                       if(!exists("lang") || is.null(lang$adminMode$database$removeDialogBtn)){
+                                         "Delete all database tables"
+                                       }else{
+                                         lang$adminMode$database$removeDialogBtn
+                                       })
+                 )
+               )
+             },
              tableOutput("JSONErrorMessages")
     )
   )
   server_initError <- function(input, output, session){
+    if(identical(isShinyProxy, FALSE) && identical(showRemoveDbTablesBtn, TRUE)){
+      if(!exists("lang") || is.null(lang$adminMode$database$removeDialogTitle)){
+        removeDbTabLang <- list(title = "Remove database tables",
+                                desc = "Are you sure that you want to delete all database tables? This can not be undone! You might want to save the database first before proceeding.",
+                                cancel = "Cancel",
+                                confirm = "")
+      }else{
+        removeDbTabLang <- list(title = lang$adminMode$database$removeDialogTitle,
+                                desc = lang$adminMode$database$removeDialogDesc,
+                                cancel = lang$adminMode$database$removeDialogCancel,
+                                confirm = lang$adminMode$database$removeDialogConfirm)
+      }
+      observeEvent(input$removeDbTablesPre, {
+        showModal(modalDialog(title = removeDbTabLang$title,
+                              removeDbTabLang$desc, footer = tagList(
+                      modalButton(removeDbTabLang$cancel),
+                      actionButton("removeDbTables", label = removeDbTabLang$confirm, 
+                                   class = "bt-highlight-1"))))
+      })
+      source(file.path('tools', 'admin', 'db_management.R'), local = TRUE)
+    }
     output$errorMessages <- renderText(
       errMsg
     )
@@ -486,28 +555,100 @@ if(identical(LAUNCHADMINMODE, TRUE)){
   }
   
   shinyApp(ui = ui_initError, server = server_initError)
+}else if(identical(LAUNCHADMINMODE, TRUE)){
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
+  
+  source("./tools/admin/server.R", local = TRUE)
+  source("./tools/admin/ui.R", local = TRUE)
+  shinyApp(ui = ui_admin, server = server_admin)
 }else{
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 0.6, label= "Importing new data")
+  }
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
-    save(modelIn, modelOut, config, lang, inputDsNames, modelOutToDisplay,
+    save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, outputTabs, outputTabTitles,
          modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
-         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep,
+         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
          choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
-         inputTabs, inputTabTitles, modelInWithDep, modelOutAlias, colsWithDep,
+         inputTabs, inputTabTitles, scenInputTabs, scenInputTabTitles, 
+         isGroupOfSheets, groupSheetToTabIdMap, scalarsInTemplate,
+         modelInWithDep, modelOutAlias, colsWithDep, scalarsInMetaData,
          modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, installPackage, dbSchema, file = rSaveFilePath)
+         modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
   }
-  
+  local({
+    miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
+    miroDataFiles <- list.files(miroDataDir)
+    dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
+    miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
+    newScen <- NULL
+    tryCatch({
+      if(length(miroDataFiles)){
+        modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
+        dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
+        modelInTemplateTmp <- modelInTemplate[!vapply(modelInTemplate, is.null, logical(1L), USE.NAMES = FALSE)]
+        if(scalarsFileName %in% names(modelInRaw)){
+          dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
+          modelInTemplateTmp <- c(modelInTemplateTmp, list(scalarsInTemplate))
+        }
+        for(i in seq_along(miroDataFiles)){
+          miroDataFile <- miroDataFiles[i]
+          flog.info("New data: '%s' is being stored in the database. Please wait a until the import is finished.", miroDataFile)
+          if(dataFileExt[i] %in% c("xls", "xlsx")){
+            method <- "xls"
+          }else{
+            method <- dataFileExt[i]
+          }
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
+          dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelOutTemplate, method = method, fileName = miroDataFile)$tabular
+          dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
+                                  modelInTemplateTmp, method = method, fileName = miroDataFile)$tabular
+          
+          if(!scalarsFileName %in% names(modelInRaw) && length(scalarInputSym)){
+            # additional command line parameters that are not GAMS symbols
+            scalarsTemplate <- tibble(a = character(0L), b = character(0L), c = character(0L))
+            names(scalarsTemplate) <- scalarsFileHeaders
+            newScen$save(c(dataOut, dataIn, list(scalarsTemplate)))
+          }else{
+            newScen$save(c(dataOut, dataIn))
+          }
+          
+          if(!file.remove(file.path(miroDataDir, miroDataFile))){
+            flog.info("Could not remove file: '%s'.", miroDataFile)
+          }
+        }
+      }
+    }, error = function(e){
+      flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
+      rm(newScen)
+      gc()
+    })
+  })
+  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
+  }else{
+    setTxtProgressBar(pb, 1)
+  }
+  close(pb)
+  pb <- NULL
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #______________________________________________________
   server <- function(input, output, session){
-    options(shiny.maxRequestSize=100*1024^2) 
-    newTab <- vector("list", maxNumberScenarios + 3)
+    options(shiny.maxRequestSize = 100*1024^2)
+    newTab <- vector("list", maxNumberScenarios + 3L)
     flog.info("Session started (model: '%s', user: '%s').", modelName, uid)
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
@@ -555,8 +696,11 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     isInSolveMode      <- TRUE
     
     # currently active scenario (R6 object)
-    activeScen       <- NULL
+    activeScen         <- NULL
+    exportFileType     <- "gdx"
     
+    # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
+    sidCompOrder     <- NULL
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -574,63 +718,107 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       sidsInSplitComp  <- vector("integer", length = 2L)
       # occupied slots (scenario is loaded in ui with this rv$scenId)
       occupiedSidSlots <- vector("logical", length = maxNumberScenarios)
-      # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
-      sidCompOrder     <- NULL
       loadInLeftBoxSplit <- TRUE
-      # boolean that specifies whether nested tabset is active or not
-      shortcutNest     <- FALSE
-      observeEvent(input$tabsetShortcutNest, {
-        if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
-          shortcutNest <<- TRUE
-        }
-      })
-      observeEvent(input$tabsetShortcutUnnest, {
-        if(isolate(input$sidebarMenuId) == "scenarios" && !is.null(sidCompOrder)){
-          shortcutNest <<- FALSE
-        }
-      })
     }
     # trigger navigation through tabs by shortcuts
-    observeEvent(input$tabsetShortcutNext, {
+    shortcutNest     <- 0L
+    nestTabsetsViaShortcuts <- function(direction){
+      shortcutNest <<- min(2L, shortcutNest + direction)
+    }
+    observeEvent(input$tabsetShortcutNest, {
+      nestTabsetsViaShortcuts(direction = +1L)
+    })
+    observeEvent(input$tabsetShortcutUnnest, {
+      nestTabsetsViaShortcuts(direction = -1L)
+    })
+    navigateTabsViaShortcuts <- function(direction){
+      
       if(isolate(input$sidebarMenuId) == "inputData"){
-        flog.debug("Navigated to next input tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentSheet + 1))
+        flog.debug("Navigated %d input tab (using shortcut).", direction)
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
+        if(shortcutNest && length(inputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("inputTabset", 
+                                                                    currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("inputTabset", currentGroup), 
+                            paste0("inputTabset", currentGroup, "_", 
+                                   currentSheet + direction))
+        }else{
+          updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", 
+                                                           currentGroup + direction))
+        }
       }else if(isolate(input$sidebarMenuId) == "outputData"){
-        flog.debug("Navigated to next output tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
-        updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentSheet + 1))
+        flog.debug("Navigated %d output tabs (using shortcut).", direction)
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
+        if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentCurrent", 
+                                                                    currentGroup)]]), "_")[[1]][2])
+          updateTabsetPanel(session, paste0("contentCurrent", currentGroup), 
+                            paste0("contentCurrent", 
+                                   currentGroup, "_", currentSheet + direction))
+        }else{
+          updateTabsetPanel(session, "contentCurrent", 
+                            paste0("contentCurrent_", currentGroup + direction))
+        }
       }else if(isolate(input$sidebarMenuId) == "scenarios"){
-        if(!is.null(sidCompOrder) && !isInSplitView){
-          currentScen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
-          if(shortcutNest){
-            flog.debug("Navigated to next data tab in scenario comparison view (using shortcut).")
-            # go to next data sheet
-            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
-                                            isolate(input[[paste0("contentScen_", currentScen)]])))
-            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                              paste0("contentScen_", currentScen, "_", currentSheet + 1))
+        if(isInSplitView){
+          flog.debug("Navigated %d data tabs in split view scenario comparison view (using shortcut).", direction)
+          currentScen <- 2
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                              "_", fixed = TRUE)[[1L]][[3L]])
+          if(shortcutNest > 0L && isGroupOfSheets[[currentSheet]]){
+            # nest to group of sheets
+            currentGroup <- currentSheet
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                      currentGroup)]]),
+                                                "_", fixed = TRUE)[[1L]][[4L]])
+            updateTabsetPanel(session, paste0("contentScen_", currentScen, 
+                                              "_", currentGroup), 
+                              paste0("contentScen_", currentScen, "_", 
+                                     currentGroup, "_", currentSheet + direction))
+            
+            updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L, 
+                                              "_", currentGroup), 
+                              paste0("contentScen_", currentScen + 1L, "_", 
+                                     currentGroup, "_", currentSheet + direction))
           }else{
-            flog.debug("Navigated to next scenario tab in scenario comparison view (using shortcut).")
+            # switch to next group
+            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                              paste0("contentScen_", currentScen, "_", currentSheet + direction))
+            updateTabsetPanel(session, paste0("contentScen_", currentScen + 1L), 
+                              paste0("contentScen_", currentScen + 1L, "_", currentSheet + direction))
+          }
+        }else{
+          if(is.null(sidCompOrder)){
+            return()
+          }
+          currentScen <- as.integer(strsplit(isolate(input$scenTabset), "_", fixed = TRUE)[[1L]][[2L]])
+          if(shortcutNest > 0L){
+            flog.debug("Navigated %d data tabs in scenario comparison view (using shortcut).", direction)
+            currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen)]]),
+                                                "_", fixed = TRUE)[[1L]][[3L]])
+            if(shortcutNest > 1L && isGroupOfSheets[[currentSheet]]){
+              # nest to group of sheets
+              currentGroup <- currentSheet
+              currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentScen_", currentScen, "_", 
+                                                                        currentGroup)]]),
+                                                  "_", fixed = TRUE)[[1L]][[4L]])
+              updateTabsetPanel(session, paste0("contentScen_", currentScen, "_", currentGroup), 
+                                paste0("contentScen_", currentScen, "_", 
+                                       currentGroup, "_", currentSheet + direction))
+            }else{
+              # switch to next group
+              updateTabsetPanel(session, paste0("contentScen_", currentScen), 
+                                paste0("contentScen_", currentScen, "_", currentSheet + direction))
+            }
+          }else{
+            flog.debug("Navigated %d scenario tabs in scenario comparison view (using shortcut).", direction)
             # go to next scenario tab
             idx <- which(sidCompOrder == currentScen)[1]
-            if(identical(idx, length(sidCompOrder))){
-              return(NULL)
-            }
-            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + 1], "_"))
+            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx + direction], "_"))
           }
-        }else if(isInSplitView){
-          flog.debug("Navigated to next data tab in split view scenario comparison view (using shortcut).")
-          currentScen <- 2
-          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
-                                          isolate(input[[paste0("contentScen_", currentScen)]])))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                            paste0("contentScen_", currentScen, "_", currentSheet + 1))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), 
-                            paste0("contentScen_", currentScen + 1, "_", currentSheet + 1))
         }
       }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
-        flog.debug("Navigated to next data tab in paver output tabpanel (using shortcut).")
+        flog.debug("Navigated %d data tabs in paver output tabpanel (using shortcut).", direction)
         # go to next data sheet
         local({
           tabsetName <- isolate(input$tabs_paver_results)
@@ -639,62 +827,15 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           if(is.na(currentSheet))
             return()
           updateTabsetPanel(session, "tabs_paver_results", 
-                            paste0("tabs_paver_", currentSheet + 1))
+                            paste0("tabs_paver_", currentSheet + direction))
         })
       }
+    }
+    observeEvent(input$tabsetShortcutNext, {
+      navigateTabsViaShortcuts(direction = +1L)
     })
     observeEvent(input$tabsetShortcutPrev,{
-      if(isolate(input$sidebarMenuId) == "inputData"){
-        flog.debug("Navigated to previous input tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$inputTabset)))
-        updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", currentSheet - 1))
-      }else if(isolate(input$sidebarMenuId) == "outputData"){
-        flog.debug("Navigated to previous output tab (using shortcut).")
-        currentSheet <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
-        updateTabsetPanel(session, "contentCurrent", paste0("contentCurrent_", currentSheet - 1))
-      }else if(isolate(input$sidebarMenuId) == "scenarios"){
-        if(!is.null(sidCompOrder) && !isInSplitView){
-          currentScen <- as.numeric(gsub("\\D", "", isolate(input$scenTabset)))
-          if(shortcutNest){
-            flog.debug("Navigated to previous data tab in single scenario comparison view (using shortcut).")
-            # go to previous data sheet
-            currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
-                                            isolate(input[[paste0("contentScen_", currentScen)]])))
-            updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                              paste0("contentScen_", currentScen, "_", currentSheet - 1))
-          }else{
-            flog.debug("Navigated to previous scenario tab in scenario comparison view (using shortcut).")
-            # go to previous scenario tab
-            idx <- which(sidCompOrder == currentScen)[1]
-            if(identical(idx, 1)){
-              return(NULL)
-            }
-            updateTabsetPanel(session, "scenTabset", paste0("scen_", sidCompOrder[idx - 1], "_"))
-          }
-        }else if(isInSplitView){
-          flog.debug("Navigated to previous data tab in split view scenario comparison view (using shortcut).")
-          currentScen <- 2
-          currentSheet <- as.numeric(gsub("\\D+_\\d+_", "", 
-                                          isolate(input[[paste0("contentScen_", currentScen)]])))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen), 
-                            paste0("contentScen_", currentScen, "_", currentSheet - 1))
-          updateTabsetPanel(session, paste0("contentScen_", currentScen + 1), 
-                            paste0("contentScen_", currentScen + 1, "_", currentSheet - 1))
-        }
-        
-      }else if(isolate(input$sidebarMenuId) == "hcubeAnalyze"){
-        flog.debug("Navigated to previous data tab in paver output tabpanel (using shortcut).")
-        # go to next data sheet
-        local({
-          tabsetName <- isolate(input$tabs_paver_results)
-          currentSheet <- suppressWarnings(as.numeric(substr(tabsetName, 
-                                                             nchar(tabsetName), nchar(tabsetName))))
-          if(is.na(currentSheet))
-            return()
-          updateTabsetPanel(session, "tabs_paver_results", 
-                            paste0("tabs_paver_", currentSheet - 1))
-        })
-      }
+      navigateTabsViaShortcuts(direction = -1L)
     })
     
     # initially set rounding precision to default
@@ -728,6 +869,19 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     previousInputData <- vector(mode = "list", length = length(modelIn))
     # initialize model input data
     modelInputData <- modelInTemplate
+    
+    tryCatch({
+      if(length(config$defaultScenName) && nchar(trimws(config$defaultScenName))){
+        defSid <- db$getSid(config$defaultScenName)
+        if(!identical(defSid, 0L)){
+          sidsToLoad <- list(defSid)
+          rv$btOverwriteScen <- isolate(rv$btOverwriteScen) + 1L
+        }
+      }
+    }, error = function(e){
+      flog.warn("Problems loading default scenario. Error message: '%s'.", e)
+    })
+    
     # initialise list of reactive expressions returning data for model input
     dataModelIn <- vector(mode = "list", length = length(modelIn))
     # auxiliary vector that specifies whether data frame has no data or data was overwritten
@@ -744,10 +898,10 @@ if(identical(LAUNCHADMINMODE, TRUE)){
 
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
+      # reset nest level
+      shortcutNest <<- 0L
       if((config$activateModules$scenario || config$activateModules$hcubeMode)
           && input$sidebarMenuId == "scenarios"){
-        # reset nest level
-        shortcutNest <<- FALSE
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
         rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
@@ -759,6 +913,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     lapply(seq_along(modelIn), function(i){
       if(modelIn[[i]]$type == "hot"){
         observeEvent(input[["in_" %+% i %+% "_select"]], {
+          hotInit[[i]] <<- TRUE
+          isEmptyInput[[i]] <<- FALSE
           if(noCheck[i]){
             noCheck[i] <<- FALSE
           }
@@ -797,17 +953,13 @@ if(identical(LAUNCHADMINMODE, TRUE)){
           return()
         }
         isolate(rv$datasetsModified[i] <- TRUE)
-        if(isolate(rv$unsavedFlag)){
-          return()
-        }
-        # set unsaved flag
-        rv$unsavedFlag <<- TRUE
         # if scenario includes output data set dirty flag
         if(!noOutputData){
           dirtyFlag <<- TRUE
           showEl(session, "#dirtyFlagIcon")
           showEl(session, "#dirtyFlagIconO")
         }
+        rv$unsavedFlag <<- TRUE
       }, priority = 1000L)
     })
     
@@ -839,8 +991,8 @@ if(identical(LAUNCHADMINMODE, TRUE)){
         return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
       }
     )
-    output$inputDataTitle <- renderText(getScenTitle())
-    output$outputDataTitle <- renderText(getScenTitle())
+    output$inputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
+    output$outputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
     
     # activate solve button once all model input files are imported
     observe({
@@ -872,7 +1024,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     # generate import dialogue
     source("./modules/input_ui.R", local = TRUE)
     # load input data from Excel sheet
-    source("./modules/excel_input_load.R", local = TRUE)
+    source("./modules/scen_import.R", local = TRUE)
     
     ####### GAMS interaction
     # solve button clicked
@@ -916,6 +1068,22 @@ if(identical(LAUNCHADMINMODE, TRUE)){
       # scenario split screen mode
       source("./modules/scen_split.R", local = TRUE)
       skipScenCompObserve <- vector("logical", maxNumberScenarios + 3L)
+      
+      scenCompUpdateTab <- function(scenId, sheetId, groupId = NULL){
+        if(is.null(groupId)){
+          if(!identical(isolate(input[[paste0("contentScen_", scenId)]]), 
+                        paste0("contentScen_", scenId, "_", sheetId)))
+            skipScenCompObserve[scenId] <<- TRUE
+          updateTabsetPanel(session, paste0("contentScen_", scenId),
+                            paste0("contentScen_", scenId, "_", sheetId))
+        }else{
+          updateTabsetPanel(session, paste0("contentScen_", scenId),
+                            paste0("contentScen_", scenId, "_", groupId))
+          updateTabsetPanel(session, paste0("contentScen_", scenId, "_", groupId),
+                            paste0("contentScen_", scenId, "_", groupId, "_", sheetId))
+        }
+      }
+      
       lapply(seq_len(maxNumberScenarios  + 3L), function(i){
         scenIdLong <- paste0("scen_", i, "_")
         # table view
@@ -925,7 +1093,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
         source("./modules/scen_close.R", local = TRUE)
         
         # export Scenario to Excel spreadsheet
-        source("./modules/excel_scen_save.R", local = TRUE)
+        source("./modules/scen_export.R", local = TRUE)
         
         # compare scenarios
         obsCompare[[i]] <<- observe({
@@ -934,28 +1102,22 @@ if(identical(LAUNCHADMINMODE, TRUE)){
             skipScenCompObserve[i] <<- FALSE
             return(NULL)
           }
-          j <- strsplit(isolate(input[[paste0("contentScen_", i)]]), "_")[[1]][3]
+          j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                                   "_", fixed = TRUE)[[1]][[3L]])
+          groupId <- NULL
+          if(isGroupOfSheets[[j]]){
+            groupId <- j
+            j <- strsplit(input[[paste0("contentScen_", i, "_", groupId)]], 
+                          "_", fixed = TRUE)[[1L]][[4L]]
+          }
           if(identical(i, 2L)){
-            if(!identical(isolate(input[[paste0("contentScen_", i + 1)]]), 
-                          paste0("contentScen_", i + 1, "_", j)))
-              skipScenCompObserve[i + 1L] <<- TRUE
-            updateTabsetPanel(session, paste0("contentScen_", i + 1),
-                              paste0("contentScen_", i + 1, "_", j))
-            
+            scenCompUpdateTab(scenId = i + 1L, sheetId = j, groupId = groupId)
           }else if(identical(i, 3L)){
-            if(!identical(isolate(input[[paste0("contentScen_", i - 1)]]), 
-                          paste0("contentScen_", i - 1, "_", j)))
-              skipScenCompObserve[i - 1L] <<- TRUE
-            updateTabsetPanel(session, paste0("contentScen_", i - 1),
-                              paste0("contentScen_", i - 1, "_", j))
+            scenCompUpdateTab(scenId = i - 1L, sheetId = j, groupId = groupId)
           }else{
             lapply(names(scenData), function(scen){
-              k <- strsplit(scen, "_")[[1]][2]
-              if(!identical(isolate(input[[paste0("contentScen_", k)]]), 
-                            paste0("contentScen_", k, "_", j)))
-                skipScenCompObserve[k] <<- TRUE
-              updateTabsetPanel(session, paste0("contentScen_", k),
-                                paste0("contentScen_", k, "_", j))
+              scenCompUpdateTab(scenId = as.integer(strsplit(scen, "_")[[1]][[2L]]), 
+                                sheetId = j, groupId = groupId)
             })
           }
         }, suspended = TRUE)
@@ -975,7 +1137,7 @@ if(identical(LAUNCHADMINMODE, TRUE)){
               return()
             }
             if(!identical(hcubeProcess$get_exit_status(), 0L)){
-              flog.debug("Problems launching Hypercube mode. Error message: '%s'.", 
+              flog.error("Problems launching Hypercube mode. Error message: '%s'.", 
                          hcubeProcess$read_error())
               showHideEl(session, "#hcubeLaunchError", 4000L)
               return()
@@ -990,13 +1152,22 @@ if(identical(LAUNCHADMINMODE, TRUE)){
     }else{
       id <- 1
       # export output data to Excel spreadsheet
-      source("./modules/excel_scen_save.R", local = TRUE)
+      source("./modules/scen_export.R", local = TRUE)
     }
+    observeEvent(input$btExportScen, {
+      showScenExportDialog(input$btExportScen)
+    })
+    observeEvent(input$exportFileType, {
+      switch(input$exportFileType,
+             xls = exportFileType <<- "xlsx",
+             gdx = exportFileType <<- "gdx",
+             flog.warn("Unknown export file type: '%s'.", input$exportFileType))
+    })
     if(!isShinyProxy && 
        curl::has_internet() && 
        file.exists(file.path(currentModelDir, ".crash.zip"))){
-      showModal(modalDialog(title = "MIRO terminated unexpectedly",
-                            paste0("MIRO discovered that it was terminated unexpectedly. We are constantly striving to improve MIRO.
+      showModal(modalDialog(title = "Unexpected behavior",
+                            paste0("MIRO discovered it was behaving unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
                             The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
                             "_io.json' and '", modelName, ".json' as well as the error log. 

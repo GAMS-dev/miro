@@ -1,0 +1,376 @@
+{
+  "output": {
+    "tab_5_1-custom-transport": {
+      "x": {
+        "options": {
+          "crs": {
+            "crsClass": "L.CRS.EPSG3857",
+            "code": null,
+            "proj4def": null,
+            "projectedBounds": null,
+            "options": {
+
+            }
+          }
+        },
+        "calls": [
+          {
+            "method": "addTiles",
+            "args": [
+              "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              null,
+              null,
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "attribution": "&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"
+              }
+            ]
+          },
+          {
+            "method": "addMarkers",
+            "args": [
+              [
+                51.5073219,
+                51.5073219,
+                51.5073219,
+                52.2319237,
+                52.2319237,
+                52.2319237
+              ],
+              [
+                -0.1276474,
+                -0.1276474,
+                -0.1276474,
+                21.0067265,
+                21.0067265,
+                21.0067265
+              ],
+              null,
+              null,
+              null,
+              {
+                "interactive": true,
+                "draggable": false,
+                "keyboard": true,
+                "title": "",
+                "alt": "",
+                "zIndexOffset": 0,
+                "opacity": 1,
+                "riseOnHover": false,
+                "riseOffset": 250
+              },
+              null,
+              null,
+              null,
+              null,
+              [
+                "London (capacity: 550)",
+                "London (capacity: 550)",
+                "London (capacity: 550)",
+                "Warsaw (capacity: 425)",
+                "Warsaw (capacity: 425)",
+                "Warsaw (capacity: 425)"
+              ],
+              {
+                "interactive": false,
+                "permanent": true,
+                "direction": "auto",
+                "opacity": 1,
+                "offset": [
+                  0,
+                  0
+                ],
+                "textsize": "22px",
+                "textOnly": false,
+                "style": {
+                  "background-color": "rgb(243, 150, 25)"
+                },
+                "className": "",
+                "sticky": true
+              },
+              null
+            ]
+          },
+          {
+            "method": "addMarkers",
+            "args": [
+              [
+                40.4167047,
+                48.1371079,
+                41.0096334,
+                40.4167047,
+                48.1371079,
+                41.0096334
+              ],
+              [
+                -3.7035825,
+                11.5753822,
+                28.9651646,
+                -3.7035825,
+                11.5753822,
+                28.9651646
+              ],
+              null,
+              null,
+              null,
+              {
+                "interactive": true,
+                "draggable": false,
+                "keyboard": true,
+                "title": "",
+                "alt": "",
+                "zIndexOffset": 0,
+                "opacity": 1,
+                "riseOnHover": false,
+                "riseOffset": 250
+              },
+              null,
+              null,
+              null,
+              null,
+              [
+                "Madrid\n (demand: \n325\n)",
+                "Munich\n (demand: \n300\n)",
+                "Istanbul\n (demand: \n275\n)",
+                "Madrid\n (demand: \n325\n)",
+                "Munich\n (demand: \n300\n)",
+                "Istanbul\n (demand: \n275\n)"
+              ],
+              {
+                "interactive": false,
+                "permanent": true,
+                "direction": "auto",
+                "opacity": 1,
+                "offset": [
+                  0,
+                  0
+                ],
+                "textsize": "22px",
+                "textOnly": false,
+                "style": {
+                  "color": "rgb(243, 150, 25)"
+                },
+                "className": "",
+                "sticky": true,
+                "closeButton": false
+              },
+              null
+            ]
+          },
+          {
+            "method": "addFlows",
+            "args": [
+              [
+                {
+                  "dyn": {
+                    "value": [
+                      0
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From London to Istanbul",
+                    "lat0": 51.5073219,
+                    "lat1": 41.0096334,
+                    "lng0": -0.1276474,
+                    "lng1": 28.9651646
+                  },
+                  "timeSteps": 1
+                },
+                {
+                  "dyn": {
+                    "value": [
+                      325
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From London to Madrid",
+                    "lat0": 51.5073219,
+                    "lat1": 40.4167047,
+                    "lng0": -0.1276474,
+                    "lng1": -3.7035825
+                  },
+                  "timeSteps": 1
+                },
+                {
+                  "dyn": {
+                    "value": [
+                      150
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From London to Munich",
+                    "lat0": 51.5073219,
+                    "lat1": 48.1371079,
+                    "lng0": -0.1276474,
+                    "lng1": 11.5753822
+                  },
+                  "timeSteps": 1
+                },
+                {
+                  "dyn": {
+                    "value": [
+                      275
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From Warsaw to Istanbul",
+                    "lat0": 52.2319237,
+                    "lat1": 41.0096334,
+                    "lng0": 21.0067265,
+                    "lng1": 28.9651646
+                  },
+                  "timeSteps": 1
+                },
+                {
+                  "dyn": {
+                    "value": [
+                      0
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From Warsaw to Madrid",
+                    "lat0": 52.2319237,
+                    "lat1": 40.4167047,
+                    "lng0": 21.0067265,
+                    "lng1": -3.7035825
+                  },
+                  "timeSteps": 1
+                },
+                {
+                  "dyn": {
+                    "value": [
+                      150
+                    ]
+                  },
+                  "static": {
+                    "color": "indianred",
+                    "maxValue": 325,
+                    "minThickness": 0,
+                    "maxThickness": 12,
+                    "opacity": 1,
+                    "layerId": "From Warsaw to Munich",
+                    "lat0": 52.2319237,
+                    "lat1": 48.1371079,
+                    "lng0": 21.0067265,
+                    "lng1": 11.5753822
+                  },
+                  "timeSteps": 1
+                }
+              ],
+              [
+                "1"
+              ],
+              null,
+              {
+                "showTitle": true,
+                "showValues": true,
+                "labels": [
+
+                ],
+                "supValues": null,
+                "supLabels": [
+
+                ],
+                "html": null,
+                "noPopup": false,
+                "digits": null
+              }
+            ]
+          }
+        ],
+        "setView": [
+          [
+            51.5073219,
+            -0.1276474
+          ],
+          5,
+          [
+
+          ]
+        ],
+        "limits": {
+          "lat": [
+            40.4167047,
+            52.2319237
+          ],
+          "lng": [
+            -3.7035825,
+            28.9651646
+          ]
+        }
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "minichart",
+          "version": "0.2.2",
+          "src": {
+            "href": "minichart-0.2.2"
+          },
+          "meta": null,
+          "script": "leaflet.minicharts.min.js",
+          "stylesheet": "minicharts.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "font-awesome",
+          "version": "4.7.0",
+          "src": {
+            "href": "font-awesome-4.7.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "css/font-awesome.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    }
+  }
+}

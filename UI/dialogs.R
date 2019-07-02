@@ -100,7 +100,7 @@ showRemoveExistingOutputDataDialog <- function(){
                    class = "bt-highlight-1 bt-gms-confirm")),
     fade = TRUE, easyClose = FALSE))
 }
-getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE){
+getLoadDbPanel <- function(id, title, scenList, tagList, iconName, modeDescriptor, async = FALSE){
   if(identical(id, "remote"))
     suffixInputs <- ""
   else
@@ -128,32 +128,68 @@ getLoadDbPanel <- function(id, title, scenList, tagList, iconName, async = FALSE
     ),
     tags$div(class = "small-space"),
     tags$div(style = "text-align: center;",
-             HTML(paste0('<button type="button" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
+             HTML(paste0('<button type="button" id="btLoadScenConfirm2" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
 onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">', lang$nav$dialogLoadScen$okButton, '</button>'))
     )
   )
   tabPanel(title, value = "tb_importData_" %+% id,
-           fluidRow(
-             column(12,
-                    if(async){
-                      tagList(
-                        genSpinner("importDataDbSpinner"),
-                        tags$div(id = "importDataDbUnknownError", style = "display:none;",
-                                 lang$errMsg$unknownError), 
-                        tags$div(id = "importDataDbNoContent", style = "display:none;", 
-                                 lang$nav$dialogLoadScen$descNoScen),
-                        tags$div(id = "importDataDbContent", style = "display:none;",
-                                 content)
-                      )
-                    }else{
-                      if(!length(scenList)){
-                        lang$nav$dialogLoadScen$descNoScen
+           tags$div(id = "loadData_content" %+% suffixInputs,
+             fluidRow(
+               column(12,
+                      if(async){
+                        tagList(
+                          genSpinner("importDataDbSpinner"),
+                          tags$div(id = "importDataDbUnknownError", style = "display:none;",
+                                   lang$errMsg$unknownError), 
+                          tags$div(id = "importDataDbNoContent", style = "display:none;", 
+                                   lang$nav$dialogLoadScen$descNoScen),
+                          tags$div(id = "importDataDbContent", style = "display:none;",
+                                   content)
+                        )
                       }else{
-                        content
+                        if(!length(scenList)){
+                          lang$nav$dialogLoadScen$descNoScen
+                        }else{
+                          content
+                        }
                       }
-                    }
+               )
              )
            ),
+           if(!identical(id, "remote") && config$activateModules$scenario){
+             tags$div(id = "loadBase_scenNameExists", style = "display:none;",
+                      fluidRow(
+                        tags$div(id = "loadBase_snameExistsMsg",
+                                 tags$div(class = "err-msg",
+                                          lang$nav[[modeDescriptor]]$scenNameExists
+                                 )
+                        ),
+                        tags$div(id="loadBase_newName", style = "display:none;",
+                                 textInput("base_newScenName", 
+                                           lang$nav[[modeDescriptor]]$newScenName,
+                                           width = "100%")
+                          
+                        )
+                      ),
+                      HTML(paste0(
+                        '<div style="text-align: center;">
+                        <div id="base-overwrite-container">
+                          <button class="btn btn-default action-button" type="button" 
+                                  onclick="Shiny.setInputValue(\'btOverwriteScen\', 1, 
+                                                               {priority: \'event\'})">',
+                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$overwriteButton), '</button>
+                          <button class="btn btn-default action-button bt-highlight-1 bt-gms-confirm" 
+                        type="button" onclick="Miro.showNewNameBaseDialog()">',
+                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$newNameButton), '</button>
+                        </div>
+                        <button id="btCheckSnameBase" class="btn btn-default bt-highlight-1 
+                        bt-gms-confirm" type="button" style="display:none;" 
+                        onclick="Miro.validateSname(\'#base_newScenName\', \'btCheckSnameBaseConfirm\')">', 
+                        htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), '</button>
+                        </div>'
+                      ))
+             )
+           },
            icon = icon(iconName)
   )
 }
@@ -173,7 +209,8 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                                                multiple = FALSE,
                                                                accept = c("application/vnd.ms-excel", 
                                                                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                          ".xlsx")),
+                                                                          ".xlsx",
+                                                                          ".gdx")),
                                                      if(noDataInUI){
                                                        tagList(
                                                          tags$div(id = "local_badScenName",
@@ -208,7 +245,7 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                             fluidRow(
                                               tags$div(style = "text-align: center;",
                                                        HTML(paste0('<button id="btCheckSnameLocal" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
-type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), 
+type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), 
                                                                    '</button>'))
                                               )
                                             )
@@ -237,12 +274,14 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
                                     title = lang$nav[[modeDescriptor]]$tabDatabase, 
                                     scenList = scenListDb, tagList = dbTagList,
-                                    iconName = if(config$activateModules$hcube) "cube" else "database")
+                                    iconName = if(config$activateModules$hcube) "cube" else "database",
+                                    modeDescriptor = modeDescriptor)
     if(config$activateModules$hcubeMode){
       tabLoadFromBase <- getLoadDbPanel(id = "base", 
                                         title = lang$nav[[modeDescriptor]]$tabBase, 
                                         scenList = character(0L), tagList = character(0L),
-                                        iconName = "database", async = TRUE)
+                                        iconName = "database", 
+                                        modeDescriptor = modeDescriptor, async = TRUE)
     }else{
       tabLoadFromHcube <- tabPanel(lang$nav[[modeDescriptor]]$tabHcube, value = "tb_importData_hcube",
                                    fluidRow(
@@ -250,11 +289,16 @@ type="button" onclick="validateSname(\'#local_newScenName\')" disabled>', htmlto
                                             tags$div(class = "space"),
                                             tags$div(
                                               lang$nav[[modeDescriptor]]$hcubeHashDesc,
-                                              HTML(paste0('<div style="margin:10px;">
-<input class="form-control" id="hcHashLookup" style="width:490px;font-size:10pt;"/></div>
-                                                       <div style="text-align:center;">
-                                                       <button class="btn btn-default bt-highlight-1" type="button" 
-                                                                 onclick="validateHcubeHash()">',
+                                              HTML(paste0('<div class="small-space"></div>
+<input class="form-control" id="hcHashLookup" style="width:95%;font-size:10pt;"/>
+                                                         <div class="space"></div>')),
+                                              textInput("hcube_newScenName", 
+                                                        lang$nav[[modeDescriptor]]$newScenName,
+                                                        width = "95%"),
+                                              HTML(paste0('<div class="small-space"></div>
+                                                           <div style="text-align:center;">
+                                                              <button class="btn btn-default bt-highlight-1" type="button" 
+                                                                      onclick="Miro.validateHcubeHash()">',
                                                           htmltools::htmlEscape(lang$nav[[modeDescriptor]]$hcubeHashButton), 
                                                           '</button></div>')),
                                               genSpinner("hcHashLookup_load", absolute = TRUE, hidden = TRUE),
@@ -315,10 +359,10 @@ getHcubeHashLookupTable <- function(hashLookupResults){
                  tags$th(lang$nav$hcubeMode$importJobsDialog$header$date)
                ),
                do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i){
-                 tags$tr(onclick = paste0("hcHashImport(", hashLookupResults[[1]][i], ")"),
-                         tags$td(hashLookupResults[[2]][i]),
-                         tags$td(substr(hashLookupResults[[3]][i], 2, 
-                                        nchar(hashLookupResults[[3]][i]) - 1L))
+                 tags$tr(onclick = paste0("Miro.hcHashImport(", hashLookupResults[[1]][i], ")"),
+                         tags$td(substr(hashLookupResults[[2]][i], 2, 
+                                        nchar(hashLookupResults[[2]][i]) - 1L)),
+                         tags$td(hashLookupResults[[3]][i])
                  )
                }))
     )
@@ -457,7 +501,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
               tags$div(class = "row attachment-line", 
                        column(width = 6, 
                               HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                                          '" type="button" onclick="removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
+                                          '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
                               downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
                               ),
                        if(attachAllowExec){
@@ -481,6 +525,17 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
                    class = "bt-highlight-1 bt-gms-confirm")
     ),
     fade = TRUE, easyClose = FALSE
+  ))
+}
+showScenExportDialog <- function(id){
+  showModal(modalDialog(
+    title = lang$nav$dialogExportScen$title,
+    selectInput("exportFileType", lang$nav$dialogExportScen$desc, c("gdx", "xls")),
+    footer = tagList(
+      modalButton(lang$nav$dialogExportScen$cancelButton),
+      downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
+                     class = "bt-highlight-1 bt-gms-confirm")
+      ), fade = TRUE, easyClose = TRUE
   ))
 }
 ######## HYPERCUBE MODE
@@ -746,23 +801,23 @@ getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
                                 tags$td(
                                   if(identical(jStatus, "completed")){
                                     tagList(
-                                      HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                      HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="Miro.confirmModalShow(\'', 
                                                   lang$nav$hcubeMode$importJobsDialog$importConfirm$title, '\', \'', 
                                                   lang$nav$hcubeMode$importJobsDialog$importConfirm$desc, '\', \'', 
                                                   lang$nav$hcubeMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
                                                   lang$nav$hcubeMode$importJobsDialog$importConfirm$confirmButton, 
-                                                  '\', \'importHypercubeJob(', jID, 
+                                                  '\', \'Miro.importHypercubeJob(', jID, 
                                                   ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$import, '</button>'))
                                     )
                                   },
-                                  HTML(paste0('<button type="button" class="btn btn-default" onclick="showHypercubeLog(', jID, ')">', 
+                                  HTML(paste0('<button type="button" class="btn btn-default" onclick="Miro.showHypercubeLog(', jID, ')">', 
                                               lang$nav$hcubeMode$importJobsDialog$buttons$log, '</button>
-                                   <button type="button" class="btn btn-default" onclick="confirmModalShow(\'', 
+                                   <button type="button" class="btn btn-default" onclick="Miro.confirmModalShow(\'', 
                                               lang$nav$hcubeMode$importJobsDialog$discardConfirm$title, '\', \'', 
                                               lang$nav$hcubeMode$importJobsDialog$discardConfirm$desc, '\', \'', 
                                               lang$nav$hcubeMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
                                               lang$nav$hcubeMode$importJobsDialog$discardConfirm$confirmButton, 
-                                              '\', \'discardHypercubeJob(', jID, 
+                                              '\', \'Miro.discardHypercubeJob(', jID, 
                                               ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$discard, '</button>'))
                                 )
                               }

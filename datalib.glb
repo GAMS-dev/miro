@@ -1678,17 +1678,8 @@ Files = pickstock.gms,dowjones2016.csv,pickstock_conf.zip,mkconfig.inc
 
 
 *$*$*$
-Files = pickstock_live.gms,pickstock_live_conf.zip,mkconfig.inc
-1 = 126
-2 = pickstock_live
-3 = gms, inc
-4 = miro
-5 = 
-6 = Stock selection problem with live data with MIRO
-
-*$*$*$
 Files = transport.gms,transport_conf.zip,mkconfig.inc
-1 = 127
+1 = 126
 2 = transport
 3 = gms, inc
 4 = miro
@@ -1697,7 +1688,7 @@ Files = transport.gms,transport_conf.zip,mkconfig.inc
 
 *$*$*$
 Files = transport_live.gms,transport_live_conf.zip,mkconfig.inc
-1 = 128
+1 = 127
 2 = transport_live
 3 = gms, inc
 4 = miro
@@ -1706,7 +1697,7 @@ Files = transport_live.gms,transport_live_conf.zip,mkconfig.inc
 
 *$*$*$
 Files = kport.gms,kport_conf.zip,mkconfig.inc
-1 = 129
+1 = 128
 2 = kport
 3 = gms, inc
 4 = miro

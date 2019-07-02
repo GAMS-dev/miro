@@ -8,7 +8,7 @@ body{
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 
 }
-.err-msg{
+.err-msg, .config-array-err{
   margin: 5px;
   color: #F39619;
   font-weight: bold;
@@ -613,4 +613,8 @@ animation: none !important;
   background:#f0f0f0; 
   padding:10px;
   border: 1px solid #c2c2c2;
+}
+/* admin mode */
+.option-section{
+  margin-left:20px;
 }

@@ -6,6 +6,8 @@ observeEvent(input$btImport, {
   isInSolveMode <<- TRUE
   dbTagList     <- NULL
   maxNoScenExceeded <- FALSE
+  activeSid <- NULL
+  scenListDb <- NULL
   if(config$activateModules$scenario){
     # fetch list of saved scenarios
     # only load single scenario as not in comparison mode
@@ -28,15 +30,14 @@ observeEvent(input$btImport, {
       scenMetaDbSubset <<- scenMetaDb
       maxNoScenExceeded <- FALSE
     }
-  }
-  activeSid <- NULL
-  if(!is.null(activeScen) && length(scenMetaDbSubset)){
-    activeSid  <- activeScen$getSid()
-    scenListDb <- db$formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ], 
-                                    stimeIdentifier, desc = TRUE)
-  }else{
-    scenListDb <- db$formatScenList(scenMetaDbSubset, 
-                                    stimeIdentifier, desc = TRUE)
+    if(!is.null(activeScen) && length(scenMetaDbSubset)){
+      activeSid  <- activeScen$getSid()
+      scenListDb <- db$formatScenList(scenMetaDbSubset[scenMetaDbSubset[[1L]] != activeSid, ], 
+                                      stimeIdentifier, desc = TRUE)
+    }else{
+      scenListDb <- db$formatScenList(scenMetaDbSubset, 
+                                      stimeIdentifier, desc = TRUE)
+    }
   }
     
   showLoadDataDialog(scenListDb = scenListDb, 

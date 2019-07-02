@@ -44,10 +44,7 @@ output$btDownloadTmpZip <- downloadHandler(
     }
   },
   content = function(file) {
-    wd <- getwd()
-    setwd(workDir)
-    on.exit(setwd(wd))
-    zip(file, list.files(path = ".", pattern = ".+\\..+$"), compression_level = 6)
+    zipr(file, list.files(path = workDir, pattern = ".+\\..+$", full.names = TRUE), compression_level = 6)
   },
   contentType = "application/zip"
 )

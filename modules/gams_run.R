@@ -11,12 +11,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
               quote_escape = "double")
     flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
-    return(getHcubeStaticElMd5(filePath))
-  }
-  getHcubeStaticElMd5 <- function(filePath){
-    con <- file(filePath, open = "r")
-    on.exit(close(con), add = TRUE)
-    return(as.character(openssl::md5(con)))
+    return(digest(file = filePath, algo = "md5"))
   }
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
@@ -184,12 +179,13 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       filePaths     <- filePaths[match(basename(filePaths), sort(basename(filePaths)))]
       if(length(filePaths)){
         gmsString <- paste(gmsString, paste(vapply(seq_along(filePaths), function(i){
-          return(paste0("--HCUBE_STATIC_", i, "=", getHcubeStaticElMd5(filePaths[i])))
+          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = filePaths[i], algo = "md5")))
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    scenIds <- as.character(sha256(gmsString))
+    scenIds <- vapply(gmsString, digest, character(1L), algo = "sha256", 
+                      serialize = FALSE, USE.NAMES = FALSE)
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- paste0(scenIds, ": ", gmsString)
     
@@ -603,7 +599,7 @@ observeEvent(input$btSolve, {
       if(!is.null(modelStatus())){
         return(logText)
       }
-      if(input$logUpdate){
+      if(identical(input$logUpdate, TRUE)){
         scrollDown(session, "#logStatus")
       }
       return(logText)
@@ -612,7 +608,7 @@ observeEvent(input$btSolve, {
   # reset listing file when new solve is started
   output$listFile <- renderText("")
   # print model status
-  output$modelStatus <- renderText({
+  output$modelStatus <- renderUI({
     
     statusText <- lang$nav$gamsModelStatus$exec
     # model got solved successfully
@@ -707,11 +703,11 @@ observeEvent(input$btSolve, {
                           selected = "contentCurrent_1")
         errMsg <- NULL
         tryCatch({
-          GAMSResults <- loadGAMSResults(scalarsOutName = scalarsOutName, modelOut = modelOut, workDir = workDir, 
-                                         modelName = modelName, errMsg = lang$errMsg$GAMSOutput,
-                                         scalarsFileHeaders = scalarsFileHeaders, colTypes = db$getDbSchema()$colTypes,
-                                         modelOutTemplate = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                         hiddenOutputScalars = config$hiddenOutputScalars) 
+          GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
+                                      modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
+                                      scalarsFileHeaders = scalarsFileHeaders,
+                                      templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
+                                      hiddenOutputScalars = config$hiddenOutputScalars) 
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc
@@ -730,20 +726,13 @@ observeEvent(input$btSolve, {
             traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% modelName %+%".trc", 
                                         traceColNames)
           }, error = function(e){
-            flog.error("Problems loading trace data. Error message: %s.", e)
-            errMsg <<- lang$errMsg$readOutput$desc
+            flog.info("Problems loading trace data. Error message: %s.", e)
           })
-          if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-            return()
-          }
         }
         
         GAMSResults <- NULL
         # rendering tables and graphs
         renderOutputData()
-        
-        # enable download button for saving scenario to Excel file
-        enableEl(session, "#export_1")
         
         # show load button after solve
         switchTab(session, "output")
@@ -753,7 +742,7 @@ observeEvent(input$btSolve, {
       }
     }
     # print model status
-    return(statusText)
+    return(htmltools::htmlEscape(statusText))
   })
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)

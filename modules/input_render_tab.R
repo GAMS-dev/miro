@@ -43,6 +43,13 @@ observeEvent(input$inputTabset, {
 })
 observeEvent(input$btGraphIn, {
   i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])
+  if(length(inputTabs[[i]]) > 1L){
+    j <- as.integer(strsplit(isolate(input[[paste0("inputTabset", i)]]), "_")[[1]][2])
+    i <- inputTabs[[i]][j]
+  }else{
+    i <- inputTabs[[i]][1]
+  }
+  flog.debug("Graph view for model input in sheet: %d activated.", i)
   if(is.null(configGraphsIn[[i]])){
     return()
   }else if(identical(modelIn[[i]]$type, "hot")){
@@ -162,17 +169,18 @@ lapply(modelInTabularData, function(sheet){
              # check for readonly columns
              colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
                if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
-                 names(modelIn[[i]]$headers)[[j]]
+                 modelIn[[i]]$headers[[j]]$alias
                }else{
                  NA_character_
                }
              }, character(1L), USE.NAMES = FALSE)
              colsReadonly <- colsReadonly[!is.na(colsReadonly)]
              if(length(colsReadonly)){
-               return(hot_col(ht, colsReadonly, readOnly = TRUE))
-             }else{
-               return(ht)
+               ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
              }
+             if(identical(modelIn[[i]]$heatmap, TRUE))
+               return(hot_heatmap(ht))
+             return(ht)
            })
          },
          dt = {

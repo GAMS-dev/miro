@@ -29,7 +29,7 @@ if(isInSplitView){
   }
 }
 # generate title and date
-output[[paste0("title_", scenId)]] <- renderText(scenMetaData[[scenIdLong]][[3]][1])
+output[[paste0("title_", scenId)]] <- renderUI(htmltools::htmlEscape(scenMetaData[[scenIdLong]][[3]][1]))
 output[[paste0("date_", scenId)]] <- renderText(as.character(scenMetaData[[scenIdLong]][[4]][1]))
 eMsg <- NULL
 lapply(scenTableNamesToDisplay, function(sheetName){

@@ -1,17 +1,18 @@
 {  
    "$schema":"http://json-schema.org/draft-07/schema#",
    "title":"Configuration file schema",
-   "description":"GAMS WebUI configuration file schema",
+   "description":"GAMS MIRO configuration file schema",
    "type":"object",
    "additionalProperties":false,
    "properties":{  
       "language":{  
-         "description":"default language for WebUI",
+         "description":"default language for MIRO",
          "type":"string",
          "default":"en",
          "enum":[  
             "de",
-            "en"
+            "en",
+            "cn"
          ],
          "required":false
       },
@@ -30,7 +31,7 @@
          "required":false
       },
       "includeParentDir":{
-        "description":"Boolean which specifies whether to include the parent directory of the curren model folder (e.g. because several models share files)",
+        "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
          "type":"boolean",
          "default":false,
          "required":false
@@ -45,6 +46,11 @@
          "description":"Boolean which specifies whether to include empty sheets in the Excel file",
          "type":"boolean",
          "default":true,
+         "required":false
+      },
+      "defaultScenName":{
+        "description":"Name of the default scenario that will be loaded on startup (leave empty, if you dont want a default scenario)",
+         "type":"string",
          "required":false
       },
       "UILogo":{  
@@ -69,7 +75,8 @@
       },
       "extraClArgs":{
         "description":"Specify extra command line arguments that GAMS will be called with",
-        "type":"array",
+        "type":["array", "string"],
+        "minLength":3,
         "required":false,
         "items":{
           "type":"string",
@@ -90,7 +97,7 @@
          "description":"Activate/deactivate certain modules",
          "type":"object",
          "additionalProperties":false,
-         "properties":{  
+         "properties":{
             "scenario":{  
                "description":"Activate scenario functionality?",
                "type":"boolean",
@@ -121,13 +128,13 @@
                "default":false,
                "required":false
             },
-            "logFile:":{  
+            "logFile":{  
                "description":"Show log file in UI?",
                "type":"boolean",
                "default":true,
                "required":false
             },
-            "lstFile:":{  
+            "lstFile":{  
                "description":"Show lst file in UI?",
                "type":"boolean",
                "default":true,
@@ -146,6 +153,62 @@
          "type": "boolean",
          "default":true,
          "required":false
+      },
+      "inputGroups":{
+         "description": "Specify input tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{  
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input tables)",
+                "type":"array",
+                "uniqueItems":true,
+                "minItems":2,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
+      "outputGroups":{
+         "description": "Specify output tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "uniqueItems":true,
+         "minItems":1,
+         "items":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{  
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (output tables)",
+                "type":"array",
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
       },
       "scalarAliases":{  
          "description":"Specify the aliases for the input and output scalar tables",
@@ -168,7 +231,8 @@
       },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",
-         "type":"array",
+         "type":["array", "string"],
+         "minLength":1,
          "uniqueItems":true,
          "required":false,
          "items":{
@@ -183,7 +247,7 @@
          "required":false
       },
       "inputWidgets":{
-        "description":"Format in which input or output data is to be displayed in the WebUI.",
+        "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
@@ -212,7 +276,7 @@
                    },
                    "label":{  
                      "description":"Label of considered inputdata",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "min":{  
@@ -231,6 +295,7 @@
                    },
                    "default":{  
                      "description":"Default/starting value of inputdata",
+                     "required": true,
                      "type":[  
                        "number",
                        "string",
@@ -252,12 +317,12 @@
                      "description":"Boolean that specifies whether to hide or show tick marks (optional)",
                      "type":"boolean",
                      "required":false
-                   },
-                   "additionalProperties":false,
-                   "required":[  
+                   }
+                  },
+                  "required":[  
                       "widgetType", "step", "min", "max", "default"
-                   ]
-                  }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -282,16 +347,16 @@
                    },
                    "label":{  
                       "description":"display label for the dropdown menu",
-                      "type":"string",
+                      "type":["string","null"],
                       "minLength":1
                     },
                     "choices":{  
                       "description":"List of values to select from.",
                       "type":[  
                         "array",
-                        "string"
+                        "string",
+                        "number"
                       ],
-                      "minLength":1,
                       "uniqueItems":true,
                       "minItems":1,
                       "required":true,
@@ -309,7 +374,8 @@
                     "aliases":{  
                       "type":[  
                         "array",
-                        "string"
+                        "string",
+                        "null"
                       ],
                       "minLength":1,
                       "uniqueItems":true,
@@ -323,14 +389,15 @@
                       "description":"The initially selected value.",
                       "type":[  
                         "string",
-                        "number"
+                        "number",
+                        "null"
                       ]
-                    },
-                   "additionalProperties":false,
+                    }
+                  },
                    "required":[  
                       "widgetType"
-                   ]
-                  }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -355,24 +422,24 @@
                    },
                    "label":{  
                      "description":"display label for the date selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -397,6 +464,32 @@
                      "minimum":0,
                      "maximum":6
                    },
+                   "daysofweekdisabled":{
+                     "description":"disallow certain days of week to be selected",
+                     "type": ["array", "null"],
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"integer",
+                       "minimum":0,
+                       "maximum":6
+                     }
+                   },
+                   "datesdisabled":{
+                     "description":"disallow certain dates to be selected",
+                     "type": "array",
+                     "uniqueItems":true,
+                     "minItems":1,
+                     "items":{  
+                       "type":"string",
+                       "minLength":10,
+                       "maxLength":10
+                     }
+                   },
+                   "autoclose":{  
+                     "description":"Whether or not to close the datepicker immediately when a date is selected",
+                     "type":"boolean"
+                   },
                    "width":{  
                      "description":"width of the input",
                      "type":[  
@@ -404,12 +497,12 @@
                        "integer"
                      ],
                      "minLength":1
-                   },
-                   "additionalProperties":false,
-                   "required":[  
+                   }
+                 },
+                 "required":[  
                       "widgetType", "min", "max", "value"
-                   ]
-                 }
+                   ],
+                  "additionalProperties": false
                },
                {
                  "properties":{
@@ -435,30 +528,30 @@
                    },
                    "label":{  
                      "description":"display label for the daterange selector",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "start":{  
                      "description":"initial start date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "end":{  
                      "description":"initial end date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "min":{  
                      "description":"minimum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
                    "max":{  
                      "description":"maximum allowed date",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":10,
                      "maxLength":10
                    },
@@ -499,12 +592,12 @@
                    "autoclose":{  
                      "description":"Whether or not to close the datepicker immediately when a date is selected",
                      "type":"boolean"
-                   },
-                   "additionalProperties":false,
-                   "required":[  
-                      "widgetType"
-                   ]
-                 }
+                   }
+                 },
+                 "required":[  
+                    "widgetType"
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -529,7 +622,7 @@
                    },
                    "label":{  
                      "description":"display label for the checkbox",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
@@ -557,10 +650,10 @@
                      "minLength":1
                    }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -581,17 +674,17 @@
                    },
                    "label":{  
                      "description":"display label for the textinput",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "value":{  
                      "description":"default value",
-                     "type": "string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "placeholder":{  
                      "description":"placeholder (e.g. to give more information about what kind of value is expected from user)",
-                     "type":"string",
+                     "type":["string","null"],
                      "minLength":1
                    },
                    "width":{  
@@ -603,10 +696,10 @@
                      "minLength":1
                    }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                },
                {
                  "properties":{
@@ -621,6 +714,11 @@
                      "type":"string",
                      "minLength":1
                    },
+                   "sharedData":{  
+                     "description":"Choose whether data for this table should come from a shared table (across all scenarios)",
+                     "type":"boolean",
+                     "default": false
+                   },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"
@@ -629,25 +727,30 @@
                         "description":"Either true or false for entire table to be readonly",
                         "type":"boolean"
                     },
+                    "heatmap":{
+                        "description":"Turn table into a heatmap?",
+                        "type":"boolean"
+                    },
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
-                      "type":"array",
+                      "type":["array", "string", "null"],
+                      "minLength":1,
                       "items":{
                         "type":"string",
                         "minLength":1
                       }
                     }
                  },
-                 "additionalProperties":false,
                  "required":[  
                     "widgetType"
-                 ]
+                 ],
+                 "additionalProperties": false
                }
             ]
          }
       },
       "dataRendering":{  
-        "description":"Format in which input or output data is to be displayed in the WebUI.",
+        "description":"Format in which input or output data is to be displayed in MIRO.",
          "type":"object",
          "additionalProperties":{  
             "type":"object",
@@ -748,7 +851,8 @@
                         "properties":{  
                            "rows":{  
                               "description":"Array of the names of columns in the data.frame to prepopulate the rows of the pivot table.",
-                              "type":"array",
+                              "type":["array", "string"],
+                              "minLength":1,
                               "uniqueItems":true,
                               "minItems":0,
                               "items":{  
@@ -759,7 +863,8 @@
                            },
                            "cols":{  
                               "description":"Array of the names of columns in the data.frame to prepopulate the columns of the pivot table.",
-                              "type":"array",
+                              "type":["array", "string"],
+                              "minLength":1,
                               "uniqueItems":true,
                               "minItems":0,
                               "items":{  
@@ -865,7 +970,7 @@
                         }
                      }
                   },
-                  "additionalProperties":false,
+                  "additionalProperties":true,
                   "required":[  
                      "outType"
                   ]
@@ -894,7 +999,9 @@
                               "type":"string",
                               "enum":[  
                                  "plotly",
-                                 "dygraphs"
+                                 "dygraphs",
+                                 "leaflet",
+                                 "timevis"
                               ],
                               "required":true
                            }
@@ -935,7 +1042,8 @@
                      },
                      "packages":{  
                         "description":"Packages that need to be installed",
-                        "type":"array",
+                        "type":["array", "string"],
+                        "minLength":2,
                         "minItems":1,
                         "uniqueItems":true,
                         "items":{  
@@ -1032,7 +1140,7 @@
                   "last",
                   "all"
                ],
-               "default":"all",
+               "default":"none",
                "required":false
             },
             "columnSorting":{  
@@ -1050,12 +1158,15 @@
             "manualColumnResize":{  
                "description":"Defines whether columns can be manually resized.",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "colWidths":{  
                "description":"Width of columns.",
-               "type":"integer",
+               "type":[  
+                  "string",
+                  "integer"
+               ],
                "exclusiveMinimum":0,
                "default":null,
                "required":false
@@ -1128,7 +1239,6 @@
                   "string"
                ],
                "minItems":1,
-               "minLength":1,
                "default":"display",
                "required":false
             },
@@ -1149,9 +1259,15 @@
                "required":false,
                "default":false
             },
+            "autoHideNavigation":{  
+               "description":"Boolean that specifies whether to automatically hide navigation elements when number of total records is less than page size",
+               "type":"boolean",
+               "required":false,
+               "default":true
+            },
             "extensions":{  
                "description":"For a list of supported extensions see: https://rstudio.github.io/DT/extensions.html",
-               "type":"array",
+               "type":["array", "string"],
                "uniqueItems":true,
                "required":false,
                "items":{  
@@ -1184,9 +1300,13 @@
                   },
                   "buttons":{  
                      "description":"Buttons or groups of buttons to insert",
-                     "type":"object",
-                     "required":false,
-                     "default":null
+                     "type":["array", "string"],
+                     "uniqueItems":true,
+                     "items":{
+                         "type": "string",
+                         "enum":["copy", "csv", "excel", "pdf", "print"]
+                     },
+                     "required":false
                   },
                   "pageLength":{  
                      "description":"Number of items to display per page",
@@ -1207,7 +1327,8 @@
                               "anyOf":[  
                                  {  
                                     "description":"Column numbers to refer to.",
-                                    "type":"array",
+                                    "type":["array", "integer"],
+                                    "minimum":1,
                                     "minItems":1,
                                     "items":{  
                                        "type":"integer",
@@ -1239,6 +1360,62 @@
                   }
                }
             }
+         }
+      },
+      "inputGroups":{
+         "description": "Specify input tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (input tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "minItems":2,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
+         }
+      },
+      "outputGroups":{
+         "description": "Specify output tables that shall be aggregated to groups",
+         "type": "array",
+         "required":false,
+         "uniqueItems":true,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["name", "members"],
+           "properties":{
+              "name":{
+                "description":"Specify the name of the group as it is displayed in the UI",
+                "type":"string",
+                "minLength":1
+              },
+              "members":{
+                "description":"Specify the group members (output tables)",
+                "type":["array", "string"],
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength":1
+                }
+              }
+           }
          }
       }
    }

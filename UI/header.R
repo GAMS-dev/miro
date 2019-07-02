@@ -1,6 +1,6 @@
 # UI header
 header <- dashboardHeader(
-  if(config$activateModules$hcubeMode || isShinyProxy){
+  if(config$activateModules$hcubeMode || isShinyProxy || !config$activateModules$scenario){
     tags$li(class = "dropdown")
   }else{
     tags$li(title = lang$nav$header$tooltips$switchToHcube, class = "dropdown", 
@@ -8,7 +8,7 @@ header <- dashboardHeader(
                        label = NULL,
                        icon("cube"),
                        icon("arrow-right"),
-                       onclick = "showSpinnerIcon(this, 5000)"))
+                       onclick = "Miro.showSpinnerIcon(this, 5000)"))
   },
   if(config$activateModules$scenario){
   tags$li(class = "dropdown", 
@@ -19,7 +19,9 @@ header <- dashboardHeader(
                   tags$li(actionLink("btEditMeta", lang$nav$header$scenario$edit)),
                   tags$li(actionLink("btSave", lang$nav$header$scenario$save)),
                   tags$li(actionLink("btSaveAs", lang$nav$header$scenario$saveAs)),
-                  tags$li(downloadLink(outputId = "export_1", lang$nav$header$scenario$export)),
+                  tags$li(HTML(paste0('<a href="#" class="action-button" 
+                                      onclick="Shiny.setInputValue(\'btExportScen\', 1, {priority: \'event\'})">',
+                                      lang$nav$header$scenario$export, '</a>'))),
                   tags$li(actionLink("btDelete", lang$nav$header$scenario$delete))))
     }else{
       tags$li(class = "dropdown")
@@ -30,9 +32,9 @@ header <- dashboardHeader(
             tags$ul(class = "dropdown-menu", role="menu",
                     tags$li(tags$a(href = "https://www.gams.com/miro/", 
                            target = "_blank", lang$nav$header$help$doc)),
-                    tags$li(HTML(paste0('<a href="#" class="action-button" onclick="confirmModalShow(\'',
+                    tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                         'About GAMS MIRO\', \'', 
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
-                                        lang$nav$header$help$about, '</a>')
-                    )))),
+                                        lang$nav$header$help$about, '</a>'))
+                    ))),
   title=config$pageTitle, disable = FALSE)

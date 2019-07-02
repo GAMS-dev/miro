@@ -741,7 +741,7 @@ class StatisticsGenerator():
             print("</TR>", file=out);
             count += 1;
         print("</TABLE></P>", file=out)
-        print("<P>For a short description on the computed values, refer to <A href='#' onclick = 'changeTab($(this), ", n, ", 6)'>the documentation</A>.</P>", file=out);
+        print("<P>For a short description on the computed values, refer to <A href='#' onclick = 'Miro.changeTab($(this), ", n, ", 6)'>the documentation</A>.</P>", file=out);
         
         count = 0;
         for outcome in self._results[category] :

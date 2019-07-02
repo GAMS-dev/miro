@@ -1,5 +1,5 @@
 {
-    "pageTitle": "A Transportation Problem (TRNSPORT,SEQ=1)",
+    "pageTitle": "A Transportation Problem with multiple version LP/MIP/MINLP",
     "MIROSwitch": "MIRO=RUN",
     "fileExchange": "csv",
     "csvDelim": ",",
@@ -54,13 +54,13 @@
                     "type": "set",
                     "alias": "canning plants"
                 },
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "value": {
+                "lat": {
                     "type": "parameter",
-                    "alias": "Plant location information"
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
                 }
             }
         },
@@ -71,13 +71,13 @@
                     "type": "set",
                     "alias": "markets"
                 },
-                "uni": {
-                    "type": "set",
-                    "alias": "Universal set"
-                },
-                "value": {
+                "lat": {
                     "type": "parameter",
-                    "alias": "Market location information"
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
                 }
             }
         },

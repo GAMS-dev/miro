@@ -51,10 +51,16 @@ observeEvent(input$btPaver, {
   gmswebiter <<- gmswebiter + 1
   req(input$selPaverAttribs)
   noErr <- TRUE
+  scenToFetch <- rv$fetchedScenarios[[1]] %in% sidsToLoad
+  if(!any(scenToFetch)){
+    flog.warn("Paver was attempted to be started while no scenarios were selected.")
+    showHideEl(session, "#paverRunUnknownError", 6000L)
+    return()
+  }
   tryCatch({
-    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[rv$fetchedScenarios[[1]] %in% sidsToLoad, ,
-                                                                             drop = FALSE], 
-                                                         input$selPaverAttribs, maxSolversPaver, isolate(input$paverExclAttrib))
+    exceedsMaxNoSolvers <- hcubeLoad$exceedsMaxNoSolvers(rv$fetchedScenarios[scenToFetch, , drop = FALSE], 
+                                                         input$selPaverAttribs, maxSolversPaver,
+                                                         isolate(input$paverExclAttrib))
   }, error = function(e){
       noErr <<- FALSE
       flog.error("Problems identifying whether maximum number of solvers for paver is exceeded Error message: '%s'.", e)
@@ -68,7 +74,7 @@ observeEvent(input$btPaver, {
     return()
   }else{
     errMsg <- NULL
-    paverDir <- paste0(workDir, "paver", .Platform$file.sep)
+    paverDir <- paste0(workDir, "paver")
     paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){
@@ -77,8 +83,8 @@ observeEvent(input$btPaver, {
         dir.create(traceFileDir, showWarnings = FALSE)
       }
       if(dir.exists(paverDir)){
-        unlink(file.path(paverDir,"*"), recursive = TRUE, force = TRUE)
-        unlink(file.path(paverDir,"*.png"), recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir, "*"), recursive = TRUE, force = TRUE)
+        unlink(file.path(paverDir, "*.png"), recursive = TRUE, force = TRUE)
       }
       dir.create(paverDir, showWarnings = FALSE)
     }, error = function(e){
@@ -95,9 +101,11 @@ observeEvent(input$btPaver, {
         noErr <<- FALSE
         switch(conditionMessage(e),
                noTrc = {
+                 flog.info("Unknown error exeuting Paver. Error message: '%s'.", e)
                  showHideEl(session, "#paverRunNoTrc", 6000L)
                },
                {
+                 flog.error("Unknown error exeuting Paver. Error message: '%s'.", e)
                  showHideEl(session, "#paverRunUnknownError", 6000L)
                })
       })

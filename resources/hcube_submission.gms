@@ -48,7 +48,11 @@ def extractDir(fdir):
 def getScalars(text):
    try:
       if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1].split(' MIRO=')[0]
+         text = text.split('.gms ')[1]
+         if text.startswith('MIRO='):
+            text = text.split('MIRO=')[0]
+         else:
+            text = text.split(' MIRO=')[0]
       textTmp = text.split()
       scalarsRaw = r"Scalar,Description,Value\n"
       scalars = scalarsRaw
@@ -120,7 +124,6 @@ with open(bfname) as f:
    content = [x.strip() for x in content]
 
 if outScript == "gams":
-   fjobsub = open(fJobSubName,"w")
    # write GAMS $calls into job submission file
    linestmp = ""
    linestmp += "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
@@ -160,7 +163,11 @@ if outScript == "gams":
    linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -x *.lst* -x *.log* -x *.json* -x *.gdx* -x *.gms* -x *.txt* -x *.lxi*"
 
    # delete all temporary solution directories
-   fjobsub.write(linestmp + "\n$call rm -r " + zipname)
+   linestmp += "\n$call rm -r " + zipname
+
+   #write to file
+   with open(fJobSubName,"w") as fjobsub:
+      fjobsub.write(linestmp)
 
 elif outScript == "hpc":
    pass

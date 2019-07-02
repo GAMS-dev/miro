@@ -536,7 +536,7 @@ class SolveDataWriter() :
     def writeHTML(self, solvedata, out, chartsdir = None, plotfileprefix = '') :
         '''Generates HTML tables for PAVER instance data and given solve data.'''
         
-        print("<P>For a short description on how gaps and integrals are calculated, refer to <A href='#' onclick = 'changeTab($(this), 5, 6)'>the documentation</A>.</P>", file=out);
+        print("<P>For a short description on how gaps and integrals are calculated, refer to <A href='#' onclick = 'Miro.changeTab($(this), 5, 6)'>the documentation</A>.</P>", file=out);
         
         # print instances and solver runs
         col_align = ['left'];

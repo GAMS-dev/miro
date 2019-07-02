@@ -1,7 +1,14 @@
 observeEvent(input[["table_" %+% i]], {
   # get sheet ID for current scenario
-  j <- as.integer(strsplit(isolate(input[["contentScen_" %+% i]]), "_")[[1]][3])
-  flog.debug("Table view in scenario with id: %d for sheet: %d activated.", i, j)
+  j <- as.integer(strsplit(isolate(input[[paste0("contentScen_", i)]]), 
+                  "_", fixed = TRUE)[[1L]][[3L]])
+  if(isGroupOfSheets[[j]]){
+    j <- groupSheetToTabIdMap[[j]][[as.integer(strsplit(isolate(input[[paste0("contentScen_", i, "_", j)]]), 
+                                                        "_", fixed = TRUE)[[1L]][[4L]])]]
+  }else{
+    j <- groupSheetToTabIdMap[[j]][[1L]]
+  }
+  flog.debug("Table view in scenario with id: %s for sheet: %s activated.", i, j)
   if(isInCompareMode){
     if(isInSplitView){
       lapply(2:3, function(k){

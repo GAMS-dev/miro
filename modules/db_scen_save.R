@@ -145,7 +145,8 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
         gc()
         rv$activeSname <<- isolate(input$scenName)
       }
-      activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), tags = scenTags)
+      activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
+                                  tags = scenTags, overwrite = identical(saveAsFlag, TRUE))
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)

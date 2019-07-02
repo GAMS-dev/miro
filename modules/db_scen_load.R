@@ -154,23 +154,33 @@ observeEvent(input$btSortTime, {
 observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid, 
                                  rv$loadHcubeHashSid), {
   checkNameTmp <- FALSE
+  scenNameTmp  <- character(0L)
   flog.debug("Confirm load scenario button clicked.")
-  if(identical(isolate(input$tb_importData), "tb_importData_hcube")){
+  
+  if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
+     identical(isolate(input$tb_importData), "tb_importData_hcube")){
     checkNameTmp <- TRUE
+    scenNameTmp  <- isolate(input$hcube_newScenName)
+    if(isBadScenName(scenNameTmp)){
+      flog.debug("Bad scenario name: '%s'.", scenNameTmp)
+      return()
+    }
     if(identical(length(sidsToLoad), 2L) && identical(sidsToLoad[[1L]], -1L)){
-      sidsToLoad <<- list(sidsToLoad[[2L]])
+      sidsToLoad <<- list(scenNameTmp, sidsToLoad[[2L]])
     }else if(length(isolate(input$loadHcubeHashSid))){
-      sidsToLoad <<- list(isolate(input$loadHcubeHashSid))
+      sidsToLoad <<- list(scenNameTmp, isolate(input$loadHcubeHashSid))
     }else{
       flog.error("An unexptected error occurred. Scenario from Hypercube mode was attempted to be loaded, but no scenario ID could be found.")
       return()
     }
   }else{
-    if(identical(isolate(input$tabsetLoadScen), "loadScenUI")){
+    if(identical(isolate(input$sidebarMenuId), "scenarios") &&
+       identical(isolate(input$tabsetLoadScen), "loadScenUI")){
       scenSelected <- isolate(input$selLoadScenUI)
-    }else if(identical(isolate(input$tb_importData), "tb_importData_base")){
-      checkNameTmp <- TRUE
+    }else if(!identical(isolate(input$sidebarMenuId), "scenarios") &&
+             identical(isolate(input$tb_importData), "tb_importData_base")){
       scenSelected <- isolate(input[["selLoadScen_base"]])
+      checkNameTmp <- TRUE
     }else{
       scenSelected <- isolate(input$selLoadScen)
     }
@@ -185,13 +195,19 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
   }
   if(checkNameTmp){
     tryCatch({
-      scenNameTmp <- db$importDataset(tableName = db$getTableNameMetadata(), 
-                                      tibble(sidIdentifier, sidsToLoad[[1]]),
-                                      colNames = snameIdentifier)[[1]]
+      if(!length(scenNameTmp))
+        scenNameTmp <- db$importDataset(tableName = db$getTableNameMetadata(), 
+                                        tibble(sidIdentifier, sidsToLoad[[1]]),
+                                        colNames = snameIdentifier)[[1]]
       if(db$checkSnameExists(scenNameTmp, uid)){
         flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
-        showHideEl(session, "#importScenSnameExistsErr", 4000L)
-        sidsToLoad <<- NULL
+        if(config$activateModules$hcubeMode){
+          showEl(session, "#loadBase_scenNameExists")
+          hideEl(session, "#loadData_content_base")
+        }else{
+          showHideEl(session, "#importScenSnameExistsErr", 4000L)
+        }
+        return()
       }
     }, error = function(e){
       showHideEl(session, "#importScenError", 4000L)
@@ -239,6 +255,9 @@ observeEvent(virtualActionButton(input$btLoadScenConfirm, input$loadHcubeHashSid
 
 observeEvent(input$btOverwriteScen, {
   flog.debug("Overwrite scenario button clicked.")
+  if(!length(sidsToLoad)){
+    return()
+  }
   overwriteInput <<- TRUE
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })
@@ -274,7 +293,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }else{
     allSidsInComp <- FALSE
     errMsg <- NULL
+    loadAsName <- NULL
     tryCatch({
+      if(is.na(suppressWarnings(as.numeric(sidsToLoad[[1]])))){
+        loadAsName      <- sidsToLoad[[1]]
+        sidsToLoad[[1]] <- NULL
+      }
       scenDataTmp <- db$loadScenarios(unlist(sidsToLoad, use.names = FALSE), 
                                       msgProgress = lang$progressBar$loadScenDb)
     }, error = function(e){
@@ -296,7 +320,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if(!closeScenario()){
       return()
     }
-    tryCatch(activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]]), 
+    tryCatch({
+      if(is.null(loadAsName))
+        activeScen <<- Scenario$new(db = db, sid = sidsToLoad[[1]])
+      else
+        activeScen <<- Scenario$new(db = db, sname = loadAsName)
+        }, 
              error = function(e){
                flog.error("Error generating new Scenario object. Error message: '%s'.", e)
                errMsg <<- lang$errMsg$loadScen$desc
@@ -351,7 +380,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           if(identical(i, idxScalarOut)){
             # scalar data exists
             removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
-            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]][removeRows, ]
+            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]]
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
           }
         }
@@ -417,7 +446,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
           # scalar data exists
           rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]][rowIdsToRemove, ]
+          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]]
           scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
         }else{
           scalarData[[scenIdLong]]               <<- tibble()
@@ -488,7 +517,8 @@ observeEvent(input$hcHashLookup, {
     matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
                                     colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
                                     tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
-                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), c(hashVal, 1L), c("=", ">=")))
+                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
+                                           c(hashVal, 1L), c("=", ">=")))
   }, error = function(e){
     flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
     showHideEl(session, "#importScenError")
@@ -622,5 +652,20 @@ if(config$activateModules$hcubeMode){
                          icon = icon("sort-by-order", lib = "glyphicon"))
       btSortTimeDescBase <<- TRUE
     }
+  })
+  observeEvent(input$btCheckSnameBaseConfirm, {
+    flog.debug("Check new scenario name imported from base module button clicked.")
+    scenNameTmp <- isolate(input$base_newScenName)
+    if(isBadScenName(scenNameTmp)){
+      flog.debug("Bad scenario name: '%s'.", scenNameTmp)
+      return()
+    }
+    if(db$checkSnameExists(scenNameTmp, uid)){
+      flog.debug("A scenario with the same name already exists. Please first delete this scenario before importing another one with the same name.")
+      showHideEl(session, "#importScenSnameExistsErr", 4000L)
+      return()
+    }
+    sidsToLoad         <<- c(scenNameTmp, sidsToLoad)
+    rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
   })
 }

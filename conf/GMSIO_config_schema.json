@@ -135,7 +135,7 @@
             "minItems":1,
             "items":{
               "type":"string",
-              "enum":["set","parameter"],
+              "enum":["set","parameter", "variable", "equation"],
               "minLength":1
             }
           },

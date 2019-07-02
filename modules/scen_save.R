@@ -7,26 +7,19 @@ if(!saveOutput){
   lapply(seq_along(modelOut), function(i){
     scenData[[scenIdLong]][[i]] <<- scenDataTemplate[[i]]
   })
-  scalarData[[scenIdLong]] <<- data.frame()
+  scalarData[[scenIdLong]] <<- tibble()
 }
 if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
-  scalarData[[scenIdLong]] <<- data.frame()
+  scalarData[[scenIdLong]] <<- tibble()
 }else{
   idxScalarOut <- match(tolower(scalarsOutName), names(modelOut))
   if(!is.na(idxScalarOut)){
-    # bind hidden and non hidden scalar data
-    if(nrow(scenData[[scenIdLong]][[idxScalarOut]])){
-      if(nrow(scalarData[[scenIdLong]])){
-        scenData[[scenIdLong]][[idxScalarOut]] <<- rbind(scenData[[scenIdLong]][[idxScalarOut]], scalarData[[scenIdLong]])
-      }else{
-        scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]]
-      }
-    }else if(nrow(scalarData[[scenIdLong]])){
+    if(nrow(scalarData[[scenIdLong]])){
       scenData[[scenIdLong]][[idxScalarOut]] <<- scalarData[[scenIdLong]]
     }else{
       scenData[[scenIdLong]][[idxScalarOut]] <<- scenDataTemplate[[idxScalarOut]]
     }
-    scalarData[[scenIdLong]] <<- data.frame()
+    scalarData[[scenIdLong]] <<- tibble()
   }
 }
 

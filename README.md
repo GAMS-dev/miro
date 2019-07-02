@@ -4,7 +4,7 @@ GAMS MIRO is a graphical user interface (GUI) for your GAMS models that runs in 
 
 You can find the documentation with examples [here](http://gams.com/miro).
 
-If you have any questions about MIRO, please contact us via [mail](support@gams.com). For bug reports, please use the [issue tracker](https://git.gams.com/fproske/gmswebui/issues).
+If you have any questions about MIRO, please contact us via [mail](miro@gams.com). For bug reports, please use the [issue tracker](https://git.gams.com/fproske/gmswebui/issues).
 
 ## Features
 
@@ -22,7 +22,7 @@ Simply pull the repository. Some example models that help you getting started ca
 
 ## Getting started
 
-For a running application you need R (v. 3.5.1 or later) with the following packages installed:
+In order to launch GAMS MIRO you need R (v. 3.5.1 or later) with the following packages installed:
 
 * shiny
 * shinydashboard
@@ -42,8 +42,7 @@ For a running application you need R (v. 3.5.1 or later) with the following pack
 * tidyr
 * DBI
 * RSQLite
-* openssl
-* DT
+* digest
 
 To start the application, run the following command from an R console:
 ```
@@ -52,5 +51,5 @@ shiny::runApp(launch.browser=TRUE)
 
 ## License
 
-GAMS MIRO as a whole is distributed under GPL-2 (GNU GENERAL PUBLIC LICENSE version 2), or (at your option) any later version. 
+GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3), or (at your option) any later version. 
 See the [LICENSE](LICENSE) file for more details.

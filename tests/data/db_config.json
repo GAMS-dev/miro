@@ -1,6 +1,6 @@
 {  
    "type":"sqlite",
-   "name":"test",
+   "name":"sqlitetests",
    "host":"localhost",
    "port":5432
 }

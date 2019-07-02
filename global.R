@@ -1,13 +1,15 @@
 # gams model name
-modelName <- "pickstock_live"
+modelName <- "pickstock"
 # turn debug mode on or off
 debugMode <- TRUE
+# miro data folder prefix
+miroDataDirPrefix <- "data_"
 # name of the environment variable used in shiny proxy to identify model name to use
 spModelPathEnvVar <- "GMSMODELNAME"
 spModelModeEnvVar <- "GMSMODE"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noImport")
-# keywords that define data MUST not be imported in order to run the model
+# keywords that define data does not HAVE TO BE imported in order to run the model
 keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput",
                           "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
@@ -37,7 +39,7 @@ logFileDir <- paste0("logs", .Platform$file.sep)
 # whether to print log output in console (in additional to file) or not
 logToConsole <- TRUE
 # specify the logging level (["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"])
-loggingLevel <- "TRACE"
+loggingLevel <- "INFO"
 # name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
@@ -60,6 +62,7 @@ customRendererDirName <- "customRenderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
+scalarEquationsOutName <- "scalarsve_out"
 scalarsFileHeaders <- c("scalar", "description", "value")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"
@@ -117,4 +120,6 @@ attachMaxFileSize     <- 1e7
 attachMaxNo           <- 5L
 # bug report URL
 bugReportUrl <- list(url = "https://cloud.gams.com/public.php/webdav/", dir = "4raJTCgwfoyi2HK")
+
+TIMEVIS_MAX_EVENTS <- 50L
 

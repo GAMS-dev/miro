@@ -24,6 +24,9 @@ observeEvent(input$btScenSplit1_open, {
   loadInLeftBoxSplit <<- TRUE
   
   updateTabsetPanel(session, "contentScen_2", "contentScen_2_1")
+  if(isGroupOfSheets[[1]]){
+    updateTabsetPanel(session, "contentScen_2_1", "contentScen_2_1_1")
+  }
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
 observeEvent(input$btScenSplit2_open, {
@@ -31,6 +34,9 @@ observeEvent(input$btScenSplit2_open, {
   loadInLeftBoxSplit <<- FALSE
   
   updateTabsetPanel(session, "contentScen_3", "contentScen_3_1")
+  if(isGroupOfSheets[[1]]){
+    updateTabsetPanel(session, "contentScen_3_1", "contentScen_3_1_1")
+  }
   rv$btLoadScen <<- isolate(rv$btLoadScen + 1)
 })
 observeEvent(input$loadActiveScenSplitComp, {
@@ -50,7 +56,12 @@ observeEvent(input$loadActiveScenSplitComp, {
                User most likely tried to tamper with the app.", isolate(input$loadActiveScenSplitComp))
     return()
   }
-  updateTabsetPanel(session, "contentScen_" %+% id, paste0("contentScen_", id, "_1"))
+  updateTabsetPanel(session, paste0("contentScen_", id), 
+                    paste0("contentScen_", id, "_1"))
+  if(isGroupOfSheets[[1]]){
+    updateTabsetPanel(session, paste0("contentScen_", id, "_1"), 
+                      paste0("contentScen_", id, "_1_1"))
+  }
   
   sidsToLoad <<- list(activeScen$getSid())
   if(!length(scenMetaDb) || !sidsToLoad[[1]] %in% scenMetaDb[[1]]){
@@ -66,7 +77,7 @@ observeEvent(input$btScenSplit1_close, {
     return(NULL)
   }
   
-  output$title_2                                     <- renderText(character(0))
+  output$title_2                                     <- renderUI(character(0))
   scenIdLong                                         <- "scen_2_"
   scenData[[scenIdLong]]                             <<- list(NULL)
   scalarData[[scenIdLong]]                           <<- list(NULL)
@@ -84,7 +95,7 @@ observeEvent(input$btScenSplit2_close, {
     return(NULL)
   }
   
-  output$title_3                                     <- renderText(character(0))
+  output$title_3                                     <- renderUI(character(0))
   scenIdLong                                         <- "scen_3_"
   scenData[[scenIdLong]]                             <<- list(NULL)
   scalarData[[scenIdLong]]                           <<- list(NULL)

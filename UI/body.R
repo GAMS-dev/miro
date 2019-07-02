@@ -39,10 +39,10 @@ tabItemList <- list(
             box(title = list(
               tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
                        icon("exclamation-triangle")),
-              textOutput("inputDataTitle", inline = TRUE),
+              uiOutput("inputDataTitle", inline = TRUE),
               tags$div(style = "float: right;", 
-                       HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                   onclick="confirmModalShow(\'', 
+                       HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
+                                   onclick="Miro.confirmModalShow(\'', 
                                    lang$nav$dialogRemoveScen$title, '\', \'', 
                                    lang$nav$dialogRemoveScen$desc, '\', \'', 
                                    lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
@@ -62,201 +62,216 @@ tabItemList <- list(
                               )
                      )
             ),
-            do.call(tabsetPanel, c(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
-              i <- inputTabs[[tabId]][1]
-              tabPanel(
-                title=inputTabTitles[tabId],
+            do.call(tabBox, c(id = "inputTabset", width = 12, lapply(seq_along(inputTabs), function(tabId) {
+              content <- lapply(inputTabs[[tabId]], function(i){
+                hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
+                tabContent <- switch(modelIn[[i]]$type,
+                                     hot = ,
+                                     dt = {
+                                       tagList(
+                                         tags$div(id = paste0("data-in_", i), {
+                                           if(modelIn[[i]]$type == "hot"){
+                                             rHandsontableOutput(paste0("in_", i))
+                                           }else{
+                                             dataTableOutput(paste0("in_", i))
+                                           }
+                                         }),
+                                         tags$div(id = paste0("graph-in_", i), class = "render-output", 
+                                                  style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                                                    sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
+                                                  tryCatch({
+                                                    renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                                                 graphTool = configGraphsIn[[i]]$graph$tool, 
+                                                                 customOptions = configGraphsIn[[i]]$options,
+                                                                 height = configGraphsIn[[i]]$height, 
+                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                                  }, error = function(e) {
+                                                    flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                                    errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                                    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                                  })
+                                         ))
+                                     },
+                                     slider = {
+                                       if(hasDependency){
+                                         sliderStepSize <- 1L
+                                         slider         <- sliderInput(paste0("slider_", i),
+                                                                       label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
+                                                                       value = if(length(modelIn[[i]]$slider$default) > 1) 
+                                                                         numeric(2L) else numeric(1L), step = sliderStepSize, 
+                                                                       width = modelIn[[i]]$slider$width, 
+                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                         slider         <- tagList(tagAppendAttributes(slider, style = "display:none;"), 
+                                                                   tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                                                            lang$nav$inputScreen$noDataDep))
+                                       }else{
+                                         sliderName     <- tolower(names(modelIn)[[i]])
+                                         sliderStepSize <- sliderValues[[sliderName]]$step
+                                         slider         <- sliderInput(paste0("slider_", i), 
+                                                                       label = modelIn[[i]]$slider$label, 
+                                                                       min = sliderValues[[sliderName]]$min, 
+                                                                       max = sliderValues[[sliderName]]$max, 
+                                                                       value = sliderValues[[sliderName]]$def, 
+                                                                       step = sliderValues[[sliderName]]$step, 
+                                                                       width = modelIn[[i]]$slider$width, 
+                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                       }
+                                       if(config$activateModules$hcubeMode){
+                                         if(identical(modelIn[[i]]$slider$double, TRUE)){
+                                           tagList(
+                                             column(width = 8, style = "padding-left:0px;",
+                                                    slider
+                                             ),
+                                             column(width = 2, style = "min-width: 130px; min-height:100px;",
+                                                    tagList(
+                                                      tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
+                                                                 lang$nav$hcubeMode$sliderAllCombinations), 
+                                                      tags$div(
+                                                        tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
+                                                                   checkboxInput("hcubeMode_" %+% i, label = NULL, 
+                                                                                 value = modelIn[[i]]$checkbox$value))
+                                                      )
+                                                    )
+                                             ),
+                                             conditionalPanel("input.hcubeMode_" %+% i, 
+                                                              column(width = 1, style = "min-width: 100px; min-height:100px;",
+                                                                     numericInput("hcubeStep_" %+% i, "Step size", 
+                                                                                  sliderStepSize, min = 0)
+                                                              )
+                                             )
+                                             
+                                           )
+                                         }else if(identical(modelIn[[i]]$slider$single, TRUE)){
+                                           tagList(
+                                             column(width = 10, style = "padding-left:0px;",
+                                                    slider
+                                             ),
+                                             column(width = 1, style = "min-width: 100px; min-height:100px;",
+                                                    numericInput("hcubeStep_" %+% i, "Step size", 
+                                                                 sliderStepSize, min = 0)
+                                             )
+                                           )
+                                         }
+                                       }else{
+                                         slider
+                                       }
+                                     },
+                                     dropdown = {
+                                       if(hasDependency){
+                                         tagList(
+                                           tagAppendAttributes(selectInput(paste0("dropdown_", i),
+                                                                           label = modelIn[[i]]$dropdown$label, 
+                                                                           choices = character(0), selected = character(0),
+                                                                           multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                                                   TRUE)) TRUE else FALSE), style = "display:none;"),
+                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
+                                                    style = "float: left;width: 100%;margin: 20px;", 
+                                                    lang$nav$inputScreen$noDataDep)
+                                         )
+                                       }else{
+                                         choices <- modelIn[[i]]$dropdown$choices
+                                         
+                                         if(!is.null(modelIn[[i]]$dropdown$aliases)){
+                                           names(choices) <- modelIn[[i]]$dropdown$aliases
+                                         }
+                                         selectInput(paste0("dropdown_", i), 
+                                                     label = modelIn[[i]]$dropdown$label, 
+                                                     choices = choices, 
+                                                     selected = modelIn[[i]]$dropdown$selected, 
+                                                     multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                             TRUE)) TRUE else FALSE)
+                                       }
+                                     },
+                                     dropdowne = {
+                                       selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
+                                                   choices = character(0), selected = character(0),
+                                                   multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
+                                                                           TRUE)) TRUE else FALSE)
+                                     },
+                                     daterange = {
+                                       dateRangeInput(paste0("daterange_", i), 
+                                                      label = modelIn[[i]]$daterange$label, 
+                                                      start = modelIn[[i]]$daterange$start, 
+                                                      end = modelIn[[i]]$daterange$end, 
+                                                      min = modelIn[[i]]$daterange$min, 
+                                                      max = modelIn[[i]]$daterange$max, 
+                                                      format = modelIn[[i]]$daterange$format, 
+                                                      startview = modelIn[[i]]$daterange$startview, 
+                                                      weekstart = modelIn[[i]]$daterange$weekstart, 
+                                                      language = config$language, 
+                                                      separator = if(identical(modelIn[[i]]$daterange$separator, 
+                                                                               NULL)) " to " else modelIn[[i]]$daterange$separator, 
+                                                      width = modelIn[[i]]$daterange$width, 
+                                                      autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
+                                                                               FALSE)) FALSE else TRUE)
+                                     },
+                                     date = {
+                                       dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
+                                                 value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
+                                                 max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
+                                                 startview = modelIn[[i]]$date$startview, 
+                                                 weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                                 width = modelIn[[i]]$date$width)
+                                     },
+                                     checkbox = {
+                                       if(hasDependency){
+                                         tagList(
+                                           tags$div(id = paste0("cbDiv_", i), style = "display:none;",
+                                                    tags$label(class = "cb-label", "for" = paste0("cb_", i), 
+                                                               modelIn[[i]]$checkbox$label), 
+                                                    tags$div(
+                                                      tags$label(class = modelIn[[i]]$checkbox$class, 
+                                                                 "for" = paste0("cb_", i), 
+                                                                 checkboxInput(paste0("cb_", i), 
+                                                                               label = NULL, value = NULL, 
+                                                                               width = modelIn[[i]]$checkbox$width))
+                                                    )
+                                           ),
+                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                                    lang$nav$inputScreen$noDataDep)
+                                         )
+                                       }else{
+                                         tagList(
+                                           tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
+                                           tags$div(
+                                             tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
+                                                        checkboxInput(paste0("cb_", i), label = NULL, 
+                                                                      value = modelIn[[i]]$checkbox$value, 
+                                                                      width = modelIn[[i]]$checkbox$width))
+                                           )
+                                         )
+                                       }
+                                     },
+                                     textinput = {
+                                       textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
+                                                 value = modelIn[[i]]$textinput$value,
+                                                 width = modelIn[[i]]$textinput$width,
+                                                 placeholder = modelIn[[i]]$textinput$placeholder)
+                                     }
+                )
+                if(length(inputTabTitles[[tabId]]) > 1L){
+                  titleId <- match(i, inputTabs[[tabId]]) + 1L
+                  return(tabPanel(
+                    title = inputTabTitles[[tabId]][titleId],
+                    value = paste0("inputTabset", tabId, "_", titleId - 1L),
+                    tags$div(class="small-space"),
+                    tabContent,
+                    tags$div(class="small-space")
+                  ))
+                }
+                return(tabContent)
+              })
+              return(tabPanel(
+                title = inputTabTitles[[tabId]][1],
                 value = paste0("inputTabset_", tabId),
-                tags$div(class="small-space"),
-                lapply(inputTabs[[tabId]], function(i){
-                  hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
-                  switch(modelIn[[i]]$type,
-                         hot = ,
-                         dt = {
-                           tagList(
-                             tags$div(id = paste0("data-in_", i), {
-                               if(modelIn[[i]]$type == "hot"){
-                                 rHandsontableOutput(paste0("in_", i))
-                               }else{
-                                 dataTableOutput(paste0("in_", i))
-                               }
-                             }),
-                             tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                      style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                        sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                      tryCatch({
-                                        renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                     graphTool = configGraphsIn[[i]]$graph$tool, 
-                                                     customOptions = configGraphsIn[[i]]$options,
-                                                     height = configGraphsIn[[i]]$height, 
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                      }, error = function(e) {
-                                        flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                        errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                        showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                      })
-                             ))
-                         },
-                         slider = {
-                           if(hasDependency){
-                             sliderStepSize <- 1L
-                             slider         <- sliderInput(paste0("slider_", i),
-                                                           label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
-                                                           value = if(length(modelIn[[i]]$slider$default) > 1) 
-                                                             numeric(2L) else numeric(1L), step = sliderStepSize, 
-                                                           width = modelIn[[i]]$slider$width, 
-                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
-                             slider         <- tagList(tagAppendAttributes(slider, style = "display:none;"), 
-                                                       tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                                                                lang$nav$inputScreen$noDataDep))
-                           }else{
-                             sliderName     <- tolower(names(modelIn)[[i]])
-                             sliderStepSize <- sliderValues[[sliderName]]$step
-                             slider         <- sliderInput(paste0("slider_", i), 
-                                                           label = modelIn[[i]]$slider$label, 
-                                                           min = sliderValues[[sliderName]]$min, 
-                                                           max = sliderValues[[sliderName]]$max, 
-                                                           value = sliderValues[[sliderName]]$def, 
-                                                           step = sliderValues[[sliderName]]$step, 
-                                                           width = modelIn[[i]]$slider$width, 
-                                                           ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
-                           }
-                           if(config$activateModules$hcubeMode){
-                             if(identical(modelIn[[i]]$slider$double, TRUE)){
-                               tagList(
-                                 column(width = 8, style = "padding-left:0px;",
-                                        slider
-                                 ),
-                                 column(width = 2, style = "min-width: 130px; min-height:100px;",
-                                        tagList(
-                                          tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
-                                                     lang$nav$hcubeMode$sliderAllCombinations), 
-                                          tags$div(
-                                            tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
-                                                       checkboxInput("hcubeMode_" %+% i, label = NULL, 
-                                                                     value = modelIn[[i]]$checkbox$value))
-                                          )
-                                        )
-                                 ),
-                                 conditionalPanel("input.hcubeMode_" %+% i, 
-                                                  column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                         numericInput("hcubeStep_" %+% i, "Step size", 
-                                                                      sliderStepSize, min = 0)
-                                                  )
-                                 )
-                                 
-                               )
-                             }else if(identical(modelIn[[i]]$slider$single, TRUE)){
-                               tagList(
-                                 column(width = 10, style = "padding-left:0px;",
-                                        slider
-                                 ),
-                                 column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                        numericInput("hcubeStep_" %+% i, "Step size", 
-                                                     sliderStepSize, min = 0)
-                                 )
-                               )
-                             }
-                           }else{
-                             slider
-                           }
-                         },
-                         dropdown = {
-                           if(hasDependency){
-                             tagList(
-                               tagAppendAttributes(selectInput(paste0("dropdown_", i),
-                                                               label = modelIn[[i]]$dropdown$label, 
-                                                               choices = character(0), selected = character(0),
-                                                               multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                                       TRUE)) TRUE else FALSE), style = "display:none;"),
-                               tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
-                                        style = "float: left;width: 100%;margin: 20px;", 
-                                        lang$nav$inputScreen$noDataDep)
-                             )
-                           }else{
-                             choices <- modelIn[[i]]$dropdown$choices
-                             
-                             if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                               names(choices) <- modelIn[[i]]$dropdown$aliases
-                             }
-                             selectInput(paste0("dropdown_", i), 
-                                         label = modelIn[[i]]$dropdown$label, 
-                                         choices = choices, 
-                                         selected = modelIn[[i]]$dropdown$selected, 
-                                         multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                 TRUE)) TRUE else FALSE)
-                           }
-                         },
-                         dropdowne = {
-                           selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
-                                       choices = character(0), selected = character(0),
-                                       multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
-                                                               TRUE)) TRUE else FALSE)
-                         },
-                         daterange = {
-                           dateRangeInput(paste0("daterange_", i), 
-                                          label = modelIn[[i]]$daterange$label, 
-                                          start = modelIn[[i]]$daterange$start, 
-                                          end = modelIn[[i]]$daterange$end, 
-                                          min = modelIn[[i]]$daterange$min, 
-                                          max = modelIn[[i]]$daterange$max, 
-                                          format = modelIn[[i]]$daterange$format, 
-                                          startview = modelIn[[i]]$daterange$startview, 
-                                          weekstart = modelIn[[i]]$daterange$weekstart, 
-                                          language = config$language, 
-                                          separator = if(identical(modelIn[[i]]$daterange$separator, 
-                                                                   NULL)) " to " else modelIn[[i]]$daterange$separator, 
-                                          width = modelIn[[i]]$daterange$width, 
-                                          autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
-                                                                   FALSE)) FALSE else TRUE)
-                         },
-                         date = {
-                           dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
-                                     value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
-                                     max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
-                                     startview = modelIn[[i]]$date$startview, 
-                                     weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
-                                     width = modelIn[[i]]$date$width)
-                         },
-                         checkbox = {
-                           if(hasDependency){
-                             tagList(
-                               tags$div(id = paste0("cbDiv_", i), style = "display:none;",
-                                        tags$label(class = "cb-label", "for" = paste0("cb_", i), 
-                                                   modelIn[[i]]$checkbox$label), 
-                                        tags$div(
-                                          tags$label(class = modelIn[[i]]$checkbox$class, 
-                                                     "for" = paste0("cb_", i), 
-                                                     checkboxInput(paste0("cb_", i), 
-                                                                   label = NULL, value = NULL, 
-                                                                   width = modelIn[[i]]$checkbox$width))
-                                        )
-                               ),
-                               tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                                        lang$nav$inputScreen$noDataDep)
-                             )
-                           }else{
-                             tagList(
-                               tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
-                               tags$div(
-                                 tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
-                                            checkboxInput(paste0("cb_", i), label = NULL, 
-                                                          value = modelIn[[i]]$checkbox$value, 
-                                                          width = modelIn[[i]]$checkbox$width))
-                               )
-                             )
-                           }
-                         },
-                         textinput = {
-                           textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
-                                     value = modelIn[[i]]$textinput$value,
-                                     width = modelIn[[i]]$textinput$width,
-                                     placeholder = modelIn[[i]]$textinput$placeholder)
-                         }
-                  )
-                }),
-                tags$div(class="small-space")
-              )
+                if(length(inputTabTitles[[tabId]]) > 1L){
+                  do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
+                }else{
+                  tagList(tags$div(class="small-space"), 
+                          content,
+                          tags$div(class="small-space"))
+                }
+              ))
             })))
             )
           )
@@ -275,7 +290,7 @@ tabItemList <- list(
           fluidRow(
             tags$div(id = "scen-split-view",
                      box(width = 6, solidHeader = TRUE, status="primary", title = 
-                           tagList(textOutput("title_2", inline = T), 
+                           tagList(uiOutput("title_2", inline = T), 
                                    tags$div(style = "float: right;", 
                                             actionButton(inputId = "btScenSplit1_close", 
                                                          class = "bt-icon",
@@ -286,7 +301,7 @@ tabItemList <- list(
                          genSplitCompButtons(1)
                          ),
                      box(width = 6, solidHeader = TRUE, status="primary", 
-                         title = tagList(textOutput("title_3", inline = T), 
+                         title = tagList(uiOutput("title_3", inline = T), 
                                          tags$div(style = "float: right;", 
                                                   actionButton(inputId = "btScenSplit2_close", 
                                                                class = "bt-icon", icon = icon("times"), label = NULL))),
@@ -393,13 +408,16 @@ if(config$activateModules$hcubeMode){
     tabItem(tabName="gamsinter",
             fluidRow(
               box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                  textOutput("modelStatus"))
+                  uiOutput("modelStatus"))
             ),
             if(any(config$activateModules$logFile, config$activateModules$lstFile)){
               if(config$activateModules$logFile && config$activateModules$lstFile){
                 logTabset <- tabsetPanel(
                   tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus")),
+                           verbatimTextOutput("logStatus"),
+                           checkboxInput("logUpdate", 
+                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                         value = TRUE)),
                   tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
                            verbatimTextOutput("listFile"))
                 )
@@ -411,15 +429,16 @@ if(config$activateModules$hcubeMode){
               }else{
                 logTabset <- tabsetPanel(
                   tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus"))
+                           verbatimTextOutput("logStatus"),
+                           checkboxInput("logUpdate", 
+                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                         value = TRUE))
                 )
               }
               fluidRow(
                 box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
                     width=12, collapsible = TRUE,
-                    logTabset,
-                    checkboxInput("logUpdate", label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                  value = T)
+                    logTabset
                 )
               )
             }
@@ -429,10 +448,10 @@ if(config$activateModules$hcubeMode){
               box(title = list(
                 tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
                          icon("exclamation-triangle")),
-                textOutput("outputDataTitle", inline = TRUE),
+                uiOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 
-                                   onclick="confirmModalShow(\'', 
+                                   onclick="Miro.confirmModalShow(\'', 
                                      lang$nav$dialogRemoveScen$title, '\', \'', 
                                      lang$nav$dialogRemoveScen$desc, '\', \'', 
                                      lang$nav$dialogRemoveScen$cancelButton, '\', \'', 
@@ -453,32 +472,52 @@ if(config$activateModules$hcubeMode){
                                 )
                        )
               ),
-              do.call(tabsetPanel, c(id = "contentCurrent", 
-                                     lapply(modelOutToDisplay, function(sheetName) {
-                                       i <- match(sheetName, names(modelOut))[1]
-                                       tabPanel(
-                                         title = modelOutAlias[i],
-                                         value = paste0("contentCurrent_", i),
-                                         tags$div(class="space"),
-                                         tags$div(id = paste0("graph-out_", i), class = "render-output", 
-                                                  style = if(!is.null(configGraphsOut[[i]]$height)) 
-                                                    sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
-                                                  renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                                               graphTool = configGraphsOut[[i]]$graph$tool, 
-                                                               customOptions = configGraphsOut[[i]]$options,
-                                                               height = configGraphsOut[[i]]$height, 
-                                                               noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                         ),
-                                         tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
-                                           tryCatch({
-                                             renderDataUI(paste0("table-out_",i), type = "datatable", 
-                                                          noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                           }, error = function(e) {
-                                             flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
-                                             eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
+              do.call(tabBox, c(id = "contentCurrent", width = 12L,
+                                     lapply(seq_along(outputTabs), function(tabId){
+                                       content <- lapply(outputTabs[[tabId]], function(i){
+                                         tabContent <- tagList(
+                                           tags$div(id = paste0("graph-out_", i), class = "render-output", 
+                                                    style = if(!is.null(configGraphsOut[[i]]$height)) 
+                                                      sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
+                                                    renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
+                                                                 graphTool = configGraphsOut[[i]]$graph$tool, 
+                                                                 customOptions = configGraphsOut[[i]]$options,
+                                                                 height = configGraphsOut[[i]]$height, 
+                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                           ),
+                                           tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
+                                             tryCatch({
+                                               renderDataUI(paste0("table-out_",i), type = "datatable", 
+                                                            noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                             }, error = function(e) {
+                                               flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
+                                               eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
+                                             })
                                            })
-                                         }),
-                                         tags$div(class="space"))
+                                         )
+                                         if(length(outputTabTitles[[tabId]]) > 1L){
+                                           titleId <- match(i, outputTabs[[tabId]]) + 1L
+                                           return(tabPanel(
+                                             title = outputTabTitles[[tabId]][titleId],
+                                             value = paste0("contentCurrent", tabId, "_", titleId - 1L),
+                                             tags$div(class="small-space"),
+                                             tabContent,
+                                             tags$div(class="small-space")
+                                           ))
+                                         }
+                                         return(tabContent)
+                                       })
+                                       return(tabPanel(
+                                         title = outputTabTitles[[tabId]][1],
+                                         value = paste0("contentCurrent_", tabId),
+                                         if(length(outputTabTitles[[tabId]]) > 1L){
+                                           do.call(tabsetPanel, c(id = paste0("contentCurrent", tabId), content))
+                                         }else{
+                                           tagList(tags$div(class="small-space"), 
+                                                   content,
+                                                   tags$div(class="small-space"))
+                                         }
+                                       ))
                                      })))
               )
             )
@@ -504,8 +543,8 @@ body <- dashboardBody({
       )
     },
     tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
-    tags$script(src = "mirosc.js", type = "application/javascript"),
     tags$script(src = "miro.js", type = "application/javascript"),
+    tags$script(src = "jquery.slimscroll.min.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)
     tags$style(HTML(paste0('

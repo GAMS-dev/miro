@@ -118,7 +118,7 @@
             }
         },
 		"dowvsindex"   	: {
-			"outType"               : "dtGraph",
+			"outType"               : "graph",
 			"height"				: 700,
 			"graph"                 : {
 				"tool"      			: "dygraphs",
@@ -145,12 +145,12 @@
 					"show"					: "always",
 					"hideOnMouseOut"		: true
 				},
-				"dyRangeSelector"		:{
-					"height"				: 20,
-					"strokeColor"			: ""
+                "dyRangeSelector"		:{
+                    "height": 20,
+                    "strokeColor": "" 
 				},
 				"dyEvent"    :{
-					"lastDayTraining"  : {
+					"lastdaytraining"  : {
 						 "label"     	: "End of training phase",
 						 "labelLoc"     : "bottom",
 						 "color"        : "red"
@@ -162,7 +162,7 @@
 						"label"					: "Dow Jones index",
 						"stepPlot"      		: false,
 						"stemPlot"      		: false,
-						"fillGraph"				: true,
+						"fillGraph"				: false,
 						"drawpoints"			: true
 					},
 					"index fund"    		: {
@@ -212,5 +212,8 @@
                 }
             }
 		}
-	}
+	},
+    "handsontable": {
+       "colWidths": 150
+    }
 }

@@ -46,12 +46,9 @@
     },
     "dataRendering"      : {
         "schedule"			: {
-		    "outType"			: "trnsport1",
+		    "outType"			: "transport1",
 		    "height"			: 700,
-		    "packages"			: ["leaflet", "leaflet.minicharts", "sf", "RColorBrewer"],
-		    "options"			: {
-		    	"geojsonloc"		: "us-states.geojson"
-		    }
+		    "packages"			: ["leaflet", "leaflet.minicharts"]
 	    },
         "scalars_out"   : {
             "outType"			: "valueBox",

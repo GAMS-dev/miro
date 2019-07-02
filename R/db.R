@@ -71,7 +71,7 @@ Db <- R6Class("Db",
                     })
                   }else if(identical(dbConf$type, "sqlite")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name)
+                      private$conn <- DBI::dbConnect(drv = RSQLite::SQLite(), dbname = dbConf$name, bigint = "integer")
                       # turn foreign key usage on
                       dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
                     }, error = function(e){
@@ -1149,9 +1149,9 @@ Db <- R6Class("Db",
                   if(inherits(private$conn, "PqConnection")){
                     return(self$escapePattern(pattern))
                   }else{
-                    bsEscaped <- gsub("\\", "\\\\", pattern, fixed = TRUE)
-                    return(gsub("([.|()\\^{}+$*?'\"]|\\[|\\])", 
-                                "\\\\\\1", bsEscaped))
+                    bsEscaped <- gsub("\\", "\\\\\\\\", pattern, fixed = TRUE)
+                    return(gsub("([.|()^{}+$*?'\"]|\\[|\\])", 
+                                "\\\\\\\\\\1", stringi::stri_escape_unicode(bsEscaped)))
                   }
                 },
                 escapePattern = function(pattern){
@@ -1199,7 +1199,7 @@ Db <- R6Class("Db",
                 },
                 finalize = function(){
                   DBI::dbDisconnect(private$conn)
-                  flog.info("Db: Database connection ended as Db object was gced.")
+                  flog.debug("Db: Database connection ended as Db object was gced.")
                 }
               ),
               active = list(
