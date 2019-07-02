@@ -1,0 +1,41 @@
+{
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "pageSkin": "black",
+  "defCompMode": "split",
+  "storeLogFilesDuration": 7,
+  "roundingDecimals": 2,
+  "defaultScenName": "",
+  "activateModules": {
+    "scenario": true,
+    "strictmode": true,
+    "loadLocal": true,
+    "logFile": true,
+    "lstFile": true,
+    "attachments": true
+  },
+  "aggregateWidgets": true,
+  "includeParentDir": false,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "autoGenInputGraphs": true,
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true,
+      "allowReadOnly": false,
+      "allowComments": true
+    },
+    "height": 700,
+    "colWidths": "[]"
+  }
+}

@@ -244,10 +244,6 @@ pipeline {
                                        set arrangement of theViewOptions to not arranged
                                        set icon size of theViewOptions to 144  
                                        set position of item "'${APP_NAME}'" of container window to {200, 280} 
-                                       set position of item "'.Trashes'" of container window to {100, 600} 
-                                       set position of item "'.bg.png'" of container window to {100, 600} 
-                                       set position of item "'.fseventsd'" of container window to {100, 600} 
-                                       set position of item "'.VolumeIcon.icns'" of container window to {100, 600} 
                                        update without registering applications
                                        delay 5
                                        close
