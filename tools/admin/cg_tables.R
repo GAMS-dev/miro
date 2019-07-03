@@ -389,6 +389,8 @@ observeEvent(rv$tableConfig, {
   switch(rv$tableConfig$tableType,
          "hot" = {
            configJSON$handsontable <<- rv$tableConfig$handsontable
+           if(identical(configJSON$handsontable$colWidths, "[]"))
+             configJSON$handsontable$colWidths <<- NULL
          },
          "dt" = {
            configJSON$datatable <<- rv$tableConfig$datatable
