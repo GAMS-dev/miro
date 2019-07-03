@@ -584,6 +584,9 @@ if(!is.null(errMsg)){
          modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
          scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
          modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
+    if(identical(getCommandArg("buildonly", FALSE), "true")){
+      quit("no")
+    }
   }
   local({
     miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))

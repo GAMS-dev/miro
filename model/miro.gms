@@ -473,9 +473,13 @@ with open(confdir + '/' + '%fn%'.lower() + '_io.json', 'w', encoding='utf-8') as
    json.dump(config, f, indent=4, sort_keys=False)
 db.__del__()
 $offembeddedCode
-   
+
 $include "%fp%%fn%_miro.gms"
-$ifi x%gams.MIRO%==xBUILD $terminate
+$iftheni.build x%gams.MIRO%==xBUILD
+$   set MIROBUILDONLY true
+$else.build
+$   set MIROBUILDONLY false
+$endif.build
 
 $iftheni.mode x%gams.MIROMODE%==x1
 $  set MODEARG LAUNCHHCUBE
@@ -712,6 +716,6 @@ $ if %sysenv.PYEXCEPT% == "NORERROR" $abort "No R installation was found on your
 $ if %sysenv.PYEXCEPT% == "RVERSIONERROR" $abort "R version 3.5 or higher required. Set the path to the RScript executable manually by placing a file: 'rpath.conf' that contains a single line specifying this path in the '<GAMSroot>/miro/conf/' directory."
 $ terminate
 $endif
-$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -gamsSysDir="%gams.sysdir%" -modelPath="%fp%%fn%%fe%" %MODEARG%
+$hiddencall cd . && "%sysenv.RPATH%Rscript" "--vanilla" "%fp%runapp.R" -gamsSysDir="%gams.sysdir%" -modelPath="%fp%%fn%%fe%" -buildonly="%MIROBUILDONLY%" %MODEARG%
 $if errorlevel 1 $abort Problems executing MIRO as web app. Make sure you have a valid MIRO installation.
 $terminate
