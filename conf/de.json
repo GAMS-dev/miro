@@ -64,6 +64,7 @@
         "gamsOutputTabset":{  
           "logFile":"Log-Datei",
           "lstFile":"Listing-Datei",
+          "miroLogFile":"MIRO Log-Datei",
           "logUpdate":"Aktualisieren"
         }
       }
@@ -731,6 +732,9 @@
       },
       "pivotcolor":{
         "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
+      },
+      "mirologfile":{
+        "label": "Geben Sie den Namen der MIRO Log-Datei ein. Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
       },
       "saveDuration":{
         "label": "Dauer, die die GAMS-Logs und lst-Dateien in der Datenbank gespeichert werden sollen (in Tagen). 0 bedeutet, dass Dateien überhaupt nicht gespeichert werden, 999 bedeutet, dass die Dateien nie gelöscht werden sollen. Diese Einstellung wird ignoriert, wenn das Anhangsmodul nicht aktiv ist. Beachten Sie, dass dies derzeit nur im MIRO-Basismodus unterstützt wird."

@@ -154,6 +154,12 @@
          "default":true,
          "required":false
       },
+      "miroLogFile": {
+        "description": "Enter the name of the MIRO log file.",
+         "type": "string",
+         "minLength":3,
+         "required":false
+      },
       "inputGroups":{
          "description": "Specify input tables that shall be aggregated to groups",
          "type": "array",

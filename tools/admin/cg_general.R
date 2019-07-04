@@ -79,6 +79,10 @@ insertUI(selector = "#general_wrapper",
                                      value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
                     )),
            tags$div(style = "max-width:400px;",
+                    textInput("general_mirologfile", label = lang$adminMode$general$mirologfile$label,
+                              value = if(length(configJSON$miroLogFile)) configJSON$miroLogFile else ""
+                    )),
+           tags$div(style = "max-width:400px;",
                     sliderInput("general_save_duration", label = lang$adminMode$general$saveDuration$label,
                                 min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else config$storeLogFilesDuration
                     )),
@@ -321,6 +325,14 @@ observeEvent(input$general_decimal, {
 })
 observeEvent(input$general_pivotcolor, {
   rv$generalConfig$pivottable$bgColor <<- input$general_pivotcolor
+})
+observeEvent(input$general_mirologfile, {
+  if(length(input$general_mirologfile) && 
+     nchar(trimws(input$general_mirologfile))){
+    rv$generalConfig$miroLogFile <<- input$general_mirologfile
+    return()
+  }
+  rv$generalConfig$miroLogFile <<- NULL
 })
 observeEvent(input$add_general, {
   if(length(input$add_general) < 3L){

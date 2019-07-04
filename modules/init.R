@@ -543,6 +543,8 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   scenInputTabs    <- scenInputTabs$tabs
   # read graph data for input and output sheets
   strictMode        <- config$activateModules$strictmode
+  config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L && 
+    nchar(config$miroLogFile) > 2L
   configGraphsIn    <- vector(mode = "list", length = length(modelIn))
   configGraphsOut   <- vector(mode = "list", length = length(modelOut))
   

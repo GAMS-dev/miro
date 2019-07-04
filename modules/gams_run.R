@@ -456,6 +456,7 @@ observeEvent(input$btSolve, {
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
   
   updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
+  updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data 
@@ -607,6 +608,8 @@ observeEvent(input$btSolve, {
   }
   # reset listing file when new solve is started
   output$listFile <- renderText("")
+  output$miroLogFile <- renderUI("")
+  hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
     
@@ -640,6 +643,24 @@ observeEvent(input$btSolve, {
         })
         showErrorMsg(lang$errMsg$readLst$title, errMsg)
       }
+      if(config$activateModules$miroLogFile){
+        miroLogContent <- ""
+        miroLogPath <- file.path(workDir, config$miroLogFile)
+        tryCatch({
+          if(file.exists(miroLogPath)[1]){
+            inputScalarsTmp <- NULL
+            if(scalarsFileName %in% names(modelIn))
+              inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
+            miroLogContent     <- parseMiroLog(session, miroLogPath, 
+                                               names(modelIn), inputScalarsTmp)
+            miroLogAnnotations <- miroLogContent$annotations
+            miroLogContent <- miroLogContent$content
+          }
+        }, error = function(e){
+          flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+        })
+        output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
+      }
       
       if(modelStatus() != 0){
         returnCodeText <- GAMSReturnCodeMap[as.character(modelStatus())]
@@ -647,6 +668,26 @@ observeEvent(input$btSolve, {
           returnCodeText <- as.character(modelStatus())
         }
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
+        if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
+          session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
+          switchTab(session, "input")
+          valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
+          if(!is.na(valIdHead)){
+            valTabId <- 0L
+            for(inputTabId in seq_along(inputTabs)){
+              valTabIdTmp <- inputTabs[[inputTabId]]
+              valTabIdErr <- match(valIdHead, valTabIdTmp)
+              if(!is.na(valTabIdErr)){
+                updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId))
+                if(length(valTabIdTmp) > 1L){
+                  updateTabsetPanel(session, paste0("inputTabset", inputTabId), 
+                                    paste0("inputTabset", inputTabId, "_", valTabIdErr))
+                }
+                break
+              }
+            }
+          }
+        }
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
       }else{
         # run terminated successfully
@@ -695,8 +736,7 @@ observeEvent(input$btSolve, {
         }
         #select first tab in current run tabset
         statusText <- lang$nav$gamsModelStatus$success
-        updateTabsetPanel(session, "sidebarMenuId",
-                          selected = "outputData")
+        switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
         updateTabsetPanel(session, "contentCurrent",
@@ -733,9 +773,6 @@ observeEvent(input$btSolve, {
         GAMSResults <- NULL
         # rendering tables and graphs
         renderOutputData()
-        
-        # show load button after solve
-        switchTab(session, "output")
         
         # mark scenario as unsaved
         markUnsaved()

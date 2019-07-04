@@ -4,6 +4,84 @@ import 'regenerator-runtime/runtime';
 
 const spinnerActive = {};
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function changeActiveButtons(tabId) {
+  switch (tabId) {
+    case 'inputData':
+      $('#btImport').show();
+      $('#btSolve').show();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'outputData':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'gamsinter':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').show();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+      break;
+
+    case 'scenarios':
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').show();
+      $('#btCompareScen').show();
+      break;
+
+    default:
+      $('#btImport').hide();
+      $('#btSolve').hide();
+      $('#btInterrupt').hide();
+      $('#btSplitView').hide();
+      $('#btCompareScen').hide();
+  }
+}
+
+function switchTab(el) {
+  switch (el) {
+    case 'input':
+      changeActiveButtons('inputData');
+      $('[href="#shiny-tab-inputData"]').tab('show');
+      break;
+
+    case 'output':
+      changeActiveButtons('outputData');
+      $('[href="#shiny-tab-outputData"]').tab('show');
+      break;
+
+    case 'gamsinter':
+      changeActiveButtons('gamsinter');
+      $('[href="#shiny-tab-gamsinter"]').tab('show');
+      break;
+
+    case 'hcubeAna':
+      changeActiveButtons('default');
+      $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
+      break;
+
+    case 'scenComp':
+      changeActiveButtons('scenarios');
+      $('[href="#shiny-tab-scenarios"]').tab('show');
+      break;
+    default:
+      break;
+  }
+}
+
 export function showSpinnerIcon(el, delay = 3000) {
   if (spinnerActive[$(el).prop('id')]) {
     return;
@@ -119,6 +197,19 @@ export function hcHashImport(sid) {
   });
 }
 
+export async function jumpToLogMark(id) {
+  switchTab('gamsinter');
+  $('#logFileTabsset [data-value="mirolog"]').tab('show');
+  await sleep(200);
+  const el = $(`#mlogMark_${id}`);
+  if (el !== undefined) {
+    el[0].scrollIntoView();
+    el.animate({ backgroundColor: 'yellow' }, 400)
+      .delay(1000)
+      .animate({ backgroundColor: 'transparent' }, 400);
+  }
+}
+
 function isInputEl(id) {
   if ($(id).parents('.form-group').length) {
     return true;
@@ -149,49 +240,6 @@ function showHideEl(el, delay, msg = null) {
     $(el).text(msg);
   }
   $(el).show().delay(delay).fadeOut();
-}
-
-function changeActiveButtons(tabId) {
-  switch (tabId) {
-    case 'inputData':
-      $('#btImport').show();
-      $('#btSolve').show();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'outputData':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'gamsinter':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').show();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-      break;
-
-    case 'scenarios':
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').show();
-      $('#btCompareScen').show();
-      break;
-
-    default:
-      $('#btImport').hide();
-      $('#btSolve').hide();
-      $('#btInterrupt').hide();
-      $('#btSplitView').hide();
-      $('#btCompareScen').hide();
-  }
 }
 
 $(document).ready(() => {
@@ -230,29 +278,7 @@ $(document).ready(() => {
     + '<i class="far fa-plus-square" style="font-size:13pt;"></i></a></li>'); // show/hide buttons after (R triggered) tab switch.
 
   Shiny.addCustomMessageHandler('gms-switchTab', (el) => {
-    switch (el) {
-      case 'input':
-        changeActiveButtons('inputData');
-        break;
-
-      case 'output':
-        changeActiveButtons('outputData');
-        break;
-
-      case 'gamsinter':
-        changeActiveButtons('gamsinter');
-        break;
-
-      case 'hcubeAna':
-        changeActiveButtons('default');
-        break;
-
-      case 'scenComp':
-        changeActiveButtons('scenarios');
-        break;
-      default:
-        break;
-    }
+    switchTab(el);
   });
   $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
@@ -356,6 +382,20 @@ $(document).ready(() => {
         el.css('font-size', `${currSize}px`);
       }
     }, 500);
+  });
+  Shiny.addCustomMessageHandler('gms-showValidationErrors', (content) => {
+    const inSyms = Object.keys(content);
+    $('.input-validation-error').empty();
+    inSyms.forEach((key) => {
+      if (Array.isArray(content[key])) {
+        content[key].forEach((item) => {
+          $(`#valErr_${key}`).append(item);
+        });
+      } else {
+        $(`#valErr_${key}`).append(content[key]);
+      }
+    });
+    $('.input-validation-error').show();
   });
 });
 

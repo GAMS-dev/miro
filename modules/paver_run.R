@@ -133,7 +133,6 @@ observeEvent(input$btPaver, {
     showEl(session, "#paverLoad")
     hideEl(session, "#newPaverRunButton")
     enableEl(session, "#btPaverInterrupt")
-    updateTabsetPanel(session, "sidebarMenuId", selected = "hcubeAnalyze")
     switchTab(session, "hcubeAna")
     
     errMsg <- NULL

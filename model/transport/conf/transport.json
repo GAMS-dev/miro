@@ -1,4 +1,5 @@
 {
+    "miroLogFile": "miro.log",
     "inputWidgets":{
        "f":{
           "widgetType": "slider",

@@ -69,6 +69,7 @@ tabItemList <- list(
                                      hot = ,
                                      dt = {
                                        tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                          tags$div(id = paste0("data-in_", i), {
                                            if(modelIn[[i]]$type == "hot"){
                                              rHandsontableOutput(paste0("in_", i))
@@ -101,20 +102,25 @@ tabItemList <- list(
                                                                          numeric(2L) else numeric(1L), step = sliderStepSize, 
                                                                        width = modelIn[[i]]$slider$width, 
                                                                        ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
-                                         slider         <- tagList(tagAppendAttributes(slider, style = "display:none;"), 
-                                                                   tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                                                                            lang$nav$inputScreen$noDataDep))
+                                         slider         <- tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                           tagAppendAttributes(slider, style = "display:none;"), 
+                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                                    lang$nav$inputScreen$noDataDep))
                                        }else{
                                          sliderName     <- tolower(names(modelIn)[[i]])
                                          sliderStepSize <- sliderValues[[sliderName]]$step
-                                         slider         <- sliderInput(paste0("slider_", i), 
-                                                                       label = modelIn[[i]]$slider$label, 
-                                                                       min = sliderValues[[sliderName]]$min, 
-                                                                       max = sliderValues[[sliderName]]$max, 
-                                                                       value = sliderValues[[sliderName]]$def, 
-                                                                       step = sliderValues[[sliderName]]$step, 
-                                                                       width = modelIn[[i]]$slider$width, 
-                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                         slider         <- tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                           sliderInput(paste0("slider_", i), 
+                                                       label = modelIn[[i]]$slider$label, 
+                                                       min = sliderValues[[sliderName]]$min, 
+                                                       max = sliderValues[[sliderName]]$max, 
+                                                       value = sliderValues[[sliderName]]$def, 
+                                                       step = sliderValues[[sliderName]]$step, 
+                                                       width = modelIn[[i]]$slider$width, 
+                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                         )
                                        }
                                        if(config$activateModules$hcubeMode){
                                          if(identical(modelIn[[i]]$slider$double, TRUE)){
@@ -159,6 +165,7 @@ tabItemList <- list(
                                      dropdown = {
                                        if(hasDependency){
                                          tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tagAppendAttributes(selectInput(paste0("dropdown_", i),
                                                                            label = modelIn[[i]]$dropdown$label, 
                                                                            choices = character(0), selected = character(0),
@@ -174,48 +181,61 @@ tabItemList <- list(
                                          if(!is.null(modelIn[[i]]$dropdown$aliases)){
                                            names(choices) <- modelIn[[i]]$dropdown$aliases
                                          }
-                                         selectInput(paste0("dropdown_", i), 
-                                                     label = modelIn[[i]]$dropdown$label, 
-                                                     choices = choices, 
-                                                     selected = modelIn[[i]]$dropdown$selected, 
-                                                     multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                             TRUE)) TRUE else FALSE)
+                                         tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                           selectInput(paste0("dropdown_", i), 
+                                                       label = modelIn[[i]]$dropdown$label, 
+                                                       choices = choices, 
+                                                       selected = modelIn[[i]]$dropdown$selected, 
+                                                       multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                               TRUE)) TRUE else FALSE)
+                                         )
                                        }
                                      },
                                      dropdowne = {
-                                       selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
-                                                   choices = character(0), selected = character(0),
-                                                   multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
-                                                                           TRUE)) TRUE else FALSE)
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
+                                                     choices = character(0), selected = character(0),
+                                                     multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
+                                                                             TRUE)) TRUE else FALSE)
+                                       )
                                      },
                                      daterange = {
-                                       dateRangeInput(paste0("daterange_", i), 
-                                                      label = modelIn[[i]]$daterange$label, 
-                                                      start = modelIn[[i]]$daterange$start, 
-                                                      end = modelIn[[i]]$daterange$end, 
-                                                      min = modelIn[[i]]$daterange$min, 
-                                                      max = modelIn[[i]]$daterange$max, 
-                                                      format = modelIn[[i]]$daterange$format, 
-                                                      startview = modelIn[[i]]$daterange$startview, 
-                                                      weekstart = modelIn[[i]]$daterange$weekstart, 
-                                                      language = config$language, 
-                                                      separator = if(identical(modelIn[[i]]$daterange$separator, 
-                                                                               NULL)) " to " else modelIn[[i]]$daterange$separator, 
-                                                      width = modelIn[[i]]$daterange$width, 
-                                                      autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
-                                                                               FALSE)) FALSE else TRUE)
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         dateRangeInput(paste0("daterange_", i), 
+                                                        label = modelIn[[i]]$daterange$label, 
+                                                        start = modelIn[[i]]$daterange$start, 
+                                                        end = modelIn[[i]]$daterange$end, 
+                                                        min = modelIn[[i]]$daterange$min, 
+                                                        max = modelIn[[i]]$daterange$max, 
+                                                        format = modelIn[[i]]$daterange$format, 
+                                                        startview = modelIn[[i]]$daterange$startview, 
+                                                        weekstart = modelIn[[i]]$daterange$weekstart, 
+                                                        language = config$language, 
+                                                        separator = if(identical(modelIn[[i]]$daterange$separator, 
+                                                                                 NULL)) " to " else modelIn[[i]]$daterange$separator, 
+                                                        width = modelIn[[i]]$daterange$width, 
+                                                        autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
+                                                                                 FALSE)) FALSE else TRUE)
+                                       )
                                      },
                                      date = {
-                                       dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
-                                                 value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
-                                                 max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
-                                                 startview = modelIn[[i]]$date$startview, 
-                                                 weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
-                                                 width = modelIn[[i]]$date$width)
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
+                                                   value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
+                                                   max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
+                                                   startview = modelIn[[i]]$date$startview, 
+                                                   weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                                   width = modelIn[[i]]$date$width)
+                                       )
                                      },
                                      checkbox = {
                                        if(hasDependency){
                                          tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tags$div(id = paste0("cbDiv_", i), style = "display:none;",
                                                     tags$label(class = "cb-label", "for" = paste0("cb_", i), 
                                                                modelIn[[i]]$checkbox$label), 
@@ -232,6 +252,7 @@ tabItemList <- list(
                                          )
                                        }else{
                                          tagList(
+                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
                                            tags$div(
                                              tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
@@ -243,10 +264,13 @@ tabItemList <- list(
                                        }
                                      },
                                      textinput = {
-                                       textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
-                                                 value = modelIn[[i]]$textinput$value,
-                                                 width = modelIn[[i]]$textinput$width,
-                                                 placeholder = modelIn[[i]]$textinput$placeholder)
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
+                                                   value = modelIn[[i]]$textinput$value,
+                                                   width = modelIn[[i]]$textinput$width,
+                                                   placeholder = modelIn[[i]]$textinput$placeholder)
+                                       )
                                      }
                 )
                 if(length(inputTabTitles[[tabId]]) > 1L){
@@ -410,35 +434,34 @@ if(config$activateModules$hcubeMode){
               box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
                   uiOutput("modelStatus"))
             ),
-            if(any(config$activateModules$logFile, config$activateModules$lstFile)){
-              if(config$activateModules$logFile && config$activateModules$lstFile){
-                logTabset <- tabsetPanel(
-                  tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus"),
-                           checkboxInput("logUpdate", 
-                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                         value = TRUE)),
-                  tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
-                           verbatimTextOutput("listFile"))
-                )
-              }else if(config$activateModules$lstFile){
-                logTabset <- tabsetPanel(
-                  tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
-                           verbatimTextOutput("listFile"))
-                )
-              }else{
-                logTabset <- tabsetPanel(
-                  tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
-                           verbatimTextOutput("logStatus"),
-                           checkboxInput("logUpdate", 
-                                         label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                         value = TRUE))
-                )
+            if(any(config$activateModules$logFile, config$activateModules$lstFile, 
+                   config$activateModules$miroLogFile)){
+              logTabsetList <- list()
+              if(config$activateModules$logFile){
+                logTabsetList$log <- tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                                              value = "log",
+                                              verbatimTextOutput("logStatus"),
+                                              checkboxInput("logUpdate", 
+                                                            label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                                            value = TRUE))
               }
+              if(config$activateModules$lstFile){
+                logTabsetList$lst <- tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                                              value = "listfile",
+                                              verbatimTextOutput("listFile"))
+              }
+              if(config$activateModules$miroLogFile){
+                logTabsetList$miroLog <- tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile,
+                                                  value = "mirolog",
+                                                  tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
+                                                                      uiOutput("miroLogFile")))
+              }
+              logTabsetList <- unname(logTabsetList)
+              logTabsetList$id <- "logFileTabsset"
               fluidRow(
                 box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
                     width=12, collapsible = TRUE,
-                    logTabset
+                    do.call(tabsetPanel, logTabsetList)
                 )
               )
             }

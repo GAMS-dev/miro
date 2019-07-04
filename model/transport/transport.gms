@@ -50,6 +50,16 @@ Parameter
 c(i,j) 'transport cost in thousands of dollars per case';
 c(i,j) = f*d(i,j)/1000;
 
+
+* input validataion
+file log / miro.log /;
+
+if(sum(i, a(i)) < sum(j, b(j)),
+  put log 'a:: Capacity insufficient to meet demand'/;
+);
+putclose log;
+
+
 Variable
    x(i,j) 'shipment quantities in cases'
    z      'total transportation costs in thousands of dollars';

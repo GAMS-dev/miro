@@ -486,7 +486,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   rm(scenDataTmp)
   if(!is.list(sidsToLoad)){
     switchTab(session, "scenComp")
-    updateTabsetPanel(session, "sidebarMenuId", selected = "scenarios")
   }
   if(!isInSplitView){
     switchTab(session, "scenComp")
