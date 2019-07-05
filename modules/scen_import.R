@@ -169,9 +169,9 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     }else{
       noOutputData <<- TRUE
     }
-    scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
+    scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
     if(!is.na(scalarIdTmp)){
-      scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
+      scalarData[["scen_1_"]] <<- bind_rows(scenInputData[[scalarIdTmp]], scalarData[["scen_1_"]])
     }
     outputData <- NULL
   }else{

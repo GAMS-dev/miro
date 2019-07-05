@@ -62,9 +62,11 @@ Db <- R6Class("Db",
                   
                   if(identical(dbConf$type, "postgres")){
                     tryCatch({
-                      private$conn <- DBI::dbConnect(drv = RPostgres::Postgres(), dbname = dbConf$name, 
-                                                     host = dbConf$host, port = dbConf$port, 
-                                                     user = dbConf$username, password = dbConf$password)
+                      private$conn <- dbConnect(odbc(), driver = "PostgreSQL Driver", 
+                                                database = dbConf$name,  
+                                                host = dbConf$host, port = dbConf$port, 
+                                                uid = dbConf$username, pwd = dbConf$password, 
+                                                bigint = "integer")
                     }, error = function(e){
                       stop(sprintf("Db: Database connection could not be established. Error message: %s", e), 
                            call. = FALSE)
@@ -104,8 +106,7 @@ Db <- R6Class("Db",
                   #
                   # Returns:
                   #   list with names of orphaned database tables
-                  
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND table_name LIKE ", 
@@ -146,7 +147,7 @@ Db <- R6Class("Db",
                     confHeaders <- colNames[[tabNameRaw]]
                     if(!is.null(confHeaders) && dbExistsTable(private$conn, tabName)){
                       tryCatch({
-                        if(inherits(private$conn, "PqConnection")){
+                        if(inherits(private$conn, "PostgreSQL")){
                           query <- SQL(paste0("SELECT column_name,data_type  FROM information_schema.columns 
                                             WHERE table_name = ", 
                                               dbQuoteString(private$conn, tabName), ";"))
@@ -212,7 +213,7 @@ Db <- R6Class("Db",
                 removeTablesModel     = function(){
                   tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName['_scenAttach'])
                   # bring metadata table to front as others depend on it
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     query <- paste0("DROP TABLE IF EXISTS ",  
                                     paste(dbQuoteIdentifier(private$conn, tableNames),
                                           collapse = ", "), " CASCADE;")
@@ -396,7 +397,7 @@ Db <- R6Class("Db",
                   # Returns:
                   # integer: latest scenario Id exported to database
                   
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     tryCatch({
                       query <- SQL(paste0("SELECT nextval(pg_get_serial_sequence(",
                                                         DBI::dbQuoteString(private$conn, private$tableNameMetadata), 
@@ -673,7 +674,7 @@ Db <- R6Class("Db",
                       subsetRows <- self$buildRowSubsetSubquery(dots, innerSep, outerSep)
                     }
                     if(!is.null(subsetSids) && length(subsetSids) >= 1L){
-                      if(inherits(private$conn, "PqConnection")){
+                      if(inherits(private$conn, "PostgreSQL")){
                         # POSTGRES subsetting
                         innerJoin <- paste0(" INNER JOIN (VALUES ", paste("(" %+% subsetSids, collapse = "), "),
                           ")) vals(_v) ON ",  DBI::dbQuoteIdentifier(private$conn, 
@@ -836,14 +837,14 @@ Db <- R6Class("Db",
                                       DBI::dbQuoteIdentifier(private$conn, metaTabName), 
                                       " (", 
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
-                                      if(inherits(private$conn, "PqConnection")) 
+                                      if(inherits(private$conn, "PostgreSQL")) 
                                         " serial PRIMARY KEY," else " integer PRIMARY KEY,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['uid']), 
                                       " varchar(50) NOT NULL,", 
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sname']), 
                                       " varchar(255) NOT NULL,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stime']), 
-                                      if(inherits(private$conn, "PqConnection")) 
+                                      if(inherits(private$conn, "PostgreSQL")) 
                                         " timestamp with time zone," else " text,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['stag']), 
                                       " text,",
@@ -854,7 +855,7 @@ Db <- R6Class("Db",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['accessX']), 
                                       " text NOT NULL,",
                                       DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['scode']), 
-                                      if(inherits(private$conn, "PqConnection")) " smallint);" else " integer);")
+                                      if(inherits(private$conn, "PostgreSQL")) " smallint);" else " integer);")
                       DBI::dbExecute(private$conn, query)
                     }, error = function(e){
                       stop(sprintf("Metadata table could not be created (Db.writeMetadata). " %+%
@@ -941,7 +942,7 @@ Db <- R6Class("Db",
                   
                   self$writeMetadata(metadata, update = FALSE, hcubeMetadata = TRUE)
                   
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     query <- "SELECT lastval();"
                   }else{
                     query <- "SELECT last_insert_rowid();"
@@ -1146,7 +1147,7 @@ Db <- R6Class("Db",
                   }
                 },
                 escapePatternPivot = function(pattern){
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     return(self$escapePattern(pattern))
                   }else{
                     bsEscaped <- gsub("\\", "\\\\\\\\", pattern, fixed = TRUE)
@@ -1155,7 +1156,7 @@ Db <- R6Class("Db",
                   }
                 },
                 escapePattern = function(pattern){
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     pattern <- gsub("([%_\\])", "\\\\\\1", pattern)
                   }else{
                     pattern <- gsub("([%_])", "\\1\\1", pattern)
@@ -1397,7 +1398,7 @@ Db <- R6Class("Db",
                 },
                 getTableNamesModel = function(){
                   # attachment table currently not fetched
-                  if(inherits(private$conn, "PqConnection")){
+                  if(inherits(private$conn, "PostgreSQL")){
                     query <- SQL(paste0("SELECT table_name FROM information_schema.tables", 
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND (table_name IN (", 

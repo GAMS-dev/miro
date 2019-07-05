@@ -546,7 +546,7 @@ getOS <- function(){
 
 dateColToChar <- function(conn, df){
   # converts date columns to character
-  if(inherits(conn, "PqConnection")){
+  if(inherits(conn, "PostgreSQL")){
     return(df)
   }
   df[] <- lapply(df, function(col){

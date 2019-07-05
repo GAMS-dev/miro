@@ -124,7 +124,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
     })
   }else{
     tryCatch({
-      customRenderer <- match.fun("render" %+% toupper(substr(typeCustom, 1, 1)) %+% substr(typeCustom, 2, nchar(typeCustom)))
+      customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),
+                                         substr(typeCustom, 2, nchar(typeCustom))))
     }, error = function(e){
       stop(sprintf("A custom renderer function: '%s' was not found. 
                    Please make sure you first define such a function.", typeCustom), call. = FALSE)

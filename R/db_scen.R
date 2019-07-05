@@ -695,7 +695,7 @@ Scenario <- R6Class("Scenario",
                                             DBI::dbQuoteIdentifier(private$conn, private$scenMetaColnames['sid']), 
                                             " int UNIQUE,", 
                                             DBI::dbQuoteIdentifier(private$conn, private$slocktimeIdentifier), 
-                                            if(inherits(private$conn, "PqConnection")) 
+                                            if(inherits(private$conn, "PostgreSQL")) 
                                               " timestamp with time zone);" else " text);")
                             DBI::dbExecute(private$conn, query)
                             flog.debug("Db: %s: Table with locks ('%s') was created as it did not yet exist. (Scenario.lock)", private$uid, private$tableNameScenLocks)

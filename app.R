@@ -25,7 +25,7 @@ MIRORDate   <- "Jun 21 2019"
 # leaflet         #GPL-3
 # leaflet.minicharts #GPL >=v2
 
-# RPostgres (Scenario mode) #GPL-2
+# odbc (Scenario mode) #GMIT
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
@@ -300,7 +300,7 @@ if(is.null(errMsg)){
     if(identical(tolower(config$db$type), "sqlite")){
       requiredPackages <- c("DBI", "RSQLite")
     }else{
-      requiredPackages <- c("DBI", "RPostgres")
+      requiredPackages <- c("DBI", "odbc")
     }
     source("./R/install_packages.R", local = TRUE)
     
