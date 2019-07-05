@@ -345,6 +345,9 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-removeClassEl', (el) => {
     $(el.id).removeClass(el.oldclass);
   });
+  Shiny.addCustomMessageHandler('gms-emptyEl', (id) => {
+    $(id).empty();
+  });
   Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
     setTimeout(() => {
       $(id).animate({

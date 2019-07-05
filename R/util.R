@@ -688,6 +688,9 @@ addClassEl <- function(session, id, class){
 removeClassEl <- function(session, id, class){
   session$sendCustomMessage("gms-removeClassEl", list(id = id, oldclass = class))
 }
+emptyEl <- function(session, id){
+  session$sendCustomMessage("gms-emptyEl", id)
+}
 hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
 }

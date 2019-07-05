@@ -35,7 +35,6 @@
       "allowReadOnly": false,
       "allowComments": true
     },
-    "height": 700,
-    "colWidths": "[]"
+    "height": 700
   }
 }

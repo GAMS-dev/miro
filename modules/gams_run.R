@@ -608,7 +608,7 @@ observeEvent(input$btSolve, {
   }
   # reset listing file when new solve is started
   output$listFile <- renderText("")
-  output$miroLogFile <- renderUI("")
+  emptyEl(session, "#miroLogFile")
   hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
