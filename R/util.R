@@ -476,7 +476,8 @@ verifyInput <- function(data, headers){
       if(tolower(headers[[i]]$type) %in% c("scalar", "parameter") && class(data[[i]]) != "numeric"){
         return(FALSE)
       }
-      if(tolower(headers[[i]]$type) %in% c("acronym", "set") && !(class(data[[i]]) %in% c("factor", "character", "numeric"))){
+      if(tolower(headers[[i]]$type) %in% c("acronym", "set") && 
+         !any(class(data[[i]]) %in% c("factor", "character", "numeric", "POSIXt", "Date"))){
         return(FALSE)
       }
     }

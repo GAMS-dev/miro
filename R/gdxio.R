@@ -35,7 +35,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                               if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$parameters)){
                                 return(as.character(private$rgdxScalar(scalarSymbols$symnames[[i]])))
                               }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
-                                return(private$rgdxSet(scalarSymbols$symnames[[i]])[[1]][1])
+                                return(as.character(private$rgdxSet(scalarSymbols$symnames[[i]])[[1]][1]))
                               }
                               return(scalar)
                             }, character(1L), USE.NAMES = FALSE)))
@@ -275,7 +275,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }else if(length(names)){
       names(symDF) <- names
     }
-    return(symDF)
+    return(type_convert(symDF, cols()))
   },
   rgdxScalar = function(symName = NULL, sym = NULL){
     if(!length(sym)){
@@ -315,6 +315,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(length(names)){
       names(symDF) <- names
     }
-    return(symDF)
+    return(type_convert(symDF, cols()))
   }
 ))
