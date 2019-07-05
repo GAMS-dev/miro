@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>MIRO - Configuration</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- Spectrum ColorPicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
+    <!-- bootstrap datetimepicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- alpaca -->
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
+
+</head>
+
+<body class="body-blue">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Charts</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Charts</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="pie-chart" class="doc-section">
+                                <h2 class="section-title">Pie chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Any parameter with a value column can be displayed as a pie chart.</p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pie_config.png" alt="Pie chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "stock_weight": {
+      "outType": "graph",
+      "graph": {
+        "title": "weight",
+        "tool": "plotly",
+        "labels": "symbol",
+        "values": "value",
+        "type": "pie"
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="donut-chart" class="doc-section">
+                                <h2 class="section-title">Donut chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>A donut chart is a pie chart with a hole. In the configuration mode the donut chart is therefore to be found under <i>pie chart</i>. 
+                                    Only the size of the donut hole can be configured here additionally.</p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_donut_config.png" alt="Donut chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "stock_weight": {
+      "outType": "graph",
+      "graph": {
+        "title": "weight",
+        "tool": "plotly",
+        "labels": "symbol",
+        "values": "value",
+        "type": "pie",
+        "hole": 0.6
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>       
+                            <section id="bar-chart" class="doc-section">
+                                <h2 class="section-title">Bar chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>If a parameter is to be visualized as a bar chart, an index must be specified for the x-axis as well as for the y-axis. 
+                                    Several data series can be plotted simultaneously on the x-axis. </p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bar_config.png" alt="Bar chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "stock_weight": {
+      "outType": "graph",
+      "graph": {
+        "title": "weight",
+        "tool": "plotly",
+        "type": "bar",
+        "barmode": "group",
+        "ydata": {
+          "value": {
+            "label": "weight",
+            "mode": "lines",
+            "marker": {
+              "line": {
+                "width": 0
+              },
+              "color": "#c50e0e"
+            }
+          }
+        },
+        "xdata": "symbol",
+        "showlegend": false,
+        "outType": "graph",
+        "xaxis": {
+          "title": "stock symbol",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true
+        },
+        "yaxis": {
+          "title": "weight",
+          "showgrid": true,
+          "zeroline": true,
+          "showticklabels": true
+        }
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="scatter-chart" class="doc-section">
+                                <h2 class="section-title">Scatter plot</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_scatter_config.png" alt="Scatter plot configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "abserror": {
+      "outType": "graph",
+      "graph": {
+        "title": "absolute error",
+        "tool": "plotly",
+        "type": "scatter",
+        "ydata": {
+          "absolute error train": {
+            "label": "absolute error train",
+            "mode": "markers",
+            "fill": "none",
+            "marker": {
+              "symbol": "circle",
+              "opacity": 1,
+              "size": "15",
+              "line": {
+                "width": "2",
+                "color": "#121212"
+              },
+              "color": "#d11515"
+            },
+            "showlegend": false
+          }
+        },
+        "xdata": "date",
+        "showlegend": false,
+        "outType": "graph",
+        "xaxis": {
+          "title": "date",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "rangefrom": "2016-01-01",
+          "rangeto": "2016-05-01"
+        },
+        "yaxis": {
+          "title": "absolute error train",
+          "showgrid": true,
+          "zeroline": false,
+          "showticklabels": true
+        }
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>      
+                            <section id="line-chart" class="doc-section">
+                                <h2 class="section-title">Line chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_line_config.png" alt="Line chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "abserror": {
+      "outType": "graph",
+      "graph": {
+        "title": "absolute error",
+        "tool": "plotly",
+        "type": "scatter",
+        "ydata": {
+          "absolute error train": {
+            "label": "absolute error train",
+            "mode": "lines",
+            "line": {
+              "width": 2,
+              "shape": "linear",
+              "dash": "solid",
+              "color": "#0f93c0"
+            },
+            "showlegend": false,
+            "fill": "tozeroy"
+          },
+          "absolute error test": {
+            "label": "absolute error test",
+            "mode": "lines",
+            "line": {
+              "width": 2,
+              "shape": "linear",
+              "dash": "solid"
+            },
+            "showlegend": true,
+            "fill": "tozeroy"
+          }
+        },
+        "xdata": "date",
+        "showlegend": false,
+        "outType": "graph",
+        "xaxis": {
+          "title": "date",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true
+        },
+        "yaxis": {
+          "title": "absolute error train",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": false
+        },
+        "plot_bgcolor": "#f5f0f0"
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="bubble-chart" class="doc-section">
+                                <h2 class="section-title">Bubble chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>A bubble chart is a scatter plot where the size of a single plot depends on a value.</p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bubble_config.png" alt="Bubble chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "abserror": {
+      "outType": "graph",
+      "graph": {
+        "title": "absolute error",
+        "tool": "plotly",
+        "type": "bubble",
+        "ydata": {
+          "absolute error train": {
+            "label": "absolute error train",
+            "mode": "markers",
+            "marker": {
+              "symbol": "circle",
+              "opacity": 1,
+              "size": "absolute error train",
+              "color": "absolute error train",
+              "line": {
+                "width": 0
+              },
+              "maxsize": 31
+            },
+            "showlegend": false
+          }
+        },
+        "xdata": "date",
+        "showlegend": false,
+        "outType": "graph",
+        "xaxis": {
+          "title": "date",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true,
+          "rangefrom": "2016-01-01",
+          "rangeto": "2016-05-01"
+        },
+        "yaxis": {
+          "title": "absolute error train",
+          "showgrid": false,
+          "zeroline": false,
+          "showticklabels": true
+        }
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>       
+                            <section id="histogram-chart" class="doc-section">
+                                <h2 class="section-title">Histogram</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_histogram_config.png" alt="Histogram configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "abserror": {
+      "outType": "graph",
+      "graph": {
+        "title": "Absolute error - comparison",
+        "tool": "plotly",
+        "type": "hist",
+        "xdata": {
+          "absolute error train": {
+            "color": "#14ca76",
+            "alpha": 1,
+            "labels": "absolute error train"
+          },
+          "absolute error test": {
+            "labels": "absolute error test",
+            "color": "rgba(255,0,0,0.6)",
+            "alpha": 1
+          }
+        },
+        "histnorm": "",
+        "nbins": 10,
+        "barmode": "overlay",
+        "xaxis": {
+          "title": "Absolute error"
+        },
+        "yaxis": {
+          "title": "Frequency"
+        }
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="map-chart" class="doc-section">
+                                <h2 class="section-title">Map</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "schedule": {
+      "outType": "graph",
+      "graph": {
+        "title": "shipment quantities in cases",
+        "tool": "leaflet",
+        "layersControl": {
+          "options": {
+            "collapsed": true
+          },
+          "position": "topright",
+          "overlayGroups": ["Canning plants", "Markets"]
+        },
+        "markers": {
+          "1": {
+            "lng": "lngp",
+            "lat": "latp",
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": false
+            },
+            "label": "Canning plant [i]",
+            "group": "Canning plants"
+          },
+          "2": {
+            "lng": "lngm",
+            "lat": "latm",
+            "labelOptions": {
+              "textsize": "12px",
+              "permanent": false
+            },
+            "label": "Market [j]",
+            "group": "Markets"
+          }
+        },
+        "flows": {
+          "1": {
+            "lng0": "lngm",
+            "lat0": "latm",
+            "lng1": "lngp",
+            "lat1": "latp",
+            "flow": "lngp",
+            "color": "#0000ff",
+            "minThickness": 1,
+            "maxThickness": "8"
+          }
+        },
+        "minicharts": {}
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="timeseries-chart" class="doc-section">
+                                <h2 class="section-title">Time series diagram</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "dowvsindex": {
+      "outType": "graph",
+      "graph": {
+        "title": "dow jones vs. index fund",
+        "tool": "dygraphs",
+        "xdata": "date",
+        "ydata": {
+          "dj": {
+            "label": "dow jones",
+            "stemPlot": false,
+            "stepPlot": false,
+            "fillGraph": false,
+            "drawPoints": false,
+            "pointShape": "dot",
+            "pointSize": 2
+          },
+          "index fund": {
+            "label": "index fund",
+            "stemPlot": false,
+            "stepPlot": false,
+            "fillGraph": false,
+            "drawPoints": false,
+            "pointShape": "dot",
+            "pointSize": 2
+          }
+        },
+        "dyOptions": {
+          "includeZero": false,
+          "logscale": false,
+          "drawGrid": true,
+          "stepPlot": false,
+          "stemPlot": false,
+          "fillGraph": false,
+          "fillAlpha": 0.15,
+          "drawPoints": false,
+          "pointShape": "dot",
+          "pointSize": 2
+        },
+        "dyHighlight": {
+          "highlightSeriesBackgroundAlpha": 0.5,
+          "hideOnMouseOut": true,
+          "highlightCircleSize": 3
+        },
+        "xaxis": {
+          "title": "date"
+        },
+        "yaxis": {
+          "title": "dow jones"
+        },
+        "dyEvent": {
+          "lastdaytraining": {
+            "labelLoc": "top",
+            "color": "rgb(255,0,0)",
+            "strokePattern": "dashed",
+            "label": "last day of training phase"
+          }
+        },
+        "dyRangeSelector": {
+          "height": 40,
+          "strokeColor": "#808fab",
+          "fillColor": "#a7b1c4",
+          "retainDateWindow": false,
+          "keepMouseZoom": true
+        }
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="pivot-chart" class="doc-section">
+                                <h2 class="section-title">Pivot table</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "schedule": {
+      "outType": "pivot",
+      "pivottable": {
+        "aggregatorName": "Sum",
+        "rendererName": "Heatmap",
+        "locale": "en",
+        "subtotals": false,
+        "rows": "i",
+        "cols": "j",
+        "vals": "quantities"
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="gantt-chart" class="doc-section">
+                                <h2 class="section-title">Gantt chart</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p></p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "dataRendering": {
+    "gantt": {
+      "outType": "graph",
+      "graph": {
+        "title": "asdasd",
+        "tool": "timevis",
+        "showZoom": true,
+        "fit": true,
+        "zoomFactor": 0.5,
+        "series": {
+          "1": {
+            "content": "content",
+            "start": "start",
+            "type": "range",
+            "end": "end",
+            "title": "content",
+            "group": "group",
+            "groupTitle": "content"
+          }
+        },
+        "editable": true,
+        "multiselect": false,
+        "showCurrentTime": false
+      },
+      "height": 700
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>                           
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                            <a class="nav-link scrollto" href="#intro">Pie chart</a>
+                             <a class="nav-link scrollto" href="#intro">Donut chart</a>
+                             <a class="nav-link scrollto" href="#intro">Bar chart</a>
+                             <a class="nav-link scrollto" href="#intro">Scatter plot</a>
+                             <a class="nav-link scrollto" href="#intro">Line chart</a>
+                             <a class="nav-link scrollto" href="#intro">Bubble chart</a>
+                             <a class="nav-link scrollto" href="#intro">Histogram</a>
+                             <a class="nav-link scrollto" href="#intro">Map</a>
+                             <a class="nav-link scrollto" href="#intro">Pivot table</a>
+                             <a class="nav-link scrollto" href="#intro">Gantt chart</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
+    <!-- Moment plugin -->
+    <script type="text/javascript" src="assets/plugins/moment/moment.min.js"></script>
+    <!-- Bootstrap datetimepicker plugin -->
+    <script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+    <!-- alpaca -->
+    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+    <!-- AJV -->
+    <script type="text/javascript" src="assets/js/ajv.min.js"></script>
+    <!-- config generator -->
+    <script type="text/javascript" src="assets/js/config-gen.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+    	$('.gifplayer').gifplayer();
+    </script>
+
+</body>
+</html>
