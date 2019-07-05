@@ -1081,3 +1081,15 @@ parseMiroLog <- function(session, logPath,
   }
   return(list(content = logContent, annotations = parsedLog))
 }
+filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
+  type <- match.arg(type)
+  
+  scalarsToFilter <- c()
+  if(length(scalarsOutList)){
+    scalarsToFilter <- scalarsOutList$symnames
+  }
+  if(identical(type, "input")){
+    return(scalars[!tolower(scalars[[1]]) %in% scalarsToFilter, ])
+  }
+  return(scalars[tolower(scalars[[1]]) %in% scalarsToFilter, ])
+}
