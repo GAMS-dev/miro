@@ -646,6 +646,7 @@ observeEvent(input$btSolve, {
       if(config$activateModules$miroLogFile){
         miroLogContent <- ""
         miroLogPath <- file.path(workDir, config$miroLogFile)
+        miroLogAnnotations <- ""
         tryCatch({
           if(file.exists(miroLogPath)[1]){
             inputScalarsTmp <- NULL
@@ -672,7 +673,7 @@ observeEvent(input$btSolve, {
           session$sendCustomMessage("gms-showValidationErrors", miroLogAnnotations)
           switchTab(session, "input")
           valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
-          if(!is.na(valIdHead)){
+          if(length(valIdHead) && !is.na(valIdHead)){
             valTabId <- 0L
             for(inputTabId in seq_along(inputTabs)){
               valTabIdTmp <- inputTabs[[inputTabId]]
