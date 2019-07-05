@@ -311,8 +311,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     }
   }
   
-  idxScalarOut <- match(gsub("_", "", modelName, fixed = TRUE) %+% 
-                          "_" %+% scalarsOutName, scenTableNames)[[1]]
+  idxScalarOut <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                               "_", scalarsOutName), scenTableNames)[[1]]
   
   if(isInSolveMode){
     # close currently opened scenario
@@ -364,6 +364,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     if(!is.null(errMsg)){
       return()
     }
+    if(length(scalarDataset) && nrow(scalarDataset)){
+      scalarData[["scen_1_"]] <<- scalarDataset
+    }
     removeModal()
     if(!config$activateModules$hcubeMode){
       # render output data
@@ -380,11 +383,12 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
           if(identical(i, idxScalarOut)){
             # scalar data exists
             removeRows                 <- tolower(scenData[["scen_1_"]][[i]][[1]]) %in% config$hiddenOutputScalars
-            scalarData[["scen_1_"]]    <<- scenData[["scen_1_"]][[i]]
+            scalarData[["scen_1_"]]    <<- bind_rows(scalarData[["scen_1_"]], scenData[["scen_1_"]][[i]])
             scenData[["scen_1_"]][[i]] <<- scenData[["scen_1_"]][[i]][!removeRows, ]
           }
         }
       })
+      
       scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
       if(noOutput){
         noOutputData <<- TRUE
@@ -421,6 +425,8 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   }
   errMsg <- NULL
   lastImportedSid <- NULL
+  idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                              "_", scalarsFileName), scenTableNames)[[1]]
   lapply(seq_along(scenDataTmp), function(i){
     tryCatch({
       if(!isInSplitView){
@@ -443,13 +449,16 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
         # load scenario data
         scenData[[scenIdLong]]                   <<- scenDataTmp[[i]]
         # load scalar data if available
+        if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLong]][[idxScalarIn]])){
+          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarIn]]
+        }else{
+          scalarData[[scenIdLong]]               <<- tibble()
+        }
         if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
           # scalar data exists
           rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
-          scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarOut]]
+          scalarData[[scenIdLong]]               <<- bind_rows(scalarData[[scenIdLong]], scenData[[scenIdLong]][[idxScalarOut]])
           scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
-        }else{
-          scalarData[[scenIdLong]]               <<- tibble()
         }
         # add scenario metadata
         scenMetaData[[scenIdLong]]               <<- db$getMetadata(sid = metadata[[sidIdentifier]],

@@ -30,7 +30,7 @@ output[["export_" %+% i]] <- downloadHandler(
       # combine hidden and non hidden scalar data
       scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
       if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
-        data[[scalarOutIdx]] <- scalarData[[scenIdLong]]
+        data[[scalarOutIdx]] <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
       }
     }
     removeModal()

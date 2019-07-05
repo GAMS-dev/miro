@@ -468,7 +468,7 @@ observeEvent(input$btSolve, {
   pfFileContent <- NULL
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
-    if(identical(tolower(names(dataTmp)[[i]]), tolower(scalarsFileName))){
+    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
       # scalars file exists, so remove compile time variables from it
       DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
       GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
@@ -608,7 +608,7 @@ observeEvent(input$btSolve, {
   }
   # reset listing file when new solve is started
   output$listFile <- renderText("")
-  output$miroLogFile <- renderUI("")
+  emptyEl(session, "#miroLogFile")
   hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
@@ -757,6 +757,10 @@ observeEvent(input$btSolve, {
         }
         if(!is.null(GAMSResults$scalar)){
           scalarData[["scen_1_"]] <<- GAMSResults$scalar
+        }
+        scalarIdTmp <- match(scalarsFileName, tolower(names(dataTmp)))[[1L]]
+        if(!is.na(scalarIdTmp)){
+          scalarData[["scen_1_"]] <<- bind_rows(dataTmp[[scalarIdTmp]], scalarData[["scen_1_"]])
         }
         if(!is.null(GAMSResults$tabular)){
           scenData[["scen_1_"]] <<- GAMSResults$tabular

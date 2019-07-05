@@ -476,7 +476,8 @@ verifyInput <- function(data, headers){
       if(tolower(headers[[i]]$type) %in% c("scalar", "parameter") && class(data[[i]]) != "numeric"){
         return(FALSE)
       }
-      if(tolower(headers[[i]]$type) %in% c("acronym", "set") && !(class(data[[i]]) %in% c("factor", "character", "numeric"))){
+      if(tolower(headers[[i]]$type) %in% c("acronym", "set") && 
+         !any(class(data[[i]]) %in% c("factor", "character", "numeric", "POSIXt", "Date"))){
         return(FALSE)
       }
     }
@@ -687,6 +688,9 @@ addClassEl <- function(session, id, class){
 }
 removeClassEl <- function(session, id, class){
   session$sendCustomMessage("gms-removeClassEl", list(id = id, oldclass = class))
+}
+emptyEl <- function(session, id){
+  session$sendCustomMessage("gms-emptyEl", id)
 }
 hideModal <- function(session, delay = 1L){
   session$sendCustomMessage("gms-hideModal", delay)
@@ -1077,4 +1081,16 @@ parseMiroLog <- function(session, logPath,
     }
   }
   return(list(content = logContent, annotations = parsedLog))
+}
+filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
+  type <- match.arg(type)
+  
+  scalarsToFilter <- c()
+  if(length(scalarsOutList)){
+    scalarsToFilter <- scalarsOutList$symnames
+  }
+  if(identical(type, "input")){
+    return(scalars[!tolower(scalars[[1]]) %in% scalarsToFilter, ])
+  }
+  return(scalars[tolower(scalars[[1]]) %in% scalarsToFilter, ])
 }

@@ -12,10 +12,11 @@ if(!saveOutput){
 if(is.null(scalarData[[scenIdLong]]) || !nrow(scalarData[[scenIdLong]])){
   scalarData[[scenIdLong]] <<- tibble()
 }else{
-  idxScalarOut <- match(tolower(scalarsOutName), names(modelOut))
+  idxScalarOut <- match(scalarsOutName, names(modelOut))
   if(!is.na(idxScalarOut)){
-    if(nrow(scalarData[[scenIdLong]])){
-      scenData[[scenIdLong]][[idxScalarOut]] <<- scalarData[[scenIdLong]]
+    outputScalars <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
+    if(length(outputScalars) && nrow(outputScalars)){
+      scenData[[scenIdLong]][[idxScalarOut]] <<- outputScalars
     }else{
       scenData[[scenIdLong]][[idxScalarOut]] <<- scenDataTemplate[[idxScalarOut]]
     }

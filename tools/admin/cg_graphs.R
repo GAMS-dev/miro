@@ -4,7 +4,7 @@ activeSymbol <- list(id = integer(1L), name = character(1L),
 newChartTool     <- character(0L)
 modelInputData   <- vector("list", length(modelIn))
 modelOutputData  <- vector("list", length(modelOut))
-scalarOutputData <- tibble()
+configScalars <- tibble()
 hotInit          <- vector("logical", length(modelIn))
 isEmptyInput     <- vector(mode = "logical", length = length(modelIn))
 isEmptyOutput    <- vector(mode = "logical", length = length(modelOut))
@@ -208,6 +208,10 @@ observeEvent(input$localInput, {
   }, logical(1L), USE.NAMES = FALSE)
   tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
                                    modelInAlias[!isEmptyInput])
+  scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
+  if(!is.na(scalarIdTmp)){
+    configScalars <<- scenInputData[[scalarIdTmp]]
+  }
   tabularOutputWithData <- NULL
   if(identical(loadMode, "gdx") || any(names(modelOut) %in% xlsWbNames)){
     tryCatch({
@@ -226,7 +230,7 @@ observeEvent(input$localInput, {
       return()
     }
     if(!is.null(outputDataTmp$scalar)){
-      scalarOutputData <<- outputDataTmp$scalar
+      configScalars <<- bind_rows(configScalars, outputDataTmp$scalar)
     }
     if(!is.null(outputDataTmp$tabular)){
       modelOutputData        <<- outputDataTmp$tabular
@@ -252,9 +256,9 @@ observeEvent(input$localInput, {
   }
   showEl(session, "#preview_wrapper")
   updateSelectInput(session, "gams_symbols", choices = c(tabularInputWithData, tabularOutputWithData))
-  if(identical(length(scalarOutputData), 3L) && nrow(scalarOutputData)){
-    session$sendCustomMessage("gms-setScalarOutputs", list(indices = scalarOutputData[[1]], 
-                                                           aliases = scalarOutputData[[2]]))
+  if(identical(length(configScalars), 3L) && nrow(configScalars)){
+    session$sendCustomMessage("gms-setScalarOutputs", list(indices = configScalars[[1]], 
+                                                           aliases = configScalars[[2]]))
   }
   rv$initData <<- TRUE
 })
@@ -1101,7 +1105,7 @@ observeEvent(input$add_array_el, {
         }else if(identical(el_id, "hist_xdata")){
           currentContent$labels <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
         }else if(identical(el_id, "dy_dyAnnotation")){
-          currentContent$text <- scalarOutputData[[2]][match(chart_label, scalarOutputData[[1]])][1]
+          currentContent$text <- configScalars[[2]][match(chart_label, configScalars[[1]])][1]
         }
       }
       rv$graphConfig$graph[[JSON_id]][labelID] <<- NULL
@@ -1171,7 +1175,7 @@ observeEvent(input$add_array_el, {
                         color = "rgb(0,0,0)", 
                         strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyAnnotation")){
-    newContent <- list(text = scalarOutputData[[2]][1], attachAtBottom = FALSE)
+    newContent <- list(text = configScalars[[2]][1], attachAtBottom = FALSE)
   }else if(identical(el_id, "dy_dyShading")){
     newContent <- list(from = input$add_array_el[2], 
                        to = input$add_array_el[2], 
@@ -1626,7 +1630,7 @@ getDygraphsOptions <- reactive({
     createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata),
     selectInput("chart_color", lang$adminMode$graphs$dygraphsOptions$color,
                 choices = c("_", indices)),
-    if(length(scalarOutputData) && nrow(scalarOutputData)){
+    if(length(configScalars) && nrow(configScalars)){
       tagList(
         createArray(session, "dy_dyEvent", lang$adminMode$graphs$dygraphsOptions$dyEvent, autoCreate = FALSE),
         createArray(session, "dy_dyLimit", lang$adminMode$graphs$dygraphsOptions$dyLimit, autoCreate = FALSE),
@@ -1782,7 +1786,7 @@ observe({
   tryCatch({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
       callModule(renderData, "preview_output_plotly", type = rv$graphConfig$outType, 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-plotly")
@@ -1793,7 +1797,7 @@ observe({
       hideEl(session, "#preview-content-valuebox")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
       callModule(renderData, "preview_output_dygraph", type = rv$graphConfig$outType, 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-dygraph")
@@ -1805,7 +1809,7 @@ observe({
     }else if(isolate(rv$graphConfig$graph$tool) == "pivot"){
       pivotOptions <- rv$graphConfig$pivottable
       callModule(renderData, "preview_output_pivot", type = "pivot", 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  pivotOptions = pivotOptions,
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-pivot")
@@ -1816,7 +1820,7 @@ observe({
       hideEl(session, "#preview-content-valuebox")
     }else if(isolate(rv$graphConfig$graph$tool) == "timevis"){
       callModule(renderData, "preview_output_timevis", type = rv$graphConfig$outType, 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-timevis")
@@ -1829,7 +1833,7 @@ observe({
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
       customOptionstmp$count <- configGraphsOut[[i]]$options$count
       callModule(renderData, "preview_output_valuebox", type = "valuebox", 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  customOptions = customOptionstmp,
                  modelDir = modelDir)
       showEl(session, "#preview-content-valuebox")
@@ -1840,7 +1844,7 @@ observe({
       hideEl(session, "#preview-content-timevis")
     }else{
       callModule(renderData, "preview_output_leaflet", type = rv$graphConfig$outType, 
-                 data = data, configData = scalarOutputData, 
+                 data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-leaflet")
