@@ -74,16 +74,13 @@
                                 <h2 class="section-title">The configuration mode</h2>
                                 <div class="section-block">
                                     This chapter shows how to configure MIRO using the graphical interface. 
-                                    For those who feel comfortable writing JSON, section <a href ="#configViaJson" class="scrollto">Configuration via JSON</a> shows in detail how to configure a MIRO app in the classic way without using the graphical help tool.</p>
+                                    For those who feel more comfortable writing JSON, section <a href ="#configViaJson" class="scrollto">Configuration via JSON</a> shows in detail how to configure a MIRO app in the classic way without using the graphical help tool.</p>
                                     
-                                    <p>The <i>Configuration mode</i> is direkctly accessible via the GAMS Studio version of the GAMS MIRO installation, see below.</p> 
+                                    <p>The <i>Configuration mode</i> is directly accessible via the GAMS Studio version of the GAMS MIRO installation, see below. </p> 
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_studio.png" alt="start the configuration mode" />
                                     </div>
-                                    <p>Alternatively, you can start the MIRO base mode and add the double-dash parameter <span class="code">--miromode=1</span>.
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/start_doubleDash.png" alt="start the configuration mode" />
-                                    </div>
+                                    <p>In order to launch the configuration mode from the old GAMS IDE or via the command line, besides the GAMS option statement <span class="code" style="white-space:nowrap">miro=launch</span> <span class="code">miromode=2</span> has to be added to the command line (e.g. <kbd style="white-space: nowrap;">cd path/to/model && gams transport.gms miro=launch miromode=2</kbd>).
                                     <p>After the startup the following screen appears:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configuration_mode.png" alt="start the configuration mode" />
@@ -106,8 +103,10 @@
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                 </div>
-                                <div class="section-block" id="general-settings">
-                                  <h3 class="block-title">General settings</h3>
+                            </section>       
+                            <section id="general-settings" class="doc-section">
+                                <h2 class="section-title">General settings</h2>
+                                <div class="section-block">
                                   <p>As the name suggests, general options can be set in this section. Since many of these options are self-explanatory, only a few of those that require clarification are addressed here.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default scenario comparison mode</h6>
                                   <p style="display:none">This option sets the default comparison method for scenarios. 
@@ -121,9 +120,19 @@
                                   This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double dash parameter. 
                                   Note, that the command line arguments set with this option are not visible in MIRO.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide input symbols into groups</h6>
-                                  <p style="display:none">Multiple tabs of input symbols (also output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <div style="display:none"> <p>Multiple tabs of input symbols (also output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <p>Example:<br>
+                                  For the input data of the transport model, one might want to group the symbols with geo data together:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/general_inputGroups.png" alt="Specify input groups" />
+                                  </div>
+                                  <p>Which ends up with the following in the MIRO app:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:325pt;" src="assets/images/configuration_mode/general_inputGroups2.png" alt="Input group in MIRO" />
+                                  </div>
+                                  </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide ouput symbols into groups</h6>
-                                  <p style="display:none">Multiple tabs of output symbols (also input symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <p style="display:none">Multiple tabs of output symbols (also input symbols) can be grouped together. All symbols of a group are displayed in an own tab. For an example, see <i>Divide input symbols into groups</i></p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the input scalars table</h6>
                                   <p style="display:none"><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> are special in the sense that they will not be displayed in one separate table for each scalar value. 
                                   Instead, they are combined into a single table. You can specify a custom name for this table here.</p>
@@ -132,63 +141,304 @@
                                   Instead, they are combined into a single table. You can specify a custom name for this table here.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Scalars that should not be displayed in the scalars table but can be used in graphs etc.</h6>
                                   <div style="display:none"><p>For some graphs it may be useful to include scalar result data from another GAMS symbol. 
-                                  In the following example the scalar output value "End of training phase" has been integrated into the graph to identify exactly this phase.</p>
+                                  In the following example from the pickstock model, the scalar output value "End of training phase" has been integrated into the graph to identify exactly this phase.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/hidden_scalars.png" alt="Scalar value in graph" />
                                   </div>
+                                  <p>If the scalar value used is part of the model anyway - good! But it is also possible that you want to use a scalar value for this graph, which is not used otherwise. 
+                                  In this case you may not want to see the value in the scalars table, but only in the graph. 
+                                  This option allows you to do exactly that, i.e. use scalar values that are not otherwise visible in MIRO.</p>
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate scenario functionality</h6>
-                                  <p style="display:none">If disabled, scenario data can not be saved.</p>
+                                  <p style="display:none">If enabled, scenario data can be saved.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
-                                  <p style="display:none">If enabled, scenario data can be loaded via local files.</p>
+                                  <div style="display:none"><p>If enabled, scenario data can be loaded via local files.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:325pt;" src="assets/images/import-local.png" alt="Import local data" />
+                                  </div>
+                                  </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should users be allowed to add attachments to scenarios?</h6>
                                   <p style="display:none">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachment">here</a>.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should all input widgets (slider, dropdown menu, etc.) be aggregated on a single tab?</h6>
-                                  <p style="display:none">If not enabled, all scalar input widgets are displayed in an own, separate tab.</p>
+                                  <p style="display:none">If enabled, all scalar input widgets are displayed in the same tab and separated otherwise.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include parent directory of the model folder in your model runs (e.g. because several models share files)</h6>
                                   <p style="display:none">In general, GAMS searches for input and include files in the current working directory only. This option sets an include directory to the parent directory of the GAMS model.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
-                                  <p style="display:none">The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>
+                                  <div style="display:none"><p>The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/general_export_metadata.png" alt="Metadata sheet" />
+                                  </div>
+                                  </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
                                   <p style="display:none">The trace file gives performance information about a GAMS run. For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Generate graphs for each input sheet automatically (pivot tool)</h6>
                                   <p style="display:none">If this option is activated, a pivottable is generated for each input symbol apart from the tabular representation. 
                                   If an additional graphic is configured for a symbol, then this graphic is displayed instead.</p>
                                 </div>
-                                <div class="section-block" id="table-settings">
-                                  <h3 class="block-title">Table settings</h3>
-                                  <p>Here you can define the general configuration of input and output tables, e.g. the design, (de-)activating the table search or the integration of certain add-ons. The settings made here always affect all input or output tables.
-                                  If, for example, the editing of input tables is disabled here, all input tables can no longer be edited. 
-                                  If instead only individual tables or even individual table columns shall be <i>readonly</i>, this must be configured in section <i>Configure widgets</i>.
+                            </section>       
+                            <section id="table-settings" class="doc-section">
+                                <h2 class="section-title">Table settings</h2>
+                                  <div class="section-block">
+                                    <p>Here you can define the general configuration of input and output tables, e.g. the design, (de-)activating the table search or the integration of certain add-ons. The settings made here always affect all input or output tables.
+                                    If, for example, the editing of input tables is disabled here, all input tables can no longer be edited. 
+                                    If instead only individual tables or even individual table columns shall be <i>readonly</i>, this must be configured in section <i>Configure widgets</i>.
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Example: Input tables</h6>
+                                  <div style="display:none">
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings.png" alt="Settings for input tables" />
+                                    </div>
+                                  </div>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Example: Output tables</h6>
+                                  <div style="display:none">
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings2.png" alt="Settings for output tables" />
+                                    </div>
+                                  </div>
+                                </div>
+                            </section>       
+                            <section id="configure-widgets" class="doc-section">
+                                <h2 class="section-title">Configure widgets</h2>
                                 <div class="section-block">
-                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings.png" alt="start the configuration mode" />
-                                </div>
-                                </div>
-                                <div class="section-block" id="configure-widgets">
-                                  <h3 class="block-title">Configure widgets</h3>
                                   <p>Input widgets are scalar input data, which are not displayed in tabular form, but for example using a slider, dropdown menu, date selector or a checkbox.
-                                  Not only scalar GAMS symbols but also GAMS command line parameters, i.e. GAMS options and double-dash parameters can be displayed as widgets in MIRO.                                   
+                                  Not only scalar GAMS symbols but also GAMS command line parameters, i.e. <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameters</a> can be displayed as widgets in MIRO.                                   
                                   Besides that, the tabular representation of individual GAMS symbols can be customized here.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_widgets.png" alt="Configuration of input widgets and tables" />
+                                  </div>
+                                  <p>The symbol type to be configured can be selected at the top. The options are:</p>
+                                  <ul>
+                                    <li><b>Symbol</b>
+                                      <br>This option must be selected if a GAMS symbol should be configured. This includes all scalar input symbols for configuring sliders, dropdown menus, checkboxes, date selector etc. but also all multidimensional symbols. 
+                                      For the latter a few options can be set here such as setting readonly of single columns or the whole table.
+                                      <br>Furthermore, already configured GAMS options and double dash parameters are listed here, so that the existing configuration can be adapted / deleted. 
+                                    </li>
+                                    <li><b>New GAMS option</b>
+                                      <br>As the name suggests, a <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS option</a> can be configured here as an input widget. All available widget types are available here. 
+                                      If an option is configured, it will be set with each GAMS run of the corresponding model according to the user's selection.
+                                    </li>
+                                    <li><b>New double dash parameter</b>
+                                      <br>The configuration of <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameters</a> is the same as that of the GAMS options. 
+                                    </li>
+                                  </ul>
+                                  <p>Let's now configure a widget for our <i>transport</i> model. The following widgets are available for scalar values:</p>
+                                  <ul>
+                                    <li><b>Slider</b><br>
+                                    Returns a numeric value.
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:30pt;" src="assets/images/configuration_mode/widgets_slider.png" alt="Slider" />
+                                    </div>
+                                    </li>
+                                    <li><b>Slider range</b><br>
+                                    Returns two numeric values. For more on widget ranges, see <a href="#widgets-advanced" class="scrollto">here</a>.
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:30pt;" src="assets/images/configuration_mode/widgets_slider_range.png" alt="Slider range" />
+                                    </div>
+                                    </li>
+                                    <li><b>Dropdown menu</b><br>
+                                    Returns a string 
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:120pt;" src="assets/images/configuration_mode/widgets_dropdown.png" alt="Dropdown menu" />
+                                    </div>
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>If you configure a dropdown menu and you want a choice to be <i>nothing</i>, use the symbol "_" as a choice. MIRO treats an underscore character internally as if nothing is set.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    </li>
+                                    <li><b>Checkbox</b><br>
+                                    Returns 0 or 1. 
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:35pt;" src="assets/images/configuration_mode/widgets_checkbox.png" alt="Checkbox" />
+                                    </div>
+                                    </li>
+                                    <li><b>Date selector</b><br>
+                                    Returns a date (string).
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/widgets_date.png" alt="Date selector" />
+                                    </div>
+                                    </li>
+                                    <li><b>Date range selector</b><br>
+                                    Returns two dates. For more on widget ranges, see <a href="#widgets-advanced" class="scrollto">here</a>.
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/widgets_date_range.png" alt="Date range selector" />
+                                    </div>
+                                    </li>
+                                    <li><b>Textbox</b><br>
+                                    Returns the inserted text.
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:35pt;" src="assets/images/configuration_mode/widgets_textbox.png" alt="Textbox" />
+                                    </div>
+                                    </li>
+                                  </ul>
+                                  <p>For the scalar value <i>freight</i> a slider is the best choice. 
+                                  <br>From the list of available symbols we choose the desired scalar, select <i>slider</i> as widget tye and give it a label, which then appear above the slider.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:275pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider1.png" alt="Configuration of a slider (1)" />
+                                  </div>
+                                  <p>Next we specify the upper and lower bound of the slider, the default value and the step size of selectable values.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:275pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider2.png" alt="Configuration of a slider (2)" />
+                                  </div>
+                                  <p>When we are satisfied with the selected configuration, click save. A confirmation that the configuration has been updated successfully will appear:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:40pt; display: block; margin:auto;" src="assets/images/configuration_mode/widget_updated.png" alt="Successful update of widget configuration" />
+                                  </div>
+                                  <p>Done!</p>
+                                  <p id="dynamic-limits"><b>Dynamic limits</b>:
+                                  <br>In many cases it makes sense to assign the limits and default values of a slider not with static but with dynamic values. This is done, for example, in the demo model <i>pickstock</i>. 
+                                  Here, two sliders are used. In the first one the <i>maxmimum number of stocks</i> can be selected, in the second one the <i>number of training days</i>.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
+                                  </div>
+                                  <p>In both sliders, the maximum value results from the input data of the parameter <i>price</i>.</p>
+                                  <div class="section-block" id="input-symbol-price">
+                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider4.png" alt="Configuration of a slider (4)" />
+                                  </div>
+                                  <p>The maximum value for the <i>maximum number of stocks</i> is 30, because the used data set <i>price</i> contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes dynamically to 29.
+                                  The same is true for the second slider for the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
+                                  <br>In configuration mode we can easily set such dynamic limits. For the first slider the configuration looks like this:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
+                                  </div>
+                                  <p>The <i>Static value?</i> box was unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, it is selected with the corresponding header <i>stock symbol</i> in which the stocks are contained (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
+                                  The <i>operator</i> is set to <i>count</i> since we want to count all stock symbols in our data to set the maximum value.</p>
+                                  <p>For the calculation of such limits from the data, the following operators are available: </p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider7.png" alt="Configuration of a slider (5)" />
+                                  </div>
+                                  <p>More on Dependencies among Widgets can be found <a href="#widgets-dependencies" class="scrollto">here</a>.</p>
+                                  <p>In addition to widgets for scalar values, Configure Widgets can also be used to customize the tables of individual, multidimensional symbols. 
+                                  In the following screenshot, for example, the table of the GAMS parameter distance in thousands of miles is customized. 
+                                  Here the last table column is marked as readonly, i.e. it is not editable in the MIRO app later.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:350pt; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_table.png" alt="Configuration of a slider (5)" />
+                                  </div>
+                                </div>
+                            </section>       
+                            <section id="configure-graphs" class="doc-section">
+                                <h2 class="section-title">Configure graphs</h2>
                                 <div class="section-block">
-                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_widgets.png" alt="start the configuration mode" />
-                                </div>
-                                </div>
-                                <div class="section-block" id="configure-graphs">
-                                  <h3 class="block-title">Configure graphs</h3>
                                   <p>In addition to the always available tabular format, multidimensional GAMS symbols can be visualized as graphs. GAMS MIRO offers comprehensive visualization options. 
                                   A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. 
                                   The selection of these pre-implemented graphics currently includes scatter plots, line charts, bubble charts, histograms, pie charts, donut charts, gantt charts, pivot tables and maps and is constantly being expanded.</p>
                                   <p>To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
                                     </p>
+                                  <div id="graphs-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
+                                      <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Pie chart" />
+                                             </div>
+                                             <h3 class="title">Pie chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_donut.png" alt="Donut chart" />
+                                             </div>
+                                             <h3 class="title">Donut chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_bar.png" alt="Bar chart" />
+                                             </div>
+                                             <h3 class="title">Bar chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Scatter plot" />
+                                             </div>
+                                             <h3 class="title">Scatter plot</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Line chart" />
+                                             </div>
+                                             <h3 class="title">Line chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Bubble chart" />
+                                             </div>
+                                             <h3 class="title">Bubble chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Histogram" />
+                                             </div>
+                                             <h3 class="title">Histogram</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Time series diagram" />
+                                             </div>
+                                             <h3 class="title">Time series diagram</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Map" />
+                                             </div>
+                                             <h3 class="title">Map</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Pivot table" />
+                                             </div>
+                                             <h3 class="title">Pivot table</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner">
+                                             <div>
+                                                 <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_pie.png" alt="Gantt chart" />
+                                             </div>
+                                             <h3 class="title">Gantt chart</h3>
+                                             <a class="link" href="start.html"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                 </div><!--//cards-wrapper-->
+                                 <div class="section-block">
+                                     <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_graphs.png" alt="Graph configuration" />
+                                 </div>
+                                </div>
+                            </section>       
+                            <section id="database-management" class="doc-section">
+                                <h2 class="section-title">Database management</h2>
                                 <div class="section-block">
-                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/configure_graphs.png" alt="start the configuration mode" />
-                                </div>
-                                </div>
-                                <div class="section-block" id="database-management">
-                                  <h3 class="block-title">Database management</h3>
                                   <p>Create database backups, restore a database, remove database tables.</p>
                                 <div class="section-block">
-                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/database_management.png" alt="start the configuration mode" />
+                                    <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/database_management.png" alt="Database management" />
                                 </div>
                                 </div>
                             </section>   
@@ -377,68 +627,6 @@
                                            </div><!--//content-->
                                        </div><!--//callout-block-->
                                 </div><!--//section-block-->
-                                <div class="section-block" id="widgets-dependencies">
-                                  <h3 class="block-title">Dependencies among widgets</h3>
-                                  <p>One special feature of GAMS MIRO is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them; and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your MIRO installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
-                                  </div>
-                                  <p>Similar dependencies can also be considered for sliders. An example is the <i>pickstock</i> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
-                                  <p>A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
-                                  <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                              <th>Input widget type</th>
-                                              <th>Forward dependency</th>
-                                              <th>Backward dependency</th>
-                                              <th>Example model</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                              <td>Dropdown menu</td>
-                                              <td><i class="fas fa-check"></i></td>
-                                              <td><i class="fas fa-check"></i></td>
-                                              <td><span class="code">kport</span></td>
-                                            </tr>
-                                            <tr>
-                                              <td>Slider</td>
-                                              <td><i class="fas fa-check"></i></td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td><span class="code">pickstock</span></td>
-                                            </tr>
-                                            <tr>
-                                              <td>Checkbox</td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td>-</td>
-                                            </tr>
-                                            <tr>
-                                              <td>Date selector</td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td>-</td>
-                                            </tr>
-                                            <tr>
-                                              <td>Daterange selector</td>
-                                              <td><i class="fas fa-times"></i></td>
-                                              <td>(<i class="fas fa-check"></i>)</td>
-                                              <td><span class="code">pickstock_live</span></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                  </div><!--//table-responsive-->
-                                  <div class="callout-block callout-warning">
-                                      <div class="icon-holder">
-                                          <i class="fas fa-info-circle"></i>
-                                      </div><!--//icon-holder-->
-                                      <div class="content">
-                                          <b class="callout-title">Note:</b>
-                                          <p>You need dependency support for a type of widget which is currently not available? Please feel free to contact us at: <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>. You added dependency support for another type of widget yourself? Send us a pull request on <a href="TODO:ADD GITHUB LINK" target="_blank">GitHub</a>!</p>
-                                      </div><!--//content-->
-                                  </div><!--//callout-block-->
-                                </div><!--//section-block-->
                                 <div class="section-block" id="widgets-advanced">
                                   <h3 class="block-title">Advanced topics</h3>
                                    <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector:</p>
@@ -530,6 +718,70 @@ schedule(i,j,'quantities') = x.l(i,j);</code></pre>
                                   </div>
                                   <p>That's it. We've created our first MIRO graph.</p>
                                   <p>Besides bar charts, we can create multiple other types of charts. Just try it out yourself! You are now able to explore the different options on your own. And if you are stuck, you can always visit our <a href="https://forum.gamsworld.org/" target="_blank">forum</a> and ask others for help.</p>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widgets-dependencies" class="doc-section">
+                                <h2 class="section-title">Dependencies among widgets</h2>
+                                <div class="section-block">
+                                  <p>One special feature of GAMS MIRO is that you can define interdependencies between different parameters. Scalars can take two forms of dependencies to other parameters: They can feed their attributes from them; and they can manipulate the content of those parameters. An example for this is the <span class="code">kport</span> model that comes with your MIRO installation (in case you selected to install the example models). Here, we have a set of scenarios that can be selected as well as a singleton set with the currently selected/active scenario. A singleton set is suited to be represented as a dropdown menu, hence we choose that type of widget here. We would like to filter our parameters based on the currently selected scenario so that we only see data that is relevant for this scenario (this type of dependency is also referred to as a <span class="code">backward dependency</span>). This means that in case scenario 1 is selected via our dropdown menu, we only want to display data relevant to scenario 1 to the user. Additionally, we want the choices of our dropdown menu to be the elements of all available scenarios (also referred to as a <span class="code">forward dependency</span>).</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid gifplayer" style= "display: block; margin-left: auto; margin-right: auto;" src="assets/images/dd-filter.png" alt="Dropdown menu filters table"/>
+                                  </div>
+                                  <p>Similar dependencies can also be considered for sliders. An example is the <i>pickstock</i> model. Here, the number of stocks you can select for your portfolio can not be larger than the number of stocks in your dataset. Similarly, the number of days you can use to train your model must not be larger than the number of days you have in the stock price dataset. The slider attributes - namely the maximum value that can be selected - should change according to the price data the user uploads. Thus, we also have forward dependencies here.</p>
+                                  <p>A table that shows the currently supported forms of dependencies for the different input widgets is shown below.</p>
+                                  <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                              <th>Input widget type</th>
+                                              <th>Forward dependency</th>
+                                              <th>Backward dependency</th>
+                                              <th>Example model</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                              <td>Dropdown menu</td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><span class="code">kport</span></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Slider</td>
+                                              <td><i class="fas fa-check"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><span class="code">pickstock</span></td>
+                                            </tr>
+                                            <tr>
+                                              <td>Checkbox</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>-</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Date selector</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>-</td>
+                                            </tr>
+                                            <tr>
+                                              <td>Daterange selector</td>
+                                              <td><i class="fas fa-times"></i></td>
+                                              <td>(<i class="fas fa-check"></i>)</td>
+                                              <td><span class="code">pickstock_live</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                  </div><!--//table-responsive-->
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>You need dependency support for a type of widget which is currently not available? Please feel free to contact us at: <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>. You added dependency support for another type of widget yourself? Send us a pull request on <a href="TODO:ADD GITHUB LINK" target="_blank">GitHub</a>!</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
                                 </div><!--//section-block-->
                             </section>
                             <section id="custom-renderers" class="doc-section">
@@ -711,23 +963,21 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                                 <a class="nav-link scrollto" href="#intro">Introduction</a>
                                 <a class="nav-link scrollto" href="#configurationGen">The configuration mode</a>
-                                <nav class="doc-sub-menu nav flex-column">
-                                    <a class="nav-link scrollto" href="#general-settings">General settings</a>
-                                    <a class="nav-link scrollto" href="#table-settings">Table settings</a>
-                                    <a class="nav-link scrollto" href="#configure-widgets">Configure widgets</a>
-                                    <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
-                                    <a class="nav-link scrollto" href="#database-management">Database management</a>
-                                </nav>
+                                <a class="nav-link scrollto" href="#general-settings">General settings</a>
+                                <a class="nav-link scrollto" href="#table-settings">Table settings</a>
+                                <a class="nav-link scrollto" href="#configure-widgets">Configure widgets</a>
+                                <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
+                                <a class="nav-link scrollto" href="#database-management">Database management</a>
                                 <a class="nav-link scrollto" href="#jsonfiles">Configuration via JSON files</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#input-widgets">Input widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-tables">Tables</a>
                                     <a class="nav-link scrollto" href="#widgets-scalars">Scalars</a>
                                     <a class="nav-link scrollto" href="#widgets-commandLine">Command line parameters</a>
-                                    <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies among Widgets</a>
                                     <a class="nav-link scrollto" href="#widgets-advanced">Advanced topics</a>
                                     <a class="nav-link scrollto" href="#graphics-charts">Charts</a>
                                 </nav>
+                                <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies among Widgets</a>
                                 <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
                                 <a class="nav-link scrollto" href="#development-mode">Advanced: Development mode and compilation phase</a>
                                 <a class="nav-link scrollto" href="#language-files">Language Files</a>
