@@ -252,7 +252,7 @@
                                 <h2 class="section-title">Line chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p></p>
+                                    <p>Line charts also include area charts.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_line_config.png" alt="Line chart configuration"/>
@@ -322,7 +322,7 @@
                                 <h2 class="section-title">Bubble chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>A bubble chart is a scatter plot where the size of a single plot depends on a value.</p>
+                                    <p>A bubble chart is a scatter plot where the size and the color of a single plot depends on a value.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bubble_config.png" alt="Bubble chart configuration"/>
@@ -435,10 +435,57 @@
                                 <h2 class="section-title">Map</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p></p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
+                                    </div>
+                                    <p>With regard to map-based graphics, a variety of possible visualizations are conceivable. In MIRO configuration mode, the following aspects can be realized on a map:</p>
+                                    <ul>
+                                      <li><b>Markers</b><br>
+                                      Markers can be set. For this the position of the markers must be available in the data as longitude and latitude data. 
+                                      Marker labels can be set dynamically, i.e. based on data. In the following example, the marker label is set with <i>Market: [j]</i>. 
+                                      If you now click on a marker on the resulting map, the label will not be <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced with the city belonging to the data (here: <i>Chicago</i>). 
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
+                                      </div>
+                                      The data of this configuration is the following:
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
+                                      </div>
+                                      The second column of the symbol <i>schedule</i> contains the markets j. The columns lngM and latM were selected as longitude and latitude data. 
+                                      For a given longitude-latitude combination, the corresponding element from the second column is now displayed as label.
+                                      </li>
+                                      <li><b>Flows</b><br>
+                                      Between different points on the map flows can be displayed. The thickness of the arrows can depend on the flow data.
+                                      The data overview from the previous picture also helps here for the understanding: 
+                                      In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
+                                      The thickness depends on the data column <i>quantities</i>.
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_flows.png" alt="Map flows"/>
+                                      </div>
+                                      </li>
+                                      <li><b>Charts</b><br>
+                                      You can display small charts on your map. In the following example, a pie chart is displayed for each of the 16 German states.
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
+                                      </div>
+                                      The graph is based on the data below:
+                                      <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts2.png" alt="Map charts data"/>
+                                      </div>
+                                      The position of each pie chart results from a lngitude/latitude combination. 
+                                      The data of the pie chart for each state were determined in configuration mode with <i>Renewable</i> and <i>Fossil</i>. <br>
+                                      You also have the option of defining a time component in the charts. The data of the example covers a period of one year with a resolution of one hour. 
+                                      For the configuration, the corresponding 1st column was defined as the time dimension (starting with <i>t001</i>. 
+                                      Thus, for each time period, a separate pie chart can be displayed for each state (see play button at the bottom right of the map).<br><br>
+                                      Note that all data of your entire graphic must come from the same GAMS symbol. If you want to have more sophisticated graphics, 
+                                      it may be useful to combine data from different symbols into one symbol. Or you can use our <a href="./customize.html#custom-renderers">R API</a> and create your own graphics.
+                                      </li>
+                                    </ul>
+                                    <p><b>Layers</b><br>For map visualizations it can be helpful to display different layers, e.g. with markers. 
+                                    In configuration mode you can specify such layers. In the resulting graphic you can select the different layers and display only the corresponding markers.</p>
+                                    <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_layers.png" alt="Map charts data"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -505,7 +552,9 @@
                                 <h2 class="section-title">Time series diagram</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p></p>
+                                    <p>As the name of the graphic type suggests, the graphics configured here are based on time series. 
+                                    An important property of such time series is the format of the data. You should make sure that the dataset, which should represent the time component of your graphic, is available in a date format or at least can be formatted into such a format. 
+                                    A suitable syntax for a date would be <i>yyyy-mm-dd</i>, e.g. <i>2014-07-13</i>.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
@@ -592,7 +641,9 @@
                                 <h2 class="section-title">Pivot table</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p></p>
+                                    <p>The live preview of the pivot table already allows you to move and change the elements directly in the graphic. 
+                                    This can lead to confusion, because the actual configuration of the graphic has to be done on the left side as with all other graphics. 
+                                    Only the options set there are saved.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
@@ -625,10 +676,31 @@
                                 <h2 class="section-title">Gantt chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p></p>
+                                    <p>The GAMS symbol, whose data should be visualized as a Gantt chart, must contain the following: </p>
+                                    <ul>
+                                      <li>Start<br>
+                                      Each item must have a start variable. The format of the underlying data has to be in a date format, e.g. <i>yyyy-mm-dd hh:mm:ss</i> (<i>hh:mm:ss</i> is not required).
+                                      </li>
+                                      <li>Content<br>
+                                      Each item must have a content variable which is then shown as a label.</li>                                      
+                                    </ul>
+                                    <p>The following example also contains:</p>
+                                    <ul>
+                                      <li>End<br>
+                                      If the item is not a single point in time, but a range, you can provide an end variable.</li>
+                                      <li>Title<br>
+                                      A title is shown when you hover an item.</li> 
+                                      <li>Group<br>
+                                      Items of the same groups are grouped together when specifying a group variable.</li>                                     
+                                    </ul>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
                                     </div>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/gantt_data.png" alt="Gantt chart data"/>
+                                    </div>
+                                    <p><b>Note:</b> The columns in the table do not have to be named <i>start</i>, <i>end</i>, <i>content</i> etc. Only the mapping you define in the configuation mode is relevant.</p>
+                                    <p>More inforation on the tool we use for gantt charts can be found <a href="https://github.com/daattali/timevis" target="_blank">here</a>.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
@@ -670,16 +742,17 @@
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
-                            <a class="nav-link scrollto" href="#intro">Pie chart</a>
-                             <a class="nav-link scrollto" href="#intro">Donut chart</a>
-                             <a class="nav-link scrollto" href="#intro">Bar chart</a>
-                             <a class="nav-link scrollto" href="#intro">Scatter plot</a>
-                             <a class="nav-link scrollto" href="#intro">Line chart</a>
-                             <a class="nav-link scrollto" href="#intro">Bubble chart</a>
-                             <a class="nav-link scrollto" href="#intro">Histogram</a>
-                             <a class="nav-link scrollto" href="#intro">Map</a>
-                             <a class="nav-link scrollto" href="#intro">Pivot table</a>
-                             <a class="nav-link scrollto" href="#intro">Gantt chart</a>
+                            <a class="nav-link scrollto" href="#pie-chart">Pie chart</a>
+                             <a class="nav-link scrollto" href="#donut-chart">Donut chart</a>
+                             <a class="nav-link scrollto" href="#bar-chart">Bar chart</a>
+                             <a class="nav-link scrollto" href="#scatter-chart">Scatter plot</a>
+                             <a class="nav-link scrollto" href="#line-chart">Line chart</a>
+                             <a class="nav-link scrollto" href="#bubble-chart">Bubble chart</a>
+                             <a class="nav-link scrollto" href="#histogram-chart">Histogram</a>
+                             <a class="nav-link scrollto" href="#map-chart">Map</a>
+                             <a class="nav-link scrollto" href="#timeseries-chart">Time series diagram</a>
+                             <a class="nav-link scrollto" href="#pivot-chart">Pivot table</a>
+                             <a class="nav-link scrollto" href="#gantt-chart">Gantt chart</a>
                             </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->
