@@ -16,6 +16,8 @@ keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox",
 keywordsType <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
                      "date" = "date", "checkbox" = "checkbox", "textinput" = "textinput")
+listOfScalarInputWidgets <- c("slider", "dropdown", "textinput", 
+                              "checkbox", "daterange", "date")
 listOfOperators <- list("count" = "card", "max" = "max", "min" = "min", 
                         "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
 # define identifier names for user id and scenario id 

@@ -271,6 +271,33 @@ tabItemList <- list(
                                                    width = modelIn[[i]]$textinput$width,
                                                    placeholder = modelIn[[i]]$textinput$placeholder)
                                        )
+                                     },
+                                     {
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         tags$div(id = paste0("data-in_", i), {
+                                           tryCatch({
+                                             generateDataUI(paste0("in_", i), type = modelIn[[i]]$type,
+                                                            customOptions = modelIn[[i]]$options,
+                                                            height = modelIn[[i]]$height)
+                                           }, error = function(e) {
+                                             flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                             errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                             showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                           })
+                                         }),
+                                         tags$div(id = paste0("graph-in_", i), class = "render-output", 
+                                                  style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                                                    sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
+                                                  tryCatch({
+                                                    renderDataUI(paste0("in_", i), type = "datatable",
+                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                                  }, error = function(e) {
+                                                    flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                                    errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                                    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                                  })
+                                         ))
                                      }
                 )
                 if(length(inputTabTitles[[tabId]]) > 1L){

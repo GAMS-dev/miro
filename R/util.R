@@ -150,16 +150,19 @@ getWidgetDependencies <- function(widgetType, depString){
          })
 }
 
-getInputType <- function(data, keywordsType){
+getInputType <- function(data, keywordsType, isCustomWidget = FALSE){
   # Retrieves input type from JSOn file based on keyword list
   #
   # Args:
   # data:                       raw list of input data
   # keywordsType:               list of return value/keyword pairs (example: "hot" = "columns")
+  # isCustomWidget:             specifies whether widget is custom renderer
   #
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
-  
+  if(isCustomWidget){
+    stop("", call. = FALSE)
+  }
   for(i in seq_along(keywordsType)){
     if(keywordsType[[i]] %in% names(data)){
       return(names(keywordsType)[[i]])

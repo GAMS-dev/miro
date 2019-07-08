@@ -44,7 +44,7 @@ tmpFileDir <- tempdir(check = TRUE)
 configDir <- "./conf/"
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
-                    "./modules/render_data.R")
+                    "./modules/render_data.R", "./modules/generate_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
@@ -59,7 +59,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }else{
   pb <- txtProgressBar(file = stderr())
 }
-gamsSysDir   <- ""
+gamsSysDir   <- "/Applications/MIRO0.6/sysdir/"
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
   args <- commandArgs(trailingOnly = TRUE)
@@ -853,7 +853,7 @@ if(!is.null(errMsg)){
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
-    
+    test123 <- vector("list", length(modelIn))
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
