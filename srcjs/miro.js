@@ -226,13 +226,12 @@ function rerenderDygraph(delay = 100) {
   }
 }
 function rerenderHot(delay = 100) {
-  try {
-    setTimeout(() => {
-      HTMLWidgets.getInstance($('.rhandsontable:visible').get(0)).hot.render();
-    }, delay);
-  } catch (e) {
-    // continue regardless of error
-  }
+  setTimeout(() => {
+    const el = $('.rhandsontable:visible').get(0);
+    if (el !== undefined) {
+      HTMLWidgets.getInstance(el).hot.render();
+    }
+  }, delay);
 }
 
 function showHideEl(el, delay, msg = null) {
