@@ -395,7 +395,7 @@ observeEvent(input$widget_symbol_type, {
   latest_widget_symbol_type <<- input$widget_symbol_type
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
-output$table_preview <- renderRHandsontable({
+output$hot_preview <- renderRHandsontable({
   req(input$widget_symbol %in% names(inputSymHeaders))
   headers_tmp <- inputSymHeaders[[input$widget_symbol]]
   data        <- data.frame(matrix(c(letters[1:10], 
@@ -410,11 +410,28 @@ output$table_preview <- renderRHandsontable({
                                                headers_tmp)], 
                   readOnly = TRUE)
   }
+  if(identical(rv$widgetConfig$bigData, TRUE)){
+    return()
+  }
   if(identical(input$table_heatmap, TRUE)){
     return(hot_heatmap(ht))
   }else{
     return(ht)
   }
+})
+output$dt_preview <- renderDT({
+  req(input$widget_symbol %in% names(inputSymHeaders))
+  headers_tmp <- names(inputSymHeaders[[input$widget_symbol]])
+  data        <- data.frame(matrix(c(letters[1:10], 
+                                     replicate(length(headers_tmp) - 1L,
+                                               1:10)), 10))
+  dtOptions <- list(editable = !identical(input$readonly, 
+                                          TRUE),
+                    colnames = headers_tmp)
+  if(!identical(rv$widgetConfig$bigData, TRUE)){
+    return()
+  }
+  return(renderDTable(data, dtOptions, render = FALSE))
 })
 observeEvent({input$widget_type
   rv$widget_type}, {
@@ -447,28 +464,24 @@ observeEvent({input$widget_type
              tagList(
                tags$div(style = "max-width:400px;",
                         textInput("widget_alias", lang$adminMode$widgets$table$alias, value = rv$widgetConfig$alias)),
-               tags$div(class = "shiny-input-container",
-                        tags$label(class = "cb-label", "for" = "table_readonly", lang$adminMode$widgets$table$readonly),
-                        tags$div(
-                          tags$label(class = "checkbox-material",
-                                     checkboxInput("table_readonly", 
-                                                   value = rv$widgetConfig$readonly, label = NULL)
-                          ))
-               ),
-               tags$div(style = "max-width:400px;",
-                        selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
-                                    choices = inputSymHeaders[[input$widget_symbol]], 
-                                    selected = rv$widgetConfig$readonlyCols, multiple = TRUE)),
-               tags$div(class = "shiny-input-container",
-                        tags$label(class = "cb-label", "for" = "table_heatmap", lang$adminMode$widgets$table$heatmap),
-                        tags$div(
-                          tags$label(class = "checkbox-material", 
-                                     checkboxInput("table_heatmap", value = rv$widgetConfig$heatmap, label = NULL)
-                          ))
-                        )), 
+               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = identical(rv$widgetConfig$bigData, TRUE)),
+               checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
+               conditionalPanel(condition = "input.table_bigdata===false",
+                                tags$div(style = "max-width:400px;",
+                                         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
+                                                     choices = inputSymHeaders[[input$widget_symbol]], 
+                                                     selected = rv$widgetConfig$readonlyCols, multiple = TRUE)),
+                                checkboxInput_MIRO("table_heatmap", 
+                                                   lang$adminMode$widgets$table$heatmap, 
+                                                   value = rv$widgetConfig$heatmap)
+               )), 
              where = "beforeEnd")
     output$widget_preview <- renderUI("")
-    showEl(session, "#table_preview")
+    if(identical(rv$widgetConfig$bigData, TRUE)){
+      hideEl(session, "#hot_preview")
+    }else{
+      showEl(session, "#hot_preview")
+    }
     return()
   }
   
@@ -1172,7 +1185,7 @@ observeEvent({input$widget_type
            })
          }
   )
-  hideEl(session, "#table_preview")
+  hideEl(session, "#hot_preview")
 })
 
 observeEvent(input$widget_alias, {
@@ -1188,15 +1201,20 @@ observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube
 })
 
+observeEvent(input$table_bigdata, {
+  if(input$table_bigdata == TRUE){
+    hideEl(session, "#hot_preview")
+    rv$widgetConfig$bigData <<- TRUE
+  }else{
+    showEl(session, "#hot_preview")
+    rv$widgetConfig$bigData <<- FALSE
+  }
+})
 observeEvent(input$table_readonly, {
   rv$widgetConfig$readonly <<- input$table_readonly
 })
-observe({
-  if(!length(input$table_readonlyCols)){
-    isolate(rv$widgetConfig$readonlyCols <<- NULL)
-  }else{
-    isolate(rv$widgetConfig$readonlyCols <<- input$table_readonlyCols)
-  }
+observeEvent(input$table_readonlyCols, {
+  rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
 })
 observeEvent(input$table_heatmap, {
   rv$widgetConfig$heatmap <<- input$table_heatmap
@@ -1412,7 +1430,11 @@ observeEvent(input$saveWidget, {
 })
 observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm), {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
+  
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
+  if(!length(configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols)){
+    configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols <- NULL
+  }
   
   symbolDDNeedsUpdate <- FALSE
   

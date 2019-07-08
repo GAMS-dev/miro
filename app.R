@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.6.1"
-MIRORDate   <- "Jun 21 2019"
+MIROVersion <- "0.6.3"
+MIRORDate   <- "Jul 8 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -109,6 +109,8 @@ if(is.null(errMsg)){
       })
     }
   })
+  # set maximum upload size
+  options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # check whether shiny proxy is used to access this file
   isShinyProxy <- isShinyProxy()
   # get model path and name
@@ -650,7 +652,6 @@ if(!is.null(errMsg)){
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #______________________________________________________
   server <- function(input, output, session){
-    options(shiny.maxRequestSize = 100*1024^2)
     newTab <- vector("list", maxNumberScenarios + 3L)
     flog.info("Session started (model: '%s', user: '%s').", modelName, uid)
     btSortNameDesc     <- FALSE

@@ -28,6 +28,9 @@ slocktimeIdentifier <- "_slocktime"
 stagIdentifier <- "_stag"
 scodeIdentifier <- "_scode"
 
+# maximum upload size [MB] for data files
+maxUploadSize <- 100L
+
 # maximum number of scalars to represent as value box
 maxScalarsValBox <- 20L
 

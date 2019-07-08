@@ -903,6 +903,7 @@
       },
       "table":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
         "heatmap": "Turn table into a heatmap?"

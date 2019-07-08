@@ -221,7 +221,8 @@ body_admin <- dashboardBody({
                     ),
                     tags$div(class = "col-sm-6",
                              uiOutput("widget_preview"),
-                             rHandsontableOutput("table_preview"),
+                             rHandsontableOutput("hot_preview"),
+                             DTOutput("dt_preview"),
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
                                       actionButton("deleteWidget", "Delete", icon("trash-alt")),
                                       actionButton("saveWidget", "Save", icon("save")))

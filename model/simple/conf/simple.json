@@ -1,5 +1,11 @@
 {
 	"UILogo": "simple.jpg",
+	"inputWidgets":{
+		"timeseries":{
+			"widgetType": "table",
+			"bigData": true
+		}
+	},
     "dataRendering"      : {
         "timeseries"   	: {
 			"outType"               : "graph",

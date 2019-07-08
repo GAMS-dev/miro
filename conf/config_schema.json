@@ -725,6 +725,11 @@
                      "type":"boolean",
                      "default": false
                    },
+                   "bigData":{  
+                     "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
+                     "type":"boolean",
+                     "default": false
+                   },
                    "noImport":{  
                     "description":"Boolean that specifies whether data should not be imported from external source",
                     "type":"boolean"

@@ -903,6 +903,7 @@
       },
       "table":{
         "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",
+        "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie bestimmte Spalten aus, die schreibgeschützt sein sollen",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"

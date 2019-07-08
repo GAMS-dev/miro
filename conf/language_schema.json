@@ -4137,6 +4137,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "bigData":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "readonly":{ 
                   "type":"string",
                   "minLength":1,

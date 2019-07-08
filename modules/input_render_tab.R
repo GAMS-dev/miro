@@ -227,9 +227,9 @@ lapply(modelInTabularData, function(sheet){
                return(data)
              })
            }else{
-             modelInputData[[i]] <- reactive({
+             dataModelIn[[i]] <- reactive({
                rv[["in_" %+% i]]
-               if(!nrow(modelInputData[[i]])){
+               if(!length(modelInputData[[i]]) || nrow(modelInputData[[i]]) < 1L){
                  # disable graph button as no data was loaded
                  disableEl(session, "#btGraphIn")
                  isEmptyInput[i] <<- TRUE
@@ -245,13 +245,12 @@ lapply(modelInTabularData, function(sheet){
            output[["in_" %+% i]] <- renderDT({
              errMsg <- NULL
              tryCatch({
-               dt <- do.call(datatable, c(list(dataModelIn[[i]](), 
-                                               editable = if(identical(modelIn[[i]]$readonly, 
-                                                                       TRUE))
-                                                 FALSE else TRUE,
-                                               colnames = attr(modelInTemplate[[i]], "aliases")),
-                                          config$datatable)) %>%
-                 formatRound(seq_along(data), roundPrecision)
+               dtOptions <- list(editable = !identical(modelIn[[i]]$readonly, 
+                                                       TRUE),
+                                 colnames = attr(modelInTemplate[[i]], "aliases"))
+               
+               dt <- renderDTable(dataModelIn[[i]](), dtOptions, 
+                                  roundPrecision = roundPrecision, render = FALSE)
              }, error = function(e){
                flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
                           modelInAlias[[i]], e) 

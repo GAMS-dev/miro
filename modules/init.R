@@ -235,6 +235,9 @@ if(is.null(errMsg)){
       }
       widgetConfig$widgetType <- NULL
       
+      if(identical(widgetType, "table") && identical(widgetConfig$bigData, TRUE)){
+        modelIn[[i]]$dtHeaders <- TRUE
+      }
       if(!is.null(widgetConfig$alias)){
         modelIn[[i]]$alias <- widgetConfig$alias
         widgetConfig$alias <- NULL

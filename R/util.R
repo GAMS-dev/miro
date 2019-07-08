@@ -151,7 +151,7 @@ getWidgetDependencies <- function(widgetType, depString){
 }
 
 getInputType <- function(data, keywordsType){
-  # Retrieves input type from JSOn file based on keyword list
+  # Retrieves input type from JSON file based on keyword list
   #
   # Args:
   # data:                       raw list of input data
