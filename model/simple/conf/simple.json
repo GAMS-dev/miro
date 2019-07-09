@@ -44,18 +44,12 @@
 		"rep_emix"			: {
 			"outType"			: "simple1",
 			"height"			: 700,
-			"packages"			: ["leaflet", "leaflet.minicharts", "sf", "RColorBrewer"],
-			"options"			: {
-				"geojsonloc"		: "bundeslaender.geojson"
-			}
+			"packages"			: ["leaflet", "leaflet.minicharts"]
 		},
 		"rep_flow"			: {
 			"outType"			: "simple2",
 			"height"			: 700,
-			"packages"			: ["leaflet", "leaflet.minicharts", "sf", "RColorBrewer"],
-			"options"			: {
-				"geojsonloc"		: "bundeslaender.geojson"
-			}
+			"packages"			: ["leaflet", "leaflet.minicharts"]
 		}
     }
 }

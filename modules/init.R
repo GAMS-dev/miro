@@ -71,35 +71,6 @@ if(is.null(errMsg)){
       flog.info("Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated.")
       config$activateModules$attachments <- FALSE
     }
-  }else if(!identical(config$db$type, "sqlite")){
-    pg_user <- Sys.getenv("GMS_PG_USERNAME", unset = NA)
-    if(is.na(pg_user)){
-      if(!length(config$db$username)){
-        errMsg <- paste(errMsg, "The PostgresQL username could not be identified. Please make sure you specify a valid username:\n
-                        The username for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_USERNAME'.",
-                        sep = "\n")
-      }
-    }else{
-      config$db$username <- pg_user
-    }
-    pg_pass <- Sys.getenv("GMS_PG_PASSWORD", unset = NA)
-    if(is.na(pg_pass)){
-      if(!length(config$db$password)){
-        errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
-                        sep = "\n")
-      }
-    }else{
-      config$db$password <- pg_pass
-    }
-    pg_dbname <- Sys.getenv("GMS_PG_DBNAME", unset = NA)
-    if(is.na(pg_dbname)){
-      if(!length(config$db$name)){
-        errMsg <- paste(errMsg, "The PostgresQL password could not be identified. Please make sure you specify a valid password:\nThe password for the GAMS WebUI PostgreSQL database should be stored in the environment variable: 'GMS_PG_PASSWORD'.",
-                        sep = "\n")
-      }
-    }else{
-      config$db$name <- pg_dbname
-    }
   }
   
   if(!is.null(config$db$name) && nchar(config$db$name) &&
