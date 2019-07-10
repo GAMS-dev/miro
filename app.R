@@ -1209,7 +1209,15 @@ if(!is.null(errMsg)){
       # remove temporary files and folders
       unlink(file.path(workDir), recursive=TRUE)
       suppressWarnings(rm(activeScen))
-      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid))
+      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
+          silent = TRUE)
+      if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
+        # clean up
+        try(db$deleteRows(scenMetadataTable, 
+                          uidIdentifier, 
+                          uid), silent = TRUE)
+        
+      }
       if(config$activateModules$attachments && 
          config$storeLogFilesDuration > 0L){
         db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 
