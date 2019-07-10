@@ -1,8 +1,8 @@
 showReadonlyDialog <- function(){
   if(config$activateModules$hcubeMode){
-    modeDescriptor <- "dialogReadonly"
-  }else{
     modeDescriptor <- "dialogReadonlyHC"
+  }else{
+    modeDescriptor <- "dialogReadonly"
   }
   showModal(modalDialog(
     title = lang$nav[[modeDescriptor]]$title,

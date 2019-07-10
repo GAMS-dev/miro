@@ -1,6 +1,7 @@
 {
 	"UILogo"             : "pickstock.png",
     "hiddenOutputScalars": ["lastdaytraining"],
+    "miroLogFile": "miro.log",
     "inputWidgets":{
       "price":{
         "widgetType": "table",

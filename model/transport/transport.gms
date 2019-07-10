@@ -54,7 +54,7 @@ c(i,j) = f*d(i,j)/1000;
 * input validataion
 file log / miro.log /;
 put log '------------------------------------'/;
-put log '        Executing transport'/;
+put log '        Validating data'/;
 put log '------------------------------------'/;
 if(sum(i, a(i)) < sum(j, b(j)),
   put log 'a:: Capacity insufficient to meet demand'/;
