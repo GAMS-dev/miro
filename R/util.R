@@ -1113,8 +1113,7 @@ setDbConfig <- function(configFn){
     if(is.na(data)){
       if(!length(config[[metaData$keyName]])){
         errMsg <- paste(errMsg, paste0("The ", metaData$desc , " could not be identified. Please make sure you specify a valid ", 
-                                       metaData$desc, ":\n
-                        The ", metaData$desc, " should be stored in the environment variable: '", metaData$keyName, "'."),
+                                       metaData$desc, ":\nThe ", metaData$desc, " should be stored in the environment variable: '", metaData$envVar, "'."),
                         sep = "\n")
       }
     }else{
