@@ -57,7 +57,7 @@
         <div class="doc-wrapper">
             <div class="container">
                 <div id="doc-header" class="doc-header text-center">
-                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_tools"></span> Charts</h1>
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-chart-pie"></span> Charts</h1>
                 </div><!--//doc-header-->
                 <div class="doc-body row">
                     <div class="doc-content col-md-9 col-12 order-1">
@@ -66,10 +66,30 @@
                                 <h2 class="section-title">Pie chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Any parameter with a value column can be displayed as a pie chart.</p>
+                                    <p>Any GAMS symbol with a value column can be displayed as a pie chart.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <pre><code class="language-gams">Set         symbol           'stock symbol';
+Variable    w(symbol)        'what part of the portfolio'; 
+                                    
+$onExternalOutput    
+Parameter   weight(symbol)   'weight of stock';
+$offExternalOutput
+
+stock_weight(s) = w.l(s);
+</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Pie chart data"/>
+                                    </div>
+                                     <p>In the configuration mode we then can configure a pie chart. Note that index sets are provided with their explanatory text, not with the actual symbol names.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pie_config.png" alt="Pie chart configuration"/>
+                                    </div>
+                                    <p><b>Note:</b> <br>Instead of the parameter <i>weight</i>, to which you assign the values of the variable <i>w</i>, you could have used a pie chart directly for the levels of variable <i>w</i>. 
+                                    However, this variable also contains all the zero values that would then become visible in the pie chart, see below. 
+                                    But if you assign the levels of the variable <i>w</i> (<code class="language-gams">w.l(symbol)</code>) to the parameter <i>weight</i>, zeros will not be transferred at all. </p>
+                                    <div class="section-block" id="pie-variable"">
+                                        <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/pie_variable.png" alt="Pie chart with variable"/>
                                     </div>
                                 </div><!--//section-block-->
                                 <div class="section-block">
@@ -130,12 +150,28 @@
                                 <h2 class="section-title">Bar chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>If a parameter is to be visualized as a bar chart, an index must be specified for the x-axis as well as for the y-axis. 
+                                    <p>If a symbol is to be visualized as a bar chart, an index must be specified for the x-axis as well as for the y-axis. 
                                     Several data series can be plotted simultaneously on the x-axis. </p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <pre><code class="language-gams">Set         symbol           'stock symbol';
+Variable    w(symbol)        'what part of the portfolio'; 
+                                    
+$onExternalOutput    
+Parameter   weight(symbol)   'weight of stock';
+$offExternalOutput
+
+stock_weight(s) = w.l(s);
+</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Bar chart data"/>
+                                    </div>
+                                    <p>In the configuration mode we then can configure a bar chart.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bar_config.png" alt="Bar chart configuration"/>
                                     </div>
+                                    <p><b>Note:</b> <br>Instead of the parameter <i>weight</i>, to which you assign the values of the variable <i>w</i>, you could have used a bar chart directly for the levels of variable <i>w</i>. 
+                                    However, this variable also contains all the zero values that would then become visible in the chart, see the <a href="#pie-variable" class="scrollto">pie chart example</a>.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
@@ -190,6 +226,33 @@
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <p>The parameter to plot represents the absolute errors in the training phase. <br>
+                                    We define a parameter <code class="language-gams">abserror(td, 'absolute error train')</code> (last row), to which we assign the values of the parameter <code class="language-gams">error(d)</code>, but only those values where <code class="language-gams">ord(d) <= trainingdays</code>. 
+                                    </p>
+                                    <pre><code class="language-gams">Set         date           'date';
+Parameter   error(date)    'Absolute error'; 
+
+td(d)     = ord(d) <= trainingdays;
+ntd(d)    = not td(d);
+
+solve pickStock min obj using mip;
+
+error(d)  = abs(index(d)-fund(d));                 
+   
+Set errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /; 
+  
+$onExternalOutput    
+Parameter abserror(date,errHdr)          'absolute error [MIRO:table]';  
+$offExternalOutput
+
+abserror(td, 'absolute error train')   = error(td);
+abserror(ntd,'absolute error test')    = error(ntd);
+</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/scatter_data.png" alt="Scatter plot data"/>
+                                    </div>
+                                    <p>In the configuration mode we then can configure a bar chart.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_scatter_config.png" alt="Scatter plot configuration"/>
                                     </div>
@@ -254,6 +317,7 @@
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Line charts also include area charts.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_line_config.png" alt="Line chart configuration"/>
                                     </div>
@@ -324,6 +388,7 @@
                                   <h3 class="block-title">Configuration</h3>
                                     <p>A bubble chart is a scatter plot where the size and the color of a single plot depends on a value.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_bubble_config.png" alt="Bubble chart configuration"/>
                                     </div>
@@ -387,6 +452,7 @@
                                   <h3 class="block-title">Configuration</h3>
                                     <p></p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>absolute error</i></p>
+                                    <p>For an example in GAMS, see the <a href="#scatter-chart" class="scrollto">scatter plot example</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_histogram_config.png" alt="Histogram configuration"/>
                                     </div>
@@ -436,28 +502,48 @@
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
+                                    <p>The parameter to plot represents the shipment quantities between canning plants and markets. <br>
+                                    </p>
+                                    <pre><code class="language-gams">Set   
+    i           'canning plants'
+    j           'markets'
+    scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
+  
+$onExternalOutput
+Parameter  schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
+$offExternalOutput
+
+schedule(i,j, 'lngP')       = iLocData(i,'lng');
+schedule(i,j, 'latP')       = iLocData(i,'lat');
+schedule(i,j, 'lngM')       = jLocData(j,'lng');
+schedule(i,j, 'latM')       = jLocData(j,'lat');
+schedule(i,j, 'cap')        = a(i);
+schedule(i,j, 'demand')     = b(j);
+schedule(i,j, 'quantities') = x.l(i,j);
+</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <div class="section-block" id="map-data">
+                                        <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
+                                    </div>
+                                    <p>In the configuration mode we then can configure a map.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_map_config.png" alt="Map configuration"/>
                                     </div>
                                     <p>With regard to map-based graphics, a variety of possible visualizations are conceivable. In MIRO configuration mode, the following aspects can be realized on a map:</p>
                                     <ul>
                                       <li><b>Markers</b><br>
-                                      Markers can be set. For this the position of the markers must be available in the data as longitude and latitude data. 
+                                      Markers can be set. For this the position of the markers must be available in the data as longitude and latitude data (see <a href="#map-data" class="scrollto">table above</a>). 
                                       Marker labels can be set dynamically, i.e. based on data. In the following example, the marker label is set with <i>Market: [j]</i>. 
-                                      If you now click on a marker on the resulting map, the label will not be <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced with the city belonging to the data (here: <i>Chicago</i>). 
+                                      If you now click on a marker on the resulting map, the label will not be <i>Market: [j]</i>. Instead, the <i>[j]</i> is replaced with the element of the GAMS index set belonging to the data (here: <i>Chicago</i>). 
                                       <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
-                                      </div>
-                                      The data of this configuration is the following:
-                                      <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
                                       </div>
                                       The second column of the symbol <i>schedule</i> contains the markets j. The columns lngM and latM were selected as longitude and latitude data. 
                                       For a given longitude-latitude combination, the corresponding element from the second column is now displayed as label.
                                       </li>
                                       <li><b>Flows</b><br>
                                       Between different points on the map flows can be displayed. The thickness of the arrows can depend on the flow data.
-                                      The data overview from the previous picture also helps here for the understanding: 
+                                      The data overview from the <a href="#map-data" class="scrollto">table above</a> also helps here for the understanding: 
                                       In the example below the flows have been configured to point from <i>lngP</i>/<i>latP</i> to <i>lngM</i>/<i>latM</i>. 
                                       The thickness depends on the data column <i>quantities</i>.
                                       <div class="section-block">
@@ -466,6 +552,7 @@
                                       </li>
                                       <li><b>Charts</b><br>
                                       You can display small charts on your map. In the following example, a pie chart is displayed for each of the 16 German states.
+                                      <p>Example: Model <i>Simple</i> (see <a href="./showcases.html">showcases</a>), parameter <i>energy mix report</i></p>
                                       <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
                                       </div>
@@ -478,12 +565,13 @@
                                       You also have the option of defining a time component in the charts. The data of the example covers a period of one year with a resolution of one hour. 
                                       For the configuration, the corresponding 1st column was defined as the time dimension (starting with <i>t001</i>. 
                                       Thus, for each time period, a separate pie chart can be displayed for each state (see play button at the bottom right of the map).<br><br>
-                                      Note that all data of your entire graphic must come from the same GAMS symbol. If you want to have more sophisticated graphics, 
+                                      <b>Note</b> that all data of your entire graphic must come from the same GAMS symbol. If you want to have more sophisticated graphics, 
                                       it may be useful to combine data from different symbols into one symbol. Or you can use our <a href="./customize.html#custom-renderers">R API</a> and create your own graphics.
                                       </li>
                                     </ul>
                                     <p><b>Layers</b><br>For map visualizations it can be helpful to display different layers, e.g. with markers. 
                                     In configuration mode you can specify such layers. In the resulting graphic you can select the different layers and display only the corresponding markers.</p>
+                                    <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
                                     <div class="section-block">
                                       <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_layers.png" alt="Map charts data"/>
                                     </div>
@@ -553,12 +641,53 @@
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>As the name of the graphic type suggests, the graphics configured here are based on time series. 
-                                    An important property of such time series is the format of the data. You should make sure that the dataset, which should represent the time component of your graphic, is available in a date format or at least can be formatted into such a format. 
+                                    An important property of such time series is the format of the data. You should make sure that the elements of the index set, which should represent the time component of your graphic, have their data available in a date format or at least can be formatted into such a format. 
                                     A suitable syntax for a date would be <i>yyyy-mm-dd</i>, e.g. <i>2014-07-13</i>.</p>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>dow jones vs. index fund</i></p>
+                                    <pre><code class="language-gams">Set date      'date'
+    fHdr      'fund header'   / dj 'dow jones','index fund'  /;
+                                    
+$onExternalOutput    
+Parameter   dowVSindex(date,fHdr)  'dow jones vs. index fund [MIRO:table]';
+$offExternalOutput
+
+dowVSindex(d,'dj')             = index(d);
+dowVSindex(d,'index fund')     = fund(d);
+</code></pre>
+                                    <div class="row" style="margin-bottom:20pt;">
+                                        <div class="col-md-6">
+                                              <p>The index set <i>date</i> looks as follows:</p>
+                                              <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/timeseries_date.png" alt="Time series diagram dates"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                              <p>The parameter <i>dowVSindex</i>:</p>
+                                              <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/timeseries_data.png" alt="Time series diagram data"/>
+                                        </div>
+                                    </div>
+                                     <p>In the configuration mode we then can configure a time series diagram:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
                                     </div>
+                                    <p>The picture in this example shows a red dotted vertical line showing the "last day of training phase". A scalar output value has been integrated into the graph to identify exactly this phase. </p>
+                                    <p>The graphics tool in MIRO used for creating such time series diagrams allows the inclusion of scalar values for the following elements:</p>
+                                    <ul>
+                                      <li><b>Event line</b>
+                                        <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_event.png" alt="Vertical event"/>
+                                      </div></li>
+                                      <li><b>Limit line</b>
+                                        <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_limit.png" alt="Horizontal line"/>
+                                      </div></li>
+                                      <li><b>Annotation</b>
+                                        <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_annotation.png" alt="Annotation"/>
+                                      </div></li>
+                                      <li><b>Shading</b>
+                                        <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/timeseries_shading.png" alt="Shading"/>
+                                      </div></li>
+                                    </ul>
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
@@ -645,6 +774,7 @@
                                     This can lead to confusion, because the actual configuration of the graphic has to be done on the left side as with all other graphics. 
                                     Only the options set there are saved.</p>
                                     <p>Example: Model <i>Transport</i>, parameter <i>shipment quantities in cases</i></p>
+                                    <p>For an example in GAMS, see the <a href="#map-chart" class="scrollto">map example</a>.</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pivot_config.png" alt="Pivottable configuration"/>
                                     </div>
@@ -676,31 +806,61 @@
                                 <h2 class="section-title">Gantt chart</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>The GAMS symbol, whose data should be visualized as a Gantt chart, must contain the following: </p>
+                                    <p>The GAMS symbol, whose data should be visualized as a gantt chart, must contain the following index sets: </p>
                                     <ul>
                                       <li>Start<br>
-                                      Each item must have a start variable. The format of the underlying data has to be in a date format, e.g. <i>yyyy-mm-dd hh:mm:ss</i> (<i>hh:mm:ss</i> is not required).
+                                      Each gantt event must have a start. The GAMS elements of the underlying set must be in date format, e.g. <i>yyyy-mm-dd hh:mm:ss</i> (<i>hh:mm:ss</i> is not required).
                                       </li>
                                       <li>Content<br>
-                                      Each item must have a content variable which is then shown as a label.</li>                                      
+                                      Each gantt event must have a content which is then shown as a label. The GAMS elements of the underlying set can be of any format.</li>                                      
                                     </ul>
-                                    <p>The following example also contains:</p>
+                                    <p>Optional index sets of the GAMS Symbol:</p>
                                     <ul>
                                       <li>End<br>
-                                      If the item is not a single point in time, but a range, you can provide an end variable.</li>
+                                      If a gantt event is not a single point in time, but a range, you can provide an end date. The GAMS elements of the underlying set must be in date format.</li>
                                       <li>Title<br>
-                                      A title is shown when you hover an item.</li> 
+                                      A title is shown when you hover an item. The GAMS elements of the underlying set can be of any format.</li> 
                                       <li>Group<br>
-                                      Items of the same groups are grouped together when specifying a group variable.</li>                                     
+                                      Items of the same groups are grouped together when specifying a group variable. The GAMS elements of the underlying set can be of any format.</li>                                     
                                     </ul>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
-                                    </div>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>The index sets of the GAMS Symbol do not have to be named <i>start</i>, <i>end</i>, <i>content</i> etc. Only the mapping you define in the configuation mode is relevant.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>As an example we use a GAMS Parameter <i>gantt</i> with index sets <i>id</i>, <i>start</i>, <i>end</i>, <i>content</i> and <i>group</i>:</p>
+                                    <pre><code class="language-gams">Set
+   id       'gannt_id'      / 1, 2, 3, 4, 5, 6 /
+   start    'gannt_start'   / '2016-01-04 10:00:00', '2016-01-05 10:30:00', '2016-01-06 10:50:00', '2016-01-07 14:00:00', '2016-01-08 14:45:00', '2016-01-09 19:00:00' /
+   end      'gannt_end'     / '2016-01-05 10:00:00', '2016-01-06 10:30:00', '2016-01-07 10:50:00', '2016-01-08 14:00:00', '2016-01-09 14:45:00', '2016-01-10 19:00:00' /
+   content  'gannt_content' / test1, test2, test3, test4, test5, test6 /
+   group    'gantt_group'   / a, b /
+   ;
+
+$onExternalOutput
+Parameter gantt(id, start, end, content, group) 'Gantt chart parameter' ;
+$offExternalOutput
+
+gantt('1', '2016-01-04 10:00:00', '2016-01-05 10:00:00', 'test1', 'a') = 1;
+gantt('2', '2016-01-05 10:30:00', '2016-01-06 10:30:00', 'test2', 'a') = 1;
+gantt('3', '2016-01-06 10:50:00', '2016-01-07 10:50:00', 'test3', 'a') = 1;
+gantt('4', '2016-01-07 14:00:00', '2016-01-08 14:00:00', 'test4', 'b') = 1;
+gantt('5', '2016-01-08 14:45:00', '2016-01-09 14:45:00', 'test5', 'b') = 1;
+gantt('6', '2016-01-09 19:00:00', '2016-01-10 19:00:00', 'test6', 'b') = 1;</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/gantt_data.png" alt="Gantt chart data"/>
                                     </div>
-                                    <p><b>Note:</b> The columns in the table do not have to be named <i>start</i>, <i>end</i>, <i>content</i> etc. Only the mapping you define in the configuation mode is relevant.</p>
+                                    <p>In the configuration mode we then can configure a gantt chart. Note that index sets are provided with their explanatory text, not with the actual symbol names.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_gantt_config.png" alt="Gantt chart configuration"/>
+                                    </div>
                                     <p>More inforation on the tool we use for gantt charts can be found <a href="https://github.com/daattali/timevis" target="_blank">here</a>.</p>
+                                    
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>

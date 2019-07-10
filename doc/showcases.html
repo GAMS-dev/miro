@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>MIRO - Configuration</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- Spectrum ColorPicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
+    <!-- bootstrap datetimepicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- alpaca -->
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
+
+</head>
+
+<body class="body-blue">
+<div id="loading-screen" style="display:none;"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
+       <div></div><div></div><div></div><div></div></div></div>
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Showcases</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-chart-area"></span> Showcases</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-12 col-12 order-1">
+                        <div class="content-inner">     
+                            <section id="showcases" class="doc-section">
+                                <div class="section-block" id="configure-graphs">
+                                  <p>This gallery should give you an insight into what is possible with MIRO. But also interesting GAMS models / problems to solve shall be addressed here.</p>
+                                  <p>Just try out the MIRO applications (base mode only) directly in your browser! </p>
+                                  <div id="showcases-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;">
+                                      <div class="item col-lg-4 col-6" onclick="$('#loading-screen').show();">
+                                         <div class="item-inner">
+                                             <div style="height:200px;">
+                                                 <img class="img-fluid" style= "max-height:180px; display: block; margin:auto;" src="assets/images/showcases/transport.png" alt="Transport demo" />
+                                             </div>
+                                             <div>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Transport</h3>
+                                             <p class="intro" style="text-align:left;">A transportation problem</p>
+                                             </div>
+                                             <a class="link" href="https://miro.gams.com/showcases/app_direct/transport/"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6" onclick="$('#loading-screen').show();">
+                                         <div class="item-inner">
+                                             <div style="height:200px;">
+                                                 <img class="img-fluid" style= "max-height:180px; display: block; margin:auto;" src="assets/images/showcases/pickstock.png" alt="Pickstock demo" />
+                                             </div>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Pickstock</h3>
+                                             <p class="intro" style="text-align:left;">Stock Selection Optimization</p>
+                                             <a class="link" href="https://miro.gams.com/showcases/app_direct/pickstock/"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6" onclick="$('#loading-screen').show();">
+                                         <div class="item-inner">
+                                             <div style="height:200px;">
+                                                 <img class="img-fluid" style= "max-height:180px; display: block; margin:auto;" src="assets/images/showcases/simple.png" alt="Simple demo" />
+                                             </div>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Simple</h3>
+                                             <p class="intro" style="text-align:left;">Simplified Energy Systems Model</p>
+                                             <a class="link" href="https://miro.gams.com/showcases/app_direct/simple/"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                 </div><!--//cards-wrapper-->
+                                 <div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">You want to share your own MIRO app with others?</b>
+                                            <p>In order to show different application possibilities of MIRO, we want to expand our gallery with MIRO showcase apps permanently.
+                                            If you have configured a MIRO app and would like to share it with others, you are welcome to do so here!
+                                            <br>
+                                            Please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a> for this.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section>
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
+    <!-- Moment plugin -->
+    <script type="text/javascript" src="assets/plugins/moment/moment.min.js"></script>
+    <!-- Bootstrap datetimepicker plugin -->
+    <script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+    <!-- alpaca -->
+    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+    <!-- AJV -->
+    <script type="text/javascript" src="assets/js/ajv.min.js"></script>
+    <!-- config generator -->
+    <script type="text/javascript" src="assets/js/config-gen.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+    	$('.gifplayer').gifplayer();
+    </script>
+
+</body>
+</html>
