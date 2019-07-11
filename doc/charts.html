@@ -47,7 +47,7 @@
     </script>
 </head>
 
-<body class="body-blue">
+<body class="body-orange">
     <!--#include virtual="/wbody.html" -->
     <div class="page-wrapper">
 
@@ -102,8 +102,8 @@ stock_weight(s) = w.l(s);
                                     </div>
                                     <p><b>Note:</b> <br>Instead of the parameter <i>weight</i>, to which you assign the values of the variable <i>w</i>, you could have used a pie chart directly for the levels of variable <i>w</i>. 
                                     However, this variable also contains all the zero values that would then become visible in the pie chart, see below. 
-                                    But if you assign the levels of the variable <i>w</i> (<code class="language-gams">w.l(symbol)</code>) to the parameter <i>weight</i>, zeros will not be transferred at all. </p>
-                                    <div class="section-block" id="pie-variable"">
+                                    But if you assign the levels of the variable <i>w</i> (<code class="language-gams">w.l(symbol)</code>) to the parameter <i>weight</i>, zeros will not be used at all. </p>
+                                    <div class="section-block" id="pie-variable">
                                         <img class="img-fluid" style= "max-height:175pt;" src="assets/images/configuration_mode/pie_variable.png" alt="Pie chart with variable"/>
                                     </div>
                                 </div><!--//section-block-->
@@ -567,7 +567,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       </li>
                                       <li><b>Charts</b><br>
                                       You can display small charts on your map. In the following example, a pie chart is displayed for each of the 16 German states.
-                                      <p>Example: Model <i>Simple</i> (see <a href="./gallery.html">gallery</a>), parameter <i>energy mix report</i></p>
+                                      <p>Example: Model <i>Simple</i> (see <a href="./gallery.html">GAMS MIRO gallery</a>), parameter <i>energy mix report</i></p>
                                       <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_charts.png" alt="Map charts"/>
                                       </div>
@@ -683,8 +683,22 @@ dowVSindex(d,'index fund')     = fund(d);
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_timeseries_config.png" alt="Time series configuration"/>
                                     </div>
-                                    <p>The picture in this example shows a red dotted vertical line showing the "last day of training phase". A scalar output value has been integrated into the graph to identify exactly this phase. </p>
-                                    <p>The graphics tool in MIRO used for creating such time series diagrams allows the inclusion of scalar values for the following elements:</p>
+                                    <p>The picture in this example shows a red dotted vertical line showing the "last day of training phase". A scalar output value has been integrated into the graph to identify exactly this phase. 
+                                    <br><b>Note:</b> To use such a scalar value in graph, MIRO must obviously know about this symbol. You therefore need to tag it with <code class="language-gams">$onExternalInput
+                                        </code> / <code class="language-gams">$offExternalInput
+                                        </code> or <code class="language-gams">$onExternalOutput
+                                        </code> / <code class="language-gams">$offExternalOutput
+                                        </code> in the GAMS model.</p>
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>You want to use a scalar value in a graph but not in the scalars table in MIRO? You can do this by <a href="./customize.html#hidden-scalars">hiding that symbol</a> in the general options.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>The graphics tool in MIRO used for creating time series diagrams allows the inclusion of scalar values for the following elements:</p>
                                     <ul>
                                       <li><b>Event line</b>
                                         <div class="section-block">

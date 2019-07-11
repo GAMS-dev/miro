@@ -431,18 +431,22 @@ $onExternalOutput
                                 </div><!--//section-block-->
                                 <div  id="display-scalars"  class="section-block">
                                     <h3 class="block-title">Scalars</h3>
-                                    <p>The handling of <a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">scalars</a> and 0- or 1-dimensional <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (&le; 1 domains and dimensions) differs from the previously discussed GAMS symbols.
+                                    <p>The handling of <a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">scalars</a> and 0- or 1-dimensional <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">singleton sets</a> (&le; 1 domains and dimensions) differs from the previously discussed GAMS symbols.</p>
                                     <div class="callout-block callout-success">
                                       <div class="icon-holder">
                                           <i class="fas fa-thumbs-up"></i>
                                       </div><!--//icon-holder-->
                                       <div class="content">
                                           <b class="callout-title">Note:</b>
-                                          <p>Scalars and 0- or 1-dimensional singleton sets are collected in a joint table in the interface by default.</p>
+                                          <p>Scalars and 0- or 1-dimensional singleton sets are collected in a joint table in the interface by default.<br>
+                                          In case you want each widget to be displayed on a separate sheet, there is an <a href="./customize.html#aggregate-widgets">option to do so</a>.</p>
                                       </div><!--//content-->
                                     </div><!--//callout-block-->
-                                    They are merged in a joint table in the interface by default. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in MIRO in one single table called <span class="code">scalars</span>. The same is also true for output scalars. These are summarized in the results section in a table called <span class="code">scalars_out</span>.
-                                    <br>Example:</p>
+                                    <p>They are merged in a joint table in the interface by default. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in MIRO in one single table called <span class="code">scalars</span>. 
+                                    The same is also true for output scalars. These are summarized in the results section in a table called <span class="code">scalars_out</span>.
+                                    This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the <span class="code">scalars</span> table. 
+                                  Thus, it improves compactness and flexibility - especially when MIRO is connected to a database as the schema stays fixed even when you add or remove certain scalars.</p>
+                                    <p>Example:</p>
                                     <pre><code class="language-gams">$onExternalInput
 Scalar f    'freight in dollars per case per thousand miles' / 90 /
        minS 'minimum shipment (MIP- and MINLP-only)' / 100 /
@@ -454,8 +458,8 @@ $offExternalInput
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/scalars-table.png" alt="Visualization of scalars and singleton sets in a table" />
                                     </div>
-                                    <p>Instead of representing an input scalar as a row in a table you can opt to display it using one of the <i>input widgets</i> MIRO ships with.
-                                    Scalar values are well suited for representation as a slider, dropdown menu, checkbox or date selector. You can learn more about this in the section about <a href="./customize.html#widgets-scalars">scalar widgets</a>.</p>
+                                    <p>Instead of representing an input scalar as a row in a table you can display it using one of the <i>input widgets</i> MIRO ships with.
+                                    Scalar values are well suited for representation as a slider, dropdown menu, checkbox or date selector. You can learn more about this in the section about <a href="./customize.html#configure-widgets">widgets</a>.</p>
                                     <div class="callout-block callout-success">
                                             <div class="icon-holder">
                                                 <i class="fas fa-thumbs-up"></i>
@@ -532,8 +536,7 @@ $offExternalInput
                                     <h3 class="block-title">Command line parameters</h3>
                                     <p>In addition to GAMS symbols like parameters and scalars, command line parameters (<a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double dash parameters</a>) can also be set from within MIRO.
                                     The configuration of these command line parameters differs from that of GAMS symbols. While sets, parameters, scalars etc. are declared directly in the GAMS code and can therefore be tagged, command line parameters lack such a formal declaration.
-                                    To be able to set them from MIRO, you must declare them in the &lt;modelname&gt;.json file.
-                                    Read more about this topic <a href="./customize.html#widgets-commandLine">here</a>.
+                                    To be able to set them from MIRO, you must declare them in the <a href="./customize.html#configure-widgets">configuration mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file).
                                     </p>
                                 </div><!--//section-block-->
                                 <div  id="database"  class="section-block">
