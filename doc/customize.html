@@ -658,7 +658,7 @@
                                        </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="widgets-advanced">
-                                <h3 class="block-title">Widgets with ranges</h3>
+                                <h3 class="block-title" id="widgets-ranges">Widgets with ranges</h3>
                                    <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector:</p>
                                    <p>The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set at all. Let's look at the following example: We would like to specify a time window that we want to fetch stock data for. Thus, we define a new double dash parameter <kbd>--TW</kbd> that we want to be visualized in the form of a date range selector. We add the following JSON snippet to our <span class="code">&lt;modelName&gt;.json</span> configuration file:</p>
                                     <pre><code class="language-json">
