@@ -101,12 +101,12 @@ validateWidgetConfig <- function(widgetJSON){
               length(widgetJSON$default) > 2L){
              return(lang$adminMode$widgets$validate$val6)
            }
-           if(widgetJSON$default < widgetJSON$min && 
+           if(any(widgetJSON$default < widgetJSON$min) && 
               identical(input$slider_min_dep_selector, TRUE) &&
               identical(input$slider_def_dep_selector, TRUE)){
              return(lang$adminMode$widgets$validate$val7)
            }
-           if(widgetJSON$max < widgetJSON$default && 
+           if(any(widgetJSON$max < widgetJSON$default) && 
               identical(input$slider_max_dep_selector, TRUE) && 
               identical(input$slider_def_dep_selector, TRUE)){
              return(lang$adminMode$widgets$validate$val7)
@@ -1398,11 +1398,14 @@ observeEvent(input$saveWidget, {
     }else{
       rv$widgetConfig$max <<- input$slider_max
     }
-    if(identical(rv$widgetConfig$widgetType, "slider") && identical(input$slider_def_dep_selector, FALSE)){
-      rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
-                                         "$", input$slider_def_dep_header, ")")
-    }else{
-      rv$widgetConfig$default <<- input$slider_def
+    if(identical(rv$widgetConfig$widgetType, "slider") && 
+       identical(length(rv$widgetConfig$default), 1L)){
+      if(identical(input$slider_def_dep_selector, FALSE)){
+        rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
+                                           "$", input$slider_def_dep_header, ")")
+      }else{
+        rv$widgetConfig$default <<- input$slider_def
+      }
     }
   }else if(identical(rv$widgetConfig$widgetType, "dropdown")){
     if(identical(input$dd_choice_dep_selector, FALSE)){

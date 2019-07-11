@@ -7,7 +7,6 @@ these components are included below):
 - R, https://www.r-project.org
 - jQuery, https://github.com/jquery/jquery
 - jQuery UI (some components), https://github.com/jquery/jquery-ui
-- JQuery slimScroll, https://github.com/rochal/jQuery-slimScroll
 - Bootstrap, https://github.com/twbs/bootstrap
 - html5shiv, https://github.com/aFarkas/html5shiv
 - Respond.js, https://github.com/scottjehl/Respond
@@ -2022,7 +2021,6 @@ Public License instead of this License.
                                                  ,Serphentas ,svalee <triksrimer@gmail.com> ,Svetlana Konovalova ,Sébastien Barré <sheub@users.noreply.github.com>
                                                  ,Thomas <thomas_gratier@yahoo.fr> ,Tom Wallroth <tomwallroth@gmail.com> ,tony <jinzc1@lenovo.com> ,tristan <tristanhomsi@gmail.com>
                                                  ,Vladimir Kalinkin <vova.kalinkin@gmail.com> ,William Hammond <william.t.hammond@gmail.com> ,willr <willr@plotwatt.com> ,Yorick Holkamp <github@nextpulse.nl>
-        - slimScroll, Copyright (c) 2011 Piotr Rochala (http://rocha.la)
                                                  
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>

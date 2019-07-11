@@ -34,7 +34,6 @@ body_admin <- dashboardBody({
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
-      tags$script(src = "jquery.slimscroll.min.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
       tags$style(HTML(paste0('
