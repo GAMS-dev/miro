@@ -33,6 +33,24 @@ Parameter
 Set td(date)    'training days'
     ntd(date)   'none-training days';
     
+* input validataion
+set error01(date, symbol);
+
+error01(date, symbol) = price(date, symbol) < 0;
+
+file log / miro.log /;
+put log '------------------------------------'/;
+put log '        Data validation'/;
+put log '------------------------------------'/;
+if(card(error01),
+  put log 'price:: No negative prices allowed!'/;
+  loop(error01(date, symbol),
+      put log / ' Symbol ' symbol.tl:4 ' has negative price at the date: ' date.tl:0;
+    );
+  abort "Data errors detected."
+);
+putclose log;
+    
 avgprice(s)       = sum(d, price(d,s))/card(d);
 weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
 contribution(d,s) = weight(s)*price(d,s);

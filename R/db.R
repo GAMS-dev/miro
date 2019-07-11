@@ -62,9 +62,9 @@ Db <- R6Class("Db",
                   
                   if(identical(dbConf$type, "postgres")){
                     tryCatch({
-                      private$conn <- dbConnect(odbc(), driver = "PostgreSQL Driver", 
+                      private$conn <- dbConnect(odbc(), driver = dbConf$driver, 
                                                 database = dbConf$name,  
-                                                host = dbConf$host, port = dbConf$port, 
+                                                servername = dbConf$host, port = dbConf$port, 
                                                 uid = dbConf$username, pwd = dbConf$password, 
                                                 bigint = "integer")
                     }, error = function(e){
@@ -1209,7 +1209,7 @@ Db <- R6Class("Db",
                     return(private$userAccessGroups)
                   
                   stopifnot(is.character(groups), length(groups) >=1)
-                  private$userAccessGroups <- groups
+                  private$userAccessGroups <- unique(groups)
                 }
               ),
               private = list(

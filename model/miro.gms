@@ -242,8 +242,8 @@ with open(r'%fp%%fn%_miro.gms', 'w', encoding="utf-8") as f:
             extra = 'index=1..' + str(s[0].dimension) + ' value=' + str(s[0].dimension+1)
          elif s[1] == 'pp':
             extra = 'index=1..' + str(s[0].dimension-1) + ' valuedim=1 values=' + str(s[0].dimension) + '..lastCol'
-         f.write('$hiddencall csv2gdx %csvHome%' + symname + '.csv id=' + symname + ' useheader=y ' + extra + ' > csv2gdx.log\n')
-         f.write('$if errorlevel 1 $abort "Problem converting ' + symname + '.csv to GDX. Check csv2gdx.log"\n')
+         f.write('$hiddencall csv2gdx %csvHome%' + symname.lower() + '.csv id=' + symname + ' useheader=y ' + extra + ' > csv2gdx.log\n')
+         f.write('$if errorlevel 1 $abort "Problem converting ' + symname.lower() + '.csv to GDX. Check csv2gdx.log"\n')
          f.write('$hiddencall rm -f csv2gdx.log\n')
          f.write('$gdxin ' + symname + '\n')
          f.write('$loadDCR ' + symname +'\n')
@@ -330,8 +330,8 @@ with open(r'%fp%%fn%_miro.gms', 'w', encoding="utf-8") as f:
       for h in symHeader[1:]:
          htext = htext + ',' + h[0]
       f.write('$if DEFINED ' + symname + ' execute$card(' + symname + ') ')
-      f.write('\'gdxdump "' + fn + '" epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname + '.csv\';')
-      f.write(' abort$errorlevel "problems writing ' + symname + '.csv";\n')
+      f.write('\'gdxdump "' + fn + '" epsout=0 noheader symb=' + symname + extra + ' header="' + htext + '" format=csv csvsettext csvallfields > ' + symname.lower() + '.csv\';')
+      f.write(' abort$errorlevel "problems writing ' + symname.lower() + '.csv";\n')
    f.write('$if not set MIRO_DEBUG execute "rm -rf ' + fn + '";\n')
 
    f.write('\n')

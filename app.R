@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.6.3"
-MIRORDate   <- "Jul 8 2019"
+MIROVersion <- "0.6.4"
+MIRORDate   <- "Jul 10 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -169,11 +169,13 @@ if(is.null(errMsg)){
       ugroups <- defaultGroup
     }
   }
-  if(any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-~]{3,19}$", c(uid, ugroups), perl = TRUE))){
+  if(!identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true") && 
+     any(!grepl("^[a-zA-Z0-9][a-zA-Z0-9!%\\(\\)\\-~]{3,19}$", c(uid, ugroups), perl = TRUE))){
     errMsg <- paste(errMsg, 
                     "Invalid user ID or user group specified. The following rules apply for user IDs and groups:\n- must be at least 4 and not more than 20 characters long\n- must start with a number or letter (upper or lowercase) {a-z}, {A-Z}, {0-9}\n- may container numbers, letters and the following additional characters: {!%()-~}",
                     sep = "\n")
   }
+  
   #initialise loggers
   if(!dir.exists(logFileDir)){
     tryCatch({
@@ -202,7 +204,12 @@ if(is.null(errMsg)){
   }else{
     load(rSaveFilePath, envir = .GlobalEnv)
     if(isShinyProxy){
-      config$db <- fromJSON(paste0(configDir, "db_config.json"))
+      dbConfig <- setDbConfig(paste0(configDir, "db_config.json"))
+      if(length(dbConfig$errMsg)){
+        errMsg <- dbConfig$errMsg
+      }else{
+        config$db <- dbConfig$data
+      }
     }
   }
 }
@@ -1202,7 +1209,15 @@ if(!is.null(errMsg)){
       # remove temporary files and folders
       unlink(file.path(workDir), recursive=TRUE)
       suppressWarnings(rm(activeScen))
-      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid))
+      try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
+          silent = TRUE)
+      if(identical(Sys.getenv("SHINYPROXY_NOAUTH"), "true")){
+        # clean up
+        try(db$deleteRows(scenMetadataTable, 
+                          uidIdentifier, 
+                          uid), silent = TRUE)
+        
+      }
       if(config$activateModules$attachments && 
          config$storeLogFilesDuration > 0L){
         db$removeExpiredAttachments(paste0(modelName, c(".log", ".lst")), 

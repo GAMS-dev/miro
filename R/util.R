@@ -1094,3 +1094,31 @@ filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
   }
   return(scalars[tolower(scalars[[1]]) %in% scalarsToFilter, ])
 }
+setDbConfig <- function(configFn){
+  config <- fromJSON(configFn)
+  errMsg <- NULL
+  
+  envNameDbDataMap <- list(
+    list(envVar = 'MIRO_DB_DRIVER', keyName = 'driver', desc = 'database driver'),
+    list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
+    list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
+    list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
+    list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host'),
+    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port'))
+  
+  for(i in seq_along(envNameDbDataMap)){
+    metaData <- envNameDbDataMap[[i]]
+                
+    data <- Sys.getenv(metaData$envVar, unset = NA)
+    if(is.na(data)){
+      if(!length(config[[metaData$keyName]])){
+        errMsg <- paste(errMsg, paste0("The ", metaData$desc , " could not be identified. Please make sure you specify a valid ", 
+                                       metaData$desc, ":\nThe ", metaData$desc, " should be stored in the environment variable: '", metaData$envVar, "'."),
+                        sep = "\n")
+      }
+    }else{
+      config[[metaData$keyName]] <- data
+    }
+  }
+  return(list(data = config, errMsg = errMsg))
+}

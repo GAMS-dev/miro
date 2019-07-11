@@ -117,7 +117,6 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   if(config$activateModules$sharedScenarios && !is.null(activeScen)){
     tryCatch({
       if(activeScen$isReadonlyOrLocked){
-        activeScen <<- NULL
         showReadonlyDialog()
         flog.info("Scenario is readonly or locked.")
         return(NULL)
