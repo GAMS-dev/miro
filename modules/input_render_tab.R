@@ -4,7 +4,7 @@ proxy <- vector("list", length(modelIn))
 getInputDataset <- function(id){
   if(modelIn[[id]]$type %in% c("dt", "hot")){
     if((!is.null(isolate(input[["in_" %+% id]])) && hotInit[[id]]) ||
-       (length(tableContent[[id]]))){
+       length(tableContent[[id]])){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
@@ -34,8 +34,13 @@ getInputDataset <- function(id){
     }
     stop("No input data found.", call. = FALSE)
   }else{
-    print(isolate(test123[[id]]$a))
-    stop()
+    data <- isolate(modelInputDataVisible[[id]]())
+    if(identical(length(data), length(modelIn[[id]]$headers)) &&
+       hasValidHeaderTypes(data, modelIn[[id]]$colTypes)){
+      return(data)
+    }
+    print(data)
+    stop("No valid input data found.", call. = FALSE)
   }
 }
 observeEvent(input$inputTabset, {
@@ -81,72 +86,99 @@ observeEvent(input$btGraphIn, {
   })
   showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
 })
+
 lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
-  
+  if(length(colsWithDep[[i]])){
+    dataModelIn[[i]] <- reactive({
+      hotInit[[i]] <<- TRUE
+      # make sure data will be updated when old data is overwritten
+      rv[["in_" %+% i]]
+      if(isEmptyInput[i]){
+        data <- modelInputData[[i]]
+      }else{
+        # save changes made in handsontable
+        if(identical(modelIn[[i]]$type, "hot") && 
+           !is.null(isolate(input[["in_" %+% i]]))){
+          tableContent[[i]] <<- as_tibble(hot_to_r(isolate(input[["in_" %+% i]])))
+        }
+        
+        tryCatch({
+          data <- bind_rows(tableContent[[i]], modelInputData[[i]])
+        }, error = function(e){
+          flog.warn(paste0(lang$errMsg$dataError$desc,e))
+          errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+        })
+        modelInputData[[i]] <<- data
+      }
+      for(iDep in seq_along(colsWithDep[[i]])){
+        # get id of element (e.g. dropdown menu) that causes backward dependency
+        id  <- colsWithDep[[i]][[iDep]]
+        # in case nothing was selected in dropdown menu, skip this iteration
+        if(is.null(input[["dropdown_" %+% id]]) || 
+           input[["dropdown_" %+% id]] %in% c("","_")){
+          next
+        }
+        # get column name with dependency
+        col <- names(colsWithDep[[i]])[[iDep]]
+        # filter data frame
+        data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
+      }
+      modelInputData[[i]] <<- anti_join(modelInputData[[i]], 
+                                        data, by = idsIn[[i]])
+      
+      if(identical(modelIn[[i]]$type, "hot")){
+        if(!nrow(data)){
+          data[1, ] <- ""
+          disableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- TRUE
+        }else{
+          enableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- FALSE
+        }
+        modelInputDataVisible[[i]] <<- data
+      }else{
+        if(!nrow(data)){
+          disableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- TRUE
+        }else{
+          enableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- FALSE
+        }
+        tableContent[[i]] <<- data
+      }
+      
+      return(data)
+    })
+  }else{
+    dataModelIn[[i]] <- reactive({
+      rv[["in_" %+% i]]
+      hotInit[[i]] <<- TRUE
+      if(identical(modelIn[[i]]$type, "hot")){
+        if(!nrow(modelInputData[[i]])){
+          modelInputData[[i]][1, ] <<- ""
+          disableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- TRUE
+        }else{
+          enableEl(session, "#btGraphIn")
+          isEmptyInput[i] <<- FALSE
+        }
+        return(modelInputData[[i]])
+      }
+      if(!nrow(modelInputData[[i]])){
+        disableEl(session, "#btGraphIn")
+        isEmptyInput[i] <<- TRUE
+      }else{
+        enableEl(session, "#btGraphIn")
+        isEmptyInput[i] <<- FALSE
+      }
+      tableContent[[i]] <<- modelInputData[[i]]
+      return(tableContent[[i]])
+    })
+  }
   switch(modelIn[[i]]$type,
          hot = {
-           if(length(colsWithDep[[i]])){
-             dataModelIn[[i]] <- reactive({
-               hotInit[[i]] <<- TRUE
-               # make sure data will be updated when old data is overwritten
-               rv[["in_" %+% i]]
-               if(isEmptyInput[i]){
-                 data <- modelInputData[[i]]
-               }else{
-                 # save changes made in handsontable
-                 if(!is.null(isolate(input[["in_" %+% i]]))){
-                   hotInput[[i]] <<- as_tibble(hot_to_r(isolate(input[["in_" %+% i]])))
-                 }
-                 tryCatch({
-                   data <- bind_rows(hotInput[[i]], modelInputData[[i]])
-                 }, error = function(e){
-                   flog.warn(paste0(lang$errMsg$dataError$desc,e))
-                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                 })
-                 modelInputData[[i]] <<- data
-               }
-               for(iDep in seq_along(colsWithDep[[i]])){
-                 # get id of element (e.g. dropdown menu) that causes backward dependency
-                 id  <- colsWithDep[[i]][[iDep]]
-                 # in case nothing was selected in dropdown menu, skip this iteration
-                 if(is.null(input[["dropdown_" %+% id]]) || input[["dropdown_" %+% id]] %in% c("","_")){
-                   next
-                 }
-                 # get column name with dependency
-                 col <- names(colsWithDep[[i]])[[iDep]]
-                 # filter data frame
-                 data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
-               }
-               modelInputData[[i]] <<- anti_join(modelInputData[[i]], data, by = idsIn[[i]])
-               if(!nrow(data)){
-                 data[1, ] <- ""
-                 disableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- TRUE
-               }else{
-                 enableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- FALSE
-               }
-               modelInputDataVisible[[i]] <<- data
-               return(data)
-             })
-           }else{
-             dataModelIn[[i]] <- reactive({
-               rv[["in_" %+% i]]
-               hotInit[[i]] <<- TRUE
-               if(!nrow(modelInputData[[i]])){
-                 modelInputData[[i]][1, ] <<- ""
-                 disableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- TRUE
-               }else{
-                 enableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- FALSE
-               }
-               return(modelInputData[[i]])
-             })
-             
-           }
            # rendering handsontables for input data 
            output[[paste0("in_", i)]] <- renderRHandsontable({
              noCheck[i] <<- TRUE
@@ -189,64 +221,6 @@ lapply(modelInTabularData, function(sheet){
            })
          },
          dt = {
-           if(length(colsWithDep[[i]])){
-             dataModelIn[[i]] <- reactive({
-               # make sure data will be updated when old data is overwritten
-               rv[["in_" %+% i]]
-               if(isEmptyInput[i]){
-                 data <- modelInputData[[i]]
-               }else{
-                 tryCatch({
-                   data <- bind_rows(tableContent[[i]], modelInputData[[i]])
-                 }, error = function(e){
-                   flog.warn(paste0(lang$errMsg$dataError$desc, e))
-                   errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
-                 })
-                 modelInputData[[i]] <<- data
-               }
-               
-               for(idDep in seq_along(colsWithDep[[i]])){
-                 # get id of element (e.g. dropdown menu) that causes backward dependency
-                 id  <- colsWithDep[[i]][[idDep]]
-                 # in case nothing was selected in dropdown menu, skip this iteration
-                 if(is.null(input[["dropdown_" %+% id]]) || 
-                    input[["dropdown_" %+% id]] %in% c("", "_")){
-                   next
-                 }
-                 # get column name with dependency
-                 col <- names(colsWithDep[[1]])[[idDep]]
-                 # filter data frame
-                 data <- data[data[[col]] %in% input[["dropdown_" %+% id]], ]
-               }
-               modelInputData[[i]] <<- anti_join(modelInputData[[i]], 
-                                                 data, by = idsIn[[i]])
-               if(!nrow(data)){
-                 # disable graph button as no data was loaded
-                 disableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- TRUE
-               }else{
-                 enableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- FALSE
-               }
-               tableContent[[i]] <<- data
-               return(data)
-             })
-           }else{
-             modelInputData[[i]] <- reactive({
-               rv[["in_" %+% i]]
-               if(!nrow(modelInputData[[i]])){
-                 # disable graph button as no data was loaded
-                 disableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- TRUE
-               }else{
-                 enableEl(session, "#btGraphIn")
-                 isEmptyInput[i] <<- FALSE
-               }
-               tableContent[[i]] <<- modelInputData[[i]]
-               return(tableContent[[i]])
-             })
-             
-           }
            output[["in_" %+% i]] <- renderDT({
              errMsg <- NULL
              tryCatch({
@@ -288,14 +262,17 @@ lapply(modelInTabularData, function(sheet){
            })
          },
          {
-           tryCatch({
-             test123[[i]] <<- callModule(generateData, paste0("in_", i), type = modelIn[[i]]$type, 
-                                    data = modelInputData[[i]],
-                                    customOptions = modelIn[[i]]$options)
-           }, error = function(e){
-             flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
-                        modelInAlias[[i]], e)
-             errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
+           observe({
+             tryCatch({
+               modelInputDataVisible[[i]] <<- callModule(generateData, paste0("in_", i), 
+                                                         type = modelIn[[i]]$rendererName, 
+                                                         data = dataModelIn[[i]](),
+                                                         customOptions = modelIn[[i]]$options)
+             }, error = function(e){
+               flog.error("Problems rendering table for input dataset: %s. Error message: %s.",
+                          modelInAlias[[i]], e)
+               errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
+             })
            })
          }
   )

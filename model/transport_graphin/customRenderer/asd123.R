@@ -1,12 +1,10 @@
 test123Output <- function(id, height, options, path){
    ns <- NS(id)
-   sliderInput(ns('asd'), 'test123', 0, 10, 2)
+   timevisOutput(ns('mytime'))
 }
 
 renderTest123 <- function(input, output, session, data, options = NULL, path = NULL){
-    print(data)
-   test <- reactiveValues()
-   observe(test$a <- input$asd)
-   return(test)
+   output$mytime <- renderTimevis(timevis(options = list(editable = TRUE)))
+   return(reactive({input$mytime_data}))
 }
 

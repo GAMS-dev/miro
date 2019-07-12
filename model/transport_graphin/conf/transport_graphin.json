@@ -1,6 +1,13 @@
 {
     "miroLogFile": "miro.log",
     "inputWidgets":{
+      "a":{
+        "widgetType": "custom",
+        
+        "rendererName": "test123",
+          "alias": "test123",
+          "noImport": true
+      },
        "f":{
           "widgetType": "slider",
           "alias": "freight in dollars per case per thousand miles",

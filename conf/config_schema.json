@@ -755,6 +755,13 @@
                {
                  "properties":{
                    "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "custom"
+                     ]
+                   },
+                   "rendererName":{
                      "description":"Custom widget (name of generator)",
                      "type":"string",
                      "minLength": 3
@@ -792,7 +799,7 @@
                    }
                  },
                  "required":[  
-                    "widgetType"
+                    "widgetType", "rendererName"
                  ],
                  "additionalProperties": false
                }

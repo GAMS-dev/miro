@@ -217,7 +217,7 @@ if(is.null(errMsg)){
       }
     }else{
       symDim          <- length(modelIn[[i]]$headers)
-      if(symDim > 1L && widgetType %in% listOfScalarInputWidgets){
+      if(symDim > 1L && !(widgetType %in% c("table", "custom"))){
         if(!(identical(symDim, 2L) && identical(names(modelIn[[i]]$headers)[2], "text") && 
            all(vapply(modelIn[[i]]$headers$type, identical, logical(1L), "set", USE.NAMES = FALSE)) &&
            identical(widgetType, "dropdown"))){
@@ -247,12 +247,14 @@ if(is.null(errMsg)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
         widgetConfig$noImport  <- NULL
       }
-      if(widgetType %in% listOfScalarInputWidgets){
+      if(!is.null(widgetConfig$rendererName)){
+        modelIn[[i]]$rendererName <- widgetConfig$rendererName
+        widgetConfig$rendererName  <- NULL
+      }
+      if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
-      }else if(!identical(widgetType, "table")){
-        modelIn[[i]]$custom <- TRUE
       }
       if(!is.null(widgetConfig$sharedData)){
         modelIn[[i]]$sharedData  <- widgetConfig$sharedData
@@ -275,8 +277,6 @@ if(is.null(errMsg)){
         }
         
       }
-      if(!identical(modelIn[[i]]$custom, TRUE))
-        config$inputWidgets[[el]] <- NULL
     }
   }
   # make sure two input or output data sheets dont share the same name (case insensitive)
@@ -362,10 +362,9 @@ if(is.null(errMsg)){
   # add input type to list
   lapply(seq_along(modelIn), function(i){
     tryCatch({
-      modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType, 
-                                         identical(modelIn[[i]]$custom, TRUE))
+      modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
       if(names(modelIn)[[i]] %in% c(DDPar, GMSOpt) && 
-         !modelIn[[i]]$type %in% listOfScalarInputWidgets){
+         modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         stop(sprintf("Tables are not supported for GAMS command line parameters ('%s'). 
                      Please specify another widget type.", modelInAlias[i]))
       }
@@ -383,12 +382,9 @@ if(is.null(errMsg)){
         }
       }
       }, error = function(e){
-        idTmp <- match(names(modelIn)[i], names(config$inputWidgets))
-        if(is.na(idTmp)){
-          errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
-        }else{
-          modelIn[[i]]$type <<- config$inputWidgets[[idTmp]]$widgetType
-        }
+        errMsg <<- paste(errMsg, paste0(modelInAlias[i], 
+                                        " has no valid input type defined. Error message: ",
+                                        e), sep = "\n")
       })
       })
     }
@@ -423,7 +419,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       idsToDisplay <- seq_along(names)
     }
     for(i in idsToDisplay){
-      if(identical(isOutput, TRUE) || !modelIn[[i]]$type %in% listOfScalarInputWidgets){
+      if(identical(isOutput, TRUE) || modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         if(isAssigned[i]){
           next
         }
@@ -520,10 +516,10 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
            tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)]))
   }
   widgetIds    <- lapply(seq_along(modelIn), function(i){
-    if(modelIn[[i]]$type %in% listOfScalarInputWidgets){
-      return(i)
-    }else{
+    if(modelIn[[i]]$type %in% c("hot", "dt", "custom")){
       return(NULL)
+    }else{
+      return(i)
     }
   })
   

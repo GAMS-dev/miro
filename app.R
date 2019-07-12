@@ -59,7 +59,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
 }else{
   pb <- txtProgressBar(file = stderr())
 }
-gamsSysDir   <- "/Applications/MIRO0.6/sysdir/"
+gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
   args <- commandArgs(trailingOnly = TRUE)
@@ -853,7 +853,6 @@ if(!is.null(errMsg)){
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
-    test123 <- vector("list", length(modelIn))
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 

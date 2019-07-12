@@ -1,0 +1,187 @@
+{
+    "pageTitle": "A Transportation Problem with multiple version LP/MIP/MINLP",
+    "MIROSwitch": "MIRO=RUN",
+    "fileExchange": "csv",
+    "csvDelim": ",",
+    "gamsInputFiles": {
+        "a": {
+            "alias": "capacity of plant i in cases",
+            "headers": {
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
+                },
+                "value": {
+                    "type": "parameter",
+                    "alias": "capacity of plant i in cases"
+                }
+            }
+        },
+        "b": {
+            "alias": "demand at market j in cases",
+            "headers": {
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
+                },
+                "value": {
+                    "type": "parameter",
+                    "alias": "demand at market j in cases"
+                }
+            }
+        },
+        "d": {
+            "alias": "distance in thousands of miles",
+            "headers": {
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
+                },
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
+                },
+                "value": {
+                    "type": "parameter",
+                    "alias": "distance in thousands of miles"
+                }
+            }
+        },
+        "ilocdata": {
+            "alias": "Plant location information",
+            "headers": {
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
+                },
+                "lat": {
+                    "type": "parameter",
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
+                }
+            }
+        },
+        "jlocdata": {
+            "alias": "Market location information",
+            "headers": {
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
+                },
+                "lat": {
+                    "type": "parameter",
+                    "alias": "lat"
+                },
+                "lng": {
+                    "type": "parameter",
+                    "alias": "lng"
+                }
+            }
+        },
+        "scalars": {
+            "alias": "Input Scalars",
+            "symnames": [
+                "f",
+                "mins",
+                "beta"
+            ],
+            "symtext": [
+                "freight in dollars per case per thousand miles",
+                "minimum shipment (MIP- and MINLP-only)",
+                "beta (MINLP-only)"
+            ],
+            "symtypes": [
+                "parameter",
+                "parameter",
+                "parameter"
+            ],
+            "headers": {
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    },
+    "gamsOutputFiles": {
+        "schedule": {
+            "alias": "shipment quantities in cases",
+            "headers": {
+                "i": {
+                    "type": "set",
+                    "alias": "canning plants"
+                },
+                "j": {
+                    "type": "set",
+                    "alias": "markets"
+                },
+                "lngp": {
+                    "type": "parameter",
+                    "alias": "lngP"
+                },
+                "latp": {
+                    "type": "parameter",
+                    "alias": "latP"
+                },
+                "lngm": {
+                    "type": "parameter",
+                    "alias": "lngM"
+                },
+                "latm": {
+                    "type": "parameter",
+                    "alias": "latM"
+                },
+                "cap": {
+                    "type": "parameter",
+                    "alias": "cap"
+                },
+                "demand": {
+                    "type": "parameter",
+                    "alias": "demand"
+                },
+                "quantities": {
+                    "type": "parameter",
+                    "alias": "quantities"
+                }
+            }
+        },
+        "scalars_out": {
+            "alias": "Output Scalars",
+            "symnames": [
+                "total_cost"
+            ],
+            "symtext": [
+                "total transportation costs in thousands of dollars"
+            ],
+            "symtypes": [
+                "parameter"
+            ],
+            "count": 1,
+            "headers": {
+                "scalar": {
+                    "type": "set",
+                    "alias": "Scalar Name"
+                },
+                "description": {
+                    "type": "set",
+                    "alias": "Scalar Description"
+                },
+                "value": {
+                    "type": "set",
+                    "alias": "Scalar Value"
+                }
+            }
+        }
+    }
+}
