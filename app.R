@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.6.4"
-MIRORDate   <- "Jul 10 2019"
+MIROVersion <- "0.6.5"
+MIRORDate   <- "Jul 13 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -44,7 +44,7 @@ tmpFileDir <- tempdir(check = TRUE)
 configDir <- "./conf/"
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
-                    "./modules/render_data.R")
+                    "./modules/render_data.R", "./modules/generate_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
@@ -861,7 +861,6 @@ if(!is.null(errMsg)){
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
-    
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
@@ -873,6 +872,7 @@ if(!is.null(errMsg)){
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
     modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
+    modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
     modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
     sharedInputData <- vector(mode = "list", length = length(modelIn))
     sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))

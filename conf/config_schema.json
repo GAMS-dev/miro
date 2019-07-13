@@ -756,6 +756,57 @@
                     "widgetType"
                  ],
                  "additionalProperties": false
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
+                       "custom"
+                     ]
+                   },
+                   "rendererName":{
+                     "description":"Custom widget (name of generator)",
+                     "type":"string",
+                     "minLength": 3
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "height":{  
+                      "description":"Height of the output element.",
+                      "type":"integer",
+                      "minimum":0,
+                      "default":null,
+                      "required":false
+                   },
+                   "packages":{  
+                      "description":"Packages that need to be installed",
+                      "type":["array", "string"],
+                      "minLength":2,
+                      "minItems":1,
+                      "uniqueItems":true,
+                      "items":{  
+                         "type":"string",
+                         "minLength":2
+                      }
+                   },
+                   "options":{
+                      "description":"Additional options",
+                      "type":"object",
+                      "required":false
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   }
+                 },
+                 "required":[  
+                    "widgetType", "rendererName"
+                 ],
+                 "additionalProperties": false
                }
             ]
          }
