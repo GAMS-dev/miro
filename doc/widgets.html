@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>MIRO - Configuration</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- Spectrum ColorPicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
+    <!-- bootstrap datetimepicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- alpaca -->
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
+
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Widgets</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-sliders-h"></span> Widgets</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="widget-slider" class="doc-section">
+                                <h2 class="section-title">Slider</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>If the desired slider does not change with changing data sets, it is a good idea to configure it as a slider with static values (lower and upper bound, step size).</p>
+                                    <p>Example:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_slider_config.png" alt="Slider configuration"/>
+                                    </div>
+                                    
+                                    
+                                   <p id="dynamic-limits"><br><br><b>Dynamic limits</b>:
+                                  <br>In many cases it makes sense to assign the limits and default values of a slider not with static but with dynamic values. This is done, for example, in the demo model <i>pickstock</i>. 
+                                  Here, two sliders are used. In the first one the <i>maxmimum number of stocks</i> can be selected, in the second one the <i>number of training days</i>.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
+                                  </div>
+                                  <p>In both sliders, the maximum value results from the input data of the parameter <i>price</i>.</p>
+                                  <div class="section-block" id="input-symbol-price">
+                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider4.png" alt="Configuration of a slider (4)" />
+                                  </div>
+                                  <p>The maximum value for the <i>maximum number of stocks</i> is 30, because the used data set <i>price</i> contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes dynamically to 29.
+                                  The same is true for the second slider for the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
+                                  <br>In configuration mode we can easily set such dynamic limits. For the first slider the configuration looks like this:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
+                                  </div>
+                                  <p>The <i>Static value?</i> box was unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, it is selected with the corresponding header <i>stock symbol</i> in which the stocks are contained (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
+                                  The <i>operator</i> is set to <i>count</i> since we want to count all stock symbols in our data to set the maximum value.</p>
+                                  <p>For the calculation of such limits from the data, the following operators are available: </p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider7.png" alt="Configuration of a slider (5)" />
+                                  </div>
+                                  <p>More on Dependencies among Widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <p>Slider with dynamic upper bound.</p>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "maxstock": {
+      "label": "Select the maximum number of stocks",
+      "min": 1,
+      "default": 3,
+      "step": 1,
+      "max": "card(price$symbol)",
+      "alias": "maximum number of stocks to select",
+      "widgetType": "slider"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-sliderrange" class="doc-section">
+                                <h2 class="section-title">Slider range</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>A slider with a range returns two numeric values. For this reason such a slider is not suitable for GAMS scalars, but only for GAMS command line parameters, i.e. GAMS options and double-dash parameters.</p>
+                                    <p>Example:</p>
+                                    <p>In the configuration mode we define a double-dash parameter <i>--range</i> with the bounds <i>1</i> and <i>100</i>. The lower default value shall be <i>42</i> and the upper default value <i>75</i>:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_sliderrange_config.png" alt="Slider range configuration"/>
+                                    </div>
+                                    <p>In the GAMS model we can access the selected range with
+                                    <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
+                                    <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                  <p>Note: In order for MIRO to recognize whether the symbol is a double dash parameter or a GAMS option, they are prefixed with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.</p>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSPAR_range": {
+      "widgetType": "slider",
+      "alias": "Range",
+      "min": 1,
+      "max": 100,
+      "default": 42,
+      "step": 1,
+      "ticks": false,
+      "noHcube": false,
+      "label": "Select a range"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-checkbox" class="doc-section">
+                                <h2 class="section-title">Checkbox</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns 0 or 1.</p>
+                                    <p>Example:</p>
+                                    <p>Configuration of the GAMS option <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOkeep" target="_blank">keep</a> as a checkbox:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_checkbox_config.png" alt="Checkbox configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSOPT_keep": {
+      "widgetType": "checkbox",
+      "alias": "Keep",
+      "label": "Keep process directory?",
+      "value": 1,
+      "noHcube": true,
+      "class": "checkbox-material"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-dropdown" class="doc-section">
+                                <h2 class="section-title">Dropdown menu</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns a string.</p>
+                                    <p>Example: </p>
+                                    <p>Dropdown menu with MIP solvers as choices:<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_dropdown_config.png" alt="Dropdown menu configuration"/>
+                                    </div>
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>Similar to the dynamic limits of a slider, the choices of a dropdown menu can also be filled dynamically, depending on the loaded data.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    
+                                    <div class="callout-block callout-success" style="margin-top:10px;">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-thumbs-up"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Tip:</b>
+                                            <p>If you configure a dropdown menu and you want a choice to be <i>nothing</i>, use the symbol "_" as a choice. MIRO treats an underscore character internally as if nothing is set.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSOPT_mip": {
+      "alias": "MIP-Solver",
+      "widgetType": "dropdown",
+      "label": "Solver to use",
+      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
+      "selected": "CPLEX"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                           <!-- <section id="widget-multidropdown" class="doc-section">
+                                <h2 class="section-title">Multi-dropdown menu</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns a string.</p>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
+                                    <pre><code class="language-gams">asd;
+</code></pre>
+                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Pie chart data"/>
+                                    </div>
+                                     <p>In the configuration mode we then can configure a pie chart. Note that index sets are provided with their explanatory text, not with the actual symbol names.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pie_config.png" alt="Pie chart configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                               <!-- <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-date" class="doc-section">
+                                <h2 class="section-title">Date selector</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns a date (string).</p>
+                                    <p>Example: </p>
+                                    <p>Date selector for double-dash parameter <i>date</i>:<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:550pt;" src="assets/images/configuration_mode/widget_date_config.png" alt="Date selector configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSPAR_date": {
+      "widgetType": "date",
+      "alias": "Date",
+      "format": "yyyy-mm-dd",
+      "startview": "month",
+      "weekstart": 1,
+      "autoclose": false,
+      "noHcube": false,
+      "label": "Select a date",
+      "daysofweekdisabled": [6, 0]
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-daterange" class="doc-section">
+                                <h2 class="section-title">Daterange selector</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns two dates. For more on widget ranges, see <a href="#widgets-advanced" class="scrollto">here</a>.</p>
+                                    <p>Example: </p>
+                                    <p>Date range selector for double-dash parameter <i>date</i>:<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_daterange_config.png" alt="Date range configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSPAR_date": {
+      "widgetType": "daterange",
+      "alias": "Date range",
+      "label": "Select a time range",
+      "start": "2019-01-01",
+      "min": null,
+      "max": null,
+      "format": "yyyy-mm-dd",
+      "startview": "month",
+      "weekstart": 0,
+      "separator": " to ",
+      "autoclose": true,
+      "noHcube": false
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-textbox" class="doc-section">
+                                <h2 class="section-title">Textbox</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns the inserted text.</p>
+                                    <p>Example: </p>
+                                    <p>Textbox for double-dash parameter <i>comment</i>:<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_textbox_config.png" alt="Textbox configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "GMSPAR_comment": {
+      "widgetType": "textinput",
+      "alias": "Comment",
+      "value": "",
+      "placeholder": "e.g. \"experimental run\"",
+      "label": "Insert a comment"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                            <section id="widget-table" class="doc-section">
+                                <h2 class="section-title">Table</h2>
+                                <div class="section-block">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
+                                    <p>By default, every cell in the table is editable and rows can be inserted and removed. 
+                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "alias": "Price",
+      "readonly": false,
+      "heatmap": true,
+      "readonlyCols": "date"
+    }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                             <a class="nav-link scrollto" href="#widget-slider">Slider</a>
+                             <a class="nav-link scrollto" href="#widget-sliderrange">Slider range</a>
+                             <a class="nav-link scrollto" href="#widget-checkbox">Checkbox</a>
+                             <a class="nav-link scrollto" href="#widget-dropdown">Dropdown menu</a>
+                             <!--<a class="nav-link scrollto" href="#widget-multidropdown">Multidropdown menu</a>-->
+                             <a class="nav-link scrollto" href="#widget-date">Date selector</a>
+                             <a class="nav-link scrollto" href="#widget-daterange">Daterange selector</a>
+                             <a class="nav-link scrollto" href="#widget-textbox">Textbox</a>
+                             <a class="nav-link scrollto" href="#widget-table">Table</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
+    <!-- Moment plugin -->
+    <script type="text/javascript" src="assets/plugins/moment/moment.min.js"></script>
+    <!-- Bootstrap datetimepicker plugin -->
+    <script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+    <!-- alpaca -->
+    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+    <!-- AJV -->
+    <script type="text/javascript" src="assets/js/ajv.min.js"></script>
+    <!-- config generator -->
+    <script type="text/javascript" src="assets/js/config-gen.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+    	$('.gifplayer').gifplayer();
+    </script>
+
+</body>
+</html>
