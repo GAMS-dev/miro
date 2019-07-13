@@ -39,7 +39,6 @@ getInputDataset <- function(id){
        hasValidHeaderTypes(data, modelIn[[id]]$colTypes)){
       return(data)
     }
-    print(data)
     stop("No valid input data found.", call. = FALSE)
   }
 }
@@ -59,16 +58,27 @@ observeEvent(input$btGraphIn, {
   }else{
     i <- inputTabs[[i]][1]
   }
-  flog.debug("Graph view for model input in sheet: %d activated.", i)
   if(is.null(configGraphsIn[[i]])){
     return()
   }else if(identical(modelIn[[i]]$type, "hot")){
     data <- hot_to_r(input[["in_" %+% i]])
   }else if(identical(modelIn[[i]]$type, "dt")){
     data <- tableContent[[i]]
+  }else{
+    data <- isolate(modelInputDataVisible[[i]]())
   }
   toggleEl(session, "#graph-in_" %+% i)
   toggleEl(session, "#data-in_" %+% i)
+  
+  if(modelInputGraphVisible[[i]]){
+    flog.debug("Graph view for model input in sheet: %d deactivated", i)
+    modelInputGraphVisible[[i]] <<- FALSE
+    return()
+  }else{
+    flog.debug("Graph view for model input in sheet: %d activated.", i)
+    modelInputGraphVisible[[i]] <<- TRUE
+  }
+  
   errMsg <- NULL
   tryCatch({
     callModule(renderData, "in_" %+% i, 
@@ -264,7 +274,7 @@ lapply(modelInTabularData, function(sheet){
          {
            observe({
              tryCatch({
-               modelInputDataVisible[[i]] <<- callModule(generateData, paste0("in_", i), 
+               modelInputDataVisible[[i]] <<- callModule(generateData, paste0("data-in_", i), 
                                                          type = modelIn[[i]]$rendererName, 
                                                          data = dataModelIn[[i]](),
                                                          customOptions = modelIn[[i]]$options)

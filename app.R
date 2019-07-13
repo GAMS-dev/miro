@@ -864,6 +864,7 @@ if(!is.null(errMsg)){
     # list with input data
     modelInputData  <- vector(mode = "list", length = length(modelIn))
     modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
+    modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
     modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
     sharedInputData <- vector(mode = "list", length = length(modelIn))
     sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))

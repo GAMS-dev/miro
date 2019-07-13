@@ -277,7 +277,7 @@ tabItemList <- list(
                                          tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                          tags$div(id = paste0("data-in_", i), {
                                            tryCatch({
-                                             generateDataUI(paste0("in_", i), type = modelIn[[i]]$rendererName,
+                                             generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
                                                             customOptions = modelIn[[i]]$options,
                                                             height = modelIn[[i]]$height)
                                            }, error = function(e) {

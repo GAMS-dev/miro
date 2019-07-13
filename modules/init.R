@@ -625,6 +625,10 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         }
       }
     }
+    if(identical(modelIn[[i]]$type, "custom")){
+      # make sure custom inputs have graph button activated (table is displayed there)
+      configGraphsIn[[i]] <<- list(outType = "datatable")
+    }
   })
   # Hypercube mode configuration
   modelInGmsString <- NULL
