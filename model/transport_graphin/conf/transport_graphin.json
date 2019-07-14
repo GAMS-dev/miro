@@ -3,10 +3,10 @@
     "inputWidgets":{
       "a":{
         "widgetType": "custom",
-        
         "rendererName": "test123",
-          "alias": "test123",
-          "noImport": true
+        "alias": "test123",
+        "noImport": true,
+        "packages": ["timevis"]
       },
        "f":{
           "widgetType": "slider",

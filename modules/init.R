@@ -127,6 +127,7 @@ if(is.null(errMsg)){
   modelIn           <- config$gamsInputFiles
   names(modelIn)    <- tolower(names(modelIn))
   modelInRaw        <- modelIn
+  customPackages    <- vector("list", length(modelIn))
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
     el_l <- tolower(el)
@@ -223,7 +224,11 @@ if(is.null(errMsg)){
       }
       if(!is.null(widgetConfig$rendererName)){
         modelIn[[i]]$rendererName <- widgetConfig$rendererName
+        if(length(widgetConfig$packages)){
+          customPackages[[i]]       <- widgetConfig$packages
+        }
         widgetConfig$rendererName  <- NULL
+        widgetConfig$packages      <- NULL
       }
       if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
@@ -601,7 +606,9 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     }
     if(identical(modelIn[[i]]$type, "custom")){
       # make sure custom inputs have graph button activated (table is displayed there)
-      configGraphsIn[[i]] <<- list(outType = "datatable")
+      configGraphsIn[[i]] <<- list(outType = "datatable", 
+                                   rendererName = modelIn[[i]]$rendererName,
+                                   packages = customPackages[[i]])
     }
   })
   # Hypercube mode configuration

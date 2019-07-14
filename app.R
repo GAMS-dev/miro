@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.6.5"
-MIRORDate   <- "Jul 13 2019"
+MIROVersion <- "0.6.6"
+MIRORDate   <- "Jul 14 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -215,10 +215,6 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
-  customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
-                                  currentModelDir), customRendererDirName, .Platform$file.sep)
-  rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
- 
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
                         if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
                         if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
@@ -229,80 +225,94 @@ if(is.null(errMsg)){
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
   
-  for(file in rendererFiles){
-    if(!file.access("./modules/renderers/" %+% file, mode = 4)){
-      tryCatch({
-        source("./modules/renderers/" %+% file)
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                 file, e), sep = "\n")
-      }, warning = function(w){
-        errMsg <<- paste(errMsg, 
-                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                 file, w), sep = "\n")
-      })
-    }else{
-      errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
-    }
-  }
-  for(customRendererDir in customRendererDirs){
-    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
-    lapply(rendererFiles, function(file){
-      if(!file.access(customRendererDir %+% file, mode = 4)){
+  if(debugMode){
+    customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
+                                    currentModelDir), customRendererDirName, .Platform$file.sep)
+    rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
+    for(file in rendererFiles){
+      if(!file.access("./modules/renderers/" %+% file, mode = 4)){
         tryCatch({
-          source(customRendererDir %+% file)
+          source("./modules/renderers/" %+% file)
         }, error = function(e){
           errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                           sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
                                    file, e), sep = "\n")
         }, warning = function(w){
           errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                           sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
                                    file, w), sep = "\n")
         })
       }else{
-        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                         file), sep = "\n")
-      }
-    })
-  }
-  
-  requiredPackages <- NULL
-  for(customRendererConfig in configGraphsOut){
-    # check whether non standard renderers were defined in graph config
-    if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
-      customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
-        substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
-      customRendererOutput <- customRendererConfig$outType %+% "Output"
-      # find render function
-      tryCatch({
-        match.fun(customRendererName)
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
-                                 customRendererName), sep = "\n")
-      })
-      # find output function
-      tryCatch({
-        match.fun(customRendererOutput)
-      }, error = function(e){
-        errMsg <<- paste(errMsg, 
-                         sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
-                                 customRendererName), sep = "\n")
-      })
-      # find packages to install and install them
-      if(!is.null(customRendererConfig$packages) && length(customRendererConfig$packages)){
-        requiredPackages <- c(requiredPackages, customRendererConfig$packages)
+        errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
       }
     }
-  }
-  if(!is.null(requiredPackages)){
-    requiredPackages <- unique(requiredPackages)
+    for(customRendererDir in customRendererDirs){
+      rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
+      lapply(rendererFiles, function(file){
+        if(!file.access(customRendererDir %+% file, mode = 4)){
+          tryCatch({
+            source(customRendererDir %+% file)
+          }, error = function(e){
+            errMsg <<- paste(errMsg, 
+                             sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                     file, e), sep = "\n")
+          }, warning = function(w){
+            errMsg <<- paste(errMsg, 
+                             sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                     file, w), sep = "\n")
+          })
+        }else{
+          errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                           file), sep = "\n")
+        }
+      })
+    }
+    listOfCustomRenderers <- Set$new()
+    requiredPackagesCR <<- NULL
+    for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
+      # check whether non standard renderers were defined in graph config
+      if(!is.null(customRendererConfig$rendererName)){
+        customRendererConfig$outType <- customRendererConfig$rendererName
+      }
+      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+        customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
+          substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
+        customRendererOutput <- customRendererConfig$outType %+% "Output"
+        # find render function
+        tryCatch({
+          match.fun(customRendererName)
+          listOfCustomRenderers$push(customRendererName)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
+                                   customRendererName), sep = "\n")
+        })
+        # find output function
+        tryCatch({
+          match.fun(customRendererOutput)
+          listOfCustomRenderers$push(customRendererOutput)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
+                                   customRendererName), sep = "\n")
+        })
+        # find packages to install and install them
+        if(length(customRendererConfig$packages)){
+          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
+        }
+      }
+    }
+    requiredPackagesCR <- unique(requiredPackagesCR)
+    if(!is.null(requiredPackagesCR)){
+      requiredPackages <- requiredPackagesCR
+      source("./R/install_packages.R", local = TRUE)
+    }
+  }else if(!is.null(requiredPackagesCR)){
+    requiredPackages <- requiredPackagesCR
     source("./R/install_packages.R", local = TRUE)
+    rm(requiredPackagesCR)
   }
 }
-
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
   if(config$activateModules$scenario){
@@ -582,17 +592,24 @@ if(!is.null(errMsg)){
   }
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
-    save(modelIn, modelInRaw, modelOut, config, lang, inputDsNames, outputTabs, outputTabTitles,
-         modelInTemplate, scenDataTemplate, isShinyProxy, modelInTabularData,
-         sharedData, colSubset, modelInFileNames, ddownDep, aliasesNoDep, idsIn,
-         choicesNoDep, sliderValues, configGraphsOut, configGraphsIn, hotOptions,
-         inputTabs, inputTabTitles, scenInputTabs, scenInputTabTitles, 
-         isGroupOfSheets, groupSheetToTabIdMap, scalarsInTemplate,
-         modelInWithDep, modelOutAlias, colsWithDep, scalarsInMetaData,
-         modelInMustImport, modelInAlias, DDPar, GMSOpt, currentModelDir, 
-         modelInToImportAlias, modelInToImport, scenTableNames, modelOutTemplate,
-         scenTableNamesToDisplay, serverOS, GAMSReturnCodeMap, dependentDatasets,
-         modelInGmsString, installPackage, dbSchema, scalarInputSym, file = rSaveFilePath)
+    save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
+                  "modelOut", "config", "lang", "inputDsNames", "outputTabs", 
+                  "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
+                  "modelInTabularData", "sharedData", "colSubset", 
+                  "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
+                  "choicesNoDep", "sliderValues", "configGraphsOut", 
+                  "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
+                  "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets", 
+                  "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
+                  "modelOutAlias", "colsWithDep", "scalarsInMetaData",
+                  "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
+                  "currentModelDir", "modelInToImportAlias", "modelInToImport", 
+                  "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
+                  "serverOS", "GAMSReturnCodeMap", "dependentDatasets",
+                  "modelInGmsString", "installPackage", "dbSchema", "scalarInputSym",
+                  "requiredPackagesCR"), 
+         file = rSaveFilePath)
+    rm(listOfCustomRenderers)
     if(identical(getCommandArg("buildonly", FALSE), "true")){
       quit("no")
     }
