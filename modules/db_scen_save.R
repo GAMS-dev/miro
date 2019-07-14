@@ -184,7 +184,7 @@ observeEvent(input$btEditMeta, {
     attachmentMetadata <- attachmentList
   }
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
-                                              readPerm = "readPerm", writePerm = "writePerm"), noPermFields = FALSE), 
+                                              readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
                      config$activateModules$sharedScenarios, allowAttachments = config$activateModules$attachments, 
                      attachmentMetadata = attachmentMetadata, attachAllowExec = attachAllowExec)
 })

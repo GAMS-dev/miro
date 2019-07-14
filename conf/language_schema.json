@@ -1560,6 +1560,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "execPerm":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -1650,6 +1655,40 @@
               "required":true
             },
             "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "dialogNoExecPerm":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "dialogNoExecPermHC":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
               "type":"string",
               "minLength":1,
               "required":true

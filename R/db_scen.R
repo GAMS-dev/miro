@@ -109,23 +109,24 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.logical(noPermFields), length(noPermFields) == 1L)
                         #END error checks
                         
-                        stag <- character(0L)
-                        readPerm <- character(0L)
+                        stag      <- character(0L)
+                        readPerm  <- character(0L)
                         writePerm <- character(0L)
+                        execPerm  <- character(0L)
                         
                         if(!noPermFields){
                           readPerm <- private$readPerm
-                        }
-                        if(!noPermFields){
                           writePerm <- private$writePerm
+                          execPerm <- private$execPerm
                         }
                         super$getMetadata(sid = private$sid, uid = private$suid, sname = private$sname, 
                                           stime = private$stime, stag = private$tags, readPerm = readPerm, 
-                                          writePerm = writePerm,
+                                          writePerm = writePerm, execPerm = execPerm,
                                           uidAlias = aliases[["uid"]], snameAlias = aliases[["sname"]], 
                                           stimeAlias = aliases[["stime"]],
                                           stagAlias = aliases[["stag"]], readPermAlias = aliases[["readPerm"]], 
-                                          writePermAlias = aliases[["writePerm"]])
+                                          writePermAlias = aliases[["writePerm"]],
+                                          execPermAlias = aliases[["execPerm"]])
                       },
                       save = function(datasets, msgProgress = NULL){
                         # Saves multiple dataframes to database
@@ -422,6 +423,7 @@ Scenario <- R6Class("Scenario",
                         stopifnot(is.character(newReadPerm))
                         stopifnot(is.character(newWritePerm))
                         stopifnot(is.character(newExecPerm))
+                        stopifnot(!is.null(private$sid))
                         #END error checks 
                         if(private$isReadonly()){
                           stop("Db: Metadata wasn't updated as scenario is readonly (Scenario.updateMetadata).", 
@@ -454,6 +456,21 @@ Scenario <- R6Class("Scenario",
                         private$lock()
                         
                         invisible(self)
+                      },
+                      hasExecPerm = function(){
+                        # checks whether current scenario can be executed
+                        # 
+                        # Args:
+                        #
+                        # Returns:
+                        #   logical: returns TRUE if scenario can be executed, FALSE otherwise 
+                        stopifnot(!is.null(private$sid))
+                        
+                        if(any(private$userAccessGroups %in% csv2Vector(private$execPerm))){
+                          return(TRUE)
+                        }else{
+                          return(FALSE)
+                        }
                       },
                       finalize = function(){
                         if(length(private$sid)){

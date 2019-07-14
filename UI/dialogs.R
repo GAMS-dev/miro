@@ -478,15 +478,21 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
       if(sharedScen && length(ugroups)){
         readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
         writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
+        execPerm <- csv2Vector(metadata[["writePerm"]][[1]])
         ugroups   <- csv2Vector(ugroups)
         tagList(
-          selectizeInput("editMetaReadPerm", lang$nav[[modeDescriptor]]$readPerm, 
-                         ugroups, selected = csv2Vector(metadata[["writePerm"]][[1]]),
+          selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
+                         ugroups, selected = readPerm,
                          multiple = TRUE, options = list(
                            'create' = TRUE,
                            'persist' = FALSE)),
-          selectizeInput("editMetaWritePerm", lang$nav[[modeDescriptor]]$writePerm, 
+          selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
                          ugroups, selected = writePerm,
+                         multiple = TRUE, options = list(
+                           'create' = TRUE,
+                           'persist' = FALSE)),
+          selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
+                         ugroups, selected = execPerm,
                          multiple = TRUE, options = list(
                            'create' = TRUE,
                            'persist' = FALSE))

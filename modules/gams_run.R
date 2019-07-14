@@ -225,6 +225,10 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   executeHcubeJob <- function(scenGmsPar){
+    if(length(activeScen) && !activeScen$hasExecPerm()){
+      flog.error("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to temper with the app!")
+      stop(call. = FALSE)
+    }
     jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
     flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
     hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
@@ -390,6 +394,17 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
 observeEvent(input$btSolve, {
   flog.debug("Solve button clicked (model: '%s').", modelName)
   removeModal()
+  if(length(activeScen) && !activeScen$hasExecPerm()){
+    if(config$activateModules$hcubeMode){
+      modeDescriptor <- "dialogNoExecPerm"
+    }else{
+      modeDescriptor <- "dialogNoExecPermHC"
+    }
+    showErrorMsg(lang$nav[[modeDescriptor]]$title, 
+                 lang$nav[[modeDescriptor]]$desc)
+    flog.info("User has no execute permission for this scenario.")
+    return()
+  }
   if(identical(config$activateModules$hcubeMode, TRUE)){
     numberScenarios <- noScenToSolve()
     if(numberScenarios > maxNoHcube){
