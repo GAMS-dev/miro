@@ -137,7 +137,7 @@ Parameter
                                           <li><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double dash parameters</a></li>
                                         </ul>
                                         <p>The configuration of GAMS Options and double dash parameters differs from the other symbols. Learn more about this <a href="#command-line" class="scrollto">here</a>.</p>
-                                        <p>Let's try this for our demo model <i>transport</i> now. This is what the input data section of the model looks like when we have loaded it from the GAMS Model Library:</p>
+                                        <p><b>Example:</b><br>Let's try this for our demo model <i>transport</i> now. This is what the input data section of the model looks like when we have loaded it from the GAMS Model Library:</p>
                                         <pre><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
@@ -199,59 +199,60 @@ Positive Variable x;
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
-                                              <b class="callout-title">Note:</b>
+                                              <b class="callout-title">Tip:</b>
                                               <p>You can also use MIRO to set GAMS options and double dash parameters for a model run. More about this is explained <a href="#pickstock_externalinput" class="scrollto">here</a>.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                     </div><!--//section-block-->
 
-                                    <div id="configuration-files" class="section-block">
-                                        <h3 class="block-title">Configuration files</h3>
-                                        <p>In the next step the model-specific configuration files for GAMS MIRO are created.</p>
-                                        <ul>
-                                          <li>Run the model with the command line parameter: <span class="code">miro=build</span>.
-                                            <div class="section-block" style="text-align:center;">
-                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/miro-build.png" alt="miro=build" />
-                                            </div>
-                                            <div class="callout-block callout-warning">
-                                                <div class="icon-holder">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </div><!--//icon-holder-->
-                                                <div class="content">
-                                                    <b class="callout-title">Warning:</b>
-                                                    <p>If your model uses a GAMS <code class="language-gams">$call</code>, the execution phase variant <span class="code">execute</span> or any other command that is unable to understand the GAMS <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">input file directories</a>, you must pay attention to the path of the external files you include in this call: When your model is run from within MIRO, it is executed in a temporary working directory. Thus, you can not rely on relative paths you use in your model to work. For this reason, GAMS MIRO is providing you the path to your model file via the GAMS option <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means that in order to e.g. import an Excel file <span class="code">test.xlsx</span>, the GDXXRW tool needs to be called like this: <code class="language-gams">$call gdxxrw i="%gams.idir1%test.xlsx"</code>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>).</p>
-                                                </div><!--//content-->
-                                            </div><!--//callout-block-->
-                                          </li>
-                                          <li>After the build process is completed, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax.
-                                            </br>Additionally, you will find a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx container named <span class="code">default.gdx</span>. This gdx file holds all the data relevant to MIRO that GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch your app.
-                                            <div class="callout-block callout-warning">
-                                                <div class="icon-holder">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </div><!--//icon-holder-->
-                                                <div class="content">
-                                                    <b class="callout-title">Note:</b>
-                                                    <p>All gdx files inside the <span class="code">data_&lt;modelname&gt;</span> folder will be stored into the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the name of the scenario.</p>
-                                                </div><!--//content-->
-                                            </div><!--//callout-block-->
-                                          </li>
-                                          <li>The very basic configuration is now done. You can start your GAMS MIRO app either by clicking the <kbd>Launch MIRO</kbd> button or by pressing F11. 
-                                            <div class="section-block" style="text-align:center;">
-                                                <img class="img-fluid" style="max-height:30pt;" src="assets/images/launch-miro-btn.png" alt="miro=launch" />
-                                            </div>
-                                            In case you are not launching MIRO from within GAMS Studio, the same can be accomplished by appending <span class="code" style="white-space:nowrap">miro=launch</span> to the command line.
-                                          </li>
-                                        </ul>
+                                    <div id="launch-miro" class="section-block">
+                                        <h3 class="block-title">Launch MIRO</h3>
+                                        <p>To launch MIRO from within GAMS Studio, simply click the <kbd>Launch MIRO</kbd> button or press F11.</p>
+                                        <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                            <img class="img-fluid" src="assets/images/launch-miro-btn.png" alt="Launch MIRO button" />
+                                        </div>
+                                        <p>In order to launch MIRO from the old GAMS IDE or via the command line, the GAMS option statement <span class="code" style="white-space:nowrap">miro=launch</span> has to be added to the command line (e.g. <kbd style="white-space: nowrap;">cd path/to/model && gams transport.gms miro=launch</kbd>).
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Note:</b>
+                                                <p>To run GAMS MIRO from the command prompt, it has to be either added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system or called with an absolute path!</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
                                         <p><br>Congratulations! Your firtst MIRO app is now up and running!</p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" src="assets/images/initial-screen.png" alt="initial GAMS MIRO screen" />
-                                        </div>
-                                        <p>With the basic configuration you can upload local files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>lst</i> files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined.
+                                        </div>    
+                                        <p>With the basic configuration you can upload local files, modify them from within the interface and start or stop a GAMS job. You also have access to the <i>log</i> and <i>listing</i> (<i>lst</i>) files of GAMS as well as all files generated during the run. When the model has finished the execution phase successfully, the results can be examined.
                                         Since MIRO is connected to a database, you can store results there, fetch previously saved results and modify them or use them to compare with other scenarios.</p>
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">Warning:</b>
+                                                <p>If your model uses a GAMS <code class="language-gams">$call</code>, the execution phase variant <span class="code">execute</span> or any other command that is unable to understand the GAMS <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">input file directories</a>, you must pay attention to the path of the external files you include in this call: When your model is run from within MIRO, it is executed in a temporary working directory. Thus, you can not rely on relative paths you use in your model to work. For this reason, GAMS MIRO is providing you the path to your model file via the GAMS option <span class="code"><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOinputdir" target="_blank">idir1</a></span>. This means that in order to e.g. import an Excel file <span class="code">test.xlsx</span>, the GDXXRW tool needs to be called like this: <code class="language-gams">$call gdxxrw i="%gams.idir1%test.xlsx"</code>. Alternatively, you can also use absolute paths (e.g. via <code class="language-gams">$setNames "%gams.input%" fp fn fe</code> (see <a href="https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARsetnames" target="_blank">here</a>).</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>After the startup, you will find a new folder named <i>conf</i> in the directory where your model is located. This folder contains the file <span class="code">&lt;modelname&gt;_io.json</span>: The metadata of all input and output symbols we just defined in our model are declared here in JSON syntax. You should not modify this file.
+                                            </br>Additionally, you will find a folder named <span class="code">data_&lt;modelname&gt;</span> with a gdx container named <span class="code">default.gdx</span>. This gdx file holds all the data relevant to MIRO that GAMS extracted from your model. It will be automatically imported into the MIRO database the next time you launch your app.
+                                             </p>
+                                             <div class="callout-block callout-success">
+                                               <div class="icon-holder">
+                                                   <i class="fas fa-thumbs-up"></i>
+                                               </div><!--//icon-holder-->
+                                               <div class="content">
+                                                   <b class="callout-title">Tip:</b>
+                                                   <p>All gdx files inside the <span class="code">data_&lt;modelname&gt;</span> folder will be stored into the MIRO database the next time your MIRO app is launched! The name of the gdx file determines the name of the scenario. 
+                                                   This way you can easily import several scenarios at once.</p>
+                                               </div><!--//content-->
+                                             </div><!--//callout-block-->
                                     </div><!--//section-block-->
                                     <div id="create-app-executable" class="section-block">
                                         <h3 class="block-title">Executable MIRO app</h3>
-                                        <p>As already explained, an app of a GAMS model can be started via the command line or via GAMS Studio (e.g. <span class="code">gams transport.gms miro=launch</span>). However, there is another option: creating an executable shortcut for your GAMS MIRO app.
+                                        <p>As already explained, an app of a GAMS model can be started via GAMS Studio, GAMSIDE or via the command line. However, there is another option: creating an executable shortcut for your GAMS MIRO app.
                                         By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which you can double-click to directly launch your MIRO app.</p>
                                         <p style="display:block; text-align:center;"><span class="code">gams transport.gms miro=launch --mkapp=1</span></p>
                                         <p>You do no longer have to launch Studio or the command line to start your MIRO app. Another advantage of this approach is that the startup phase of your MIRO app is now much faster than the startup via GAMS Studio:
@@ -332,7 +333,7 @@ $offExternalInput
                                     Each index is shown in a separate column named after the explanatory text of the corresponding set (or in case no explanatory text is available, the name of the symbol).
                                     The value column of a parameter is always called <i>value</i> and aliased with the explanatory text of the parameter. This type of representation of a GAMS parameter is what we call the <i>parameter view</i>.
                                     </p>
-                                    <p><b>Definition of a table header</b>:
+                                    <p id="table-header"><b>Definition of a table header</b>:
                                     <br>Sometimes it can be useful to show each set element of an index in a separate column; we call this the <i>table view</i> of a parameter.<br>
                                     Let's take the output parameter <span class="code">dowVSindex</span> as an example. This parameter reports the actual price of the dow jones index as well as the calculated price of the index fund. Note that the elements of the set <span class="code">fHdr</span> are fixed, namely: <span class="code">dow jones</span> and <span class="code">index fund</span>. We want to display each of these prices in a separate column so that we can easily compare them side by side. In order to achieve this type of pivot functionality, we need to <b>change the explanatory text of the parameter</b> that we want to pivot. More precisely, we need to include the keyword: <span class="code">[MIRO:table]</span>.
                                     Doing so will lead to the desired result: <span class="code">dow jones</span> and <span class="code">index fund</span> are shown as separate value columns.</p>
@@ -556,11 +557,10 @@ $offExternalInput
                                 </div><!--//section-block-->
                                 <div  id="create-custom"  class="section-block">
                                     <h3 class="block-title">Custom configuration</h3>
-                                    <p>When the basic interface between a GAMS model and MIRO is configured, you can start customizing MIRO to leverage its full potential. GAMS MIRO comes with various pre-implemented tools to plot your data: at the moment these are pie charts, bar charts, line charts, scatter plots, histograms and pivot tables. To create graphics that are perfectly tailored to your data, you can use MIRO's R-API.</p>
+                                    <p>When the basic interface between a GAMS model and MIRO is configured, you can start customizing MIRO to leverage its full potential. Have a look at the <a href="./customize.html">next section</a> and learn how to customize MIRO.</p>
                                     <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/gams_miro.png" alt="GAMS MIRO - visualization" />
                                     </div>
-                                    <p>Have a look at the <a href="./customize.html">next section</a> and learn how to customize MIRO.</p>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                         </div><!--//content-inner-->
@@ -571,7 +571,7 @@ $offExternalInput
 	                            <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a MIRO app</a>
                                   <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
-                                    <a class="nav-link scrollto" href="#configuration-files">Configuration files</a>
+                                    <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
                                     <a class="nav-link scrollto" href="#create-app-executable">Executable MIRO app</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#gams-symbols">GAMS symbols</a>

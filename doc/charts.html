@@ -536,6 +536,15 @@ schedule(i,j, 'cap')        = a(i);
 schedule(i,j, 'demand')     = b(j);
 schedule(i,j, 'quantities') = x.l(i,j);
 </code></pre>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>With the keyword <i>[MIRO:table]</i> in the explanatory text of parameter <i>schedule</i> we define the parameter to be displayed in the <a href="./model.html#table-header">table view</a> in MIRO.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                     <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
                                     <div class="section-block" id="map-data">
                                         <img class="img-fluid" style= "max-height:140pt;" src="assets/images/configuration_mode/map_data.png" alt="Map data"/>
@@ -553,8 +562,8 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                       <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/map_markers.png" alt="Map markers"/>
                                       </div>
-                                      The second column of the symbol <i>schedule</i> contains the markets j. The columns lngM and latM were selected as longitude and latitude data. 
-                                      For a given longitude-latitude combination, the corresponding element from the second column is now displayed as label.
+                                      The second index of the symbol <i>schedule</i> contains the markets j. The indices lngM and latM were selected as longitude and latitude data. 
+                                      For a given longitude-latitude combination, the corresponding element from the second index is now displayed as label.
                                       </li>
                                       <li><b>Flows</b><br>
                                       Between different points on the map flows can be displayed. The thickness of the arrows can depend on the flow data.
