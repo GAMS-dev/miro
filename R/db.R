@@ -248,13 +248,15 @@ Db <- R6Class("Db",
                   return(invisible(self))
                 },
                 getMetadata           = function(sid, uid, sname, stime, stag = character(0L), 
-                                                 readPerm = character(0L), writePerm = character(0L), 
+                                                 readPerm = character(0L), writePerm = character(0L),
+                                                 execPerm = character(0L),
                                                  uidAlias = private$scenMetaColnames[['uid']], 
                                                  snameAlias = private$scenMetaColnames[['sname']], 
                                                  stimeAlias = private$scenMetaColnames[['stime']],
                                                  stagAlias = private$scenMetaColnames[['stag']],
                                                  readPermAlias = private$scenMetaColnames[['accessR']],
-                                                 writePermAlias = private$scenMetaColnames[['accessW']]){
+                                                 writePermAlias = private$scenMetaColnames[['accessW']],
+                                                 execPermAlias = private$scenMetaColnames[['accessX']]){
                   # Generate dataframe containing scenario metadata
                   #
                   # Args:
@@ -265,12 +267,14 @@ Db <- R6Class("Db",
                   #   stag:                     tags of the scenario (optional)
                   #   readPerm:                 read permissions of scenario (optional)
                   #   writePerm:                write permissions of scenario (optional)
+                  #   execPerm:                 execute permissions of scenario (optional)
                   #   uidAlias:                 User ID Description (optional)
                   #   snameAlias:               Scenario name Description (optional)
                   #   stimeAlias:               Scenario time description (optional)
                   #   stagAlias:                Scenario tag description (optional)
                   #   readPermAlias:            Scenario read permissions description (optional)
                   #   writePermAlias:           Scenario write permissions description (optional)
+                  #   execPermAlias:            Scenario execute permissions description (optional)
                   #
                   # Returns:
                   #   dataframe with metadata
@@ -284,12 +288,14 @@ Db <- R6Class("Db",
                   stopifnot(is.character(stag))
                   stopifnot(is.character(readPerm))
                   stopifnot(is.character(writePerm))
+                  stopifnot(is.character(execPerm))
                   stopifnot(is.character(uidAlias), length(uidAlias) == 1L)
                   stopifnot(is.character(snameAlias), length(snameAlias) == 1L)
                   stopifnot(is.character(stimeAlias), length(stimeAlias) == 1L)
                   stopifnot(is.character(stagAlias))
                   stopifnot(is.character(readPermAlias))
                   stopifnot(is.character(writePermAlias))
+                  stopifnot(is.character(execPermAlias))
                   #END error checks
                   
                   metadata <- tibble(sid, uid, sname, stime)
@@ -300,17 +306,14 @@ Db <- R6Class("Db",
                     }
                     metadata[[stagAlias]] <- stag
                   }
-                  if(length(readPerm)){
-                    if(length(readPerm) > 1L){
-                      readPerm <- vector2Csv(readPerm)
+                  permList <- list(perm = list(readPerm, writePerm, execPerm),
+                                   alias = list(readPermAlias, writePermAlias,
+                                                execPermAlias))
+                  for(i in seq_len(3L)){
+                    perm <- permList$perm[[i]]
+                    if(length(perm)){
+                      metadata[[permList$alias[[i]]]] <- vector2Csv(perm)
                     }
-                    metadata[[readPermAlias]] <- readPerm
-                  }
-                  if(length(writePerm)){
-                    if(length(writePerm) > 1L){
-                      writePerm <- vector2Csv(writePerm)
-                    }
-                    metadata[[writePermAlias]] <- writePerm
                   }
                   
                   return(metadata)

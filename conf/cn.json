@@ -337,7 +337,8 @@
         "stime":"创建时间",
         "stag":"场景标签",
         "readPerm":"读取权限",
-        "writePerm":"保存权限"
+        "writePerm":"保存权限",
+        "execPerm": "执行权限"
       },
       "inputPrefix": "",
       "inputSuffix":"（输入）",
@@ -359,6 +360,14 @@
       "desc":"没有该Hypercube作业配置的保存权限，另存为新配置？",
       "okButton":"另存为",
       "cancelButton":"取消"
+    },
+    "dialogNoExecPerm":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this scenario."
+    },
+    "dialogNoExecPermHC":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this Hypercube job configuration."
     },
     "dialogDownloadTmp":{
       "title":"下载临时文件",

@@ -337,7 +337,8 @@
         "stime":"Time created",
         "stag": "Scenario tags",
         "readPerm": "Read permissions",
-        "writePerm": "Write permissions"
+        "writePerm": "Write permissions",
+        "execPerm": "Execute permissions"
       },
       "inputPrefix":"",
       "inputSuffix":" (Input)",
@@ -359,6 +360,14 @@
       "desc": "You do not have write permissions for this Hypercube job configuration. Do you want to save the it as a new configuration instead?",
       "okButton": "Save as",
       "cancelButton": "Cancel"
+    },
+    "dialogNoExecPerm":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this scenario."
+    },
+    "dialogNoExecPermHC":{
+      "title": "No execute permissions",
+      "desc": "You do not have execute permissions for this Hypercube job configuration."
     },
     "dialogDownloadTmp":{
       "title": "Download temporary files",

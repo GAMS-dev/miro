@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>MIRO - Q&A Webinar</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Q&A Webinar</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon icon_lifesaver"></span> Q&A Webinar</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                          <h6>Below you will find the questions and answers that emerged during our webinar on July, 11th.</h6>
+                            <div class="callout-block callout-warning">
+                               <div class="icon-holder">
+                                   <i class="fas fa-info-circle"></i>
+                               </div><!--//icon-holder-->
+                               <div class="content">
+                                   <b class="callout-title">Note:</b>
+                                   <p>This page will be taken down in the near future!<br>Long-term relevant questions will be included in the <a href="./faqs.html">FAQ</a> section of the GAMS MIRO documentation.</p>
+                               </div><!--//content-->
+                            </div><!--//callout-block-->
+                            <section id="general" class="doc-section">
+                                <h2 class="section-title">General</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> I downloaded the latest GAMS distribution from <a href="www.gams.com/download" target="_blank">www.gams.com/download</a> but I can not see any MIRO buttons in GAMS Studio.</h3>
+                                    <div class="answer">During the beta phase a special GAMS distribution will be available which contains GAMS MIRO. The regular GAMS distributions are completely independent of this. The MIRO buttons are only available in the version of GAMS Studio that ships with the MIRO BETA version.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Are the MIRO buttons also included in the GAMSIDE?</h3>
+                                    <div class="answer">No, the GAMSIDE is no longer maintained. If you want to start MIRO from the GAMSIDE or the command line, you have to set the command line option <i>miro=launch</i>. For the configuration mode you additionally have to add the option <i>miromode=2</i>. You can find more information <a href="https://gams.com/miro/start.html#start-miro" target="_blank">here</a> and <a href="https://gams.com/miro/customize.html#configurationMode" target="_blank">here</a>.</div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="features" class="doc-section">
+                                <h2 class="section-title">Features</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Can I use notebooks in the Hypercube mode in MIRO 1.0?</h3>
+                                    <div class="answer">
+                                      We plan to allow notebook technology also for the Hypercube mode.
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Will the MIRO server version only be available as-a-service or can I use it on my own server?</h3>
+                                    <div class="answer">As things currently stand, both variants will be possible.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> With MIRO, can I continue using the GAMS Python API to drive the GDX generation and GAMS modeling?</h3>
+                                    <div class="answer">Here, we have to distinguish between different things:
+                                        <ul><li><a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">Embedded Python code</a> can be used in your GAMS models without any restrictions.</li>
+                                            <li>It is not possible to call a Python script instead of a GAMS model</li><li>The MIRO back end to execute your GAMS models will have a REST API and can therefore be called from your Python script.</li></ul></div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Does MIRO only support those graphics which are available in the configuration mode?</h3>
+                                    <div class="answer">No. You can write your own Custom Renderers in R using MIRO's <a href="https://gams.com/miro/customize.html#custom-renderers" target="_blank">R API</a>.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> In GAMS MIRO, after setting up a new configuration of a Table (i.e., setting up Rows and columns), can I export that table to Excel or Word in the same format?</h3>
+                                    <div class="answer">Tables can be exported as Excel files in the format in which they are displayed in MIRO. Just click on <i>Scenario</i> in the upper right corner and then <i>export</i>. There you can choose between GDX and XLS format. 
+                                    This exports not only one table but the whole scenario data. Also see <a href="https://gams.com/miro/start.html#save-results" target="_blank">here</a>.<br>
+                                    If you want to export individual tables, this might be a reasonable feature request. Currently it is only possible in this way: <br>
+                                    <ul>
+                                      <li>For the output tables (which can also be configured as input tables), buttons can be added in the <a href="https://gams.com/miro/customize.html#table-settings" target="_blank">table settings</a> 
+                                      of the configuration mode. These allow the export of individual tables (Attention: Only the currently visible table page will be exported).</li>
+                                      <li>With the regular input tables you can mark all entries in a table, copy them to the clipboard and paste them into an Excel sheet.</li>
+                                    </ul>
+                                    </div>
+                                </div><!--//section-block-->
+                                 <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> How is the performance with large GDX files and parameters?</h3>
+                                    <div class="answer"><i>Performance</i> and <i>large</i> are both very imprecise terms. We have tested MIRO with datasets up to 1 million records. Data import at this instance takes about 5 seconds and the data export about 7 seconds on a computer with an Intel Quad-Core i7 with 2.8 GHz.<br >
+                                    Please note that the default tool for rendering input tables loads the entire dataset into the user's browser. This can be problematic if you have clients working on low performance computers and/or old browsers. Thus, we have added a "big data" version for input tables that supports pagination and therefore does not dependend as much on the hardware of the client. These "big data" tables are not yet included in the current beta version, but will be available in upcoming releases.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> In your examples you changed parameter values - can you also change set global variables?</h3>
+                                    <div class="answer"></div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Is it possible to hide the solving process for the user, e.g. display only the result message?</h3>
+                                    <div class="answer">Yes. You can configure the interface to show only a status message and hide the GAMS log and lst file. In the configuration mode you can find this option in the <a href="https://gams.com/miro/customize.html#general-settings" target="_blank">general settings</a>.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Do you have a plan for equipping GAMS MIRO with econometric tools (forecasts) for stock analysis?</h3>
+                                    <div class="answer">No. We do, however, plan to integrate "custom output sheets" that allow you to execute your own code. These can be used to perform statistical analyses among others.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> If I got it right, each view is related to one parameter, or can you have more views per parameter?</h3>
+                                    <div class="answer">For each Parameter you always have the tabular view and a graphical representation available (side by side or on single sheets). If you want to have several graphics for one parameter, 
+                                    this is possible via the R API.</div>
+                                </div><!--//section-block-->
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Do you plan for spanish language support? <br>Which languages do you plan to support?</h3>
+                                    <div class="answer">GAMS MIRO has the possibility to change the preferred language. This results in MIRO including the corresponding language package. Language packages are JSON files in which all language-specific components are defined. 
+To create a new language package, this JSON file only needs to be translated. We are happy when users want to create new language packs.  If you would like to contribute your language file, so that other people can profit from your work as well, send us an email: <a href="mailto:miro@gams.com">miro@gams.com</a>.</div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="development" class="doc-section">
+                                <h2 class="section-title">Development</h2>
+                                <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> What is the rough schedule of the server infrastructure (GAMS REST API) in your roadmap?</h3>
+                                    <div class="answer">We are working hard on the server version and plan a release later this year.</div>
+                                </div><!--//section-block-->
+                                 <div class="section-block">
+                                    <h3 class="question"><i class="fas fa-question-circle"></i> Is it possible to use a web server in order to publish results even if it is not official yet?</h3>
+                                    <div class="answer">Yes, if you would like us to provide you with an account on one of our servers for testing MIRO, please contact us. Please note that we operate a <a href="https://www.gams.com/miro/gallery.html">GAMS MIRO gallery</a> in which we present some exemplary models. If you want to add your model there, please <a href="mailto:miro@gams.com">reach out</a>!</div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#general">General</a>
+                                <a class="nav-link scrollto" href="#features">Features</a>
+                                <a class="nav-link scrollto" href="#development">Development</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>

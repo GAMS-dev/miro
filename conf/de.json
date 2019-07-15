@@ -337,7 +337,8 @@
         "stime":"Erstellungsdatum",
         "stag": "Szenario Tags",
         "readPerm": "Leseberechtigung",
-        "writePerm": "Schreibberechtigung"
+        "writePerm": "Schreibberechtigung",
+        "execPerm": "Ausführungsberechtigung"
       },
       "inputPrefix":"",
       "inputSuffix":" (Eingabe)",
@@ -359,6 +360,14 @@
       "desc": "Sie habe keine Schreibrechte für diese Hypercube-Job-Konfiguration. Möchten Sie sie stattdessen als neue Konfiguration speichern?",
       "okButton": "Speichern als",
       "cancelButton": "Abbrechen"
+    },
+    "dialogNoExecPerm":{
+      "title": "Keine Ausführungsrechte",
+      "desc": "Für dieses Szenario haben Sie keine Ausführungsberechtigungen."
+    },
+    "dialogNoExecPermHC":{
+      "title": "Keine Ausführungsrechte",
+      "desc": "Für diese Hypercube-Job-Konfiguration haben Sie keine Ausführungsrechte."
     },
     "dialogDownloadTmp":{
       "title": "Temporäre Dateien laden",
