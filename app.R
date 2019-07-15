@@ -120,8 +120,9 @@ if(is.null(errMsg)){
                         .Platform$file.sep, modelName, ".gms")
     modelPath    <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, 
                                  paste0(getwd(), .Platform$file.sep, modelDir))
-    modelGmsName <- modelPath[[2]]
+    modelNameRaw <- modelPath[[4]]
     modelName    <- modelPath[[3]]
+    modelGmsName <- modelPath[[2]]
     modelPath    <- modelPath[[1]]
   }, error = function(e){
     errMsg <<- paste(errMsg,
@@ -886,7 +887,7 @@ if(!is.null(errMsg)){
                                          modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
                                          url = Sys.getenv("GMS_WORKER_URL")), 
                          #method = if(identical(isShinyProxy, TRUE)) "remote" else "local")
-                         method = "remote", workDir = workDir)
+                         method = "local", workDir = workDir)
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 

@@ -614,7 +614,8 @@ observeEvent(input$btSolve, {
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
-            output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
+            output$listFile <- renderText(read_file(paste0(workDir, 
+                                                           modelNameRaw, ".lst")))
           }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
@@ -676,7 +677,7 @@ observeEvent(input$btSolve, {
         if(config$activateModules$attachments && 
            config$storeLogFilesDuration > 0L && !is.null(activeScen)){
           tryCatch({
-            filesToStore  <- c(file.path(workDir, paste0(modelName, c(".log", ".lst"))))
+            filesToStore  <- c(file.path(workDir, paste0(modelNameRaw, c(".log", ".lst"))))
             filesNoAccess <- file.access(filesToStore) == -1L
             errMsg <- NULL
             if(any(filesNoAccess)){

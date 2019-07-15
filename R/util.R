@@ -85,10 +85,10 @@ getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NU
       }
     })
   }
-  gmsFileName <- basename(modelPath)
-  modelName   <- tolower(gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName))
-  modelDir    <- dirname(modelPath) %+% .Platform$file.sep
-  return(list(modelDir, gmsFileName, modelName))
+  gmsFileName  <- basename(modelPath)
+  modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
+  modelDir     <- dirname(modelPath) %+% .Platform$file.sep
+  return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
 getInputToImport <- function(data, keywordsNoImport){
   # Retrieves input data which has to be loaded from an external source
