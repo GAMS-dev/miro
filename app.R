@@ -44,6 +44,7 @@ tmpFileDir <- tempdir(check = TRUE)
 configDir <- "./conf/"
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
+                    "./R/data_instance.R", "./R/worker.R",
                     "./modules/render_data.R", "./modules/generate_data.R")
 # required packages
 suppressMessages(library(R6))
@@ -878,6 +879,14 @@ if(!is.null(errMsg)){
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
+    worker <- Worker$new(metadata = list(user = uid, modelName = modelName, tableNameTracePrefix = tableNameTracePrefix, 
+                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                         MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
+                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                         url = Sys.getenv("GMS_WORKER_URL")), 
+                         #method = if(identical(isShinyProxy, TRUE)) "remote" else "local")
+                         method = "remote", workDir = workDir)
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
