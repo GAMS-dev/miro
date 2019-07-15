@@ -13,7 +13,7 @@ keywordsNoImport <- c("noImport")
 keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput",
                           "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
-keywordsType <- list("dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
+keywordsType <- list("custom" = "rendererName", "dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
                      "date" = "date", "checkbox" = "checkbox", "textinput" = "textinput")
 listOfOperators <- list("count" = "card", "max" = "max", "min" = "min", 

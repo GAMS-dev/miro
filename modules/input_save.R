@@ -42,23 +42,6 @@ addScalarVal <- function(scalar, description, value){
 lapply(seq_along(modelIn), function(i){
   noErr <- TRUE
   switch(modelIn[[i]]$type,
-         dt = ,
-         hot = {
-           if(names(modelIn)[[i]] != scalarsFileName){
-             tryCatch({
-               dataTmp[[j]] <<- getInputDataset(i)
-             }, error = function(e){
-               flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
-               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
-                                                modelInAlias[i]), sep = "\n")
-               noErr <<- FALSE
-             })
-             if(!noErr){
-               return()
-             }
-             j <<- j + 1
-           }
-         },
          slider = {
            if(!is.null(isolate(input[[paste0("slider_", i)]]))){
              value <- isolate(input[[paste0("slider_", i)]])
@@ -183,6 +166,22 @@ lapply(seq_along(modelIn), function(i){
            scalar      <- names(modelIn)[[i]]
            description <- modelInAlias[i]
            addScalarVal(scalar, description, value)
+         },
+         {
+           if(names(modelIn)[[i]] != scalarsFileName){
+             tryCatch({
+               dataTmp[[j]] <<- getInputDataset(i)
+             }, error = function(e){
+               flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", modelInAlias[i], e)
+               errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 
+                                                modelInAlias[i]), sep = "\n")
+               noErr <<- FALSE
+             })
+             if(!noErr){
+               return()
+             }
+             j <<- j + 1
+           }
          }
   )
   flog.trace("Dataset: %s saved in dataTmp.", modelIn[[i]])

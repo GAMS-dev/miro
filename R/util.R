@@ -159,7 +159,6 @@ getInputType <- function(data, keywordsType){
   #
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
-  
   for(i in seq_along(keywordsType)){
     if(keywordsType[[i]] %in% names(data)){
       return(names(keywordsType)[[i]])

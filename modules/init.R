@@ -127,6 +127,7 @@ if(is.null(errMsg)){
   modelIn           <- config$gamsInputFiles
   names(modelIn)    <- tolower(names(modelIn))
   modelInRaw        <- modelIn
+  customPackages    <- vector("list", length(modelIn))
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
     el_l <- tolower(el)
@@ -188,7 +189,7 @@ if(is.null(errMsg)){
       }
     }else{
       symDim          <- length(modelIn[[i]]$headers)
-      if(symDim > 1L && !identical(widgetType, "table")){
+      if(symDim > 1L && !(widgetType %in% c("table", "custom"))){
         if(!(identical(symDim, 2L) && identical(names(modelIn[[i]]$headers)[2], "text") && 
            all(vapply(modelIn[[i]]$headers$type, identical, logical(1L), "set", USE.NAMES = FALSE)) &&
            identical(widgetType, "dropdown"))){
@@ -221,7 +222,15 @@ if(is.null(errMsg)){
         modelIn[[i]]$noImport <- widgetConfig$noImport
         widgetConfig$noImport  <- NULL
       }
-      if(!identical(widgetType, "table")){
+      if(!is.null(widgetConfig$rendererName)){
+        modelIn[[i]]$rendererName <- widgetConfig$rendererName
+        if(length(widgetConfig$packages)){
+          customPackages[[i]]       <- widgetConfig$packages
+        }
+        widgetConfig$rendererName  <- NULL
+        widgetConfig$packages      <- NULL
+      }
+      if(!widgetType %in% c("table", "custom")){
         modelIn[[i]]$headers       <- NULL
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
@@ -247,7 +256,6 @@ if(is.null(errMsg)){
         }
         
       }
-      config$inputWidgets[[el]] <- NULL
     }
   }
   # make sure two input or output data sheets dont share the same name (case insensitive)
@@ -335,7 +343,7 @@ if(is.null(errMsg)){
     tryCatch({
       modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
       if(names(modelIn)[[i]] %in% c(DDPar, GMSOpt) && 
-         modelIn[[i]]$type %in% c("hot", "dt")){
+         modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         stop(sprintf("Tables are not supported for GAMS command line parameters ('%s'). 
                      Please specify another widget type.", modelInAlias[i]))
       }
@@ -353,7 +361,9 @@ if(is.null(errMsg)){
         }
       }
       }, error = function(e){
-        errMsg <<- paste(errMsg, paste0(modelInAlias[i], " has no valid input type defined. Error message: ", e), sep = "\n")
+        errMsg <<- paste(errMsg, paste0(modelInAlias[i], 
+                                        " has no valid input type defined. Error message: ",
+                                        e), sep = "\n")
       })
       })
     }
@@ -388,7 +398,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       idsToDisplay <- seq_along(names)
     }
     for(i in idsToDisplay){
-      if(identical(isOutput, TRUE) || modelIn[[i]]$type %in% c("hot", "dt")){
+      if(identical(isOutput, TRUE) || modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         if(isAssigned[i]){
           next
         }
@@ -485,7 +495,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
            tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)]))
   }
   widgetIds    <- lapply(seq_along(modelIn), function(i){
-    if(modelIn[[i]]$type %in% c("hot", "dt")){
+    if(modelIn[[i]]$type %in% c("hot", "dt", "custom")){
       return(NULL)
     }else{
       return(i)
@@ -593,6 +603,12 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
           }
         }
       }
+    }
+    if(identical(modelIn[[i]]$type, "custom")){
+      # make sure custom inputs have graph button activated (table is displayed there)
+      configGraphsIn[[i]] <<- list(outType = "datatable", 
+                                   rendererName = modelIn[[i]]$rendererName,
+                                   packages = customPackages[[i]])
     }
   })
   # Hypercube mode configuration
@@ -805,20 +821,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
              })
              return(NULL)
            },
-           hot = ,
-           dt ={
-             # check that in case dataset is scalar ds, it has correct headers
-             if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
-                !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
-               warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
-                                "but has incorrect headers. The headers were adjusted accordingly."))
-               names(modelIn[[i]]$headers) <- scalarsFileHeaders
-             }
-             if(identical(modelIn[[i]]$sharedData, TRUE)){
-               sharedData[i] <<- TRUE
-             }
-             return(name)
-           },
            date = {
              if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
                errMsg <<- paste(errMsg, paste0("The date selector: '", modelInAlias[i], 
@@ -873,6 +875,19 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                }
              }
              return(NULL)
+           },
+           {
+             # check that in case dataset is scalar ds, it has correct headers
+             if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
+                !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
+               warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
+                                "but has incorrect headers. The headers were adjusted accordingly."))
+               names(modelIn[[i]]$headers) <- scalarsFileHeaders
+             }
+             if(identical(modelIn[[i]]$sharedData, TRUE)){
+               sharedData[i] <<- TRUE
+             }
+             return(name)
            }
     )
   })

@@ -84,7 +84,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
-  if(identical(nrow(data), 0L)){
+  if(!length(data) || identical(nrow(data), 0L)){
     showEl(session, "#" %+% session$ns("noData"))
     hideEl(session, "#" %+% session$ns("data"))
     return()

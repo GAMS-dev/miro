@@ -15,7 +15,7 @@ elif [ $LOCAL = $BASE ]; then
     git reset --hard FETCH_HEAD
     git clean -df
     cd model
-    zip miroDemoApps.zip pickstock/pickstock.gms pickstock/dowjones2016.csv pickstock/conf/pickstock.json pickstock/static/pickstock.png kport/kport.gms kport/conf/kport.json kport/static/kport.jpg pickstock_live/pickstock_live.gms pickstock_live/conf/pickstock_live.json pickstock_live/static/pickstock-live.png transport/transport.gms transport/conf/transport.json transport/customRenderer/* transport_live/transport_live.gms transport_live/conf/transport_live.json transport_live/customRenderer/*
+    zip miroDemoApps.zip pickstock/pickstock.gms pickstock/dowjones2016.csv pickstock/conf/pickstock.json pickstock/static/pickstock.png kport/kport.gms kport/conf/kport.json kport/static/kport.jpg transport/transport.gms transport/conf/transport.json transport/customRenderer/* transport_live/transport_live.gms transport_live/conf/transport_live.json transport_live/customRenderer/*
     mv miroDemoApps.zip ../doc
     cd ..
     MIRO_VERSION=$(grep -m 1 -e "^MIROVersion" app.R|cut -f3 -d" "|xargs) 
