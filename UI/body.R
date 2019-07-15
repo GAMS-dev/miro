@@ -467,7 +467,7 @@ if(config$activateModules$hcubeMode){
               if(config$activateModules$logFile){
                 logTabsetList$log <- tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
                                               value = "log",
-                                              verbatimTextOutput("logStatus"),
+                                              tags$pre(id = "logStatus", class = "shiny-text-output noplaceholder"),
                                               checkboxInput("logUpdate", 
                                                             label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
                                                             value = TRUE))

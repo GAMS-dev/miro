@@ -577,31 +577,14 @@ observeEvent(input$btSolve, {
   modelStatus    <- modelStatus$re
   
   if(config$activateModules$logFile){
-    if(identical(worker$getMethod(), "local")){
-      output$logStatus <- renderText({
-        # read log file 
-        logText    <- logfile()
-        logSize    <- nchar(logText)
-        logText    <- paste0(if(logSize > (3e4 + 1)) "[...]\n", 
-                             substr(logText, logSize - 3e4, logSize))
-        if(!is.null(modelStatus())){
-          return(logText)
-        }
-        if(identical(input$logUpdate, TRUE)){
-          scrollDown(session, "#logStatus")
-        }
-        return(logText)
-      })
-    }else{
-      emptyEl(session, "#logStatus")
-      observe({
-        logText    <- logfile()
-        if(!is.null(modelStatus())){
-          return(appendEl(session, "#logStatus", logText))
-        }
-        return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
-      })
-    }
+    emptyEl(session, "#logStatus")
+    observe({
+      logText    <- logfile()
+      if(!is.null(modelStatus())){
+        return()
+      }
+      return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
+    })
   }
   # reset listing file when new solve is started
   output$listFile <- renderText("")

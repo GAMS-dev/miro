@@ -20,7 +20,7 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$runRemote(inputData))
   },
-  retrieveRemoteLog = function(){
+  retrieveLog = function(){
     if(!length(private$process)){
       stop("Process not started", call. = FALSE)
     }
@@ -28,8 +28,96 @@ Worker <- R6Class("Worker", public = list(
       return(private$updateLog)
     }
     if(inherits(private$process, "process")){
-      stop("Process is local", call. = FALSE)
+      return(private$retrieveLocalLog())
+    }else{
+      return(private$retrieveRemoteLog())
     }
+  },
+  getReactiveLog = function(session){
+    return(reactivePoll2(500, session, checkFunc = function(){
+      self$retrieveLog()
+    }, valueFunc = function(){
+      private$log
+    }))
+  },
+  getReactiveStatus = function(session){
+    return(reactivePoll2(1000, session, checkFunc = function(){
+      private$status
+    }, valueFunc = function(){
+      private$status
+    }))
+  },
+  getMethod = function(){
+    return(private$method)
+  }
+), private = list(
+  method = character(1L),
+  status = NULL, 
+  metadata = NULL,
+  inputData = NULL,
+  log = character(1L),
+  pfFileContent = NULL,
+  process = NULL,
+  workDir = NULL,
+  updateLog = 1L,
+  runLocal = function(inputData){
+    
+    inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)
+    
+    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
+                  paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'),
+                  if(private$metadata$includeParentDir) paste0('idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"'), 
+                  paste0('curdir="', private$workDir, '"'), "lo=4", paste0("execMode=", private$metadata$gamsExecMode), 
+                  private$metadata$MIROSwitch, "LstTitleLeftAligned=1")
+    if(private$metadata$saveTraceFile){
+      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
+    }
+    pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
+    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
+    
+    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), args = c(private$metadata$modelGmsName, 
+                                                                   "pf", pfFilePath), 
+                                   stdout = "|", windows_hide_window = TRUE)
+    return(self)
+  },
+  runRemote = function(inputData){
+    zipFilePath <- paste0(private$workDir, "data.zip")
+    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
+                  paste0("execMode=", private$metadata$gamsExecMode), 
+                  private$metadata$MIROSwitch)
+    pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
+    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
+    
+    inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)$addFilePaths(pfFilePath)$compress(zipFilePath)
+    
+    ret <- POST(paste0(private$metadata$url, "/jobs"), encode = "multipart", 
+                body = list(model = private$metadata$modelName, username = private$metadata$user,
+                            use_pf_file = TRUE, 
+                            data = upload_file(zipFilePath, 
+                                               type = 'application/zip')),
+                timeout(2L))
+    
+    if(identical(status_code(ret), 201L)){
+      private$process <- content(ret)$token
+    }else{
+      stop(content(ret)$message, call. = FALSE)
+    }
+
+    return(self)
+  },
+  retrieveLocalLog = function(){
+    private$log <- private$process$read_output()
+    exitStatus  <- private$process$get_exit_status()
+    if(!identical(private$log, "")){
+      private$updateLog <- private$updateLog + 1L
+    }
+    if(length(exitStatus)){
+      private$status <- exitStatus
+    }
+    return(private$updateLog)
+  },
+  retrieveRemoteLog = function(){
+    
     ret <- DELETE(paste0(private$metadata$url, "/unread_logs/", private$process), timeout(2L))
     statusCode <- status_code(ret)
     if(identical(statusCode, 200L)){
@@ -59,93 +147,5 @@ Worker <- R6Class("Worker", public = list(
     }else{
       stop(content(ret)$message, call. = FALSE)
     }
-  },
-  getReactiveLog = function(session){
-    if(!length(private$process)){
-      stop("Process not started", call. = FALSE)
-    }
-    if(identical(private$method, "local")){
-      return(reactiveFileReader2(300, session, file.path(private$workDir, 
-                                                         paste0(private$metadata$modelName, ".log"))))
-    }
-    return(reactivePoll2(500, session, checkFunc = function(){
-      self$retrieveRemoteLog()
-    }, valueFunc = function(){
-      private$log
-    }))
-  },
-  getReactiveStatus = function(session){
-    return(reactivePoll2(1000, session, checkFunc = function(){
-      private$getStatus()
-    }, valueFunc = function(){
-      private$getStatus()
-    }))
-  },
-  getMethod = function(){
-    return(private$method)
-  }
-), private = list(
-  method = character(1L),
-  status = NULL, 
-  metadata = NULL,
-  inputData = NULL,
-  log = character(1L),
-  pfFileContent = NULL,
-  process = NULL,
-  workDir = NULL,
-  updateLog = 1L,
-  runLocal = function(inputData){
-    
-    inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)
-    
-    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
-                  paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'),
-                  if(private$metadata$includeParentDir) paste0('idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"'), 
-                  paste0('curdir="', private$workDir, '"'), "lo=3", paste0("execMode=", private$metadata$gamsExecMode), 
-                  private$metadata$MIROSwitch, "LstTitleLeftAligned=1")
-    if(private$metadata$saveTraceFile){
-      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
-    }
-    pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
-    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
-    
-    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), args = c(private$metadata$modelGmsName, 
-                                                                   "pf", pfFilePath), 
-                                   stdout = paste0(private$workDir, private$metadata$modelName, ".log"), windows_hide_window = TRUE)
-    return(self)
-  },
-  runRemote = function(inputData){
-    zipFilePath <- paste0(private$workDir, "data.zip")
-    gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
-                  paste0("execMode=", private$metadata$gamsExecMode), 
-                  private$metadata$MIROSwitch)
-    pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
-    writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
-    
-    inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)$addFilePaths(pfFilePath)$compress(zipFilePath)
-    
-    ret <- POST(paste0(private$metadata$url, "/jobs"), encode = "multipart", 
-                body = list(model = private$metadata$modelName, username = private$metadata$user,
-                            use_pf_file = TRUE, 
-                            data = upload_file(zipFilePath, 
-                                               type = 'application/zip')),
-                timeout(2L))
-    
-    if(identical(status_code(ret), 201L)){
-      private$process <- content(ret)$token
-    }else{
-      stop(content(ret)$message, call. = FALSE)
-    }
-
-    return(self)
-  },
-  getStatus = function(){
-    if(!length(private$process)){
-      return(NULL)
-    }
-    if(inherits(private$process, "process")){
-      return(private$process$get_exit_status())
-    }
-    return(private$status)
   }
 ))
