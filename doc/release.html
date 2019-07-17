@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>MIRO - Configuration</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/lightbox/dist/ekko-lightbox.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+    <!-- Spectrum ColorPicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/spectrum/spectrum.css">
+    <!-- bootstrap datetimepicker plugin -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- alpaca -->
+    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Release notes</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><span aria-hidden="true" class="icon fas fa-code-branch"></span> Release notes</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="v06" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 0.6</h2>
+                                <div class="section-block">
+                                    <ul>
+                                      <li>MIRO configuration mode: The GAMS MIRO configuration mode can be used to change the settings of your MIRO app as well as to generate new widgets and charts. 
+                                      When configuring your widgets and charts, you get a live preview so that you immediately see the results of your configuration. You don't need to touch JSON code anymore.</li>
+                                      <li>New data import mechanism: Instead of creating an Excel file that the user then has to upload in order to get the first data into MIRO, data relevant to MIRO is automatically extracted from your model and stored in the MIRO database.</li>
+                                      <li>Tab grouping: Group multiple input tabs and output tabs together.</li>
+                                      <li>Automated loading of data on startup: Automatically load data when your MIRO app launches, so tables won’t start out empty.</li>
+                                      <li>Automated scenario import into DB: GDX files that you place in the data_&lt;modelName&gt; folder of your MIRO app will be automatically imported into the MIRO database the next time you launch your app.</li>
+                                      <li>Improved UTF-8 support: You can now use non-ASCII characters throughout MIRO</li>
+                                      <li>Chinese language support (note that the MIRO configuration mode is not yet translated, though).</li>
+                                      <li>Import and export of GDX files: Besides Excel spreadsheets you can now also import and export GDX containers.</li>
+                                      <li>GAMS Studio toolbar to launch MIRO.</li>
+                                      <li>Experimental support for Gantt charts.</li>
+                                      <li>Bug fixes and performance improvements.</li>
+                                    </ul>
+                                </div>
+                            </section> 
+                            <section id="v04" class="doc-section">
+                                <h2 class="section-title">GAMS MIRO 0.4</h2>
+                                <div class="section-block">
+                                    <p>Initial release</p>
+                                </div>
+                            </section> 
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+                            <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+                                <a class="nav-link scrollto" href="#v06">GAMS MIRO 0.6</a>
+                                <a class="nav-link scrollto" href="#v04">GAMS MIRO 0.4</a>
+                            </nav><!--//doc-menu-->
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/lightbox/dist/ekko-lightbox.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <!-- Spectrum ColorPicker plugin -->
+    <script type="text/javascript" src="assets/plugins/spectrum/spectrum.js"></script>
+    <!-- Moment plugin -->
+    <script type="text/javascript" src="assets/plugins/moment/moment.min.js"></script>
+    <!-- Bootstrap datetimepicker plugin -->
+    <script type="text/javascript" src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    <!-- dependencies (jquery, handlebars and bootstrap) -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+    <!-- alpaca -->
+    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
+    <!-- AJV -->
+    <script type="text/javascript" src="assets/js/ajv.min.js"></script>
+    <!-- config generator -->
+    <script type="text/javascript" src="assets/js/config-gen.js"></script>
+    <!-- gifplayer plugin -->
+    <script type="text/javascript" src="assets/js/gifplayer.js"></script>
+    <script>
+    	$('.gifplayer').gifplayer();
+    </script>
+
+</body>
+</html>
