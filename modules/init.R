@@ -1222,6 +1222,7 @@ if(is.null(errMsg)){
                          '10' = "Out of memory",
                          '11' = "Out of disk",
                          '15' = "Model execution was interrupted",
+                         '100' = "Model execution timed out",
                          '109' = "Could not create process/scratch directory",
                          '110' = "Too many process/scratch directories",
                          '112' = "Could not delete the process/scratch directory",

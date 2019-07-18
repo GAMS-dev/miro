@@ -580,7 +580,7 @@ observeEvent(input$btSolve, {
     emptyEl(session, "#logStatus")
     observe({
       logText    <- logfile()
-      if(!is.null(modelStatus())){
+      if(is.integer(modelStatus())){
         return()
       }
       return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
@@ -592,10 +592,12 @@ observeEvent(input$btSolve, {
   hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
-    
-    statusText <- lang$nav$gamsModelStatus$exec
-    # model got solved successfully
-    if(!is.null(modelStatus())){
+    currModelStat <- modelStatus()
+    if(is.null(currModelStat)){
+      statusText <- lang$nav$gamsModelStatus$exec
+    }else if(is.na(currModelStat)){
+      statusText <- lang$nav$gamsModelStatus$queued
+    }else{
       modelStatusObs$destroy()
       modelStatus <- NULL
       enableEl(session, "#btSolve")
@@ -610,7 +612,7 @@ observeEvent(input$btSolve, {
         tryCatch({
           fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
           if(is.na(fileSize))
-            stop("Could not access listing file.", call. = FALSE)
+            stop("Could not access listing file", call. = FALSE)
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
@@ -644,10 +646,10 @@ observeEvent(input$btSolve, {
         output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
       }
       
-      if(modelStatus() != 0){
-        returnCodeText <- GAMSReturnCodeMap[as.character(modelStatus())]
+      if(currModelStat != 0){
+        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
         if(is.na(returnCodeText)){
-          returnCodeText <- as.character(modelStatus())
+          returnCodeText <- as.character(currModelStat)
         }
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
         if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
@@ -659,6 +661,7 @@ observeEvent(input$btSolve, {
             for(inputTabId in seq_along(inputTabs)){
               valTabIdTmp <- inputTabs[[inputTabId]]
               valTabIdErr <- match(valIdHead, valTabIdTmp)
+              print(valTabIdErr)
               if(!is.na(valTabIdErr)){
                 updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId))
                 if(length(valTabIdTmp) > 1L){
@@ -673,6 +676,7 @@ observeEvent(input$btSolve, {
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
       }else{
         # run terminated successfully
+        statusText <- lang$nav$gamsModelStatus$success
         # check whether GAMS output files shall be stored
         if(config$activateModules$attachments && 
            config$storeLogFilesDuration > 0L && !is.null(activeScen)){
@@ -717,7 +721,6 @@ observeEvent(input$btSolve, {
           showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
         }
         #select first tab in current run tabset
-        statusText <- lang$nav$gamsModelStatus$success
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
@@ -735,7 +738,7 @@ observeEvent(input$btSolve, {
           errMsg <<- lang$errMsg$readOutput$desc
         })
         if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-          return()
+          return(htmltools::htmlEscape(statusText))
         }
         if(!is.null(GAMSResults$scalar)){
           scalarData[["scen_1_"]] <<- GAMSResults$scalar

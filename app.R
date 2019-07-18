@@ -207,6 +207,7 @@ if(is.null(errMsg)){
     load(rSaveFilePath, envir = .GlobalEnv)
     if(isShinyProxy){
       dbConfig <- setDbConfig(paste0(configDir, "db_config.json"))
+      config$activateModules$remoteExecution <- TRUE
       if(length(dbConfig$errMsg)){
         errMsg <- dbConfig$errMsg
       }else{
@@ -224,8 +225,15 @@ if(is.null(errMsg)){
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c(requiredPackages, "future", "httr")
+  }
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
+  
+  if(config$activateModules$remoteExecution){
+    plan(multiprocess)
+  }
   
   if(debugMode){
     customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
@@ -471,11 +479,19 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
 if(is.null(errMsg)){
-  tryCatch(gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut)),
-           error = function(e){
-             flog.error(e)
-             errMsg <<- paste(errMsg, e, sep = '\n')
-           })
+  tryCatch({
+    gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut))
+    worker <- Worker$new(metadata = list(user = uid, modelName = modelName, tableNameTracePrefix = tableNameTracePrefix, 
+                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                         MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
+                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                         timeout = 3, url = Sys.getenv("GMS_WORKER_URL")), 
+                         remote = config$activateModules$remoteExecution)
+  }, error = function(e){
+    flog.error(e)
+    errMsg <<- paste(errMsg, e, sep = '\n')
+  })
 }
 if(!is.null(errMsg)){
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -873,6 +889,7 @@ if(!is.null(errMsg)){
     
     # set local working directory
     workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+    worker$setWorkDir(workDir)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
@@ -880,14 +897,6 @@ if(!is.null(errMsg)){
     }else{
       flog.debug("Working directory was created: '%s'.", workDir)
     }
-    worker <- Worker$new(metadata = list(user = uid, modelName = modelName, tableNameTracePrefix = tableNameTracePrefix, 
-                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
-                                         MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
-                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
-                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                         url = Sys.getenv("GMS_WORKER_URL")), 
-                         #method = if(identical(isShinyProxy, TRUE)) "remote" else "local")
-                         method = "local", workDir = workDir)
     # initialization of several variables
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 

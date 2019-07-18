@@ -1,9 +1,12 @@
 Worker <- R6Class("Worker", public = list(
-  initialize = function(metadata, workDir, method = c("local", "remote")){
-    stopifnot(is.list(metadata), is.character(workDir), identical(length(workDir), 1L))
-    private$method <- match.arg(method)
-    private$workDir <- workDir
+  initialize = function(metadata, remote){
+    stopifnot(is.list(metadata), is.logical(remote), 
+              identical(length(remote), 1L))
+    private$remote   <- remote
     private$metadata <- metadata
+  },
+  setWorkDir = function(workDir){
+    private$workDir <- workDir
   },
   run = function(inputData, pfFileContent = NULL){
     if(length(pfFileContent)){
@@ -12,30 +15,32 @@ Worker <- R6Class("Worker", public = list(
     }else{
       private$pfFileContent <- NULL
     }
-    private$log <- character(1L)
-    private$status <- NULL
+    private$log     <- character(1L)
+    private$gamsRet <- NULL
+    private$fRemoteRes <- NULL
+    private$wait    <- 0L
+    private$waitCnt <- 0L
     
-    if(identical(private$method, "local")){
-      return(private$runLocal(inputData))
+    if(private$remote){
+      return(private$runRemote(inputData))
     }
-    return(private$runRemote(inputData))
+    return(private$runLocal(inputData))
   },
-  retrieveLog = function(){
+  pingProcess = function(){
     if(!length(private$process)){
       stop("Process not started", call. = FALSE)
     }
-    if(length(private$status)){
+    if(is.integer(private$status)){
       return(private$updateLog)
     }
     if(inherits(private$process, "process")){
-      return(private$retrieveLocalLog())
-    }else{
-      return(private$retrieveRemoteLog())
+      return(private$pingLocalProcess())
     }
+    return(private$pingRemoteProcess())
   },
   getReactiveLog = function(session){
     return(reactivePoll2(500, session, checkFunc = function(){
-      self$retrieveLog()
+      self$pingProcess()
     }, valueFunc = function(){
       private$log
     }))
@@ -46,12 +51,9 @@ Worker <- R6Class("Worker", public = list(
     }, valueFunc = function(){
       private$status
     }))
-  },
-  getMethod = function(){
-    return(private$method)
   }
 ), private = list(
-  method = character(1L),
+  remote = logical(1L),
   status = NULL, 
   metadata = NULL,
   inputData = NULL,
@@ -60,8 +62,12 @@ Worker <- R6Class("Worker", public = list(
   process = NULL,
   workDir = NULL,
   updateLog = 1L,
+  gamsRet = NULL,
+  waitCnt = integer(1L),
+  wait = integer(1L),
+  fRemoteRes = NULL,
   runLocal = function(inputData){
-    
+    private$status  <- NULL
     inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)
     
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
@@ -81,10 +87,16 @@ Worker <- R6Class("Worker", public = list(
     return(self)
   },
   runRemote = function(inputData){
+    private$status  <- NA
     zipFilePath <- paste0(private$workDir, "data.zip")
+    on.exit(unlink(zipFilePath))
+    
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
                   paste0("execMode=", private$metadata$gamsExecMode), 
                   private$metadata$MIROSwitch)
+    if(private$metadata$saveTraceFile){
+      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
+    }
     pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
     writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
     
@@ -92,7 +104,7 @@ Worker <- R6Class("Worker", public = list(
     
     ret <- POST(paste0(private$metadata$url, "/jobs"), encode = "multipart", 
                 body = list(model = private$metadata$modelName, username = private$metadata$user,
-                            use_pf_file = TRUE, 
+                            use_pf_file = TRUE, listen = paste0(private$metadata$modelName, ".lst"),
                             data = upload_file(zipFilePath, 
                                                type = 'application/zip')),
                 timeout(2L))
@@ -105,7 +117,7 @@ Worker <- R6Class("Worker", public = list(
 
     return(self)
   },
-  retrieveLocalLog = function(){
+  pingLocalProcess = function(){
     private$log <- private$process$read_output()
     exitStatus  <- private$process$get_exit_status()
     if(!identical(private$log, "")){
@@ -117,16 +129,50 @@ Worker <- R6Class("Worker", public = list(
     return(private$updateLog)
   },
   retrieveRemoteLog = function(){
-    
+    ret <- GET(paste0(private$metadata$url, "/logs/", private$process))
+    if(!identical(status_code(ret), 200L)){
+      stop(content(retFull)$message, call. = FALSE)
+    }
+    return(content(retFull)$message)
+  },
+  pingRemoteProcess = function(){
+    if(private$wait > 0L){
+      private$wait <- private$wait - 1L
+      return(private$updateLog)
+    }
+    if(length(private$gamsRet)){
+      if(resolved(private$fRemoteRes)){
+        private$status <- private$gamsRet
+        if(!identical(value(private$fRemoteRes), 0L)){
+          flog.error(value(private$fRemoteRes))
+        }
+      }else{
+        private$wait <- bitwShiftL(2L, private$waitCnt)
+        if(private$waitCnt < private$metadata$timeout){
+          private$waitCnt <- private$waitCnt + 1L
+        }else{
+          private$status <- 100L
+        }
+      }
+      return(private$updateLog)
+    }
     ret <- DELETE(paste0(private$metadata$url, "/unread_logs/", private$process), timeout(2L))
     statusCode <- status_code(ret)
     if(identical(statusCode, 200L)){
       responseContent <- content(ret)
       if(identical(responseContent$queue_finished, TRUE)){
-        private$status <- responseContent$gams_return_code
+        private$gamsRet <- responseContent$gams_return_code
+        private$wait    <- 0L
+        private$waitCnt <- 0L
+        private$fRemoteRes  <- future({
+          library(httr)
+          private$readRemoteOutput()
+          })
+      }else{
+        private$status <- NULL
       }
-      private$log <- responseContent$log
-      if(!identical(responseContent$log, "")){
+      private$log <- responseContent$message
+      if(!identical(private$log, "")){
         private$updateLog <- private$updateLog + 1L
       }
       return(private$updateLog)
@@ -134,18 +180,35 @@ Worker <- R6Class("Worker", public = list(
       # job finished, get full log
       retContent <- content(ret)
       private$status <- retContent$gams_return_code
-      #retFull <- GET(paste0(private$metadata$url, "/logs/", private$process))
-      #if(identical(status_code(retFull), 200L)){
-      #  retContent <- content(retFull)
-      #  private$log <- responseContent$log
-      #  return(nchar(private$log))
-      #}else{
-      #  stop(content(retFull)$message)
-      #}
+      return(private$updateLog)
     }else if(identical(statusCode, 403L)){
+      private$wait <- bitwShiftL(2L, private$waitCnt)
+      if(private$waitCnt < private$metadata$timeout){
+        private$waitCnt <- private$waitCnt + 1L
+      }else{
+        private$status <- 100L
+      }
       return(private$updateLog)
     }else{
       stop(content(ret)$message, call. = FALSE)
     }
+  },
+  readRemoteOutput = function(){
+    if(!length(private$process)){
+      return("Process not started")
+    }
+    
+    tmp <- tempfile(pattern="res_", fileext = ".zip")
+    on.exit(unlink(tmp))
+    
+    ret <- GET(url = paste0(private$metadata$url, "/result/", private$process), 
+               write_disk(tmp), timeout(2L))
+    
+    if(identical(status_code(ret), 200L)){
+      unzip(tmp, exdir = private$workDir)
+    }else{
+      return(content(ret)$message)
+    }
+    return(0L)
   }
 ))
