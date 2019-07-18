@@ -47,8 +47,10 @@
         <!--TYPO3SEARCH_begin-->
 
         <!-- ******Header****** -->
-        <header class="sub-header text-center">
-            <div class="container">
+        <header class="sub-header text-center" style="padding:0;position: relative;">
+            <div class="container" style="margin:0;max-width:inherit;padding-left:0;padding-right:0;">
+                
+                <div style="position: absolute;bottom: 0;background: rgba(0, 0, 0, 0.5);color: #f1f1f1;width: inherit;padding: 20px;">
                 <div class="branding">
                     <h1 class="logo">
                       <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
@@ -58,23 +60,22 @@
                     <p>Documentation Center</p>
                     <p style="font-size:10pt">Please note that GAMS MIRO is currently in the beta phase (not suited for use in production).</p>
                 </div><!--//tagline-->
+                </div>
+                <video autoplay muted loop id="myVideo" style="width:inherit;display:block;margin:auto">
+                  <source src="assets/images/header_base.mp4" type="video/mp4">
+                </video>
             </div><!--//container-->
         </header><!--//header-->
 
         <section class="cards-section text-center">
             <div class="container">
-                <h2 class="title">Welcome!</h2>
+                <h1 class="title">Welcome!</h1>
                 <div class="intro">
                     <p>Welcome to the documentation of GAMS MIRO (Model Interface with Rapid Orchestration) for and from GAMS, the General Algebraic Modeling System.
                     GAMS MIRO is an interactive web application for GAMS models.
                     It is designed for people working with GAMS looking for an easy and automated way to deploy their models.
                     Extensive visualization options support you to make decisions based on optimization.</p>
-                    <p>GAMS MIRO is currently in the beta phase. If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.</p>
-                      <br>
-                      <div>
-                          <img class="img-fluid" style="max-height:450px;" src="assets/images/gams_miro.png" alt="GAMS MIRO" />
-                      </div>
-                      <br><br>
+                    <p>GAMS MIRO is currently in the beta phase. If you encounter any bugs or have suggestions for improvement, please contact <a href="mailto:miro@gams.com" target="_blank">miro@gams.com</a>.<br><br></p>
                       <div id="why-section">
                         <h2 class="title">Why should I use GAMS MIRO?</h2>
                         <p>Are you working with GAMS and looking for a fast way to deploy your GAMS models automatically?
