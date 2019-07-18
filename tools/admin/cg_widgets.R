@@ -1,6 +1,7 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
 modelInWithPrefix <- names(modelIn)
+ignoreRefreshWidgetType <- FALSE
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
@@ -345,6 +346,7 @@ observeEvent({input$widget_symbol
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
   }
+  ignoreRefreshWidgetType <<- TRUE
   updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
   rv$widget_type <- rv$widget_type + 1L
 })
@@ -435,7 +437,12 @@ output$dt_preview <- renderDT({
 })
 observeEvent({input$widget_type
   rv$widget_type}, {
-    req(length(input$widget_type) > 0L, req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L))
+    req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
+        nchar(currentWidgetSymbolName) > 0L)
+    if(ignoreRefreshWidgetType){
+      ignoreRefreshWidgetType <<- FALSE
+      return()
+    }
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     rv$widgetConfig <- list()
     
@@ -453,7 +460,6 @@ observeEvent({input$widget_type
       widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
     }
   }
-  
   if(identical(input$widget_type, "table")){
     rv$widgetConfig <- list(widgetType = "table",
                             alias = widgetAlias,
