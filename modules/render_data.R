@@ -18,7 +18,10 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       data <- tagList(
         tags$div(style = "overflow-x:hidden;",
           column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-          column(6, plotlyOutput(ns("graph"), height = height), style = "overflow-x:auto;")
+          column(6, tags$div(class = "renderer-wrapper", 
+                             genSpinner(externalStyle = TRUE),
+                             plotlyOutput(ns("graph"), height = height), style = "overflow-x:auto;")
+          )
         )
       )
     }else if(graphTool == "dygraphs"){

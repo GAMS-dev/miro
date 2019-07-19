@@ -48,21 +48,20 @@
 
         <!-- ******Header****** -->
         <header class="sub-header text-center" style="padding:0;position: relative;">
-            <div class="container" style="margin:0;max-width:inherit;padding-left:0;padding-right:0;">
-                
-                <div style="position: absolute;bottom: 0;background: rgba(0, 0, 0, 0.5);color: #f1f1f1;width: inherit;padding: 20px;">
-                <div class="branding">
-                    <h1 class="logo">
-                      <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
-                    </h1>
-                </div><!--//branding-->
-                <div class="tagline">
-                    <p>Documentation Center</p>
-                    <p style="font-size:10pt">Please note that GAMS MIRO is currently in the beta phase (not suited for use in production).</p>
-                </div><!--//tagline-->
+            <div class="container">
+                <div id="videoOverlay">
+                    <div class="branding">
+                        <h1 class="logo">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </h1>
+                    </div><!--//branding-->
+                    <div class="tagline">
+                        <p>Documentation Center</p>
+                        <p style="font-size:10pt">Please note that GAMS MIRO is currently in the beta phase (not suited for use in production).</p>
+                    </div><!--//tagline-->
                 </div>
-                <video autoplay muted loop id="myVideo" style="width:inherit;display:block;margin:auto">
-                  <source src="assets/images/header_base.mp4" type="video/mp4">
+                <video playsinline autoplay muted loop id="headerVid">
+                  <source data-src="assets/images/header_base.mp4" type="video/mp4">
                 </video>
             </div><!--//container-->
         </header><!--//header-->
@@ -257,6 +256,7 @@
     <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
 
     <script type = "application/javascript">
+    /*
        let OSName="Unknown OS";
        let defDl = document.getElementById('dl-miro-default');
        let leftDl = document.getElementById('dl-miro-left');
@@ -276,7 +276,26 @@
          leftDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
          rightDl.innerHTML = "Download for Windows";
          rightDl.href = "https://cloud.gams.com/s/eYcCaD6tM97QnHs";
-       };
+       };*/
+       // thanks Paul Roub: https://stackoverflow.com/questions/43984623/stop-video-from-loading-in-background-on-mobile
+       window.addEventListener("load", function() {
+          var bgv = document.getElementById("headerVid");
+        
+          // what jQuery checks under the hood
+          var visible = !!(bgv.offsetWidth ||
+            bgv.offsetHeight ||
+            bgv.getClientRects().length);
+        
+          if (visible) {
+            var children = bgv.getElementsByTagName("source");
+        
+            for (var i = 0; i < children.length; ++i) {
+        
+              children[i].src = children[i].getAttribute("data-src");
+            }
+          }
+          bgv.load();
+        });
     </script>
 </body>
 </html>

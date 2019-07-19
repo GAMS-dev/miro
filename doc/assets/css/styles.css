@@ -1,4 +1,4 @@
-﻿/* loading spinner (https://loading.io/css/)*/
+/* loading spinner (https://loading.io/css/)*/
 #loading-screen {
     position: fixed;
     width: 100%;
@@ -430,6 +430,41 @@ body{
   border-bottom: 7px solid #f90;
   margin-left: auto;
   margin-right: auto;
+}
+.page-wrapper .sub-header .container {
+  margin:0;
+  max-width:inherit;
+  padding-left:0;
+  padding-right:0;
+}
+#headerVid {
+  display:none;
+}
+#videoOverlay {
+  padding: 20px;
+}
+@media screen and (min-width: 400px) {
+  .page-wrapper .sub-header .container {
+    padding-top:40.42%;
+  }
+  #headerVid {
+    width:inherit;
+    display:block;
+    margin:auto;
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    bottom: 0; 
+    right: 0; 
+  }
+  #videoOverlay {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #f1f1f1;
+    width: inherit;
+    z-index:2;
+  }
 }
 .page-wrapper #header {
   max-width: 1200px;

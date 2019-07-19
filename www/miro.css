@@ -123,6 +123,20 @@ animation: none !important;
   left: 75%;
   top: 50%;
 }
+.renderer-wrapper {
+  position: relative;
+}
+.renderer-wrapper .lds-ellipsis {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  margin-top: -33px;  /* half of the spinner's height */
+  margin-left: -33px; /* half of the spinner's width */
+}
+.renderer-wrapper .recalculating {
+  z-index: -2;
+}
 .datepicker{
   /* bring datepicker menu to the front */
   z-index: 9999 !important;
