@@ -431,12 +431,6 @@ body{
   margin-left: auto;
   margin-right: auto;
 }
-.page-wrapper .sub-header .container {
-  margin:0;
-  max-width:inherit;
-  padding-left:0;
-  padding-right:0;
-}
 #headerVid {
   display:none;
 }
@@ -444,8 +438,12 @@ body{
   padding: 20px;
 }
 @media screen and (min-width: 400px) {
-  .page-wrapper .sub-header .container {
+  .page-wrapper .sub-header .video-container {
     padding-top:40.42%;
+    margin:0;
+    max-width:inherit;
+    padding-left:0;
+    padding-right:0;
   }
   #headerVid {
     width:inherit;
