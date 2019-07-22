@@ -118,6 +118,12 @@ if(is.null(errMsg)){
   if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
+  # quote extra command line arguments
+  config$extraClArgs <- vapply(seq_along(config$extraClArgs), function(idx){
+    if(idx %% 2 == 0)
+      return(escapeGAMSCL(config$extraClArgs[[idx]]))
+    return(config$extraClArgs[[idx]])
+  }, character(1L), USE.NAMES = FALSE)
   # handsontable options
   hotOptions        <- config$handsontable
   
