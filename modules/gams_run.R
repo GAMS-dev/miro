@@ -571,10 +571,16 @@ observeEvent(input$btSolve, {
     })
     showErrorMsg(lang$errMsg$readLog$title, errMsg)
   }
-  
-  modelStatus    <- worker$getReactiveStatus(session)
-  modelStatusObs <- modelStatus$obs
-  modelStatus    <- modelStatus$re
+  errMsg <- NULL
+  tryCatch({
+    modelStatus    <- worker$getReactiveStatus(session)
+    modelStatusObs <- modelStatus$obs
+    modelStatus    <- modelStatus$re
+  }, error = function(e) {
+    flog.error("GAMS status could not be retrieved (model: '%s'). Error message: %s.", modelName, e)
+    errMsg <<- lang$errMsg$readLog$desc
+  })
+  showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
   if(config$activateModules$logFile){
     emptyEl(session, "#logStatus")
