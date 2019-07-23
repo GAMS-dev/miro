@@ -111,8 +111,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       if(is.na(scalarDataTmp)){
         scalarData <- data[[3]][[i]]
       }else{
-        scalarData <- formatC(round(scalarDataTmp, roundPrecision), big.mark = " ", 
-                              big.interval = 3, format = "f", drop0trailing = TRUE)
+        scalarData <- formatC(round(scalarDataTmp, roundPrecision), digits = roundPrecision, 
+                              big.mark = " ", big.interval = 3, format = "f", drop0trailing = TRUE)
       }
       output[["valBox" %+% i]] <- renderValueBox({
         valueBox(
