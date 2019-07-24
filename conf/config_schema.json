@@ -471,7 +471,7 @@
                    },
                    "daysofweekdisabled":{
                      "description":"disallow certain days of week to be selected",
-                     "type": ["array", "null"],
+                     "type": ["integer", "array", "null"],
                      "uniqueItems":true,
                      "minItems":1,
                      "items":{  
@@ -505,7 +505,7 @@
                    }
                  },
                  "required":[  
-                      "widgetType", "min", "max", "value"
+                      "widgetType"
                    ],
                   "additionalProperties": false
                },

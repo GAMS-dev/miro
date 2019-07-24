@@ -215,7 +215,7 @@ validateWidgetConfig <- function(widgetJSON){
            minDate <- NULL
            maxDate <- NULL
            errMsg  <- NULL
-           if(!is.null(widgetJSON$start)){
+           if(!is.null(widgetJSON[["start"]])){
              eTxt <- lang$adminMode$widgets$validate$val20
              tryCatch(startDate <- as.Date(widgetJSON$start), error = function(e){
                errMsg <<- eTxt
@@ -292,6 +292,9 @@ validateWidgetConfig <- function(widgetJSON){
              if(minDate > maxDate){
                return(lang$adminMode$widgets$validate$val31)
              }
+           }
+           if(!nchar(widgetJSON$separator)){
+               return(lang$adminMode$widgets$validate$val44)
            }
          },
          table = {
@@ -509,7 +512,6 @@ observeEvent({input$widget_type
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = 
@@ -684,7 +686,6 @@ observeEvent({input$widget_type
          sliderrange = {
            rv$widgetConfig <- list(widgetType = "slider",
                                    alias = widgetAlias,
-                                   label = currentConfig$widget_label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
                                    default = 
@@ -813,7 +814,6 @@ observeEvent({input$widget_type
          dropdown = {
            rv$widgetConfig <- list(widgetType = "dropdown",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
                                    choices = currentConfig$choices,
                                    aliases = currentConfig$aliases,
                                    selected = currentConfig$selected,
@@ -901,7 +901,6 @@ observeEvent({input$widget_type
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
                                    value = identical(currentConfig$value, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    class =  "checkbox-material")
@@ -946,16 +945,15 @@ observeEvent({input$widget_type
          date = {
            rv$widgetConfig <- list(widgetType = "date",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
-                                   value = currentConfig$value,
-                                   min   = currentConfig$min,
-                                   max   = currentConfig$max,
                                    format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
                                    startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
-                                   daysofweekdisabled = currentConfig$daysofweekdisabled,
-                                   autoclose = identical(currentConfig$autoclose, FALSE),
+                                   autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig$value <- currentConfig$value
+           rv$widgetConfig$min <- currentConfig$min
+           rv$widgetConfig$max <- currentConfig$max
+           rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$date$alias, value = rv$widgetConfig$alias),
@@ -1068,17 +1066,17 @@ observeEvent({input$widget_type
          daterange = {
            rv$widgetConfig <- list(widgetType = "daterange",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
-                                   start = currentConfig$start,
-                                   end   = currentConfig$end,
-                                   min   = currentConfig$min,
-                                   max   = currentConfig$max,
                                    format = if(length(currentConfig$format)) currentConfig$format else "yyyy-mm-dd",
                                    startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
                                    separator = if(length(currentConfig$separator)) currentConfig$separator else " to ",
-                                   autoclose = identical(currentConfig$autoclose, FALSE),
+                                   autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig[["start"]] <- currentConfig[["start"]]
+           rv$widgetConfig$end <- currentConfig$end
+           rv$widgetConfig$min <- currentConfig$min
+           rv$widgetConfig$max <- currentConfig$max
+           
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$daterange$alias, value = rv$widgetConfig$alias),
@@ -1095,7 +1093,7 @@ observeEvent({input$widget_type
                                                  tags$div(
                                                    tags$label(class = "checkbox-material", 
                                                               checkboxInput("date_start_off", 
-                                                                            value = is.null(rv$widgetConfig$start), label = NULL)
+                                                                            value = !is.null(rv$widgetConfig$start), label = NULL)
                                                    ))
                                         ))
                       ),
@@ -1208,7 +1206,6 @@ observeEvent({input$widget_type
          textinput = {
            rv$widgetConfig <- list(widgetType = "textinput",
                                    alias = widgetAlias,
-                                   label = currentConfig$label,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
            insertUI(selector = "#widget_options",
@@ -1227,14 +1224,13 @@ observeEvent({input$widget_type
            })
          }
   )
+  rv$widgetConfig$label <- currentConfig$widget_label
   hideEl(session, "#hot_preview")
 })
 observeEvent(input$widget_alias, {
   rv$widgetConfig$alias <<- input$widget_alias
 })
 observeEvent(input$widget_label, {
-  if(!nchar(input$widget_label))
-    configJSON$widgetConfig$label <<- NULL
   if(nchar(input$widget_label))
     rv$widgetConfig$label <<- input$widget_label
   else
@@ -1351,13 +1347,13 @@ observeEvent(input$date_def_off, {
   }
 })
 observeEvent(input$date_start, {
-  rv$widgetConfig$start <<- input$date_start
+  rv$widgetConfig[["start"]] <<- input$date_start
 })
 observeEvent(input$date_start_off, {
   if(input$date_start_off){
-    rv$widgetConfig$start <<- NULL
+    rv$widgetConfig[["start"]] <<- NULL
   }else{
-    rv$widgetConfig$start <<- input$date_start
+    rv$widgetConfig[["start"]] <<- input$date_start
   }
 })
 observeEvent(input$date_end, {
@@ -1473,6 +1469,7 @@ observeEvent(input$saveWidget, {
              })
     }
   }
+  print(rv$widgetConfig)
   errMsg <- validateWidgetConfig(rv$widgetConfig)
   if(nchar(errMsg)){
     showHideEl(session, "#widgetValidationErr", 5000L, errMsg)

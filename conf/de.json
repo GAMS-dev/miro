@@ -902,7 +902,8 @@
         "val40": "Kein Slider Minimum gefunden!",
         "val41": "Kein Slider Maximum gefunden!",
         "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
-        "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!"
+        "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
+        "val44": "Es muss ein Seperator angegeben werden!"
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],

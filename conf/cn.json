@@ -902,7 +902,8 @@
         "val40": "No minimum slider value found!",
         "val41": "No maximum slider value found!",
         "val42": "The minimum value must be lower than the maximum value!",
-        "val43": "For a slider range 2 default values need to be defined!"
+        "val43": "For a slider range 2 default values need to be defined!",
+        "val44": "A separator must be provided!"
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
