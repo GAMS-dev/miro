@@ -75,3 +75,50 @@ output[["export_" %+% i]] <- downloadHandler(
   contentType = if(identical(exportFileType, "gdx")) "application/octet-stream" else
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
+observeEvent(input[[paste0("remote_export_", i)]], {
+  if(length(datasetsRemoteExport) && length(input$exportFileType)){
+    exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
+    if(!is.na(exportId)){
+      expConfig  <- datasetsRemoteExport[[input$exportFileType]]
+      dsToExport <- names(expConfig)
+      
+      if(i == 1){
+        # active scenario (editable)
+        saveAsFlag <<- FALSE
+        source("./modules/scen_save.R", local = TRUE)
+        data <- scenData[[scenIdLong]]
+      }else{
+        data <- scenData[[scenIdLong]]
+        # combine hidden and non hidden scalar data
+        scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
+        if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
+          data[[scalarOutIdx]] <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
+        }
+      }
+      names(data) <- c(names(modelOut), inputDsNames)
+      errMsg <- NULL
+      for(dataId in seq_along(data)){
+        dsName <- names(data)[dataId]
+        expId <- match(dsName, dsToExport)
+        if(is.na(expId)){
+          return()
+        }
+        tryCatch(dataio$export(data[[dsName]], expConfig[[expId]]), 
+                 error = function(e){
+                   flog.warn("Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
+                             input$exportFileType, dsName, e)
+                   errMsg <<- lang$errMsg$saveScen$desc
+                 })
+        if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
+          break
+        }
+      }
+      flog.debug("Data exported successfully.")
+      removeModal(session)
+      return()
+    }
+  }
+  flog.error("Remote export button clicked but export file type: '%s' does not exist.", 
+             input$exportFileType)
+  return()
+})

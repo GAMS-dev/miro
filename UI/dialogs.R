@@ -533,14 +533,17 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     fade = TRUE, easyClose = FALSE
   ))
 }
-showScenExportDialog <- function(id){
+showScenExportDialog <- function(id, exportTypes){
   showModal(modalDialog(
     title = lang$nav$dialogExportScen$title,
-    selectInput("exportFileType", lang$nav$dialogExportScen$desc, c("gdx", "xls")),
+    selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
     footer = tagList(
       modalButton(lang$nav$dialogExportScen$cancelButton),
       downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
-                     class = "bt-highlight-1 bt-gms-confirm")
+                     class = "bt-highlight-1 bt-gms-confirm file-export"),
+      actionButton(paste0("remote_export_", id), lang$nav$dialogExportScen$okButton,  
+                   class = "bt-highlight-1 bt-gms-confirm remote-export", 
+                   style = "display: none;")
       ), fade = TRUE, easyClose = TRUE
   ))
 }

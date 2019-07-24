@@ -129,6 +129,7 @@
 	    "btNew": "Select scenarios"
     },
     "gamsModelStatus":{  
+      "queued": "Model queued",
       "exec":"Model execution phase",
       "success":"Run successfully terminated.",
       "error":"Run did not terminate successfully: "

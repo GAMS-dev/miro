@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .DS_Store
+dump.rdb
 *.RData
 .Ruserdata
 packrat/lib*/

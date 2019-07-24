@@ -81,6 +81,9 @@ these components are included below):
 - cellranger https://github.com/rsheets/cellranger or https://cran.r-project.org/web/packages/cellranger/index.html
 - scales https://github.com/r-lib/scales or https://cran.r-project.org/web/packages/scales/index.html
 - httr https://github.com/r-lib/httr or https://cran.r-project.org/web/packages/httr/index.html
+- future https://github.com/HenrikBengtsson/future or https://cran.r-project.org/web/packages/future/index.html
+- globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
+- listenv https://github.com/HenrikBengtsson/listenv or https://cran.r-project.org/web/packages/listenv/index.html
 - viridisLite https://github.com/sjmgarnier/viridisLite or https://cran.r-project.org/web/packages/viridisLite/index.html
 - base64enc https://github.com/cran/base64enc or https://cran.r-project.org/web/packages/base64enc/index.html
 - RColorBrewer https://github.com/cran/RColorBrewer or https://cran.r-project.org/web/packages/RColorBrewer/index.html
@@ -2077,6 +2080,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         - fansi [expanded from: GPL (≥ 2)], Copyright (c) Brodie Gaslam [aut, cre], 
             Elliott Sales De Andrade [ctb], 
             R Core Team [cph] (UTF8 byte length calcs from src/util.c)
+        - future, Copyright (c) Henrik Bengtsson [aut, cre, cph]
+        - globals, Copyright (c) Henrik Bengtsson [aut, cre, cph]
+        - listenv, Copyright (c) Henrik Bengtsson [aut, cre, cph]
 
 -----------------------------------------------------------------------------
 

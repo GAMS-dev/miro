@@ -129,6 +129,7 @@
 	    "btNew": "Szenarien auswählen"
     },
     "gamsModelStatus":{  
+      "queued": "Modell in der Warteschlange",
       "exec":"Modell wird gelöst",
       "success":"Das Modell wurde erfolgreich gelöst.",
       "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
