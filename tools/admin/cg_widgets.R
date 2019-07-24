@@ -98,18 +98,29 @@ validateWidgetConfig <- function(widgetJSON){
   switch(widgetJSON$widgetType, 
          slider = ,
          sliderrange = {
-           if(length(widgetJSON$default) < 1L || 
-              length(widgetJSON$default) > 2L){
+           if(!is.null(widgetJSON$default) && (length(widgetJSON$default) < 1L || 
+              length(widgetJSON$default) > 2L)){
              return(lang$adminMode$widgets$validate$val6)
            }
-           if(any(widgetJSON$default < widgetJSON$min) && 
+           if(is.na(widgetJSON$min)){
+             return(lang$adminMode$widgets$validate$val40)
+           }
+           if(is.na(widgetJSON$max)){
+             return(lang$adminMode$widgets$validate$val41)
+           }
+           if(any(widgetJSON$max < widgetJSON$min) && 
               identical(input$slider_min_dep_selector, TRUE) &&
-              identical(input$slider_def_dep_selector, TRUE)){
+              identical(input$slider_max_dep_selector, TRUE)){
+             return(lang$adminMode$widgets$validate$val42)
+           }
+           if(!is.null(widgetJSON$default) && (any(widgetJSON$default < widgetJSON$min) && 
+              identical(input$slider_min_dep_selector, TRUE) &&
+              identical(input$slider_def_dep_selector, TRUE))){
              return(lang$adminMode$widgets$validate$val7)
            }
-           if(any(widgetJSON$max < widgetJSON$default) && 
+           if(!is.null(widgetJSON$default) && (any(widgetJSON$max < widgetJSON$default) && 
               identical(input$slider_max_dep_selector, TRUE) && 
-              identical(input$slider_def_dep_selector, TRUE)){
+              identical(input$slider_def_dep_selector, TRUE))){
              return(lang$adminMode$widgets$validate$val7)
            }
            if(!is.logical(widgetJSON$tick)){
@@ -345,6 +356,10 @@ observeEvent({input$widget_symbol
   selectedType <- NULL
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
+    if(identical(selectedType, "slider") && 
+       identical(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$default), 2L)){
+      selectedType <- "sliderrange"
+    }
   }
   ignoreRefreshWidgetType <<- TRUE
   updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
@@ -490,7 +505,6 @@ observeEvent({input$widget_type
     }
     return()
   }
-  
   switch(input$widget_type,
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
@@ -498,11 +512,19 @@ observeEvent({input$widget_type
                                    label = currentConfig$label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
-                                   default = if(length(currentConfig$default)) currentConfig$default else 2L,
+                                   default = 
+                                     if(length(currentConfig$default) && length(currentConfig$default) < 2L){
+                                       currentConfig$default
+                                     }else if(length(currentConfig$default) && length(currentConfig$default) > 1L){
+                                       currentConfig$default[1]
+                                     }else if(is.numeric(currentConfig$min)){
+                                       currentConfig$min
+                                     }else{
+                                       2L
+                                     },
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
-           
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -515,7 +537,14 @@ observeEvent({input$widget_type
                                                    value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L))
            staticDefInput <- tags$div(style = "max-width:400px;",
                                       numericInput("slider_def", lang$adminMode$widgets$slider$default, 
-                                                   value = if(is.numeric(rv$widgetConfig$default)) rv$widgetConfig$default else 2L))
+                                                   value = 
+                                                     if(is.numeric(rv$widgetConfig$default)){
+                                                       rv$widgetConfig$default
+                                                     }else if(is.numeric(rv$widgetConfig$min)){
+                                                       rv$widgetConfig$min
+                                                     }else{
+                                                       NULL
+                                                     }))
            insertUI(selector = "#widget_options",
                     tagList(
                       tags$div(style = "max-width:400px;",
@@ -658,7 +687,14 @@ observeEvent({input$widget_type
                                    label = currentConfig$widget_label,
                                    min = if(length(currentConfig$min)) currentConfig$min else 0L,
                                    max = if(length(currentConfig$max)) currentConfig$max else 10L,
-                                   default = if(length(currentConfig$default) > 1L) currentConfig$default else c(2L, 5L),
+                                   default = 
+                                     if(length(currentConfig$default) > 1L){
+                                       currentConfig$default
+                                     }else if(is.numeric(currentConfig$min)){
+                                       c(currentConfig$min, currentConfig$min)
+                                     }else{
+                                       c(2L, 5L)
+                                     },
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
@@ -744,9 +780,9 @@ observeEvent({input$widget_type
                                }
                       ),
                       numericInput("slider_def1", lang$adminMode$widgets$sliderrange$default1, 
-                                   value = rv$widgetConfig$default[1L]),
+                                   value = rv$widgetConfig$default[1]),
                       numericInput("slider_def2", lang$adminMode$widgets$sliderrange$default2, 
-                                   value = rv$widgetConfig$default[2L]),
+                                   value = rv$widgetConfig$default[2]),
                       numericInput("slider_step", "Step size", value = rv$widgetConfig$step, min = 0L),
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "slider_ticks", lang$adminMode$widgets$sliderrange$ticks),
@@ -1193,11 +1229,12 @@ observeEvent({input$widget_type
   )
   hideEl(session, "#hot_preview")
 })
-
 observeEvent(input$widget_alias, {
   rv$widgetConfig$alias <<- input$widget_alias
 })
 observeEvent(input$widget_label, {
+  if(!nchar(input$widget_label))
+    configJSON$widgetConfig$label <<- NULL
   if(nchar(input$widget_label))
     rv$widgetConfig$label <<- input$widget_label
   else
@@ -1219,7 +1256,10 @@ observeEvent(input$table_bigdata, {
 observeEvent(input$table_readonly, {
   rv$widgetConfig$readonly <<- input$table_readonly
 })
-observeEvent(input$table_readonlyCols, {
+observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
+  if(!length(input$table_readonlyCols)){
+    configJSON$widgetConfig$readonlyCols <<- NULL
+  }
   rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
 })
 observeEvent(input$table_heatmap, {
@@ -1243,9 +1283,12 @@ observeEvent(input$slider_max_dep, {
   updateSelectInput(session, "slider_max_dep_header", choices = inputSymHeaders[[input$slider_max_dep]])
 })
 observeEvent(input$slider_def, {
-  if(!is.numeric(input$slider_def))
-    return()
-  rv$widgetConfig$default <<- input$slider_def
+  if(is.na(input$slider_def))
+    configJSON$widgetConfig$default <<- NULL
+  if(is.numeric(input$slider_def))
+    rv$widgetConfig$default <<- input$slider_def
+  else
+    rv$widgetConfig$default <<- NULL
 })
 observeEvent(input$slider_def_dep, {
   updateSelectInput(session, "slider_def_dep_header", choices = inputSymHeaders[[input$slider_def_dep]])

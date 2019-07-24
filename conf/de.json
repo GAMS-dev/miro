@@ -709,10 +709,6 @@
         "label": "Sprache",
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
-      "skin":{
-        "label": "Skin für das Dashboard",
-        "choices": ["schwarz", "blau", "lila", "grün", "rot", "gelb"]
-      },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
         "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
@@ -722,7 +718,7 @@
         "label": "Name des Standardszenarios"
       },
       "args":{
-        "label": "Geben Sie zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen wird (z.B. limrow=10,threads=4)"
+        "label": "Geben Sie zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen wird"
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
@@ -902,7 +898,11 @@
         "val36": "Der Gruppenname muss mindestens 1 Zeichen lang sein.",
         "val37": "Jede Gruppe muss mindestens 2 Mitglieder haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
         "val38": "Es muss mindestens ein Element ausgewählt werden!",
-        "val39": "Im Namen sind keine Leerzeichen erlaubt!"
+        "val39": "Im Namen sind keine Leerzeichen erlaubt!",
+        "val40": "Kein Slider Minimum gefunden!",
+        "val41": "Kein Slider Maximum gefunden!",
+        "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
+        "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!"
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
@@ -1242,6 +1242,10 @@
         "confirm": "Bestätigen"
       },
       "js":{
+        "extraCLargs":{
+            "key": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
+            "value": "Wert des Kommandozeilenparameters (keine Anführungszeichen verwenden)"
+        },
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
           "groupMemberIn": "Gruppenmitglieder auswählen"

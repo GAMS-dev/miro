@@ -3209,29 +3209,6 @@
                 }
               }
             },
-            "skin":{          
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "choices":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
-                  "required":true
-                }
-              }
-            },
             "scen":{          
               "type":"object",
               "additionalProperties":false,
@@ -4109,6 +4086,26 @@
                   "required":true
                 },
                 "val39":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val40":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val41":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val42":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val43":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5847,6 +5844,23 @@
               "additionalProperties":false,
               "required":true,
               "properties":{ 
+                "extraCLargs":{  
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "key":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "value":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
                 "addInputGroup":{  
                   "type":"object",
                   "additionalProperties":false,

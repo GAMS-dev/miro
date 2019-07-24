@@ -709,10 +709,6 @@
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
       },
-      "skin":{
-        "label": "Skin to use for dashboard",
-        "choices": ["black", "blue", "purple", "green", "red", "yellow"]
-      },
       "scen":{
         "label": "Default scenario comparison mode",
         "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
@@ -722,7 +718,7 @@
         "label": "Name of the default scenario"
       },
       "args":{
-        "label": "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)"
+        "label": "Specify extra command line arguments that GAMS will be called with"
       },
       "groups":{
         "input": "Divide input symbols into groups",
@@ -902,7 +898,11 @@
         "val36": "The group name must be at least 1 character long.",
         "val37": "Each group must have at least 2 members and every element may only appear in a single group!",
         "val38": "At least one choice has to be specified!",
-        "val39": "No space allowed in the name!"
+        "val39": "No space allowed in the name!",
+        "val40": "No minimum slider value found!",
+        "val41": "No maximum slider value found!",
+        "val42": "The minimum value must be lower than the maximum value!",
+        "val43": "For a slider range 2 default values need to be defined!"
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
@@ -1242,6 +1242,10 @@
         "confirm": "Confirm"
       },
       "js":{
+        "extraCLargs":{
+          "key": "Name of the command line argument (e.g. limrow or --mydoubledash)",
+          "value": "Value of the command line argument (do not use quotation marks)"
+        },
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
           "groupMemberIn": "Select group members"
