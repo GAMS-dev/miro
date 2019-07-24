@@ -90,13 +90,13 @@ lapply(seq_along(modelIn), function(id){
                input[["in_" %+% k]]
                rv[["in_" %+% id]]
                
-               if(sharedData[k]){
+               if(!is.null(externalInputConfig[[k]])){
                  switch(modelIn[[k]]$type,
                         dropdown = {
                           input[["dropdown_" %+% k]]
-                          if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                          if(length(externalInputData_filtered[[k]]) && nrow(externalInputData_filtered[[k]])){
                             tryCatch(
-                                value <- filterDf(sharedInputData_filtered[[k]], modelIn[[id]]$checkbox$max)
+                                value <- filterDf(externalInputData_filtered[[k]], modelIn[[id]]$checkbox$max)
                             , error = function(e){
                               flog.error("Some problem occurred attempting to fetch values for checkbox: '%s' " %+%
                                            "(forward dependency on dataset: '%s'). Error message: %s.", 
@@ -284,14 +284,14 @@ lapply(seq_along(modelIn), function(id){
                  j <- 2
                  for(dataSheet in unique(tolower(names(ddownDep[[name]]$fw)))){
                    k <- match(dataSheet, names(modelIn))
-                   if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
+                   if(!is.null(externalInputConfig[[k]]) && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
                      rv[["in_" %+% k]]
-                     if(length(sharedInputData_filtered[[k]]) && 
-                        nrow(sharedInputData_filtered[[k]])){
+                     if(length(externalInputData_filtered[[k]]) && 
+                        nrow(externalInputData_filtered[[k]])){
                        tryCatch(
-                         choices[[j]] <- filterDf(sharedInputData_filtered[[k]], 
+                         choices[[j]] <- filterDf(externalInputData_filtered[[k]], 
                                                   ddownDep[[name]]$fw[[dataSheet]])
                          , error = function(e){
                            flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
@@ -301,7 +301,7 @@ lapply(seq_along(modelIn), function(id){
                        })
                        if(!is.null(ddownDep[[name]]$aliases[[dataSheet]])){
                          tryCatch(
-                           aliases[[j]] <- filterDf(sharedInputData_filtered[[k]], 
+                           aliases[[j]] <- filterDf(externalInputData_filtered[[k]], 
                                                     ddownDep[[name]]$aliases[[dataSheet]])
                            , error = function(e){
                              flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
@@ -500,12 +500,12 @@ lapply(seq_along(modelIn), function(id){
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
-                   }else if(sharedData[k] && modelIn[[k]]$type == "dropdown"){
+                   }else if(!is.null(externalInputConfig[[k]]) && modelIn[[k]]$type == "dropdown"){
                      # dependent sheet is a dataset that uses shared data
                      input[["dropdown_" %+% k]]
-                     if(length(sharedInputData_filtered[[k]]) && nrow(sharedInputData_filtered[[k]])){
+                     if(length(externalInputData_filtered[[k]]) && nrow(externalInputData_filtered[[k]])){
                        tryCatch(
-                         dataTmp <- unique(filterDf(sharedInputData_filtered[[k]], el[[1]]))
+                         dataTmp <- unique(filterDf(externalInputData_filtered[[k]], el[[1]]))
                          , error = function(e){
                            flog.error("Some problem occurred attempting to fetch values for dropdown menu: '%s' " %+%
                                         "(forward dependency on dataset: '%s'). Error message: %s.", 

@@ -604,6 +604,75 @@ Db <- R6Class("Db",
                   })
                   return(affectedRows)
                 },
+                exportDataset = function(tableName, data, checkColNames = FALSE){
+                  # Export the dataframe to database
+                  #
+                  # Args:
+                  #   tableName :       name of the table to import dataframe from
+                  #   data:             dataframe with data to write
+                  #   checkColNames:    boolean that specifies whether col name should be
+                  #                     checked. Non existing columns will be appended
+                  #
+                  # Returns:
+                  #   reference to class or throws exception in case of failure
+                  
+                  stopifnot(inherits(data, "data.frame"),is.character(tableName), 
+                            identical(length(tableName), 1L), 
+                            is.logical(checkColNames), 
+                            identical(length(checkColNames), 1L))
+                  if(!dbExistsTable(private$conn, tableName)){
+                    dbWriteTable(private$conn, tableName, data)
+                    return(self)
+                  }
+                  if(!checkColNames){
+                    dbWriteTable(private$conn, tableName, data)
+                    return(self)
+                  }
+                  dataValidate <- self$importDataset(limit = 1L)
+                  nonMatchingColNames <- is.na(match(names(data), 
+                                                     names(dataValidate)))
+                  if(any(nonMatchingColNames)){
+                    stop(sprintf("Some columns could not be found in the table: '%s'",
+                                 paste(names(data)[nonMatchingColNames], 
+                                       collapse = "', '")), call. = FALSE)
+                  }
+                  if(identical(length(dataValidate, nonMatchingColNames))){
+                    dbWriteTable(private$conn, tableName, data)
+                    return(self)
+                  }
+                  nrowData <- nrow(data)
+                  dataList <- lapply(names(dataValidate), function(colName){
+                    colId <- match(colName, names(data))
+                    if(!is.na(colId)){
+                      return(data[[colId]])
+                    }
+                    col <- dataValidate[[colName]]
+                    if(any(class(col) == "POSIXt")){
+                      return(rep(NA_character_, nrowData))
+                    }
+                    switch(class(col), 
+                           logical = {
+                             return(logical(nrowData))
+                           },
+                           integer = {
+                             return(rep(NA_integer_, nrowData))
+                           },
+                           numeric = {
+                             return(rep(NA_real_, nrowData))
+                           },
+                           character = {
+                             return(rep(NA_character_, nrowData))
+                           },
+                           {
+                             stop(sprintf("Unknown data type: '%s' of column: '%s'", 
+                                          class(col), colName), call. = FALSE)
+                           }
+                    )
+                  })
+                  names(dataList) <- names(dataValidate)
+                  dbWriteTable(private$conn, tableName, as_tibble(dataList))
+                  return(self)
+                },
                 importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
                                          innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL){
                   # Import the data corresponding to the table name provided from the database by 

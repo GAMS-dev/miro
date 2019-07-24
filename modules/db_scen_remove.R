@@ -82,6 +82,19 @@ closeScenario <- function(){
     hideEl(session, "#graph-in_" %+% i)
     showEl(session, "#data-in_" %+% i)
   })
+  # load external data
+  lapply(seq_along(externalInputData), function(i){
+    if(length(externalInputData[[i]]) && nrow(externalInputData[[i]])){
+      modelInputData[[i]] <<- externalInputData[[i]]
+      
+      if(length(isolate(rv[[paste0("in_", i)]]))){
+        rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1L
+      }else{
+        rv[[paste0("in_", i)]] <<- 1L
+      }
+    }
+  })
+  
   # reset model output data
   renderOutputData()
   activeScenario    <<- NULL

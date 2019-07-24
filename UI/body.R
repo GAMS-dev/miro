@@ -328,7 +328,7 @@ tabItemList <- list(
           )
   ),
   tabItem(tabName = "scenarios",
-          tags$div(id = "scen-tab-view", style = "display:none;",
+          tags$div(id = "scen-tab-view", style = if(identical(config$defCompMode, "split")) "display:none;" else "",
                    tabsetPanel(id="scenTabset"),
                    tags$div(id = "no-scen", lang$nav$scen$noScen, 
                             tags$div(style = "margin: 10px;",
@@ -339,7 +339,7 @@ tabItemList <- list(
                    )
           ),
           fluidRow(
-            tags$div(id = "scen-split-view",
+            tags$div(id = "scen-split-view", style = if(identical(config$defCompMode, "split")) "" else "display:none;",
                      box(width = 6, solidHeader = TRUE, status="primary", title = 
                            tagList(uiOutput("title_2", inline = T), 
                                    tags$div(style = "float: right;", 

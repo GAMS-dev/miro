@@ -26,6 +26,12 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$runLocal(inputData))
   },
+  interrupt = function(){
+    if(private$remote){
+      return(private$interruptRemote())
+    }
+    return(private$interruptLocal())
+  },
   pingProcess = function(){
     if(!length(private$process)){
       stop("Process not started", call. = FALSE)
@@ -81,8 +87,8 @@ Worker <- R6Class("Worker", public = list(
     pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
     writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
     
-    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), args = c(private$metadata$modelGmsName, 
-                                                                   "pf", pfFilePath), 
+    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), 
+                                   args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
                                    stdout = "|", windows_hide_window = TRUE)
     return(self)
   },
@@ -107,6 +113,8 @@ Worker <- R6Class("Worker", public = list(
                             use_pf_file = TRUE, listen = paste0(private$metadata$modelName, ".lst"),
                             data = upload_file(zipFilePath, 
                                                type = 'application/zip')),
+                authenticate(private$metadata$user, private$metadata$password),
+                add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
                 timeout(2L))
     
     if(identical(status_code(ret), 201L)){
@@ -117,8 +125,23 @@ Worker <- R6Class("Worker", public = list(
 
     return(self)
   },
+  retrieveRemoteLog = function(){
+    ret <- GET(paste0(private$metadata$url, "/logs/", private$process),
+               authenticate(private$metadata$user, private$metadata$password),
+               add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
+               timeout(2L))
+    if(!identical(status_code(ret), 200L)){
+      stop(content(retFull)$message, call. = FALSE)
+    }
+    return(content(retFull)$message)
+  },
   pingLocalProcess = function(){
-    private$log <- private$process$read_output()
+    tryCatch(
+      private$log <- private$process$read_output(),
+    error = function(e){
+      private$log <- ""
+    })
+    
     exitStatus  <- private$process$get_exit_status()
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
@@ -127,13 +150,6 @@ Worker <- R6Class("Worker", public = list(
       private$status <- exitStatus
     }
     return(private$updateLog)
-  },
-  retrieveRemoteLog = function(){
-    ret <- GET(paste0(private$metadata$url, "/logs/", private$process))
-    if(!identical(status_code(ret), 200L)){
-      stop(content(retFull)$message, call. = FALSE)
-    }
-    return(content(retFull)$message)
   },
   pingRemoteProcess = function(){
     if(private$wait > 0L){
@@ -156,7 +172,10 @@ Worker <- R6Class("Worker", public = list(
       }
       return(private$updateLog)
     }
-    ret <- DELETE(paste0(private$metadata$url, "/unread_logs/", private$process), timeout(2L))
+    ret <- DELETE(paste0(private$metadata$url, "/unread_logs/", private$process), 
+                  authenticate(private$metadata$user, private$metadata$password),
+                  add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
+                  timeout(2L))
     statusCode <- status_code(ret)
     if(identical(statusCode, 200L)){
       responseContent <- content(ret)
@@ -202,12 +221,54 @@ Worker <- R6Class("Worker", public = list(
     on.exit(unlink(tmp))
     
     ret <- GET(url = paste0(private$metadata$url, "/result/", private$process), 
-               write_disk(tmp), timeout(2L))
+               write_disk(tmp), authenticate(private$metadata$user, private$metadata$password),
+               add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
+               timeout(2L))
     
     if(identical(status_code(ret), 200L)){
       unzip(tmp, exdir = private$workDir)
     }else{
       return(content(ret)$message)
+    }
+    return(0L)
+  },
+  interruptLocal = function(){
+    if(!length(private$process)){
+      return("Process not started")
+    }
+    errMsg <- NULL
+    tryCatch({
+      private$process$kill_tree()
+    }, error= function(e){
+      errMsg <<- "error"
+    })
+    if(!is.null(errMsg)){
+      errMsg <- NULL
+      if(private$metadata$serverOS == 'windows'){
+        run(command = 'taskkill', args = c("/F", "/PID", private$process$get_pid(), "/T"), 
+            windows_hide_window = TRUE)
+      }else if(private$metadata$serverOS %in% c('linux', 'osx')){
+        run(command = 'kill', args = c("-SIGKILL", -private$process$get_pid()))
+      }else{
+        stop(sprintf("Operating system: '%s' not supported.", private$metadata$serverOS), 
+             call. = FALSE)
+      }
+    }
+    return(0L)
+  },
+  interruptRemote = function(){
+    if(!length(private$process)){
+      return("Process not started")
+    }
+    
+    ret <- DELETE(url = paste0(private$metadata$url, "/jobs/", private$process), 
+                  authenticate(private$metadata$user, private$metadata$password),
+                  add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
+                  timeout(2L))
+    
+    if(!identical(status_code(ret), 200L)){
+      stop(sprintf("Problems interrupting remote process (status code: '%s'). Error message: '%s'",
+                   status_code(ret), content(ret)$message), call. = FALSE)
     }
     return(0L)
   }
