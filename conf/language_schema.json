@@ -4434,6 +4434,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "multiple":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "hcube":{ 
                   "type":"string",
                   "minLength":1,

@@ -817,7 +817,8 @@ observeEvent({input$widget_type
                                    choices = currentConfig$choices,
                                    aliases = currentConfig$aliases,
                                    selected = currentConfig$selected,
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   noHcube = identical(currentConfig$noHcube, TRUE),
+                                   multiple = identical(currentConfig$multiple, TRUE)) 
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            
            staticChoiceInput <- tagList(
@@ -877,6 +878,15 @@ observeEvent({input$widget_type
                       selectInput("dd_default", lang$adminMode$widgets$dropdown$default, choices = rv$widgetConfig$choices, 
                                   selected = rv$widgetConfig$selected),
                       tags$div(class = "shiny-input-container",
+                               tags$label(class = "cb-label", "for" = "widget_multiple", 
+                                          lang$adminMode$widgets$dropdown$multiple),
+                               tags$div(
+                                 tags$label(class = "checkbox-material", 
+                                            checkboxInput("widget_multiple", value = rv$widgetConfig$multiple, 
+                                                          label = NULL)
+                                            ))
+                               ),
+                      tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "widget_hcube", 
                                           lang$adminMode$widgets$dropdown$hcube),
                                tags$div(
@@ -895,7 +905,7 @@ observeEvent({input$widget_type
                choices <- setNames(rv$widgetConfig$choices, rv$widgetConfig$aliases)
              }
              selectInput("dropdown_preview", rv$widgetConfig$label, choices = choices, 
-                         selected = rv$widgetConfig$selected)
+                         selected = rv$widgetConfig$selected, multiple = rv$widgetConfig$multiple)
            })
          },
          checkbox = {
@@ -1235,6 +1245,9 @@ observeEvent(input$widget_label, {
     rv$widgetConfig$label <<- input$widget_label
   else
     rv$widgetConfig$label <<- NULL
+})
+observeEvent(input$widget_multiple, {
+  rv$widgetConfig$multiple <<- input$widget_multiple
 })
 observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube

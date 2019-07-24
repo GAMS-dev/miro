@@ -963,6 +963,7 @@
           "selector": "Static choices?"
         },
         "default": "Default value",
+        "multiple": "Should multiple items be selectable?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{

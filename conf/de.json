@@ -963,6 +963,7 @@
           "selector": "Statische Auswahlmöglichkeiten?"
         },
         "default": "Standardwert",
+        "multiple": "Sollen mehrere Elemente auswählbar sein?",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "checkbox":{
