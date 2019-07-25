@@ -702,7 +702,7 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -759,7 +759,7 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -811,7 +811,12 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "emptyPerm":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -903,7 +908,7 @@
               "minLength":1,
               "required":true
             },
-            "scenExits":{  
+            "scenExists":{  
               "type":"string",
               "minLength":1,
               "required":true

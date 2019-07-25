@@ -186,7 +186,7 @@ observeEvent(input$btEditMeta, {
   showEditMetaDialog(activeScen$getMetadata(c(uid = "uid", sname = "sname", stime = "stime", stag = "stag",
                                               readPerm = "readPerm", writePerm = "writePerm", execPerm = "execPerm"), noPermFields = FALSE), 
                      config$activateModules$sharedScenarios, allowAttachments = config$activateModules$attachments, 
-                     attachmentMetadata = attachmentMetadata, attachAllowExec = attachAllowExec)
+                     attachmentMetadata = attachmentMetadata, attachAllowExec = attachAllowExec, ugroups = c(uid, csv2Vector(ugroups)))
 })
 
 observeEvent(input$btUpdateMeta, {
@@ -226,9 +226,21 @@ observeEvent(input$btUpdateMeta, {
       showHideEl(session, "#editMetaNameExists", 6000)
       return()
     }
-    newReadPerm  <- character(0L)
-    newWritePerm <- character(0L)
-    newExecPerm  <- character(0L)
+    newReadPerm  <- input$editMetaReadPerm
+    newWritePerm <- input$editMetaWritePerm
+    newExecPerm  <- input$editMetaExecPerm
+    
+    if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
+      enableEl(session, "#btUpdateMeta")
+      flog.debug("Empty permissions entered.")
+      showHideEl(session, "#editMetaEmptyPerm", 6000)
+      return()
+    }
+    if(any(!c(newReadPerm, newWritePerm, newExecPerm) %in% c(uid, csv2Vector(ugroups)))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to temper with access permissions!")
+      return()
+    }
     tryCatch({
       activeScen$updateMetadata(scenName, isolate(input$editMetaTags), 
                                 newReadPerm, newWritePerm, newExecPerm)
@@ -242,6 +254,7 @@ observeEvent(input$btUpdateMeta, {
       errMsg <<- character(1L)
     })
     if(!is.null(errMsg)){
+      enableEl(session, "#btUpdateMeta")
       showHideEl(session, "#editMetaError")
       return()
     }

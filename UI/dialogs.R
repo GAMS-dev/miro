@@ -34,7 +34,7 @@ showNewScenDialog <- function(tmpScenName){
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
     tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
-             lang$nav[[modeDescriptor]]$scenExits),
+             lang$nav[[modeDescriptor]]$scenExists),
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav[[modeDescriptor]]$cancelButton),
@@ -448,7 +448,9 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaBadName", 
              lang$nav[[modeDescriptor]]$badName),
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
-             lang$nav[[modeDescriptor]]$scenExits),
+             lang$nav[[modeDescriptor]]$scenExists),
+    tags$div(class = "gmsalert gmsalert-error", id = "editMetaEmptyPerm",
+             lang$nav[[modeDescriptor]]$emptyPerm),
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
              lang$nav[[modeDescriptor]]$errMsg),
     tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
@@ -478,8 +480,7 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
       if(sharedScen && length(ugroups)){
         readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
         writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
-        execPerm <- csv2Vector(metadata[["writePerm"]][[1]])
-        ugroups   <- csv2Vector(ugroups)
+        execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
         tagList(
           selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
                          ugroups, selected = readPerm,
