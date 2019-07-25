@@ -739,7 +739,7 @@
         "label": "Background color of row and column headers in pivot tables."
       },
       "mirologfile":{
-        "label": "Enter the name of the MIRO log file. Leave the field empty if you do not have a MIRO log file."
+        "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
       },
       "saveDuration":{
         "label": "Duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode."
@@ -1063,7 +1063,7 @@
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "Select which GAMS symbol to plot",
         "chartTitle": "Choose a title for your chart",
-        "height": "Choose a height for your chart (px)",
+        "height": "Choose a height for your chart (px) (no live preview available)",
         "tool": "Select the charting tool you want to use",
         "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
       },

@@ -739,7 +739,7 @@
         "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
       },
       "mirologfile":{
-        "label": "Geben Sie den Namen der MIRO Log-Datei ein. Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
+        "label": "Geben Sie den Namen der MIRO Log-Datei ein (mindestens 3 Zeichen). Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
       },
       "saveDuration":{
         "label": "Dauer, die die GAMS-Logs und lst-Dateien in der Datenbank gespeichert werden sollen (in Tagen). 0 bedeutet, dass Dateien überhaupt nicht gespeichert werden, 999 bedeutet, dass die Dateien nie gelöscht werden sollen. Diese Einstellung wird ignoriert, wenn das Anhangsmodul nicht aktiv ist. Beachten Sie, dass dies derzeit nur im MIRO-Basismodus unterstützt wird."
@@ -1063,7 +1063,7 @@
         "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
         "gamsSymbols": "Wählen Sie aus, welches GAMS-Symbol geplottet werden soll",
         "chartTitle": "Wählen Sie einen Titel für Ihr Diagramm",
-        "height": "Wählen Sie eine Höhe für Ihr Diagramm (px)",
+        "height": "Wählen Sie eine Höhe für Ihr Diagramm (px) (keine Live-Vorschau verfügbar)",
         "tool": "Wählen Sie das Charting-Tool aus, das Sie verwenden möchten",
         "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte"]
       },

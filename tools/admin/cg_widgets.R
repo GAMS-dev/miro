@@ -815,10 +815,10 @@ observeEvent({input$widget_type
            rv$widgetConfig <- list(widgetType = "dropdown",
                                    alias = widgetAlias,
                                    choices = currentConfig$choices,
-                                   aliases = currentConfig$aliases,
                                    selected = currentConfig$selected,
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    multiple = identical(currentConfig$multiple, TRUE)) 
+           rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            
            staticChoiceInput <- tagList(
@@ -1322,10 +1322,14 @@ observeEvent(input$slider_ticks, {
     return()
   rv$widgetConfig$ticks <<- input$slider_ticks
 })
-
-observeEvent(input$dd_choices, {
+observeEvent(input$dd_choices, ignoreNULL = FALSE, {
   rv$widgetConfig$choices <<- input$dd_choices
-  updateSelectInput(session, "dd_default", choices = input$dd_choices)
+  if(!length(input$dd_choices)){
+    choicestmp <- character(0)
+  }else{
+    choicestmp <- input$dd_choices
+  }
+  updateSelectInput(session, "dd_default", choices = choicestmp)
 })
 observeEvent(input$dd_choice_dep, {
   if(identical(input$dd_choice_dep, "")){
