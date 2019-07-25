@@ -240,7 +240,6 @@ pipeline {
                                        set statusbar visible of container window to false
                                        set the bounds of container window to {400, 200, 1200, 710}
                                        set theViewOptions to the icon view options of container window
-                                       set background picture of theViewOptions to file ".bg.png"
                                        set arrangement of theViewOptions to not arranged
                                        set icon size of theViewOptions to 144  
                                        set position of item "'${APP_NAME}'" of container window to {200, 280} 
