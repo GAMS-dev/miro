@@ -242,28 +242,27 @@ if(is.null(errMsg)){
   if(config$activateModules$remoteExecution){
     plan(multiprocess)
   }
-  
+  rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
+  for(file in rendererFiles){
+    if(!file.access("./modules/renderers/" %+% file, mode = 4)){
+      tryCatch({
+        source("./modules/renderers/" %+% file)
+      }, error = function(e){
+        errMsg <<- paste(errMsg, 
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
+                                 file, e), sep = "\n")
+      }, warning = function(w){
+        errMsg <<- paste(errMsg, 
+                         sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
+                                 file, w), sep = "\n")
+      })
+    }else{
+      errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
+    }
+  }
   if(debugMode){
     customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
                                     currentModelDir), customRendererDirName, .Platform$file.sep)
-    rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
-    for(file in rendererFiles){
-      if(!file.access("./modules/renderers/" %+% file, mode = 4)){
-        tryCatch({
-          source("./modules/renderers/" %+% file)
-        }, error = function(e){
-          errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                   file, e), sep = "\n")
-        }, warning = function(w){
-          errMsg <<- paste(errMsg, 
-                           sprintf("Some error occurred while sourcing renderer file '%s'. Error message: '%s'.", 
-                                   file, w), sep = "\n")
-        })
-      }else{
-        errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
-      }
-    }
     for(customRendererDir in customRendererDirs){
       rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
       lapply(rendererFiles, function(file){
