@@ -169,7 +169,6 @@ if(is.null(errMsg)){
     if(!length(ugroups) || grepl("^\\s*$", ugroups)){
       errMsg <- paste(errMsg, "No user groups specified (shinyproxy).", sep = "\n")
     }
-    options(shiny.port = 3838, shiny.host = "0.0.0.0")
   }else{
     if(length(uid) != 1 || !is.character(uid)){
       errMsg <- "Invalid user ID specified."

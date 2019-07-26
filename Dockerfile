@@ -115,15 +115,19 @@ RUN R -e "install.packages(c('rematch', 'formatR', 'ps', 'clipr', 'cellranger', 
 USER miro
 WORKDIR $APP
 ENV R_GAMS_SYSDIR="/home/miro/gams"
-RUN mkdir /home/miro/gams
-COPY resources/miro /home/miro/gams
+COPY resources/docker /home/miro/gams
 
 # copy MIRO to the image
-RUN mkdir /home/miro/app
-COPY app.R conf global.R JS LICENSE modules R tools/paver UI www /home/miro/app/
+COPY app.R global.R LICENSE /home/miro/app/
+COPY conf /home/miro/app/conf
+COPY JS /home/miro/app/JS
+COPY modules /home/miro/app/modules
+COPY R /home/miro/app/R
+COPY tools/paver /home/miro/app/tools/paver
+COPY UI /home/miro/app/UI
+COPY www /home/miro/app/www
 
-WORKDIR /
 EXPOSE 3838
 
-CMD ["R", "-e", "shiny::runApp('/home/miro/app')"]
+CMD ["R", "-e", "shiny::runApp('/home/miro/app', port = 3838, host = '0.0.0.0')"]
 

@@ -1102,24 +1102,35 @@ setDbConfig <- function(configFn){
   errMsg <- NULL
   
   envNameDbDataMap <- list(
-    list(envVar = 'MIRO_DB_DRIVER', keyName = 'driver', desc = 'database driver'),
+    list(envVar = 'MIRO_DB_TYPE', keyName = 'type', desc = 'database type', default = 'postgres'),
+    list(envVar = 'MIRO_DB_DRIVER', keyName = 'driver', desc = 'database driver', default = 'PostgreSQL Unicode'),
     list(envVar = 'MIRO_DB_USERNAME', keyName = 'username', desc = 'database username'),
     list(envVar = 'MIRO_DB_PASSWORD', keyName = 'password', desc = 'database password'),
     list(envVar = 'MIRO_DB_NAME', keyName = 'name', desc = 'database name'),
     list(envVar = 'MIRO_DB_HOST', keyName = 'host', desc = 'database host'),
-    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port'))
+    list(envVar = 'MIRO_DB_PORT', keyName = 'port', desc = 'database port', numeric = TRUE, default = 5432))
   
   for(i in seq_along(envNameDbDataMap)){
     metaData <- envNameDbDataMap[[i]]
                 
     data <- Sys.getenv(metaData$envVar, unset = NA)
     if(is.na(data)){
-      if(!length(config[[metaData$keyName]])){
+      if(length(metaData$default)){
+        config[[metaData$keyName]] <- metaData$default
+      }else{
         errMsg <- paste(errMsg, paste0("The ", metaData$desc , " could not be identified. Please make sure you specify a valid ", 
                                        metaData$desc, ":\nThe ", metaData$desc, " should be stored in the environment variable: '", metaData$envVar, "'."),
                         sep = "\n")
       }
     }else{
+      if(identical(metaData$numeric, TRUE)){
+        data <- suppressWarnings(as.numeric(data))
+        if(is.na(data)){
+          errMsg <- paste(errMsg, paste0("The ", metaData$desc , " must be numeric."),
+                          sep = "\n")
+          next
+        }
+      }
       config[[metaData$keyName]] <- data
     }
   }
