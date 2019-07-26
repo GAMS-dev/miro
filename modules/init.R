@@ -245,7 +245,6 @@ if(is.null(errMsg)){
       if(!is.null(widgetConfig$externalData)){
         externalInputConfig[[i]]     <- widgetConfig$externalData
         names(externalInputConfig)[i] <- names(modelIn)[i]
-        modelIn[[i]]$noImport      <- TRUE
         widgetConfig$externalData  <- NULL
       }
       if(!is.null(widgetConfig[["readonly"]])){
@@ -774,7 +773,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                  colSubset <- c(tolower(ddownDep[[name]]$shared), tolower(ddownDep[[name]]$aliases))
                }
                externalInputConfig[[i]] <<- list(colSubset = colSubset)
-               modelIn[[i]]$noImport <<- TRUE
              }
              # in case dropdown menu has aliases, validate that they are of matching length as choices
              if(!is.null(aliases)){

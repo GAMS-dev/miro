@@ -116,7 +116,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
     return()
   }
-  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% modelInToImport]
+  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% names(modelInToImport)]
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form
