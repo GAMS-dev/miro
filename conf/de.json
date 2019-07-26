@@ -765,10 +765,10 @@
         "label": "Szenario-Sharing zwischen verschiedenen Benutzern aktivieren"
       },
       "actLog":{
-        "label": "Log-Datei in der Benutzeroberfläche anzeigen"
+        "label": "Log Datei in der Benutzeroberfläche anzeigen"
       },
       "actLst":{
-        "label": "Lst-Datei in der Benutzeroberfläche anzeigen"
+        "label": "Listing (lst) Datei in der Benutzeroberfläche anzeigen"
       },
       "actAttach":{
         "title": "Können Dateien in jedem Format sein. MIRO unterscheidet zwei Arten von Anhängen: Anhänge, die von Ihrem GAMS-Modell gesehen und gelesen werden können, und Dateien, die nicht sichtbar sind.",
@@ -800,8 +800,8 @@
     "tables":{
       "ui":{
         "title": "Allgemeine Tabelleneinstellungen",
-        "tableType": "Welchen Tabellentyp möchten Sie konfigurieren?",
-        "choices": ["Eingabetabelle", "Ausgabetabelle"]
+        "input": "Eingabetabellen",
+        "output": "Ausgabetabellen"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
@@ -848,9 +848,13 @@
     "widgets":{
       "ui":{
         "title":"Eingabe-Widgets konfigurieren",
-        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
-        "symbolType": "Zu konfigurierender Symboltyp",
+        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",,
+        "gams": "Symbol",
+        "go": "Neue GAMS Option",
+        "dd": "Neuer double-dash Parameter",
         "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
+        "noSymbolMsg": "Es wurde kein GAMS symbol für die Verwendung mit MIRO markiert",
+        "noWidgetMsg": "Es wurde noch kein Widget konfiguriert",
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter",
@@ -903,7 +907,8 @@
         "val41": "Kein Slider Maximum gefunden!",
         "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
         "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
-        "val44": "Es muss ein Seperator angegeben werden!"
+        "val44": "Es muss ein Seperator angegeben werden!",
+        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein."
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
@@ -1245,7 +1250,7 @@
       },
       "js":{
         "extraCLargs":{
-            "key": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
+            "name": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
             "value": "Wert des Kommandozeilenparameters (keine Anführungszeichen verwenden)"
         },
         "addInputGroup":{

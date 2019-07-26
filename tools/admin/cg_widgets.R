@@ -59,7 +59,8 @@ if(length(widgetSymbols)){
   updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   noWidgetSymbols <- FALSE
 }else{
-  updateRadioButtons(session, "widget_symbol_type", choices = langSpecificUI$symbolType[-1])
+  showEl(session, "#noSymbolMsg")
+  showEl(session, "#noWidgetMsg")
   noWidgetSymbols <- TRUE
 }
 
@@ -316,13 +317,14 @@ validateWidgetConfig <- function(widgetJSON){
 
 observeEvent({input$widget_symbol
   rv$widget_symbol}, {
-  req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L, 
-      identical(input$widget_symbol_type, "gams"))
-  
-  hideEl(session, "#noWidgetConfigMsg")
-  hideEl(session, "#optionConfigMsg")
-  hideEl(session, "#doubledashConfigMsg")
-  
+    req(length(input$widget_symbol) > 0L, nchar(input$widget_symbol) > 0L, 
+        identical(input$widget_symbol_type, "gams"))
+    hideEl(session, "#noSymbolMsg")
+    hideEl(session, "#noWidgetMsg")
+    hideEl(session, "#noWidgetConfigMsg")
+    hideEl(session, "#optionConfigMsg")
+    hideEl(session, "#doubledashConfigMsg")
+    
   if(input$widget_symbol %in% scalarInputSym){
     currentWidgetSymbolName <<- input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
@@ -378,6 +380,8 @@ observeEvent(input$widget_dd, {
 observeEvent(input$widget_symbol_type, {
   if(input$widget_symbol_type %in% c("dd", "go")){
     hideEl(session, "#optionConfigMsg")
+    hideEl(session, "#noSymbolMsg")
+    hideEl(session, "#noWidgetMsg")
     hideEl(session, "#doubledashConfigMsg")
     updateSelectInput(session, "widget_type", choices = langSpecificWidget$widgetOptionsAll)
     if(!length(latest_widget_symbol_type)){
@@ -408,6 +412,8 @@ observeEvent(input$widget_symbol_type, {
     latest_widget_symbol_type <<- input$widget_symbol_type
     return()
   }else if(!length(widgetSymbols)){
+    showEl(session, "#noSymbolMsg")
+    showEl(session, "#noWidgetMsg")
     currentWidgetSymbolName <<- character(0L)
     latest_widget_symbol_type <<- input$widget_symbol_type
     return()
@@ -416,7 +422,7 @@ observeEvent(input$widget_symbol_type, {
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
 output$hot_preview <- renderRHandsontable({
-  req(input$widget_symbol %in% names(inputSymHeaders))
+  req(identical(input$widget_symbol_type, "gams"), input$widget_symbol %in% names(inputSymHeaders))
   headers_tmp <- inputSymHeaders[[input$widget_symbol]]
   data        <- data.frame(matrix(c(letters[1:10], 
                                      replicate(length(headers_tmp) - 1L,
@@ -445,7 +451,7 @@ output$dt_preview <- renderDT({
   data        <- data.frame(matrix(c(letters[1:10], 
                                      replicate(length(headers_tmp) - 1L,
                                                1:10)), 10))
-  dtOptions <- list(editable = !identical(input$readonly, 
+  dtOptions <- list(editable = !identical(input$table_readonly, 
                                           TRUE),
                     colnames = headers_tmp)
   if(!identical(rv$widgetConfig$bigData, TRUE)){
@@ -1486,7 +1492,6 @@ observeEvent(input$saveWidget, {
              })
     }
   }
-  print(rv$widgetConfig)
   errMsg <- validateWidgetConfig(rv$widgetConfig)
   if(nchar(errMsg)){
     showHideEl(session, "#widgetValidationErr", 5000L, errMsg)
@@ -1521,6 +1526,8 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
       }
       symbolDDNeedsUpdate <- TRUE
     }else{
+      hideEl(session, "#noSymbolMsg")
+      hideEl(session, "#noWidgetMsg")
       hideEl(session, "#noWidgetConfigMsg")
       hideEl(session, "#optionConfigMsg")
       hideEl(session, "#doubledashConfigMsg")
@@ -1532,7 +1539,8 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   }
   if(noWidgetSymbols){
-    updateRadioButtons(session, "widget_symbol_type", choices = langSpecificUI$symbolType)
+    hideEl(session, "#noSymbolMsg")
+    hideEl(session, "#noWidgetMsg")
     noWidgetSymbols <<- FALSE
   }
   removeModal()
@@ -1563,12 +1571,15 @@ observeEvent(input$deleteWidgetConfirm, {
   }
   removeModal()
   showHideEl(session, "#widgetUpdateSuccess", 4000L)
+  hideEl(session, "#noSymbolMsg")
+  hideEl(session, "#noWidgetMsg")
   hideEl(session, "#noWidgetConfigMsg")
   hideEl(session, "#optionConfigMsg")
   hideEl(session, "#doubledashConfigMsg")
   if(!length(widgetSymbols)){
     if(!noWidgetSymbols){
-      updateRadioButtons(session, "widget_symbol_type", choices = langSpecificUI$symbolType[-1])
+      showEl(session, "#noSymbolMsg")
+      showEl(session, "#noWidgetMsg")
       noWidgetSymbols <<- TRUE
     }
     currentWidgetSymbolName <<- character(0L)

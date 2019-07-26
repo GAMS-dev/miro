@@ -768,7 +768,7 @@
         "label": "Show log file in UI"
       },
       "actLst":{
-        "label": "Show lst file in UI"
+        "label": "Show listing (lst) file in UI"
       },
       "actAttach":{
         "title": "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
@@ -800,8 +800,8 @@
     "tables":{
       "ui":{
         "title": "General table settings",
-        "tableType": "Which table type would you like to configure?",
-        "choices": ["input table", "output table"]
+        "input": "input table",
+        "output": "output table"
       },
       "hot":{
         "height": "Height of input tables (in px)",
@@ -849,8 +849,12 @@
       "ui":{
         "title":"Configure input widgets",
         "widgetUpdateSuccess": "Widget configuration was updated successfully",
-        "symbolType": "Symbol type to configure",
+        "gams": "Symbol",
+        "go": "New GAMS option",
+        "dd": "New double-dash parameter",
         "choices": ["Symbol", "New GAMS option", "New double dash parameter"],
+        "noSymbolMsg": "No GAMS symbol has been tagged for use in MIRO",
+        "noWidgetMsg": "No widget has been configured yet",
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
@@ -903,7 +907,8 @@
         "val41": "No maximum slider value found!",
         "val42": "The minimum value must be lower than the maximum value!",
         "val43": "For a slider range 2 default values need to be defined!",
-        "val44": "A separator must be provided!"
+        "val44": "A separator must be provided!",
+        "val45": "The name of the command line parameter must be at least 1 character long."
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
@@ -1245,7 +1250,7 @@
       },
       "js":{
         "extraCLargs":{
-          "key": "Name of the command line argument (e.g. limrow or --mydoubledash)",
+          "name": "Name of the command line argument (e.g. limrow or --mydoubledash)",
           "value": "Value of the command line argument (do not use quotation marks)"
         },
         "addInputGroup":{

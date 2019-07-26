@@ -3592,20 +3592,14 @@
                   "minLength":1,
                   "required":true
                 },
-                "tableType":{ 
+                "input":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "choices":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":2,
-                  "maxItems":2,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -3837,7 +3831,17 @@
                   "minLength":1,
                   "required":true
                 },
-                "symbolType":{ 
+                "gams":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "go":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dd":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3851,6 +3855,16 @@
                       "type":"string",
                       "minLength": 1
                   },
+                  "required":true
+                },
+                "noSymbolMsg":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noWidgetMsg":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
                 "noWidgetConfigMsg":{ 
@@ -4111,6 +4125,11 @@
                   "required":true
                 },
                 "val44":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val45":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5859,7 +5878,7 @@
                   "additionalProperties":false,
                   "required":true,
                   "properties":{ 
-                    "key":{ 
+                    "name":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true

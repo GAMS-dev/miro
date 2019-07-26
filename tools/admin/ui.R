@@ -181,51 +181,60 @@ body_admin <- dashboardBody({
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
+                    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                              tags$div(style = "padding-bottom: 20px;",
-                                      radioButtons("widget_symbol_type", label = lang$adminMode$widgets$ui$symbolType,
-                                                   choices = langSpecificUI$symbolType, 
-                                                   selected = "gams", inline = TRUE)),
-                             tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      tabsetPanel(id="widget_symbol_type",
+                                                  tabPanel(lang$adminMode$widgets$ui$gams, value = "gams"),
+                                                  tabPanel(lang$adminMode$widgets$ui$go, value = "go"),
+                                                  tabPanel(lang$adminMode$widgets$ui$dd, value = "dd")
+                                      )),
+                             tags$div(class = "col-sm-6",
+                                      tags$div(id = "noSymbolMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
                                       text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
-                                      lang$adminMode$widgets$ui$noWidgetConfigMsg),
-                             tags$div(id = "optionConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                               lang$adminMode$widgets$ui$noSymbolMsg),
+                                      tags$div(id = "noWidgetMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
                                       text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
-                                      lang$adminMode$widgets$ui$optionConfigMsg),
-                             tags$div(id = "doubledashConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                               lang$adminMode$widgets$ui$noWidgetMsg),
+                                      tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
                                       text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
-                                      lang$adminMode$widgets$ui$doubledashConfigMsg),
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      conditionalPanel(
-                                        condition = "input.widget_symbol_type == 'gams'",
-                                        tags$div(style = "max-width:400px;",
-                                                 selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
-                                                             choices = c()))
-                                      ),
-                                      conditionalPanel(
-                                        condition = "input.widget_symbol_type == 'go'",
-                                        tags$div(style = "max-width:400px;",
-                                                 textInput("widget_go", lang$adminMode$widgets$ui$widgetGo))
-                                      ),
-                                      conditionalPanel(
-                                        condition = "input.widget_symbol_type == 'dd'",
-                                        tags$div(style = "max-width:400px;",
-                                                 textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd))
-                                      ),
-                                      tags$div(style = "max-width:400px;",
-                                               selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c())),
-                                      tags$div(id = "widget_options"),
-                                      tags$div(style = "height:100px;")
-                             )
-                    ),
-                    tags$div(class = "col-sm-6",
-                             uiOutput("widget_preview"),
-                             rHandsontableOutput("hot_preview"),
-                             DTOutput("dt_preview"),
-                             tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
-                                      actionButton("deleteWidget", "Delete", icon("trash-alt")),
-                                      actionButton("saveWidget", "Save", icon("save")))
-                    )
+                                               lang$adminMode$widgets$ui$noWidgetConfigMsg),
+                                      tags$div(id = "optionConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                               lang$adminMode$widgets$ui$optionConfigMsg),
+                                      tags$div(id = "doubledashConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
+                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                               lang$adminMode$widgets$ui$doubledashConfigMsg),
+                                      tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                               conditionalPanel(
+                                                 condition = "input.widget_symbol_type == 'gams'",
+                                                 tags$div(style = "max-width:400px;",
+                                                          selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
+                                                                      choices = c()))
+                                               ),
+                                               conditionalPanel(
+                                                 condition = "input.widget_symbol_type == 'go'",
+                                                 tags$div(style = "max-width:400px;",
+                                                          textInput("widget_go", lang$adminMode$widgets$ui$widgetGo))
+                                               ),
+                                               conditionalPanel(
+                                                 condition = "input.widget_symbol_type == 'dd'",
+                                                 tags$div(style = "max-width:400px;",
+                                                          textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd))
+                                               ),
+                                               tags$div(style = "max-width:400px;",
+                                                        selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c())),
+                                               tags$div(id = "widget_options"),
+                                               tags$div(style = "height:100px;")
+                                      )
+                             ),
+                             tags$div(class = "col-sm-6",
+                                      uiOutput("widget_preview"),
+                                      rHandsontableOutput("hot_preview"),
+                                      DTOutput("dt_preview"),
+                                      tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
+                                               actionButton("deleteWidget", "Delete", icon("trash-alt")),
+                                               actionButton("saveWidget", "Save", icon("save")))
+                             ))
                 )
               )
       ),
@@ -233,17 +242,31 @@ body_admin <- dashboardBody({
               fluidRow(
                 box(title = lang$adminMode$general$ui$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
-                                      tags$div(id = "general_wrapper"),
-                                      tags$div(style = "height:100px;")
-                             )
-                    ),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
-                                      tags$div(id = "general_wrapper2"),
-                                      tags$div(style = "height:100px;")
-                             )      
+                    tabsetPanel(
+                      tabPanel("Interface", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                                     tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                                              tags$div(id = "interface_wrapper1"),
+                                                              tags$div(style = "height:100px;")
+                                                     )
+                      ),
+                      tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                               tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                        tags$div(id = "interface_wrapper2"),
+                                        tags$div(style = "height:100px;")
+                               )
+                      )),
+                      tabPanel("Modules", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                                   tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                                            tags$div(id = "module_wrapper1"),
+                                                            tags$div(style = "height:100px;")
+                                                   )      
+                      ),
+                      tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                               tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                        tags$div(id = "module_wrapper2"),
+                                        tags$div(style = "height:100px;")
+                               )      
+                      ))
                     )
                 )
               )
@@ -252,25 +275,25 @@ body_admin <- dashboardBody({
               fluidRow(
                 box(title = lang$adminMode$tables$ui$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
-                    tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
-                                      tags$div(style = "padding-bottom: 20px;",
-                                               radioButtons("table_type", label = lang$adminMode$tables$ui$tableType, inline = TRUE,
-                                                            choices = langSpecificUI$tableType, 
-                                                            selected = "hot")),
+                    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                             tags$div(style = "padding-bottom: 20px;",
+                                      tabsetPanel(id="table_type",
+                                                  tabPanel(lang$adminMode$tables$ui$input, value = "hot"),
+                                                  tabPanel(lang$adminMode$tables$ui$output, value = "dt")
+                                      )),
+                             tags$div(class = "col-sm-6",
                                       tags$div(id = "table_wrapper"),
                                       tags$div(style = "height:100px;")
-                             )
-                    ),
-                    tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
-                             tags$div(id = "preview-output-hot", 
-                                      rHandsontableOutput("table_preview_hot")),
-                             tags$div(id = "preview-output-dt", style = "display:none;",
-                                      renderDataUI("table_preview_dt", type = "datatable", 
-                                                   graphTool = "plotly", 
-                                                   height = 700, 
-                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData))
-                    )
+                             ),
+                             tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
+                                      tags$div(id = "preview-output-hot", 
+                                               rHandsontableOutput("table_preview_hot")),
+                                      tags$div(id = "preview-output-dt", style = "display:none;",
+                                               renderDataUI("table_preview_dt", type = "datatable", 
+                                                            graphTool = "plotly", 
+                                                            height = 700, 
+                                                            noDataTxt = lang$nav$outputScreen$boxResults$noData))
+                             ))
                 )
               )
       )
