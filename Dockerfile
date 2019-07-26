@@ -4,19 +4,22 @@ FROM ubuntu:xenial
 
 LABEL com.gamsmiro.vendor="GAMS Development Corp."\
 com.gamsmiro.version="0.7.1"\
-com.gamsmiro.license="GPL-2.0"\
+com.gamsmiro.license="GPL-3.0"\
 com.gamsmiro.description="GAMS MIRO Docker image"\
 maintainer="rschuchmann@gams.com"
 
 ARG R_BASE_VERSION=3.6.0
 
-## Add user to 'staff' group, granting them write privileges to /usr/local/lib/R/site.library
-RUN useradd docker \
-	&& mkdir /home/docker \
-	&& chown docker:docker /home/docker \
-	&& addgroup docker staff
+
+RUN groupadd -g 999 miro && \
+    useradd -r -u 999 -g miro miro
+
+ENV APP /home/miro/app
+RUN mkdir -p $APP
+RUN chown -R miro /home/miro
 
 RUN apt-get update \ 
+    && apt-get upgrade -y \
 	&& apt-get install -y --no-install-recommends \
 		ed \
 		less \
@@ -40,22 +43,14 @@ RUN echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" > /et
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
 
 
-## Now install R and littler, and create a link for littler in /usr/local/bin
-## Also set a default CRAN repo, and make sure littler knows about it too
+## Now install R 
+## Also set a default CRAN repo
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		littler\
-                r-cran-littler \
 		r-base=${R_BASE_VERSION}* \
 		r-base-dev=${R_BASE_VERSION}* \
 		r-recommended=${R_BASE_VERSION}* \
         && echo 'options(repos = c(CRAN = "https://cloud.r-project.org/"), download.file.method = "libcurl")' >> /etc/R/Rprofile.site \
-        && echo 'source("/etc/R/Rprofile.site")' >> /etc/littler.r \
-	&& ln -s /usr/share/doc/littler/examples/install.r /usr/local/bin/install.r \
-	&& ln -s /usr/share/doc/littler/examples/install2.r /usr/local/bin/install2.r \
-	&& ln -s /usr/share/doc/littler/examples/installGithub.r /usr/local/bin/installGithub.r \
-	&& ln -s /usr/share/doc/littler/examples/testInstalled.r /usr/local/bin/testInstalled.r \
-	&& install.r docopt \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
 	&& rm -rf /var/lib/apt/lists/*
 
@@ -65,46 +60,70 @@ RUN apt-get update \
 # system libraries of general use
 RUN apt-get update && apt-get install -y \
     sudo \
-    software-properties-common python-software-properties 
+    software-properties-common
+
+RUN add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt-get install -y \
     sudo \
-    libcurl-dev \
-    libcairo2-dev \
+    libcurl4-gnutls-dev \
     libv8-3.14-dev \
-    unixodbc\
-    unixodbc-dev\
-    odbc-postgresql
+    unixodbc \
+    unixodbc-dev \
+    odbc-postgresql \
+    python3.6 \
+    python3-pip
+
+RUN pip3 install --upgrade pip
+RUN pip3 install numpy pandas matplotlib geocoder geopy
+
 # basic shiny functionality
 RUN R -e "install.packages('shiny', repos='http://cran.us.r-project.org/')"
 
+# install custom packages
+
+# first install dependencies of custom packages
+RUN R -e "install.packages(c('cli', 'fansi', 'utf8'), repos='http://cran.us.r-project.org/')"
+RUN mkdir /home/miro/packages
+COPY packages /home/miro/packages
+RUN R -e "install.packages('/home/miro/packages/pillar_1.3.1.9999.tar.gz', repos = NULL, type = 'source')"
+
+RUN R -e "install.packages(c('colorspace', 'purrr', 'yaml', 'labeling', 'munsell', 'lazyeval', 'assertthat', 'glue', 'pkgconfig', 'tibble', 'tidyselect', 'plogr', 'htmlwidgets', 'base64enc', 'png', 'RColorBrewer', 'raster', 'scales', 'sp', 'viridisLite', 'zeallot', 'ellipsis'), repos='http://cran.us.r-project.org/')"
+
+RUN R -e "install.packages('/home/miro/packages/crosstalk_1.0.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/dplyr_0.8.1.9000.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/DT_0.6.2.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/gdxrrw_1.0.4.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/htmltools_0.3.6.9003.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/leaflet_2.0.2.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/vctrs_0.2.0.9999.tar.gz', repos = NULL, type = 'source')"
+
+RUN R -e "install.packages(c('sys', 'askpass', 'prettyunits', 'stringi', 'curl', 'DBI', 'blob', 'hms', 'tidyr', 'data.table'), repos='http://cran.us.r-project.org/')"
+
+RUN R -e "install.packages('/home/miro/packages/httr_1.4.0.9999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/odbc_1.1.6.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/plotly_4.9.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/shinydashboard_0.7.1.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/timevis_0.5.0.9999.tar.gz', repos = NULL, type = 'source')"
+RUN rm -rf /home/miro/packages
+
 # install dependencies of the app
-RUN R -e "install.packages(c('R6', 'stringi', 'shinydashboard', 'processx', 'V8', 'dplyr', 'readr', 'readxl', 'writexl', 'rhandsontable', 'jsonlite', 'jsonvalidate', 'rpivotTable', 'futile.logger', 'zip', 'tidyr', 'odbc', 'DBI', 'digest', 'DT', 'leaflet', 'leaflet.minicharts', 'RColorBrewer', 'plotly', 'dygraphs', 'xts', 'httr', 'future'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages(c('rematch', 'formatR', 'ps', 'clipr', 'cellranger', 'progress', 'lambda.r', 'futile.options', 'zoo', 'globals', 'listenv', 'R6', 'processx', 'V8', 'readr', 'readxl', 'writexl', 'rhandsontable', 'jsonvalidate', 'rpivotTable', 'futile.logger', 'zip', 'tidyr', 'digest', 'leaflet.minicharts', 'dygraphs', 'xts', 'future'), repos='http://cran.us.r-project.org/')"
 
-
-# copy cmex, opt and err file; r-x permissions for cmex file
-COPY gams_data ${R_GAMS_SYSDIR}
-RUN chmod 755 ${R_GAMS_SYSDIR}/gamscmex.out
-
-#install pip and some python packages
-RUN sudo apt-get -y install python3-pip
-RUN pip3 install numpy pandas matplotlib geocoder geopy
 
 # environment variable for GDX API
-ENV R_GAMS_SYSDIR="/home/docker/gams"
-RUN mkdir /home/docker/gams
-
-#install GDXRRW packagpe
-COPY gams_data /home/docker/gams
-RUN R -e "install.packages('/home/docker/gams/gdxrrw_1.0.4.999.tar.gz', repos = NULL, type = 'source')"
-RUN rm /home/docker/gams/gdxrrw_1.0.4.999.tar.gz
+USER miro
+WORKDIR $APP
+ENV R_GAMS_SYSDIR="/home/miro/gams"
+RUN mkdir /home/miro/gams
+COPY resources/miro /home/miro/gams
 
 # copy MIRO to the image
-RUN mkdir /home/docker/miro
-COPY miro_data /home/docker/miro
+RUN mkdir /home/miro/app
+COPY app.R conf global.R JS LICENSE modules R tools/paver UI www /home/miro/app/
 
 WORKDIR /
 EXPOSE 3838
 
-CMD ["R", "-e", "shiny::runApp('/home/docker/miro')"]
+CMD ["R", "-e", "shiny::runApp('/home/miro/app')"]
 
