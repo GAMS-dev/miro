@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.6.6"
-MIRORDate   <- "Jul 14 2019"
+MIROVersion <- "0.7.0"
+MIRORDate   <- "Jul 24 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -42,23 +42,13 @@ if(R.version[["major"]] < 3 ||
 tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
 configDir <- "./conf/"
-# vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
-                    "./modules/render_data.R", "./modules/generate_data.R")
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "zip", "tidyr", "gdxrrw")
-LAUNCHADMINMODE <- FALSE
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
-  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
-                       min = 0, max = 1, initial = 0, width = 300)
-  setWinProgressBar(pb, 0.1)
-}else{
-  pb <- txtProgressBar(file = stderr())
-}
+                      "futile.logger", "zip", "tidyr")
+
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
@@ -78,14 +68,31 @@ getCommandArg <- function(argName, exception = TRUE){
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
 if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
-
+  
   RLibPath = NULL
-
+  
 }else{
   RLibPath = file.path(gamsSysDir, "GMSR", "library")
   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
+useGdx <- FALSE
+if("gdxrrw" %in% installedPackages){
+  useGdx <- TRUE
+  requiredPackages <- c(requiredPackages, "gdxrrw")
+}
+# vector of required files
+filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
+                    "./R/data_instance.R", "./R/worker.R", "./R/dataio.R",
+                    "./modules/render_data.R", "./modules/generate_data.R")
+LAUNCHADMINMODE <- FALSE
+if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
+                       min = 0, max = 1, initial = 0, width = 300)
+  setWinProgressBar(pb, 0.1)
+}else{
+  pb <- txtProgressBar(file = stderr())
+}
 source("./R/install_packages.R", local = TRUE)
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
@@ -119,8 +126,9 @@ if(is.null(errMsg)){
                         .Platform$file.sep, modelName, ".gms")
     modelPath    <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, 
                                  paste0(getwd(), .Platform$file.sep, modelDir))
-    modelGmsName <- modelPath[[2]]
+    modelNameRaw <- modelPath[[4]]
     modelName    <- modelPath[[3]]
+    modelGmsName <- modelPath[[2]]
     modelPath    <- modelPath[[1]]
   }, error = function(e){
     errMsg <<- paste(errMsg,
@@ -205,6 +213,7 @@ if(is.null(errMsg)){
     load(rSaveFilePath, envir = .GlobalEnv)
     if(isShinyProxy){
       dbConfig <- setDbConfig(paste0(configDir, "db_config.json"))
+      config$activateModules$remoteExecution <- TRUE
       if(length(dbConfig$errMsg)){
         errMsg <- dbConfig$errMsg
       }else{
@@ -222,8 +231,17 @@ if(is.null(errMsg)){
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c(requiredPackages, "future", "httr")
+  }else if(length(externalInputConfig) || length(externalInputConfig)){
+    requiredPackages <- c(requiredPackages, "httr")
+  }
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
+  
+  if(config$activateModules$remoteExecution){
+    plan(multiprocess)
+  }
   
   if(debugMode){
     customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
@@ -357,6 +375,9 @@ if(is.null(errMsg)){
       errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
     })
   }
+  dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
+                                     modelName = modelName),
+                       db = db, auth = auth)
   if(config$activateModules$hcubeMode){
     hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
     requiredPackages <- c("digest", "DT")
@@ -469,11 +490,22 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
 if(is.null(errMsg)){
-  tryCatch(gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut)),
-           error = function(e){
-             flog.error(e)
-             errMsg <<- paste(errMsg, e, sep = '\n')
-           })
+  tryCatch({
+    if(useGdx){
+      gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut))
+    }
+    worker <- Worker$new(metadata = list(user = uid, password = Sys.getenv("GMS_WORKER_PASSWORD"), modelName = modelName, 
+                                         tableNameTracePrefix = tableNameTracePrefix, 
+                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                         MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
+                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                         timeout = 3, url = Sys.getenv("GMS_WORKER_URL"), serverOS = getOS()), 
+                         remote = config$activateModules$remoteExecution)
+  }, error = function(e){
+    flog.error(e)
+    errMsg <<- paste(errMsg, e, sep = '\n')
+  })
 }
 if(!is.null(errMsg)){
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -595,7 +627,7 @@ if(!is.null(errMsg)){
     save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
                   "modelOut", "config", "lang", "inputDsNames", "outputTabs", 
                   "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
-                  "modelInTabularData", "sharedData", "colSubset", 
+                  "modelInTabularData", "externalInputConfig",
                   "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
                   "choicesNoDep", "sliderValues", "configGraphsOut", 
                   "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
@@ -605,7 +637,7 @@ if(!is.null(errMsg)){
                   "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
                   "currentModelDir", "modelInToImportAlias", "modelInToImport", 
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                  "serverOS", "GAMSReturnCodeMap", "dependentDatasets",
+                  "GAMSReturnCodeMap", "dependentDatasets",
                   "modelInGmsString", "installPackage", "dbSchema", "scalarInputSym",
                   "requiredPackagesCR"), 
          file = rSaveFilePath)
@@ -618,7 +650,7 @@ if(!is.null(errMsg)){
     miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
     miroDataFiles <- list.files(miroDataDir)
     dataFileExt   <- tolower(tools::file_ext(miroDataFiles))
-    miroDataFiles <- miroDataFiles[dataFileExt %in% c("gdx", "xlsx", "xls")]
+    miroDataFiles <- miroDataFiles[dataFileExt %in% c(if(useGdx) "gdx", "xlsx", "xls")]
     newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
@@ -725,7 +757,7 @@ if(!is.null(errMsg)){
     
     # currently active scenario (R6 object)
     activeScen         <- NULL
-    exportFileType     <- "gdx"
+    exportFileType     <- if(useGdx) "gdx" else "xls"
     
     # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
     sidCompOrder     <- NULL
@@ -871,6 +903,7 @@ if(!is.null(errMsg)){
     
     # set local working directory
     workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+    worker$setWorkDir(workDir)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
@@ -891,8 +924,8 @@ if(!is.null(errMsg)){
     modelInputDataVisible <- vector(mode = "list", length = length(modelIn))
     modelInputGraphVisible <- vector(mode = "logical", length = length(modelIn))
     modelInputDataHcube <- vector(mode = "list", length = length(modelIn))
-    sharedInputData <- vector(mode = "list", length = length(modelIn))
-    sharedInputData_filtered <- vector(mode = "list", length = length(modelIn))
+    externalInputData <- vector(mode = "list", length = length(modelIn))
+    externalInputData_filtered <- vector(mode = "list", length = length(modelIn))
     # list with input data before new data was loaded as shiny is lazy when data is equal and wont update
     previousInputData <- vector(mode = "list", length = length(modelIn))
     # initialize model input data
@@ -1088,7 +1121,7 @@ if(!is.null(errMsg)){
     # scenario module
     if(config$activateModules$scenario){
       #load shared datasets
-      source("./modules/db_shared_load.R", local = TRUE)
+      source("./modules/db_external_load.R", local = TRUE)
       # load scenario
       source("./modules/db_scen_load.R", local = TRUE)
       # save scenario
@@ -1183,9 +1216,22 @@ if(!is.null(errMsg)){
       source("./modules/scen_export.R", local = TRUE)
     }
     observeEvent(input$btExportScen, {
-      showScenExportDialog(input$btExportScen)
+      exportTypes <- c(if(useGdx) "gdx", "xls")
+      if(length(datasetsRemoteExport)){
+        exportTypes <- c(exportTypes, names(datasetsRemoteExport))
+      }
+      showScenExportDialog(input$btExportScen, exportTypes)
     })
     observeEvent(input$exportFileType, {
+      stopifnot(length(input$exportFileType) > 0L)
+      
+      if(length(datasetsRemoteExport) && 
+         input$exportFileType %in% names(datasetsRemoteExport)){
+        hideEl(session, ".file-export")
+        showEl(session, ".remote-export")
+        return()
+      }
+      
       switch(input$exportFileType,
              xls = exportFileType <<- "xlsx",
              gdx = exportFileType <<- "gdx",

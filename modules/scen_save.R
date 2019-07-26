@@ -30,22 +30,3 @@ source("./modules/input_save.R", local = TRUE)
 lapply(seq_along(dataTmp), function(i){
   scenData[[scenIdLong]][[i + length(modelOut)]] <<- dataTmp[[i]]
 })
-scen.name <- NULL
-# check whether name is valid
-if(saveAsFlag){
-  if(!is.null(isolate(input$scenName))){
-    scen.name <- isolate(input$scenName)
-  }else{
-    flog.warn("Attempt to save new scenario failed due to no valid name being assigned (Save As button was clicked).")
-    return(NULL)
-  }
-}else{
-  if(!is.null(isolate(rv$activeSname))){
-    scen.name <- isolate(rv$activeSname)
-  }else if (!is.null(activeSnameTmp)){
-    scen.name <- activeSnameTmp
-  }else{
-    flog.warn("Attempt to save new scenario failed due to no valid name being assigned (Save button was clicked).")
-    return(NULL)
-  }
-}

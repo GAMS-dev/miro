@@ -129,6 +129,7 @@
 "btNew":"选择场景"
     },
     "gamsModelStatus":{
+      "queued": "Model queued",
       "exec":"模型执行阶段",
       "success":"运行已终止。",
       "error":"运行未终止:"

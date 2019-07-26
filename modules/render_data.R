@@ -17,11 +17,10 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     if(graphTool == "plotly"){
       data <- tagList(
         tags$div(style = "overflow-x:hidden;",
-          column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-          column(6, tags$div(class = "renderer-wrapper", 
-                             genSpinner(externalStyle = TRUE),
-                             plotlyOutput(ns("graph"), height = height), style = "overflow-x:auto;")
-          )
+                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
+                 column(6, tags$div(class = "renderer-wrapper", 
+                                    genSpinner(externalStyle = TRUE),
+                                    plotlyOutput(ns("graph"), height = height)), style = "overflow-x:auto;")
         )
       )
     }else if(graphTool == "dygraphs"){
@@ -114,8 +113,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
       if(is.na(scalarDataTmp)){
         scalarData <- data[[3]][[i]]
       }else{
-        scalarData <- formatC(round(scalarDataTmp, roundPrecision), big.mark = " ", 
-                              big.interval = 3, format = "f", drop0trailing = TRUE)
+        scalarData <- formatC(round(scalarDataTmp, roundPrecision), digits = roundPrecision, 
+                              big.mark = " ", big.interval = 3, format = "f", drop0trailing = TRUE)
       }
       output[["valBox" %+% i]] <- renderValueBox({
         valueBox(

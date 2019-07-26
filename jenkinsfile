@@ -58,7 +58,7 @@ pipeline {
 
                             rem Python modules
                             cd %GAMS_DIR%\\GMSPython\\Scripts
-                            pip install matplotlib pandas numpy pandas_datareader geocoder geopy
+                            pip install --no-cache-dir matplotlib pandas numpy pandas_datareader geocoder geopy
                             cd %WORKSPACE%\\installer\\win\\innofiles
 
                             rem miro libinclude
@@ -186,7 +186,7 @@ pipeline {
                             TARGET="$WORKSPACE/$DMG_ROOT/GAMS$GMS_VER/sysdir"
                             
                             cd "$TARGET/GMSPython/bin"
-                            "./pip" install matplotlib pandas numpy pandas_datareader geocoder geopy Pillow
+                            "./pip" install --no-cache-dir matplotlib pandas numpy pandas_datareader geocoder geopy Pillow
                             cd "$WORKSPACE"
                             mkdir -p "$TARGET/GMSR"
                             mkdir "$TARGET/miro/"
@@ -240,7 +240,6 @@ pipeline {
                                        set statusbar visible of container window to false
                                        set the bounds of container window to {400, 200, 1200, 710}
                                        set theViewOptions to the icon view options of container window
-                                       set background picture of theViewOptions to file ".bg.png"
                                        set arrangement of theViewOptions to not arranged
                                        set icon size of theViewOptions to 144  
                                        set position of item "'${APP_NAME}'" of container window to {200, 280} 

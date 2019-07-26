@@ -94,7 +94,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   scalarDataset <- NULL
   
   fileType <- tolower(tools::file_ext(isolate(input$localInput$datapath)))
-  if(identical(fileType, "gdx")){
+  if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else if(fileType %in% c("xls", "xlsx")){
@@ -116,6 +116,7 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
     showErrorMsg(lang$errMsg$readOutput$title, lang$errMsg$readOutput$desc)
     return()
   }
+  datasetsToFetch <- datasetsToFetch[datasetsToFetch %in% modelInToImport]
   # extract scalar sheets
   if(length(modelIn) > length(modelInTabularData)){
     # atleast one scalar input element that is not in tabular form

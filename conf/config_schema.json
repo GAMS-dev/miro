@@ -145,6 +145,12 @@
                "type": "boolean",
                "default":true,
                "required":false
+            },
+            "remoteExecution":{
+               "description": "Should model be solved remotely (not that credentials/location needs to be specified via environment variables!)?",
+               "type": "boolean",
+               "default":false,
+               "required":false
             }
          }
       },
@@ -159,62 +165,6 @@
          "type": "string",
          "minLength":3,
          "required":false
-      },
-      "inputGroups":{
-         "description": "Specify input tables that shall be aggregated to groups",
-         "type": "array",
-         "required":false,
-         "minItems":1,
-         "items":{  
-           "type":"object",
-           "additionalProperties":false,
-           "required": ["name", "members"],
-           "properties":{  
-              "name":{
-                "description":"Specify the name of the group as it is displayed in the UI",
-                "type":"string",
-                "minLength":1
-              },
-              "members":{
-                "description":"Specify the group members (input tables)",
-                "type":"array",
-                "uniqueItems":true,
-                "minItems":2,
-                "items":{
-                  "type":"string",
-                  "minLength":1
-                }
-              }
-           }
-         }
-      },
-      "outputGroups":{
-         "description": "Specify output tables that shall be aggregated to groups",
-         "type": "array",
-         "required":false,
-         "uniqueItems":true,
-         "minItems":1,
-         "items":{  
-           "type":"object",
-           "additionalProperties":false,
-           "required": ["name", "members"],
-           "properties":{  
-              "name":{
-                "description":"Specify the name of the group as it is displayed in the UI",
-                "type":"string",
-                "minLength":1
-              },
-              "members":{
-                "description":"Specify the group members (output tables)",
-                "type":"array",
-                "uniqueItems":true,
-                "items":{
-                  "type":"string",
-                  "minLength":1
-                }
-              }
-           }
-         }
       },
       "scalarAliases":{  
          "description":"Specify the aliases for the input and output scalar tables",
@@ -719,10 +669,98 @@
                      "type":"string",
                      "minLength":1
                    },
-                   "sharedData":{  
-                     "description":"Choose whether data for this table should come from a shared table (across all scenarios)",
-                     "type":"boolean",
-                     "default": false
+                   "externalData":{  
+                     "description":"Specify whether data comes from an external source",
+                     "type":"object",
+                     "properties":{  
+                       "source":{  
+                         "description":"Source of the data",
+                         "type":"string",
+                         "default": "database",
+                         "enum":[
+                           "database",
+                           "REST"
+                         ]
+                       },
+                       "url":{
+                         "description":"URL of REST API",
+                         "type":"string",
+                         "minLength": 10
+                       },
+                       "method":{
+                         "description":"HTTP method (of REST request)",
+                         "type":"string",
+                         "default": "GET",
+                         "enum":[
+                           "GET",
+                           "POST",
+                           "PATCH",
+                           "DELETE",
+                           "HEAD",
+                           "PUT"
+                         ]
+                       },
+                       "httpHeaders":{
+                         "description":"Additional parameters to send alongside the request in the HTTP header",
+                         "type": "array",
+                         "required":false,
+                         "minItems":1,
+                         "items":{
+                           "type":"object",
+                           "additionalProperties":false,
+                           "required": ["key", "value"],
+                           "properties":{
+                              "key":{
+                                "description":"Header key",
+                                "type":"string",
+                                "minLength":1
+                              },
+                              "value":{
+                                "description":"Header value",
+                                "type":"string",
+                                "minLength":1
+                              }
+                           }
+                         }
+                       },
+                       "httpBody":{
+                         "description":"Additional parameters to send alongside the request in the HTTP body",
+                         "type": "array",
+                         "required":false,
+                         "minItems":1,
+                         "items":{
+                           "type":"object",
+                           "additionalProperties":false,
+                           "required": ["key", "value"],
+                           "properties":{
+                              "key":{
+                                "description":"Body key",
+                                "type":"string",
+                                "minLength":1
+                              },
+                              "value":{
+                                "description":"Body value",
+                                "type":"string",
+                                "minLength":1
+                              }
+                           }
+                         }
+                       },
+                       "encode":{
+                         "description": "How should data in body be encoded?",
+                         "type": "string",
+                         "required": false,
+                         "enum": [
+                           "multipart", 
+                           "form", 
+                           "json", 
+                           "raw"
+                         ],
+                         "default": "json"
+                       }
+                     },
+                     "required": ["source"],
+                     "additionalProperties": false
                    },
                    "bigData":{  
                      "description":"Does the table represent a large dataset (i.e. more than 20.000 records)?",
@@ -1478,6 +1516,106 @@
               }
            }
          }
+      },
+      "remoteExport":{
+        "description": "Export data to a remote service",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "symbols"],
+          "properties":{
+            "name":{
+              "description":"Specify a name for the remote export option",
+              "type":"string",
+              "minLength":1
+             },
+             "symbols":{
+               "description":"Symbols to export",
+               "type": "array",
+               "uniqueItems":true,
+               "minItems":1,
+               "items":{
+                 "type":"object",
+                 "additionalProperties":false,
+                 "required": ["name", "url"],
+                 "properties":{
+                    "name":{
+                      "description":"Name of the symbol to export",
+                      "type":"string",
+                      "minLength":1
+                    },
+                    "url":{
+                       "description":"URL of REST API",
+                       "type":"string",
+                       "minLength": 10
+                     },
+                     "method":{
+                       "description":"HTTP method (of REST request)",
+                       "type":"string",
+                       "default": "POST",
+                       "enum":[
+                         "GET",
+                         "POST",
+                         "PATCH",
+                         "DELETE",
+                         "HEAD",
+                         "PUT"
+                       ]
+                     },
+                     "httpHeaders":{
+                       "description":"Additional parameters to send alongside the request in the HTTP header",
+                       "type": "array",
+                       "required":false,
+                       "minItems":1,
+                       "items":{
+                         "type":"object",
+                         "additionalProperties":false,
+                         "required": ["key", "value"],
+                         "properties":{
+                            "key":{
+                              "description":"Header key",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "value":{
+                              "description":"Header value",
+                              "type":"string",
+                              "minLength":1
+                            }
+                         }
+                       }
+                     },
+                     "httpBody":{
+                       "description":"Additional parameters to send alongside the request in the HTTP body",
+                       "type": "array",
+                       "required":false,
+                       "minItems":1,
+                       "items":{
+                         "type":"object",
+                         "additionalProperties":false,
+                         "required": ["key", "value"],
+                         "properties":{
+                            "key":{
+                              "description":"Body key",
+                              "type":"string",
+                              "minLength":1
+                            },
+                            "value":{
+                              "description":"Body value",
+                              "type":"string",
+                              "minLength":1
+                            }
+                         }
+                       }
+                     }
+                   }
+               }
+             }
+           }
+        }
       }
    }
 }

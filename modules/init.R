@@ -134,6 +134,7 @@ if(is.null(errMsg)){
   names(modelIn)    <- tolower(names(modelIn))
   modelInRaw        <- modelIn
   customPackages    <- vector("list", length(modelIn))
+  externalInputConfig <- vector("list", length(modelIn))
   for(el in names(config$inputWidgets)){
     i    <- match(tolower(el), names(modelIn))
     el_l <- tolower(el)
@@ -241,9 +242,11 @@ if(is.null(errMsg)){
         modelIn[[i]][[widgetType]] <- widgetConfig
         next
       }
-      if(!is.null(widgetConfig$sharedData)){
-        modelIn[[i]]$sharedData  <- widgetConfig$sharedData
-        widgetConfig$sharedData  <- NULL
+      if(!is.null(widgetConfig$externalData)){
+        externalInputConfig[[i]]     <- widgetConfig$externalData
+        names(externalInputConfig)[i] <- names(modelIn)[i]
+        modelIn[[i]]$noImport      <- TRUE
+        widgetConfig$externalData  <- NULL
       }
       if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig$readonly
@@ -617,6 +620,35 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                                    packages = customPackages[[i]])
     }
   })
+  # get remote export options
+  datasetsRemoteExport <- NULL
+  if(length(config$remoteExport)){
+    datasetsRemoteExport <- vector("list", length(config$remoteExport))
+    for (i in seq_along(config$remoteExport)){
+      exportSymbols <- tolower(vapply(config$remoteExport[[i]]$symbols, "[[", 
+                                    character(1L), "name", USE.NAMES = FALSE))
+      invalidRemoteDs <- is.na(match(exportSymbols, 
+                                     c(names(modelIn), names(modelOut))))
+      if(any(invalidRemoteDs)){
+        errMsg <- paste(errMsg, sprintf("Some of the datasets you selected for remote export: '%s' are not valid: '%s'.", 
+                                        config$remoteExport[[i]]$name, 
+                                        paste(exportSymbols[invalidRemoteDs], 
+                                              collapse = "', '")))
+        break
+      }
+      if(any(duplicated(exportSymbols))){
+        errMsg <- paste(errMsg, sprintf("Duplicated datasets found in remote export: '%'s.", 
+                                        config$remoteExport[[i]]$name))
+        break
+      }
+      datasetsRemoteExport[[i]] <- config$remoteExport[[i]]$symbols
+      names(datasetsRemoteExport[[i]]) <- exportSymbols
+    }
+    names(datasetsRemoteExport) <- vapply(config$remoteExport, "[[",
+                                          character(1L), "name", USE.NAMES = FALSE)
+    config$remoteExport <- NULL
+  }
+  
   # Hypercube mode configuration
   modelInGmsString <- NULL
   if(identical(config$activateModules$hcubeMode, TRUE)){
@@ -683,12 +715,8 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         }
       }
     }), use.names = FALSE)
-    }
+  }
   
-  # get datasets whose data source is shared with other models
-  sharedData       <- vector("logical", length(modelIn))
-  # list of column names used to subset shared dataframe
-  colSubset <- vector("list", length(modelIn))
   # get input sheets with dependencies on other sheets
   # get dropdown dependencies
   
@@ -740,13 +768,13 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                # remove identifier string from dropdown that specifies where shared data comes from 
                ddownDep[[name]]$shared <<- choices$shared
                
+               colSubset <- character(0L)
                if(!identical(name, choices$shared)){
                  # only subset of columns will be imported
-                 colSubset[[i]]   <<- c(tolower(ddownDep[[name]]$shared), tolower(ddownDep[[name]]$aliases))
+                 colSubset <- c(tolower(ddownDep[[name]]$shared), tolower(ddownDep[[name]]$aliases))
                }
-               
-               # add to list of widgets with shared datasource
-               sharedData[i] <<- TRUE
+               externalInputConfig[[i]] <<- list(colSubset = colSubset)
+               modelIn[[i]]$noImport <<- TRUE
              }
              # in case dropdown menu has aliases, validate that they are of matching length as choices
              if(!is.null(aliases)){
@@ -889,9 +917,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
                                 "but has incorrect headers. The headers were adjusted accordingly."))
                names(modelIn[[i]]$headers) <- scalarsFileHeaders
-             }
-             if(identical(modelIn[[i]]$sharedData, TRUE)){
-               sharedData[i] <<- TRUE
              }
              return(name)
            }
@@ -1135,7 +1160,6 @@ if(is.null(errMsg)){
     }))
   })
   # get the operating system that shiny is running on
-  serverOS          <- getOS()
   installPackage    <- list()
   installPackage$DT <- any(vapply(seq_along(modelIn), function(i){if(identical(modelIn[[i]]$type, "dt")) TRUE else FALSE}, 
                                   logical(1L), USE.NAMES = FALSE))
@@ -1214,6 +1238,7 @@ if(is.null(errMsg)){
                                             lang$scalarAliases$cols$desc,
                                             lang$scalarAliases$cols$value)
   }
+  
   # generate GAMS return code map
   GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
                          '1' = "Solver is to be called, the system should never return this number", 
@@ -1228,6 +1253,7 @@ if(is.null(errMsg)){
                          '10' = "Out of memory",
                          '11' = "Out of disk",
                          '15' = "Model execution was interrupted",
+                         '100' = "Model execution timed out",
                          '109' = "Could not create process/scratch directory",
                          '110' = "Too many process/scratch directories",
                          '112' = "Could not delete the process/scratch directory",

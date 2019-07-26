@@ -481,6 +481,7 @@ observeEvent(input$btSolve, {
     return(NULL)
   }
   pfFileContent <- NULL
+  inputData <- DataInstance$new(modelInFileNames)
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
@@ -534,45 +535,19 @@ observeEvent(input$btSolve, {
       csvData <- dataTmp[[i]]
     }
     
-    # write csv files used to communicate with GAMS
-    tryCatch({
-      write_delim(csvData, workDir %+% names(dataTmp)[[i]] %+% ".csv", 
-                  delim = config$csvDelim, na = "")
-    }, error = function(e) {
-      fileName <- paste0(names(dataTmp)[[i]], ".csv")
-      flog.error("Error writing csv file: '%s' (model: '%s').", fileName, modelName)
-      errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$writeCsv, fileName), sep = "\n")
-    })
-    
+    inputData$push(names(dataTmp)[[i]], csvData)
   })
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)
   }
   # run GAMS
   tryCatch({
-    gamsArgs <- c(if(length(config$extraClArgs)) config$extraClArgs, 
-                  paste0('idir1="', gmsFilePath(currentModelDir), '"'),
-                  if(config$includeParentDir) paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'), 
-                  paste0('curdir="', workDir, '"'), "lo=3", "execMode=" %+% gamsExecMode, 
-                  config$MIROSwitch, "LstTitleLeftAligned=1")
-    if(config$saveTraceFile){
-      gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, modelName, '.trc"'), "traceopt=3")
-    }
-    pfFilePath <- paste0(workDir, tolower(modelName), ".pf")
-    if(isWindows()){
-      gamsArgs <- gsub("/", "\\", gamsArgs, fixed = TRUE)
-      pfFilePath <- gsub("/", "\\", pfFilePath, fixed = TRUE)
-    }
-    writeLines(c(pfFileContent, gamsArgs), pfFilePath)
-    
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
       prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
-      activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
     }
     prog$close()
-    gams <<- process$new(gamsSysDir %+% "gams", args = c(modelGmsName, 
-                                                         "pf", pfFilePath), 
-                         stdout = workDir %+% modelName %+% ".log", windows_hide_window = TRUE)
+    worker$run(inputData, pfFileContent)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
     flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
@@ -587,7 +562,7 @@ observeEvent(input$btSolve, {
   # read log file
   if(config$activateModules$logFile){
     tryCatch({
-      logfile <- reactiveFileReader2(300, session, file.path(workDir, modelName %+% ".log"))
+      logfile <- worker$getReactiveLog(session)
       logfileObs <- logfile$obs
       logfile <- logfile$re
     }, error = function(e) {
@@ -596,29 +571,25 @@ observeEvent(input$btSolve, {
     })
     showErrorMsg(lang$errMsg$readLog$title, errMsg)
   }
-  
-  modelStatus <- reactivePoll2(1000, session, checkFunc = function(){
-    gams$get_exit_status()
-  }, valueFunc = function(){
-    gams$get_exit_status()
+  errMsg <- NULL
+  tryCatch({
+    modelStatus    <- worker$getReactiveStatus(session)
+    modelStatusObs <- modelStatus$obs
+    modelStatus    <- modelStatus$re
+  }, error = function(e) {
+    flog.error("GAMS status could not be retrieved (model: '%s'). Error message: %s.", modelName, e)
+    errMsg <<- lang$errMsg$readLog$desc
   })
-  modelStatusObs <- modelStatus$obs
-  modelStatus <- modelStatus$re
+  showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
   if(config$activateModules$logFile){
-    output$logStatus <- renderText({
-      # read log file 
+    emptyEl(session, "#logStatus")
+    observe({
       logText    <- logfile()
-      logSize    <- nchar(logText)
-      logText    <- paste0(if(logSize > (3e4 + 1)) "[...]\n", 
-                           substr(logText, logSize - 3e4, logSize))
-      if(!is.null(modelStatus())){
-        return(logText)
+      if(is.integer(modelStatus())){
+        return()
       }
-      if(identical(input$logUpdate, TRUE)){
-        scrollDown(session, "#logStatus")
-      }
-      return(logText)
+      return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
     })
   }
   # reset listing file when new solve is started
@@ -627,10 +598,12 @@ observeEvent(input$btSolve, {
   hideEl(session, ".input-validation-error")
   # print model status
   output$modelStatus <- renderUI({
-    
-    statusText <- lang$nav$gamsModelStatus$exec
-    # model got solved successfully
-    if(!is.null(modelStatus())){
+    currModelStat <- modelStatus()
+    if(is.null(currModelStat)){
+      statusText <- lang$nav$gamsModelStatus$exec
+    }else if(is.na(currModelStat)){
+      statusText <- lang$nav$gamsModelStatus$queued
+    }else{
       modelStatusObs$destroy()
       modelStatus <- NULL
       enableEl(session, "#btSolve")
@@ -645,11 +618,12 @@ observeEvent(input$btSolve, {
         tryCatch({
           fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
           if(is.na(fileSize))
-            stop("Could not access listing file.", call. = FALSE)
+            stop("Could not access listing file", call. = FALSE)
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
-            output$listFile <- renderText(read_file(workDir %+% modelName %+% ".lst"))
+            output$listFile <- renderText(read_file(paste0(workDir, 
+                                                           modelNameRaw, ".lst")))
           }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
@@ -678,10 +652,10 @@ observeEvent(input$btSolve, {
         output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
       }
       
-      if(modelStatus() != 0){
-        returnCodeText <- GAMSReturnCodeMap[as.character(modelStatus())]
+      if(currModelStat != 0){
+        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
         if(is.na(returnCodeText)){
-          returnCodeText <- as.character(modelStatus())
+          returnCodeText <- as.character(currModelStat)
         }
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
         if(config$activateModules$miroLogFile && length(miroLogAnnotations)){
@@ -693,6 +667,7 @@ observeEvent(input$btSolve, {
             for(inputTabId in seq_along(inputTabs)){
               valTabIdTmp <- inputTabs[[inputTabId]]
               valTabIdErr <- match(valIdHead, valTabIdTmp)
+              print(valTabIdErr)
               if(!is.na(valTabIdErr)){
                 updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId))
                 if(length(valTabIdTmp) > 1L){
@@ -707,11 +682,12 @@ observeEvent(input$btSolve, {
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
       }else{
         # run terminated successfully
+        statusText <- lang$nav$gamsModelStatus$success
         # check whether GAMS output files shall be stored
         if(config$activateModules$attachments && 
            config$storeLogFilesDuration > 0L && !is.null(activeScen)){
           tryCatch({
-            filesToStore  <- c(file.path(workDir, paste0(modelName, c(".log", ".lst"))))
+            filesToStore  <- c(file.path(workDir, paste0(modelNameRaw, c(".log", ".lst"))))
             filesNoAccess <- file.access(filesToStore) == -1L
             errMsg <- NULL
             if(any(filesNoAccess)){
@@ -751,7 +727,6 @@ observeEvent(input$btSolve, {
           showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
         }
         #select first tab in current run tabset
-        statusText <- lang$nav$gamsModelStatus$success
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
@@ -769,7 +744,7 @@ observeEvent(input$btSolve, {
           errMsg <<- lang$errMsg$readOutput$desc
         })
         if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-          return()
+          return(htmltools::htmlEscape(statusText))
         }
         if(!is.null(GAMSResults$scalar)){
           scalarData[["scen_1_"]] <<- GAMSResults$scalar

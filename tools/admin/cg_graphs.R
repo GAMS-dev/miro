@@ -174,7 +174,8 @@ observeEvent(input$localInput, {
   rv$initData <- FALSE
   
   fileType <- tolower(tools::file_ext(isolate(input$localInput$datapath)))
-  if(identical(fileType, "gdx")){
+  errMsg <- NULL
+  if(identical(fileType, "gdx") && useGdx){
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else if(fileType %in% c("xls", "xlsx")){
@@ -190,6 +191,8 @@ observeEvent(input$localInput, {
     xlsWbNames <- vapply(strsplit(xlsWbNames, " ", fixed = TRUE), "[[", character(1L), 1L)
     # extract only sheets which are also in list of input parameters
     datasetsToFetch <- xlsWbNames[tolower(xlsWbNames) %in% modelInTabularData]
+  }else{
+    errMsg <- lang$errMsg$GAMSInput$desc
   }
   if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
     return(NULL)

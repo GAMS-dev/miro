@@ -241,6 +241,14 @@ function showHideEl(el, delay, msg = null) {
   $(el).show().delay(delay).fadeOut();
 }
 
+function scrollDown(id, delay = 500) {
+  setTimeout(() => {
+    $(id).animate({
+      scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
+    }, 300);
+  }, delay);
+}
+
 $(document).ready(() => {
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
@@ -347,12 +355,18 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-emptyEl', (id) => {
     $(id).empty();
   });
+  Shiny.addCustomMessageHandler('gms-appendEl', (data) => {
+    let { content } = data;
+    if (data.text) {
+      content = document.createTextNode(content);
+    }
+    $(data.id).append(content);
+    if (data.scroll) {
+      scrollDown(data.id, 50);
+    }
+  });
   Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
-    setTimeout(() => {
-      $(id).animate({
-        scrollTop: $(id)[0].scrollHeight - $(id)[0].clientHeight,
-      }, 300);
-    }, 500);
+    scrollDown(id);
   });
   Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
     setTimeout(() => {
