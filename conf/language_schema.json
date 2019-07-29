@@ -3219,29 +3219,6 @@
                 }
               }
             },
-            "skin":{          
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "choices":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
-                  "required":true
-                }
-              }
-            },
             "scen":{          
               "type":"object",
               "additionalProperties":false,
@@ -3625,20 +3602,14 @@
                   "minLength":1,
                   "required":true
                 },
-                "tableType":{ 
+                "input":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "choices":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":2,
-                  "maxItems":2,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -3870,7 +3841,17 @@
                   "minLength":1,
                   "required":true
                 },
-                "symbolType":{ 
+                "gams":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "go":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dd":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3884,6 +3865,16 @@
                       "type":"string",
                       "minLength": 1
                   },
+                  "required":true
+                },
+                "noSymbolMsg":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noWidgetMsg":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
                 "noWidgetConfigMsg":{ 
@@ -4119,6 +4110,36 @@
                   "required":true
                 },
                 "val39":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val40":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val41":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val42":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val43":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val44":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "val45":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4438,6 +4459,11 @@
                   }
                 },
                 "default":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "multiple":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5857,6 +5883,23 @@
               "additionalProperties":false,
               "required":true,
               "properties":{ 
+                "extraCLargs":{  
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{ 
+                    "name":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "value":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                },
                 "addInputGroup":{  
                   "type":"object",
                   "additionalProperties":false,

@@ -210,7 +210,12 @@ getDtOptions <- reactive({
 
 
 observeEvent(input$hot_height, {
-  rv$tableConfig$handsontable$height <<- input$hot_height
+  if(is.na(input$hot_height))
+    configJSON$tableConfig$handsontable$height <<- NULL
+  if(!is.na(input$hot_height))
+    rv$tableConfig$handsontable$height <<- input$hot_height
+  else
+    rv$tableConfig$handsontable$height <<- NULL
 })
 observeEvent(input$hot_readonly, {
   rv$tableConfig$handsontable$readonly <<- input$hot_readonly
@@ -282,7 +287,12 @@ observeEvent(input$dt_dom, {
     rv$tableConfig$datatable$options$dom <<- NULL
 })
 observeEvent(input$dt_pagelength, {
-  rv$tableConfig$datatable$options$pageLength <<- input$dt_pagelength
+  if(is.na(input$dt_pagelength))
+    configJSON$tableConfig$datatable$options$pageLength <<- NULL
+  if(!is.na(input$dt_pagelength))
+    rv$tableConfig$datatable$options$pageLength <<- input$dt_pagelength
+  else
+    rv$tableConfig$datatable$options$pageLength <<- NULL
 })
 observeEvent(input$dt_buttons, {
   if(identical(isolate({input$dt_buttons}), TRUE)){

@@ -81,6 +81,9 @@
                                 <h2 class="section-title">Introduction</h2>
                                 <div class="section-block">
                                     <p>In this section you will learn how to customize GAMS MIRO. As you saw previously when creating your first app, MIRO works without any further configuration. However, you will notice that there are a multitude of configuration options that allow you to shape MIRO to fit your particular model.</p>
+                                    <video playsinline autoplay muted loop id="configVideo" style="width:100%;display:block;margin:auto;padding-bottom:15px;">
+                                      <source src="assets/images/configuration_mode/configuration.mp4" type="video/mp4">
+                                    </video>
                                     <p>The configuration can be done via a <a href ="#configurationMode" class="scrollto">graphical configuration interface</a>, with which you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview.
                                     In addition, the configuration can also be done <a href ="#jsonfiles" class="scrollto">manually via JSON</a> files.</p>
                                 </div>
@@ -216,16 +219,16 @@ putclose log;
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default scenario comparison mode</h6>
                                   <p style="display:none">This option sets the default comparison method for scenarios. 
                                   Regardless of the selected option, you can always switch between split screen and tab view within the MIRO application.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use a default scenario that will be loaded on startup?</h6>
+                                  <h6 id="default-scenario" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Use a default scenario that will be loaded on startup?</h6>
                                   <p style="display:none">Allows you to pre-populate tables and widgets with data when starting MIRO. 
                                   If this option is set and a scenario name is specified, MIRO looks for the corresponding scenario in the database at the application startup and automatically loads all data into the interface. 
                                   If the same input data is always used as basic data, this option allows you to skip the data import step in MIRO.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Specify extra command line arguments that GAMS will be called with</h6>
+                                  <h6 id="command-line-args" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Specify extra command line arguments that GAMS will be called with</h6>
                                   <p style="display:none">With this option GAMS Command line arguments can be specified, which are set for the model with every GAMS run started out of MIRO.
                                   This can be GAMS options like <span class="code">limrow=10</span> or <span class="code">threads=4</span> but also custom double-dash parameter. 
                                   Note, that the command line arguments set with this option are not visible in MIRO.
                                   <br>For command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide input symbols into groups</h6>
+                                  <h6 id="tab-grouping" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide input symbols into groups</h6>
                                   <div style="display:none"> <p>Multiple tabs of input symbols (also output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
                                   <p>Example:<br>
                                   For the input data of the transport model, one might want to group the symbols with geo data together:</p>
@@ -257,7 +260,7 @@ putclose log;
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate scenario functionality</h6>
                                   <p style="display:none">If enabled, scenario data can be saved.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
+                                  <h6 id="local-upload" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
                                   <div style="display:none"><p>If enabled, scenario data can be loaded via local files.</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/import-local.png" alt="Import local data" />
@@ -267,7 +270,7 @@ putclose log;
                                   <p style="display:none">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachment">here</a>.</p>
                                   <h6 id="aggregate-widgets" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should all input widgets (slider, dropdown menu, etc.) be aggregated on a single tab?</h6>
                                   <p style="display:none">If enabled, all scalar input widgets are displayed in the same tab and separated otherwise.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include parent directory of the model folder in your model runs (e.g. because several models share files)</h6>
+                                  <h6 id="include-parent" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include parent directory of the model folder in your model runs (e.g. because several models share files)</h6>
                                   <p style="display:none">In general, GAMS searches for input and include files in the current working directory only. This option sets an include directory to the parent directory of the GAMS model.</p>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include a metadata sheet in the Excel file (when exporting a scenario)?</h6>
                                   <div style="display:none"><p>The metatdata sheet contains information about the user name, the scenario name and the time when the creation time of the scenario.</p>

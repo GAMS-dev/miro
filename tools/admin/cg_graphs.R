@@ -1891,8 +1891,9 @@ observeEvent(input$saveGraphConfirm, rv$saveGraphConfirm <- rv$saveGraphConfirm 
 observeEvent(rv$saveGraphConfirm, {
   req(rv$saveGraphConfirm > 0L)
   configJSON$dataRendering[[activeSymbol$name]] <<- rv$graphConfig
-  if(length(input$chart_height))
+  if(!is.na(input$chart_height) && length(input$chart_height)){
     configJSON$dataRendering[[activeSymbol$name]]$height <<- input$chart_height
+  }
   if(rv$graphConfig$graph$tool == "pivot"){
     configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL

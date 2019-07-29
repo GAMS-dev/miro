@@ -711,10 +711,6 @@
         "label": "Sprache",
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
-      "skin":{
-        "label": "Skin für das Dashboard",
-        "choices": ["schwarz", "blau", "lila", "grün", "rot", "gelb"]
-      },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
         "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
@@ -724,7 +720,7 @@
         "label": "Name des Standardszenarios"
       },
       "args":{
-        "label": "Geben Sie zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen wird (z.B. limrow=10,threads=4)"
+        "label": "Geben Sie zusätzliche Kommandozeilenparameter an, mit denen GAMS aufgerufen wird"
       },
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
@@ -745,7 +741,7 @@
         "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
       },
       "mirologfile":{
-        "label": "Geben Sie den Namen der MIRO Log-Datei ein. Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
+        "label": "Geben Sie den Namen der MIRO Log-Datei ein (mindestens 3 Zeichen). Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
       },
       "saveDuration":{
         "label": "Dauer, die die GAMS-Logs und lst-Dateien in der Datenbank gespeichert werden sollen (in Tagen). 0 bedeutet, dass Dateien überhaupt nicht gespeichert werden, 999 bedeutet, dass die Dateien nie gelöscht werden sollen. Diese Einstellung wird ignoriert, wenn das Anhangsmodul nicht aktiv ist. Beachten Sie, dass dies derzeit nur im MIRO-Basismodus unterstützt wird."
@@ -771,10 +767,10 @@
         "label": "Szenario-Sharing zwischen verschiedenen Benutzern aktivieren"
       },
       "actLog":{
-        "label": "Log-Datei in der Benutzeroberfläche anzeigen"
+        "label": "Log Datei in der Benutzeroberfläche anzeigen"
       },
       "actLst":{
-        "label": "Lst-Datei in der Benutzeroberfläche anzeigen"
+        "label": "Listing (lst) Datei in der Benutzeroberfläche anzeigen"
       },
       "actAttach":{
         "title": "Können Dateien in jedem Format sein. MIRO unterscheidet zwei Arten von Anhängen: Anhänge, die von Ihrem GAMS-Modell gesehen und gelesen werden können, und Dateien, die nicht sichtbar sind.",
@@ -806,8 +802,8 @@
     "tables":{
       "ui":{
         "title": "Allgemeine Tabelleneinstellungen",
-        "tableType": "Welchen Tabellentyp möchten Sie konfigurieren?",
-        "choices": ["Eingabetabelle", "Ausgabetabelle"]
+        "input": "Eingabetabellen",
+        "output": "Ausgabetabellen"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
@@ -854,9 +850,13 @@
     "widgets":{
       "ui":{
         "title":"Eingabe-Widgets konfigurieren",
-        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
-        "symbolType": "Zu konfigurierender Symboltyp",
+        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",,
+        "gams": "Symbol",
+        "go": "Neue GAMS Option",
+        "dd": "Neuer double-dash Parameter",
         "choices": ["Symbol", "Neue GAMS-Option", "Neuer Double-Dash-Parameter"],
+        "noSymbolMsg": "Es wurde kein GAMS symbol für die Verwendung mit MIRO markiert",
+        "noWidgetMsg": "Es wurde noch kein Widget konfiguriert",
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter",
@@ -904,7 +904,13 @@
         "val36": "Der Gruppenname muss mindestens 1 Zeichen lang sein.",
         "val37": "Jede Gruppe muss mindestens 2 Mitglieder haben und jedes Element darf nur in einer einzigen Gruppe erscheinen!",
         "val38": "Es muss mindestens ein Element ausgewählt werden!",
-        "val39": "Im Namen sind keine Leerzeichen erlaubt!"
+        "val39": "Im Namen sind keine Leerzeichen erlaubt!",
+        "val40": "Kein Slider Minimum gefunden!",
+        "val41": "Kein Slider Maximum gefunden!",
+        "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
+        "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
+        "val44": "Es muss ein Seperator angegeben werden!",
+        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein."
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
@@ -964,6 +970,7 @@
           "selector": "Statische Auswahlmöglichkeiten?"
         },
         "default": "Standardwert",
+        "multiple": "Sollen mehrere Elemente auswählbar sein?",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "checkbox":{
@@ -1063,7 +1070,7 @@
         "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
         "gamsSymbols": "Wählen Sie aus, welches GAMS-Symbol geplottet werden soll",
         "chartTitle": "Wählen Sie einen Titel für Ihr Diagramm",
-        "height": "Wählen Sie eine Höhe für Ihr Diagramm (px)",
+        "height": "Wählen Sie eine Höhe für Ihr Diagramm (px) (keine Live-Vorschau verfügbar)",
         "tool": "Wählen Sie das Charting-Tool aus, das Sie verwenden möchten",
         "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte"]
       },
@@ -1244,6 +1251,10 @@
         "confirm": "Bestätigen"
       },
       "js":{
+        "extraCLargs":{
+            "name": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
+            "value": "Wert des Kommandozeilenparameters (keine Anführungszeichen verwenden)"
+        },
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
           "groupMemberIn": "Gruppenmitglieder auswählen"

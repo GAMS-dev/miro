@@ -711,10 +711,6 @@
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
       },
-      "skin":{
-        "label": "Skin to use for dashboard",
-        "choices": ["black", "blue", "purple", "green", "red", "yellow"]
-      },
       "scen":{
         "label": "Default scenario comparison mode",
         "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
@@ -724,7 +720,7 @@
         "label": "Name of the default scenario"
       },
       "args":{
-        "label": "Specify extra command line arguments that GAMS will be called with (e.g. limrow=10,threads=4)"
+        "label": "Specify extra command line arguments that GAMS will be called with"
       },
       "groups":{
         "input": "Divide input symbols into groups",
@@ -745,7 +741,7 @@
         "label": "Background color of row and column headers in pivot tables."
       },
       "mirologfile":{
-        "label": "Enter the name of the MIRO log file. Leave the field empty if you do not have a MIRO log file."
+        "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
       },
       "saveDuration":{
         "label": "Duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode."
@@ -774,7 +770,7 @@
         "label": "Show log file in UI"
       },
       "actLst":{
-        "label": "Show lst file in UI"
+        "label": "Show listing (lst) file in UI"
       },
       "actAttach":{
         "title": "Can be files of any format. MIRO distinguishes between two types of attachments: attachments that can be seen and read by your GAMS model and files that can not be seen.",
@@ -806,8 +802,8 @@
     "tables":{
       "ui":{
         "title": "General table settings",
-        "tableType": "Which table type would you like to configure?",
-        "choices": ["input table", "output table"]
+        "input": "input table",
+        "output": "output table"
       },
       "hot":{
         "height": "Height of input tables (in px)",
@@ -854,9 +850,13 @@
     "widgets":{
       "ui":{
         "title":"Configure input widgets",
-        "widgetUpdateSuccess": "Widget configuration was updated successfully",
-        "symbolType": "Symbol type to configure",
+        "widgetUpdateSuccess": "Widget configuration was updated successfully",,
+        "gams": "Symbol",
+        "go": "New GAMS option",
+        "dd": "New double-dash parameter",
         "choices": ["Symbol", "New GAMS option", "New double dash parameter"],
+        "noSymbolMsg": "No GAMS symbol has been tagged for use in MIRO",
+        "noWidgetMsg": "No widget has been configured yet",
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
@@ -904,7 +904,13 @@
         "val36": "The group name must be at least 1 character long.",
         "val37": "Each group must have at least 2 members and every element may only appear in a single group!",
         "val38": "At least one choice has to be specified!",
-        "val39": "No space allowed in the name!"
+        "val39": "No space allowed in the name!",
+        "val40": "No minimum slider value found!",
+        "val41": "No maximum slider value found!",
+        "val42": "The minimum value must be lower than the maximum value!",
+        "val43": "For a slider range 2 default values need to be defined!",
+        "val44": "A separator must be provided!",
+        "val45": "The name of the command line parameter must be at least 1 character long."
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
@@ -964,6 +970,7 @@
           "selector": "Static choices?"
         },
         "default": "Default value",
+        "multiple": "Should multiple items be selectable?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{
@@ -1063,7 +1070,7 @@
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "Select which GAMS symbol to plot",
         "chartTitle": "Choose a title for your chart",
-        "height": "Choose a height for your chart (px)",
+        "height": "Choose a height for your chart (px) (no live preview available)",
         "tool": "Select the charting tool you want to use",
         "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
       },
@@ -1244,6 +1251,10 @@
         "confirm": "Confirm"
       },
       "js":{
+        "extraCLargs":{
+          "name": "Name of the command line argument (e.g. limrow or --mydoubledash)",
+          "value": "Value of the command line argument (do not use quotation marks)"
+        },
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
           "groupMemberIn": "Select group members"
