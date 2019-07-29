@@ -934,8 +934,8 @@ addHcubeLoadBlock <- function(id, choices){
     ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
       tags$hr()
     },
-    tags$div(style="background-color: #3c8dbc12;border-left: 5px solid #3c8dbc;padding-bottom:10px;padding-left: 5px;", 
-             tags$div(style="position:absolute;right:1%;bottom: 0;line-height:1;color:#3c8dbc9c;font-size:50px;", "&"),
+    tags$div(style="background-color: #3c8dbc12;border-left: 5px solid #3c8dbc;padding-bottom:10px;padding-left:5px;min-width:1000px;", 
+             tags$div(style="right:1%;bottom: 0;line-height:1;color:#3c8dbc9c;font-size:50px;float:right;margin-top:5px;margin-right:5px;", "&"),
              tags$div(id = "blockContent" %+% id, 
                       class = "grid-container"
              ),
