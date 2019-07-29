@@ -226,9 +226,22 @@ observeEvent(input$btUpdateMeta, {
       showHideEl(session, "#editMetaNameExists", 6000)
       return()
     }
-    newReadPerm  <- input$editMetaReadPerm
-    newWritePerm <- input$editMetaWritePerm
-    newExecPerm  <- input$editMetaExecPerm
+    currentReadPerm <- activeScen$getReadPerm()
+    currentWritePerm <- activeScen$getWritePerm()
+    currentExecPerm <- activeScen$getExecPerm()
+    
+    activeUserGroups <- c(uid, csv2Vector(ugroups))
+    
+    
+    if(any(activeUserGroups %in% currentWritePerm)){
+      newWritePerm <- input$editMetaWritePerm
+      newExecPerm  <- input$editMetaExecPerm
+      newReadPerm  <- input$editMetaReadPerm
+    }else{
+      newWritePerm <- currentWritePerm
+      newExecPerm <- currentExecPerm
+      newReadPerm  <- currentReadPerm
+    }
     
     if(any(c(length(newReadPerm), length(newWritePerm), length(newExecPerm)) < 1L)){
       enableEl(session, "#btUpdateMeta")
@@ -236,9 +249,27 @@ observeEvent(input$btUpdateMeta, {
       showHideEl(session, "#editMetaEmptyPerm", 6000)
       return()
     }
-    if(any(!c(newReadPerm, newWritePerm, newExecPerm) %in% c(uid, csv2Vector(ugroups)))){
+    if(any(!newReadPerm %in% c(activeUserGroups, currentReadPerm))){
       showHideEl(session, "#editMetaError")
-      flog.error("Attempt to temper with access permissions!")
+      flog.error("Attempt to tamper with read access permissions!")
+      return()
+    }
+    if(any(!newWritePerm %in% c(activeUserGroups, currentWritePerm))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to tamper with write access permissions!")
+      return()
+    }
+    if(any(!newExecPerm %in% c(activeUserGroups, currentExecPerm))){
+      showHideEl(session, "#editMetaError")
+      flog.error("Attempt to tamper with execute access permissions!")
+      return()
+    }
+    scenOwner <- activeScen$getScenUid()[[1L]]
+    if((!scenOwner %in% newReadPerm) 
+       || (!scenOwner %in% newWritePerm) 
+       || (!scenOwner %in% newExecPerm)){
+      showHideEl(session, "#editMetaIncapOwner")
+      flog.debug("Attempt to revoke the scenario owner's access rights.")
       return()
     }
     tryCatch({

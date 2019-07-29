@@ -1,5 +1,9 @@
 # load input data from excel sheet
 observeEvent(input$btOverwriteLocal, {
+  if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
+    return()
+  }
   scenName <- isolate(input$local_newScenName)
   flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
   errMsg <- NULL
@@ -16,6 +20,10 @@ observeEvent(input$btOverwriteLocal, {
   rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
 })
 observeEvent(input$btCheckSnameLocalConfirm, {
+  if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
+    return()
+  }
   if(length(isolate(rv$activeSname))){
     rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
   }
@@ -44,11 +52,11 @@ observeEvent(input$btCheckSnameLocalConfirm, {
   }
 })
 observeEvent(virtualActionButton(rv$btLoadLocal),{
-  flog.debug("Load local data button clicked.")
-  
   if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
     return()
   }
+  flog.debug("Load local data button clicked.")
   
   # check whether current input datasets are empty
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){
@@ -86,6 +94,10 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   if(is.null(input$localInput$datapath)){
     flog.error("Load Excel event was triggered but no datapath specified. This should not happen!")
     return(NULL)
+  }
+  if(identical(config$activateModules$loadLocal, FALSE)){
+    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
+    return()
   }
   
   # initialize new imported sheets counter

@@ -93,7 +93,7 @@ accessElIdentifier <- "_ael"
 # prefix for database tables with shared data
 sharedTablePrefix <- "_shared"
 # default access group every user is in
-defaultGroup <- "user"
+defaultGroup <- "users"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # name of the folder where hcube jobs will be executed
