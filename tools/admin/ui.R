@@ -115,7 +115,7 @@ body_admin <- dashboardBody({
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
                     tags$div(class = "col-sm-6",
-                             tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                             tags$div(class="main-tab",
                                       fileInput("localInput", lang$adminMode$graphs$ui$localInput,
                                                 width = "100%",
                                                 multiple = FALSE,
@@ -131,7 +131,7 @@ body_admin <- dashboardBody({
                                                            setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot", "valuebox"), 
                                                                     lang$adminMode$graphs$ui$choices)),
                                                tags$div(id = "tool_options"),
-                                               tags$div(style = "height:100px;")
+                                               tags$div(class = "space")
                                       )
                              )
                     ),
@@ -181,7 +181,7 @@ body_admin <- dashboardBody({
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                    tags$div(class="main-tab",
                              tags$div(style = "padding-bottom: 20px;",
                                       tabsetPanel(id="widget_symbol_type",
                                                   tabPanel(lang$adminMode$widgets$ui$gams, value = "gams"),
@@ -189,22 +189,17 @@ body_admin <- dashboardBody({
                                                   tabPanel(lang$adminMode$widgets$ui$dd, value = "dd")
                                       )),
                              tags$div(class = "col-sm-6",
-                                      tags$div(id = "noSymbolMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      tags$div(id = "noSymbolMsg", class="config-message;", 
                                                lang$adminMode$widgets$ui$noSymbolMsg),
-                                      tags$div(id = "noWidgetMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      tags$div(id = "noWidgetMsg", class="config-message;", 
                                                lang$adminMode$widgets$ui$noWidgetMsg),
-                                      tags$div(id = "noWidgetConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      tags$div(id = "noWidgetConfigMsg", class="config-message;", 
                                                lang$adminMode$widgets$ui$noWidgetConfigMsg),
-                                      tags$div(id = "optionConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      tags$div(id = "optionConfigMsg", class="config-message;", 
                                                lang$adminMode$widgets$ui$optionConfigMsg),
-                                      tags$div(id = "doubledashConfigMsg", style = "padding: 15px;margin-bottom: 20px;font-weight: bold;
-                                      text-align: center;font-size: 12pt;background: #3c8dbcb0;display: none;", 
+                                      tags$div(id = "doubledashConfigMsg", class="config-message;", 
                                                lang$adminMode$widgets$ui$doubledashConfigMsg),
-                                      tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
+                                      tags$div(class="main-tab",
                                                conditionalPanel(
                                                  condition = "input.widget_symbol_type == 'gams'",
                                                  tags$div(style = "max-width:400px;",
@@ -224,7 +219,7 @@ body_admin <- dashboardBody({
                                                tags$div(style = "max-width:400px;",
                                                         selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c())),
                                                tags$div(id = "widget_options"),
-                                               tags$div(style = "height:100px;")
+                                               tags$div(class = "space")
                                       )
                              ),
                              tags$div(class = "col-sm-6",
@@ -244,27 +239,27 @@ body_admin <- dashboardBody({
                     tags$div(class = "space"),
                     tabsetPanel(
                       tabPanel("Interface", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                                                     tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                                     tags$div(class="main-tab",
                                                               tags$div(id = "interface_wrapper1"),
-                                                              tags$div(style = "height:100px;")
+                                                              tags$div(class = "space")
                                                      )
                       ),
                       tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                               tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                               tags$div(class="main-tab",
                                         tags$div(id = "interface_wrapper2"),
-                                        tags$div(style = "height:100px;")
+                                        tags$div(class = "space")
                                )
                       )),
                       tabPanel("Modules", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                                                   tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                                                   tags$div(class="main-tab",
                                                             tags$div(id = "module_wrapper1"),
-                                                            tags$div(style = "height:100px;")
+                                                            tags$div(class = "space")
                                                    )      
                       ),
                       tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                               tags$div(style = "max-height:800px;max-height:80vh;overflow:auto;padding-right:30px;",
+                               tags$div(class="main-tab",
                                         tags$div(id = "module_wrapper2"),
-                                        tags$div(style = "height:100px;")
+                                        tags$div(class = "space")
                                )      
                       ))
                     )
@@ -275,15 +270,16 @@ body_admin <- dashboardBody({
               fluidRow(
                 box(title = lang$adminMode$tables$ui$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
-                    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;",
                              tags$div(style = "padding-bottom: 20px;",
                                       tabsetPanel(id="table_type",
                                                   tabPanel(lang$adminMode$tables$ui$input, value = "hot"),
                                                   tabPanel(lang$adminMode$tables$ui$output, value = "dt")
                                       )),
                              tags$div(class = "col-sm-6",
-                                      tags$div(id = "table_wrapper"),
-                                      tags$div(style = "height:100px;")
+                                      tags$div(class="main-tab",
+                                               tags$div(id = "table_wrapper"),
+                                               tags$div(class = "space")
+                                      )
                              ),
                              tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
                                       tags$div(id = "preview-output-hot", 
@@ -293,7 +289,7 @@ body_admin <- dashboardBody({
                                                             graphTool = "plotly", 
                                                             height = 700, 
                                                             noDataTxt = lang$nav$outputScreen$boxResults$noData))
-                             ))
+                             )
                 )
               )
       )

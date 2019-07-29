@@ -1351,7 +1351,7 @@ getPieOptions <- reactive({
                 choices = indices),
     selectInput("pie_values", lang$adminMode$graphs$pieOptions$values,
                 choices = scalarIndices),
-    tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+    tags$div(class = "shiny-input-container conditional",
              tags$div(class = "col-sm-4", style = "padding: inherit;",
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("pie_donut", lang$adminMode$graphs$pieOptions$donut)

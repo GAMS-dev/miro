@@ -492,12 +492,12 @@ observeEvent({input$widget_type
                             heatmap = identical(currentConfig$heatmap, TRUE))
     insertUI(selector = "#widget_options",
              tagList(
-               tags$div(style = "max-width:400px;",
+               tags$div(class="option-wrapper",
                         textInput("widget_alias", lang$adminMode$widgets$table$alias, value = rv$widgetConfig$alias)),
                checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = identical(rv$widgetConfig$bigData, TRUE)),
                checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
                conditionalPanel(condition = "input.table_bigdata===false",
-                                tags$div(style = "max-width:400px;",
+                                tags$div(class="option-wrapper",
                                          selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                                      choices = inputSymHeaders[[input$widget_symbol]], 
                                                      selected = rv$widgetConfig$readonlyCols, multiple = TRUE)),
@@ -537,13 +537,13 @@ observeEvent({input$widget_type
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
            
-           staticMinInput <- tags$div(style = "max-width:400px;",
+           staticMinInput <- tags$div(class="option-wrapper",
                                       numericInput("slider_min", lang$adminMode$widgets$slider$min, 
                                                    value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L))
-           staticMaxInput <- tags$div(style = "max-width:400px;",
+           staticMaxInput <- tags$div(class="option-wrapper",
                                       numericInput("slider_max", lang$adminMode$widgets$slider$max, 
                                                    value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 10L))
-           staticDefInput <- tags$div(style = "max-width:400px;",
+           staticDefInput <- tags$div(class="option-wrapper",
                                       numericInput("slider_def", lang$adminMode$widgets$slider$default, 
                                                    value = 
                                                      if(is.numeric(rv$widgetConfig$default)){
@@ -555,11 +555,11 @@ observeEvent({input$widget_type
                                                      }))
            insertUI(selector = "#widget_options",
                     tagList(
-                      tags$div(style = "max-width:400px;",
+                      tags$div(class="option-wrapper",
                                textInput("widget_alias", lang$adminMode$widgets$slider$alias, value = rv$widgetConfig$alias)),
-                      tags$div(style = "max-width:400px;",
+                      tags$div(class="option-wrapper",
                                textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label)),
-                      tags$div(class = "shiny-input-container",
+                      tags$div(class = "shiny-input-container conditional",
                         tags$div(class = "col-sm-8",
                                  if(length(inputSymMultiDim)){
                                    tagList(
@@ -594,7 +594,7 @@ observeEvent({input$widget_type
                                    ))
                         }
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
                                           tagList(
@@ -628,7 +628,7 @@ observeEvent({input$widget_type
                                           ))
                                }
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
                                           tagList(
@@ -662,7 +662,7 @@ observeEvent({input$widget_type
                                           ))
                                }
                       ),
-                      tags$div(style = "max-width:400px;",
+                      tags$div(class="option-wrapper",
                                numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L)),
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "slider_ticks", lang$adminMode$widgets$slider$ticks),
@@ -718,7 +718,7 @@ observeEvent({input$widget_type
                       textInput("widget_alias", lang$adminMode$widgets$sliderrange$alias, 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
                                           tagList(
@@ -752,7 +752,7 @@ observeEvent({input$widget_type
                                           ))
                                }
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
                                           tagList(
@@ -846,7 +846,7 @@ observeEvent({input$widget_type
                       textInput("widget_alias", lang$adminMode$widgets$dropdown$alias, 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         if(length(inputSymMultiDim)){
                                           tagList(
@@ -974,7 +974,7 @@ observeEvent({input$widget_type
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$date$alias, value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_def_off!==true",
                                                          dateInput("date_default", lang$adminMode$widgets$date$default, value = rv$widgetConfig$value)
@@ -989,7 +989,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_min_off!==true",
                                                          dateInput("date_min", lang$adminMode$widgets$date$min, value = rv$widgetConfig$min)
@@ -1004,7 +1004,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_max_off!==true",
                                                          dateInput("date_max", lang$adminMode$widgets$date$max, 
@@ -1020,7 +1020,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$date$format,
@@ -1097,7 +1097,7 @@ observeEvent({input$widget_type
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$daterange$alias, value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_start_off!==true",
                                                          dateInput("date_start", lang$adminMode$widgets$daterange$defaultStart, 
@@ -1113,7 +1113,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_end_off!==true",
                                                          dateInput("date_start", lang$adminMode$widgets$daterange$defaultEnd, 
@@ -1129,7 +1129,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_min_off!==true",
                                                          dateInput("date_min", lang$adminMode$widgets$daterange$min, value = rv$widgetConfig$min)
@@ -1144,7 +1144,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_max_off!==true",
                                                          dateInput("date_max", lang$adminMode$widgets$daterange$max, 
@@ -1160,7 +1160,7 @@ observeEvent({input$widget_type
                                                    ))
                                         ))
                       ),
-                      tags$div(class = "shiny-input-container", style = "width:100%;display:inline-block;",
+                      tags$div(class = "shiny-input-container conditional",
                                tags$div(class = "col-sm-8",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$daterange$format,

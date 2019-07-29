@@ -28,7 +28,7 @@ removeUI(selector = "#module_wrapper1 .shiny-input-container", multiple = TRUE)
 
 insertUI(selector = "#interface_wrapper1",
          tagList(
-           tags$h2("General", style="margin-top:0px;"),
+           tags$h2("General", class="option-category"),
            tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
            tags$div(
              tags$label(class = "checkbox-material", 
@@ -39,16 +39,16 @@ insertUI(selector = "#interface_wrapper1",
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_act_lst", value = if(length(configJSON$activateModules$lstFile)) configJSON$activateModules$lstFile else config$activateModules$lstFile, label = NULL)
              )),
-           tags$div(style = "max-width:400px;position:relative;",
+           tags$div(class = "option-wrapper info-position",
                     textInput("general_mirologfile", tags$div(lang$adminMode$general$mirologfile$label, 
-                                                            tags$a("", style="color:inherit;", href="https://gams.com/miro/customize.html#miro-log", 
-                                                                   tags$span(class="fas fa-info-circle", style="color: #f39619;top: 0;text-align: right;font-size: 12px;margin-left: 2px;"), target="_blank")),
+                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#miro-log", 
+                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                               value = if(!is.null(configJSON$miroLogFile) && nchar(configJSON$miroLogFile)) configJSON$miroLogFile else ""
                     )),
-           tags$div(style = "max-width:400px;position:relative;",
+           tags$div(class = "option-wrapper info-position",
                     selectInput("general_scen", tags$div(lang$adminMode$general$scen$label, 
-                                                         tags$a("", style="color:inherit;", href="https://gams.com/miro/start.html#scenario-comparison", 
-                                                                tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank")), 
+                                                         tags$a("", class="info-wrapper", href="https://gams.com/miro/start.html#scenario-comparison", 
+                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")), 
                                 choices = langSpecific$scen,
                                 selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
                     )),
@@ -58,23 +58,23 @@ insertUI(selector = "#interface_wrapper1",
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_auto", value = if(length(configJSON$autoGenInputGraphs)) configJSON$autoGenInputGraphs else config$autoGenInputGraphs, label = NULL)
              )),
-           tags$div(style = "max-width:400px;",
+           tags$div(class="option-wrapper",
                     colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
                                      value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"
                     )),
-           tags$div(style = "max-width:400px;",
+           tags$div(class="option-wrapper",
                     sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
                                 min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
                     )),
            tags$hr(),
            tags$h2("Logo"),
-           tags$div(style = "max-width:400px; margin-bottom: 5px;",
+           tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                     fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
                               width = "100%",
                               multiple = FALSE,
                               accept = c(".png", ".PNG", ".jpg", ".JPG"))),
            tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", "Logo preview:",
-                      tags$div(style = "max-width:230px; max-height:50px; margin-left: 25px; vertical-align: top; border-style: solid; border-color: #eeeeee; border-width: 1px;",
+                      tags$div(class="logo-wrapper",
                                imageOutput("general_logo_preview", height = "50px", width = "230px")
                       ))
          ), 
@@ -86,24 +86,23 @@ if(length(configJSON$outputGroups))
   addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
 insertUI(selector = "#interface_wrapper2",
          tagList(
-           tags$h2("Scalars", style="margin-top:0px;"),
-           tags$div(style = "max-width:400px;",
+           tags$h2("Scalars", class="option-category"),
+           tags$div(class="option-wrapper",
                     textInput("general_input_scalars", lang$adminMode$general$inputScalars$label, value = configJSON$scalarAliases$inputScalars,
                               placeholder = lang$adminMode$general$inputScalars$placeholder)),
-           tags$div(style = "max-width:400px;",
+           tags$div(class="option-wrapper",
                     textInput("general_output_scalars", lang$adminMode$general$outputScalars$label, value = configJSON$scalarAliases$outputScalars,
                               placeholder = lang$adminMode$general$outputScalars$placeholder)),
            if(length(modelOut[[scalarsOutName]])){
-             tags$div(style = "max-width:400px;",
-                      tags$div(style="position:relative;", selectInput("general_hidden", 
-                                                                       tags$div(lang$adminMode$general$hidden$label, tags$a("", style="color:inherit;", href="https://gams.com/miro/customize.html#hidden-scalars", 
-                                                                              tags$span(class="fas fa-info-circle", style="color: #f39619;top: 0;text-align: right;
-                                                                                        font-size: 12px;margin-left: 2px;"), target="_blank")),
+             tags$div(class="option-wrapper",
+                      tags$div(class = "info-position", selectInput("general_hidden", 
+                                                                       tags$div(lang$adminMode$general$hidden$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#hidden-scalars", 
+                                                                              tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                                        choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
                                                                        selected = configJSON$hiddenOutputScalars, multiple = TRUE)
                       ))
            },
-           tags$div(style = "max-width:400px;", title = lang$adminMode$general$aggregate$title,
+           tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
                     tags$label(class = "cb-label", "for" = "general_aggregate", lang$adminMode$general$aggregate$label),
                     tags$div(
                       tags$label(class = "checkbox-material", 
@@ -111,23 +110,22 @@ insertUI(selector = "#interface_wrapper2",
                       ))
            ),
            tags$hr(),
-           tags$div(style="position:relative;",
-                    tags$h2(("Tab grouping"), tags$a(href="https://gams.com/miro/customize.html#tab-grouping", 
-                                                     tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;
-                                                               text-align: right;font-size: 16px;margin-left: 6px;"), target="_blank"))
+           tags$div(class = "info-position",
+                    tags$h2(("Tab grouping"), tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
+                                                     tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
            ),
            tags$h4("Inputgroups"),
-           tags$div(style = "max-width:440px;",
+           tags$div(class="option-wrapper-indented",
                     createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
            tags$h4("Outputgroups"),
-           tags$div(style = "max-width:440px;",
+           tags$div(class="option-wrapper-indented",
                     createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE))
          ), 
          where = "beforeEnd")
 
 insertUI(selector = "#module_wrapper1",
          tagList(
-           tags$h2("Scenario & data", style="margin-top:0px;"),
+           tags$h2("Scenario & data", class="option-category"),
            tags$div(title = lang$adminMode$general$actScen$title,
                     tags$label(class = "cb-label", "for" = "general_act_scen", lang$adminMode$general$actScen$label),
                     tags$div(
@@ -136,21 +134,19 @@ insertUI(selector = "#module_wrapper1",
                       ))
            ),
            tags$div(title = lang$adminMode$general$actUpload$title,
-                    tags$label(style = "position:relative;", class = "cb-label", "for" = "general_act_upload", 
-                               tags$div(lang$adminMode$general$actUpload$label, tags$a("", style="color:inherit;", href="https://gams.com/miro/customize.html#local-upload", 
-                                                                                       tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;
-                                                text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank"))),
+                    tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
+                               tags$div(lang$adminMode$general$actUpload$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
+                                                                                       tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_upload", value = if(length(configJSON$activateModules$loadLocal)) configJSON$activateModules$loadLocal else config$activateModules$loadLocal, label = NULL)
                       ))
            ),
            tags$div(class = "shiny-input-container",
-                    tags$label(style="position:relative;", class = "cb-label", "for" = "default_scen_check",
-                               tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("", style="color:inherit;", 
+                    tags$label(class = "cb-label info-position", "for" = "default_scen_check",
+                               tags$div(lang$adminMode$general$defaultScenName$checkbox, tags$a("", class="info-wrapper", 
                                       href="https://gams.com/miro/customize.html#default-scenario", 
-                                      tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;
-          text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank"))),
+                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("default_scen_check", label = NULL, value = if(length(configJSON$defaultScenName) && nchar(configJSON$defaultScenName)) TRUE else FALSE)
@@ -158,7 +154,7 @@ insertUI(selector = "#module_wrapper1",
            ),
            conditionalPanel(
              condition = "input.default_scen_check===true",
-             tags$div(style = "max-width:400px;padding-right:30px;padding-left:40px;",
+             tags$div(class = "option-wrapper", style = "padding-right:30px;padding-left:40px;",
                       textInput("general_default_scen_name", lang$adminMode$general$defaultScenName$label,
                                 value = if(length(configJSON$defaultScenName)) configJSON$defaultScenName else NULL))),
            tags$div(title = lang$adminMode$general$meta$title,
@@ -178,16 +174,15 @@ insertUI(selector = "#module_wrapper1",
                       ))
            ),
            tags$div(title = lang$adminMode$general$actAttach$title,
-                    tags$label(style="position:relative;", class = "cb-label", "for" = "general_act_attach", 
-                               tags$div(lang$adminMode$general$actAttach$label, tags$a("", style="color:inherit;", href="https://gams.com/miro/start.html#file-attachment", 
-                                      tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;
-                                                text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank"))),
+                    tags$label(class = "cb-label info-position", "for" = "general_act_attach", 
+                               tags$div(lang$adminMode$general$actAttach$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/start.html#file-attachment", 
+                                      tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
                     tags$div(
                       tags$label(class = "checkbox-material", 
                                  checkboxInput("general_act_attach", value = if(length(configJSON$activateModules$attachments)) configJSON$activateModules$attachments else config$activateModules$attachments, label = NULL)
                       ))
            ),
-           tags$div(style = "max-width:400px;",
+           tags$div(class="option-wrapper",
                     sliderInput("general_save_duration", label = lang$adminMode$general$saveDuration$label,
                                 min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else config$storeLogFilesDuration
                     ))
@@ -196,7 +191,7 @@ insertUI(selector = "#module_wrapper1",
 
 insertUI(selector = "#module_wrapper2",
          tagList(
-           tags$h2("Computation", style="margin-top:0px;"),
+           tags$h2("Computation", class="option-category"),
            tags$div(title = lang$adminMode$general$saveTrace$title,
                     tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
                     tags$div(
@@ -204,19 +199,18 @@ insertUI(selector = "#module_wrapper2",
                                  checkboxInput("general_save_trace", value = if(length(configJSON$saveTraceFile)) configJSON$saveTraceFile else config$saveTraceFile, label = NULL)
                       ))
            ),
-           tags$label(style = "position:relative;", class = "cb-label", "for" = "general_parent", 
-                      tags$div(lang$adminMode$general$parent$label, tags$a("", style="color:inherit;", 
+           tags$label(class = "cb-label info-position", "for" = "general_parent", 
+                      tags$div(lang$adminMode$general$parent$label, tags$a("", class="info-wrapper", 
                                                                            href="https://gams.com/miro/customize.html#include-parent", 
-                                                                           tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;
-          text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank"))),
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
            tags$div(
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_parent", value = if(length(configJSON$includeParentDir)) configJSON$includeParentDir else config$includeParentDir, label = NULL)
              )),
-           tags$div(style = "max-width:400px;",
+           tags$div(class="option-wrapper",
                     selectizeInput("general_args", tags$div(lang$adminMode$general$args$label, 
-                                                            tags$a("", style="color:inherit;", href="https://gams.com/miro/customize.html#include-parent", 
-                                                                   tags$span(class="fas fa-info-circle", style="color: #f39619;position:absolute;top: 0;text-align: right;font-size: 12px;margin-left: 6px;"), target="_blank")),
+                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#include-parent", 
+                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                             choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
                                                             multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))),
            tags$hr(),
