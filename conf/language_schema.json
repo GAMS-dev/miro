@@ -4143,6 +4143,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "val46":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -5883,23 +5888,6 @@
               "additionalProperties":false,
               "required":true,
               "properties":{ 
-                "extraCLargs":{  
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required":true,
-                  "properties":{ 
-                    "name":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    },
-                    "value":{ 
-                      "type":"string",
-                      "minLength":1,
-                      "required":true
-                    }
-                  }
-                },
                 "addInputGroup":{  
                   "type":"object",
                   "additionalProperties":false,

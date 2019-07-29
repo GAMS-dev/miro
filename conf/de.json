@@ -910,7 +910,8 @@
         "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
         "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
         "val44": "Es muss ein Seperator angegeben werden!",
-        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein."
+        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
+        "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an."
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
@@ -1251,10 +1252,6 @@
         "confirm": "Bestätigen"
       },
       "js":{
-        "extraCLargs":{
-            "name": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
-            "value": "Wert des Kommandozeilenparameters (keine Anführungszeichen verwenden)"
-        },
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
           "groupMemberIn": "Gruppenmitglieder auswählen"

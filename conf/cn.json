@@ -910,7 +910,8 @@
         "val42": "The minimum value must be lower than the maximum value!",
         "val43": "For a slider range 2 default values need to be defined!",
         "val44": "A separator must be provided!",
-        "val45": "The name of the command line parameter must be at least 1 character long."
+        "val45": "The name of the command line parameter must be at least 1 character long.",
+        "val46": "Please specify command line arguments and values separately."
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
@@ -1251,10 +1252,6 @@
         "confirm": "Confirm"
       },
       "js":{
-        "extraCLargs":{
-          "name": "Name of the command line argument (e.g. limrow or --mydoubledash)",
-          "value": "Value of the command line argument (do not use quotation marks)"
-        },
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
           "groupMemberIn": "Select group members"
