@@ -110,7 +110,8 @@ Worker <- R6Class("Worker", public = list(
     
     ret <- POST(paste0(private$metadata$url, "/jobs"), encode = "multipart", 
                 body = list(model = private$metadata$modelName, username = private$metadata$user,
-                            use_pf_file = TRUE, listen = paste0(private$metadata$modelName, ".lst"),
+                            use_pf_file = TRUE, text_entities = paste0(private$metadata$modelName, ".lst"),
+                            stdout_filename = "log",
                             data = upload_file(zipFilePath, 
                                                type = 'application/zip')),
                 authenticate(private$metadata$user, private$metadata$password),
@@ -126,7 +127,7 @@ Worker <- R6Class("Worker", public = list(
     return(self)
   },
   retrieveRemoteLog = function(){
-    ret <- GET(paste0(private$metadata$url, "/logs/", private$process),
+    ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/log"),
                authenticate(private$metadata$user, private$metadata$password),
                add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
                timeout(2L))
@@ -172,7 +173,7 @@ Worker <- R6Class("Worker", public = list(
       }
       return(private$updateLog)
     }
-    ret <- DELETE(paste0(private$metadata$url, "/unread_logs/", private$process), 
+    ret <- DELETE(paste0(private$metadata$url, "/jobs/", private$process, "/unread-logs"), 
                   authenticate(private$metadata$user, private$metadata$password),
                   add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
                   timeout(2L))
@@ -220,7 +221,7 @@ Worker <- R6Class("Worker", public = list(
     tmp <- tempfile(pattern="res_", fileext = ".zip")
     on.exit(unlink(tmp))
     
-    ret <- GET(url = paste0(private$metadata$url, "/result/", private$process), 
+    ret <- GET(url = paste0(private$metadata$url, "/jobs/", private$process, "/result"), 
                write_disk(tmp), authenticate(private$metadata$user, private$metadata$password),
                add_headers(.headers = c("Timestamp" = as.character(Sys.time(), usetz = TRUE))),
                timeout(2L))
