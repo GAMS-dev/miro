@@ -355,7 +355,7 @@ observeEvent(input$importHypercubeJob, {
   }
   isCompleted <- grepl("completed", hcubeMeta[hcubeMeta[[1]] == jID, snameIdentifier])[[1L]]
   if(!isCompleted){
-    flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tempered with the UI.", jID)
+    flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
   }
   hcubeTags    <<- vector2Csv(isolate(input[["jTag_" %+% jID]]))

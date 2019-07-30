@@ -93,6 +93,9 @@ Scenario <- R6Class("Scenario",
                       getScenUid  = function() private$suid,
                       getScenName = function() private$sname,
                       getScenTime = function() private$stime,
+                      getReadPerm = function() csv2Vector(private$readPerm),
+                      getWritePerm = function() csv2Vector(private$writePerm),
+                      getExecPerm = function() csv2Vector(private$execPerm),
                       isFromOtherMode = function() private$dataFromOtherMode,
                       getMetadata = function(aliases = character(0L), noPermFields = TRUE){
                         # Generates dataframe containing scenario metadata

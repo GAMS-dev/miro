@@ -66,27 +66,27 @@ if(length(widgetSymbols)){
 
 validateWidgetConfig <- function(widgetJSON){
   if(!length(widgetJSON$alias) || identical(nchar(trimws(widgetJSON$alias)), 0L)){
-    return(lang$adminMode$widgets$validate$val1)
+    return(lang$adminMode$widgets$validate[["val1"]])
   }
   if(startsWith(currentWidgetSymbolName, prefixDDPar) && 
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixDDPar))){
-    return(lang$adminMode$widgets$validate$val2)
+    return(lang$adminMode$widgets$validate[["val2"]])
   }
   if(startsWith(currentWidgetSymbolName, prefixGMSOpt) && 
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixGMSOpt))){
-    return(lang$adminMode$widgets$validate$val3)
+    return(lang$adminMode$widgets$validate[["val3"]])
   }
   if(startsWith(currentWidgetSymbolName, prefixDDPar)){ 
     symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixDDPar)+1L, nchar(currentWidgetSymbolName))
     if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
-      return(lang$adminMode$widgets$validate$val4)
+      return(lang$adminMode$widgets$validate[["val4"]])
     }
     rm(symbolNameTmp)
   } 
   if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){ 
     symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixGMSOpt)+1L, nchar(currentWidgetSymbolName))
     if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
-      return(lang$adminMode$widgets$validate$val5)
+      return(lang$adminMode$widgets$validate[["val5"]])
     }
     rm(symbolNameTmp)
   }
@@ -101,7 +101,7 @@ validateWidgetConfig <- function(widgetJSON){
          sliderrange = {
            if(!is.null(widgetJSON$default) && (length(widgetJSON$default) < 1L || 
               length(widgetJSON$default) > 2L)){
-             return(lang$adminMode$widgets$validate$val6)
+             return(lang$adminMode$widgets$validate[["val6"]])
            }
            if(is.na(widgetJSON$min)){
              return(lang$adminMode$widgets$validate$val40)
@@ -117,18 +117,18 @@ validateWidgetConfig <- function(widgetJSON){
            if(!is.null(widgetJSON$default) && (any(widgetJSON$default < widgetJSON$min) && 
               identical(input$slider_min_dep_selector, TRUE) &&
               identical(input$slider_def_dep_selector, TRUE))){
-             return(lang$adminMode$widgets$validate$val7)
+             return(lang$adminMode$widgets$validate[["val7"]])
            }
            if(!is.null(widgetJSON$default) && (any(widgetJSON$max < widgetJSON$default) && 
               identical(input$slider_max_dep_selector, TRUE) && 
               identical(input$slider_def_dep_selector, TRUE))){
-             return(lang$adminMode$widgets$validate$val7)
+             return(lang$adminMode$widgets$validate[["val7"]])
            }
            if(!is.logical(widgetJSON$tick)){
-             return(lang$adminMode$widgets$validate$val8)
+             return(lang$adminMode$widgets$validate[["val8"]])
            }
            if(!is.numeric(widgetJSON$step)){
-             return(lang$adminMode$widgets$validate$val9)
+             return(lang$adminMode$widgets$validate[["val9"]])
            }
          },
          dropdown = {

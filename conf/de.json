@@ -154,7 +154,7 @@
       "tags":"Füge dem Szenario Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für das neue Szenario.",
       "newScenName":"Neues Szenario",
-      "scenExits":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "scenExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "btNewName":"Anderen Namen wählen",
       "btOverwrite":"Überschreiben",
       "cancelButton":"Abbrechen",
@@ -166,7 +166,7 @@
       "tags":"Füge dem HC-Job Tag(s) hinzu (optional):",
       "badName":"Bitte wählen Sie eine gültige Bezeichnung für die neue HC-Job-Konfiguration.",
       "newScenName":"Neue HC-Job-Konfiguration",
-      "scenExits":"Der von Ihnen gewählte HC-Job-Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
+      "scenExists":"Der von Ihnen gewählte HC-Job-Name existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "btNewName":"Anderen Namen wählen",
       "btOverwrite":"Überschreiben",
       "cancelButton":"Abbrechen",
@@ -174,11 +174,15 @@
     },
     "dialogEditMeta":{
       "title":"Metadaten bearbeiten",
+      "categoryGeneral": "Allgemeine Optionen",
+      "categoryAttachments": "Anhänge",
+      "categoryAccessPerm": "Zugriffsberechtigungen",
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
       "newTags":"Neue Tags",
-      "scenExits":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
-      "attachmentsLabel": "Anhänge",
+      "scenExists":"Es existiert bereits ein Szenario mit dem von Ihnen gewählten Namen.",
+      "emptyPerm": "Szenario Zugriffsrechte dürfen nicht leer sein!",
+      "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
       "attachmentsAdd": "Anhänge hinzufügen",
       "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
       "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
@@ -193,11 +197,15 @@
     },
     "dialogEditMetaHC":{
       "title":"Metadaten bearbeiten",
+      "categoryGeneral": "Allgemeine Optionen",
+      "categoryAttachments": "Anhänge",
+      "categoryAccessPerm": "Zugriffsberechtigungen",
       "newName": "New name",
       "badName": "Der von Ihnen gewählte Name ist ungültig (entweder zu lang oder zu kurz). Bitte wählen Sie einen anderen Namen.",
       "newTags":"Neue Tags",
-      "scenExits":"Es existiert bereits eine Hypercube-Job-Konfiguration mit dem von Ihnen gewählten Namen.",
-      "attachmentsLabel": "Anhänge",
+      "emptyPerm": "Job-Zugriffsrechte dürfen nicht leer sein!",
+      "incapOwner": "Du kannst dem Besitzer seine Zugriffsberechtigungen nicht entziehen.",
+      "scenExists":"Es existiert bereits eine Hypercube-Job-Konfiguration mit dem von Ihnen gewählten Namen.",
       "attachmentsAdd": "Anhänge hinzufügen",
       "attachmentsExecPerm": "Modell erlauben, diese Datei zu lesen",
       "attachSuccess": "Anhänge wurden erfolgreich aktualisiert",
@@ -849,7 +857,7 @@
     "widgets":{
       "ui":{
         "title":"Eingabe-Widgets konfigurieren",
-        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",,
+        "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
         "gams": "Symbol",
         "go": "Neue GAMS Option",
         "dd": "Neuer double-dash Parameter",
@@ -909,7 +917,8 @@
         "val42": "Der Minimalwert muss kleiner sein als der Maximalwert!",
         "val43": "Bei einem Doppelslider müssen 2 Standardwerte angegeben werden!",
         "val44": "Es muss ein Seperator angegeben werden!",
-        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein."
+        "val45": "Der Name des Kommandozeilenparameters muss mindestens 1 Zeichen lang sein.",
+        "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an."
       },
       "widgetOptions":{
         "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
@@ -1250,10 +1259,6 @@
         "confirm": "Bestätigen"
       },
       "js":{
-        "extraCLargs":{
-            "name": "Name des Kommandozeilenparameters (z.B. limrow oder --meindoubledash)",
-            "value": "Wert des Kommandozeilenparameters (keine Anführungszeichen verwenden)"
-        },
         "addInputGroup":{
           "symbolInputgroups": "Name der Eingabegruppe?",
           "groupMemberIn": "Gruppenmitglieder auswählen"

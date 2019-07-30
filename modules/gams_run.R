@@ -226,7 +226,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   }
   executeHcubeJob <- function(scenGmsPar){
     if(length(activeScen) && !activeScen$hasExecPerm()){
-      flog.error("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to temper with the app!")
+      flog.error("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!")
       stop(call. = FALSE)
     }
     jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
@@ -396,9 +396,9 @@ observeEvent(input$btSolve, {
   removeModal()
   if(length(activeScen) && !activeScen$hasExecPerm()){
     if(config$activateModules$hcubeMode){
-      modeDescriptor <- "dialogNoExecPerm"
-    }else{
       modeDescriptor <- "dialogNoExecPermHC"
+    }else{
+      modeDescriptor <- "dialogNoExecPerm"
     }
     showErrorMsg(lang$nav[[modeDescriptor]]$title, 
                  lang$nav[[modeDescriptor]]$desc)

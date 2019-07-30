@@ -154,7 +154,7 @@
       "tags":"请为场景添加标签（可选）:",
       "newScenName":"新建场景",
       "badName":"请输入正确的名称。",
-      "scenExits":"输入的名称已存在，要替换它吗？",
+      "scenExists":"输入的名称已存在，要替换它吗？",
       "btNewName":"选择不同的名称",
       "btOverwrite": "替换",
       "cancelButton": "取消",
@@ -166,7 +166,7 @@
       "tags":"请为HC作业添加标签（可选）:",
       "newScenName":"新建Hypercube作业",
       "badName":"请输入正确的名称。",
-      "scenExits":"输入的名称已存在，要替换它吗？",
+      "scenExists":"输入的名称已存在，要替换它吗？",
       "btNewName":"选择不同的名称",
       "btOverwrite": "替换",
       "cancelButton": "取消",
@@ -174,12 +174,16 @@
     },
     "dialogEditMeta":{
       "title":"编辑元数据",
+      "categoryGeneral": "General options",
+      "categoryAttachments": "附件",
+      "categoryAccessPerm": "Access permissions",
       "success":"元数据已更新。",
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
       "newTags":"新建标签",
-      "scenExits":"带有该名称的场景已存在。",
-      "attachmentsLabel":"附件",
+      "scenExists":"带有该名称的场景已存在。",
+      "emptyPerm":"Scenario access permissions can not be empty!",
+      "incapOwner": "You cannot revoke the owner's access permissions.",
       "attachmentsAdd":"添加附件",
       "attachmentsExecPerm":"允许模型读取此文件",
       "attachSuccess":"附件已更新",
@@ -193,12 +197,16 @@
     },
     "dialogEditMetaHC":{
       "title":"编辑元数据",
+      "categoryGeneral": "General options",
+      "categoryAttachments": "附件",
+      "categoryAccessPerm": "Access permissions",
       "success":"元数据已更新。",
       "newName":"新建名称",
       "badName":"该名称无效（太长或太短），请选择其他名称。",
       "newTags":"新建标签",
-      "scenExits":"已存在该名称的Hypercube作业配置。",
-      "attachmentsLabel":"附件",
+      "emptyPerm":"Job access permissions can not be empty!",
+      "incapOwner": "You cannot revoke the owner's access permissions.",
+      "scenExists":"已存在该名称的Hypercube作业配置。",
       "attachmentsAdd":"添加附件",
       "attachmentsExecPerm":"允许模型读取此文件",
       "attachSuccess":"附件已更新",
@@ -849,7 +857,7 @@
     "widgets":{
       "ui":{
         "title":"Configure input widgets",
-        "widgetUpdateSuccess": "Widget configuration was updated successfully",,
+        "widgetUpdateSuccess": "Widget configuration was updated successfully",
         "gams": "Symbol",
         "go": "New GAMS option",
         "dd": "New double-dash parameter",
@@ -909,7 +917,8 @@
         "val42": "The minimum value must be lower than the maximum value!",
         "val43": "For a slider range 2 default values need to be defined!",
         "val44": "A separator must be provided!",
-        "val45": "The name of the command line parameter must be at least 1 character long."
+        "val45": "The name of the command line parameter must be at least 1 character long.",
+        "val46": "Please specify command line arguments and values separately."
       },
       "widgetOptions":{
         "input": ["Slider", "Dropdown menu", "Checkbox"],
@@ -1250,10 +1259,6 @@
         "confirm": "Confirm"
       },
       "js":{
-        "extraCLargs":{
-          "name": "Name of the command line argument (e.g. limrow or --mydoubledash)",
-          "value": "Value of the command line argument (do not use quotation marks)"
-        },
         "addInputGroup":{
           "symbolInputgroups": "Name of the input group?",
           "groupMemberIn": "Select group members"

@@ -34,7 +34,7 @@ showNewScenDialog <- function(tmpScenName){
     tags$div(id = "badScenarioName", class = "gmsalert gmsalert-error", 
              lang$nav[[modeDescriptor]]$badName),
     tags$div(id = "scenarioExits", class = "err-msg", style = "display:none;", 
-             lang$nav[[modeDescriptor]]$scenExits),
+             lang$nav[[modeDescriptor]]$scenExists),
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav[[modeDescriptor]]$cancelButton),
@@ -199,76 +199,83 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
   }else{
     modeDescriptor <- "dialogImport"
   }
-  tabLoadFromLocalFile <- tabPanel(lang$nav[[modeDescriptor]]$tabLocal, value = "tb_importData_local",
-                                   tags$div(class = "space"),
-                                   tags$div(id = "loadLocal_content",
-                                            fluidRow(
-                                              column(12,
-                                                     fileInput("localInput", lang$nav[[modeDescriptor]]$descLocal, 
-                                                               width = "100%",
-                                                               multiple = FALSE,
-                                                               accept = c("application/vnd.ms-excel", 
-                                                                          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                          ".xlsx",
-                                                                          ".gdx")),
-                                                     if(noDataInUI){
-                                                       tagList(
-                                                         tags$div(id = "local_badScenName",
-                                                                  class = "gmsalert gmsalert-error", 
-                                                                  lang$nav[[modeDescriptor]]$badScenName),
-                                                         textInput("local_newScenName", 
-                                                                   lang$nav[[modeDescriptor]]$newScenName,
-                                                                   width = "100%")
-                                                       )
-                                                     }
-                                              )
-                                            ),
-                                            fluidRow(
-                                              div(class= "choose-input", 
-                                                  column(6,
-                                                         tags$label(class = "checkbox-material flex-design", 
-                                                                    'for'= "cbSelectManuallyLoc", 
-                                                                    checkboxInput("cbSelectManuallyLoc", "", FALSE), 
-                                                                    lang$nav[[modeDescriptor]]$cbSelectManually)
-                                                  ),
-                                                  column(6,
-                                                         conditionalPanel(
-                                                           condition = "input.cbSelectManuallyLoc == true",
-                                                           selectInput("selInputDataLoc", lang$nav[[modeDescriptor]]$selInputData, 
-                                                                       setNames(as.list(names(modelInToImport)), 
-                                                                                modelInToImportAlias), 
-                                                                       multiple = TRUE, width = "100%")
-                                                         )
-                                                  )
-                                              )
-                                            ),
-                                            fluidRow(
-                                              tags$div(style = "text-align: center;",
-                                                       HTML(paste0('<button id="btCheckSnameLocal" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
-type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), 
-                                                                   '</button>'))
-                                              )
-                                            )
-                                   ),
-                                   if(config$activateModules$scenario){
-                                     tags$div(id = "loadLocal_scenNameExists", style = "display:none;",
+  tabLoadFromDb <- NULL
+  tabLoadFromLocalFile <- NULL
+  tabLoadFromBase <- NULL 
+  tabLoadFromHcube <- NULL 
+  
+  if(config$activateModule$loadLocal){
+    tabLoadFromLocalFile <- tabPanel(lang$nav[[modeDescriptor]]$tabLocal, value = "tb_importData_local",
+                                     tags$div(class = "space"),
+                                     tags$div(id = "loadLocal_content",
                                               fluidRow(
-                                                tags$div(class = "err-msg",
-                                                         lang$nav[[modeDescriptor]]$scenNameExists
+                                                column(12,
+                                                       fileInput("localInput", lang$nav[[modeDescriptor]]$descLocal, 
+                                                                 width = "100%",
+                                                                 multiple = FALSE,
+                                                                 accept = c("application/vnd.ms-excel", 
+                                                                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                                                                            ".xlsx",
+                                                                            ".gdx")),
+                                                       if(noDataInUI){
+                                                         tagList(
+                                                           tags$div(id = "local_badScenName",
+                                                                    class = "gmsalert gmsalert-error", 
+                                                                    lang$nav[[modeDescriptor]]$badScenName),
+                                                           textInput("local_newScenName", 
+                                                                     lang$nav[[modeDescriptor]]$newScenName,
+                                                                     width = "100%")
+                                                         )
+                                                       }
+                                                )
+                                              ),
+                                              fluidRow(
+                                                div(class= "choose-input", 
+                                                    column(6,
+                                                           tags$label(class = "checkbox-material flex-design", 
+                                                                      'for'= "cbSelectManuallyLoc", 
+                                                                      checkboxInput("cbSelectManuallyLoc", "", FALSE), 
+                                                                      lang$nav[[modeDescriptor]]$cbSelectManually)
+                                                    ),
+                                                    column(6,
+                                                           conditionalPanel(
+                                                             condition = "input.cbSelectManuallyLoc == true",
+                                                             selectInput("selInputDataLoc", lang$nav[[modeDescriptor]]$selInputData, 
+                                                                         setNames(as.list(names(modelInToImport)), 
+                                                                                  modelInToImportAlias), 
+                                                                         multiple = TRUE, width = "100%")
+                                                           )
+                                                    )
                                                 )
                                               ),
                                               fluidRow(
                                                 tags$div(style = "text-align: center;",
-                                                         actionButton("btOverwriteLocal", 
-                                                                      lang$nav[[modeDescriptor]]$overwriteButton),
-                                                         actionButton("btNewNameLocal", 
-                                                                      lang$nav[[modeDescriptor]]$newNameButton, 
-                                                                      class = "bt-highlight-1 bt-gms-confirm")
+                                                         HTML(paste0('<button id="btCheckSnameLocal" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
+type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), 
+                                                                     '</button>'))
                                                 )
                                               )
-                                     )
+                                     ),
+                                     if(config$activateModules$scenario){
+                                       tags$div(id = "loadLocal_scenNameExists", style = "display:none;",
+                                                fluidRow(
+                                                  tags$div(class = "err-msg",
+                                                           lang$nav[[modeDescriptor]]$scenNameExists
+                                                  )
+                                                ),
+                                                fluidRow(
+                                                  tags$div(style = "text-align: center;",
+                                                           actionButton("btOverwriteLocal", 
+                                                                        lang$nav[[modeDescriptor]]$overwriteButton),
+                                                           actionButton("btNewNameLocal", 
+                                                                        lang$nav[[modeDescriptor]]$newNameButton, 
+                                                                        class = "bt-highlight-1 bt-gms-confirm")
+                                                  )
+                                                )
+                                       )
                                      },
-                                   icon = icon("file"))
+                                     icon = icon("file"))
+  }
   
   if(config$activateModules$scenario){
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
@@ -312,6 +319,10 @@ type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', h
       )
     }
   }
+  
+  loadDataTabs <- list(tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromBase, tabLoadFromHcube)
+  loadDataTabs <- loadDataTabs[!vapply(loadDataTabs, is.null, logical(1L), USE.NAMES = FALSE)]
+  
   showModal(modalDialog(
     title = lang$nav[[modeDescriptor]]$title,
     tags$div(id = "importScenMaxNoScen", class = "gmsalert gmsalert-error", 
@@ -323,16 +334,7 @@ type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', h
     tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
              lang$errMsg$unknownError),
     tags$div(id = "importDataTabset",
-             if(config$activateModules$scenario){
-               if(config$activateModules$hcubeMode)
-                 tabBox(width = 12, id = "tb_importData", 
-                        tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromBase)
-               else
-                 tabBox(width = 12, id = "tb_importData", 
-                        tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromHcube)
-             }else{
-               tabBox(width = 12, id = "tb_importData", tabLoadFromLocalFile)
-             }
+             do.call(tabBox, c(list(width = 12, id = "tb_importData"), loadDataTabs))
     ),
     tags$div(id = "importDataOverwrite", style = "display:none;",
              lang$nav[[modeDescriptor]]$descOverwriteInput
@@ -440,94 +442,114 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
   }else{
     modeDescriptor <- "dialogEditMeta"
   }
+  langData <- lang$nav[[modeDescriptor]]
+  
   scenTags <- csv2Vector(metadata[["stag"]][[1]])
-  showModal(modalDialog(
-    title = lang$nav[[modeDescriptor]]$title,
-    tags$div(class = "gmsalert gmsalert-success", id = "attachSuccess", 
-             lang$nav[[modeDescriptor]]$attachSuccess),
+  
+  contentAccessPerm <- NULL
+  
+  content <- tagList(
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaBadName", 
-             lang$nav[[modeDescriptor]]$badName),
+             langData$badName),
     tags$div(class = "gmsalert gmsalert-error", id = "editMetaNameExists",
-             lang$nav[[modeDescriptor]]$scenExits),
-    tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
-             lang$nav[[modeDescriptor]]$errMsg),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
-             lang$nav[[modeDescriptor]]$attachMaxNoError),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachMaxSizeError", 
-             lang$nav[[modeDescriptor]]$attachMaxSizeError),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachDuplicateError", 
-             lang$nav[[modeDescriptor]]$attachDuplicateError),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachForbiddenFnameError", 
-             lang$nav[[modeDescriptor]]$attachForbiddenFnameError),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachRO", 
-             lang$errMsg$permErr),
-    tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
-             lang$errMsg$unknownError),
+             langData$scenExists),
     tags$div(class = "space"),
-    tags$div(id = "editMetaSuccess", style = "display:none;", 
-             lang$nav[[modeDescriptor]]$success),
-    tags$div(id = "editMetaUI",
-      textInput("editMetaName", lang$nav[[modeDescriptor]]$newName, 
-                value = metadata[["sname"]][[1]]),
-      selectizeInput("editMetaTags", lang$nav[[modeDescriptor]]$newTags, 
-                     scenTags, selected = scenTags,
-                     multiple = TRUE, options = list(
-                       'create' = TRUE,
-                       'persist' = FALSE)
-      ),
-      if(sharedScen && length(ugroups)){
-        readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
-        writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
-        execPerm <- csv2Vector(metadata[["writePerm"]][[1]])
-        ugroups   <- csv2Vector(ugroups)
-        tagList(
-          selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
-                         ugroups, selected = readPerm,
-                         multiple = TRUE, options = list(
-                           'create' = TRUE,
-                           'persist' = FALSE)),
-          selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
-                         ugroups, selected = writePerm,
-                         multiple = TRUE, options = list(
-                           'create' = TRUE,
-                           'persist' = FALSE)),
-          selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
-                         ugroups, selected = execPerm,
-                         multiple = TRUE, options = list(
-                           'create' = TRUE,
-                           'persist' = FALSE))
-        )
-      },
-      if(allowAttachments){
-        tagList(
-          tags$div(class = "label-class", lang$nav[[modeDescriptor]]$attachmentsLabel),
-          fileInput("file_addAttachments", lang$nav[[modeDescriptor]]$attachmentsAdd, multiple = TRUE),
-          if(length(attachmentMetadata[["name"]])){
-            lapply(seq_along(attachmentMetadata[["name"]]), function(i){
-              tags$div(class = "row attachment-line", 
-                       column(width = 6, 
-                              HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                                          '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
-                              downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
-                              ),
-                       if(attachAllowExec){
-                         column(width = 6,
-                                HTML(paste0('<div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_', 
-                                            i, '\', $(this).is(\':checked\'));"', if(attachmentMetadata[["execPerm"]][[i]]) 'checked="checked"', '><span>', 
-                                            lang$nav[[modeDescriptor]]$attachmentsExecPerm, '</span></label></div></div>'))
-                                )
-                       }
-                    )
-            })
-          },
-          tags$div(id = "endAttachList", class = "small-space"),
-          genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
-        )
-      }
+             textInput("editMetaName", langData$newName, 
+                       value = metadata[["sname"]][[1]]),
+             selectizeInput("editMetaTags", langData$newTags, 
+                            scenTags, selected = scenTags,
+                            multiple = TRUE, options = list(
+                              'create' = TRUE,
+                              'persist' = FALSE)
+             )
+  )
+  writePerm <- csv2Vector(metadata[["writePerm"]][[1]])
+  if(sharedScen && length(ugroups) && any(ugroups %in% writePerm)){
+    readPerm  <- csv2Vector(metadata[["readPerm"]][[1]])
+    execPerm <- csv2Vector(metadata[["execPerm"]][[1]])
+    
+    contentAccessPerm <- tabPanel(langData$categoryAccessPerm, 
+                                  tags$div(class = "gmsalert gmsalert-error", id = "editMetaEmptyPerm",
+                                           langData$emptyPerm),
+                                  tags$div(class = "gmsalert gmsalert-error", id = "editMetaIncapOwner",
+                                           langData$incapOwner),
+                                  tags$div(class = "gmsalert gmsalert-error", id = "editAccessRightsError", 
+                                           langData$errMsg),
+                                  tags$div(class = "space"),
+        selectizeInput("editMetaReadPerm", lang$nav$excelExport$metadataSheet$readPerm, 
+                       unique(c(readPerm, ugroups)), selected = readPerm,
+                       multiple = TRUE),
+        selectizeInput("editMetaWritePerm", lang$nav$excelExport$metadataSheet$writePerm, 
+                       unique(c(writePerm, ugroups)), selected = writePerm,
+                       multiple = TRUE),
+        selectizeInput("editMetaExecPerm", lang$nav$excelExport$metadataSheet$execPerm, 
+                       unique(c(execPerm, ugroups)), selected = execPerm,
+                       multiple = TRUE)
+      )
+  }
+  if(allowAttachments){
+    contentAttachments <- tabPanel(langData$categoryAttachments,
+                                   tags$div(class = "gmsalert gmsalert-success", id = "attachSuccess", 
+                                            langData$attachSuccess),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachMaxNoError", 
+                                            langData$attachMaxNoError),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachMaxSizeError", 
+                                            langData$attachMaxSizeError),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachDuplicateError", 
+                                            langData$attachDuplicateError),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachForbiddenFnameError", 
+                                            langData$attachForbiddenFnameError),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachRO", 
+                                            lang$errMsg$permErr),
+                                   tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
+                                            lang$errMsg$unknownError),
+                                   tags$div(class = "space"),
+                                   fileInput("file_addAttachments", langData$attachmentsAdd, multiple = TRUE),
+                                   if(length(attachmentMetadata[["name"]])){
+                                     lapply(seq_along(attachmentMetadata[["name"]]), function(i){
+                                       tags$div(class = "row attachment-line", 
+                                                column(width = 6, 
+                                                       HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
+                                                                   '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
+                                                       downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
+                                                ),
+                                                if(attachAllowExec){
+                                                  column(width = 6,
+                                                         HTML(paste0('<div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue(\'execPermAttachment_', 
+                                                                     i, '\', $(this).is(\':checked\'));"', if(attachmentMetadata[["execPerm"]][[i]]) 'checked="checked"', '><span>', 
+                                                                     langData$attachmentsExecPerm, '</span></label></div></div>'))
+                                                  )
+                                                }
+                                       )
+                                     })
+                                   },
+                                   tags$div(id = "endAttachList", class = "small-space"),
+                                   genSpinner(id = "addAttachLoading", hidden = TRUE, absolute = FALSE)
+    )
+    contentList <- list(tabPanel(langData$categoryGeneral, 
+                                 content), contentAttachments)
+    if(length(contentAccessPerm)){
+      contentList[[3L]] <- contentAccessPerm
+    }
+    content <- do.call(tabsetPanel, contentList)
+  }else if(length(contentAccessPerm)){
+    content <- tabsetPanel(tabPanel(langData$categoryGeneral, 
+                                    content),
+                           contentAccessPerm)
+  }
+  showModal(modalDialog(
+    title = langData$title,
+    tags$div(
+      tags$div(class = "gmsalert gmsalert-error", id = "editMetaError", 
+               langData$errMsg),
+      tags$div(id = "editMetaSuccess", style = "display:none;", 
+               langData$success),
+      tags$div(id = "editMetaUI",
+               content)
     ),
     footer = tagList(
-      modalButton(lang$nav[[modeDescriptor]]$cancelButton),
-      actionButton("btUpdateMeta", lang$nav[[modeDescriptor]]$okButton, 
+      modalButton(langData$cancelButton),
+      actionButton("btUpdateMeta", langData$okButton, 
                    class = "bt-highlight-1 bt-gms-confirm")
     ),
     fade = TRUE, easyClose = FALSE
