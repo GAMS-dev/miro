@@ -953,28 +953,29 @@ addHcubeLoadBlock <- function(id, choices){
   insertUI(
     selector = "#selectorsWrapper",
     where = "beforeEnd",
-    ui = tags$div(id = "block" %+% id,
-                  tags$div(id = "blockContent" %+% id, 
-                           class = "grid-container",
-                           if(id > 1L){
-                             tags$hr()
-                           }
-                  ),
-                  tags$div(class = "item-add-block",
-                           tags$div(class = "item-and", 
-                                    tags$span(style = "display:inline-block;vertical-align:middle;line-height: 70px;", 
-                                              lang$nav$hcubeLoad$andButton)),
-                           tags$div(class = "item-dropdown", 
-                                    selectInput("newLine_" %+% id, "", 
-                                                choices = fields)
-                           ),
-                           if(id > 1L){
-                             tags$div(class = "item-delete",
-                                      actionButton("btRemoveBlock" %+% id, label = "-", 
-                                                   style = "background-color: #fff;"))
-                           }
-                  )
-    )
+    ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
+      tags$hr()
+    },
+    tags$div(style="background-color: #3c8dbc12;border-left: 5px solid #3c8dbc;padding-bottom:10px;padding-left:5px;min-width:1000px;", 
+             tags$div(style="right:1%;bottom: 0;line-height:1;color:#3c8dbc9c;font-size:50px;float:right;margin-top:5px;margin-right:5px;", "&"),
+             tags$div(id = "blockContent" %+% id, 
+                      class = "grid-container"
+             ),
+             tags$div(class = "item-add-block",
+                      tags$div(class = "item-and", 
+                               tags$span(style = "display:inline-block;vertical-align:middle;line-height: 70px;color: #737373;", 
+                                         lang$nav$hcubeLoad$andButton)),
+                      tags$div(class = "item-dropdown", 
+                               selectInput("newLine_" %+% id, "", 
+                                           choices = fields)
+                      ),
+                      if(id > 1L){
+                        tags$div(class = "item-delete",
+                                 actionButton("btRemoveBlock" %+% id, label = "-", 
+                                              style = "background-color: #fff;"))
+                      }
+             )
+    ))
   )
 }
 showHashDialog <- function(hash){
