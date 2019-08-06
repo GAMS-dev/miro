@@ -112,6 +112,7 @@ Worker <- R6Class("Worker", public = list(
                 body = list(model = private$metadata$modelName, username = private$metadata$user,
                             use_pf_file = TRUE, text_entities = paste0(private$metadata$modelName, ".lst"),
                             stdout_filename = "log",
+                            namespace = private$metadata$namespace,
                             data = upload_file(zipFilePath, 
                                                type = 'application/zip')),
                 authenticate(private$metadata$user, private$metadata$password),
