@@ -1,0 +1,14 @@
+////dark
+//@row-selected: #76b8bb;  //before: #acbad4;
+
+//light
+@row-selected: #acbad4;
+
+/* Selected rows/cells */
+table.dataTable tr.selected td, table.dataTable td.selected {
+    background-color: @row-selected !important;
+}
+/* In case of scrollX/Y or FixedHeader */
+.dataTables_scrollBody .dataTables_sizing {
+    visibility: hidden;
+}
