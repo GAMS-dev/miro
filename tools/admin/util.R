@@ -29,6 +29,11 @@ colorPickerInput <- function(id, label = NULL, value = NULL){
       <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />\n
     </div>'))
 }
-getNonemptyDatasets <- function(datasets){
-  
+isNonemptyDataset <- function(datasets){
+  vapply(datasets, function(el){
+    if(length(el) && nrow(el))
+      FALSE
+    else
+      TRUE
+  }, logical(1L), USE.NAMES = FALSE)
 }
