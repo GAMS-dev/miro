@@ -50,27 +50,27 @@ cd miro
 
 # APILIB Example models
 cd $GITDIR/model/kport
-$GAMSDIR/gmszip -r kport_conf.zip conf/kport.json static customRenderer
+$GAMSDIR/gmszip -r kport_conf.zip conf/kport.json static custom_renderer
 \cp -f kport_conf.zip kport.gms $GAMSDIR/datalib_ml
 \rm -f kport_conf.zip
 
 cd $GITDIR/model/pickstock
-$GAMSDIR/gmszip -r pickstock_conf.zip conf/pickstock.json static customRenderer
+$GAMSDIR/gmszip -r pickstock_conf.zip conf/pickstock.json static custom_renderer
 \cp -f pickstock_conf.zip pickstock.gms dowjones2016.csv $GAMSDIR/datalib_ml
 \rm -f pickstock_conf.zip
 
 cd $GITDIR/model/pickstock_live
-$GAMSDIR/gmszip -r pickstock_live_conf.zip conf/pickstock_live.json static customRenderer
+$GAMSDIR/gmszip -r pickstock_live_conf.zip conf/pickstock_live.json static custom_renderer
 \cp -f pickstock_live_conf.zip pickstock_live.gms $GAMSDIR/datalib_ml
 \rm -f pickstock_live_conf.zip
 
 cd $GITDIR/model/transport
-$GAMSDIR/gmszip -r transport_conf.zip conf/transport.json static customRenderer
+$GAMSDIR/gmszip -r transport_conf.zip conf/transport.json static custom_renderer
 \cp -f transport_conf.zip transport.gms $GAMSDIR/datalib_ml
 \rm -f transport_conf.zip
 
 cd $GITDIR/model/transport_live
-$GAMSDIR/gmszip -r transport_live_conf.zip conf/transport_live.json static customRenderer
+$GAMSDIR/gmszip -r transport_live_conf.zip conf/transport_live.json static custom_renderer
 \cp -f transport_live_conf.zip transport_live.gms $GAMSDIR/datalib_ml
 \rm -f transport_live_conf.zip
 
