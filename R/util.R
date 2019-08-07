@@ -679,6 +679,11 @@ scrollDown <- function(session, id){
 disableEl <- function(session, id){
   session$sendCustomMessage("gms-disableEl", id)
 }
+slideToggleEl <- function(session, id, duration = 400, toggleIconDiv = NULL){
+  session$sendCustomMessage("gms-slideToggleEl", 
+                            list(id = id, duration = duration, 
+                                 toggleIconDiv = toggleIconDiv))
+}
 toggleEl <- function(session, id){
   session$sendCustomMessage("gms-toggleEl", id)
 }

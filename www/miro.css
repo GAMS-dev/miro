@@ -696,6 +696,7 @@ animation: none !important;
 .main-tab{
   max-height:800px;
   max-height:80vh;
+  min-height: 400px;
   overflow:auto;
   padding-right:30px;
 }

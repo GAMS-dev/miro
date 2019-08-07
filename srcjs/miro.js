@@ -1,5 +1,3 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 /* global $:false Shiny: false HTMLWidgets:false MathJax:false */
 
 const spinnerActive = {};
@@ -102,6 +100,21 @@ export function changeTab(object, idActive, idRefer) {
   tabPane.find(`li:nth-of-type(${idRefer})`).addClass('active');
   tabPane.find(`.tab-content div:nth-child(${idActive})`).removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
+}
+
+export function slideToggleEl(data) {
+  if (data.toggleIconDiv !== undefined) {
+    if ($(data.id).is(':visible')) {
+      $(data.toggleIconDiv).html('<i class="fa fa-plus"></i>');
+    } else {
+      $(data.toggleIconDiv).html('<i class="fa fa-minus"></i>');
+    }
+  }
+  let duration = 400;
+  if (data.duration === undefined) {
+    ({ duration } = data);
+  }
+  $(data.id).slideToggle(duration);
 }
 
 export function showNewNameBaseDialog() {
@@ -345,6 +358,9 @@ $(document).ready(() => {
       $(id).fadeToggle(600);
       $(id).trigger('hidden');
     }
+  });
+  Shiny.addCustomMessageHandler('gms-slideToggleEl', (data) => {
+    slideToggleEl(data);
   });
   Shiny.addCustomMessageHandler('gms-addClassEl', (el) => {
     $(el.id).addClass(el.newclass);
