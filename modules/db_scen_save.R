@@ -19,7 +19,6 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
     showRemoveExistingOutputDataDialog()
   }else{
     if(saveAsFlag || is.null(isolate(rv$activeSname))){
-      saveAsFlag <<- TRUE
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overwrite current scenario data
@@ -52,6 +51,7 @@ observeEvent(input$btSaveReadonly,
              )
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
+  saveAsFlag <<- TRUE
   if(!is.null(isolate(rv$activeSname))){
     tmpScenName <- isolate(rv$activeSname)
   }else if(!is.null(activeSnameTmp)){
@@ -114,7 +114,8 @@ observeEvent(input$btSaveConfirm,
 observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # check whether scenario is currently locked
   errMsg <- NULL
-  if(config$activateModules$sharedScenarios && !is.null(activeScen)){
+  if(config$activateModules$sharedScenarios && 
+     !is.null(activeScen) && !saveAsFlag){
     tryCatch({
       if(activeScen$isReadonlyOrLocked){
         showReadonlyDialog()

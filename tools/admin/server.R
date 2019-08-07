@@ -1,3 +1,5 @@
+source(file.path("tools", "admin", "util.R"))
+
 appDisconnected <- FALSE
 oneLayerEl <- c("dygraphs")
 twoLayerEl <- c("pie", "hist")
@@ -5,37 +7,6 @@ configJSONFileName <- paste0(currentModelDir, configDir,
                              modelName, ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
-addArrayEl <- function(session, arrayID, plotlyChartType = "", defaults = NULL){
-  arrayID <- paste0(arrayID, plotlyChartType)
-  session$sendCustomMessage("gms-addArrayEl", list(arrayID = arrayID, defaults = defaults))
-}
-createArray <- function(session, arrayID, label, plotlyChartType = "", autoCreate = TRUE){
-  if(autoCreate)
-    addArrayEl(session, arrayID, plotlyChartType)
-  arrayID <- paste0(arrayID, plotlyChartType)
-  HTML(paste0('<div id="', arrayID, '_wrapper" class="shiny-input-container" style="margin:20px;">\n
- <hr>\n
- <div class="array-wrapper"></div>\n
-   <div onclick="Miro.addArrayDataEl(\'', arrayID, '\')" style="cursor:pointer">\n
-     <button type="button" class="btn btn-default bt-icon btn-add-array-el" style="font-size:20px;">\n
-       <i class="far fa-plus-square"></i>\n
-     </button>\n', label, '\n
-  </div>
-</div>'))
-}
-optionSection <- function(title, ..., collapsed = FALSE){
-  tags$div(class = "shiny-input-container", style = "min-height:30px;",
-           tags$h4(class = "box-title option-section-header", title, icon("plus"), style = "cursor:pointer;font-weight:bold;", 
-                   onclick = "$(this).next().toggle();"),
-           tags$div(class = "option-section", ..., style = if(collapsed) "display:none;" else "")
-  )
-}
-colorPickerInput <- function(id, label = NULL, value = NULL){
-  HTML(paste0('<div class="form-group shiny-input-container">\n
-    <label for="', id, '">', label, '</label>\n
-      <input id="', id, '" type="text" class="form-control miro-color-picker" value="', value, '" />\n
-    </div>'))
-}
 inputSymMultiDim <- setNames(names(modelInRaw), vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE))
 inputSymHeaders <- lapply(inputSymMultiDim, function(el){
   headers <- modelInRaw[[el]]$headers

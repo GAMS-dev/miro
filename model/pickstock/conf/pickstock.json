@@ -1,13 +1,12 @@
 {
   "UILogo": "pickstock.png",
-  "hiddenOutputScalars": "lastdaytraining",
   "miroLogFile": "miro.log",
   "remoteExport": [
     {
       "name": "Testexporter",
-      "symbols": [
+      "templates": [
         {
-          "name": "stock_weight",
+          "symNames": "stock_weight",
           "url": "http://127.0.0.1:5000/io",
           "method": "POST",
           "httpBody": [
@@ -23,22 +22,7 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "readonlyCols": "date",
-      "externalData": {
-        "source": "REST",
-        "url": "http://127.0.0.1:5000/io",
-        "method": "GET",
-        "httpBody": [
-          {
-            "key": "cachetime",
-            "value": "50"
-          },
-          {
-            "key": "filename",
-            "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
-          }
-        ]
-      }
+      "readonlyCols": "date"
     },
     "maxstock": {
       "widgetType": "slider",
@@ -297,13 +281,6 @@
   "defCompMode": "tab",
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
-  "defaultScenName": "",
-  "outputGroups": [
-    {
-      "name": "Dow Jones vs. Index Fund 🙀",
-      "members": ["dowvsindex", "abserror"]
-    }
-  ],
   "activateModules": {
     "scenario": true,
     "strictmode": true,
@@ -318,6 +295,20 @@
   "excelIncludeEmptySheets": true,
   "saveTraceFile": true,
   "autoGenInputGraphs": true,
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  },
+  "outputGroups": [
+    {
+      "name": "Dow Jones vs. Index Fund 🙀",
+      "members": ["dowvsindex", "abserror"]
+    }
+  ],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,
@@ -332,7 +323,6 @@
       "allowReadOnly": false,
       "allowComments": true
     },
-    "height": 700,
-    "colWidths": 150
+    "height": 700
   }
 }

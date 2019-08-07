@@ -1,8 +1,6 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import InputArrayFactory from './input_array';
 
-export { confirmModalShow } from './miro';
+export { confirmModalShow, slideToggleEl } from './miro';
 
 /* global $:false Shiny:false */
 

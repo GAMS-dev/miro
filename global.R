@@ -126,3 +126,6 @@ bugReportUrl <- list(url = "https://cloud.gams.com/public.php/webdav/", dir = "4
 
 TIMEVIS_MAX_EVENTS <- 50L
 
+# delay (in seconds) the server should wait with shutdown after user disconnected
+SERVER_SHUTDOWN_DELAY <- 60L
+

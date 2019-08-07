@@ -85,6 +85,47 @@ langSpecificGraphs$localeChoices <- c("cs" = "cs","da" = "da","de" = "de","en" =
                                       "tr" = "tr","zh" = "zh")
 names(langSpecificGraphs$localeChoices) <- lang$adminMode$graphs$pivotOptions$options$localeChoices 
 
+scenMetaDb <- NULL
+tryCatch({
+  scenMetaDb <- db$fetchScenList(scode = 0L)
+}, error = function(e){
+  flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
+  errMsg <<- lang$errMsg$fetchScenData$desc
+})
+showErrorMsg(lang$errMsg$fetchScenData$title, errMsg)
+if(!is.null(scenMetaDb) && nrow(scenMetaDb)){
+  # by default, put most recently saved scenario first
+  scenList <- db$formatScenList(scenMetaDb, stimeIdentifier, desc = TRUE)
+  updateSelectInput(session, "scenList", choices = scenList)
+  hideEl(session, "#noDbScen")
+  showEl(session, "#dbScen")
+}else{
+  hideEl(session, "#dbScen")
+  showEl(session, "#noDbScen")
+}
+updatePreviewData <- function(tabularInputWithData, tabularOutputWithData, configScalars){
+  if(any(!isEmptyInput)){
+    changeActiveSymbol(which(!isEmptyInput)[1])
+  }else if(any(!isEmptyOutput)){
+    changeActiveSymbol(which(!isEmptyOutput)[1] + length(modelIn))
+  }else{
+    showErrorMsg(lang$adminMode$graphs$errMsg$errTitle1, 
+                 lang$adminMode$graphs$errMsg$errContent1)
+    return()
+  }
+  showEl(session, "#preview_wrapper")
+  updateSelectInput(session, "gams_symbols", 
+                    choices = c(tabularInputWithData, 
+                                tabularOutputWithData))
+  if(identical(length(configScalars), 3L) && nrow(configScalars)){
+    session$sendCustomMessage("gms-setScalarOutputs", 
+                              list(indices = configScalars[[1]], 
+                                   aliases = configScalars[[2]]))
+  }
+  slideToggleEl(session, "#previewDataInputWrapper", 
+                toggleIconDiv = "#previewDataInputToggle")
+  rv$initData <<- TRUE
+}
 validateGraphConfig <- function(graphJSON){
   if(identical(is.na(graphJSON$graph$xaxis$rangefrom), TRUE) || identical(is.na(graphJSON$graph$xaxis$rangeto), TRUE)){
     return(lang$adminMode$graphs$validate$val1)
@@ -166,6 +207,72 @@ changeActiveSymbol <- function(id){
   rv$initData <- FALSE
   rv$initData <- TRUE
 }
+observeEvent(input$dbInput, {
+  req(identical(length(input$scenList), 1L))
+  
+  # initialize new imported sheets counter
+  newInputCount <- 0L
+  errMsg <- NULL
+  scalarDataset <- NULL
+  rv$initData <- FALSE
+  
+  scenSelected <- regmatches(input$scenList, 
+                             regexpr("_", input$scenList), 
+                             invert = TRUE)
+  sidToLoad  <- suppressWarnings(as.integer(lapply(scenSelected, '[[', 1L)[[1L]]))
+  if(is.na(sidToLoad)){
+    flog.error("Bad scenario ID selected: '%s'. This seems like the user tried to tamper with the app!", 
+               lapply(scenSelected, '[[', 1L)[[1L]])
+    return(NULL)
+  }
+  tryCatch({
+    scenDataTmp <- db$loadScenarios(sidToLoad, 
+                                    msgProgress = lang$progressBar$loadScenDb)[[1L]]
+  }, error = function(e){
+    flog.error("Some error occurred loading scenarios: '%s' from database. Error message: %s.", 
+               paste(sidsToLoad, collapse = ", "), e)
+    errMsg <<- lang$errMsg$loadScen$desc
+  })
+  if(is.null(showErrorMsg(lang$errMsg$loadScen$title, errMsg))){
+    return(NULL)
+  }
+  if(length(modelOut)){
+    scenInputData          <- scenDataTmp[-seq_along(modelOut)]
+    modelOutputData        <<- scenDataTmp[seq_along(modelOut)]
+    names(modelOutputData) <<- names(modelOut)
+  }else{
+    scenInputData  <- scenDataTmp
+    scenOutputData <- NULL
+  }
+  names(scenInputData)         <- inputDsNames
+  newInputCount                <- 0L
+  
+  if(scalarsFileName %in% inputDsNames && 
+     length(scenInputData[[length(scenInputData)]]) && 
+     nrow(scenInputData[[length(scenInputData)]])){
+    configScalars <<- scenInputData[[length(scenInputData)]]
+  }else{
+    configScalars <<- tibble()
+  }
+  
+  errMsg    <-  NULL
+  loadMode  <-  "scen"
+  datasetsToFetch <- modelInTabularData
+  overwriteInput <- TRUE
+  source("./modules/input_load.R", local = TRUE)
+  if(!is.null(errMsg)){
+    return(NULL)
+  }
+  isEmptyInput         <<- isNonemptyDataset(modelInputData)
+  tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
+                                   modelInAlias[!isEmptyInput])
+  isEmptyOutput         <<- isNonemptyDataset(modelOutputData)
+  tabularOutputWithData <- setNames(names(modelOut)[!isEmptyOutput], 
+                                    modelOutAlias[!isEmptyOutput])
+  updatePreviewData(tabularInputWithData, 
+                    tabularOutputWithData, 
+                    configScalars)
+})
 observeEvent(input$localInput, {
   # initialize new imported sheets counter
   newInputCount <- 0L
@@ -203,17 +310,14 @@ observeEvent(input$localInput, {
   if(!is.null(errMsg)){
     return(NULL)
   }
-  isEmptyInput         <<- vapply(modelInputData, function(el){
-    if(length(el) && nrow(el))
-      FALSE
-    else
-      TRUE
-  }, logical(1L), USE.NAMES = FALSE)
+  isEmptyInput         <<- isNonemptyDataset(modelInputData)
   tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
                                    modelInAlias[!isEmptyInput])
   scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
   if(!is.na(scalarIdTmp)){
     configScalars <<- scenInputData[[scalarIdTmp]]
+  }else{
+    configScalars <<- tibble()
   }
   tabularOutputWithData <- NULL
   if(identical(loadMode, "gdx") || any(names(modelOut) %in% xlsWbNames)){
@@ -239,31 +343,13 @@ observeEvent(input$localInput, {
       modelOutputData        <<- outputDataTmp$tabular
       names(modelOutputData) <<- names(modelOut)
     }
-    isEmptyOutput         <<- vapply(modelOutputData, function(el){
-      if(length(el) && nrow(el))
-        FALSE
-      else
-        TRUE
-    }, logical(1L), USE.NAMES = FALSE)
+    isEmptyOutput         <<- isNonemptyDataset(modelOutputData)
     tabularOutputWithData <- setNames(names(modelOut)[!isEmptyOutput], 
                                       modelOutAlias[!isEmptyOutput])
   }
-  
-  if(any(!isEmptyInput)){
-    changeActiveSymbol(which(!isEmptyInput)[1])
-  }else if(any(!isEmptyOutput)){
-    changeActiveSymbol(which(!isEmptyOutput)[1] + length(modelIn))
-  }else{
-    showErrorMsg(lang$adminMode$graphs$errMsg$errTitle1, lang$adminMode$graphs$errMsg$errContent1)
-    return()
-  }
-  showEl(session, "#preview_wrapper")
-  updateSelectInput(session, "gams_symbols", choices = c(tabularInputWithData, tabularOutputWithData))
-  if(identical(length(configScalars), 3L) && nrow(configScalars)){
-    session$sendCustomMessage("gms-setScalarOutputs", list(indices = configScalars[[1]], 
-                                                           aliases = configScalars[[2]]))
-  }
-  rv$initData <<- TRUE
+  updatePreviewData(tabularInputWithData, 
+                    tabularOutputWithData, 
+                    configScalars)
 })
 observeEvent(input$chart_title, {
   rv$graphConfig$graph$title <<- input$chart_title

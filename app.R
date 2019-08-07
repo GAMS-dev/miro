@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.7.1"
-MIRORDate   <- "Jul 25 2019"
+MIROVersion <- "0.7.2"
+MIRORDate   <- "Aug 07 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -493,13 +493,13 @@ if(is.null(errMsg)){
     if(useGdx){
       gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut))
     }
-    worker <- Worker$new(metadata = list(user = uid, password = Sys.getenv("GMS_WORKER_PASSWORD"), modelName = modelName, 
-                                         tableNameTracePrefix = tableNameTracePrefix, 
+    worker <- Worker$new(metadata = list(user = uid, password = Sys.getenv("MIRO_GAMS_PASS"), modelName = modelName, 
+                                         namespace = Sys.getenv("MIRO_GAMS_NS"), tableNameTracePrefix = tableNameTracePrefix, 
                                          currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
                                          MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
                                          includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
                                          modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                         timeout = 3, url = Sys.getenv("GMS_WORKER_URL"), serverOS = getOS()), 
+                                         timeout = 3, url = Sys.getenv("MIRO_GAMS_HOST"), serverOS = getOS()), 
                          remote = config$activateModules$remoteExecution)
   }, error = function(e){
     flog.error(e)
@@ -701,6 +701,7 @@ if(!is.null(errMsg)){
   }
   close(pb)
   pb <- NULL
+  interruptShutdown <<- FALSE
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -715,6 +716,7 @@ if(!is.null(errMsg)){
     btSortNameDescBase <- FALSE
     btSortTimeDescBase <- TRUE
     btSortTimeBase     <- TRUE
+    interruptShutdown  <<- TRUE
     # boolean that specifies whether output data should be saved
     saveOutput         <- TRUE
     # count number of open scenario tabs
@@ -1286,8 +1288,20 @@ if(!is.null(errMsg)){
                                     config$storeLogFilesDuration)
       }
       gc()
+      
       if(!interactive()){
-        stopApp()
+        if(isShinyProxy){
+          interruptShutdown <<- FALSE
+          promises::then(future(Sys.sleep(SERVER_SHUTDOWN_DELAY)),
+                         function(val) {
+                           if(identical(interruptShutdown, FALSE)){
+                             stopApp()
+                           }}, function(val){
+                             stopApp()
+                           })
+        }else{
+          stopApp()
+        }
       }
     })
   }
