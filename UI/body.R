@@ -465,7 +465,7 @@ if(config$activateModules$hcubeMode){
                    config$activateModules$miroLogFile)){
               logTabsetList <- list()
               if(config$activateModules$logFile){
-                logTabsetList$log <- tabPanel(title=lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile,
+                logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
                                               value = "log",
                                               tags$pre(id = "logStatus", class = "shiny-text-output noplaceholder"),
                                               checkboxInput("logUpdate", 
@@ -473,12 +473,12 @@ if(config$activateModules$hcubeMode){
                                                             value = TRUE))
               }
               if(config$activateModules$lstFile){
-                logTabsetList$lst <- tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile,
+                logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
                                               value = "listfile",
                                               verbatimTextOutput("listFile"))
               }
               if(config$activateModules$miroLogFile){
-                logTabsetList$miroLog <- tabPanel(title = lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile,
+                logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
                                                   value = "mirolog",
                                                   tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
                                                                       uiOutput("miroLogFile")))
@@ -592,7 +592,8 @@ body <- dashboardBody({
         })
       )
     },
-    tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
+    tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
+    tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css"),
     tags$script(src = "miro.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)

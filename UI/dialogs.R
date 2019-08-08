@@ -973,8 +973,7 @@ generateLine <- function(i, j, type, label){
                     
            ),
            tags$div(class = "item-delete",
-                    actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-", 
-                                 style = "background-color: #fff;")
+                    actionButton("btRemoveLine" %+% i %+% "_" %+% j, label = "-")
            )
   )
 }
@@ -985,14 +984,14 @@ addHcubeLoadBlock <- function(id, choices){
     ui = tags$div(id = "block" %+% id, style="position:relative;", if(id > 1L){
       tags$hr()
     },
-    tags$div(style="background-color: #3c8dbc12;border-left: 5px solid #3c8dbc;padding-bottom:10px;padding-left:5px;min-width:1000px;", 
-             tags$div(style="right:1%;bottom: 0;line-height:1;color:#3c8dbc9c;font-size:50px;float:right;margin-top:5px;margin-right:5px;", "&"),
+    tags$div(class="and-wrapper", 
+             tags$div(class="and-sign", "&"),
              tags$div(id = "blockContent" %+% id, 
                       class = "grid-container"
              ),
              tags$div(class = "item-add-block",
                       tags$div(class = "item-and", 
-                               tags$span(style = "display:inline-block;vertical-align:middle;line-height: 70px;color: #737373;", 
+                               tags$span(class="and-button", 
                                          lang$nav$hcubeLoad$andButton)),
                       tags$div(class = "item-dropdown", 
                                selectInput("newLine_" %+% id, "", 
@@ -1000,8 +999,7 @@ addHcubeLoadBlock <- function(id, choices){
                       ),
                       if(id > 1L){
                         tags$div(class = "item-delete",
-                                 actionButton("btRemoveBlock" %+% id, label = "-", 
-                                              style = "background-color: #fff;"))
+                                 actionButton("btRemoveBlock" %+% id, label = "-"))
                       }
              )
     ))

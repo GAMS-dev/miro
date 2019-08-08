@@ -204,8 +204,8 @@ renderGraph <- function(data, configData, options, height = NULL){
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
                              zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
                              range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),
-                paper_bgcolor = options$paper_bgcolor,
-                plot_bgcolor = options$plot_bgcolor,
+                paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
+                plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
                 showlegend = options$showlegend,
                 legend = options$legend, bargap = options$bargap, bargroupgap = options$bargroupgap)
     return(renderPlotly(p))
