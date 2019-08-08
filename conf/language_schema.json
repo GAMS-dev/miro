@@ -166,6 +166,23 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "remoteExec":{
+               "type":"object",
+               "additionalProperties":false,
+               "required":true,
+               "properties":{  
+                 "login":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
+                  "logout":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  }
+               }
+            },
              "scenario":{
                "type":"object",
                "additionalProperties":false,
@@ -589,6 +606,11 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "submission":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "queued":{
               "type":"string",
               "minLength":1,
@@ -1008,6 +1030,115 @@
               "minLength":1,
               "required":true
             }
+          }
+        },
+        "dialogRemoteLogin": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "desc":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "url":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "username":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "password":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "namespace":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "useRegistered":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "remember":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "okButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "cancelButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "hostNotFound":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "nsNotFound":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "invalidCred":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "insuffPerm":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "invalidProtocol":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              }
+          }
+        },
+        "dialogRemoteLogout": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+             "title":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "desc":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "cancelButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              },
+              "okButton":{  
+                "type":"string",
+                "minLength":1,
+                "required":true
+              }
           }
         },
         "dialogRemoveScen":{  

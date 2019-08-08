@@ -1,5 +1,7 @@
 # gams model name
 modelName <- "pickstock"
+# miro workspace
+miroWorkspaceDir <- ".miro"
 # turn debug mode on or off
 debugMode <- TRUE
 # miro data folder prefix

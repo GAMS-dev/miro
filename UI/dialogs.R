@@ -15,6 +15,35 @@ showReadonlyDialog <- function(){
   ))
 }
 
+showLoginDialog <- function(cred){
+  showModal(modalDialog(
+    title = lang$nav$dialogRemoteLogin$title,
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginHostNotFound", 
+             lang$nav$dialogRemoteLogin$hostNotFound),
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginInvalidCred", 
+             lang$nav$dialogRemoteLogin$invalidCred),
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginNsNotFound", 
+             lang$nav$dialogRemoteLogin$nsNotFound),
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginInsuffPerm", 
+             lang$nav$dialogRemoteLogin$insuffPerm),
+    tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginInvalidProt", 
+             lang$nav$dialogRemoteLogin$invalidProtocol),
+    lang$nav$dialogRemoteLogin$desc,
+    div(class = "space"),
+    textInput("remoteCredUrl", lang$nav$dialogRemoteLogin$url, cred$url),
+    textInput("remoteCredUser", lang$nav$dialogRemoteLogin$username, cred$user),
+    passwordInput("remoteCredPass", lang$nav$dialogRemoteLogin$password),
+    textInput("remoteCredNs", lang$nav$dialogRemoteLogin$namespace, cred$ns),
+    checkboxInput_MIRO("remoteCredReg", lang$nav$dialogRemoteLogin$useRegistered, cred$reg),
+    checkboxInput_MIRO("remoteCredRemember", lang$nav$dialogRemoteLogin$remember),
+    footer = tagList(
+      modalButton(lang$nav$dialogRemoteLogin$cancelButton),
+      actionButton("btSaveCredentials", label = lang$nav$dialogRemoteLogin$okButton, 
+                   class = "bt-highlight-1 bt-gms-confirm")),
+    fade = TRUE, easyClose = FALSE
+  ))
+}
+
 showNewScenDialog <- function(tmpScenName){
   if(config$activateModules$hcubeMode){
     modeDescriptor <- "dialogNewHCJob"

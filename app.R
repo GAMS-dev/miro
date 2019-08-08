@@ -75,6 +75,7 @@ if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "libra
   RLibPath = file.path(gamsSysDir, "GMSR", "library")
   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
+
 installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
 useGdx <- FALSE
 if("gdxrrw" %in% installedPackages){
@@ -100,10 +101,18 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
+  # initialise MIRO workspace
+  miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
+  if(!dir.exists(miroWorkspace)){
+    if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+      errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                                      miroWorkspace), sep = "\n")
+    }
+  }
   # include custom functions and modules
   lapply(filesToInclude, function(file){
     if(!file.exists(file)){
-      errMsg <<- paste0("Include file '", file, "' could not be located.")
+      errMsg <<- paste(errMsg, paste0("Include file '", file, "' could not be located."), sep = "\n")
     }else{
       tryCatch({
         source(file)
@@ -239,7 +248,7 @@ if(is.null(errMsg)){
   source("./R/install_packages.R", local = TRUE)
   options("DT.TOJSON_ARGS" = list(na = "string"))
   
-  if(config$activateModules$remoteExecution){
+  if(config$activateModules$remoteExecution && identical(LAUNCHADMINMODE, FALSE)){
     plan(multiprocess)
   }
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
@@ -493,18 +502,61 @@ if(is.null(errMsg)){
     if(useGdx){
       gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut))
     }
-    worker <- Worker$new(metadata = list(user = uid, password = Sys.getenv("MIRO_GAMS_PASS"), modelName = modelName, 
-                                         namespace = Sys.getenv("MIRO_GAMS_NS"), tableNameTracePrefix = tableNameTracePrefix, 
-                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
-                                         MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
-                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
-                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                         timeout = 3, url = Sys.getenv("MIRO_GAMS_HOST"), serverOS = getOS()), 
-                         remote = config$activateModules$remoteExecution)
   }, error = function(e){
     flog.error(e)
     errMsg <<- paste(errMsg, e, sep = '\n')
   })
+  remoteUser <- uid
+  modelData <- modelFiles
+  rememberMeFileName <- paste0(miroWorkspace, .Platform$file.sep, ".cred_", 
+                               modelName)
+  credConfig <- NULL
+  if(isShinyProxy){
+    credConfig <- list(url = Sys.getenv("MIRO_GAMS_HOST"), 
+                       username = uid,
+                       password = "",
+                       namespace = "global",
+                       useRegistered = TRUE)
+  }else if(config$activateModules$remoteExecution){
+    tryCatch({
+      credConfigTmp <- NULL
+      if(file.exists(rememberMeFileName)){
+        credConfigTmp <- suppressWarnings(fromJSON(rememberMeFileName, 
+                                                simplifyDataFrame = FALSE, 
+                                                simplifyMatrix = FALSE))
+        if(!is.list(credConfigTmp) || !all(c('url', 'username', 'password', 'namespace', 'reg') 
+                                        %in% names(credConfigTmp)) || 
+           !all(vapply(credConfigTmp[1:4], is.character, 
+                       logical(1L), USE.NAMES = FALSE)) ||
+           !is.logical(credConfigTmp[[5L]])){
+          errMsg <<- "Malformatted credential file. Looks like someone tried to tamper with the app!"
+          flog.error(errMsg)
+          return(NULL)
+        }
+        credConfig <- list(url = credConfigTmp$url, 
+                           username = credConfigTmp$username,
+                           password = credConfigTmp$password,
+                           namespace = credConfigTmp$namespace,
+                           useRegistered = credConfigTmp$reg)
+      }
+    }, error = function(e){
+      errMsg <<- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
+      flog.error(errMsg)
+    }, finally = rm(credConfigTmp))
+  }
+  
+  worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
+                                       tableNameTracePrefix = tableNameTracePrefix, 
+                                       currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                       MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
+                                       includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                       modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                       timeout = 8L, serverOS = getOS(), modelData = modelData, 
+                                       rememberMeFileName = rememberMeFileName), 
+                       remote = config$activateModules$remoteExecution)
+  if(length(credConfig)){
+    do.call(worker$setCredentials, credConfig)
+  }
 }
 if(!is.null(errMsg)){
   if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
@@ -638,7 +690,7 @@ if(!is.null(errMsg)){
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                   "GAMSReturnCodeMap", "dependentDatasets",
                   "modelInGmsString", "installPackage", "dbSchema", "scalarInputSym",
-                  "requiredPackagesCR"), 
+                  "requiredPackagesCR", "modelFiles"), 
          file = rSaveFilePath)
     rm(listOfCustomRenderers)
     if(identical(getCommandArg("buildonly", FALSE), "true")){
@@ -717,6 +769,7 @@ if(!is.null(errMsg)){
     btSortTimeDescBase <- TRUE
     btSortTimeBase     <- TRUE
     interruptShutdown  <<- TRUE
+    btSolveClicked     <- FALSE
     # boolean that specifies whether output data should be saved
     saveOutput         <- TRUE
     # count number of open scenario tabs
@@ -913,7 +966,7 @@ if(!is.null(errMsg)){
       flog.debug("Working directory was created: '%s'.", workDir)
     }
     # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, 
+    rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
                          btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L,

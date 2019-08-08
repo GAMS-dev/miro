@@ -1,5 +1,23 @@
 # UI header
 header <- dashboardHeader(
+  if(config$activateModules$remoteExecution){
+    tags$li(class = "dropdown", 
+            HTML(paste0('<a href="#" id="remoteExecLogoutDiv" class="action-button" ', 
+                        if(!length(credConfig)) 'style="display:none;" ',
+                        'onclick="Miro.confirmModalShow(\'', 
+                        lang$nav$dialogRemoteLogout$title, '\', \'', 
+                        lang$nav$dialogRemoteLogout$desc, '\', \'', 
+                        lang$nav$dialogRemoteLogout$cancelButton, '\', \'', 
+                        lang$nav$dialogRemoteLogout$okButton, 
+                        '\', \'Shiny.setInputValue(\\\'btRemoteExecLogout\\\', 1, {priority: \\\'event\\\'})\')"">',
+                        '<i class="fa fa-sign-out-alt"></i> ', 
+                        lang$nav$header$remoteExec$logout,
+                        '</a><a href="#" id="btRemoteExecLogin" class="action-button" ',
+                        if(length(credConfig)) 'style="display:none;" ',
+                        '>', lang$nav$header$remoteExec$login, ' <i class="fa fa-sign-in-alt"></i></a>')))
+  }else{
+    tags$li(class = "dropdown")
+  },
   if(config$activateModules$hcubeMode || isShinyProxy || !config$activateModules$scenario){
     tags$li(class = "dropdown")
   }else{
@@ -37,4 +55,4 @@ header <- dashboardHeader(
                                         htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">',
                                         lang$nav$header$help$about, '</a>'))
                     ))),
-  title=config$pageTitle, disable = FALSE)
+  title = config$pageTitle, disable = FALSE)
