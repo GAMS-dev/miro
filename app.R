@@ -516,7 +516,7 @@ if(!is.null(errMsg)){
   pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css"),
+      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
       tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(

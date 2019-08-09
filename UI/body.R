@@ -592,8 +592,8 @@ body <- dashboardBody({
         })
       )
     },
-    tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
-    tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css"),
+    tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
+    tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
     tags$script(src = "miro.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)
