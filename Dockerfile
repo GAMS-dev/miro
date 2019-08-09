@@ -77,28 +77,29 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install --upgrade pip
 RUN pip3 install numpy pandas matplotlib geocoder geopy
 
-# basic shiny functionality
-RUN R -e "install.packages('shiny', repos='http://cran.us.r-project.org/')"
-
 # install custom packages
 
 # first install dependencies of custom packages
-RUN R -e "install.packages(c('cli', 'fansi', 'utf8'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages(c('assertthat', 'crayon', 'cli', 'fansi', 'utf8'), repos='http://cran.us.r-project.org/')"
 RUN mkdir /home/miro/packages
 COPY packages /home/miro/packages
-RUN R -e "install.packages('/home/miro/packages/pillar_1.3.1.9999.tar.gz', repos = NULL, type = 'source')"
 
-RUN R -e "install.packages(c('colorspace', 'purrr', 'yaml', 'labeling', 'munsell', 'lazyeval', 'assertthat', 'glue', 'pkgconfig', 'tibble', 'tidyselect', 'plogr', 'htmlwidgets', 'base64enc', 'png', 'RColorBrewer', 'raster', 'scales', 'sp', 'viridisLite', 'zeallot', 'ellipsis'), repos='http://cran.us.r-project.org/')"
+# basic shiny functionality
+RUN R -e "install.packages(c('Rcpp', 'R6', 'BH', 'magrittr', 'httpuv', 'mime', 'jsonlite', 'digest', 'sourcetools', 'later', 'promises', 'rlang', 'xtable', 'fastmap'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages('/home/miro/packages/htmltools_0.3.6.9004.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/shiny_1.3.2.9999.tar.gz', repos = NULL, type = 'source')"
+
+
+
+RUN R -e "install.packages(c('colorspace', 'purrr', 'yaml', 'labeling', 'munsell', 'lazyeval', 'glue', 'pkgconfig', 'tidyselect', 'plogr', 'htmlwidgets', 'base64enc', 'png', 'RColorBrewer', 'raster', 'scales', 'sp', 'viridisLite', 'zeallot', 'ellipsis'), repos='http://cran.us.r-project.org/')"
 
 RUN R -e "install.packages('/home/miro/packages/crosstalk_1.0.999.tar.gz', repos = NULL, type = 'source')"
-RUN R -e "install.packages('/home/miro/packages/dplyr_0.8.1.9000.tar.gz', repos = NULL, type = 'source')"
-RUN R -e "install.packages('/home/miro/packages/DT_0.6.2.999.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages('/home/miro/packages/DT_0.7.2.9999.tar.gz', repos = NULL, type = 'source')"
 RUN R -e "install.packages('/home/miro/packages/gdxrrw_1.0.4.999.tar.gz', repos = NULL, type = 'source')"
-RUN R -e "install.packages('/home/miro/packages/htmltools_0.3.6.9003.tar.gz', repos = NULL, type = 'source')"
 RUN R -e "install.packages('/home/miro/packages/leaflet_2.0.2.999.tar.gz', repos = NULL, type = 'source')"
 RUN R -e "install.packages('/home/miro/packages/vctrs_0.2.0.9999.tar.gz', repos = NULL, type = 'source')"
 
-RUN R -e "install.packages(c('sys', 'askpass', 'prettyunits', 'stringi', 'curl', 'DBI', 'blob', 'hms', 'tidyr', 'data.table'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages(c('pillar', 'tibble', 'dplyr', 'sys', 'askpass', 'prettyunits', 'stringi', 'curl', 'DBI', 'blob', 'hms', 'tidyr', 'data.table'), repos='http://cran.us.r-project.org/')"
 
 RUN R -e "install.packages('/home/miro/packages/httr_1.4.0.9999.tar.gz', repos = NULL, type = 'source')"
 RUN R -e "install.packages('/home/miro/packages/odbc_1.1.6.999.tar.gz', repos = NULL, type = 'source')"
@@ -108,7 +109,7 @@ RUN R -e "install.packages('/home/miro/packages/timevis_0.5.0.9999.tar.gz', repo
 RUN rm -rf /home/miro/packages
 
 # install dependencies of the app
-RUN R -e "install.packages(c('rematch', 'formatR', 'ps', 'clipr', 'cellranger', 'progress', 'lambda.r', 'futile.options', 'zoo', 'globals', 'listenv', 'R6', 'processx', 'V8', 'readr', 'readxl', 'writexl', 'rhandsontable', 'jsonvalidate', 'rpivotTable', 'futile.logger', 'zip', 'tidyr', 'digest', 'leaflet.minicharts', 'dygraphs', 'xts', 'future'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages(c('rematch', 'formatR', 'ps', 'clipr', 'cellranger', 'progress', 'lambda.r', 'futile.options', 'zoo', 'globals', 'listenv', 'processx', 'V8', 'readr', 'readxl', 'writexl', 'rhandsontable', 'jsonvalidate', 'rpivotTable', 'futile.logger', 'zip', 'tidyr', 'leaflet.minicharts', 'dygraphs', 'xts', 'future'), repos='http://cran.us.r-project.org/')"
 
 
 # environment variable for GDX API
