@@ -28,6 +28,7 @@ Worker <- R6Class("Worker", public = list(
   login = function(url, username, password, namespace, 
                    rememberMeFlag = FALSE, 
                    useRegistered = FALSE){
+    stopifnot(isFALSE(private$metadata$noNeedCred))
     url <- trimws(url, "right", whitespace = "/")
     private$metadata$url       <- url
     

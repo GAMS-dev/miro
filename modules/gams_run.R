@@ -803,8 +803,7 @@ observeEvent(input$btSaveCredentials, {
                  password = input$remoteCredPass, 
                  namespace = input$remoteCredNs, 
                  useRegistered = input$remoteCredReg,
-                 rememberMe = input$remoteCredRemember,
-                 token = FALSE)
+                 rememberMe = input$remoteCredRemember)
     hideEl(session, "#btRemoteExecLogin")
     showEl(session, "#remoteExecLogoutDiv")
     removeModal()
@@ -813,8 +812,9 @@ observeEvent(input$btSaveCredentials, {
     }
   }, error = function(e){
     errMsg <- conditionMessage(e)
-    flog.debug("Problems logging in. Return code: %s", errMsg)
-    if(identical(errMsg, '404') || startsWith(errMsg, "Could not"))
+    flog.error("Problems logging in. Return code: %s", errMsg)
+    if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+       startsWith(errMsg, "Timeout"))
       return(showHideEl(session, "#remoteLoginHostNotFound", 6000))
     
     if(identical(errMsg, '400'))
