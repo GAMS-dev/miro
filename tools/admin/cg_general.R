@@ -212,8 +212,7 @@ insertUI(selector = "#module_wrapper2",
                                                             tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#include-parent", 
                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                             choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
-                                                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)),
-                    tags$div(class = "config-array-err", id = "extra_cl_args_err", style = "display:none;")),
+                                                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))),
            tags$hr(),
            tags$label(class = "cb-label", "for" = "general_act_strict", lang$adminMode$general$actStrict$label),
            tags$div(
@@ -299,18 +298,6 @@ observeEvent(input$general_save_duration, {
 
 observeEvent(input$general_args, {
   req(length(input$general_args))
-  if(!identical(length(input$general_args) %% 2L, 0L)){
-    showElReplaceTxt(session, "#extra_cl_args_err", 
-                     lang$adminMode$widgets$validate$val46)
-    return()
-  }
-  clKeys <- input$general_args[seq_along(input$general_args) %% 2L == 1L]
-  if(any(!grepl("^[a-zA-Z]+[_a-zA-Z0-9]*", clKeys))){
-    showElReplaceTxt(session, "#extra_cl_args_err", 
-                     lang$adminMode$widgets$validate$val46)
-    return()
-  }
-  hideEl(session, "#extra_cl_args_err")
   rv$generalConfig$extraClArgs <<- input$general_args
 })
 
@@ -398,7 +385,7 @@ observeEvent(input$add_general, {
   }
   arrayID  <- strsplit(input$add_general[3], "_")[[1]][2]
   arrayIdx <- groupIndexMap$push(arrayID, input$add_general[1])
-
+  
   if(length(input$add_general) < 3L || nchar(trimws(input$add_general[2])) < 1L){
     # name has no characters
     if(arrayIdx <= length(rv$generalConfig[[arrayID]])){
