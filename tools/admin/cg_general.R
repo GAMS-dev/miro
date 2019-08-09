@@ -17,6 +17,9 @@ scalarSymbols <- scalarSymbols[scalarSymbols %in% scalarInputSym]
 updateSelectInput(session, "general_hidden", choices = scalarSymbols)
 
 langSpecific <- list()
+langSpecific$theme <- c("Use system/browser settings" = "browser", 
+                        "Light mode" = "light", "Dark mode" = "dark")
+names(langSpecific$theme) <- lang$adminMode$general$theme$choices
 langSpecific$language <- c("English" = "en", "German" = "de", "Chinese" = "cn")
 names(langSpecific$language) <- lang$adminMode$general$language$choices
 langSpecific$scen <- c("Split screen (suited for 2 scenarios to compare)" = "split", "Tab view 
@@ -29,6 +32,11 @@ removeUI(selector = "#module_wrapper1 .shiny-input-container", multiple = TRUE)
 insertUI(selector = "#interface_wrapper1",
          tagList(
            tags$h2("General", class="option-category"),
+           tags$div(
+             radioButtons("general_theme", lang$adminMode$general$theme$label, 
+                          choices = langSpecific$theme,
+                          selected = if(length(configJSON$theme)) configJSON$theme else config$theme
+             )),
            tags$label(class = "cb-label", "for" = "general_act_log", lang$adminMode$general$actLog$label),
            tags$div(
              tags$label(class = "checkbox-material", 
@@ -212,13 +220,7 @@ insertUI(selector = "#module_wrapper2",
                                                             tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#include-parent", 
                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                             choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
-                                                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))),
-           tags$hr(),
-           tags$label(class = "cb-label", "for" = "general_act_strict", lang$adminMode$general$actStrict$label),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_act_strict", value = if(length(configJSON$activateModules$strictmode)) configJSON$activateModules$strictmode else config$activateModules$strictmode, label = NULL)
-             ))
+                                                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
          ), 
          where = "beforeEnd")
 
@@ -237,6 +239,9 @@ output$general_logo_preview <- renderImage({
 
 observeEvent(input$general_language, {
   rv$generalConfig$language <<- input$general_language
+})
+observeEvent(input$general_theme, {
+  rv$generalConfig$theme <<- input$general_theme
 })
 observeEvent(input$general_parent, {
   rv$generalConfig$includeParentDir <<- input$general_parent

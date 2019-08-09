@@ -746,6 +746,10 @@
         "label": "Sprache",
         "choices": ["Englisch", "Deutsch", "Chinesisch"]
       },
+      "theme":{
+        "label": "Zu verwendendes Farbschema",
+        "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
+      },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
         "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]

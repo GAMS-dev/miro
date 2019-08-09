@@ -746,6 +746,10 @@
         "label": "Language",
         "choices": ["English", "German", "Chinese"]
       },
+      "theme":{
+        "label": "Color theme to use",
+        "choices": ["Use system/browser settings", "Light mode", "Dark mode"]
+      },
       "scen":{
         "label": "Default scenario comparison mode",
         "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
