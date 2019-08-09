@@ -583,10 +583,21 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   })
   showErrorMsg(lang$errMsg$readLog$title, errMsg)
   
+  logFilePath <- NULL
   if(config$activateModules$logFile){
+    if(config$activateModules$attachments && 
+       config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+      logFilePath <- file.path(workDir, modelName %+% ".log")
+      if(!identical(unlink(logFilePath, force = TRUE), 0L)){
+        flog.warn("Could not remove log file: '%s'.", logFilePath)
+      }
+    }
     emptyEl(session, "#logStatus")
     logObs <- observe({
       logText    <- logfile()
+      if(length(logFilePath)){
+        write_file(logText, logFilePath, append = TRUE)
+      }
       if(is.integer(modelStatus())){
         return()
       }

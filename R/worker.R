@@ -189,7 +189,7 @@ Worker <- R6Class("Worker", public = list(
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
                   paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'),
                   if(private$metadata$includeParentDir) paste0('idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"'), 
-                  paste0('curdir="', private$workDir, '"'), "lo=4", paste0("execMode=", private$metadata$gamsExecMode), 
+                  paste0('curdir="', private$workDir, '"'), "lo=3", paste0("execMode=", private$metadata$gamsExecMode), 
                   private$metadata$MIROSwitch, "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
@@ -267,12 +267,16 @@ Worker <- R6Class("Worker", public = list(
     error = function(e){
       private$log <- ""
     })
+    if(length(private$gamsRet)){
+      private$status <- private$gamsRet
+      return(private$status)
+    }
     exitStatus  <- private$process$get_exit_status()
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
     }
     if(length(exitStatus)){
-      private$status <- exitStatus
+      private$gamsRet <- exitStatus
     }
     return(private$status)
   },
