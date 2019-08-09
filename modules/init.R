@@ -1271,9 +1271,10 @@ if(is.null(errMsg)){
   modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]
   # generate GAMS return code map
   GAMSReturnCodeMap <- c(
+    '-500' = "Internal error",
     '-404' = "Host could not be reached",
     '-401' = "Access denied",
-    '500' = "Internal error",
+    '-15' = "Model execution was interrupted",
     '-9' = "Model execution was interrupted",
     '1' = "Solver is to be called, the system should never return this number", 
     '2' = "There was a compilation error", 
@@ -1286,7 +1287,6 @@ if(is.null(errMsg)){
     '9' = "GAMS could not be started",
     '10' = "Out of memory",
     '11' = "Out of disk",
-    '15' = "Model execution was interrupted",
     '100' = "Model execution timed out",
     '109' = "Could not create process/scratch directory",
     '110' = "Too many process/scratch directories",

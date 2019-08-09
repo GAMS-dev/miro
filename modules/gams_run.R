@@ -814,7 +814,7 @@ observeEvent(input$btSaveCredentials, {
     }
   }, error = function(e){
     errMsg <- conditionMessage(e)
-    flog.error("Problems logging in. Return code: %s", errMsg)
+    flog.info("Problems logging in. Return code: %s", errMsg)
     if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
        startsWith(errMsg, "Timeout"))
       return(showHideEl(session, "#remoteLoginHostNotFound", 6000))

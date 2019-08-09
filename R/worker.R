@@ -254,7 +254,7 @@ Worker <- R6Class("Worker", public = list(
   },
   retrieveRemoteTextEntity = function(text_entity){
     ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/", URLencode(text_entity)),
-               write_disk(file.path(private$workDir, text_entity)),
+               write_disk(file.path(private$workDir, text_entity), overwrite = TRUE),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(2L))
@@ -396,7 +396,8 @@ Worker <- R6Class("Worker", public = list(
     for(text_entity in c(paste0(private$metadata$modelName, ".log"), private$metadata$text_entities)){
       tryCatch(private$retrieveRemoteTextEntity(text_entity),
                error = function(e){
-                 flog.error("Problems fetching text entity: '%s'. Error message: '%s'.", text_entity, conditionMessage(e))
+                 warning(sprintf("Problems fetching text entity: '%s'. Error message: '%s'.", 
+                                 text_entity, conditionMessage(e)))
                })
     }
     
@@ -435,7 +436,6 @@ Worker <- R6Class("Worker", public = list(
     if(!length(private$process)){
       return("Process not started")
     }
-    
     ret <- DELETE(url = paste0(private$metadata$url, "/jobs/", private$process), 
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
