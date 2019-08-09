@@ -67,12 +67,12 @@ Source: "../../model/pickstock/pickstock.gms"; DestDir: "{userdocs}\MIRO_example
 Source: "../../model/pickstock_live/conf/pickstock_live.json"; DestDir: "{userdocs}\MIRO_examples\pickstock_live\conf"; Flags: ignoreversion;Components: examples
 Source: "../../model/pickstock_live/pickstock_live.gms"; DestDir: "{userdocs}\MIRO_examples\pickstock_live"; Flags: ignoreversion;Components: examples
 Source: "../../model/transport/conf/transport.json"; DestDir: "{userdocs}\MIRO_examples\transport\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/transport/customRenderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/transport/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/custom_renderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport\custom_renderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport/custom_renderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport\custom_renderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/transport/transport.gms"; DestDir: "{userdocs}\MIRO_examples\transport"; Flags: ignoreversion;Components: examples
 Source: "../../model/transport_live/conf/transport_live.json"; DestDir: "{userdocs}\MIRO_examples\transport_live\conf"; Flags: ignoreversion;Components: examples
-Source: "../../model/transport_live/customRenderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport_live\customRenderer"; Flags: ignoreversion;Components: examples
-Source: "../../model/transport_live/customRenderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport_live\customRenderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/custom_renderer/transport_custom.R"; DestDir: "{userdocs}\MIRO_examples\transport_live\custom_renderer"; Flags: ignoreversion;Components: examples
+Source: "../../model/transport_live/custom_renderer/us-states.geojson"; DestDir: "{userdocs}\MIRO_examples\transport_live\custom_renderer"; Flags: ignoreversion;Components: examples
 Source: "../../model/transport_live/transport_live.gms"; DestDir: "{userdocs}\MIRO_examples\transport_live"; Flags: ignoreversion;Components: examples
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MIROName}}"; Filename: "{uninstallexe}"

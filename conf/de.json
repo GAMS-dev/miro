@@ -33,6 +33,10 @@
       "interrupt":"Stop"
     },
     "header":{
+      "remoteExec":{
+        "login": "Einloggen",
+        "logout": "Ausloggen"
+      },
       "scenario":{
         "title":"Szenario",
         "titleHC": "HC-Job",
@@ -129,6 +133,7 @@
 	    "btNew": "Szenarien auswählen"
     },
     "gamsModelStatus":{  
+      "submission": "Modell wird übermittelt",
       "queued": "Modell in der Warteschlange",
       "exec":"Modell wird gelöst",
       "success":"Das Modell wurde erfolgreich gelöst.",
@@ -217,6 +222,29 @@
       "errMsg": "Beim aktualisieren der Metadaten ist ein Fehler aufgetreten. Bitte kontaktieren Sie den Systemadministrator, falls dieser Fehler bestehen bleibt.",
       "cancelButton":"Schließen",
       "okButton":"Metadaten aktualisieren"
+    },
+    "dialogRemoteLogin": {
+      "title": "Login erforderlich",
+      "desc": "Bitte geben Sie Ihre Zugangsdaten unten ein:",
+      "url": "URL des GAMS Remote Solvers",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "namespace": "Namensraum",
+      "cancelButton":"Abbrechen",
+      "useRegistered": "Ist Ihr Modell im Namensraum registriert?",
+      "remember": "Login speichern",
+      "okButton": "Ok",
+      "hostNotFound": "GAMS Remote Solver konnte unter der angegebenen URL nicht erreicht werden.",
+      "nsNotFound": "Der von Ihnen angegebene Namensraum konnte nicht gefunden werden.",
+      "invalidCred": "Die von Ihnen eingegebenen Zugangsdaten sind ungültig.",
+      "insuffPerm": "Sie haben nicht genügend Berechtigungen, um das Modell auszuführen.",
+      "invalidProtocol": "Das von Ihnen angegebene Protokoll ist ungültig. Nur HTTPS wird unterstützt."
+    },
+    "dialogRemoteLogout": {
+      "title": "Ausloggen",
+      "desc": "Sind Sie sicher, dass Sie sich ausloggen möchten?",
+      "cancelButton":"Abbrechen",
+      "okButton": "Ausloggen"
     },
     "dialogDeleteScen":{  
       "title":"Szenario löschen",

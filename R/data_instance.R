@@ -1,8 +1,8 @@
 DataInstance <- R6Class("DataInstance", public = list(
-  initialize = function(datasetNames){
-    stopifnot(is.character(datasetNames), 
-              length(datasetNames) > 0L)
+  initialize = function(datasetNames = character(0L)){
+    stopifnot(is.character(datasetNames))
     private$datasetNames <- datasetNames
+    return(invisible(self))
   },
   push = function(datasetName, data){
     stopifnot(is.character(datasetName), 
@@ -31,7 +31,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     if(is.character(filePaths) && length(filePaths)){
       private$filePaths <- c(private$filePaths, filePaths)
     }
-    return(self)
+    return(invisible(self))
   },
   writeCSV = function(filePath, datasetName = NULL, delim = ","){
     stopifnot(is.character(filePath), identical(length(filePath), 1L))
@@ -44,37 +44,32 @@ DataInstance <- R6Class("DataInstance", public = list(
     }else{
       idsToWrite <- seq_along(private$data)
     }
-    errMsg <- NULL
     for(id in idsToWrite){
       fileName <- file.path(filePath, paste0(names(private$data)[[id]], ".csv"))
-      tryCatch({
-        write_delim(private$data[[id]], fileName, 
-                    delim = delim, na = "")
-      }, error = function(e) {
-        flog.error("Error writing csv file: '%s'. Error message: '%s'.", fileName, e)
-        errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$writeCsv, fileName), sep = "\n")
-      })
-    }
-    if(length(errMsg)){
-      stop(errMsg, call. = FALSE)
+      write_delim(private$data[[id]], fileName, 
+                  delim = delim, na = "")
     }
     private$filePaths <- c(private$filePaths, paste0(filePath, names(private$data)[idsToWrite], ".csv"))
-    return(self)
+    return(invisible(self))
   },
   writeGDX = function(fileName, squeezeZeros = c('y', 'n', 'e')){
     stopifnot(is.character(fileName), identical(length(fileName), 1L))
     squeezeZeros <- match.arg(squeezeZeros)
     gdxio$wgdx(fileName, private$data, squeezeZeros)
     private$filePaths <- c(private$filePaths, fileName)
-    return(self)
+    return(invisible(self))
   },
-  compress = function(fileName){
-    stopifnot(is.character(fileName), identical(length(fileName), 1L))
+  compress = function(fileName = NULL, recurse = FALSE){
+    if(!is.null(fileName)){
+      stopifnot(is.character(fileName), identical(length(fileName), 1L))
+    }else{
+      fileName <- tempfile(fileext = ".zip")
+    }
     if(!length(private$filePaths)){
       stop("Nothing to compress.", call. = FALSE)
     }
-    zipr(fileName, private$filePaths, recurse = FALSE, compression_level = 9L)
-    return(self)
+    zipr(fileName, private$filePaths, recurse = recurse, compression_level = 9L)
+    return(invisible(fileName))
   }
 ), private = list(
   data = list(),

@@ -95,22 +95,22 @@ pipeline {
 
                             rem APILIB Example models
                             cd %WORKSPACE%\\model\\kport
-                            %GAMS_DIR%\\gmszip -r kport_conf.zip conf\\kport.json static customRenderer
+                            %GAMS_DIR%\\gmszip -r kport_conf.zip conf\\kport.json static custom_renderer
                             %GBIN_DIR%\\cp kport_conf.zip kport.gms %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f kport_conf.zip
 
                             cd %WORKSPACE%\\model\\pickstock
-                            %GAMS_DIR%\\gmszip -r pickstock_conf.zip conf\\pickstock.json static customRenderer
+                            %GAMS_DIR%\\gmszip -r pickstock_conf.zip conf\\pickstock.json static custom_renderer
                             %GBIN_DIR%\\cp pickstock_conf.zip pickstock.gms dowjones2016.csv %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f pickstock_conf.zip
 
                             cd %WORKSPACE%\\model\\transport
-                            %GAMS_DIR%\\gmszip -r transport_conf.zip conf\\transport.json static customRenderer
+                            %GAMS_DIR%\\gmszip -r transport_conf.zip conf\\transport.json static custom_renderer
                             %GBIN_DIR%\\cp transport_conf.zip transport.gms %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f transport_conf.zip
 
                             cd %WORKSPACE%\\model\\transport_live
-                            %GAMS_DIR%\\gmszip -r transport_live_conf.zip conf\\transport_live.json static customRenderer
+                            %GAMS_DIR%\\gmszip -r transport_live_conf.zip conf\\transport_live.json static custom_renderer
                             %GBIN_DIR%\\cp transport_live_conf.zip transport_live.gms %GAMS_DIR%\\datalib_ml
                             %GBIN_DIR%\\rm -f transport_live_conf.zip
 
@@ -196,22 +196,22 @@ pipeline {
                             cp "$WORKSPACE/model/miro.gms" "$TARGET/inclib"
                             
                             cd "$WORKSPACE/model/kport"
-                            "$TARGET/gmszip" -r kport_conf.zip conf/kport.json static customRenderer
+                            "$TARGET/gmszip" -r kport_conf.zip conf/kport.json static custom_renderer
                             cp kport_conf.zip kport.gms "$TARGET/datalib_ml"
                             rm -f kport_conf.zip
                             
                             cd "$WORKSPACE/model/pickstock"
-                            "$TARGET/gmszip" -r pickstock_conf.zip conf/pickstock.json static customRenderer
+                            "$TARGET/gmszip" -r pickstock_conf.zip conf/pickstock.json static custom_renderer
                             cp pickstock_conf.zip pickstock.gms dowjones2016.csv "$TARGET/datalib_ml"
                             rm -f pickstock_conf.zip
                             
                             cd "$WORKSPACE/model/transport"
-                            "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static customRenderer
+                            "$TARGET/gmszip" -r transport_conf.zip conf/transport.json static custom_renderer
                             cp transport_conf.zip transport.gms "$TARGET/datalib_ml"
                             rm -f transport_conf.zip
                             
                             cd "$WORKSPACE/model/transport_live"
-                            "$TARGET/gmszip" -r transport_live_conf.zip conf/transport_live.json static customRenderer
+                            "$TARGET/gmszip" -r transport_live_conf.zip conf/transport_live.json static custom_renderer
                             cp transport_live_conf.zip transport_live.gms "$TARGET/datalib_ml"
                             rm -f transport_live_conf.zip
                             

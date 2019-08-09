@@ -33,6 +33,10 @@
       "interrupt":"停止"
     },
     "header":{
+      "remoteExec":{
+        "login": "Login",
+        "logout": "Logout"
+      },
       "scenario":{
         "title":"场景选项",
         "titleHC":"HC作业",
@@ -129,6 +133,7 @@
 "btNew":"选择场景"
     },
     "gamsModelStatus":{
+      "submission": "Model is being submitted",
       "queued": "Model queued",
       "exec":"模型执行阶段",
       "success":"运行已终止。",
@@ -217,6 +222,29 @@
       "errMsg":"更新Hypercube作业元数据出现错误。如果此问题仍然存在,请与系统管理员联系。",
       "cancelButton": "关闭",
       "okButton":"更新元数据"
+    },
+    "dialogRemoteLogin": {
+      "title": "Login required",
+      "desc": "Please enter your credentials below:",
+      "url": "URL of the GAMS Remote Solver",
+      "username": "Username",
+      "password": "Password",
+      "namespace": "Namespace",
+      "useRegistered": "Is your model registered in the namespace?",
+      "remember": "Remember me",
+      "cancelButton":"Cancel",
+      "okButton": "Ok",
+      "hostNotFound": "GAMS Remote Solver could not be reached under the given URL.",
+      "nsNotFound": "The namespace you entered could not be found.",
+      "invalidCred": "The credentials you entered are invalid.",
+      "insuffPerm": "You don't have sufficient permissions to execute the model.",
+      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported."
+    },
+    "dialogRemoteLogout": {
+      "title": "Logout",
+      "desc": "Are you sure you want to log out?",
+      "cancelButton":"Cancel",
+      "okButton": "Logout"
     },
     "dialogDeleteScen":{
       "title":"删除场景",

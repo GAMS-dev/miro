@@ -75,11 +75,7 @@ if(is.null(errMsg)){
   
   if(!is.null(config$db$name) && nchar(config$db$name) &&
      identical(config$db$type, "sqlite")){
-    if(identical(gamsSysDir, "")){
-      config$db$name <- paste0(getwd(), .Platform$file.sep, config$db$name, ".sqlite3")
-    }else{
-      config$db$name <- file.path(getwd(), config$db$name %+% ".sqlite3")
-    }
+    config$db$name <- file.path(miroWorkspace, config$db$name %+% ".sqlite3")
   }
 }
 
@@ -1265,61 +1261,73 @@ if(is.null(errMsg)){
                                             lang$scalarAliases$cols$value)
   }
   
+  # generate list of model files
+  modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
+  modelFiles <- modelFiles[!basename(modelFiles) %in% c(hcubeDirName, customRendererDirName, "static",
+                                              "logs", "conf", "runapp.R", paste0("~$", modelNameRaw, ".gms"),
+                                              paste0(miroDataDirPrefix, modelName))]
+  modelFilesExt <- tools::file_ext(modelFiles)
+  modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
+  modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]
   # generate GAMS return code map
-  GAMSReturnCodeMap <- c('-9' = "Model execution was interrupted",
-                         '1' = "Solver is to be called, the system should never return this number", 
-                         '2' = "There was a compilation error", 
-                         '3' = "There was an execution error", 
-                         '4' = "System limits were reached",
-                         '5' = "There was a file error",
-                         '6' = "There was a parameter error",
-                         '7' = "There was a licensing error",
-                         '8' = "There was a GAMS system error",
-                         '9' = "GAMS could not be started",
-                         '10' = "Out of memory",
-                         '11' = "Out of disk",
-                         '15' = "Model execution was interrupted",
-                         '100' = "Model execution timed out",
-                         '109' = "Could not create process/scratch directory",
-                         '110' = "Too many process/scratch directories",
-                         '112' = "Could not delete the process/scratch directory",
-                         '113' = "Could not write the script gamsnext",
-                         '114' = "Could not write the parameter file",
-                         '115' = "Could not read environment variable",
-                         '144' = "Could not spawn the GAMS language compiler (gamscmex)",
-                         '400' = "Could not spawn the GAMS language compiler (gamscmex)",
-                         '145' = "Current directory (curdir) does not exist",
-                         '401' = "Current directory (curdir) does not exist",
-                         '146' = "Cannot set current directory (curdir)",
-                         '402' = "Cannot set current directory (curdir)",
-                         '148' = "Blank in system directory (UNIX only)",
-                         '404' = "Blank in system directory (UNIX only)",
-                         '149' = "Blank in current directory (UNIX only)",
-                         '405' = "Blank in current directory (UNIX only)",
-                         '150' = "Blank in scratch extension (scrext)",
-                         '406' = "Blank in scratch extension (scrext)",
-                         '151' = "Unexpected cmexRC",
-                         '407' = "Unexpected cmexRC",
-                         '152' = "Could not find the process directory (procdir)",
-                         '408' = "Could not find the process directory (procdir)",
-                         '153' = "CMEX library could not be found (experimental)",
-                         '409' = "CMEX library could not be found (experimental)",
-                         '154' = "Entry point in CMEX library could not be found (experimental)",
-                         '410' = "Entry point in CMEX library could not be found (experimental)",
-                         '155' = "Blank in process directory (UNIX only)",
-                         '411' = "Blank in process directory (UNIX only)",
-                         '156' = "Blank in scratch directory (UNIX only)",
-                         '412' = "Blank in scratch directory (UNIX only)",
-                         '141' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-                         '232' = "Driver error: incorrect command line parameters for gams",
-                         '1000' = "Driver error: incorrect command line parameters for gams",
-                         '208' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-                         '2000' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
-                         '184' = "Driver error: problems getting current directory",
-                         '3000' = "Driver error: problems getting current directory",
-                         '160' = "Driver error: internal error: GAMS compile and execute module not found",
-                         '4000' = "Driver error: internal error: GAMS compile and execute module not found",
-                         '126' = "Driver error: internal error: cannot load option handling library",
-                         '5000' = "Driver error: internal error: cannot load option handling library"
+  GAMSReturnCodeMap <- c(
+    '-404' = "Host could not be reached",
+    '-401' = "Access denied",
+    '500' = "Internal error",
+    '-9' = "Model execution was interrupted",
+    '1' = "Solver is to be called, the system should never return this number", 
+    '2' = "There was a compilation error", 
+    '3' = "There was an execution error", 
+    '4' = "System limits were reached",
+    '5' = "There was a file error",
+    '6' = "There was a parameter error",
+    '7' = "There was a licensing error",
+    '8' = "There was a GAMS system error",
+    '9' = "GAMS could not be started",
+    '10' = "Out of memory",
+    '11' = "Out of disk",
+    '15' = "Model execution was interrupted",
+    '100' = "Model execution timed out",
+    '109' = "Could not create process/scratch directory",
+    '110' = "Too many process/scratch directories",
+    '112' = "Could not delete the process/scratch directory",
+    '113' = "Could not write the script gamsnext",
+    '114' = "Could not write the parameter file",
+    '115' = "Could not read environment variable",
+    '144' = "Could not spawn the GAMS language compiler (gamscmex)",
+    '400' = "Could not spawn the GAMS language compiler (gamscmex)",
+    '145' = "Current directory (curdir) does not exist",
+    '401' = "Current directory (curdir) does not exist",
+    '146' = "Cannot set current directory (curdir)",
+    '402' = "Cannot set current directory (curdir)",
+    '148' = "Blank in system directory (UNIX only)",
+    '404' = "Blank in system directory (UNIX only)",
+    '149' = "Blank in current directory (UNIX only)",
+    '405' = "Blank in current directory (UNIX only)",
+    '150' = "Blank in scratch extension (scrext)",
+    '406' = "Blank in scratch extension (scrext)",
+    '151' = "Unexpected cmexRC",
+    '407' = "Unexpected cmexRC",
+    '152' = "Could not find the process directory (procdir)",
+    '408' = "Could not find the process directory (procdir)",
+    '153' = "CMEX library could not be found (experimental)",
+    '409' = "CMEX library could not be found (experimental)",
+    '154' = "Entry point in CMEX library could not be found (experimental)",
+    '410' = "Entry point in CMEX library could not be found (experimental)",
+    '155' = "Blank in process directory (UNIX only)",
+    '411' = "Blank in process directory (UNIX only)",
+    '156' = "Blank in scratch directory (UNIX only)",
+    '412' = "Blank in scratch directory (UNIX only)",
+    '141' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
+    '232' = "Driver error: incorrect command line parameters for gams",
+    '1000' = "Driver error: incorrect command line parameters for gams",
+    '208' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
+    '2000' = "Cannot add path / unknown UNIX environment / cannot set environment variable",
+    '184' = "Driver error: problems getting current directory",
+    '3000' = "Driver error: problems getting current directory",
+    '160' = "Driver error: internal error: GAMS compile and execute module not found",
+    '4000' = "Driver error: internal error: GAMS compile and execute module not found",
+    '126' = "Driver error: internal error: cannot load option handling library",
+    '5000' = "Driver error: internal error: cannot load option handling library"
   )
 }

@@ -1,5 +1,7 @@
 # gams model name
 modelName <- "pickstock"
+# miro workspace
+miroWorkspaceDir <- ".miro"
 # turn debug mode on or off
 debugMode <- TRUE
 # miro data folder prefix
@@ -61,7 +63,7 @@ defInType <- "pivot"
 # default height of pivot table
 pivotDefaultHeight <- 800
 # folder with custom renderer functions
-customRendererDirName <- "customRenderer"
+customRendererDirName <- "custom_renderer"
 # name and headers of the csv file that scalars will be saved in
 scalarsFileName    <- "scalars"
 scalarsOutName     <- "scalars_out"
@@ -97,7 +99,7 @@ defaultGroup <- "users"
 # list all supported standard renderers
 standardRenderers <- c("datatable", "dtgraph", "pivot", "graph", "valuebox")
 # name of the folder where hcube jobs will be executed
-hcubeDirName <- "hcubeJobs"
+hcubeDirName <- "hcube_jobs"
 # filename of hcube submission file (will be called when hypercube jobs are to be launched)
 hcubeSubmissionFile <- "hcube_submission"
 # maximum number of scenarios that can be solved per hcube run

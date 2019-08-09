@@ -219,7 +219,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     file.copy(fromDir, toDir, recursive = TRUE)
     staticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
     if(dir.exists(staticFilePath))
-    file.copy(staticFilePath, toDir, recursive = TRUE)
+      file.copy(staticFilePath, toDir, recursive = TRUE)
     unlink(staticFilePath, recursive = TRUE, force = TRUE)
     file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
@@ -339,7 +339,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     content = function(file) {
       # solve all scenarios in Hypercube run
       
-      # BEGIN EPIGRIDS specific
       workDirHcube <- file.path(tempdir(), "hcube")
       unlink(workDirHcube, recursive = TRUE, force = TRUE)
       dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
@@ -359,7 +358,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       filesToInclude <- filesToInclude[!idsToExclude]
       removeModal()
       zip(file, filesToInclude, compression_level = 6)
-      # END EPIGRIDS specific
     },
     contentType = "application/zip")
   
@@ -370,7 +368,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     content = function(file) {
       # solve only scenarios that do not yet exist
       
-      # BEGIN EPIGRIDS specific
       workDirHcube <- file.path(tempdir(), "hcube")
       unlink(workDirHcube, recursive = TRUE, force = TRUE)
       dir.create(workDirHcube, showWarnings = FALSE, recursive = TRUE)
@@ -385,15 +382,14 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       
       removeModal()
       zip(file, list.files(recursive = TRUE), compression_level = 6)
-      # END EPIGRIDS specific
     },
     contentType = "application/zip")
 }
 
 
-observeEvent(input$btSolve, {
+observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   flog.debug("Solve button clicked (model: '%s').", modelName)
-  removeModal()
+
   if(length(activeScen) && !activeScen$hasExecPerm()){
     if(config$activateModules$hcubeMode){
       modeDescriptor <- "dialogNoExecPermHC"
@@ -404,6 +400,11 @@ observeEvent(input$btSolve, {
                  lang$nav[[modeDescriptor]]$desc)
     flog.info("User has no execute permission for this scenario.")
     return()
+  }
+  if(identical(worker$validateCredentials(), FALSE)){
+    btSolveClicked <<- TRUE
+    showLoginDialog(cred = worker$getCredentials())
+    return(NULL)
   }
   if(identical(config$activateModules$hcubeMode, TRUE)){
     numberScenarios <- noScenToSolve()
@@ -469,9 +470,6 @@ observeEvent(input$btSolve, {
   prog <- Progress$new()
   on.exit(suppressWarnings(prog$close()))
   prog$set(message = lang$progressBar$prepRun$title, value = 0)
-  
-  updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
-  updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
   prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
   # save input data 
@@ -556,6 +554,9 @@ observeEvent(input$btSolve, {
     return(NULL)
   }
   
+  updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
+  updateTabsetPanel(session, "logFileTabsset", selected = "log")
+  
   #activate Interrupt button as GAMS is running now
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
@@ -584,7 +585,7 @@ observeEvent(input$btSolve, {
   
   if(config$activateModules$logFile){
     emptyEl(session, "#logStatus")
-    observe({
+    logObs <- observe({
       logText    <- logfile()
       if(is.integer(modelStatus())){
         return()
@@ -601,7 +602,9 @@ observeEvent(input$btSolve, {
     currModelStat <- modelStatus()
     if(is.null(currModelStat)){
       statusText <- lang$nav$gamsModelStatus$exec
-    }else if(is.na(currModelStat)){
+    }else if(identical(currModelStat, "s")){
+      statusText <- lang$nav$gamsModelStatus$submission
+    }else if(identical(currModelStat, "q")){
       statusText <- lang$nav$gamsModelStatus$queued
     }else{
       modelStatusObs$destroy()
@@ -611,48 +614,58 @@ observeEvent(input$btSolve, {
       
       if(config$activateModules$logFile){
         logfileObs$destroy()
+        logfileObs <- NULL
+        logObs$destroy()
         logfile <- NULL
       }
-      if(config$activateModules$lstFile){
-        errMsg <- NULL
-        tryCatch({
-          fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
-          if(is.na(fileSize))
-            stop("Could not access listing file", call. = FALSE)
-          if(fileSize > maxSizeToRead){
-            output$listFile <- renderText(lang$errMsg$readLst$fileSize)
-          }else{
-            output$listFile <- renderText(read_file(paste0(workDir, 
-                                                           modelNameRaw, ".lst")))
-          }
-        }, error = function(e) {
-          errMsg <<- lang$errMsg$readLst$desc
-          flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
-                    modelName, e)
-        })
-        showErrorMsg(lang$errMsg$readLst$title, errMsg)
-      }
-      if(config$activateModules$miroLogFile){
-        miroLogContent <- ""
-        miroLogPath <- file.path(workDir, config$miroLogFile)
-        miroLogAnnotations <- ""
-        tryCatch({
-          if(file.exists(miroLogPath)[1]){
-            inputScalarsTmp <- NULL
-            if(scalarsFileName %in% names(modelIn))
-              inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
-            miroLogContent     <- parseMiroLog(session, miroLogPath, 
-                                               names(modelIn), inputScalarsTmp)
-            miroLogAnnotations <- miroLogContent$annotations
-            miroLogContent <- miroLogContent$content
-          }
-        }, error = function(e){
-          flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
-        })
-        output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
-      }
       
-      if(currModelStat != 0){
+      if(currModelStat < 0){
+        returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
+        if(is.na(returnCodeText)){
+          returnCodeText <- as.character(currModelStat)
+        }
+        statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
+        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+                   modelName, statusText)
+      }else if(currModelStat != 0){
+        if(config$activateModules$lstFile){
+          errMsg <- NULL
+          tryCatch({
+            fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
+            if(is.na(fileSize))
+              stop("Could not access listing file", call. = FALSE)
+            if(fileSize > maxSizeToRead){
+              output$listFile <- renderText(lang$errMsg$readLst$fileSize)
+            }else{
+              output$listFile <- renderText(read_file(paste0(workDir, 
+                                                             modelNameRaw, ".lst")))
+            }
+          }, error = function(e) {
+            errMsg <<- lang$errMsg$readLst$desc
+            flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
+                      modelName, e)
+          })
+          showErrorMsg(lang$errMsg$readLst$title, errMsg)
+        }
+        if(config$activateModules$miroLogFile){
+          miroLogContent <- ""
+          miroLogPath <- file.path(workDir, config$miroLogFile)
+          miroLogAnnotations <- ""
+          tryCatch({
+            if(file.exists(miroLogPath)[1]){
+              inputScalarsTmp <- NULL
+              if(scalarsFileName %in% names(modelIn))
+                inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
+              miroLogContent     <- parseMiroLog(session, miroLogPath, 
+                                                 names(modelIn), inputScalarsTmp)
+              miroLogAnnotations <- miroLogContent$annotations
+              miroLogContent <- miroLogContent$content
+            }
+          }, error = function(e){
+            flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+          })
+          output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
+        }
         returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
         if(is.na(returnCodeText)){
           returnCodeText <- as.character(currModelStat)
@@ -667,7 +680,6 @@ observeEvent(input$btSolve, {
             for(inputTabId in seq_along(inputTabs)){
               valTabIdTmp <- inputTabs[[inputTabId]]
               valTabIdErr <- match(valIdHead, valTabIdTmp)
-              print(valTabIdErr)
               if(!is.na(valTabIdErr)){
                 updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId))
                 if(length(valTabIdTmp) > 1L){
@@ -679,7 +691,8 @@ observeEvent(input$btSolve, {
             }
           }
         }
-        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", modelName, statusText)
+        flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
+                   modelName, statusText)
       }else{
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
@@ -778,4 +791,56 @@ observeEvent(input$btSolve, {
   })
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
+})
+observeEvent(input$btRemoteExecLogin, {
+  btSolveClicked <<- FALSE
+  showLoginDialog(cred = worker$getCredentials())
+})
+observeEvent(input$btSaveCredentials, {
+  tryCatch({
+    worker$login(url = input$remoteCredUrl, 
+                 username = input$remoteCredUser, 
+                 password = input$remoteCredPass, 
+                 namespace = input$remoteCredNs, 
+                 useRegistered = input$remoteCredReg,
+                 rememberMe = input$remoteCredRemember,
+                 token = FALSE)
+    hideEl(session, "#btRemoteExecLogin")
+    showEl(session, "#remoteExecLogoutDiv")
+    removeModal()
+    if(btSolveClicked){
+      rv$btSolve <- rv$btSolve + 1L
+    }
+  }, error = function(e){
+    errMsg <- conditionMessage(e)
+    flog.debug("Problems logging in. Return code: %s", errMsg)
+    if(identical(errMsg, '404') || startsWith(errMsg, "Could not"))
+      return(showHideEl(session, "#remoteLoginHostNotFound", 6000))
+    
+    if(identical(errMsg, '400'))
+      return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
+    
+    if(identical(errMsg, '401'))
+      return(showHideEl(session, "#remoteLoginInvalidCred", 6000))
+    
+    if(identical(errMsg, '403'))
+      return(showHideEl(session, "#remoteLoginInsuffPerm", 6000))
+    
+    if(identical(errMsg, '426'))
+      return(showHideEl(session, "#remoteLoginInvalidProt", 6000))
+    
+    return(showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$unknownError))
+  })
+})
+observeEvent(input$btRemoteExecLogout, {
+  removeModal()
+  tryCatch({
+    worker$logout()
+    showEl(session, "#btRemoteExecLogin")
+    hideEl(session, "#remoteExecLogoutDiv")
+  }, error = function(e){
+    flog.error("Problems setting credentials: %s", e)
+    showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
+                                                      rememberMeFileName))
+  })
 })

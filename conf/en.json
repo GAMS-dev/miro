@@ -33,6 +33,10 @@
       "interrupt":"Stop"
     },
     "header":{
+      "remoteExec":{
+        "login": "Login",
+        "logout": "Logout"
+      },
       "scenario":{
         "title":"Scenario",
         "titleHC": "HC job",
@@ -129,6 +133,7 @@
 	    "btNew": "Select scenarios"
     },
     "gamsModelStatus":{  
+      "submission": "Model is being submitted",
       "queued": "Model queued",
       "exec":"Model execution phase",
       "success":"Run successfully terminated.",
@@ -217,6 +222,29 @@
       "errMsg": "Prolems updating Hypercube job metadata. If this problem persists, please contact the system administrator.",
       "cancelButton":"Close",
       "okButton":"Update metadata"
+    },
+    "dialogRemoteLogin": {
+      "title": "Login required",
+      "desc": "Please enter your credentials below:",
+      "url": "URL of the GAMS Remote Solver",
+      "username": "Username",
+      "password": "Password",
+      "namespace": "Namespace",
+      "useRegistered": "Is your model registered in the namespace?",
+      "remember": "Remember me",
+      "cancelButton":"Cancel",
+      "okButton": "Ok",
+      "hostNotFound": "GAMS Remote Solver could not be reached under the given URL.",
+      "nsNotFound": "The namespace you entered could not be found.",
+      "invalidCred": "The credentials you entered are invalid.",
+      "insuffPerm": "You don't have sufficient permissions to execute the model.",
+      "invalidProtocol": "The protocol you specified is invalid. Only HTTPS supported."
+    },
+    "dialogRemoteLogout": {
+      "title": "Logout",
+      "desc": "Are you sure you want to log out?",
+      "cancelButton":"Cancel",
+      "okButton": "Logout"
     },
     "dialogDeleteScen":{  
       "title":"Delete scenario",

@@ -72,27 +72,27 @@ cp    %GITDIR%global.R .
 
 rem APILIB Example models
 cd %GITDIR%model\kport
-gmszip -r kport_conf.zip conf\kport.json static customRenderer
+gmszip -r kport_conf.zip conf\kport.json static custom_renderer
 cp kport_conf.zip kport.gms %GAMSDIR%datalib_ml
 rm -f kport_conf.zip
 
 cd %GITDIR%model\pickstock
-gmszip -r pickstock_conf.zip conf\pickstock.json static customRenderer
+gmszip -r pickstock_conf.zip conf\pickstock.json static custom_renderer
 cp pickstock_conf.zip pickstock.gms dowjones2016.csv %GAMSDIR%datalib_ml
 rm -f pickstock_conf.zip
 
 cd %GITDIR%model\pickstock_live
-gmszip -r pickstock_live_conf.zip conf\pickstock_live.json static customRenderer
+gmszip -r pickstock_live_conf.zip conf\pickstock_live.json static custom_renderer
 cp pickstock_live_conf.zip pickstock_live.gms %GAMSDIR%datalib_ml
 rm -f pickstock_live_conf.zip
 
 cd %GITDIR%model\transport
-gmszip -r transport_conf.zip conf\transport.json static customRenderer
+gmszip -r transport_conf.zip conf\transport.json static custom_renderer
 cp transport_conf.zip transport.gms %GAMSDIR%datalib_ml
 rm -f transport_conf.zip
 
 cd %GITDIR%model\transport_live
-gmszip -r transport_live_conf.zip conf\transport_live.json static customRenderer
+gmszip -r transport_live_conf.zip conf\transport_live.json static custom_renderer
 cp transport_live_conf.zip transport_live.gms %GAMSDIR%datalib_ml
 rm -f transport_live_conf.zip
 

@@ -147,7 +147,7 @@
                "required":false
             },
             "remoteExecution":{
-               "description": "Should model be solved remotely (not that credentials/location needs to be specified via environment variables!)?",
+               "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
                "default":false,
                "required":false
