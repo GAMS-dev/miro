@@ -219,8 +219,8 @@ Worker <- R6Class("Worker", public = list(
       pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
       requestBody <- list(model = metadata$modelName,
-                          use_pf_file = TRUE, text_entities = paste0(metadata$modelName, ".lst"),
-                          stdout_filename = "log",
+                          use_pf_file = TRUE, text_entities = paste(metadata$text_entities, collapse = ","),
+                          stdout_filename = paste(metadata$modelName, ".log"),
                           namespace = metadata$namespace,
                           data = upload_file(inputData$
                                                writeCSV(workDir, delim = metadata$csvDelim)$
@@ -252,15 +252,13 @@ Worker <- R6Class("Worker", public = list(
                       isWindows = isWindows))
     return(self)
   },
-  retrieveRemoteLog = function(){
-    ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/log"),
+  retrieveRemoteTextEntity = function(text_entity){
+    ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/", URLencode(text_entity)),
+               write_disk(file.path(private$workDir, text_entity)),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(2L))
-    if(!identical(status_code(ret), 200L)){
-      stop(content(retFull)$message, call. = FALSE)
-    }
-    return(content(retFull)$message)
+    return(status_code(ret))
   },
   pingLocalProcess = function(){
     tryCatch(
@@ -304,8 +302,13 @@ Worker <- R6Class("Worker", public = list(
         private$wait    <- 0L
         private$waitCnt <- 0L
         if(startsWith(remoteSubValue, "error:")){
-          flog.error(value(private$fRemoteSub))
-          private$status <- -500L
+          errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7)))
+          flog.error(paste0("Could not execute model remotely. Error code: ", errCode))
+          if(is.na(errCode)){
+            private$status <- -500L
+          }else{
+            private$status <- -errCode
+          }
         }else{
           private$process <- value(private$fRemoteSub)
           private$status  <- "q"
@@ -390,6 +393,12 @@ Worker <- R6Class("Worker", public = list(
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(2L))
+    for(text_entity in c(paste0(private$metadata$modelName, ".log"), private$metadata$text_entities)){
+      tryCatch(private$retrieveRemoteTextEntity(text_entity),
+               error = function(e){
+                 flog.error("Problems fetching text entity: '%s'. Error message: '%s'.", text_entity, conditionMessage(e))
+               })
+    }
     
     if(identical(status_code(ret), 200L)){
       unzip(tmp, exdir = private$workDir)

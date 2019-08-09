@@ -547,6 +547,8 @@ if(is.null(errMsg)){
   
   worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                        tableNameTracePrefix = tableNameTracePrefix, 
+                                       text_entities = c(paste0(modelName, ".lst"), 
+                                                         if(config$activateModules$miroLogFile) config$miroLogFile),
                                        currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
                                        MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
                                        includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,

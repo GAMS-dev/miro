@@ -627,45 +627,47 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         statusText <- lang$nav$gamsModelStatus$error %+% returnCodeText
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
                    modelName, statusText)
-      }else if(currModelStat != 0){
-        if(config$activateModules$lstFile){
-          errMsg <- NULL
-          tryCatch({
-            fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
-            if(is.na(fileSize))
-              stop("Could not access listing file", call. = FALSE)
-            if(fileSize > maxSizeToRead){
-              output$listFile <- renderText(lang$errMsg$readLst$fileSize)
-            }else{
-              output$listFile <- renderText(read_file(paste0(workDir, 
-                                                             modelNameRaw, ".lst")))
-            }
-          }, error = function(e) {
-            errMsg <<- lang$errMsg$readLst$desc
-            flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
-                      modelName, e)
-          })
-          showErrorMsg(lang$errMsg$readLst$title, errMsg)
-        }
-        if(config$activateModules$miroLogFile){
-          miroLogContent <- ""
-          miroLogPath <- file.path(workDir, config$miroLogFile)
-          miroLogAnnotations <- ""
-          tryCatch({
-            if(file.exists(miroLogPath)[1]){
-              inputScalarsTmp <- NULL
-              if(scalarsFileName %in% names(modelIn))
-                inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
-              miroLogContent     <- parseMiroLog(session, miroLogPath, 
-                                                 names(modelIn), inputScalarsTmp)
-              miroLogAnnotations <- miroLogContent$annotations
-              miroLogContent <- miroLogContent$content
-            }
-          }, error = function(e){
-            flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
-          })
-          output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
-        }
+        return(htmltools::htmlEscape(statusText))
+      }
+      if(config$activateModules$lstFile){
+        errMsg <- NULL
+        tryCatch({
+          fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
+          if(is.na(fileSize))
+            stop("Could not access listing file", call. = FALSE)
+          if(fileSize > maxSizeToRead){
+            output$listFile <- renderText(lang$errMsg$readLst$fileSize)
+          }else{
+            output$listFile <- renderText(read_file(paste0(workDir, 
+                                                           modelNameRaw, ".lst")))
+          }
+        }, error = function(e) {
+          errMsg <<- lang$errMsg$readLst$desc
+          flog.warn("GAMS listing file could not be read (model: '%s'). Error message: %s.", 
+                    modelName, e)
+        })
+        showErrorMsg(lang$errMsg$readLst$title, errMsg)
+      }
+      if(config$activateModules$miroLogFile){
+        miroLogContent <- ""
+        miroLogPath <- file.path(workDir, config$miroLogFile)
+        miroLogAnnotations <- ""
+        tryCatch({
+          if(file.exists(miroLogPath)[1]){
+            inputScalarsTmp <- NULL
+            if(scalarsFileName %in% names(modelIn))
+              inputScalarsTmp  <- modelIn[[scalarsFileName]]$symnames
+            miroLogContent     <- parseMiroLog(session, miroLogPath, 
+                                               names(modelIn), inputScalarsTmp)
+            miroLogAnnotations <- miroLogContent$annotations
+            miroLogContent <- miroLogContent$content
+          }
+        }, error = function(e){
+          flog.warn("MIRO log file could not be read. Error message: '%s'.", e)
+        })
+        output$miroLogFile <- renderUI(HTML(paste(miroLogContent, collapse = "\n")))
+      }
+      if(currModelStat != 0){
         returnCodeText <- GAMSReturnCodeMap[as.character(currModelStat)]
         if(is.na(returnCodeText)){
           returnCodeText <- as.character(currModelStat)
