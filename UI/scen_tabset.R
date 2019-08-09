@@ -175,11 +175,6 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                              tags$div(title = lang$nav$scen$tooltips$btTableView, class = "scen-button-tt",
                                       actionButton(paste0("table_", scenId), icon("chart-bar"), 
                                                    class="scen-button")
-                             ),
-                             tags$div(title = lang$nav$scen$tooltips$btClose, class = "scen-button-tt",
-                                      actionButton(paste0("btClose_", scenId), icon("times"), 
-                                                   class="scen-button")
-                                      
                              )
                     )
                     

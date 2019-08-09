@@ -20,7 +20,8 @@ if(isInSplitView){
   }, logical(1L))
   newScenTabPanel <- generateScenarioTabsetMulti(scenId, noData, scenCounter = scenCounter)
   # add new Scenario tab
-  insertTab("scenTabset", newScenTabPanel, "scen_add", "before")
+  MIROinsertTab("scenTabset", newScenTabPanel, "scen_add", "before", 
+                buttonID = paste0("btClose_", scenId), buttonTT = lang$nav$scen$tooltips$btClose)
   numberScenTabs <<- numberScenTabs + 1L
   if(numberScenTabs == 1L){
     hideEl(session, "#no-scen")

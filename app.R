@@ -84,7 +84,7 @@ if("gdxrrw" %in% installedPackages){
 }
 # vector of required files
 filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
-                    "./R/data_instance.R", "./R/worker.R", "./R/dataio.R",
+                    "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R")
 LAUNCHADMINMODE <- FALSE
 if(identical(tolower(Sys.info()[["sysname"]]), "windows")){

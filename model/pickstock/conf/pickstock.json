@@ -28,7 +28,7 @@
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,
-      "max": "card(price$date)",
+      "max": "card(price$symbol)",
       "default": 3,
       "step": 1,
       "ticks": false,
@@ -277,7 +277,6 @@
   "pivottable": {
     "bgColor": "rgb(255,128,0)"
   },
-  "pageSkin": "black",
   "defCompMode": "tab",
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
@@ -287,7 +286,8 @@
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
-    "attachments": true
+    "attachments": true,
+    "remoteExecution": true
   },
   "aggregateWidgets": true,
   "includeParentDir": false,
@@ -303,6 +303,7 @@
       "pageLength": 15
     }
   },
+  "theme": "browser",
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund 🙀",
@@ -310,7 +311,7 @@
     }
   ],
   "handsontable": {
-    "stretchH": "none",
+    "stretchH": "all",
     "readonly": false,
     "highlightCol": true,
     "highlightRow": true,

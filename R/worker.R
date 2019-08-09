@@ -303,7 +303,7 @@ Worker <- R6Class("Worker", public = list(
         private$waitCnt <- 0L
         if(startsWith(remoteSubValue, "error:")){
           errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7)))
-          flog.error(paste0("Could not execute model remotely. Error code: ", errCode))
+          flog.info(paste0("Could not execute model remotely. Error code: ", errCode))
           if(is.na(errCode)){
             private$status <- -500L
           }else{
