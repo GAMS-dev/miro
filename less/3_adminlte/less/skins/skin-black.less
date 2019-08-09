@@ -13,21 +13,46 @@
   .main-header {
     .box-shadow(0px 1px 1px rgba(0, 0, 0, 0.05));
     .navbar-toggle {
-      color: @text-color;
+      .responsiveDark({
+         color: @text-color;
+      },
+      {
+         color: @text-color-dark;
+      });
     }
     .navbar-brand {
-      color: @text-color;
+      .responsiveDark({
+         color: @text-color;
+      },
+      {
+         color: @text-color-dark;
+      });
       border-right: 1px solid #eee;
     }
     .navbar {
-      .navbar-variant(@navbar-main; @navbar-icons; @navbar-hover; @navbar-main);
+      .responsiveDark({
+         .navbar-variant(@navbar-main; @navbar-icons; @navbar-hover; @navbar-main);
+      },
+      {
+         .navbar-variant(@navbar-main-dark; @navbar-icons-dark; @navbar-hover-dark; @navbar-main-dark);
+      });
       > .sidebar-toggle {
-        color: @navbar-icons;
+        .responsiveDark({
+           color: @navbar-icons;
+        },
+        {
+           color: @navbar-icons-dark;
+        });
         border-right: 1px solid #eee;
       }
       .navbar-nav {
         > li > a {
-          border-right: 1px solid @text-color;
+          .responsiveDark({
+             border-right: 1px solid @text-color;
+          },
+          {
+             border-right: 1px solid @text-color-dark;
+          });
         }
       }
       .navbar-custom-menu .navbar-nav,

@@ -7,7 +7,12 @@
   min-height: 90px;
   background: #fff;
   width: 100%;
-  box-shadow: @box-boxshadow;
+  .responsiveDark({
+    box-shadow: @box-boxshadow;
+  },
+  {
+    box-shadow: @box-boxshadow-dark;
+  });
   .border-radius(2px);
   margin-bottom: 15px;
   small {

@@ -1,90 +1,66 @@
-////dark
-//
-//
-////
-//// Variables
-//// --------------------------------------------------
-//
-//
-////== Colors
-//// custom
-//@light-blue: #00adb5;                            //new variable
-//@brand-primary-color: darken(@light-blue, 6.5%); //before: darken(#428bca, 6.5%);
-////** Border color for inputs on focus
-//@input-border-focus: @light-blue;                // before: #66afe9;
-////also an adminLTE less variable
-//@body-bg: #292D33;                               //before: #fff; 
-////modal-bg: box-background color from AdminLTE
-//@modal-bg: #393e46;                              //before: #fff;
-//@dropdown-background: @modal-bg;  //before: unset
-//@dropdown-hover: #000; //before: unset
-//@dt-search-bg: @modal-bg;                        //before: #fff;
-//
-//@nav-tabs-active-link-hover-bg: @modal-bg;       //before: @body-bg;
-//
-////## Gray and brand colors for use across Bootstrap.
-//
-//@gray-base:              #fff;                      //before: #000;
-//@gray-darker:            darken(@gray-base, 13.5%); //before: lighten(@gray-base, 13.5%);
-//@gray-dark:              darken(@gray-base, 20%);   //before: lighten(@gray-base, 20%);
-//@gray:                   darken(@gray-base, 40%);   //before: lighten(@gray-base, 33.5%);
-//@gray-light:             darken(@gray-base, 46.7%); //before: lighten(@gray-base, 46.7%);
-//@gray-lighter:           darken(@gray-base, 93.5%); //before: lighten(@gray-base, 93.5%);
-//
-//@brand-primary:         @brand-primary-color;
-//@brand-success:         #5cb85c;
-//@brand-info:            #5bc0de;
-//@brand-warning:         #f0ad4e;
-//@brand-danger:          #d9534f;
-//
-//
-////code
-//@log-bg: darken(@modal-bg, 20%);   //before: #f5f5f5;
-//@pre-bg: @log-bg;                  //before: #f5f5f5;
-//@pre-color: #3c8dbc;               //before: @gray-dark;
-//@pre-border-color: #3c8dbc;        //before: #ccc;
-//
-//
-////** Global text color on `<body>`.
-//@text-color:            #eeeeee;   //before: @gray-dark;
-//
-//@btn-color-custom-darken: darken(@text-color, 13.5%);
-//@btn-default-color:              @btn-color-custom-darken;  //before: #333;
-//
-////** `<input>` background color
-//@input-bg: @modal-bg;             //before: #fff; (now: e.g. textinput color. same as dropdown:@modal-bg;)
-//
-////** Background for the dropdown menu.
-//@dropdown-bg: @modal-bg;          //before: #fff;
-//
-////** Background color of modal content area
-//@modal-content-bg: @modal-bg;     // before: #fff;
-//
-/////////////////////////////////////////////////////////
+//dark
+
+@light-blue-dark:             #00adb5;                         //new variable
+//** Border color for inputs on focus
+@input-border-focus-dark:     @light-blue-dark;                // before: #66afe9;
+//also an adminLTE less variable
+@body-bg-dark:                #292D33;                         //before: #fff; 
+//modal-bg: box-background color from AdminLTE
+@modal-bg-dark:               #393e46;                         //before: #fff;
+@dropdown-background-dark:    @modal-bg-dark;                  //before: unset
+@dropdown-hover-dark:         #000;                            //before: unset
+@dt-search-bg-dark:           @modal-bg-dark;                  //before: #fff; 
+
+@nav-tabs-active-link-hover-bg-dark: @modal-bg-dark;           //before: @body-bg;
+
+//## Gray and brand colors for use across Bootstrap.
+
+@gray-base-dark:              #fff;                            //before: #000;
+@gray-darker-dark:            darken(@gray-base-dark, 13.5%);  //before: lighten(@gray-base, 13.5%);
+@gray-darken-dark:            darken(@gray-base-dark, 20%);    //before: lighten(@gray-base, 20%);
+@gray-dark:                   darken(@gray-base-dark, 40%);    //before: lighten(@gray-base, 33.5%);
+@gray-light-dark:             darken(@gray-base-dark, 46.7%);  //before: lighten(@gray-base, 46.7%);
+@gray-lighter-dark:           darken(@gray-base-dark, 93.5%);  //before: lighten(@gray-base, 93.5%);
+
+@brand-primary-color-dark:    darken(@light-blue-dark, 6.5%);  //before: darken(#428bca, 6.5%);
+@brand-primary-dark:          @brand-primary-color-dark;
+
+//code
+@log-bg-dark:                 darken(@modal-bg-dark, 20%);     //before: #f5f5f5;
+@pre-bg-dark:                 @log-bg-dark;                    //before: #f5f5f5;
+@pre-color-dark:              #3c8dbc;                         //before: @gray-darken;
+@pre-border-color-dark:       #3c8dbc;                         //before: #ccc;
 
 
+//** Global text color on `<body>`.
+@text-color-dark:             #eeeeee;                         //before: @gray-darken;
+
+@btn-color-custom-darken-dark: darken(@text-color-dark, 13.5%);
+@btn-default-color-dark:      @btn-color-custom-darken-dark;   //before: #333;
+
+//** `<input>` background color
+@input-bg-dark:               @modal-bg-dark;                  //before: #fff; (now: e.g. textinput color. same as dropdown:@modal-bg;)
+ 
+//** Background for the dropdown menu.
+@dropdown-bg-dark:            @modal-bg-dark;                  //before: #fff;
+
+//** Background color of modal content area
+@modal-content-bg-dark:       @modal-bg-dark;                  //before: #fff;
+
+///////////////////////////////////////////////////////
 
 //light
 
-
-//
-// Variables
-// --------------------------------------------------
-
-
-//== Colors
-// custom
-//@light-blue: #00adb5;                            //new variable
-@brand-primary-color: darken(#428bca, 6.5%);
+//@light-blue:           #00adb5;                    //new variable
 //** Border color for inputs on focus
-@input-border-focus: #66afe9;
+@input-border-focus:     #66afe9;
 //also an adminLTE less variable
-@body-bg: #fff; 
+@body-bg:                #fff; 
 //modal-bg: box-background color from AdminLTE
-@modal-bg: #fff;
-@dropdown-background: unset;
-@dropdown-hover: unset;
-@dt-search-bg: #fff;
+@modal-bg:               #fff;
+@dropdown-background:    unset;
+@dropdown-hover:         unset;
+@dt-search-bg:           #fff;
 
 @nav-tabs-active-link-hover-bg: @body-bg;
 
@@ -92,51 +68,252 @@
 
 @gray-base:              #000;
 @gray-darker:            lighten(@gray-base, 13.5%);
-@gray-dark:              lighten(@gray-base, 20%);
+@gray-darken:            lighten(@gray-base, 20%);
 @gray:                   lighten(@gray-base, 33.5%);
 @gray-light:             lighten(@gray-base, 46.7%);
 @gray-lighter:           lighten(@gray-base, 93.5%);
 
-@brand-primary:         @brand-primary-color;
-@brand-success:         #5cb85c;
-@brand-info:            #5bc0de;
-@brand-warning:         #f0ad4e;
-@brand-danger:          #d9534f;
-
+@brand-primary-color:    darken(#428bca, 6.5%);
+@brand-primary:          @brand-primary-color;
 
 //code
-@log-bg: #f5f5f5;
-@pre-bg: #f5f5f5;
-@pre-color: @gray-dark;
-@pre-border-color: #ccc;
+@log-bg:                 #f5f5f5;
+@pre-bg:                 #f5f5f5;
+@pre-color:              @gray-darken;
+@pre-border-color:       #ccc;
 
 
 //** Global text color on `<body>`.
-@text-color: @gray-dark;
+@text-color:             @gray-darken;
 
 @btn-color-custom-darken: darken(@text-color, 13.5%);
-@btn-default-color: #333;
+@btn-default-color:      #333;
 
 //** `<input>` background color
-@input-bg: #fff; 
+@input-bg:               #fff; 
 
 //** Background for the dropdown menu.
-@dropdown-bg: #fff;
+@dropdown-bg:            #fff;
 
 //** Background color of modal content area
-@modal-content-bg: #fff;
+@modal-content-bg:       #fff;
 
 ///////////////////////////////////////////////////////
+//change mode for static/browser-responsive css compilation
+@mode: "browser";
+
+.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
+    @rulesDark();
+}
+.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
+    @rules();
+}
+.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
+    @rules();
+    @media (prefers-color-scheme: dark) {
+        @rulesDark();
+    }
+}
+///////////////////////////////////////////////////////////
+
+//////////dark/light mode dependent variables//////////////
+//light
+//** Global textual link color.
+@link-color:                           @brand-primary;
+//** Link hover color set via `darken()` function.
+@link-hover-color:                     darken(@link-color, 15%);
+//** Global background color for active items (e.g., navs or dropdowns).
+@component-active-bg:                  @brand-primary;
+@btn-primary-bg:                       @brand-primary;
+@btn-primary-border:                   darken(@btn-primary-bg, 5%);
+@btn-link-disabled-color:              @gray-light;
+//** Text color for `<input>`s         
+@input-color:                          @gray;
+//** `<input disabled>` background color
+@input-bg-disabled:                    @gray-lighter;
+@legend-color:                         @gray-darken;
+//** Background color for textual input addons
+@input-group-addon-bg:                 @gray-lighter;
+//** Dropdown link text color.
+@dropdown-link-color:                  @gray-darken;
+//** Hover color for dropdown links.
+@dropdown-link-hover-color:            darken(@gray-darken, 5%);
+//** Active dropdown menu item background color.
+@dropdown-link-active-bg:              @component-active-bg;
+//** Disabled dropdown menu item background color.
+@dropdown-link-disabled-color:         @gray-light;
+//** Text color for headers within dropdown menus.
+@dropdown-header-color:                @gray-light;
+// Reset inverted navbar basics
+@navbar-inverse-color:                 lighten(@gray-light, 15%);
+@navbar-inverse-link-color:            lighten(@gray-light, 15%);
+@navbar-inverse-brand-color:           @navbar-inverse-link-color;
+@nav-link-hover-bg:                    @gray-lighter;
+@nav-disabled-link-color:              @gray-light;
+@nav-disabled-link-hover-color:        @gray-light;
+@nav-tabs-link-hover-border-color:     @gray-lighter;
+@nav-tabs-active-link-hover-color:     @gray;
+@nav-tabs-justified-active-link-border-color:     @body-bg;
+@nav-pills-active-link-hover-bg:       @component-active-bg;
+@pagination-color:                     @link-color;
+@pagination-hover-color:               @link-hover-color;
+@pagination-hover-bg:                  @gray-lighter;
+@pagination-active-bg:                 @brand-primary;
+@pagination-active-border:             @brand-primary;
+@pagination-disabled-color:            @gray-light;
+@pager-hover-bg:                       @pagination-hover-bg;
+@pager-active-bg:                      @pagination-active-bg;
+@pager-disabled-color:                 @pagination-disabled-color;
+@jumbotron-bg:                         @gray-lighter;
+//** Default label background color
+@label-default-bg:                     @gray-light;
+//** Primary label background color
+@label-primary-bg:                     @brand-primary;
+//** Default progress bar color
+@progress-bar-bg:                      @brand-primary;
+@list-group-active-bg:                 @component-active-bg;
+//** Border color of active list elements
+@list-group-active-border:             @list-group-active-bg;
+//** Text color for content within active list items
+@list-group-active-text-color:         lighten(@list-group-active-bg, 40%);
+//** Text color of disabled list items
+@list-group-disabled-color:            @gray-light;
+//** Background color of disabled list items
+@list-group-disabled-bg:               @gray-lighter;
+//** Text color for content within disabled list items
+@list-group-disabled-text-color:       @list-group-disabled-color;
+@panel-default-text:                   @gray-darken;
+@panel-primary-border:                 @brand-primary;
+@panel-primary-heading-bg:             @brand-primary;
+//** Thumbnail background color
+@thumbnail-bg:                         @body-bg;
+//** Custom text color for thumbnail captions
+@thumbnail-caption-color:              @text-color;
+@badge-bg:                             @gray-light;
+//** Badge text color in active nav link
+@badge-active-color:                   @link-color;
+//** Text color of current page in the breadcrumb
+@breadcrumb-active-color:              @gray-light;
+//** Text muted color
+@text-muted:                           @gray-light;
+//** Abbreviations and acronyms border color
+@abbr-border-color:                    @gray-light;
+//** Headings small color
+@headings-small-color:                 @gray-light;
+//** Blockquote small color
+@blockquote-small-color:               @gray-light;
+//** Blockquote border color          
+@blockquote-border-color:              @gray-lighter;
+//** Page header border color         
+@page-header-border-color:             @gray-lighter;
+//** Horizontal line color.           
+@hr-border:                            @gray-lighter;
+
+
+///////////////////////////////////////////////////////////
+//dark
+//** Global textual link color.
+@link-color-dark:                           @brand-primary-dark;
+//** Link hover color set via `darken()` function.
+@link-hover-color-dark:                     darken(@link-color-dark, 15%);
+//** Global background color for active items (e.g., navs or dropdowns).
+@component-active-bg-dark:                  @brand-primary-dark;
+@btn-primary-bg-dark:                       @brand-primary-dark;
+@btn-primary-border-dark:                   darken(@btn-primary-bg-dark, 5%);
+@btn-link-disabled-color-dark:              @gray-light-dark;
+//** Text color for `<input>`s         
+@input-color-dark:                          @gray-dark;
+//** `<input disabled>` background color
+@input-bg-disabled-dark:                    @gray-lighter-dark;
+@legend-color-dark:                         @gray-darken-dark;
+//** Background color for textual input addons
+@input-group-addon-bg-dark:                 @gray-lighter-dark;
+//** Dropdown link text color.
+@dropdown-link-color-dark:                  @gray-darken-dark;
+//** Hover color for dropdown links.
+@dropdown-link-hover-color-dark:            darken(@gray-darken-dark, 5%);
+//** Active dropdown menu item background color.
+@dropdown-link-active-bg-dark:              @component-active-bg-dark;
+//** Disabled dropdown menu item background color.
+@dropdown-link-disabled-color-dark:         @gray-light-dark;
+//** Text color for headers within dropdown menus.
+@dropdown-header-color-dark:                @gray-light-dark;
+// Reset inverted navbar basics
+@navbar-inverse-color-dark:                 lighten(@gray-light-dark, 15%);
+@navbar-inverse-link-color-dark:            lighten(@gray-light-dark, 15%);
+@navbar-inverse-brand-color-dark:           @navbar-inverse-link-color-dark;
+@nav-link-hover-bg-dark:                    @gray-lighter-dark;
+@nav-disabled-link-color-dark:              @gray-light-dark;
+@nav-disabled-link-hover-color-dark:        @gray-light-dark;
+@nav-tabs-link-hover-border-color-dark:     @gray-lighter-dark;
+@nav-tabs-active-link-hover-color-dark:     @gray-dark;
+@nav-tabs-justified-active-link-border-color-dark:     @body-bg-dark;
+@nav-pills-active-link-hover-bg-dark:       @component-active-bg-dark;
+@pagination-color-dark:                     @link-color-dark;
+@pagination-hover-color-dark:               @link-hover-color-dark;
+@pagination-hover-bg-dark:                  @gray-lighter-dark;
+@pagination-active-bg-dark:                 @brand-primary-dark;
+@pagination-active-border-dark:             @brand-primary-dark;
+@pagination-disabled-color-dark:            @gray-light-dark;
+@pager-hover-bg-dark:                       @pagination-hover-bg-dark;
+@pager-active-bg-dark:                      @pagination-active-bg-dark;
+@pager-disabled-color-dark:                 @pagination-disabled-color-dark;
+@jumbotron-bg-dark:                         @gray-lighter-dark;
+//** Default label background color
+@label-default-bg-dark:                     @gray-light-dark;
+//** Primary label background color
+@label-primary-bg-dark:                     @brand-primary-dark;
+//** Default progress bar color
+@progress-bar-bg-dark:                      @brand-primary-dark;
+@list-group-active-bg-dark:                 @component-active-bg-dark;
+//** Border color of active list elements
+@list-group-active-border-dark:             @list-group-active-bg-dark;
+//** Text color for content within active list items
+@list-group-active-text-color-dark:         lighten(@list-group-active-bg-dark, 40%);
+//** Text color of disabled list items
+@list-group-disabled-color-dark:            @gray-light-dark;
+//** Background color of disabled list items
+@list-group-disabled-bg-dark:               @gray-lighter-dark;
+//** Text color for content within disabled list items
+@list-group-disabled-text-color-dark:       @list-group-disabled-color-dark;
+@panel-default-text-dark:                   @gray-darken-dark;
+@panel-primary-border-dark:                 @brand-primary-dark;
+@panel-primary-heading-bg-dark:             @brand-primary-dark;
+//** Thumbnail background color
+@thumbnail-bg-dark:                         @body-bg-dark;
+//** Custom text color for thumbnail captions
+@thumbnail-caption-color-dark:              @text-color-dark;
+@badge-bg-dark:                             @gray-light-dark;
+//** Badge text color in active nav link
+@badge-active-color-dark:                   @link-color-dark;
+//** Text color of current page in the breadcrumb
+@breadcrumb-active-color-dark:              @gray-light-dark;
+//** Text muted color
+@text-muted-dark:                           @gray-light-dark;
+//** Abbreviations and acronyms border color
+@abbr-border-color-dark:                    @gray-light-dark;
+//** Headings small color
+@headings-small-color-dark:                 @gray-light-dark;
+//** Blockquote small color
+@blockquote-small-color-dark:               @gray-light-dark;
+//** Blockquote border color          
+@blockquote-border-color-dark:              @gray-lighter-dark;
+//** Page header border color         
+@page-header-border-color-dark:             @gray-lighter-dark;
+//** Horizontal line color.           
+@hr-border-dark:                            @gray-lighter-dark;
+///////////////////////////////////////////////////////////
+
+//brands (static)
+@brand-success:          #5cb85c;
+@brand-info:             #5bc0de;
+@brand-warning:          #f0ad4e;
+@brand-danger:           #d9534f;
 
 //== Scaffolding
 //
 //## Settings for some of the most global styles.
 
-
-//** Global textual link color.
-@link-color:            @brand-primary;
-//** Link hover color set via `darken()` function.
-@link-hover-color:      darken(@link-color, 15%);
 //** Link hover decoration.
 @link-hover-decoration: underline;
 
@@ -211,8 +388,6 @@
 
 //** Global color for active items (e.g., navs or dropdowns).
 @component-active-color:    #fff;
-//** Global background color for active items (e.g., navs or dropdowns).
-@component-active-bg:       @brand-primary;
 
 //** Width of the `border` for generating carets that indicate dropdowns.
 @caret-width-base:          4px;
@@ -251,8 +426,6 @@
 @btn-default-border:             #ccc;
 
 @btn-primary-color:              #fff;
-@btn-primary-bg:                 @brand-primary;
-@btn-primary-border:             darken(@btn-primary-bg, 5%);
 
 @btn-success-color:              #fff;
 @btn-success-bg:                 @brand-success;
@@ -270,8 +443,6 @@
 @btn-danger-bg:                  @brand-danger;
 @btn-danger-border:              darken(@btn-danger-bg, 5%);
 
-@btn-link-disabled-color:        @gray-light;
-
 // Allows for customizing button radius independently from global border radius
 @btn-border-radius-base:         @border-radius-base;
 @btn-border-radius-large:        @border-radius-large;
@@ -281,11 +452,7 @@
 //== Forms
 //
 //##
-//** `<input disabled>` background color
-@input-bg-disabled:              @gray-lighter;
 
-//** Text color for `<input>`s
-@input-color:                    @gray;
 //** `<input>` border color
 @input-border:                   #ccc;
 
@@ -311,11 +478,8 @@
 //** `.form-group` margin
 @form-group-margin-bottom:       15px;
 
-@legend-color:                   @gray-dark;
 @legend-border-color:            #e5e5e5;
 
-//** Background color for textual input addons
-@input-group-addon-bg:           @gray-lighter;
 //** Border color for textual input addons
 @input-group-addon-border-color: @input-border;
 
@@ -334,23 +498,11 @@
 //** Divider color for between dropdown items.
 @dropdown-divider-bg:            #e5e5e5;
 
-//** Dropdown link text color.
-@dropdown-link-color:            @gray-dark;
-//** Hover color for dropdown links.
-@dropdown-link-hover-color:      darken(@gray-dark, 5%);
 //** Hover background for dropdown links.
 @dropdown-link-hover-bg:         #f5f5f5;
 
 //** Active dropdown menu item text color.
 @dropdown-link-active-color:     @component-active-color;
-//** Active dropdown menu item background color.
-@dropdown-link-active-bg:        @component-active-bg;
-
-//** Disabled dropdown menu item background color.
-@dropdown-link-disabled-color:   @gray-light;
-
-//** Text color for headers within dropdown menus.
-@dropdown-header-color:          @gray-light;
 
 //** Deprecated `@dropdown-caret-color` as of v3.1.0
 @dropdown-caret-color:           #000;
@@ -481,15 +633,11 @@
 @navbar-default-toggle-icon-bar-bg:        #888;
 @navbar-default-toggle-border-color:       #ddd;
 
-
 //=== Inverted navbar
-// Reset inverted navbar basics
-@navbar-inverse-color:                      lighten(@gray-light, 15%);
 @navbar-inverse-bg:                         #222;
 @navbar-inverse-border:                     darken(@navbar-inverse-bg, 10%);
 
 // Inverted navbar links
-@navbar-inverse-link-color:                 lighten(@gray-light, 15%);
 @navbar-inverse-link-hover-color:           #fff;
 @navbar-inverse-link-hover-bg:              transparent;
 @navbar-inverse-link-active-color:          @navbar-inverse-link-hover-color;
@@ -498,7 +646,6 @@
 @navbar-inverse-link-disabled-bg:           transparent;
 
 // Inverted navbar brand label
-@navbar-inverse-brand-color:                @navbar-inverse-link-color;
 @navbar-inverse-brand-hover-color:          #fff;
 @navbar-inverse-brand-hover-bg:             transparent;
 
@@ -514,25 +661,16 @@
 
 //=== Shared nav styles
 @nav-link-padding:                          10px 15px;
-@nav-link-hover-bg:                         @gray-lighter;
-
-@nav-disabled-link-color:                   @gray-light;
-@nav-disabled-link-hover-color:             @gray-light;
 
 //== Tabs
 @nav-tabs-border-color:                     #ddd;
 
-@nav-tabs-link-hover-border-color:          @gray-lighter;
-
-@nav-tabs-active-link-hover-color:          @gray;
 @nav-tabs-active-link-hover-border-color:   #ddd;
 
 @nav-tabs-justified-link-border-color:            #ddd;
-@nav-tabs-justified-active-link-border-color:     @body-bg;
 
 //== Pills
 @nav-pills-border-radius:                   @border-radius-base;
-@nav-pills-active-link-hover-bg:            @component-active-bg;
 @nav-pills-active-link-hover-color:         @component-active-color;
 
 
@@ -540,19 +678,10 @@
 //
 //##
 
-@pagination-color:                     @link-color;
 @pagination-bg:                        #fff;
 @pagination-border:                    #ddd;
-
-@pagination-hover-color:               @link-hover-color;
-@pagination-hover-bg:                  @gray-lighter;
 @pagination-hover-border:              #ddd;
-
 @pagination-active-color:              #fff;
-@pagination-active-bg:                 @brand-primary;
-@pagination-active-border:             @brand-primary;
-
-@pagination-disabled-color:            @gray-light;
 @pagination-disabled-bg:               #fff;
 @pagination-disabled-border:           #ddd;
 
@@ -564,13 +693,10 @@
 @pager-bg:                             @pagination-bg;
 @pager-border:                         @pagination-border;
 @pager-border-radius:                  15px;
-
-@pager-hover-bg:                       @pagination-hover-bg;
-
-@pager-active-bg:                      @pagination-active-bg;
 @pager-active-color:                   @pagination-active-color;
 
-@pager-disabled-color:                 @pagination-disabled-color;
+//** Blockquote font size              
+@blockquote-font-size: (@font-size-base * 1.25);
 
 
 //== Jumbotron
@@ -579,7 +705,6 @@
 
 @jumbotron-padding:              30px;
 @jumbotron-color:                inherit;
-@jumbotron-bg:                   @gray-lighter;
 @jumbotron-heading-color:        inherit;
 @jumbotron-font-size:            ceil((@font-size-base * 1.5));
 @jumbotron-heading-font-size:    ceil((@font-size-base * 4.5));
@@ -657,10 +782,6 @@
 //
 //##
 
-//** Default label background color
-@label-default-bg:            @gray-light;
-//** Primary label background color
-@label-primary-bg:            @brand-primary;
 //** Success label background color
 @label-success-bg:            @brand-success;
 //** Info label background color
@@ -743,8 +864,6 @@
 //** Variable for setting rounded corners on progress bar.
 @progress-border-radius:      @border-radius-base;
 
-//** Default progress bar color
-@progress-bar-bg:             @brand-primary;
 //** Success progress bar color
 @progress-bar-success-bg:     @brand-success;
 //** Warning progress bar color
@@ -771,18 +890,6 @@
 //** Text color of active list items
 @list-group-active-color:       @component-active-color;
 //** Background color of active list items
-@list-group-active-bg:          @component-active-bg;
-//** Border color of active list elements
-@list-group-active-border:      @list-group-active-bg;
-//** Text color for content within active list items
-@list-group-active-text-color:  lighten(@list-group-active-bg, 40%);
-
-//** Text color of disabled list items
-@list-group-disabled-color:      @gray-light;
-//** Background color of disabled list items
-@list-group-disabled-bg:         @gray-lighter;
-//** Text color for content within disabled list items
-@list-group-disabled-text-color: @list-group-disabled-color;
 
 @list-group-link-color:         #555;
 @list-group-link-hover-color:   @list-group-link-color;
@@ -803,13 +910,10 @@
 @panel-inner-border:          #ddd;
 @panel-footer-bg:             #f5f5f5;
 
-@panel-default-text:          @gray-dark;
 @panel-default-border:        #ddd;
 @panel-default-heading-bg:    #f5f5f5;
 
 @panel-primary-text:          #fff;
-@panel-primary-border:        @brand-primary;
-@panel-primary-heading-bg:    @brand-primary;
 
 @panel-success-text:          @state-success-text;
 @panel-success-border:        @state-success-border;
@@ -834,15 +938,11 @@
 
 //** Padding around the thumbnail image
 @thumbnail-padding:           4px;
-//** Thumbnail background color
-@thumbnail-bg:                @body-bg;
 //** Thumbnail border color
 @thumbnail-border:            #ddd;
 //** Thumbnail border radius
 @thumbnail-border-radius:     @border-radius-base;
 
-//** Custom text color for thumbnail captions
-@thumbnail-caption-color:     @text-color;
 //** Padding around the thumbnail caption
 @thumbnail-caption-padding:   9px;
 
@@ -862,10 +962,7 @@
 @badge-color:                 #fff;
 //** Linked badge text color on hover
 @badge-link-hover-color:      #fff;
-@badge-bg:                    @gray-light;
 
-//** Badge text color in active nav link
-@badge-active-color:          @link-color;
 //** Badge background color in active nav link
 @badge-active-bg:             #fff;
 
@@ -884,8 +981,6 @@
 @breadcrumb-bg:                 #f5f5f5;
 //** Breadcrumb text color
 @breadcrumb-color:              #ccc;
-//** Text color of current page in the breadcrumb
-@breadcrumb-active-color:       @gray-light;
 //** Textual separator for between breadcrumb elements
 @breadcrumb-separator:          "/";
 
@@ -932,26 +1027,9 @@
 //== Type
 //
 //##
-
 //** Horizontal offset for forms and lists.
 @component-offset-horizontal: 180px;
-//** Text muted color
-@text-muted:                  @gray-light;
-//** Abbreviations and acronyms border color
-@abbr-border-color:           @gray-light;
-//** Headings small color
-@headings-small-color:        @gray-light;
-//** Blockquote small color
-@blockquote-small-color:      @gray-light;
-//** Blockquote font size
-@blockquote-font-size:        (@font-size-base * 1.25);
-//** Blockquote border color
-@blockquote-border-color:     @gray-lighter;
-//** Page header border color
-@page-header-border-color:    @gray-lighter;
 //** Width of horizontal description list titles
 @dl-horizontal-offset:        @component-offset-horizontal;
 //** Point at which .dl-horizontal becomes horizontal
 @dl-horizontal-breakpoint:    @grid-float-breakpoint;
-//** Horizontal line color.
-@hr-border:                   @gray-lighter;

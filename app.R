@@ -101,14 +101,6 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setTxtProgressBar(pb, 0.3)
 }
 if(is.null(errMsg)){
-  # initialise MIRO workspace
-  miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
-  if(!dir.exists(miroWorkspace)){
-    if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
-      errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
-                                      miroWorkspace), sep = "\n")
-    }
-  }
   # include custom functions and modules
   lapply(filesToInclude, function(file){
     if(!file.exists(file)){
@@ -125,6 +117,14 @@ if(is.null(errMsg)){
       })
     }
   })
+  # initialise MIRO workspace
+  miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
+  if(!dir.exists(miroWorkspace)){
+    if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+      errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                                      miroWorkspace), sep = "\n")
+    }
+  }
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # check whether shiny proxy is used to access this file

@@ -16,6 +16,17 @@
          ],
          "required":false
       },
+      "theme":{  
+         "description":"Color theme used for MIRO",
+         "type":"string",
+         "default":"browser",
+         "enum":[  
+            "browser",
+            "light",
+            "dark"
+         ],
+         "required":false
+      },
       "includeParentDir":{
         "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
          "type":"boolean",

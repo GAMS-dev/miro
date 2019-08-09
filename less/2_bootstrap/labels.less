@@ -40,11 +40,21 @@
 // Contextual variations (linked labels get darker on :hover)
 
 .label-default {
-  .label-variant(@label-default-bg);
+  .responsiveDark({
+     .label-variant(@label-default-bg);
+  },
+  {
+     .label-variant(@label-default-bg-dark);
+  });
 }
 
 .label-primary {
-  .label-variant(@label-primary-bg);
+  .responsiveDark({
+     .label-variant(@label-primary-bg);
+  },
+  {
+     .label-variant(@label-primary-bg-dark);
+  });
 }
 
 .label-success {

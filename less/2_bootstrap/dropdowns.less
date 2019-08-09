@@ -41,7 +41,12 @@
   list-style: none;
   font-size: @font-size-base;
   text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
-  background-color: @dropdown-bg;
+  .responsiveDark({
+     background-color: @dropdown-bg;
+  },
+  {
+     background-color: @dropdown-bg-dark;
+  });
   border: 1px solid @dropdown-fallback-border; // IE8 fallback
   border: 1px solid @dropdown-border;
   border-radius: @border-radius-base;
@@ -68,7 +73,12 @@
     clear: both;
     font-weight: normal;
     line-height: @line-height-base;
-    color: @dropdown-link-color;
+    .responsiveDark({
+       color: @dropdown-link-color;
+    },
+    {
+       color: @dropdown-link-color-dark;
+    });
     white-space: nowrap; // prevent links from randomly breaking onto new lines
   }
 }
@@ -78,7 +88,12 @@
   &:hover,
   &:focus {
     text-decoration: none;
-    color: @dropdown-link-hover-color;
+    .responsiveDark({
+       color: @dropdown-link-hover-color;
+    },
+    {
+       color: @dropdown-link-hover-color-dark;
+    });
     background-color: @dropdown-link-hover-bg;
   }
 }
@@ -91,7 +106,12 @@
     color: @dropdown-link-active-color;
     text-decoration: none;
     outline: 0;
-    background-color: @dropdown-link-active-bg;
+    .responsiveDark({
+       background-color: @dropdown-link-active-bg;
+    },
+    {
+       background-color: @dropdown-link-active-bg-dark;
+    });
   }
 }
 
@@ -103,7 +123,12 @@
   &,
   &:hover,
   &:focus {
-    color: @dropdown-link-disabled-color;
+    .responsiveDark({
+       color: @dropdown-link-disabled-color;
+    },
+    {
+       color: @dropdown-link-disabled-color-dark;
+    });
   }
 
   // Nuke hover/focus effects
@@ -155,7 +180,12 @@
   padding: 3px 20px;
   font-size: @font-size-small;
   line-height: @line-height-base;
-  color: @dropdown-header-color;
+  .responsiveDark({
+      color: @dropdown-header-color;
+  },
+  {
+      color: @dropdown-header-color-dark;
+  });
   white-space: nowrap; // as with > li > a
 }
 

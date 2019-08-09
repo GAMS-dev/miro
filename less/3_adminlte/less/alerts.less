@@ -38,7 +38,12 @@
 
 .alert-warning {
   &:extend(.bg-yellow);
-  border-color: darken(@yellow, 5%);
+  .responsiveDark({
+    border-color: darken(@yellow, 5%);
+  },
+  {
+    border-color: darken(@yellow-dark, 5%);
+  });
 }
 
 .alert-info {

@@ -8,7 +8,12 @@
   padding: 0;
   > .item {
     .border-radius(@box-border-radius);
-    .box-shadow(@box-boxshadow);
+    .responsiveDark({
+      .box-shadow(@box-boxshadow);
+    },
+    {
+      .box-shadow(@box-boxshadow-dark);
+    });
     .clearfix();
     padding: 10px 0;
     background: #fff;

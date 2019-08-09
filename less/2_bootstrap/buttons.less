@@ -32,7 +32,12 @@
   &:hover,
   &:focus,
   &.focus {
-    color: @btn-default-color;
+    .responsiveDark({
+       color: @btn-default-color;
+    },
+    {
+        color: @btn-default-color-dark;
+    });
     text-decoration: none;
   }
 
@@ -64,10 +69,20 @@
 // --------------------------------------------------
 
 .btn-default {
-  .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  .responsiveDark({
+    .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+  },
+  {
+     .button-variant(@btn-default-color-dark; @btn-default-bg; @btn-default-border);
+  });
 }
 .btn-primary {
-  .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+  .responsiveDark({
+     .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+  },
+  {
+     .button-variant(@btn-primary-color; @btn-primary-bg-dark; @btn-primary-border-dark);
+  });
 }
 // Success appears as green
 .btn-success {
@@ -92,7 +107,12 @@
 
 // Make a button look and behave like a link
 .btn-link {
-  color: @link-color;
+  .responsiveDark({
+     color: @link-color;
+  },
+  {
+     color: @link-color-dark;
+  });
   font-weight: normal;
   border-radius: 0;
 
@@ -112,7 +132,12 @@
   }
   &:hover,
   &:focus {
-    color: @link-hover-color;
+    .responsiveDark({
+       color: @link-hover-color;
+    },
+    {
+       color: @link-hover-color-dark;
+    });
     text-decoration: @link-hover-decoration;
     background-color: transparent;
   }
@@ -120,7 +145,12 @@
   fieldset[disabled] & {
     &:hover,
     &:focus {
-      color: @btn-link-disabled-color;
+      .responsiveDark({
+         color: @btn-link-disabled-color;
+      },
+      {
+         color: @btn-link-disabled-color-dark;
+      });
       text-decoration: none;
     }
   }

@@ -7,7 +7,12 @@
   box-shadow: none;
   border-color: @gray-lte;
   &:focus {
-    border-color: @light-blue;
+    .responsiveDark({
+       border-color: @light-blue;
+    },
+    {
+       border-color: @light-blue-dark;
+    });
     box-shadow: none;
   }
   &::-moz-placeholder,
@@ -41,15 +46,30 @@
 
   &.has-warning {
     label {
-      color: @yellow;
+      .responsiveDark({
+         color: @yellow;
+      },
+      {
+         color: @yellow-dark;
+      });
     }
     .form-control,
     .input-group-addon {
-      border-color: @yellow;
+      .responsiveDark({
+         border-color: @yellow;
+      },
+      {
+         border-color: @yellow-dark;
+      });
       box-shadow: none;
     }
     .help-block {
-      color: @yellow;
+      .responsiveDark({
+         color: @yellow;
+      },
+      {
+         color: @yellow-dark;
+      });
     }
   }
 

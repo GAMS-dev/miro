@@ -279,10 +279,18 @@ select {
   text-transform: none;
 }
 select {
-  background-color: @dropdown-background; //before: unset
+  .responsiveDark({
+  },
+  {
+     background-color: @dropdown-background-dark;
+  });
 }
 select li:hover {
-  background-color: @dropdown-hover; //before: unset
+  .responsiveDark({
+  },
+  {
+     background-color: @dropdown-hover-dark; 
+  });
 }
 
 //

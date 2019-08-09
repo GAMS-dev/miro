@@ -7,8 +7,14 @@
   > li > a:hover,
   > li > a:active,
   > li > a:focus {
-    color: @text-color-darker;   //before: #444; 
-    background: @box-bg-light; //before: #f7f7f7;
+    .responsiveDark({
+       color: @text-color-darken2;
+       background: @box-bg-light;
+    },
+    {
+       color: @text-color-darken2-dark;
+       background: @box-bg-light-dark;
+    });
   }
 }
 
@@ -27,7 +33,12 @@
   > li.active > a,
   > li.active > a:hover,
   > li.active > a:focus {
-    border-top-color: @light-blue;
+    .responsiveDark({
+       border-top-color: @light-blue;
+    },
+    {
+       border-top-color: @light-blue-dark;
+    });
   }
   > li.active > a {
     font-weight: 600;
@@ -47,7 +58,12 @@
     background: transparent;
     color: #444;
     border-top: 0;
-    border-left-color: @light-blue;
+    .responsiveDark({
+       border-left-color: @light-blue;
+    },
+    {
+       border-left-color: @light-blue-dark;
+    });
   }
 
   > li.header {
@@ -62,18 +78,34 @@
 /* NAV TABS */
 .nav-tabs-custom {
   margin-bottom: 20px;
-  background: @box-bg;  // before: #fff;
-  box-shadow: @box-boxshadow;
+  .responsiveDark({
+     background: @box-bg;
+     box-shadow: @box-boxshadow;
+  },
+  {
+     background: @box-bg-dark;
+     box-shadow: @box-boxshadow-dark;
+  });
   border-radius: @box-border-radius;
   > .nav-tabs {
     margin: 0;
-    border-bottom-color: @text-color;  // before: #f4f4f4;
+    .responsiveDark({
+       border-bottom-color: @text-color;
+    },
+    {
+       border-bottom-color: @text-color-dark;
+    });
     .border-top-radius(@box-border-radius);
     > li {
       border-top: 3px solid transparent;
       margin-bottom: -2px;
       > a {
-        color: @text-color-darken;  // before: #444;
+        .responsiveDark({
+           color: @text-color-darken3;
+        },
+        {
+           color: @text-color-darken3-dark;
+        });
         .border-radius(0);
         &.text-muted {
           color: #999;
@@ -98,16 +130,33 @@
     }
 
     > li.active {
-      border-top-color: @light-blue;
+      .responsiveDark({
+         border-top-color: @light-blue;
+      },
+      {
+         border-top-color: @light-blue-dark;
+      });
       & > a,
       &:hover > a {
-        background-color: @box-bg;  // before: #fff;
-        color: @text-color-dark;   //before: #444;
+        .responsiveDark({
+           background-color: @box-bg;
+           color: @text-color-darken1;
+        },
+        {
+           background-color: @box-bg-dark;
+           color: @text-color-darken1-dark;
+        });
       }
       > a {
         border-top-color: transparent;
-        border-left-color: @text-color; //before: #f4f4f4;
-        border-right-color: @text-color; //before: #f4f4f4;
+        .responsiveDark({
+           border-left-color: @text-color; 
+           border-right-color: @text-color;
+        },
+        {
+           border-left-color: @text-color-dark; 
+           border-right-color: @text-color-dark;
+        });
       }
 
     }
@@ -134,7 +183,12 @@
         }
         &.active {
           > a {
-            border-left-color: @text-color; //before: #f4f4f4;
+            .responsiveDark({
+               border-left-color: @text-color;
+            },
+            {
+               border-left-color: @text-color-dark;
+            });
             border-right-color: transparent;
           }
         }
@@ -155,7 +209,12 @@
   }
 
   > .tab-content {
-    background: @box-bg;  // before: #fff;
+    .responsiveDark({
+       background: @box-bg;
+    },
+    {
+       background: @box-bg-dark;
+    });
     padding: 10px;
     .border-bottom-radius(@box-border-radius);
   }
@@ -171,7 +230,12 @@
   &.tab-primary {
     > .nav-tabs {
       > li.active {
-        border-top-color: @light-blue;
+        .responsiveDark({
+           border-top-color: @light-blue;
+        },
+        {
+           border-top-color: @light-blue-dark;
+        });
       }
     }
   }
@@ -192,7 +256,12 @@
   &.tab-warning {
     > .nav-tabs {
       > li.active {
-        border-top-color: @yellow;
+        .responsiveDark({
+           border-top-color: @yellow;
+        },
+        {
+           border-top-color: @yellow-dark;
+        });
       }
     }
   }

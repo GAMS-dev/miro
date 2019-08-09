@@ -21,6 +21,11 @@
   }
 
   > .active {
-    color: @breadcrumb-active-color;
+    .responsiveDark({
+        color: @breadcrumb-active-color;
+    },
+    {
+        color: @breadcrumb-active-color-dark;
+    });
   }
 }

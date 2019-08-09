@@ -1,41 +1,62 @@
 //dark 
-//@light-blue: #00adb5;      //new variable
-//@darker-blue: darken(@light-blue, 2%); // before: #2e6da4;
-//@btn-icon-color: #333;     // before: #fff;
-//@btn-bg: @light-blue;      // before: #337ab7;
-//@modal-bg: #393e46;        //used in dygraph-legend (new) (before: #fff;?)
-//@log-bg: darken(@modal-bg, 20%);  //before: #f5f5f5;
-//@info-color: @light-blue;  //before: #f39619;
-//@checkbox-color: @light-blue;  //before: #f39619;
-//@progress-bar: @light-blue;    //before: #f39619;
-//
-//@log-color: #3c8dbc;       //new variable
-//@log-tab: @log-color;      //before: #3c8dbc;
-//@log-text: @log-color;     //before: #333;
-//@log-border: @log-color;   //before: #ccc;
-//@text-color: #eee;         //new variable
-//@plotly-text: #ccc;        //new variable. before: empty (i.e. #444;)
-//@scrollbar: #848991;       //same as @header-color in handsontable css
+@light-blue-dark:         #00adb5;                      //new variable
+@darker-blue-dark:        darken(@light-blue-dark, 2%); // before: #2e6da4;
+@btn-icon-color-dark:     #333;                         // before: #fff;
+@btn-bg-dark:             @light-blue-dark;             // before: #337ab7;
+@modal-bg-dark:           #393e46;                      //used in dygraph-legend (new) (before: #fff;?)
+@log-bg-dark:             darken(@modal-bg-dark, 20%);  //before: #f5f5f5;
+@info-color-dark:         @light-blue-dark;             //before: #f39619;
+@checkbox-color-dark:     @light-blue-dark;             //before: #f39619;
+@progress-bar-dark:       @light-blue-dark;             //before: #f39619;
+                                                 
+@log-color-dark:          #3c8dbc;                      //new variable
+@log-tab-dark:            @log-color-dark;              //before: #3c8dbc;
+@log-text-dark:           @log-color-dark;              //before: #333;
+@log-border-dark:         @log-color-dark;              //before: #ccc;
+@text-color-dark:         #eee;                         //new variable
+@plotly-text-dark:        #ccc;                         //new variable. before: empty (i.e. #444;)
+@scrollbar-dark:          #848991;                      //before: #c0c0c0;
+@scrollbar-shadow-dark:   grey;                         //before: #c0c0c0;
+
+///////////////////////////////////////////////////////
 
 //light
-@light-blue: #00adb5;      //new variable - same light-blue color as in other less files
-@darker-blue: #2e6da4;
-@btn-icon-color: #fff;
-@btn-bg: #337ab7;
-@modal-bg: #fff;      
-@log-bg: #f5f5f5;
-@info-color: #f39619;
-@checkbox-color: #f39619;
-@progress-bar: #f39619;
+@light-blue:              #00adb5;      //new variable - same light-blue color as in other less files
+@darker-blue:             #2e6da4;
+@btn-icon-color:          #fff;
+@btn-bg:                  #337ab7;
+@modal-bg:                #fff;      
+@log-bg:                  #f5f5f5;
+@info-color:              #f39619;
+@checkbox-color:          #f39619;
+@progress-bar:            #f39619;
 
-@log-color: #3c8dbc;       //new variable
-@log-tab: #3c8dbc;
-@log-text: #333;
-@log-border: #ccc;
-@text-color: #333;
-@plotly-text: #444;
-@scrollbar: #848991;       //same as @header-color in handsontable css
+//@log-color:             #3c8dbc;       //new variable - not used in light mode
+@log-tab:                 #3c8dbc;
+@log-text:                #333;
+@log-border:              #ccc;
+@text-color:              #333;
+@plotly-text:             #444;
+@scrollbar:               #c0c0c0;      
+@scrollbar-shadow:        #c0c0c0;
 
+///////////////////////////////////////////////////////
+//change mode for static/browser-responsive css compilation
+@mode: "browser";
+
+.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
+    @rulesDark();
+}
+.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
+    @rules();
+}
+.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
+    @rules();
+    @media (prefers-color-scheme: dark) {
+        @rulesDark();
+    }
+}
+///////////////////////////////////////////////////////////
 
 /* general */
 body{
@@ -139,7 +160,12 @@ body{
   display: inline;
 }
 .progress-bar{
-  background-color: @progress-bar;
+    .responsiveDark({
+       background-color: @progress-bar;
+    },
+    {
+       background-color: @progress-bar-dark;
+    });
 }
 .no-animations {
 -webkit-animation: none !important;
@@ -310,7 +336,12 @@ animation: none !important;
   max-height: 60vh;
 }
 .log-tab-color{
-  color: @log-tab;   //new
+    .responsiveDark({
+       color: @log-tab;
+    },
+    {
+       color: @log-tab-dark;
+    });
 }
 .miro-log-mark{
   background: none;
@@ -323,11 +354,18 @@ animation: none !important;
   margin: 0 0 10px;
   font-size: 13px;
   line-height: 1.42857143;
-  color: @log-text;  //before: #333;
+  .responsiveDark({
+     color: @log-text;
+     background-color: @log-bg;
+     border: 1px solid @log-border;
+  },
+  {
+     color: @log-text-dark;
+     background-color: @log-bg-dark;
+     border: 1px solid @log-border-dark;
+  });
   word-break: break-all;
   word-wrap: break-word;
-  background-color: @log-bg;
-  border: 1px solid @log-border;  //before: #ccc;
   border-radius: 4px;
 }
 
@@ -393,9 +431,16 @@ animation: none !important;
   left: 5px;
 }
 .scen-button, .scen-button:focus{
-  color: @btn-icon-color;  
-  background-color: @btn-bg; 
-  border-color: @darker-blue; // before: #2e6da4;
+  .responsiveDark({
+     color: @btn-icon-color;  
+     background-color: @btn-bg; 
+     border-color: @darker-blue;
+  },
+  {
+     color: @btn-icon-color-dark;  
+     background-color: @btn-bg-dark; 
+     border-color: @darker-blue-dark;
+  });
 }
 #scen-split-view .col-sm-6{
   padding-right: 5px;
@@ -493,7 +538,12 @@ animation: none !important;
 .checkbox-material .checkbox :checked + span {
     padding-right: .15em;
     padding-left: 1.5em;
-    background-color: @checkbox-color; //before: #F39619;
+    .responsiveDark({
+       background-color: @checkbox-color;
+    },
+    {
+       background-color: @checkbox-color-dark;
+    });
 }
 .checkbox-material .shiny-input-container {
   display: inline-block;
@@ -511,16 +561,36 @@ animation: none !important;
   border: 2px solid grey;
 }
 .dygraph-legend {
-  background-color: @modal-bg !important;  //new (before: #fff;?)
+  .responsiveDark({
+  },
+  {
+     background-color: @modal-bg-dark !important;
+  });
 }
 .dygraph-axis-label.dygraph-axis-label-x{
-    color: @text-color;
+    .responsiveDark({
+       color: @text-color;
+    },
+    {
+       color: @text-color-dark;
+    });
+      
 }
 .dygraph-axis-label.dygraph-axis-label-y{
-    color: @text-color;
+    .responsiveDark({
+       color: @text-color;
+    },
+    {
+       color: @text-color-dark;
+    });
 }
 .dygraph-axis-label.dygraph-axis-label-y.dygraph-axis-label-y2{
-    color: @text-color;
+    .responsiveDark({
+       color: @text-color;
+    },
+    {
+       color: @text-color-dark;
+    });
 }
 /* Hypercube module */
 .centered-div{
@@ -603,17 +673,28 @@ animation: none !important;
   margin-bottom: 25px;
 }
 .and-wrapper{
-  background-color: fade(@light-blue, 20%);  //before: initial value
-  border-left: 5px solid @light-blue;  //before: initial value
   padding-bottom:10px;
   padding-left:5px;
   min-width:1000px;
+  .responsiveDark({
+     background-color: fade(@light-blue, 20%);
+     border-left: 5px solid @light-blue;
+  },
+  {
+     background-color: fade(@light-blue-dark, 20%);
+     border-left: 5px solid @light-blue-dark;
+  });
 }
 .and-sign{
   right:1%;
   bottom: 0;
   line-height:1;
-  color:@light-blue;  //before: initial value
+  .responsiveDark({
+     color:@light-blue;
+  },
+  {
+     color:@light-blue-dark;
+  });
   font-size:50px;
   float:right;
   margin-top:5px;
@@ -723,7 +804,11 @@ animation: none !important;
   position: relative; 
 }
 .plotly text {
-  fill: @plotly-text !important; //new class. (before: #444;)
+  .responsiveDark({
+  },
+  {
+     fill: @plotly-text-dark !important;
+  });
 }
 /* PAVER */
 .dataframe { 
@@ -750,7 +835,12 @@ animation: none !important;
   position:relative;
 }
 .info-icon{
-  color: @info-color; //before: #f39619;
+  .responsiveDark({
+     color: @info-color;
+  },
+  {
+     color: @info-color-dark;
+  });
   text-align: right;
   font-size: 12px;
   margin-left: 2px;
@@ -802,17 +892,32 @@ animation: none !important;
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
+  .responsiveDark({
+     box-shadow: inset 0 0 5px @scrollbar-shadow; 
+  },
+  {
+     box-shadow: inset 0 0 5px @scrollbar-shadow-dark; 
+  });
   border-radius: 10px;
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: @scrollbar;
+  .responsiveDark({
+     background: @scrollbar;
+  },
+  {
+     background: @scrollbar-dark;
+  });
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: darken(@scrollbar, 10%); 
+  .responsiveDark({
+     background: darken(@scrollbar, 10%); 
+  },
+  {
+     background: darken(@scrollbar-dark, 10%); 
+  });
 }

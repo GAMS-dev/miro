@@ -5,15 +5,30 @@
 .box {
   position: relative;
   .border-radius(@box-border-radius);
-  background: @box-bg;  // before: #ffffff;
+  .responsiveDark({
+     background: @box-bg;
+  },
+  {
+     background: @box-bg-dark;
+  });
   border-top: 3px solid @box-default-border-top-color;
   margin-bottom: 20px;
   width: 100%;
-  box-shadow: @box-boxshadow;
-
+  .responsiveDark({
+    box-shadow: @box-boxshadow;
+  },
+  {
+     box-shadow: @box-boxshadow-dark;
+  });
+  
   // Box color variations
   &.box-primary {
-    border-top-color: @light-blue;
+    .responsiveDark({
+       border-top-color: @light-blue;
+    },
+    {
+       border-top-color: @light-blue-dark;
+    });
   }
   &.box-info {
     border-top-color: @aqua;
@@ -22,7 +37,12 @@
     border-top-color: @red;
   }
   &.box-warning {
-    border-top-color: @yellow;
+    .responsiveDark({
+      border-top-color: @yellow;
+    },
+    {
+      border-top-color: @yellow-dark;
+    });
   }
   &.box-success {
     border-top-color: @green;
@@ -87,7 +107,12 @@
       .box-solid-variant(@gray-lte, #444);
     }
     &.box-primary {
-      .box-solid-variant(@light-blue);
+      .responsiveDark({
+         .box-solid-variant(@light-blue);
+      },
+      {
+         .box-solid-variant(@light-blue-dark);
+      });
     }
     &.box-info {
       .box-solid-variant(@aqua);
@@ -96,7 +121,12 @@
       .box-solid-variant(@red);
     }
     &.box-warning {
-      .box-solid-variant(@yellow);
+      .responsiveDark({
+         .box-solid-variant(@yellow);
+       },
+       {
+         .box-solid-variant(@yellow-dark);
+       });
     }
     &.box-success {
       .box-solid-variant(@green);
@@ -394,7 +424,13 @@
     border-left-color: @red;
   }
   .warning {
-    border-left-color: @yellow;
+    .responsiveDark({
+      border-left-color: @yellow;
+    },
+    {
+      border-left-color: @yellow-dark;
+    });
+    
   }
   .info {
     border-left-color: @aqua;
@@ -403,7 +439,12 @@
     border-left-color: @green;
   }
   .primary {
-    border-left-color: @light-blue;
+    .responsiveDark({
+       border-left-color: @light-blue;
+    },
+    {
+       border-left-color: @light-blue-dark;
+    });
   }
 
   .handle {

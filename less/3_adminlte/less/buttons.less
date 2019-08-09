@@ -56,7 +56,12 @@
 //Button color variations
 .btn-default {
   background-color: #f4f4f4;
-  color: @text-color-dark;  //before: #444;
+  .responsiveDark({
+     color: @text-color-darken1;
+  },
+  {
+     color: @text-color-darken1-dark;
+  });
   border-color: #ddd;
   &:hover,
   &:active,
@@ -66,10 +71,21 @@
 }
 
 .btn-primary {
-  background-color: @light-blue;
-  border-color: @light-blue-darken;
+  .responsiveDark({
+     background-color: @light-blue;
+     border-color: @light-blue-darken;
+  },
+  {
+     background-color: @light-blue-dark;
+     border-color: @light-blue-darken-dark;
+  });
   &:hover, &:active, &.hover {
-    background-color: @light-blue-darken;
+    .responsiveDark({
+       background-color: @light-blue-darken;
+    },
+    {
+       background-color: @light-blue-darken-dark;
+    });
   }
 }
 
@@ -98,10 +114,25 @@
 }
 
 .btn-warning {
-  background-color: @yellow;
-  border-color: darken(@yellow, 5%);
+  .responsiveDark({
+    background-color: @yellow;
+  },
+  {
+    background-color: @yellow-dark;
+  });
+  .responsiveDark({
+    border-color: darken(@yellow, 5%);
+  },
+  {
+    border-color: darken(@yellow-dark, 5%);
+  });
   &:hover, &:active, &.hover {
-    background-color: darken(@yellow, 5%);
+    .responsiveDark({
+       background-color: darken(@yellow, 5%);
+    },
+    {
+       background-color: darken(@yellow-dark, 5%);
+    });
   }
 }
 

@@ -15,7 +15,12 @@
   vertical-align: middle;
   white-space: nowrap;
   text-align: center;
-  background-color: @badge-bg;
+  .responsiveDark({
+     background-color: @badge-bg;
+  },
+  {
+     background-color: @badge-bg-dark;
+  });
   border-radius: @badge-border-radius;
 
   // Empty badges collapse automatically (not available in IE8)
@@ -48,7 +53,12 @@
   // Account for badges in navs
   .list-group-item.active > &,
   .nav-pills > .active > a > & {
-    color: @badge-active-color;
+    .responsiveDark({
+       color: @badge-active-color;
+    },
+    {
+       color: @badge-active-color-dark;
+    });
     background-color: @badge-active-bg;
   }
 
