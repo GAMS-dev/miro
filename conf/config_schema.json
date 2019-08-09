@@ -16,20 +16,6 @@
          ],
          "required":false
       },
-      "pageSkin":{  
-         "description":"Skin used for shiny dashboard",
-         "type":"string",
-         "enum":[  
-            "black",
-            "blue",
-            "purple",
-            "green",
-            "red",
-            "yellow"
-         ],
-         "default":"black",
-         "required":false
-      },
       "includeParentDir":{
         "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
          "type":"boolean",

@@ -1371,7 +1371,7 @@ if(!is.null(errMsg)){
   source("./UI/sidebar.R", local = TRUE)
   source("./UI/body.R", local = TRUE)
   
-  ui <- dashboardPage(header, sidebar, body, skin = config$pageSkin)
+  ui <- dashboardPage(header, sidebar, body, skin = "black")
   
   app <- shinyApp(ui = ui, server = server)
 }
