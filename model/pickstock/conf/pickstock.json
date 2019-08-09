@@ -286,8 +286,7 @@
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
-    "attachments": true,
-    "remoteExecution": true
+    "attachments": true
   },
   "aggregateWidgets": true,
   "includeParentDir": false,

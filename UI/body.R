@@ -62,7 +62,7 @@ tabItemList <- list(
                               )
                      )
             ),
-            do.call(tabBox, c(id = "inputTabset", width = 12, lapply(seq_along(inputTabs), function(tabId) {
+            MIROtabBox(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
               content <- lapply(inputTabs[[tabId]], function(i){
                 hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
                 tabContent <- switch(modelIn[[i]]$type,
@@ -323,7 +323,7 @@ tabItemList <- list(
                           tags$div(class="small-space"))
                 }
               ))
-            })))
+            }))
             )
           )
   ),
@@ -522,7 +522,7 @@ if(config$activateModules$hcubeMode){
                                 )
                        )
               ),
-              do.call(tabBox, c(id = "contentCurrent", width = 12L,
+              MIROtabBox(id = "contentCurrent",
                                      lapply(seq_along(outputTabs), function(tabId){
                                        content <- lapply(outputTabs[[tabId]], function(i){
                                          tabContent <- tagList(
@@ -568,7 +568,7 @@ if(config$activateModules$hcubeMode){
                                                    tags$div(class="small-space"))
                                          }
                                        ))
-                                     })))
+                                     }))
               )
             )
     )

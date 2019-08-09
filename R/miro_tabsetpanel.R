@@ -1,5 +1,84 @@
 # modified original shiny tabsetPanel function (see: https://github.com/rstudio/shiny/blob/master/R/bootstrap.R)
 # to add more flexibility in MIRO
+MIROtabBox <- function(tabs, id = NULL, selected = NULL, 
+                       maxTabsExpanded = 10L)
+{
+  foundSelected <- FALSE
+  tabs <- lapply(tabs, function(div) {
+    if (foundSelected || is.character(div)) {
+      # Strings are not selectable items
+      
+    } else {
+      # Base case: regular tab item. If the `selected` argument is
+      # provided, check for a match in the existing tabs; else,
+      # mark first available item as selected
+      if (is.null(selected)) {
+        foundSelected <<- TRUE
+        div <- markTabAsSelected(div)
+      } else {
+        tabValue <- div$attribs$`data-value` %OR% div$attribs$title
+        if (identical(selected, tabValue)) {
+          foundSelected <<- TRUE
+          div <- markTabAsSelected(div)
+        }
+      }
+    }
+    return(div)
+  })
+  
+  # add input class if we have an id
+  if (!is.null(id)) ulClass <- "nav nav-tabs shiny-tab-input"
+  
+  noTabs <- length(tabs)
+  if(noTabs > maxTabsExpanded){
+    noExpandedTabs <- maxTabsExpanded
+  }else{
+    noExpandedTabs <- noTabs
+  }
+  tabsetId <- shiny:::p_randomInt(1000, 10000)
+  expandedTabs <- lapply(seq_len(noExpandedTabs), MIRObuildTabItem,
+                         tabsetId = tabsetId, tabs = tabs)
+  liTagList <- lapply(expandedTabs, "[[", 1)
+  divTagList <- lapply(expandedTabs, "[[", 2)
+  
+  if(noTabs > maxTabsExpanded){
+    collapsedTabIds <- seq(from = noExpandedTabs + 1L,
+                           to = noTabs)
+    ddTabs <- lapply(collapsedTabIds, MIRObuildTabItem,
+                     tabsetId = tabsetId, 
+                     tabs = tabs)
+    ddLiTagList <- lapply(ddTabs, "[[", 1)
+    divTagList <- c(divTagList, lapply(ddTabs, "[[", 2))
+    
+    liTagList <- c(liTagList, 
+                   list(tags$li(class = "dropdown",
+                                tags$a(class = "dropdown-toggle", 
+                                       `data-toggle` = "dropdown",
+                                       role = "button",
+                                       `aria-haspopup` = "true",
+                                       `aria-expanded` = "false",
+                                       href = "#", "huhu"),
+                                tags$ul(class = "dropdown-menu",
+                                        ddLiTagList))))
+  }
+  
+  tabNavList <- tags$ul(class = ulClass, id = id,
+                        `data-tabsetid` = tabsetId, liTagList)
+  
+  tabContent <- tags$div(class = "tab-content",
+                         `data-tabsetid` = tabsetId, divTagList)
+  
+  # create the tab div
+  content <- tags$div(class = "tabbable", tabNavList, tabContent)
+  
+  content$attribs$class <- "nav-tabs-custom"
+  
+  div(class = "col-sm-12", content)
+}
+markTabAsSelected <- function(x) {
+  attr(x, "selected") <- TRUE
+  x
+}
 MIROinsertTab <- function(inputId, tab, target,
                       position = c("before", "after"), select = FALSE,
                       buttonID = NULL, buttonTT = NULL,
@@ -31,7 +110,8 @@ MIROinsertTab <- function(inputId, tab, target,
   }
   session$onFlush(callback, once = TRUE)
 }
-MIRObuildTabItem <- function(index, tabsetId, foundSelected, tabs = NULL, 
+
+MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 
                              divTag = NULL, buttonID = NULL, buttonTT = NULL) {
   
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]

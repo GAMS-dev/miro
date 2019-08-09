@@ -126,6 +126,7 @@ Worker <- R6Class("Worker", public = list(
     private$gamsRet <- NULL
     private$fRemoteRes <- NULL
     private$fRemoteSub <- NULL
+    private$updateLog <- 0L
     private$wait    <- 0L
     private$waitCnt <- 0L
     
@@ -144,7 +145,7 @@ Worker <- R6Class("Worker", public = list(
   },
   pingProcess = function(){
     if(is.integer(private$status)){
-      return(private$updateLog)
+      return(private$status)
     }
     if(inherits(private$process, "process")){
       return(private$pingLocalProcess())
@@ -175,7 +176,7 @@ Worker <- R6Class("Worker", public = list(
   pfFileContent = NULL,
   process = NULL,
   workDir = NULL,
-  updateLog = 1L,
+  updateLog = 0L,
   gamsRet = NULL,
   waitCnt = integer(1L),
   wait = integer(1L),
@@ -266,7 +267,6 @@ Worker <- R6Class("Worker", public = list(
     error = function(e){
       private$log <- ""
     })
-    
     exitStatus  <- private$process$get_exit_status()
     if(!identical(private$log, "")){
       private$updateLog <- private$updateLog + 1L
