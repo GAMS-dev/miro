@@ -16,7 +16,12 @@
       padding: @padding-base-vertical @padding-base-horizontal;
       line-height: @line-height-base;
       text-decoration: none;
-      color: @pagination-color;
+      .responsiveDark({
+         color: @pagination-color;
+      },
+      {
+         color: @pagination-color-dark;
+      });
       background-color: @pagination-bg;
       border: 1px solid @pagination-border;
       margin-left: -1px;
@@ -41,8 +46,14 @@
     &:hover,
     &:focus {
       z-index: 2;
-      color: @pagination-hover-color;
-      background-color: @pagination-hover-bg;
+      .responsiveDark({
+         color: @pagination-hover-color;
+         background-color: @pagination-hover-bg;
+      },
+      {
+         color: @pagination-hover-color-dark;
+         background-color: @pagination-hover-bg-dark;
+      });
       border-color: @pagination-hover-border;
     }
   }
@@ -54,8 +65,14 @@
     &:focus {
       z-index: 3;
       color: @pagination-active-color;
-      background-color: @pagination-active-bg;
-      border-color: @pagination-active-border;
+      .responsiveDark({
+         background-color: @pagination-active-bg;
+         border-color: @pagination-active-border;
+      },
+      {
+         background-color: @pagination-active-bg-dark;
+         border-color: @pagination-active-border-dark;
+      });
       cursor: default;
     }
   }
@@ -67,7 +84,12 @@
     > a,
     > a:hover,
     > a:focus {
-      color: @pagination-disabled-color;
+      .responsiveDark({
+         color: @pagination-disabled-color;
+      },
+      {
+         color: @pagination-disabled-color-dark;
+      });
       background-color: @pagination-disabled-bg;
       border-color: @pagination-disabled-border;
       cursor: @cursor-disabled;

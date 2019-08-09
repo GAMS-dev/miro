@@ -9,7 +9,12 @@
   padding: @thumbnail-padding;
   margin-bottom: @line-height-computed;
   line-height: @line-height-base;
-  background-color: @thumbnail-bg;
+  .responsiveDark({
+     background-color: @thumbnail-bg;
+  },
+  {
+     background-color: @thumbnail-bg-dark;
+  });
   border: 1px solid @thumbnail-border;
   border-radius: @thumbnail-border-radius;
   .transition(border .2s ease-in-out);
@@ -25,12 +30,22 @@
   a&:hover,
   a&:focus,
   a&.active {
-    border-color: @link-color;
+    .responsiveDark({
+       border-color: @link-color;
+    },
+    {
+       border-color: @link-color-dark;
+    });
   }
 
   // Image captions
   .caption {
     padding: @thumbnail-caption-padding;
-    color: @thumbnail-caption-color;
+    .responsiveDark({
+       color: @thumbnail-caption-color;
+    },
+    {
+       color: @thumbnail-caption-color-dark;
+    });
   }
 }

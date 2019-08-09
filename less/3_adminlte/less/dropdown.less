@@ -8,7 +8,12 @@
   box-shadow: none;
   border-color: #eee;
   > li > a {
-    color: @dropdown-text-color;  //before: #777;
+    .responsiveDark({
+       color: @dropdown-text-color;
+    },
+    {
+       color: @dropdown-text-color-dark;
+    });
   }
   > li > a > .glyphicon,
   > li > a > .fa,

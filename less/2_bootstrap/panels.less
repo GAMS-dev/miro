@@ -252,10 +252,20 @@
 
 // Contextual variations
 .panel-default {
-  .panel-variant(@panel-default-border; @panel-default-text; @panel-default-heading-bg; @panel-default-border);
+  .responsiveDark({
+     .panel-variant(@panel-default-border; @panel-default-text; @panel-default-heading-bg; @panel-default-border);
+  },
+  {
+     .panel-variant(@panel-default-border; @panel-default-text-dark; @panel-default-heading-bg; @panel-default-border);
+  });
 }
 .panel-primary {
-  .panel-variant(@panel-primary-border; @panel-primary-text; @panel-primary-heading-bg; @panel-primary-border);
+  .responsiveDark({
+     .panel-variant(@panel-primary-border; @panel-primary-text; @panel-primary-heading-bg; @panel-primary-border);
+  },
+  {
+     .panel-variant(@panel-primary-border-dark; @panel-primary-text; @panel-primary-heading-bg-dark; @panel-primary-border-dark);
+  });
 }
 .panel-success {
   .panel-variant(@panel-success-border; @panel-success-text; @panel-success-heading-bg; @panel-success-border);

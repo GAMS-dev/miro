@@ -79,9 +79,19 @@
   font-size: @font-size-base;
   font-weight: normal;
   line-height: 1;
-  color: @input-color;
+  .responsiveDark({
+     color: @input-color;
+  },
+  {
+     color: @input-color-dark;
+  });
   text-align: center;
-  background-color: @input-group-addon-bg;
+  .responsiveDark({
+     background-color: @input-group-addon-bg;
+  },
+  {
+     background-color: @input-group-addon-bg-dark;
+  });
   border: 1px solid @input-group-addon-border-color;
   border-radius: @input-border-radius;
 

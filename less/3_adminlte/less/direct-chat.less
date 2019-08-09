@@ -178,11 +178,21 @@
 }
 
 .direct-chat-primary {
-  .direct-chat-variant(@light-blue);
+  .responsiveDark({
+     .direct-chat-variant(@light-blue);
+  },
+  {
+     .direct-chat-variant(@light-blue-dark);
+  });
 }
 
 .direct-chat-warning {
-  .direct-chat-variant(@yellow);
+  .responsiveDark({
+     .direct-chat-variant(@yellow);
+  },
+  {
+     .direct-chat-variant(@yellow-dark);
+  });
 }
 
 .direct-chat-info {

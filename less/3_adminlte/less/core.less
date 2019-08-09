@@ -74,7 +74,12 @@ body {
 .content-wrapper,
 .right-side {
   min-height: 100%;
-  background-color: @body-bg;
+  .responsiveDark({
+     background-color: @body-bg;
+  },
+  {
+     background-color: @body-bg-dark;
+  });
   z-index: 800;
 }
 
@@ -149,7 +154,12 @@ h6,
 
 /* General Links */
 a {
-  color: @link-color;
+  .responsiveDark({
+     color: @link-color;
+  },
+  {
+     color: @link-color-dark;
+  });
 }
 
 a:hover,
@@ -157,7 +167,12 @@ a:active,
 a:focus {
   outline: none;
   text-decoration: none;
-  color: @link-hover-color;
+  .responsiveDark({
+     color: @link-hover-color;
+  },
+  {
+     color: @link-hover-color-dark;
+  });
 }
 
 /* Page Header */

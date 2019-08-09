@@ -31,7 +31,12 @@
   .modal-header,
   .modal-footer {
     &:extend(.bg-light-blue-active);
-    border-color: darken(@light-blue, 10%);
+    .responsiveDark({
+       border-color: darken(@light-blue, 10%);
+    },
+    {
+       border-color: darken(@light-blue-dark, 10%);
+    });
   }
 }
 
@@ -42,7 +47,12 @@
   .modal-header,
   .modal-footer {
     &:extend(.bg-yellow-active);
-    border-color: darken(@yellow, 10%);
+    .responsiveDark({
+       border-color: darken(@yellow, 10%);
+    },
+    {
+       border-color: darken(@yellow-dark, 10%);
+    });
   }
 }
 

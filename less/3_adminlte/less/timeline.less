@@ -30,7 +30,12 @@
 
     // The content
     > .timeline-item {
-      .box-shadow(@box-boxshadow);
+      .responsiveDark({
+        .box-shadow(@box-boxshadow);
+      },
+      {
+        .box-shadow(@box-boxshadow-dark);
+      });
       .border-radius(@box-border-radius);
       margin-top: 0;
       background: #fff;

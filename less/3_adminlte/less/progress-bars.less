@@ -87,7 +87,12 @@
 // -------------------------
 .progress-bar-light-blue,
 .progress-bar-primary {
-  .progress-bar-variant(@light-blue);
+  .responsiveDark({
+     .progress-bar-variant(@light-blue);
+  },
+  {
+     .progress-bar-variant(@light-blue-dark);
+  });
 }
 
 .progress-bar-green,
@@ -102,7 +107,12 @@
 
 .progress-bar-yellow,
 .progress-bar-warning {
-  .progress-bar-variant(@yellow);
+  .responsiveDark({
+     .progress-bar-variant(@yellow);
+  },
+  {
+     .progress-bar-variant(@yellow-dark);
+  });
 }
 
 .progress-bar-red,

@@ -1,18 +1,34 @@
-////dark
-//@row-even: #848991;     //before: #ffffff;
-//@row-odd: #76797e;      //before: #f9f9f9;
-//@text-color: #ccc;      //before: #333;
-//@hover-row: #9499a0;    //before: #f6f6f6;
-//@row-selected: #00adb5; //before: #acbad4;
+//dark
+@row-even-dark:      #848991;   //before: #ffffff;
+@row-odd-dark:       #76797e;   //before: #f9f9f9;
+@text-color-dark:    #ccc;      //before: #333;
+@hover-row-dark:     #9499a0;   //before: #f6f6f6;
+@row-selected-dark:  #00adb5;   //before: #acbad4;
 
 //light
-@row-even: #ffffff;
-@row-odd: #f9f9f9;
-@text-color: #333;
-@hover-row: #f6f6f6;
-@row-selected: #acbad4;
+@row-even:           #ffffff;
+@row-odd:            #f9f9f9;
+@text-color:         #333;
+@hover-row:          #f6f6f6;
+@row-selected:       #acbad4;
 
+//change mode for static/browser-responsive css compilation
+@mode: "browser";
 
+.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
+    @rulesDark();
+}
+.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
+    @rules();
+}
+.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
+    @rules();
+    @media (prefers-color-scheme: dark) {
+        @rulesDark();
+    }
+}
+
+///////////////////////////////////////////////////////////
 
 table.dataTable {
     width: 100%;
@@ -76,7 +92,12 @@ table.dataTable thead .sorting_desc_disabled {
 }
 
 table.dataTable tbody tr {
-    background-color: @row-even; //before: #ffffff
+    .responsiveDark({
+       background-color: @row-even;
+    },
+    {
+       background-color: @row-even-dark;
+    });
 }
 
 table.dataTable tbody tr.selected {
@@ -120,17 +141,32 @@ table.dataTable.cell-border tbody tr:first-child td {
 
 table.dataTable.stripe tbody tr.odd,
 table.dataTable.display tbody tr.odd {
-    background-color: @row-odd; //before: #f9f9f9
+    .responsiveDark({
+       background-color: @row-odd;
+    },
+    {
+       background-color: @row-odd-dark;
+    });
 }
 
 table.dataTable.stripe tbody tr.odd.selected,
 table.dataTable.display tbody tr.odd.selected {
-    background-color: @row-selected; //before: #acbad4;
+    .responsiveDark({
+       background-color: @row-selected;
+    },
+    {
+       background-color: @row-selected-dark;
+    });
 }
 
 table.dataTable.hover tbody tr:hover,
 table.dataTable.display tbody tr:hover {
-    background-color: @hover-row;//before: #f6f6f6;
+    .responsiveDark({
+       background-color: @hover-row;
+    },
+    {
+       background-color: @hover-row-dark;
+    });
 }
 
 table.dataTable.hover tbody tr:hover.selected,
@@ -404,7 +440,12 @@ table.dataTable td {
     text-decoration: none !important;
     cursor: pointer;
     *cursor: hand;
-    color: @text-color !important;  //before: #333 !important;
+    .responsiveDark({
+       color: @text-color !important;
+    },
+    {
+       color: @text-color-dark !important;
+    });
     border: 1px solid transparent;
     border-radius: 2px
 }
@@ -485,7 +526,12 @@ table.dataTable td {
 .dataTables_wrapper .dataTables_info,
 .dataTables_wrapper .dataTables_processing,
 .dataTables_wrapper .dataTables_paginate {
-    color: @text-color; //before: #333;
+    .responsiveDark({
+       color: @text-color;
+    },
+    {
+       color: @text-color-dark;
+    });
 }
 
 .dataTables_wrapper .dataTables_scroll {

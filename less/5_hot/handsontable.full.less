@@ -1,20 +1,20 @@
 ////dark
-//@hot-cell-color: #4e545d;          //before: #fff;
-//@header-color: #848991;            //before: #f0f0f0;
-//@marked-column: #5c646e;           //before: #F9F9FB;
-//@marked-row: #464b52;              //before: #E7E8EF;
-//@marked-header: #585f69;           //before: #dcdcdc;
-//@textinput: #d3d3d3;               //before: #fff;
-//@readonly-cell: #c4c4c4;           //before: #777;
-//@context-menu: #393e46;            //before: #fff;
-//@text-color: #eeeeee;
-//@context-highlight: darken(@text-color, 20%); //before: #f3f3f3;
-//@context-disabled-highlight: lighten(@context-highlight, 5%);  //before: #fff;
-//@light-blue: #00adb5;              //before: #8eb0e7;
-//@marked-background: @light-blue;   //before: #005eff;
-//@box-shadow-color: @light-blue;    //before: #5292f7;
-//@current-cell: @light-blue;        //new! delete in classes for light mode
-//@row-selected: #00adb5;            //before: #34a9db;
+@hot-cell-color-dark:               #4e545d;           //before: #fff;
+@header-color-dark:                 #848991;           //before: #f0f0f0;
+@marked-column-dark:                #5c646e;           //before: #F9F9FB;
+@marked-row-dark:                   #464b52;           //before: #E7E8EF;
+@marked-header-dark:                #585f69;           //before: #dcdcdc;
+@textinput-dark:                    #d3d3d3;           //before: #fff;
+@readonly-cell-dark:                #c4c4c4;           //before: #777;
+@context-menu-dark:                 #393e46;           //before: #fff;
+@text-color-dark:                   #eeeeee;           //before: #eeeeee;
+@context-highlight-dark:            darken(@text-color-dark, 20%);         //before: #f3f3f3;
+@context-disabled-highlight-dark:   lighten(@context-highlight-dark, 5%);  //before: #fff;
+@light-blue-dark:                   #00adb5;           //before: #8eb0e7;
+@marked-background-dark:            @light-blue-dark;  //before: #005eff;
+@box-shadow-color-dark:             @light-blue-dark;  //before: #5292f7;
+@current-cell-dark:                 @light-blue-dark;  //new! delete in classes for light mode
+@row-selected-dark:                 #00adb5;           //before: #34a9db;
 
 //light
 @hot-cell-color: #fff;
@@ -34,6 +34,22 @@
 @row-selected: #34a9db;
 @current-cell: @light-blue;        //new! delete in classes for light mode
 
+//change mode for static/browser-responsive css compilation
+@mode: "browser";
+
+.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
+    @rulesDark();
+}
+.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
+    @rules();
+}
+.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
+    @rules();
+    @media (prefers-color-scheme: dark) {
+        @rulesDark();
+    }
+}
+///////////////////////////////////////////////////////////
 
 //after css compilation .handsontable td.area:before {bottom: -100%  \9; // IE8    needs to be added afterwards
 
@@ -242,7 +258,12 @@
     empty-cells: show;
     line-height: 21px;
     padding: 0 4px;
-    background-color: @hot-cell-color; //before: #fff;
+    .responsiveDark({
+       background-color: @hot-cell-color;
+    },
+    {
+       background-color: @hot-cell-color-dark;
+    });
     vertical-align: top;
     overflow: hidden;
     outline-width: 0;
@@ -298,7 +319,12 @@
 }
 
 .handsontable th {
-    background-color: @header-color; //before: #f0f0f0;
+    .responsiveDark({
+       background-color: @header-color;
+    },
+    {
+       background-color: @header-color-dark; 
+    });
     color: #222;
     text-align: center;
     font-weight: 400;
@@ -347,14 +373,24 @@
 .handsontable .manualColumnResizer:hover,
 .handsontable .manualRowResizer.active,
 .handsontable .manualRowResizer:hover {
-    background-color: @row-selected //before: #34a9db;
+    .responsiveDark({
+       background-color: @row-selected 
+    },
+    {
+       background-color: @row-selected-dark
+    });
 }
 
 .handsontable .manualColumnResizerGuide {
     position: fixed;
     right: 0;
     top: 0;
-    background-color: @row-selected; //before: #34a9db;
+    .responsiveDark({
+       background-color: @row-selected;
+    },
+    {
+       background-color: @row-selected-dark;
+    });
     display: none;
     width: 0;
     border-right: 1px dashed #777;
@@ -365,7 +401,12 @@
     position: fixed;
     left: 0;
     bottom: 0;
-    background-color: @row-selected; //before: #34a9db;
+    .responsiveDark({
+       background-color: @row-selected;
+    },
+    {
+       background-color: @row-selected-dark;
+    });
     display: none;
     height: 0;
     border-bottom: 1px dashed #777;
@@ -432,11 +473,21 @@
 
 .handsontable .wtBorder.current {
     z-index: 10;
-    background-color: @current-cell !important; //new
+    .responsiveDark({
+       background-color: @current-cell !important;
+    },
+    {
+       background-color: @current-cell-dark !important;
+    });
 }
 
 .handsontable .wtBorder.area {
-    background-color: @current-cell !important; //new
+    .responsiveDark({
+       background-color: @current-cell !important;
+    },
+    {
+       background-color: @current-cell-dark !important;
+    });
     z-index: 8
 }
 
@@ -471,7 +522,12 @@
     bottom: 0;
 ////needs to be added afterwards
 //    bottom: -100%  \9; // IE8
-    background: @marked-background;  //before: #005eff
+    .responsiveDark({
+       background: @marked-background;
+    },
+    {
+       background: @marked-background-dark;
+    });
 }
 
 @media (-ms-high-contrast:none),
@@ -522,12 +578,22 @@ screen and (-ms-high-contrast:active) {
 
 .handsontable tbody th.ht__highlight,
 .handsontable thead th.ht__highlight {
-    background-color: @marked-header; //before: #dcdcdc;
+    .responsiveDark({
+       background-color: @marked-header;
+    },
+    {
+       background-color: @marked-header-dark;
+    });
 }
 
 .handsontable tbody th.ht__active_highlight,
 .handsontable thead th.ht__active_highlight {
-    background-color: @light-blue; //before: #8eb0e7;
+    .responsiveDark({
+       background-color: @light-blue;
+    },
+    {
+       background-color: @light-blue-dark;
+    });
     color: #000
 }
 
@@ -550,12 +616,18 @@ screen and (-ms-high-contrast:active) {
     font-family: inherit;
     line-height: 21px;
     font-size: inherit;
-    box-shadow: inset 0 0 0 2px @box-shadow-color; //before: #5292f7;
+    .responsiveDark({
+       box-shadow: inset 0 0 0 2px @box-shadow-color;
+       background-color: @textinput;
+    },
+    {
+       box-shadow: inset 0 0 0 2px @box-shadow-color-dark;
+       background-color: @textinput-dark;
+    });
     resize: none;
     display: block;
     color: #000;
     border-radius: 0;
-    background-color: @textinput; //before: #fff;
 }
 
 .handsontableInputHolder {
@@ -572,7 +644,12 @@ screen and (-ms-high-contrast:active) {
 }
 
 .handsontable .htDimmed {
-    color: @readonly-cell; //before: #777;
+    .responsiveDark({
+       color: @readonly-cell;
+    },
+    {
+       color: @readonly-cell-dark;
+    });
 }
 
 .handsontable .htSubmenu {
@@ -1358,7 +1435,12 @@ thead .htCollapseButton:after {
 }
 
 .htContextMenu table tbody tr td {
-    background: @context-menu; //before: #fff;
+    .responsiveDark({
+       background: @context-menu; 
+    },
+    {
+       background: @context-menu-dark; 
+    });
     border-width: 0;
     padding: 4px 6px 0;
     cursor: pointer;
@@ -1378,7 +1460,12 @@ thead .htCollapseButton:after {
 
 .htContextMenu table tbody tr td.current,
 .htContextMenu table tbody tr td.zeroclipboard-is-hover {
-    background: @context-highlight //before: #f3f3f3
+    .responsiveDark({
+       background: @context-highlight; 
+    },
+    {
+       background: @context-highlight-dark; 
+    });
 }
 
 .htContextMenu table tbody tr td.htSeparator {
@@ -1394,7 +1481,12 @@ thead .htCollapseButton:after {
 }
 
 .htContextMenu table tbody tr td.htDisabled:hover {
-    background: @context-disabled-highlight; //before: #fff;
+    .responsiveDark({
+       background: @context-disabled-highlight;
+    },
+    {
+       background: @context-disabled-highlight-dark;
+    });
     color: #999;
     cursor: default
 }
@@ -1565,11 +1657,21 @@ textarea#HandsontableCopyPaste {
 
 //rhandsontable
 .handsontable .currentRow {
-  background-color: @marked-row; //before: #E7E8EF;
+    .responsiveDark({
+       background-color: @marked-row;
+    },
+    {
+       background-color: @marked-row-dark;
+    });
 }
 
 .handsontable .currentCol {
-  background-color: @marked-column; //before: #F9F9FB;
+    .responsiveDark({
+       background-color: @marked-column;
+    },
+    {
+       background-color: @marked-column-dark;
+    });
 }
 
 .handsontable {

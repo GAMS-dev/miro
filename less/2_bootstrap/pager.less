@@ -23,7 +23,12 @@
     > a:hover,
     > a:focus {
       text-decoration: none;
-      background-color: @pager-hover-bg;
+      .responsiveDark({
+         background-color: @pager-hover-bg;
+      },
+      {
+         background-color: @pager-hover-bg-dark;
+      });
     }
   }
 
@@ -46,7 +51,12 @@
     > a:hover,
     > a:focus,
     > span {
-      color: @pager-disabled-color;
+      .responsiveDark({
+         color: @pager-disabled-color;
+      },
+      {
+         color: @pager-disabled-color-dark;
+      });
       background-color: @pager-bg;
       cursor: @cursor-disabled;
     }

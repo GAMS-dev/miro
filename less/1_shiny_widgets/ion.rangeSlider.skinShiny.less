@@ -40,16 +40,29 @@
 
 .irs-bar {
     height: 8px; top: 25px;
-    border-top: 1px solid @light-blue; //before: #428bca;
-    border-bottom: 1px solid @light-blue; //before: #428bca;
-    background: @light-blue;  //before: #428bca;
+    .responsiveDark({
+       border-top: 1px solid @light-blue; 
+       border-bottom: 1px solid @light-blue;
+       background: @light-blue; 
+    },
+    {
+       border-top: 1px solid @light-blue-dark;
+       border-bottom: 1px solid @light-blue-dark;
+       background: @light-blue-dark;
+    });
 }
     .irs-bar-edge {
         height: 8px; top: 25px;
         width: 14px;
-        border: 1px solid @light-blue; //before: #428bca;
+        .responsiveDark({
+           border: 1px solid @light-blue;
+           background: @light-blue;
+        },
+        {
+           border: 1px solid @light-blue-dark;
+           background: @light-blue-dark;
+        });
         border-right: 0;
-        background: @light-blue; //before: #428bca;
         border-radius: 16px 0 0 16px;
         -moz-border-radius: 16px 0 0 16px;
     }
@@ -81,7 +94,12 @@
 }
 
 .irs-min, .irs-max {
-    color: @slider-above;  //before: #333;
+    .responsiveDark({
+       color: @slider-above;
+    },
+    {
+       color: @slider-above-dark;
+    });
     font-size: 10px; line-height: 1.333;
     text-shadow: none;
     top: 0;
@@ -100,7 +118,12 @@
     font-size: 11px; line-height: 1.333;
     text-shadow: none;
     padding: 1px 3px;
-    background: @light-blue;   //before: #428bca;
+    .responsiveDark({
+       background: @light-blue;
+    },
+    {
+       background: @light-blue-dark;
+    });
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
@@ -113,7 +136,12 @@
 }
 .irs-grid-pol {
     opacity: 0.5;
-    background: @light-blue;  //before: #428bca;
+    .responsiveDark({
+       background: @light-blue;
+    },
+    {
+       background: @light-blue-dark;
+    });
 }
 .irs-grid-pol.small {
     background: #999;
@@ -121,7 +149,12 @@
 
 .irs-grid-text {
     bottom: 5px;
-    color: @slider-below;   //before: #99a4ac;
+    .responsiveDark({
+       color: @slider-below;
+    },
+    {
+       color: @slider-below-dark;
+    });
 }
 
 .irs-disabled {

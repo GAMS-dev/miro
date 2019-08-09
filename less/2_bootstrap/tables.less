@@ -9,7 +9,12 @@ table {
 caption {
   padding-top: @table-cell-padding;
   padding-bottom: @table-cell-padding;
-  color: @text-muted;
+  .responsiveDark({
+      color: @text-muted;
+  },
+  {
+      color: @text-muted-dark;
+  });
   text-align: left;
 }
 th {
@@ -60,7 +65,12 @@ th {
 
   // Nesting
   .table {
-    background-color: @body-bg;
+    .responsiveDark({
+       background-color: @body-bg;
+    },
+    {
+       background-color: @body-bg-dark;
+    });
   }
 }
 

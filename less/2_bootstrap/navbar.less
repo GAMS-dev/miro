@@ -531,7 +531,12 @@
   border-color: @navbar-inverse-border;
 
   .navbar-brand {
-    color: @navbar-inverse-brand-color;
+    .responsiveDark({
+        color: @navbar-inverse-brand-color;
+    },
+    {
+        color: @navbar-inverse-brand-color-dark;
+    });
     &:hover,
     &:focus {
       color: @navbar-inverse-brand-hover-color;
@@ -540,13 +545,22 @@
   }
 
   .navbar-text {
-    color: @navbar-inverse-color;
+    .responsiveDark({
+        color: @navbar-inverse-color;
+    },
+    {
+        color: @navbar-inverse-color-dark;
+    });
   }
 
   .navbar-nav {
     > li > a {
-      color: @navbar-inverse-link-color;
-
+      .responsiveDark({
+          color: @navbar-inverse-link-color;
+      },
+      {
+          color: @navbar-inverse-link-color-dark;
+      });
       &:hover,
       &:focus {
         color: @navbar-inverse-link-hover-color;
@@ -609,7 +623,12 @@
           background-color: @navbar-inverse-border;
         }
         > li > a {
-          color: @navbar-inverse-link-color;
+          .responsiveDark({
+              color: @navbar-inverse-link-color;
+          },
+          {
+              color: @navbar-inverse-link-color-dark;
+          });
           &:hover,
           &:focus {
             color: @navbar-inverse-link-hover-color;
@@ -637,14 +656,24 @@
   }
 
   .navbar-link {
-    color: @navbar-inverse-link-color;
+    .responsiveDark({
+        color: @navbar-inverse-link-color;
+    },
+    {
+        color: @navbar-inverse-link-color-dark;
+    });
     &:hover {
       color: @navbar-inverse-link-hover-color;
     }
   }
 
   .btn-link {
-    color: @navbar-inverse-link-color;
+    .responsiveDark({
+        color: @navbar-inverse-link-color;
+    },
+    {
+        color: @navbar-inverse-link-color-dark;
+    });
     &:hover,
     &:focus {
       color: @navbar-inverse-link-hover-color;

@@ -99,7 +99,12 @@
 }
 
 .bg-yellow {
-  background-color: @yellow !important;
+  .responsiveDark({
+     background-color: @yellow !important;
+  },
+  {
+     background-color: @yellow-dark !important;
+  });
 }
 
 .bg-aqua {
@@ -111,7 +116,12 @@
 }
 
 .bg-light-blue {
-  background-color: @light-blue !important;
+  .responsiveDark({
+     background-color: @light-blue !important;
+  },
+  {
+     background-color: @light-blue-dark !important;
+  });
 }
 
 .bg-green {
@@ -165,7 +175,12 @@
 }
 
 .bg-yellow-active {
-  background-color: darken(@yellow , 6%) !important;
+  .responsiveDark({
+     background-color: darken(@yellow , 6%) !important;
+  },
+  {
+     background-color: darken(@yellow-dark , 6%) !important;
+  });
 }
 
 .bg-aqua-active {
@@ -177,7 +192,12 @@
 }
 
 .bg-light-blue-active {
-  background-color: darken(@light-blue , 6%) !important;
+  .responsiveDark({
+     background-color: darken(@light-blue , 6%) !important;
+  },
+  {
+     background-color: darken(@light-blue-dark , 6%) !important;
+  });
 }
 
 .bg-green-active {
@@ -227,7 +247,12 @@
 }
 
 .text-yellow {
-  color: @yellow !important;
+  .responsiveDark({
+     color: @yellow !important;
+  },
+  {
+     color: @yellow-dark !important;
+  });
 }
 
 .text-aqua {
@@ -243,7 +268,12 @@
 }
 
 .text-light-blue {
-  color: @light-blue !important;
+  .responsiveDark({
+     color: @light-blue !important;
+  },
+  {
+     color: @light-blue-dark !important;
+  });
 }
 
 .text-green {
