@@ -340,7 +340,8 @@ if(is.null(errMsg)){
   # add input type to list
   lapply(seq_along(modelIn), function(i){
     tryCatch({
-      modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType)
+      modelIn[[i]]$type <<- getInputType(modelIn[[i]], keywordsType = keywordsType, 
+                                         modelIn[[i]]$dropdown$multiple)
       if(names(modelIn)[[i]] %in% c(DDPar, GMSOpt) && 
          modelIn[[i]]$type %in% c("hot", "dt", "custom")){
         stop(sprintf("Tables are not supported for GAMS command line parameters ('%s'). 

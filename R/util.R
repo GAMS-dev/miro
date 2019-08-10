@@ -150,15 +150,19 @@ getWidgetDependencies <- function(widgetType, depString){
          })
 }
 
-getInputType <- function(data, keywordsType){
+getInputType <- function(data, keywordsType, isMultiDropdown = FALSE){
   # Retrieves input type from JSON file based on keyword list
   #
   # Args:
   # data:                       raw list of input data
   # keywordsType:               list of return value/keyword pairs (example: "hot" = "columns")
+  # isMultiDropdown:            boolean that specifies whether input is multi dropdown
   #
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
+  if(isTRUE(isMultiDropdown)){
+    return(names(keywordsType)[['dropdown']])
+  }
   for(i in seq_along(keywordsType)){
     if(keywordsType[[i]] %in% names(data)){
       return(names(keywordsType)[[i]])

@@ -109,7 +109,7 @@ observeEvent(rv$uploadHcube, {
   tryCatch({
     hcubeImport$unzipScenData(zipFilePathTmp, extractDir = workDir)
   }, error = function(e){
-    if(identical(e, "invalidFiles")){
+    if(identical(conditionMessage(e), "invalidFiles")){
       flog.error("The zip file you are trying to upload contains invalid files. Only trace and CSV files allowed! No path traversals!")
       errMsg <<- lang$errMsg$hcubeImport$extract$invalidFiles
     }else{

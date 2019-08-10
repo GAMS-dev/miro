@@ -100,6 +100,9 @@ observeEvent(input$btGraphIn, {
 lapply(modelInTabularData, function(sheet){
   # get input element id of dataset
   i <- match(sheet, tolower(names(modelIn)))[[1]]
+  if(isTRUE(modelIn[[i]]$dropdown$multiple)){
+    return()
+  }
   if(length(colsWithDep[[i]])){
     dataModelIn[[i]] <- reactive({
       hotInit[[i]] <<- TRUE
