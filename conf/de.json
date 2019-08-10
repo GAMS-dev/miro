@@ -56,6 +56,7 @@
       }
     },
     "inputScreen":{  
+      "btCollapsedTabs": "Mehr",
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
       "widgetTabTitle": "Eingabe-Widgets"
     },

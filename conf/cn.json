@@ -56,6 +56,7 @@
       }
     },
     "inputScreen":{
+      "btCollapsedTabs": "More",
       "noDataDep":"请先导入此元素所依赖的所有数据。",
       "widgetTabTitle":"输入小部件"
     },

@@ -62,7 +62,8 @@ tabItemList <- list(
                               )
                      )
             ),
-            MIROtabBox(id = "inputTabset", lapply(seq_along(inputTabs), function(tabId) {
+            MIROtabBox(id = "inputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+                         lapply(seq_along(inputTabs), function(tabId) {
               content <- lapply(inputTabs[[tabId]], function(i){
                 hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
                 tabContent <- switch(modelIn[[i]]$type,
@@ -522,7 +523,7 @@ if(config$activateModules$hcubeMode){
                                 )
                        )
               ),
-              MIROtabBox(id = "contentCurrent",
+              MIROtabBox(id = "contentCurrent", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
                                      lapply(seq_along(outputTabs), function(tabId){
                                        content <- lapply(outputTabs[[tabId]], function(i){
                                          tabContent <- tagList(

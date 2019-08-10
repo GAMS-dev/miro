@@ -56,6 +56,7 @@
       }
     },
     "inputScreen":{  
+      "btCollapsedTabs": "More",
       "noDataDep":"Please first import all data this element depends on.",
       "widgetTabTitle": "Input widgets"
     },

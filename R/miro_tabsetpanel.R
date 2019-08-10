@@ -1,7 +1,17 @@
 # modified original shiny tabsetPanel function (see: https://github.com/rstudio/shiny/blob/master/R/bootstrap.R)
 # to add more flexibility in MIRO
 MIROtabBox <- function(tabs, id = NULL, selected = NULL, 
-                       maxTabsExpanded = 10L)
+                       maxTabsExpanded = 10L, btCollapsedTabs = "")
+{
+  content <- MIROtabsetPanel(tabs, id, selected, 
+                             maxTabsExpanded, btCollapsedTabs)
+  
+  content$attribs$class <- "nav-tabs-custom"
+  
+  div(class = "col-sm-12", content)
+}
+MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
+                            maxTabsExpanded = 2L, btCollapsedTabs = "")
 {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {
@@ -57,7 +67,8 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
                                        role = "button",
                                        `aria-haspopup` = "true",
                                        `aria-expanded` = "false",
-                                       href = "#", "huhu"),
+                                       href = "#", btCollapsedTabs,
+                                       tags$i(class = "fa fa-angle-double-right")),
                                 tags$ul(class = "dropdown-menu",
                                         ddLiTagList))))
   }
@@ -69,11 +80,7 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
                          `data-tabsetid` = tabsetId, divTagList)
   
   # create the tab div
-  content <- tags$div(class = "tabbable", tabNavList, tabContent)
-  
-  content$attribs$class <- "nav-tabs-custom"
-  
-  div(class = "col-sm-12", content)
+  tags$div(class = "tabbable", tabNavList, tabContent)
 }
 markTabAsSelected <- function(x) {
   attr(x, "selected") <- TRUE

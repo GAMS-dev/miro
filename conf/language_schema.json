@@ -266,6 +266,11 @@
           "additionalProperties":false,
           "required":true,
           "properties":{  
+            "btCollapsedTabs":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "noDataDep":{  
               "type":"string",
               "minLength":1,
