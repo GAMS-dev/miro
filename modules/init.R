@@ -1264,7 +1264,8 @@ if(is.null(errMsg)){
   
   # generate list of model files
   modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
-  modelFiles <- modelFiles[!basename(modelFiles) %in% c(hcubeDirName, customRendererDirName, "static",
+  modelFiles <- modelFiles[!basename(modelFiles) %in% c(paste0(modelName, "_", hcubeDirName), 
+                                                        customRendererDirName, "static",
                                               "logs", "conf", "runapp.R", paste0("~$", modelNameRaw, ".gms"),
                                               paste0(miroDataDirPrefix, modelName))]
   modelFilesExt <- tools::file_ext(modelFiles)

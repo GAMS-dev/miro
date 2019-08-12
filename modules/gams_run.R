@@ -557,6 +557,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
   #activate Interrupt button as GAMS is running now
+  updateActionButton(session, "btInterrupt", icon = character(0L))
   enableEl(session, "#btInterrupt")
   switchTab(session, "gamsinter")
   # read log file

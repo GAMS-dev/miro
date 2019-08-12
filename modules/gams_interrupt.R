@@ -11,5 +11,5 @@ observeEvent(input$btInterrupt,{
   if(is.null(showErrorMsg(lang$errMsg$gamsTerm$title, errMsg))){
     return()
   }
-  disableEl(session, "#btInterrupt")
+  updateActionButton(session, "btInterrupt", icon = icon("skull"))
 })
