@@ -1,7 +1,11 @@
 DataInstance <- R6Class("DataInstance", public = list(
   initialize = function(datasetNames = character(0L)){
-    stopifnot(is.character(datasetNames))
-    private$datasetNames <- datasetNames
+    if(!length(datasetNames)){
+      private$datasetNames <- character(0L)
+    }else{
+      stopifnot(is.character(datasetNames))
+      private$datasetNames <- datasetNames
+    }
     return(invisible(self))
   },
   push = function(datasetName, data){
@@ -45,11 +49,16 @@ DataInstance <- R6Class("DataInstance", public = list(
       idsToWrite <- seq_along(private$data)
     }
     for(id in idsToWrite){
-      fileName <- file.path(filePath, paste0(names(private$data)[[id]], ".csv"))
+      fileName <- file.path(filePath, 
+                            paste0(names(private$data)[[id]], 
+                                   ".csv"))
       write_delim(private$data[[id]], fileName, 
                   delim = delim, na = "")
     }
-    private$filePaths <- c(private$filePaths, paste0(filePath, names(private$data)[idsToWrite], ".csv"))
+    private$filePaths <- c(private$filePaths, 
+                           paste0(filePath, 
+                                  names(private$data)[idsToWrite], 
+                                  ".csv"))
     return(invisible(self))
   },
   writeGDX = function(fileName, squeezeZeros = c('y', 'n', 'e')){

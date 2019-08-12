@@ -281,7 +281,6 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
     db$updateHypercubeJob(jID, pid = pid)
     flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, jID)
-    rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
   }
   observeEvent(input$btHcubeAll, {
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")

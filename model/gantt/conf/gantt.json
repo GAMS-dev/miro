@@ -2,7 +2,6 @@
   "pivottable": {
     "bgColor": "rgb(255,128,0)"
   },
-  "pageSkin": "black",
   "defCompMode": "split",
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
