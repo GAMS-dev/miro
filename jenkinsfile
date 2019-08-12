@@ -260,6 +260,14 @@ pipeline {
                             rm $DMG_NAME
                         '''
                     }
+                    post {
+                        failure {
+                            sh '''
+                                hdiutil detach -verbose $WORKSPACE/studio
+                                hdiutil detach -verbose $WORKSPACE/volume
+                            '''
+                        }
+                    }
                 }
             }
         }
