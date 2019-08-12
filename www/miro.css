@@ -85,6 +85,12 @@ body {
   color: #fff;
   background-color: #3c8dbc;
 }
+@media (prefers-color-scheme: dark) {
+  .gmsalert-success {
+    color: #fff;
+    background-color: #00adb5;
+  }
+}
 .gmsalert-error {
   background-color: #F39619;
 }
@@ -327,6 +333,16 @@ body {
 .pvtRows,
 .pvtCols {
   background: #DCDCDC none repeat scroll 0 0;
+}
+.pvtAxisContainer,
+.pvtVals {
+  background: #EEE;
+}
+@media (prefers-color-scheme: dark) {
+  .pvtAxisContainer,
+  .pvtVals {
+    background: #393e46;
+  }
 }
 .initErrors {
   color: #f00;
@@ -669,15 +685,38 @@ body {
 .cJob-wrapper tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+@media (prefers-color-scheme: dark) {
+  .cJob-wrapper tr:nth-child(even) {
+    background-color: #848991;
+  }
+}
+.cJob-wrapper tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  .cJob-wrapper tr:nth-child(odd) {
+    background-color: #76797e;
+  }
+}
 .cJob-wrapper tr:hover {
-  background-color: #ddd;
+  background-color: #dddddd;
+}
+@media (prefers-color-scheme: dark) {
+  .cJob-wrapper tr:hover {
+    background-color: #9499a0;
+  }
 }
 .cJob-wrapper th {
   border-bottom: 2px solid #000;
-  background: #fff;
   padding-top: 15px;
   padding-bottom: 10px;
   font-size: 15px;
+  background: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .cJob-wrapper th {
+    background: #393e46;
+  }
 }
 .cJob-wrapper .form-group {
   margin: 0;
@@ -709,6 +748,11 @@ body {
   border-radius: 50%;
   background: #fff;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+@media (prefers-color-scheme: dark) {
+  .lds-ellipsis div {
+    background: #76797e;
+  }
 }
 .lds-ellipsis div:nth-child(1) {
   left: 6px;
@@ -748,6 +792,14 @@ body {
   }
   100% {
     transform: translate(19px, 0);
+  }
+}
+.gen-spinner {
+  background: #000;
+}
+@media (prefers-color-scheme: dark) {
+  .gen-spinner {
+    background: #76797e;
   }
 }
 /* bring plotly charts to front */
@@ -831,6 +883,11 @@ body {
   font-size: 12pt;
   background: #3c8dbcb0;
   display: none;
+}
+@media (prefers-color-scheme: dark) {
+  .config-message {
+    background: #00adb5b0;
+  }
 }
 /* scrollbar */
 /* width */

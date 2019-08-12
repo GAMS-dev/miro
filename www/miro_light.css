@@ -311,6 +311,10 @@ body {
 .pvtCols {
   background: #DCDCDC none repeat scroll 0 0;
 }
+.pvtAxisContainer,
+.pvtVals {
+  background: #EEE;
+}
 .initErrors {
   color: #f00;
   font-weight: bold;
@@ -608,15 +612,18 @@ body {
 .cJob-wrapper tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+.cJob-wrapper tr:nth-child(odd) {
+  background-color: #ffffff;
+}
 .cJob-wrapper tr:hover {
-  background-color: #ddd;
+  background-color: #dddddd;
 }
 .cJob-wrapper th {
   border-bottom: 2px solid #000;
-  background: #fff;
   padding-top: 15px;
   padding-bottom: 10px;
   font-size: 15px;
+  background: #fff;
 }
 .cJob-wrapper .form-group {
   margin: 0;
@@ -688,6 +695,9 @@ body {
   100% {
     transform: translate(19px, 0);
   }
+}
+.gen-spinner {
+  background: #000;
 }
 /* bring plotly charts to front */
 .plotly {
