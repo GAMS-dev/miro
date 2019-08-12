@@ -166,47 +166,47 @@ observeEvent(input$btPaver, {
     paverStatusObs <- paverStatus$obs
     paverStatus    <- paverStatus$re
     # include html files (seperate tabs)
-    output$paverResults <- renderUI(
-      if(!is.null(paverStatus())){
-        paverStatusObs$destroy()
-        paverStatus <- NULL
-        if(paverStatus() == 0){
-          hideEl(session, "#paverLoad")
-          paverResultTabs     <- paste0("tabs_paver_", 1:6)
-          paverResultFiles    <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
-          paverResultTabNames <- c("Index", "Status", "Efficiency", "Solution Quality", "Solve data", "Documentation")
-          lapply(2:length(paverResultTabs), function(i){
-            insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
-                      tabPanel(paverResultTabNames[i], value = paverResultTabs[i],
-                               tags$div(id = "wrapper-" %+% paverResultTabs[i], 
-                                        style = "overflow: auto; height: 75vh;",
-                                        tryCatch(
-                                          suppressWarnings(includeHTML(paste0(paverDir, .Platform$file.sep, 
-                                                                              paverResultFiles[i], ".html"))),
-                                          error = function(e){
-                                            tags$div(class="errMsg", style="text-align:center;font-size:16px;margin-top:50px;",
-                                                     lang$errMsg$paverFileLoad$desc)
-                                            
-                                          })
-                               )
-                      )
-            ) 
-          })
-          return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultFiles[1], ".html")))
-        }else{
-          paverError <- paver$read_error()
-          flog.error("Problems while running paver. Error message: '%s'.", paverError)
-          hideEl(session, "#paverLoad")
-          duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))
-          if(length(duplicatedInstances))
-            showElReplaceTxt(session, "#paverFail", sprintf(lang$nav$hcubeAnalyze$duplicatesMsg, 
-                                                            substr(duplicatedInstances, 13, 
-                                                                   nchar(duplicatedInstances) - 3L)))
-          else
-            showEl(session, "#paverFail")
-        }
+    output$paverResults <- renderUI({
+      if(is.null(paverStatus())){
+        return(NULL)
       }
-    )
+      paverStatusObs$destroy()
+      paverStatus <- NULL
+      if(paverStatus() == 0){
+        hideEl(session, "#paverLoad")
+        paverResultTabs     <- paste0("tabs_paver_", 1:6)
+        paverResultFiles    <- c("index", "stat_Status", "stat_Efficiency", "stat_SolutionQuality", "solvedata", "documentation")
+        paverResultTabNames <- c("Index", "Status", "Efficiency", "Solution Quality", "Solve data", "Documentation")
+        lapply(2:length(paverResultTabs), function(i){
+          insertTab("tabs_paver_results", target = paverResultTabs[i - 1L], position = "after",
+                    tabPanel(paverResultTabNames[i], value = paverResultTabs[i],
+                             tags$div(id = "wrapper-" %+% paverResultTabs[i], 
+                                      style = "overflow: auto; height: 75vh;",
+                                      tryCatch(
+                                        suppressWarnings(includeHTML(paste0(paverDir, .Platform$file.sep, 
+                                                                            paverResultFiles[i], ".html"))),
+                                        error = function(e){
+                                          tags$div(class="errMsg", style="text-align:center;font-size:16px;margin-top:50px;",
+                                                   lang$errMsg$paverFileLoad$desc)
+                                          
+                                        })
+                             )
+                    )
+          ) 
+        })
+        return(includeHTML(paste0(paverDir, .Platform$file.sep, paverResultFiles[1], ".html")))
+      }
+      paverError <- paver$read_error()
+      flog.error("Problems while running paver. Error message: '%s'.", paverError)
+      hideEl(session, "#paverLoad")
+      duplicatedInstances <- regmatches(paverError, regexpr('on instance [^>]*$', paverError))
+      if(length(duplicatedInstances))
+        showElReplaceTxt(session, "#paverFail", sprintf(lang$nav$hcubeAnalyze$duplicatesMsg, 
+                                                        substr(duplicatedInstances, 13, 
+                                                               nchar(duplicatedInstances) - 3L)))
+      else
+        showEl(session, "#paverFail")
+    })
   }else{
     showModal(modalDialog(
       title = lang$nav$dialogPaverInUse$title,
