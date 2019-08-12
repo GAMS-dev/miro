@@ -790,10 +790,10 @@ genSpinner <- function(id = NULL, hidden = FALSE, absolute = TRUE, externalStyle
   div(id = id, class = "lds-ellipsis", 
       style = if(!externalStyle) paste0("top:50%;left:50%;z-index:1;margin-left:-32px;margin-top:-32px;", 
       if(absolute) "position:absolute;" else "display:block;", if(hidden) "display:none;"), 
-      div(style = "background:#000;"),
-      div(style = "background:#000;"),
-      div(style = "background:#000;"),
-      div(style = "background:#000;")
+      div(class = "gen-spinner"),
+      div(class = "gen-spinner"),
+      div(class = "gen-spinner"),
+      div(class = "gen-spinner")
   )
 }
 checkboxInput_MIRO <- function(inputId, label, value = FALSE){

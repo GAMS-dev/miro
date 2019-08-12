@@ -8,6 +8,9 @@
 @info-color-dark:         @light-blue-dark;             //before: #f39619;
 @checkbox-color-dark:     @light-blue-dark;             //before: #f39619;
 @progress-bar-dark:       @light-blue-dark;             //before: #f39619;
+@table-row-odd-dark:      #76797e;                      //before: #fff;
+@table-row-even-dark:     #848991;                      //before: #f2f2f2; 
+@table-hover-dark:        #9499a0;                      //before: #ddd;
                                                  
 @log-color-dark:          #3c8dbc;                      //new variable
 @log-tab-dark:            @log-color-dark;              //before: #3c8dbc;
@@ -30,6 +33,9 @@
 @info-color:              #f39619;
 @checkbox-color:          #f39619;
 @progress-bar:            #f39619;
+@table-row-odd:           #fff;           
+@table-row-even:          #f2f2f2;                     
+@table-hover:             #ddd;
 
 //@log-color:             #3c8dbc;       //new variable - not used in light mode
 @log-tab:                 #3c8dbc;
@@ -141,8 +147,14 @@ body{
   border-radius: 20px;
 }
 .gmsalert-success{
-  color: #fff;
-  background-color: #3c8dbc;
+  .responsiveDark({
+     color: #fff;
+     background-color: #3c8dbc;
+  },
+  {
+     color: #fff;
+     background-color: @light-blue-dark;
+  });
 }
 .gmsalert-error{
   background-color: #F39619;
@@ -376,6 +388,15 @@ animation: none !important;
 }
 .pvtRows, .pvtCols { 
   background: #DCDCDC none repeat scroll 0 0; 
+}
+.pvtAxisContainer,
+.pvtVals {
+  .responsiveDark({
+     background: #EEE;
+  },
+  {
+     background: @modal-bg-dark;
+  });
 }
 .initErrors{
   color:#f00;
@@ -715,17 +736,40 @@ animation: none !important;
   padding: 10px;
 }
 .cJob-wrapper tr:nth-child(even){
-  background-color: #f2f2f2;
+  .responsiveDark({
+     background-color: @table-row-even;
+  },
+  {
+     background-color: @table-row-even-dark;
+  });
+}
+.cJob-wrapper tr:nth-child(odd){
+  .responsiveDark({
+     background-color: @table-row-odd;
+  },
+  {
+     background-color: @table-row-odd-dark;
+  });
 }
 .cJob-wrapper tr:hover {
-  background-color: #ddd;
+  .responsiveDark({
+     background-color: @table-hover;
+  },
+  {
+     background-color: @table-hover-dark;
+  });
 }
 .cJob-wrapper th {
   border-bottom: 2px solid #000;
-  background: #fff;
   padding-top: 15px;
   padding-bottom: 10px;
   font-size: 15px;
+  .responsiveDark({
+     background: #fff;
+  },
+  {
+     background: @modal-bg-dark;
+  });
 }
 .cJob-wrapper .form-group {
   margin: 0;
@@ -755,7 +799,12 @@ animation: none !important;
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: #fff;
+  .responsiveDark({
+     background: #fff;
+  },
+  {
+     background: @table-row-odd-dark;
+  });
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 .lds-ellipsis div:nth-child(1) {
@@ -797,6 +846,14 @@ animation: none !important;
   100% {
     transform: translate(19px, 0);
   }
+}
+.gen-spinner {
+  .responsiveDark({
+     background: #000;
+  },
+  {
+     background: @table-row-odd-dark;
+  });
 }
 /* bring plotly charts to front */
 .plotly {
@@ -879,7 +936,12 @@ animation: none !important;
   font-weight: bold;
   text-align: center;
   font-size: 12pt;
-  background: #3c8dbcb0;
+  .responsiveDark({
+     background: #3c8dbcb0;
+  },
+  {
+     background: #00adb5b0;
+  });
   display: none;
 }
 
