@@ -347,8 +347,14 @@
         position: absolute;
         right: 5%;
         left: auto;
-        border: 1px solid #ddd;
-        background: #fff;
+        .responsiveDark({
+           border: 1px solid #ddd;
+           background: #fff;
+        },
+        {
+           border: 1px solid @text-color-dark;
+           background: @box-bg-dark;
+        });
       }
     }
   }

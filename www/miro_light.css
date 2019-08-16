@@ -578,7 +578,7 @@ body {
   margin-bottom: 25px;
 }
 .and-wrapper {
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   padding-left: 5px;
   min-width: 1000px;
   background-color: rgba(0, 173, 181, 0.2);
@@ -703,6 +703,10 @@ body {
 .plotly {
   z-index: 22;
   position: relative;
+}
+/* set background color for Gantt charts independent of theme selected (timevis) */
+.vis-timeline {
+  background-color: #fff;
 }
 /* PAVER */
 .dataframe {
