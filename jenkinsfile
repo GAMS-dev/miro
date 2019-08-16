@@ -28,9 +28,11 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: '7d79afcd-90b2-42b6-8327-e2f92dcc4adf', passwordVariable: 'password', usernameVariable: 'username')]) {
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSR.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/GMSR_win.zip', userName: username)])
                           fileOperations([fileDownloadOperation(password: password, targetFileName: 'GMSCMEX_win.zip', targetLocation: 'installer/win', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/cmex_win.zip', userName: username)])
+                          fileOperations([fileDownloadOperation(password: password, targetFileName: 'modified_lib_sources.zip', targetLocation: '', url: 'https://cloud.gams.com/remote.php/webdav/Freddy/libraries/modified_lib_sources.zip', userName: username)])
                         }
                         fileOperations([fileDownloadOperation(password: '', targetFileName: 'windows_x64_64.exe', targetLocation: 'installer/win', url: 'https://d37drm4t2jghv5.cloudfront.net/distributions/27.2.0/windows/windows_x64_64.exe', userName: '')])
                         copyArtifacts filter: '*x86_64.zip', fingerprintArtifacts: true, projectName: 'gams-studio/miro', selector: lastSuccessful()
+                        unzip dir: '', glob: '', zipFile: 'modified_lib_sources.zip'
                         bat '''
                             for /f "tokens=*" %%i in ('findstr /B /C:"MIROVersion <-" app.R') do set MIRO_VERSION=%%i
                             set MIRO_VERSION=%MIRO_VERSION:MIROVersion <- =%
@@ -55,6 +57,7 @@ pipeline {
                             %GBIN_DIR%\\cp %WORKSPACE%\\installer\\win\\GMSR.zip %WORKSPACE%\\installer\\win\\innofiles
                             gmsunzip -qq -o GMSR.zip
                             %GBIN_DIR%\\rm -f GMSR.zip
+                            %GBIN_DIR%\\mv %WORKSPACE%\\modified_lib_sources %GAMS_DIR%\\GMSR
 
                             rem Python modules
                             cd %GAMS_DIR%\\GMSPython\\Scripts

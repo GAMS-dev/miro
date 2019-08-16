@@ -126,6 +126,7 @@ Worker <- R6Class("Worker", public = list(
     private$gamsRet <- NULL
     private$fRemoteRes <- NULL
     private$fRemoteSub <- NULL
+    private$hardKill <- FALSE
     private$updateLog <- 0L
     private$wait    <- 0L
     private$waitCnt <- 0L
@@ -138,10 +139,19 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   interrupt = function(){
-    if(private$remote){
-      return(private$interruptRemote())
+    if(!is.null(private$status)){
+      return()
     }
-    return(private$interruptLocal())
+    hardKill <- FALSE
+    if(private$hardKill){
+      hardKill <- TRUE
+    }else{
+      private$hardKill <- TRUE
+    }
+    if(private$remote){
+      return(private$interruptRemote(hardKill))
+    }
+    return(private$interruptLocal(hardKill))
   },
   pingProcess = function(){
     if(is.integer(private$status)){
@@ -176,6 +186,7 @@ Worker <- R6Class("Worker", public = list(
   pfFileContent = NULL,
   process = NULL,
   workDir = NULL,
+  hardKill = FALSE,
   updateLog = 0L,
   gamsRet = NULL,
   waitCnt = integer(1L),
@@ -254,7 +265,8 @@ Worker <- R6Class("Worker", public = list(
     return(self)
   },
   retrieveRemoteTextEntity = function(text_entity){
-    ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/", URLencode(text_entity)),
+    ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/text-entity/", 
+                      URLencode(text_entity)),
                write_disk(file.path(private$workDir, text_entity), overwrite = TRUE),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
@@ -369,9 +381,17 @@ Worker <- R6Class("Worker", public = list(
       return(private$status)
     }else if(identical(statusCode, 308L)){
       # job finished, get full log
-      retContent <- content(ret)
-      private$status <- retContent$gams_return_code
-      return(private$status)
+      ret <- GET(paste0(private$metadata$url, "/jobs/", private$process, "/status"),
+                 add_headers(Authorization = private$authHeader,
+                             Timestamp = as.character(Sys.time(), usetz = TRUE)),
+                 timeout(2L))
+      gamsRetCode <- content(ret)$gams_return_code
+      
+      if(is.null(gamsRetCode)){
+        private$status <- -500L
+      }else{
+        private$status <- gamsRetCode
+      }
     }else if(identical(statusCode, 403L)){
       private$wait <- bitwShiftL(2L, private$waitCnt)
       if(private$waitCnt < private$metadata$timeout){
@@ -379,10 +399,10 @@ Worker <- R6Class("Worker", public = list(
       }else{
         private$status <- -404L
       }
-      return(private$status)
     }else{
-      stop(content(ret)$message, call. = FALSE)
+      private$status <- -500L
     }
+    return(private$status)
   },
   readRemoteOutput = function(){
     if(!length(private$process)){
@@ -412,23 +432,32 @@ Worker <- R6Class("Worker", public = list(
     }
     return(0L)
   },
-  interruptLocal = function(){
+  interruptLocal = function(hardKill = FALSE){
     if(!length(private$process)){
       return("Process not started")
     }
     errMsg <- NULL
     tryCatch({
-      private$process$kill_tree()
+      if(hardKill){
+        private$process$kill_tree()
+      }else{
+        private$process$signal(tools::SIGINT)
+      }
     }, error= function(e){
       errMsg <<- "error"
     })
     if(!is.null(errMsg)){
       errMsg <- NULL
       if(private$metadata$serverOS == 'windows'){
-        run(command = 'taskkill', args = c("/F", "/PID", private$process$get_pid(), "/T"), 
-            windows_hide_window = TRUE)
+        processx::run(command = 'taskkill', args = c(if(hardKill) "/F", 
+                                                     "/PID", 
+                                                     private$process$get_pid(), 
+                                                     "/T"), 
+                      windows_hide_window = TRUE)
       }else if(private$metadata$serverOS %in% c('linux', 'osx')){
-        run(command = 'kill', args = c("-SIGKILL", -private$process$get_pid()))
+        processx::run(command = 'kill', 
+                      args = c(if(hardKill) "-SIGKILL" else "-SIGINT",
+                               -private$process$get_pid()))
       }else{
         stop(sprintf("Operating system: '%s' not supported.", private$metadata$serverOS), 
              call. = FALSE)
@@ -436,11 +465,12 @@ Worker <- R6Class("Worker", public = list(
     }
     return(0L)
   },
-  interruptRemote = function(){
+  interruptRemote = function(hardKill = FALSE){
     if(!length(private$process)){
       return("Process not started")
     }
     ret <- DELETE(url = paste0(private$metadata$url, "/jobs/", private$process), 
+                  body = list(hard_kill = hardKill),
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)),
                   timeout(2L))
