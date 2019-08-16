@@ -1116,7 +1116,8 @@
         "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
       },
       "validate":{
-        "val1": "Could not set range for x axis. Check for correct data format!"
+        "val1": "Could not set range for x axis. Check for correct data format!",
+        "pieValues": "The selected symbol has too many values to be displayed as a pie chart. The maximum number of values that can be displayed in a pie chart is 100."
       },
       "errMsg":{
         "errTitle1": "No valid data",

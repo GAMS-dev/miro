@@ -177,6 +177,7 @@ body_admin <- dashboardBody({
                                                    graphTool = "plotly", 
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id="pieValues", class = "config-message", lang$adminMode$graphs$validate$pieValues),
                              tags$div(id = "preview-content-dygraph", style = "display:none;",
                                       renderDataUI("preview_output_dygraph", type = "graph", 
                                                    graphTool = "dygraphs", 

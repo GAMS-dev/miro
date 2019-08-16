@@ -5182,7 +5182,12 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
-                }    
+                },
+                "pieValues":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }                
               }
             },
             "errMsg":{  
