@@ -30,6 +30,12 @@ slocktimeIdentifier <- "_slocktime"
 stagIdentifier <- "_stag"
 scodeIdentifier <- "_scode"
 
+# scenario code mapping
+SCODEMAP <- c(
+  'hcube_jobconfig' = -1L,
+  'scen' = 0L
+)
+
 # maximum upload size [MB] for data files
 maxUploadSize <- 100L
 
@@ -48,6 +54,7 @@ loggingLevel <- "INFO"
 # name of table with scenario/hcube metadata as well as scenario locks
 scenMetadataTablePrefix <- "_sys_metadata_"
 tableNameMetaHcubePrefix <- "_sys_hcubemeta_"
+tableNameJobPrefix <- "_sys_jobs_"
 scenLockTablePrefix      <- "_sys_scenlocks_"
 # maximum number ofscenarios that can be displayed at the same time 
 # (used in loop for observeEvent remove/save buttons)
@@ -55,7 +62,7 @@ maxNumberScenarios <- 50
 # maximum number of scenarios that can be displayed in dropdown menu
 maxNoScenToShow <- 2e2
 # local user ID (single user)
-uid <- "user"
+uid <- Sys.info()[["login"]]
 # define the default type for output format
 defOutType <- "datatable"
 # define the default format for input sheets
@@ -130,4 +137,20 @@ TIMEVIS_MAX_EVENTS <- 50L
 
 # delay (in seconds) the server should wait with shutdown after user disconnected
 SERVER_SHUTDOWN_DELAY <- 60L
+
+JOBSTATUSMAP <- c(
+  'running' = -1L,
+  'completed' = 0L,
+  'corrupted' = 20L,
+  'corrupted(noDir)' = 21L,
+  'corrupted(noProcess)' = 22L,
+  'corrupted(man)' = 23L,
+  'discarded' = 30L,
+  'discarded(corrupted)' = 31L,
+  'discarded(running)' = 32L,
+  'discarded(scheduled)' = 33L,
+  'discarded(completed)' = 34L,
+  'imported' = 40L,
+  'imported(man)' = 41L
+)
 

@@ -66,6 +66,8 @@
       },
       "boxGamsOutput":{  
         "title":"GAMS Ausgabe",
+        "tabCurrent": "Aktueller Job",
+        "tabJobList": "Jobliste",
         "gamsOutputTabset":{  
           "logFile":"Log-Datei",
           "lstFile":"Listing-Datei",
@@ -137,6 +139,7 @@
       "submission": "Modell wird übermittelt",
       "queued": "Modell in der Warteschlange",
       "exec":"Modell wird gelöst",
+      "collection": "Ergebnisse werden übermittelt",
       "success":"Das Modell wurde erfolgreich gelöst.",
       "error":"Beim Lösen des GAMS-Modells ist ein Fehler aufgetreten: "
     },
@@ -443,6 +446,56 @@
         "desc": "Die von Ihnen gewählt Schrittweite ist ungültig. Bitte wählen Sie zunächst eine Gültige Schrittweite und versuchen es anschließend erneut."
       }
     },
+    "importJobsDialog":{
+      "title": "Derzeit aktive Jobs",
+      "noJobs": "Zur Zeit sind keine Jobs aktiv.",
+      "noJobsHist": "Es konnten keine verworfenen oder importierten Jobs gefunden werden.",
+      "discardSuccess": "Job wurde verworfen",
+      "importSuccess": "Job wurde erfolgreich importiert",
+      "accessDenied": "Zugriff verweigert",
+      "histTitle": "Jobverlauf",
+      "ttips":{
+        "importedManual": "Der Job wurde manuell importiert.",
+        "discardedCorrupted": "Der Job war korrumpiert.",
+        "discardedActive": "Der Job war noch aktiv.",
+        "discardedScheduled": "Der Job wurde eingeplant.",
+        "discardedCompleted": "Der Job war abgeschlossen.",
+        "corruptedNoDir": "Das Arbeitsverzeichnis des Jobs konnte nicht gefunden werden.",
+        "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden.",
+        "corruptedManual": "Der manuelle Import ist fehlgeschlagen."
+      },
+      "header":{
+        "owner": "Eigentümer",
+        "date": "Übermittlungsdatum",
+        "tags": "Job Tags",
+        "status": "Status",
+        "action": "Aktion"
+      },
+      "buttons":{
+        "import": "Importieren",
+        "log": "Log-Datei anzeigen",
+        "progress": "Fortschritt anzeigen",
+        "discard": "Verwerfen"
+      },
+      "importConfirm":{
+        "title": "Import bestätigen",
+        "desc": "Sind Sie sicher, dass Sie den ausgewählten Job importieren möchten?",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Bestätigen"
+      },
+      "discardConfirm":{
+        "title": "Verwerfen bestätigen",
+        "desc": "Sind Sie sicher, dass Sie den ausgewählten Job verwerfen möchten? Laufende Aufträge werden gestoppt.",
+        "cancelButton": "Abbrechen",
+        "confirmButton": "Bestätigen"
+      }
+    },
+    "newCompletedJobsDialog":{
+      "title": "Neue abgeschlossene Aufträge",
+      "desc": "Einige Ihrer Jobs sind gelöst worden und stehen nun zum Import bereit.",
+      "cancelButton": "Abbrechen",
+      "okButton": "Jobs anzeigen"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "Alle Kombinationen?",
       "checkboxAliases":["Nein", "Ja"],
@@ -481,48 +534,6 @@
         "importNewButton": "Nur neue importieren",
         "importAllButton": "Alle importieren"
       },
-      "importJobsDialog":{
-        "title": "Derzeit aktive Hypercube-Jobs",
-        "noJobs": "Zur Zeit sind keine Hypercube-Jobs aktiv.",
-        "noJobsHist": "Es konnten keine verworfenen oder importierten Hypercube-Jobs gefunden werden.",
-        "discardSuccess": "Job wurde verworfen",
-        "importSuccess": "Job wurde erfolgreich importiert",
-        "histTitle": "Jobverlauf",
-        "ttips":{
-          "importedManual": "Der Job wurde manuell importiert.",
-          "discardedCorrupted": "Der Job war korrumpiert.",
-          "discardedActive": "Der Job war noch aktiv.",
-          "discardedScheduled": "Der Job wurde eingeplant.",
-          "discardedCompleted": "Der Job war abgeschlossen.",
-          "corruptedNoDir": "Das Arbeitsverzeichnis des Jobs konnte nicht gefunden werden.",
-          "corruptedNoProcess": "Der Job ist beendet, aber es wurden keine Ergebnisse gefunden.",
-          "corruptedManual": "Der manuelle Import ist fehlgeschlagen."
-        },
-        "header":{
-          "owner": "Eigentümer",
-          "date": "Übermittlungsdatum",
-          "tags": "Job Tags",
-          "status": "Status",
-          "action": "Aktion"
-        },
-        "buttons":{
-          "import": "Importieren",
-          "log": "Log-Datei anzeigen",
-          "discard": "Verwerfen"
-        },
-        "importConfirm":{
-          "title": "Import bestätigen",
-          "desc": "Sind Sie sicher, dass Sie den ausgewählten Hypercube-Job importieren möchten?",
-          "cancelButton": "Abbrechen",
-          "confirmButton": "Bestätigen"
-        },
-        "discardConfirm":{
-          "title": "Verwerfen bestätigen",
-          "desc": "Sind Sie sicher, dass Sie den ausgewählten Hypercube-Job verwerfen möchten? Laufende Aufträge werden gestoppt.",
-          "cancelButton": "Abbrechen",
-          "confirmButton": "Bestätigen"
-        }
-      },
       "manualJobImportDialog":{
         "title": "Manueller Hypercube-Job-Import",
         "uploadZip":"Laden Sie hier eine Zip-Datei mit den Ergebnissen hoch.",
@@ -533,7 +544,12 @@
       "showLogFileDialog":{
         "title": "Hypercube-Job Log-Datei",
         "noContent": "Die Log-Datei konnte nicht aufgerufen werden oder enthält keine Daten.",
-        "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden."
+        "fileSize": "Die Log-Datei enthält zu viele Daten, um angezeigt zu werden.",
+        "cancelButton": "Abbrechen"
+      },
+      "showJobProgressDialog":{
+        "title": "Jobfortschritt",
+        "cancelButton": "Abbrechen"
       },
       "jobsCompletedDialog":{
         "title": "Erfolgreich abgeschlossene Jobs",
@@ -555,6 +571,12 @@
       "title":"Optimierungslauf wird vorbereitet",
       "sendInput":"Senden der Eingabedaten",
       "downloadAttach": "Laden der Anhänge"
+    },
+    "importScen":{
+      "title": "Szenario importieren",
+      "downloadResults": "Ergebnisse werden heruntergeladen",
+      "renderInput": "Eingabedaten werden gerendert",
+      "renderOutput": "Ausgabedaten werden gerendert"
     },
     "loadScenDb":{  
       "title":"Laden von Szenariodaten aus der Datenbank",

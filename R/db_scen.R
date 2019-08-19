@@ -66,9 +66,9 @@ Scenario <- R6Class("Scenario",
                         private$writePerm           <- vector2Csv(writePerm)
                         private$execPerm            <- vector2Csv(execPerm)
                         if(db$getHcubeActive())
-                          private$scode <- -1L
+                          private$scode <- SCODEMAP[['hcube_jobconfig']]
                         else
-                          private$scode <- 0L
+                          private$scode <- SCODEMAP[['scen']]
                         if(is.null(sid)){
                           tryCatch({
                             private$fetchMetadata(sname = sname, uid = private$uid)

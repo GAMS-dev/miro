@@ -82,7 +82,7 @@ observeEvent(virtualActionButton(rv$btLoadLocal),{
   }else{
     overwriteInput <<- FALSE
     rv$btOverwriteInput <<- isolate(rv$btOverwriteInput + 1L)
-}
+  }
 })
 
 observeEvent(input$btOverwriteInput, {
@@ -152,6 +152,8 @@ observeEvent(virtualActionButton(rv$btOverwriteInput),{
   }
   removeModal()
   
+  loadModeWorkDir  <- dirname(isolate(input$localInput$datapath))
+  loadModeFileName <- basename(isolate(input$localInput$datapath))
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
     return(NULL)

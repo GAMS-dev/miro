@@ -1,4 +1,4 @@
-# import datasets that should be loaded automatically on startup
+# import datasets from external data sources
 if(length(externalInputConfig)){
   errMsg <- NULL
   lapply(seq_along(externalInputConfig), function(extIdx){

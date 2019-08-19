@@ -36,9 +36,7 @@ fscalars = "scalars.csv"
 
 # string manipulation (batch file)
 def extractCall(call):
-   call = (call[66:] +
-           ">>\"..%system.dirsep%..%system.dirsep% ".strip() +
-           "%jobID%.log\"")
+   call = call[66:]
    return call.strip()
 
 def extractDir(fdir):
@@ -148,16 +146,12 @@ if outScript == "gams":
          linestmp += "$call cp -r static/. " + zipname + "/" + tmpdir + "\n"
          
       # gams call
-      linestmp += "$onecho >> \"%jobID%.log\"\n"
-      linestmp += "---------------------------------------------\n"
-      linestmp += "---------------------------------------------\n"
-      linestmp += "       EXECUTING SCENARIO " + str(index + 1) + "/" + str(len(content)) + "\n"
-      linestmp += "---------------------------------------------\n"
-      linestmp += "---------------------------------------------\n"
-      linestmp += "$offecho\n"
       linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
+      linestmp += "$onecho > \"%jobID%.log\"\n"
+      linestmp += str(index + 1) + "/" + str(len(content)) + "\n"
+      linestmp += "$offecho\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
    linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -i '*.csv' '*.trc'"

@@ -102,9 +102,9 @@ observeEvent(input$btCheckName, {
       showEl(session, "#dialogSaveConfirm")
       return(NULL)
     }else{
-      rv$activeSname   <<- scenName
+      rv$activeSname   <- scenName
       scenTags         <<- scenTags
-      rv$btSaveConfirm <<- isolate(rv$btSaveConfirm + 1)
+      rv[[input$btCheckName]] <- rv[[input$btCheckName]] + 1L
     }
   }
 })

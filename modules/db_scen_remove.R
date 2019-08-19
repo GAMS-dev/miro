@@ -13,67 +13,73 @@ closeScenario <- function(){
   tableContent       <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
   isolate(rv$datasetsModified[] <- FALSE)
-  lapply(seq_along(modelIn), function(i){
-    switch(modelIn[[i]]$type,
-           hot = {
-             # set identifier that data was overwritten 
-             hotInit[i]        <<- FALSE
-             isEmptyInput[i]   <<- TRUE
-           },
-           slider = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               if(length(modelIn[[i]]$slider$default))
-                 updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
-             }else{
-               showEl(session, "#no_data_dep_" %+% i)
-               hideEl(session, "#slider_" %+% i)
-               updateSliderInput(session, "slider_" %+% i, min = 0, max = 1, 
-                                  value = 0, step = 1)
+  
+  if(resetWidgetsOnClose){
+    lapply(seq_along(modelIn), function(i){
+      switch(modelIn[[i]]$type,
+             hot = {
+               # set identifier that data was overwritten 
+               hotInit[i]        <<- FALSE
+               isEmptyInput[i]   <<- TRUE
+             },
+             slider = {
+               if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
+                 if(length(modelIn[[i]]$slider$default))
+                   updateSliderInput(session, paste0("slider_", i), value = modelIn[[i]]$slider$default)
+               }else{
+                 showEl(session, "#no_data_dep_" %+% i)
+                 hideEl(session, "#slider_" %+% i)
+                 updateSliderInput(session, "slider_" %+% i, min = 0, max = 1, 
+                                   value = 0, step = 1)
+               }
+             },
+             dropdown = {
+               if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
+                 if(length(modelIn[[i]]$dropdown$selected))
+                   updateSelectInput(session, paste0("dropdown_", i), 
+                                     selected = modelIn[[i]]$dropdown$selected)
+               }else{
+                 selectedDepEl[[i]] <<- character(0)
+                 showEl(session, "#no_data_dep_" %+% i)
+                 hideEl(session, "#dropdown_" %+% i)
+                 updateSelectInput(session, "dropdown_" %+% i, choices = "_", selected = "_")
+               }
+             },
+             date = {
+               if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$date$value)){
+                 updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
+               }
+               previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
+             },
+             daterange = {
+               if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$daterange$start) &&
+                  length(modelIn[[i]]$daterange$end)){
+                 updateDateRangeInput(session, "daterange_" %+% i, 
+                                      start = modelIn[[i]]$daterange$start, 
+                                      end = modelIn[[i]]$daterange$end)
+               }
+             },
+             checkbox = {
+               if(length(modelIn[[i]]$checkbox$value)){
+                 updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+               }
+             },
+             textinput = {
+               if(length(modelIn[[i]]$textinput$value)){
+                 updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
+               }
              }
-           },
-           dropdown = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
-               if(length(modelIn[[i]]$dropdown$selected))
-                 updateSelectInput(session, paste0("dropdown_", i), selected = modelIn[[i]]$dropdown$selected)
-             }else{
-               selectedDepEl[[i]] <<- character(0)
-               showEl(session, "#no_data_dep_" %+% i)
-               hideEl(session, "#dropdown_" %+% i)
-               updateSelectInput(session, "dropdown_" %+% i, choices = "_", selected = "_")
-             }
-           },
-           date = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$date$value)){
-               updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
-             }
-             previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
-           },
-           daterange = {
-             if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$daterange$start) &&
-                length(modelIn[[i]]$daterange$end)){
-               updateDateRangeInput(session, "daterange_" %+% i, 
-                                           start = modelIn[[i]]$daterange$start, 
-                                           end = modelIn[[i]]$daterange$end)
-             }
-           },
-           checkbox = {
-             if(length(modelIn[[i]]$checkbox$value)){
-               updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
-             }
-           },
-           textinput = {
-             if(length(modelIn[[i]]$textinput$value)){
-               updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
-             }
-           }
-    )
-    # make sure data is cleaned even when modified manually 
-    # (and thus rv$in_i is NULL)
-    if(is.null(isolate(rv[["in_" %+% i]]))){
-      rv[["in_" %+% i]] <- 1L
-    }
-    rv[["in_" %+% i]]    <- NULL
-  })
+      )
+      # make sure data is cleaned even when modified manually 
+      # (and thus rv$in_i is NULL)
+      if(is.null(isolate(rv[["in_" %+% i]]))){
+        rv[["in_" %+% i]] <- 1L
+      }
+      rv[["in_" %+% i]]    <- NULL
+    })
+  }
+  resetWidgetsOnClose <<- TRUE
+  
   unlink(list.files(workDir, recursive = TRUE))
   if(is.R6(activeScen))
     flog.debug("Scenario: '%s' closed.", activeScen$getScenName())

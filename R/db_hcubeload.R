@@ -320,7 +320,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                          # fetch dataframe
                          tryCatch({
                            subsetRows <- ""
-                           subsetSids <- private$db$fetchScenList(scode = 0L, gt = TRUE)[[1L]]
+                           subsetSids <- private$db$fetchScenList(scode = SCODEMAP[['scen']],
+                                                                  gt = TRUE)[[1L]]
                            subsetSidSQL <- NULL
                            if(!length(subsetSids)){
                              return(tibble())
@@ -358,7 +359,8 @@ HcubeLoad <- R6Class("HcubeLoad",
                        fetchResultsR           = function(subsetList, colNames, limit){
                          innerTables <- private$scalarTables
                          
-                         metaData    <- private$db$fetchScenList(scode = 0L, gt = TRUE)
+                         metaData    <- private$db$fetchScenList(scode = SCODEMAP[['scen']],
+                                                                 gt = TRUE)
                          if(!length(metaData) || !nrow(metaData)){
                            return(tibble())
                          }

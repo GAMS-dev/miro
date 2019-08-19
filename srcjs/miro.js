@@ -66,6 +66,11 @@ function switchTab(el) {
       $('[href="#shiny-tab-gamsinter"]').tab('show');
       break;
 
+    case 'importData':
+      changeActiveButtons('importData');
+      $('[href="#shiny-tab-importData"]').tab('show');
+      break;
+
     case 'hcubeAna':
       changeActiveButtons('default');
       $('[href="#shiny-tab-hcubeAnalyze"]').tab('show');
@@ -100,6 +105,15 @@ export function changeTab(object, idActive, idRefer) {
   tabPane.find(`li:nth-of-type(${idRefer})`).addClass('active');
   tabPane.find(`.tab-content div:nth-child(${idActive})`).removeClass('active');
   tabPane.find(`.tab-content div:nth-child(${idRefer})`).addClass('active');
+}
+
+function switchTabInTabset(tabsetID, tabValue) {
+  const tabset = $(`#${tabsetID}`);
+  tabset.find(`a[data-value='${tabValue}']`).tab('show');
+}
+
+function removeModal() {
+  $('#shiny-modal-wrapper').find('.modal').modal('hide');
 }
 
 export function slideToggleEl(data) {
@@ -147,22 +161,14 @@ export function removeAttachment(elId) {
   });
 }
 
-export function showHypercubeLog(jID) {
-  Shiny.setInputValue('showHypercubeLog', jID, {
-    priority: 'event',
-  });
-}
-
-export function importHypercubeJob(jID) {
-  Shiny.setInputValue('importHypercubeJob', jID, {
-    priority: 'event',
-  });
-}
-
-export function discardHypercubeJob(jID) {
-  Shiny.setInputValue('discardHypercubeJob', jID, {
-    priority: 'event',
-  });
+export function showJobsDialog(hcubeMode) {
+  if (hcubeMode) {
+    switchTab('importData');
+    return;
+  }
+  removeModal();
+  switchTab('gamsinter');
+  switchTabInTabset('jobListPanel', 'joblist');
 }
 
 export function renderMathJax() {
@@ -383,6 +389,28 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
     scrollDown(id);
+  });
+  Shiny.addCustomMessageHandler('gms-startUpdateJobProgress', (jID) => {
+    const interval = setInterval(() => {
+      if ($(`#hcubeProgress${jID}`).attr('aria-valuenow') === '100'
+        || !$(`#hcubeProgress${jID}`).is(':visible')) {
+        clearInterval(interval);
+      }
+      Shiny.setInputValue('updateJobProgress', jID, {
+        priority: 'event',
+      });
+    }, 2000);
+  });
+  Shiny.addCustomMessageHandler('gms-updateJobProgress', (data) => {
+    if (!$(`#hcubeProgress${data.id}`).is(':visible')) {
+      return;
+    }
+    const percentCompleted = Math.round(parseInt(data.progress.noCompleted, 10)
+          / parseInt(data.progress.noJobs, 10) * 100);
+    $(`#hcubeProgress${data.id}`)
+      .css('width', `${percentCompleted}%`)
+      .attr('aria-valuenow', percentCompleted)
+      .text(`${data.progress.noCompleted}/${data.progress.noJobs}`);
   });
   Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
     setTimeout(() => {

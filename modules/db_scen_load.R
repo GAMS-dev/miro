@@ -36,7 +36,7 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
   # only load single scenario as not in comparison mode
   errMsg <- NULL
   tryCatch({
-    scenMetaDb <<- db$fetchScenList(scode = 0L)
+    scenMetaDb <<- db$fetchScenList(scode = SCODEMAP[['scen']])
   }, error = function(e){
     flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
     errMsg <<- lang$errMsg$fetchScenData$desc
@@ -316,7 +316,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   
   if(isInSolveMode){
     # close currently opened scenario
-    
+    resetWidgetsOnClose <<- FALSE
     if(!closeScenario()){
       return()
     }
@@ -415,9 +415,9 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
   # in Hypercube mode, sids are vector not list
   if(!is.list(sidsToLoad)){
     rowIds              <- as.integer(rv$fetchedScenarios[[1]]) %in% sidsToLoad
-    metadataFull        <- rv$fetchedScenarios[rowIds, ]
+    metadataFull        <- rv$fetchedScenarios[rowIds, 1:4]
     metDataColNames     <- db$getScenMetaColnames()
-    names(metadataFull) <- metDataColNames[c("sid", "uid", "stime")]
+    names(metadataFull) <- metDataColNames[c("sid", "uid", "stime", "sname")]
     metadataFull[[metDataColNames["sname"]]] <- as.character(seq.int(isolate(rv$scenId) - 3L, 
                                                            isolate(rv$scenId) - 4L + nrow(metadataFull)))
   }else if(!allSidsInComp){
@@ -526,7 +526,7 @@ observeEvent(input$hcHashLookup, {
                                     colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
                                     tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
                                              dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
-                                           c(hashVal, 1L), c("=", ">=")))
+                                           c(hashVal, SCODEMAP[['scen']]), c("=", ">")))
   }, error = function(e){
     flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
     showHideEl(session, "#importScenError")
@@ -556,7 +556,7 @@ if(config$activateModules$hcubeMode){
     on.exit(hideEl(session, "#importDataDbSpinner"))
     tryCatch({
       if(!length(scenMetaDbBaseList)){
-        scenMetaDbBase <<- db$fetchScenList(scode = 0L)
+        scenMetaDbBase <<- db$fetchScenList(scode = SCODEMAP[['scen']])
         if(length(scenMetaDbBase) && nrow(scenMetaDbBase)){
           if(nrow(scenMetaDbBase) > maxNoScenToShow){
             scenMetaDbBaseSubset <<- scenMetaDbBase[order(scenMetaDbBase[[stimeIdentifier]], 

@@ -1,6 +1,7 @@
 loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileHeaders,
-                         templates, errMsg = NULL, method = "csv", csvDelim = ",", hiddenOutputScalars = character(0L),
-                         fileName = character(0L)){
+                         templates, errMsg = NULL, method = "csv", csvDelim = ",", 
+                         hiddenOutputScalars = character(0L),
+                         fileName = character(0L), DDPar = character(0L), GMSOpt = character(0L)){
   if(identical(method, "xls")){
     xlsPath <- file.path(workDir, fileName)
     if(!file.exists(xlsPath)){
@@ -25,10 +26,28 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   tryCatch({
     switch(method,
            csv = {
-             if(file.exists(workDir %+% scalarsName %+% '.csv')){
-               ret$scalar <- read_delim(workDir %+% scalarsName %+% '.csv', 
-                                        csvDelim, col_types = cols(), 
+             if(file.exists(file.path(workDir, scalarsName %+% '.csv'))){
+               ret$scalar <- read_delim(file.path(workDir, scalarsName %+% '.csv'), 
+                                        csvDelim, col_types = "ccc", 
                                         col_names = TRUE)
+             }
+             if(length(c(DDPar, GMSOpt)) > 0 &&
+                (length(ret$scalar) == 0L || length(ret$scalar) == 3L) &&
+                file.exists(file.path(workDir, modelName %+% '.pf'))){
+               pfFileContent <- read_lines(file.path(workDir, modelName %+% '.pf'), 
+                                           n_max = length(c(DDPar, GMSOpt)))
+               pfFileContent <- stri_split_fixed(pfFileContent, "=", 2)
+               pfFileContent <- tibble(scalar = trimws(vapply(pfFileContent, "[[", 
+                                                       character(1L), 1L, 
+                                                       USE.NAMES = FALSE), "left", "-"), 
+                                       description = character(length(pfFileContent)), 
+                                       value = trimws(vapply(pfFileContent, "[[", 
+                                                             character(1L), 2L, 
+                                                             USE.NAMES = FALSE), "both", '"'))
+               if(length(ret$scalar)){
+                 names(pfFileContent) <- names(ret$scalar)
+               }
+               ret$scalar <- bind_rows(ret$scalar, pfFileContent)
              }
            },
            xls = {
@@ -77,7 +96,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
         # scalars already imported
         tryCatch({
           # fetch only those scalar data that are not marked as hidden and remove the data fetched from scalar dataset
-          removeRows       <- tolower(ret$scalar[[1]]) %in% hiddenOutputScalars
+          removeRows       <- tolower(ret$scalar[[1]]) %in% tolower(hiddenOutputScalars)
           ret$tabular[[i]] <<- ret$scalar[!removeRows, ]
         }, error = function(e){
           stop(sprintf("Problems removing hidden rows from scalar dataframe. Error message: %s.", e), call. = FALSE)
@@ -92,8 +111,8 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
       tryCatch({
         switch(method,
                csv = {
-                 if(file.exists(workDir %+% names(metaData)[[i]] %+% '.csv')){
-                   ret$tabular[[i]] <<- read_delim(workDir %+% names(metaData)[[i]] %+% '.csv', 
+                 if(file.exists(file.path(workDir, names(metaData)[[i]] %+% '.csv'))){
+                   ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'), 
                                                    csvDelim, col_types = cols(), 
                                                    col_names = TRUE)
                  }else{

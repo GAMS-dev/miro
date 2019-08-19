@@ -11,8 +11,10 @@ DataInstance <- R6Class("DataInstance", public = list(
   push = function(datasetName, data){
     stopifnot(is.character(datasetName), 
               identical(length(datasetName), 1L),
-              datasetName %in% private$datasetNames,
               inherits(data, "data.frame"))
+    if(!datasetName %in% private$datasetNames){
+      private$datasetNames <- c(private$datasetNames, datasetName)
+    }
     private$data[[datasetName]] <- data
   },
   add = function(datasetNames, data){

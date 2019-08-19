@@ -18,12 +18,14 @@ type="button" onclick="Shiny.setInputValue(\'loadActiveScenSplitComp\', ', id + 
                                   lang$nav$scen$split$loadActive, '</button>'))))
   }
 }
-getHypercubeJobsTableSkeleton <- function(id = NULL, content = NULL){
+getJobsTableSkeleton <- function(id = NULL, content = NULL){
   tags$div(style = "max-height: 70vh;overflow:auto;margin-bottom:20px",
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsDiscarded", 
-                    lang$nav$hcubeMode$importJobsDialog$discardSuccess),
+                    lang$nav$importJobsDialog$discardSuccess),
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
-                    lang$nav$hcubeMode$importJobsDialog$importSuccess),
+                    lang$nav$importJobsDialog$importSuccess),
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsAccessDenied", 
+                    lang$nav$importJobsDialog$accessDenied),
            tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
                     lang$errMsg$unknownError),
            if(is.null(id)){
@@ -420,7 +422,7 @@ if(config$activateModules$hcubeMode){
                                                         icon = icon("refresh"), label = NULL))),
                   status="primary", solidHeader = TRUE, width = 12,
                   genSpinner("jImport_load", absolute = FALSE),
-                  getHypercubeJobsTableSkeleton(id = "jImport_output"),
+                  getJobsTableSkeleton(id = "jImport_output"),
                   tags$div(class = "col-sm-6",
                            actionButton("btShowHistory", 
                                         lang$nav$hcubeImport$btShowHistory)
@@ -456,43 +458,72 @@ if(config$activateModules$hcubeMode){
     )
   ))
 }else{
+  contentCurrent <- tagList(
+    fluidRow(
+      box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
+          uiOutput("modelStatus"))
+    ),
+    if(any(config$activateModules$logFile, config$activateModules$lstFile, 
+           config$activateModules$miroLogFile)){
+      logTabsetList <- list()
+      if(config$activateModules$logFile){
+        logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+                                      value = "log",
+                                      tags$pre(id = "logStatus", class = "shiny-text-output noplaceholder"),
+                                      checkboxInput("logUpdate", 
+                                                    label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
+                                                    value = TRUE))
+      }
+      if(config$activateModules$lstFile){
+        logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
+                                      value = "listfile",
+                                      verbatimTextOutput("listFile"))
+      }
+      if(config$activateModules$miroLogFile){
+        logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
+                                          value = "mirolog",
+                                          tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
+                                                              uiOutput("miroLogFile")))
+      }
+      logTabsetList <- unname(logTabsetList)
+      logTabsetList$id <- "logFileTabsset"
+      fluidRow(
+        box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
+            width=12, collapsible = TRUE,
+            do.call(tabsetPanel, logTabsetList)
+        )
+      )
+    }
+  )
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
             fluidRow(
-              box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
-                  uiOutput("modelStatus"))
-            ),
-            if(any(config$activateModules$logFile, config$activateModules$lstFile, 
-                   config$activateModules$miroLogFile)){
-              logTabsetList <- list()
-              if(config$activateModules$logFile){
-                logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
-                                              value = "log",
-                                              tags$pre(id = "logStatus", class = "shiny-text-output noplaceholder"),
-                                              checkboxInput("logUpdate", 
-                                                            label = lang$nav$gams$boxGamsOutput$gamsOutputTabset$logUpdate, 
-                                                            value = TRUE))
+              if(config$activateModules$remoteExecution){
+                tabBox(width = 12, id = "jobListPanel", 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                                contentCurrent             
+                       ), 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                                fluidRow(
+                                  box(title = tagList(lang$nav$hcubeImport$title,
+                                                      tags$div(style = "float: right;", 
+                                                               actionButton(inputId = "refreshActiveJobs", 
+                                                                            class = "bt-icon", 
+                                                                            icon = icon("refresh"), label = NULL))),
+                                      status="warning", solidHeader = TRUE, width = 12,
+                                      genSpinner("jImport_load", absolute = FALSE),
+                                      getJobsTableSkeleton(id = "jImport_output"),
+                                      tags$div(class = "col-sm-6",
+                                               actionButton("btShowHistory", 
+                                                            lang$nav$hcubeImport$btShowHistory)
+                                      )
+                                  )
+                                )
+                       ))
+              }else{
+                contentCurrent
               }
-              if(config$activateModules$lstFile){
-                logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
-                                              value = "listfile",
-                                              verbatimTextOutput("listFile"))
-              }
-              if(config$activateModules$miroLogFile){
-                logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
-                                                  value = "mirolog",
-                                                  tagAppendAttributes(class = "shiny-text-output noplaceholder pre-style-div",
-                                                                      uiOutput("miroLogFile")))
-              }
-              logTabsetList <- unname(logTabsetList)
-              logTabsetList$id <- "logFileTabsset"
-              fluidRow(
-                box(title=lang$nav$gams$boxGamsOutput$title, status="warning", solidHeader = TRUE, 
-                    width=12, collapsible = TRUE,
-                    do.call(tabsetPanel, logTabsetList)
-                )
-              )
-            }
+            )
     ),
     tabItem(tabName = "outputData",
             fluidRow(

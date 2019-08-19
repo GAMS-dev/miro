@@ -66,6 +66,8 @@
       },
       "boxGamsOutput":{
         "title":"GAMS输出",
+        "tabCurrent": "Current job",
+        "tabJobList": "Job list",
         "gamsOutputTabset":{
           "logFile":"日志文件",
           "lstFile":"列表文件",
@@ -136,6 +138,7 @@
     "gamsModelStatus":{
       "submission": "Model is being submitted",
       "queued": "Model queued",
+      "collection": "Results are being downloaded",
       "exec":"模型执行阶段",
       "success":"运行已终止。",
       "error":"运行未终止:"
@@ -443,6 +446,56 @@
         "desc":"您指定了无法处理的步长大小。请选择有效的步长,再重试。"
       }
     },
+    "importJobsDialog":{
+        "title":"当前活跃的Hypercube作业",
+        "noJobs":"当前没有 Hypercube 作业处于活跃状态",
+        "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
+        "discardSuccess":"作业已丢弃",
+        "importSuccess":"作业已导入",
+        "accessDenied": "Access denied",
+        "histTitle":"作业历史",
+        "ttips":{
+          "importedManual":"作业已手动导入。",
+          "discardedCorrupted":"该作业已损坏。",
+          "discardedActive":"该作业仍然活跃。",
+          "discardedScheduled":"该作业已安排。",
+          "discardedCompleted":"该作业已完成。",
+          "corruptedNoDir":"未找到该作业的工作目录。",
+          "corruptedNoProcess":"作业已终止,但未发现任何结果。",
+          "corruptedManual":"手动导入作业失败。"
+        },
+        "header":{
+          "owner":"所有者",
+          "date":"提交日期",
+          "tags":"作业标签",
+          "status":"状态",
+          "action":"行动"
+        },
+        "buttons":{
+          "import":"导入",
+          "log":"显示日志",
+          "progress": "Show progress",
+          "discard":"丢弃"
+        },
+        "importConfirm":{
+          "title":"确认导入",
+          "desc":"确定要导入所选的Hypercube作业吗？",
+          "cancelButton":"取消",
+          "confirmButton":"确认"
+        },
+        "discardConfirm":{
+          "title":"确认丢弃",
+          "desc":"确定要丢弃所选的Hypercube作业吗？当前运行的作业将停止。",
+          "cancelButton":"取消",
+          "confirmButton":"确认"
+        }
+    },
+    "newCompletedJobsDialog":{
+      "title": "New completed jobs",
+      "desc": "Some of your jobs have been solved and are now ready for import.",
+      "cancelButton": "Cancel",
+      "okButton": "Show jobs"
+    },
     "hcubeMode":{
       "sliderAllCombinations":"所有组合？",
       "checkboxAliases":["否","是"],
@@ -481,48 +534,6 @@
         "importNewButton":"仅导入新场景",
         "importAllButton":"全部导入"
       },
-      "importJobsDialog":{
-        "title":"当前活跃的Hypercube作业",
-        "noJobs":"当前没有 Hypercube 作业处于活跃状态",
-        "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
-        "discardSuccess":"作业已丢弃",
-        "importSuccess":"作业已导入",
-        "histTitle":"作业历史",
-        "ttips":{
-          "importedManual":"作业已手动导入。",
-          "discardedCorrupted":"该作业已损坏。",
-          "discardedActive":"该作业仍然活跃。",
-          "discardedScheduled":"该作业已安排。",
-          "discardedCompleted":"该作业已完成。",
-          "corruptedNoDir":"未找到该作业的工作目录。",
-          "corruptedNoProcess":"作业已终止,但未发现任何结果。",
-          "corruptedManual":"手动导入作业失败。"
-        },
-        "header":{
-          "owner":"所有者",
-          "date":"提交日期",
-          "tags":"作业标签",
-          "status":"状态",
-          "action":"行动"
-        },
-        "buttons":{
-          "import":"导入",
-          "log":"显示日志",
-          "discard":"丢弃"
-        },
-        "importConfirm":{
-          "title":"确认导入",
-          "desc":"确定要导入所选的Hypercube作业吗？",
-          "cancelButton":"取消",
-          "confirmButton":"确认"
-        },
-        "discardConfirm":{
-          "title":"确认丢弃",
-          "desc":"确定要丢弃所选的Hypercube作业吗？当前运行的作业将停止。",
-          "cancelButton":"取消",
-          "confirmButton":"确认"
-        }
-      },
       "manualJobImportDialog":{
         "title":"手动导入Hypercube作业",
         "uploadZip":"上传带有结果的zip文件",
@@ -533,7 +544,12 @@
       "showLogFileDialog":{
         "title":"Hypercube作业的日志文件",
         "noContent":"无法访问日志文件或该日志文件不包含任何数据。",
-        "fileSize":"日志文件包含过多要显示的数据。"
+        "fileSize":"日志文件包含过多要显示的数据。",
+        "cancelButton": "取消"
+      },
+      "showJobProgressDialog":{
+        "title": "Job progress",
+        "cancelButton": "取消"
       },
       "jobsCompletedDialog":{
         "title":"已完成的作业",
@@ -555,6 +571,12 @@
       "title":"正在准备优化",
       "sendInput":"发送输入数据",
       "downloadAttach":"正在下载附件"
+    },
+    "importScen":{
+      "title": "Importing scenario",
+      "downloadResults": "Downloading result data",
+      "renderInput": "Rendering input data",
+      "renderOutput": "Rendering output data"
     },
     "loadScenDb":{
       "title":"从数据库加载场景数据",

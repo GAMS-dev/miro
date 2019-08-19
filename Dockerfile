@@ -80,12 +80,11 @@ RUN pip3 install numpy pandas matplotlib geocoder geopy
 # install custom packages
 
 # first install dependencies of custom packages
-RUN R -e "install.packages(c('assertthat', 'crayon', 'cli', 'fansi', 'utf8'), repos='http://cran.us.r-project.org/')"
+RUN R -e "install.packages(c('assertthat', 'crayon', 'cli', 'fansi', 'utf8', 'Rcpp', 'R6', 'BH', 'magrittr', 'httpuv', 'mime', 'jsonlite', 'digest', 'sourcetools', 'later', 'promises', 'rlang', 'xtable', 'fastmap'), repos='http://cran.us.r-project.org/')"
 RUN mkdir /home/miro/packages
 COPY packages /home/miro/packages
 
 # basic shiny functionality
-RUN R -e "install.packages(c('Rcpp', 'R6', 'BH', 'magrittr', 'httpuv', 'mime', 'jsonlite', 'digest', 'sourcetools', 'later', 'promises', 'rlang', 'xtable', 'fastmap'), repos='http://cran.us.r-project.org/')"
 RUN R -e "install.packages('/home/miro/packages/htmltools_0.3.6.9004.tar.gz', repos = NULL, type = 'source')"
 RUN R -e "install.packages('/home/miro/packages/shiny_1.3.2.9999.tar.gz', repos = NULL, type = 'source')"
 

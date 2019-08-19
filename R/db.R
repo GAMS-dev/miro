@@ -53,7 +53,6 @@ Db <- R6Class("Db",
                   private$scenMetaColnames            <- dbSchema$colNames[['_scenMeta']]
                   private$slocktimeIdentifier         <- dbSchema$colNames[['_scenLock']][['lock']]
                   private$tableNameMetadata           <- dbSchema$tabName[['_scenMeta']]
-                  private$tableNameMetaHcube          <- dbSchema$tabName[['_hcubeMeta']]
                   private$tableNameScenLocks          <- dbSchema$tabName[['_scenLock']]
                   private$tableNamesScenario          <- dbSchema$tabName[!startsWith(dbSchema$tabName, "_")]
                   private$slocktimeLimit              <- slocktimeLimit
@@ -92,7 +91,6 @@ Db <- R6Class("Db",
                 getScenMetaColnames   = function() private$scenMetaColnames,
                 getSlocktimeIdentifier= function() private$slocktimeIdentifier,
                 getTableNameMetadata  = function() private$tableNameMetadata,
-                getTableNameMetaHcube = function() private$tableNameMetaHcube,
                 getTableNameScenLocks = function() private$tableNameScenLocks,
                 getTableNamesScenario = function() private$tableNamesScenario,
                 getAttachmentConfig   = function() private$attachmentConfig,
@@ -237,7 +235,7 @@ Db <- R6Class("Db",
                   limit <- 1e7 + 1L
                   tableNames <- private$getTableNamesModel()
                   for(tableName in tableNames){
-                    data <- self$importDataset(tableName, limit = limit)
+                    data <- self$importDataset(tableName, limit = limit, isAdmin = TRUE)
                     if(length(nrow(data)) &&  nrow(data) > limit){
                       stop("maxRowException", call. = FALSE)
                     }
@@ -621,11 +619,11 @@ Db <- R6Class("Db",
                             is.logical(checkColNames), 
                             identical(length(checkColNames), 1L))
                   if(!dbExistsTable(private$conn, tableName)){
-                    dbWriteTable(private$conn, tableName, data)
+                    dbWriteTable(private$conn, tableName, data, row.names = FALSE)
                     return(self)
                   }
                   if(!checkColNames){
-                    dbWriteTable(private$conn, tableName, data)
+                    dbWriteTable(private$conn, tableName, data, row.names = FALSE, append = TRUE)
                     return(self)
                   }
                   dataValidate <- self$importDataset(limit = 1L)
@@ -637,7 +635,7 @@ Db <- R6Class("Db",
                                        collapse = "', '")), call. = FALSE)
                   }
                   if(identical(length(dataValidate, nonMatchingColNames))){
-                    dbWriteTable(private$conn, tableName, data)
+                    dbWriteTable(private$conn, tableName, data, row.names = FALSE, append = TRUE)
                     return(self)
                   }
                   nrowData <- nrow(data)
@@ -670,11 +668,13 @@ Db <- R6Class("Db",
                     )
                   })
                   names(dataList) <- names(dataValidate)
-                  dbWriteTable(private$conn, tableName, as_tibble(dataList))
+                  dbWriteTable(private$conn, tableName, as_tibble(dataList), 
+                               row.names = FALSE, append = TRUE)
                   return(self)
                 },
                 importDataset = function(tableName, ..., colNames = NULL, count = FALSE, limit = 1e7, 
-                                         innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL){
+                                         innerSepAND = TRUE, distinct = FALSE, subsetSids = NULL,
+                                         orderBy = character(0L), orderAsc = TRUE, isAdmin = FALSE){
                   # Import the data corresponding to the table name provided from the database by 
                   # considering scenario IDs specified.
                   #
@@ -692,6 +692,10 @@ Db <- R6Class("Db",
                   #   distinct:         boolean that specifies whether to remove duplicate rows 
                   #                     (TRUE) or not (FALSE)
                   #   subsetSids:       vector of scenario IDs that query should be filtered on
+                  #   orderBy:          character vector of columns to order by
+                  #   orderAsc:         boolean that specifies whether to order in ascending (TRUE)
+                  #                     or descending (FALSE) order
+                  #   isAdmin:          boolean that specifies whether user accessing data is admin (can read all data)
                   #
                   # Returns:
                   #   tibble: dataset (cleaned of metadata columns) with data coming from the table selected.
@@ -709,6 +713,9 @@ Db <- R6Class("Db",
                   stopifnot(is.numeric(limit), length(limit) == 1)
                   stopifnot(is.logical(innerSepAND), length(innerSepAND) == 1)
                   stopifnot(is.logical(distinct), length(distinct) == 1)
+                  stopifnot(is.character(orderBy))
+                  stopifnot(is.logical(orderAsc), length(orderAsc) == 1)
+                  stopifnot(is.logical(isAdmin), length(isAdmin) == 1)
                   if(innerSepAND){
                     innerSep <- " AND "
                     outerSep <- " OR "
@@ -762,8 +769,15 @@ Db <- R6Class("Db",
                         }
                       }
                     }
+                    orderByQuery <- character(0L)
+                    if(length(orderBy)){
+                      orderByQuery <- paste0(" ORDER BY ", 
+                                             paste(DBI::dbQuoteIdentifier(private$conn, 
+                                                                          orderBy), collapse = ", "),
+                                             if(orderAsc) " ASC" else " DESC")
+                    }
                     subsetReadPerm <- NULL
-                    if(identical(tableName, private$tableNameMetadata)){
+                    if(!isAdmin && identical(tableName, private$tableNameMetadata)){
                       subsetReadPerm <- private$buildSQLSubsetString(
                         private$getCsvSubsetClause(private$scenMetaColnames['accessR'],
                                                    private$userAccessGroups), " OR ")
@@ -777,7 +791,7 @@ Db <- R6Class("Db",
                       sql     <- DBI::SQL(paste0("SELECT ", colNames, " FROM ", 
                                                  DBI::dbQuoteIdentifier(private$conn, tableName),
                                                  innerJoin, 
-                                                 if(length(subsetRows)) " WHERE ", subsetRows,
+                                                 if(length(subsetRows)) " WHERE ", subsetRows, orderByQuery,
                                                  " LIMIT ?lim ;"))
                       query   <- DBI::sqlInterpolate(private$conn, sql, lim = limit)
                       dataset <- as_tibble(DBI::dbGetQuery(private$conn, query))
@@ -877,7 +891,7 @@ Db <- R6Class("Db",
                   }
                   invisible(self)
                 },
-                writeMetadata = function(metadata, update = FALSE, hcubeMetadata = FALSE){
+                writeMetadata = function(metadata, update = FALSE){
                   # Write scenario metadata to database
                   #
                   # Args:
@@ -885,8 +899,6 @@ Db <- R6Class("Db",
                   #                  to many scenarios
                   #   update:        boolean that specifies whether existing metadata 
                   #                  shall be updated
-                  #   hcubeMetadata: boolean that specifies whether metadata is hcube run 
-                  #                  metadata or not (scenario metadata)
                   #
                   # Returns:
                   #   reference to itself (Db R6 object)
@@ -894,13 +906,8 @@ Db <- R6Class("Db",
                   # BEGIN error checks
                   stopifnot(inherits(metadata, "data.frame"))
                   stopifnot(is.logical(update), length(update) == 1L)
-                  stopifnot(is.logical(hcubeMetadata), length(hcubeMetadata) == 1L)
                   # END error checks
-                  if(hcubeMetadata){
-                    metaTabName <- private$tableNameMetaHcube
-                  }else{
-                    metaTabName <- private$tableNameMetadata
-                  }
+                  metaTabName <- private$tableNameMetadata
                   
                   metadata <- dateColToChar(private$conn, metadata)
                   if(!DBI::dbExistsTable(private$conn, metaTabName)){
@@ -982,159 +989,46 @@ Db <- R6Class("Db",
                   
                   invisible(self)
                 },
-                writeMetaHcube = function(hcubeTags = character(1L), manual = FALSE, noScen = 0L){
-                  # adds new entry to hcube run metadata table
-                  #
-                  # Args:
-                  #   hcubeTags:         character vector with tags to save for hcube run (optional)
-                  #   manual:            boolean that specifies whether Hypercube job is manually imported
-                  #   noScen:            integer: number of scenarios that are part of Hypercube job
-                  #
-                  # Returns:
-                  #   hcube job Id (integer)
-                  if(is.null(hcubeTags)){
-                    hcubeTags <- character(1L)
+                createJobMeta = function(){
+                  tabName  <- private$dbSchema$tabName[["_jobMeta"]]
+                  colNames <- private$dbSchema$colNames[["_jobMeta"]]
+                  if(DBI::dbExistsTable(private$conn, tabName)){
+                    return(invisible(self))
                   }
-                  stopifnot(is.character(hcubeTags))
-                  stopifnot(is.logical(manual), length(manual) == 1L)
-                  stopifnot(is.integer(noScen), length(noScen) == 1L)
-                    
-                  now <- Sys.time()
-                  if(manual){
-                    statusCode <- "_corrupted(man)"
-                  }else{
-                    statusCode <- "_scheduled"
-                  }
-                  uAccessGroups <- vector2Csv(private$userAccessGroups)
-                  metadata <- tibble(private$uid, statusCode, 
-                                     now, vector2Csv(hcubeTags), permR = uAccessGroups,
-                                     permW = uAccessGroups, permX = uAccessGroups, 
-                                     scode = noScen)
-                  names(metadata) <- private$scenMetaColnames[-1]
-                  
-                  self$writeMetadata(metadata, update = FALSE, hcubeMetadata = TRUE)
-                  
-                  if(inherits(private$conn, "PostgreSQL")){
-                    query <- "SELECT lastval();"
-                  }else{
-                    query <- "SELECT last_insert_rowid();"
-                  }
-                  
-                  jID <- DBI::dbGetQuery(private$conn, query)
-                  if(length(jID) && length(jID[[1L]])){
-                    return(jID[[1]][[1]])
-                  }
-                  stop("Job ID could not be identified. Something went wrong while writing hcube metadata to database.", 
-                       call. = FALSE)
+                  query <- paste0("CREATE TABLE ", 
+                                  DBI::dbQuoteIdentifier(private$conn, tabName), 
+                                  " (", 
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[1]]), 
+                                  if(inherits(private$conn, "PostgreSQL")) 
+                                    " serial PRIMARY KEY," else " integer PRIMARY KEY,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[2]]), 
+                                  " varchar(50) NOT NULL,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[3]]), 
+                                  " integer,", 
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[4]]), 
+                                  if(inherits(private$conn, "PostgreSQL")) 
+                                    " timestamp with time zone," else " text,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[5]]), 
+                                  " text,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[6]]), 
+                                  " varchar(255) NOT NULL,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[7]]),
+                                  if(inherits(private$conn, "PostgreSQL")) 
+                                    " smallint," else " integer,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[8]]),
+                                  if(inherits(private$conn, "PostgreSQL")) 
+                                    " smallint," else " integer,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[9]]),
+                                  " integer);")
+                  DBI::dbExecute(private$conn, query)
+                  return(invisible(self))
                 },
-                getMetaHcube = function(onlyActive = FALSE){
-                  # fetches hcube job metadata
-                  #
-                  # Args:
-                  #   onlyActive:   logical that specifies whether to fetch all 
-                  #                 or only active jobs
-                  #
-                  # Returns:
-                  #   tibble with metadata
-                  stopifnot(is.logical(onlyActive), length(onlyActive) == 1L)
-                  
-                  accessRights <- private$getCsvSubsetClause(private$scenMetaColnames['accessR'], 
-                                                             private$userAccessGroups)
-                  
-                  if(onlyActive){
-                    hcubeMeta <- self$importDataset(private$tableNameMetaHcube, accessRights,
-                                                      tibble(private$scenMetaColnames['sname'],
-                                                             "%_", "NOT LIKE"),
-                                                    innerSepAND = FALSE)
-                  }else{
-                    hcubeMeta <- self$importDataset(private$tableNameMetaHcube, accessRights, 
-                                                    innerSepAND = FALSE)
-                  }
-                  
-                  
-                  return(hcubeMeta)
-                },
-                updateHypercubeJob = function(jid, pid = NULL, tags = NULL, status = NULL,
-                                              accessR = NULL, accessW = NULL, accessX = NULL, 
-                                              scode = NULL){
-                  # set process id for hcube job
-                  # 
-                  # Args:
-                  #   jid:           ID of Hypercube job to update
-                  #   pid:           process ID of hcube job
-                  #   tags:          new tags for Hypercube job
-                  #   status:        new status for Hypercube job
-                  #   accessR:       new read permissions
-                  #   accessW:       new write permissions
-                  #   accessX:       new execute permissions
-                  #   scode:         new status code
-                  #
-                  # Returns:
-                  #   invisibly returns R6 object (reference to Db class)
-                  stopifnot(is.integer(jid), length(jid) == 1L)
-                  
-                  colNames <- NULL
-                  values   <- NULL
-                  if(!is.null(pid)){
-                    stopifnot(is.integer(pid), length(pid) == 1L)
-                    stopifnot(is.null(status))
-                    colNames <- private$scenMetaColnames['sname']
-                    values   <- paste0(pid, "_running")
-                  }
-                  if(!is.null(tags)){
-                    stopifnot(is.character(tags))
-                    colNames <- c(colNames, private$scenMetaColnames['stag'])
-                    values   <- c(values, vector2Csv(tags))
-                  }
-                  if(!is.null(status)){
-                    stopifnot(is.character(status), length(status) == 1L)
-                    if(!startsWith(status, "_")){
-                      status <- paste0("_", status)
-                    }
-                    colNames <- c(colNames, private$scenMetaColnames['sname'])
-                    values   <- c(values, status)
-                  }
-                  if(is.null(colNames)){
-                    stop("No Hypercube metadata was updated as no data was provided.", call. = FALSE)
-                  }
-                  if(!is.null(accessR)){
-                    stopifnot(is.character(accessR), length(accessR) > 0L)
-                    colNames <- c(colNames, private$scenMetaColnames['accessR'])
-                    values   <- c(values, vector2Csv(accessR))
-                  }
-                  if(!is.null(accessW)){
-                    stopifnot(is.character(accessW), length(accessW) > 0L)
-                    colNames <- c(colNames, private$scenMetaColnames['accessW'])
-                    values   <- c(values, vector2Csv(accessW))
-                  }
-                  if(!is.null(accessX)){
-                    stopifnot(is.character(accessX), length(accessX) > 0L)
-                    colNames <- c(colNames, private$scenMetaColnames['accessX'])
-                    values   <- c(values, vector2Csv(accessX))
-                  }
-                  if(!is.null(scode)){
-                    scode <- suppressWarnings(as.integer(scode))
-                    stopifnot(!is.na(scode), length(scode) == 1L)
-                    colNames <- c(colNames, private$scenMetaColnames['scode'])
-                    values   <- c(values, scode)
-                  }
-                  
-                  noRowsUpdated <- self$updateRows(private$tableNameMetaHcube, 
-                                                   colNames = colNames, 
-                                                   values = values, subsetSids = jid, 
-                                                   innerSepAND = FALSE)
-                  if(!noRowsUpdated){
-                    stop("Job metadata was not updated. This might be due to insufficient write permissions.", call. = FALSE)
-                  }
-                  
-                  invisible(self)
-                },
-                fetchScenList = function(scode = 0L, gt = FALSE){
+                fetchScenList = function(scode = SCODEMAP[['scen']], gt = FALSE){
                   # returns list of scenarios that the current user has access to
                   #
                   # Args:
                   #   scode:           Fetch only scenarios with either of these scenario codes
-                  #   gt:              boolean that specifies whether to fetch qual status codes or greater/equal
+                  #   gt:              boolean that specifies whether to fetch equal status codes or greater/equal
                   #
                   # Returns:
                   #   tibble: tibble with all scenarios user has access to read as well 
@@ -1293,7 +1187,6 @@ Db <- R6Class("Db",
                 slocktimeIdentifier = character(1L),
                 userAccessGroups    = character(1L),
                 tableNameMetadata   = character(1L),
-                tableNameMetaHcube  = character(1L),
                 tableNameScenLocks  = character(1L),
                 tableNamesScenario  = character(1L),
                 slocktimeLimit      = character(1L),
@@ -1475,7 +1368,7 @@ Db <- R6Class("Db",
                                         " WHERE table_schema='public' AND table_type='BASE TABLE'", 
                                         " AND (table_name IN (", 
                                         paste(dbQuoteString(private$conn, c(private$tableNameMetadata,
-                                                                            private$tableNameMetaHcube,
+                                                                            private$dbSchema$tabName[["_jobMeta"]],
                                                                             private$tableNameScenLocks,
                                                                             private$tableNamesScenario,
                                                                             private$dbSchema$tabName[['_scenTrc']])),
@@ -1487,7 +1380,7 @@ Db <- R6Class("Db",
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
                                         " AND (name IN (", 
                                         paste(dbQuoteString(private$conn, c(private$tableNameMetadata,
-                                                                            private$tableNameMetaHcube,
+                                                                            private$dbSchema$tabName[["_jobMeta"]],
                                                                             private$tableNameScenLocks,
                                                                             private$tableNamesScenario,
                                                                             private$dbSchema$tabName[['_scenTrc']])),

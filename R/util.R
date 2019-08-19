@@ -887,7 +887,7 @@ pidExists <- function(pid){
           windows_hide_window = TRUE)$stdout, fixed = TRUE)
   }else{
     pidExists <- TRUE
-    tryCatch(run("ps", c("-p", pid)), error = function(e){
+    tryCatch(processx::run("ps", c("-p", pid), echo_cmd = TRUE), error = function(e){
       pidExists <<- FALSE
     })
     return(pidExists)

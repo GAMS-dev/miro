@@ -720,7 +720,9 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                })
       }
       })
-    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(i){
+    modelInSorted <- sort(names(modelIn))
+    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(j){
+      i <- match(names(modelIn)[j], modelInSorted)
       if((modelIn[[i]]$type == "slider" 
           && identical(modelIn[[i]]$slider$double, TRUE)) 
          || (modelIn[[i]]$type %in% c("dropdown", "daterange"))){
@@ -1200,28 +1202,29 @@ if(is.null(errMsg)){
                                                           logical(1L), USE.NAMES = FALSE))
   
   dbSchema <- list(tabName = c('_scenMeta' = scenMetadataTablePrefix %+% modelName, 
-                               '_hcubeMeta' = tableNameMetaHcubePrefix %+% modelName,
                                '_scenLock' = scenLockTablePrefix %+% modelName,
                                '_scenTrc' = tableNameTracePrefix %+% modelName,
-                               '_scenAttach' = tableNameAttachPrefix %+% modelName),
+                               '_scenAttach' = tableNameAttachPrefix %+% modelName,
+                               '_jobMeta' = tableNameJobPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
                                                    stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
                                                    accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
                                                    scode = scodeIdentifier),
-                                   '_hcubeMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
-                                                    stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
-                                                    accessW = accessIdentifier %+% "w", accessX = accessIdentifier %+% "x", 
-                                                    scode = scodeIdentifier),
                                    '_scenLock' = c(uid = uidIdentifier, sid = sidIdentifier, lock = slocktimeIdentifier),
                                    '_scenTrc' = traceColNames,
                                    '_scenAttach' = c(sid = sidIdentifier, fn = "fileName",
                                                      fExt = "fileExt", 
                                                      execPerm = "execPerm",
                                                      content = "fileContent",
-                                                     time = "timestamp")),
-                   colTypes = c('_scenMeta' = "iccTcccci", '_hcubeMeta' = "iccTcccci", 
+                                                     time = "timestamp"),
+                                   '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
+                                                  status = '_status', time = '_jtime', 
+                                                  tag = stagIdentifier, pid = '_pid', 
+                                                  sid = sidIdentifier, gamsret = '_gamsret',
+                                                  scode = scodeIdentifier)),
+                   colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT"))
+                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciii"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
@@ -1271,11 +1274,13 @@ if(is.null(errMsg)){
   modelFilesExt <- tools::file_ext(modelFiles)
   modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
   modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]
+  
   # generate GAMS return code map
   GAMSReturnCodeMap <- c(
     '-500' = "Internal error",
     '-404' = "Host could not be reached",
     '-401' = "Access denied",
+    '-100' = "Model execution timed out",
     '-15' = "Model execution was interrupted",
     '-9' = "Model execution was interrupted",
     '1' = "Solver is to be called, the system should never return this number", 
@@ -1289,7 +1294,6 @@ if(is.null(errMsg)){
     '9' = "GAMS could not be started",
     '10' = "Out of memory",
     '11' = "Out of disk",
-    '100' = "Model execution timed out",
     '109' = "Could not create process/scratch directory",
     '110' = "Too many process/scratch directories",
     '112' = "Could not delete the process/scratch directory",

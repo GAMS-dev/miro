@@ -273,12 +273,16 @@ observeEvent(input$btSendQuery, {
   hideEl(session, "#hyperQueryLoad")
   enableEl(session, "#btSendQuery")
 })
+
 if("DT" %in% (.packages())){
   output$hcubeLoadResults <- renderDataTable(
     if(length(rv$fetchedScenarios) && nrow(rv$fetchedScenarios)){
+      data <- rv$fetchedScenarios[, -1]
       datatable(
-        rv$fetchedScenarios[, -1], filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
-      formatDate(2L,  method = "toLocaleString")
+        data, filter = "bottom", colnames = names(fields)[-1], rownames = FALSE) %>%
+      formatDate(2L,  method = "toLocaleString") %>%
+        formatRound(seq(4, length(data))[vapply(data[, seq(4, length(data))], is.numeric, logical(1L), USE.NAMES = FALSE)], 
+                    digits = roundPrecision)
     }
   )
 }else{
@@ -299,7 +303,7 @@ observeEvent(input$btShowHash, {
   noErr <- TRUE
   tryCatch(
     hashValue <- db$importDataset(db$getDbSchema()$tabName[['_scenMeta']], colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, 1, ">="),
+                                  tibble(scodeIdentifier, SCODEMAP[['scen']], ">"),
                                   subsetSids = rv$fetchedScenarios[[1]][selectedRows])[[1]]
   , error = function(e){
     flog.error("Problems fetching hash value from database. Error message: '%s'.", e)

@@ -309,6 +309,7 @@
       "members": ["dowvsindex", "abserror"]
     }
   ],
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "all",
     "readonly": false,

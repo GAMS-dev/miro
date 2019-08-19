@@ -65,7 +65,7 @@ observeEvent(input$loadActiveScenSplitComp, {
   
   sidsToLoad <<- list(activeScen$getSid())
   if(!length(scenMetaDb) || !sidsToLoad[[1]] %in% scenMetaDb[[1]]){
-    scenMetaDb <<- db$fetchScenList(scode = 0L)
+    scenMetaDb <<- db$fetchScenList(scode = SCODEMAP[['scen']])
   }
   rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
 })

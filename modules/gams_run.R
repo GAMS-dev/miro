@@ -1,18 +1,55 @@
 # run GAMS
-
+storeGAMSOutputFiles <- function(workDir){
+  if(config$activateModules$attachments && 
+     config$storeLogFilesDuration > 0L && !is.null(activeScen)){
+    errMsg <- NULL
+    tryCatch({
+      filesToStore  <- c(file.path(workDir, paste0(modelNameRaw, c(".log", ".lst"))))
+      filesNoAccess <- file.access(filesToStore) == -1L
+      if(any(filesNoAccess)){
+        if(all(filesNoAccess))
+          stop("fileAccessException", call. = FALSE)
+        flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
+                  paste(filesToStore[filesNoAccess], collapse = "', '"))
+        errMsg <- lang$errMsg$saveGAMSLog$noFileAccess
+      }
+      filesToStore <- filesToStore[!filesNoAccess]
+      filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
+      if(any(filesTooLarge)){
+        if(all(filesTooLarge))
+          stop("fileSizeException", call. = FALSE)
+        flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
+                  paste(filesToStore[filesTooLarge], collapse = "', '"))
+        errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
+      }
+      filesToStore <- filesToStore[!filesTooLarge]
+      activeScen$addAttachments(filesToStore, overwrite = TRUE, 
+                                noSave = TRUE, execPerm = rep.int(FALSE, length(filesToStore)))
+    }, error = function(e){
+      switch(conditionMessage(e),
+             fileAccessException = {
+               flog.info("No GAMS output files could not be accessed. Check file permissions.")
+               errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
+             },
+             fileSizeException = {
+               flog.info("All GAMS output files are too large to be saved.")
+               errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
+             },
+             {
+               flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
+               errMsg <<- lang$errMsg$unknownError
+             })
+    })
+    showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
+  }
+}
 if(identical(config$activateModules$hcubeMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
   scenGmsPar <- NULL
-  getHcubeStaticCSVMd5 <- function(id, data, hcubeStaticFilePath){
-    filePath <- file.path(hcubeStaticFilePath, tolower(names(modelIn)[id]) %+% ".csv")
-    if(!inherits(data, "data.frame"))
-      return(NA)
-    write_csv(data, filePath, na = "", append = FALSE, col_names = TRUE, 
-              quote_escape = "double")
-    flog.debug("Static file: '%s' was written to:'%s'.", names(modelIn)[id], filePath)
-    return(digest(file = filePath, algo = "md5"))
-  }
+  attachmentFilePaths <- NULL
+  staticData <- NULL
+  
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
       return("")
@@ -90,18 +127,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
-    hcubeStaticFilePath <- file.path(currentModelDir, hcubeDirName, "static")
-    if(dir.exists(hcubeStaticFilePath) &&
-       unlink(hcubeStaticFilePath, recursive = TRUE, force = TRUE) == 1L){
-      stop("Problems removing existing directory for static Hypercube job files.", 
-           call. = FALSE)
-    }
-    if(!dir.create(hcubeStaticFilePath, showWarnings = TRUE, recursive = TRUE)[1]){
-      stop("Problems creating directory for static Hypercube job files.", 
-           call. = FALSE)
-    }
-    elementValues <- lapply(seq_along(modelIn), function(i){
+    staticData <<- DataInstance$new()
+    modelInSorted <- sort(names(modelIn))
+    elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
+      i <- match(names(modelIn)[j], modelInSorted)
       switch(modelIn[[i]]$type,
              slider = {
                value <- input[["slider_" %+% i]]
@@ -129,7 +159,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                if(identical(modelIn[[i]]$dropdown$single, FALSE)){
                  data <- tibble(input[["dropdown_" %+% i]])
                  names(data) <- tolower(names(modelIn))[i]
-                 return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
+                 return(digest(data, algo = "md5"))
                }
                parPrefix <- getHcubeParPrefix(i)
                value <- input[["dropdown_" %+% i]]
@@ -164,7 +194,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              hot = {
                input[['in_' %+% i]]
                data <- getInputDataset(i)
-               return(getHcubeStaticCSVMd5(i, data, hcubeStaticFilePath))
+               staticData$push(names(modelIn)[[i]], data)
+               return(digest(data, algo = "md5"))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
@@ -173,13 +204,15 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
     gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
+    attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      filePaths     <- activeScen$downloadAttachmentData(hcubeStaticFilePath, 
-                                                         allExecPerm = TRUE)
-      filePaths     <- filePaths[match(basename(filePaths), sort(basename(filePaths)))]
-      if(length(filePaths)){
-        gmsString <- paste(gmsString, paste(vapply(seq_along(filePaths), function(i){
-          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = filePaths[i], algo = "md5")))
+      attachmentFilePaths <- activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
+      attachmentFilePaths <- attachmentFilePaths[match(basename(attachmentFilePaths), 
+                                                       sort(basename(attachmentFilePaths)))]
+      if(length(attachmentFilePaths)){
+        staticData$addFilePaths(attachmentFilePaths)
+        gmsString <- paste(gmsString, paste(vapply(seq_along(attachmentFilePaths), function(i){
+          return(paste0("--HCUBE_STATIC_", i, "=", digest(file = attachmentFilePaths[i], algo = "md5")))
         }, character(1L), USE.NAMES = FALSE), collapse = " "))
       }
     }
@@ -189,7 +222,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
     gmsString <- paste0(scenIds, ": ", gmsString)
     
-    return(list(ids = scenIds, gmspar = gmsString))
+    return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
   
   prevJobSubmitted <- Sys.time()
@@ -224,64 +257,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     file.copy(file.path(submFileDir, hcubeSubmissionFile %+% ".gms"), toDir)
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
-  executeHcubeJob <- function(scenGmsPar){
-    if(length(activeScen) && !activeScen$hasExecPerm()){
-      flog.error("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!")
-      stop(call. = FALSE)
-    }
-    jID <- as.integer(db$writeMetaHcube(hcubeTags = isolate(input$newHcubeTags)))
-    flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", jID)
-    hcubeDir <- file.path(currentModelDir, hcubeDirName, jID)
-    if(dir.exists(hcubeDir)){
-      stop(sprintf("Hypercube job directory: '%s' already exists.", hcubeDir), call. = FALSE)
-    }
-    if(!dir.create(hcubeDir, recursive = TRUE, showWarnings = FALSE)){
-      stop(sprintf("Problems creating Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
-    }
-    staticFiles <- list.files(file.path(currentModelDir, hcubeDirName, "static"), 
-                              full.names = TRUE)
-    if(length(staticFiles)){
-      local({
-        staticDir <- file.path(hcubeDir, "static")
-        if(!dir.create(staticDir) || !all(file.copy(staticFiles, staticDir))){
-          stop(sprintf("Problems copying static Hypercube job files from: '%s' to: '%s'.", 
-                       file.path(currentModelDir, hcubeDirName, "static"), 
-                       file.path(hcubeDir, "static")), call. = FALSE)
-        }
-      })
-    }
-    
-    if(config$includeParentDir){
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir),
-                           '" idir2="', gmsFilePath(dirname(currentModelDir)), '"')
-    }else{
-      scenGmsPar <- paste0(scenGmsPar, ' idir1="', gmsFilePath(currentModelDir), '"')
-    }
-    writeLines(scenGmsPar, file.path(hcubeDir, tolower(modelName) %+% ".hcube"))
-    
-    flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
-    # create daemon to execute Hypercube job
-    hcubeSubmDir <- gmsFilePath(file.path(getwd(), "resources", hcubeSubmissionFile %+% ".gms"))
-    curdir       <- gmsFilePath(hcubeDir)
-    
-    tryCatch({
-      writeChar(paste0("Job ID: ", jID, "\n"), file.path(hcubeDir, jID %+% ".log"), 
-                eos = NULL)
-    }, error = function(e){
-      flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
-                 jID %+% ".log", hcubeDir)
-    })
-    p <- process$new(gamsSysDir %+% "gams", 
-                     args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
-                              "--jobID=" %+% jID),
-                     cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,
-                     windows_hide_window = TRUE)
-    pid <- p$get_pid()
-    p <- NULL
-    flog.trace("Hypercube job submitted successfuly. Hypercube job process ID: '%d'.", pid)
-    db$updateHypercubeJob(jID, pid = pid)
-    flog.trace("Process ID: '%d' added to Hypercube job ID: '%d'.", pid, jID)
-  }
+  
   observeEvent(input$btHcubeAll, {
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
@@ -296,7 +272,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     tryCatch({
-      executeHcubeJob(scenGmsPar)
+      sid <- NULL
+      if(length(activeScen) && !activeScen$hasExecPerm()){
+        stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
+             call. = FALSE)
+      }
+      if(!is.null(activeScen)){
+        sid <- activeScen$getSid()
+      }
+      worker$runHcube(staticData, scenGmsPar, sid, tags = isolate(input$newHcubeTags), 
+                      attachmentFilePaths = attachmentFilePaths)
       showHideEl(session, "#hcubeSubmitSuccess", 3000)
       hideModal(session, 3L)
     }, error = function(e){
@@ -321,7 +306,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     tryCatch({
-      executeHcubeJob(hcubeScen)
+      sid <- NULL
+      if(length(activeScen) && !activeScen$hasExecPerm()){
+        stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
+             call. = FALSE)
+      }
+      if(!is.null(activeScen)){
+        sid <- activeScen$getSid()
+      }
+      worker$runHcube(staticData, hcubeScen, sid, tags = isolate(input$newHcubeTags), 
+                      attachmentFilePaths = attachmentFilePaths)
       showHideEl(session, "#hcubeSubmitSuccess", 3000)
       hideModal(session, 3L)
     }, error = function(e){
@@ -401,8 +395,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     return()
   }
   if(identical(worker$validateCredentials(), FALSE)){
-    btSolveClicked <<- TRUE
-    showLoginDialog(cred = worker$getCredentials())
+    showLoginDialog(cred = worker$getCredentials(), 
+                    forwardOnSuccess = "btSolve")
     return(NULL)
   }
   if(identical(config$activateModules$hcubeMode, TRUE)){
@@ -427,7 +421,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     prog$set(message = lang$progressBar$prepRun$title, value = 0)
     
     idsSolved <- db$importDataset(scenMetadataTable, colNames = snameIdentifier, 
-                                  tibble(scodeIdentifier, 1L, ">="))
+                                  tibble(scodeIdentifier, SCODEMAP[['scen']], ">"))
     if(length(idsSolved)){
       idsSolved <- unique(idsSolved[[1L]])
     }
@@ -443,7 +437,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       return(NULL)
     }
     
-    idsToSolve <<- scenToSolve$ids
+    idsToSolve          <<- scenToSolve$ids
+    attachmentFilePaths <<- scenToSolve$attachmentFilePaths
+    
     if(length(config$extraClArgs)){
       scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
                            paste(config$extraClArgs, collapse = " "),
@@ -544,7 +540,11 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
     }
     prog$close()
-    worker$run(inputData, pfFileContent)
+    jobSid <- NULL
+    if(length(activeScen)){
+      jobSid <- activeScen$getSid()
+    }
+    worker$run(inputData, pfFileContent, jobSid)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
     flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
@@ -552,7 +552,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
     return(NULL)
   }
-  
+  if(config$activateModules$remoteExecution)
+    updateTabsetPanel(session, "jobListPanel", selected = "current")
   updateTabsetPanel(session, "sidebarMenuId", selected = "gamsinter")
   updateTabsetPanel(session, "logFileTabsset", selected = "log")
   
@@ -617,6 +618,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       statusText <- lang$nav$gamsModelStatus$submission
     }else if(identical(currModelStat, "q")){
       statusText <- lang$nav$gamsModelStatus$queued
+    }else if(identical(currModelStat, "d")){
+      statusText <- lang$nav$gamsModelStatus$collection
     }else{
       modelStatusObs$destroy()
       modelStatus <- NULL
@@ -710,48 +713,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
         # check whether GAMS output files shall be stored
-        if(config$activateModules$attachments && 
-           config$storeLogFilesDuration > 0L && !is.null(activeScen)){
-          tryCatch({
-            filesToStore  <- c(file.path(workDir, paste0(modelNameRaw, c(".log", ".lst"))))
-            filesNoAccess <- file.access(filesToStore) == -1L
-            errMsg <- NULL
-            if(any(filesNoAccess)){
-              if(all(filesNoAccess))
-                stop("fileAccessException", call. = FALSE)
-              flog.info("GAMS output files: '%s' could not be accessed. Check file permissions.", 
-                        paste(filesToStore[filesNoAccess], collapse = "', '"))
-              errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
-            }
-            filesToStore <- filesToStore[!filesNoAccess]
-            filesTooLarge <- file.size(filesToStore) > attachMaxFileSize
-            if(any(filesTooLarge)){
-              if(all(filesTooLarge))
-                stop("fileSizeException", call. = FALSE)
-              flog.info("GAMS output files: '%s' are too large. They will not be saved.", 
-                        paste(filesToStore[filesTooLarge], collapse = "', '"))
-              errMsg <<- paste(errMsg, lang$errMsg$saveGAMSLog$fileSizeExceeded, sep = "\n")
-            }
-            filesToStore <- filesToStore[!filesTooLarge]
-            activeScen$addAttachments(filesToStore, overwrite = TRUE, 
-                                      noSave = TRUE, execPerm = rep.int(FALSE, length(filesToStore)))
-          }, error = function(e){
-            switch(conditionMessage(e),
-                   fileAccessException = {
-                     flog.info("No GAMS output files could not be accessed. Check file permissions.")
-                     errMsg <<- lang$errMsg$saveGAMSLog$noFileAccess
-                   },
-                   fileSizeException = {
-                     flog.info("All GAMS output files are too large to be saved.")
-                     errMsg <<- lang$errMsg$saveGAMSLog$fileSizeExceeded
-                   },
-                   {
-                     flog.error("Problems while trying to store GAMS output files in the database. Error message: '%s'.", e)
-                     errMsg <<- lang$errMsg$unknownError
-                   })
-          })
-          showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
-        }
+        storeGAMSOutputFiles(workDir)
+        
         #select first tab in current run tabset
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
@@ -790,6 +753,13 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
             flog.info("Problems loading trace data. Error message: %s.", e)
           })
         }
+        tryCatch(
+          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+          error = function(e){
+            flog.warn("Failed to update job status. Error message: '%s'.", 
+                      conditionMessage(e))
+          })
+        
         
         GAMSResults <- NULL
         # rendering tables and graphs
@@ -805,55 +775,57 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   # refresh even when modelStatus message is hidden (i.e. user is on another tab)
   outputOptions(output, "modelStatus", suspendWhenHidden = FALSE)
 })
-observeEvent(input$btRemoteExecLogin, {
-  btSolveClicked <<- FALSE
-  showLoginDialog(cred = worker$getCredentials())
-})
-observeEvent(input$btSaveCredentials, {
-  tryCatch({
-    worker$login(url = input$remoteCredUrl, 
-                 username = input$remoteCredUser, 
-                 password = input$remoteCredPass, 
-                 namespace = input$remoteCredNs, 
-                 useRegistered = input$remoteCredReg,
-                 rememberMe = input$remoteCredRemember)
-    hideEl(session, "#btRemoteExecLogin")
-    showEl(session, "#remoteExecLogoutDiv")
+if(config$activateModules$remoteExecution){
+  observeEvent(input$btRemoteExecLogin, {
+    showLoginDialog(cred = worker$getCredentials())
+  })
+  observeEvent(input$btSaveCredentials, {
+    tryCatch({
+      worker$login(url = input$remoteCredUrl, 
+                   username = input$remoteCredUser, 
+                   password = input$remoteCredPass, 
+                   namespace = input$remoteCredNs, 
+                   useRegistered = input$remoteCredReg,
+                   rememberMe = input$remoteCredRemember)
+      hideEl(session, "#btRemoteExecLogin")
+      showEl(session, "#remoteExecLogoutDiv")
+      removeModal()
+      if(input$btSaveCredentials %in% names(rv)){
+        rv[[input$btSaveCredentials]] <- rv[[input$btSaveCredentials]] + 1L
+      }
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      flog.info("Problems logging in. Return code: %s", errMsg)
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#remoteLoginHostNotFound", 6000))
+      
+      if(identical(errMsg, '400'))
+        return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
+      
+      if(identical(errMsg, '401'))
+        return(showHideEl(session, "#remoteLoginInvalidCred", 6000))
+      
+      if(identical(errMsg, '403'))
+        return(showHideEl(session, "#remoteLoginInsuffPerm", 6000))
+      
+      if(identical(errMsg, '426'))
+        return(showHideEl(session, "#remoteLoginInvalidProt", 6000))
+      
+      return(showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$unknownError))
+    })
+  })
+  observeEvent(input$btRemoteExecLogout, {
     removeModal()
-    if(btSolveClicked){
-      rv$btSolve <- rv$btSolve + 1L
-    }
-  }, error = function(e){
-    errMsg <- conditionMessage(e)
-    flog.info("Problems logging in. Return code: %s", errMsg)
-    if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
-       startsWith(errMsg, "Timeout"))
-      return(showHideEl(session, "#remoteLoginHostNotFound", 6000))
-    
-    if(identical(errMsg, '400'))
-      return(showHideEl(session, "#remoteLoginNsNotFound", 6000))
-    
-    if(identical(errMsg, '401'))
-      return(showHideEl(session, "#remoteLoginInvalidCred", 6000))
-    
-    if(identical(errMsg, '403'))
-      return(showHideEl(session, "#remoteLoginInsuffPerm", 6000))
-    
-    if(identical(errMsg, '426'))
-      return(showHideEl(session, "#remoteLoginInvalidProt", 6000))
-    
-    return(showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$unknownError))
+    tryCatch({
+      worker$logout()
+      showEl(session, "#btRemoteExecLogin")
+      hideEl(session, "#remoteExecLogoutDiv")
+    }, error = function(e){
+      flog.error("Problems setting credentials: %s", e)
+      showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
+                                                        rememberMeFileName))
+    })
   })
-})
-observeEvent(input$btRemoteExecLogout, {
-  removeModal()
-  tryCatch({
-    worker$logout()
-    showEl(session, "#btRemoteExecLogin")
-    hideEl(session, "#remoteExecLogoutDiv")
-  }, error = function(e){
-    flog.error("Problems setting credentials: %s", e)
-    showErrorMsg(lang$errMsg$fileWrite$title, sprintf(lang$errMsg$fileWrite$desc,
-                                                      rememberMeFileName))
-  })
-})
+}
+

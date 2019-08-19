@@ -1,14 +1,18 @@
+observeEvent(input$jobListPanel, {
+  req(input$jobListPanel == "joblist")
+  rv$jobListPanel <- rv$jobListPanel + 1L
+})
 observe({
   rv$jobListPanel
   input$refreshActiveJobs
-  if(input$jobListPanel != "joblist"){
-    return()
-  }
   showEl(session, "#jImport_load")
+  
+  flog.trace("Refreshing job list..")
   isolate({
     flog.debug("Job list tab clicked. Job list is being reloaded")
     if(!worker$validateCredentials()){
       showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
+      hideEl(session, "#jImport_load")
       return(NULL)
     }
     
@@ -16,6 +20,10 @@ observe({
     redirect <- FALSE
     tryCatch({
       jobList <- worker$getJobList()
+      if(jobList$newCompleted){
+        showNewCompletedJobsDialog(hcubeMode = config$activateModules$hcubeMode)
+      }
+      jobList <- jobList$jobList
     }, error = function(e){
       errMsg <- conditionMessage(e)
       if(errMsg == 401L || errMsg == 403L){
@@ -30,7 +38,8 @@ observe({
     if(redirect)
       return()
     
-    output$jImport_output <- renderUI(getHypercubeJobsTable(jobList, hcubeMode = FALSE))
+    output$jImport_output <- renderUI(getJobsTable(jobList, 
+                                                   hcubeMode = config$activateModules$hcubeMode))
     hideEl(session, "#jImport_load")
   })
 })
@@ -40,8 +49,9 @@ observeEvent(input$btShowHistory, {
   jobList <- NULL
   err <- FALSE
   tryCatch({
-    jobList <- worker$getJobList(jobHist = TRUE)
+    jobList <- worker$getJobList(jobHist = TRUE)$jobList
   }, error = function(e){
+    errMsg <- conditionMessage(e)
     if(errMsg == 401L || errMsg == 403L){
       showLoginDialog(cred = worker$getCredentials())
       err <<- TRUE
@@ -54,74 +64,33 @@ observeEvent(input$btShowHistory, {
   if(err)
     return()
   
-  showJobHistoryDialog(jobList,  hcubeMode = FALSE)
+  showJobHistoryDialog(jobList,  hcubeMode = config$activateModules$hcubeMode)
 })
 
-observeEvent(input$importJob, {
-  jID <- isolate(input$importJob)
-  flog.trace("Import Job button clicked. Job ID: '%s'.", jID)
-  if(!is.integer(jID) || length(jID) != 1L){
-    flog.error("Invalid job ID: '%s'.", jID)
+observeEvent(input$discardJob, {
+  err <- FALSE
+  jID <- input$discardJob
+  flog.trace("Discard job button clicked. Job ID: '%s'.", jID)
+  if(is.null(worker$getPid(jID))){
+    flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  errMsg <- NULL
   tryCatch({
-    tmpdir <- worker$readOutput()
-    jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
-                               modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                               scalarsFileHeaders = scalarsFileHeaders,
-                               templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                               hiddenOutputScalars = config$hiddenOutputScalars) 
+    worker$updateJobStatus(JOBSTATUSMAP[['discarded']], 
+                           jID, 
+                           tags = isolate(input[["jTag_" %+% jID]]))
+    rv$jobListPanel <- rv$jobListPanel + 1L
   }, error = function(e){
-    flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))
-    errMsg <<- lang$errMsg$readOutput$desc
-  })
-  if(is.null(showErrorMsg(lang$errMsg$readOutput$title, errMsg))){
-    return(NULL)
-  }
-  if(!is.null(jobResults$scalar)){
-    scalarData[["scen_1_"]] <<- jobResults$scalar
-  }
-  if(!is.null(jobResults$tabular)){
-    scenData[["scen_1_"]] <<- jobResults$tabular
-  }
-  if(config$saveTraceFile){
-    tryCatch({
-      traceData <<- readTraceData(paste0(tmpdir, tableNameTracePrefix, modelName, ".trc"), 
-                                  traceColNames)
-    }, error = function(e){
-      flog.info("Problems loading trace data. Error message: %s.", e)
-    })
-  }
-  
-  jobResults <- NULL
-  # rendering tables and graphs
-  renderOutputData()
-  
-  # mark scenario as unsaved
-  markUnsaved()
-})
-
-observeEvent(input$showJobLog, {
-  flog.debug("Show job log button clicked.")
-  logContent <- tryCatch({
-    pID <- worker$getPid(input$showJobLog)
-    worker$readTextEntity(paste0(modelName, ".log"), 
-                          pID)
-  }, error = function(e){
-    flog.error("Could not retrieve job log. Error message: '%s'.", 
-               conditionMessage(e))
-    return(1L)
-  })
-  if(is.integer(logContent)){
-    flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
-    if(logContent == 401L || logContent == 403L){
-      showHideEl(session, "#fetchJobsAccessDenied")
-    }else{
-      showHideEl(session, "#fetchJobsError")
+    errMsg <- conditionMessage(e)
+    if(errMsg == 401L || errMsg == 403L){
+      showLoginDialog(cred = worker$getCredentials())
+      err <<- TRUE
+      return()
     }
-    return(NULL)
-  }
-  showJobLogFileDialog(logContent)
+    flog.error("Problems interrupting job: '%s'. Error message: '%s'.", jID, errMsg)
+    showHideEl(session, "#fetchJobsError")
+  })
+  if(err)
+    return()
 })

@@ -90,7 +90,7 @@ observeEvent(input$restoreDb, {
       tableNames[c(1L, metaId)]    <- tableNames[c(metaId, 1L)]
       unzippedFiles[c(1L, metaId)] <- unzippedFiles[c(metaId, 1L)]
     }
-    scenTableNames <- db$getTableNamesScenario()
+    scenTableNames <- c(db$getTableNamesScenario(), dbSchema$tabName[['_scenTrc']])
     if(!all(tableNames %in% dbSchema$tabName)){
       flog.info("Some tables in your archive do not exist in the current schema: '%s'.", 
                 paste(tableNames[!tableNames %in% scenTableNames], collapse = "', '"))
@@ -135,11 +135,13 @@ observeEvent(input$restoreDb, {
     prog$inc(amount = 0.2, detail = "Uploading files...")
     lapply(seq_along(validatedTables), function(i){
       tableName <- tableNames[i]
-      if(i == 1L){
+      if(identical(tableName, dbSchema$tabName[["_scenMeta"]])){
         db$writeMetadata(validatedTables[[i]])
         return()
-      }else if(identical(tableName, dbSchema$tabName[["_hcubeMeta"]])){
-        db$writeMetadata(validatedTables[[i]], hcubeMetadata = TRUE)
+      }else if(identical(tableName, dbSchema$tabName[["_jobMeta"]])){
+        db$createJobMeta()
+        db$exportDataset(dbSchema$tabName[["_jobMeta"]], validatedTables[[i]], 
+                         checkColNames = FALSE)
         return()
       }
       db$exportScenDataset(validatedTables[[i]], tableName, 

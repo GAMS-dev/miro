@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.7.3"
-MIRORDate   <- "Aug 11 2019"
+MIROVersion <- "0.8.3"
+MIRORDate   <- "Aug 19 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -117,14 +117,6 @@ if(is.null(errMsg)){
       })
     }
   })
-  # initialise MIRO workspace
-  miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
-  if(!dir.exists(miroWorkspace)){
-    if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
-      errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
-                                      miroWorkspace), sep = "\n")
-    }
-  }
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
   # check whether shiny proxy is used to access this file
@@ -161,6 +153,23 @@ if(is.null(errMsg)){
     logFileDir <- file.path(tmpFileDir, logFileDir)
   }else{
     logFileDir <- file.path(currentModelDir, logFileDir)
+    # initialise MIRO workspace
+    miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
+    if(!dir.exists(miroWorkspace)){
+      if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+        errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                                        miroWorkspace), sep = "\n")
+      }
+      if(isWindows()){
+        tryCatch(
+          processx::run("attrib", args = c("+h", miroWorkspace))
+        , error = function(e){
+          errMsg <- paste(errMsg, sprintf("Failed to hide MIRO workspace directory: '%s'. Error message: '%s'.", 
+                                          miroWorkspace, conditionMessage(e)), sep = "\n")
+        })
+        
+      }
+    }
   }
   # name of the R save file
   rSaveFilePath <- paste0(currentModelDir, modelName, '_', MIROVersion, 
@@ -519,6 +528,18 @@ if(is.null(errMsg)){
                        useRegistered = TRUE)
   }else if(config$activateModules$remoteExecution){
     tryCatch({
+      if(file.exists(file.path(miroWorkspace, "pinned_pub_keys"))){
+        pinnedPublicKeys <- paste0("sha256//", 
+                                   read_lines(file.path(miroWorkspace, 
+                                                        "pinned_pub_keys")),
+                                   collapse = ";")
+        httr::set_config(httr::config(pinnedpublickey = pinnedPublicKeys))
+      }
+    }, error = function(e){
+      errMsg <<- paste(errMsg, sprintf("Could not read pinned certificates file. Error message: '%s'.", 
+                                       conditionMessage(e)), sep = '\n')
+    })
+    tryCatch({
       credConfigTmp <- NULL
       if(file.exists(rememberMeFileName)){
         credConfigTmp <- suppressWarnings(fromJSON(rememberMeFileName, 
@@ -546,16 +567,18 @@ if(is.null(errMsg)){
   }
   
   worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                       tableNameTracePrefix = tableNameTracePrefix, 
+                                       tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = maxSizeToRead,
                                        text_entities = c(paste0(modelName, ".lst"), 
                                                          if(config$activateModules$miroLogFile) config$miroLogFile),
                                        currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
                                        MIROSwitch = config$MIROSwitch, extraClArgs = config$extraClArgs, 
                                        includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
                                        modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                       timeout = 8L, serverOS = getOS(), modelData = modelData, 
-                                       rememberMeFileName = rememberMeFileName), 
-                       remote = config$activateModules$remoteExecution)
+                                       timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = config$activateModules$hcubeMode,
+                                       rememberMeFileName = rememberMeFileName, includeParentDir = config$includeParentDir), 
+                       remote = config$activateModules$remoteExecution,
+                       hcube = config$activateModules$hcubeMode,
+                       db = db)
   if(length(credConfig)){
     do.call(worker$setCredentials, credConfig)
   }
@@ -771,7 +794,8 @@ if(!is.null(errMsg)){
     btSortTimeDescBase <- TRUE
     btSortTimeBase     <- TRUE
     interruptShutdown  <<- TRUE
-    btSolveClicked     <- FALSE
+    jobImportID        <- NULL
+    resetWidgetsOnClose <- TRUE
     # boolean that specifies whether output data should be saved
     saveOutput         <- TRUE
     # count number of open scenario tabs
@@ -971,8 +995,9 @@ if(!is.null(errMsg)){
     rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, refreshActiveJobs = 0L,
-                         loadHcubeHashSid = 0L, datasetsModified = vector(mode = "logical", length = length(modelIn)))
+                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, 
+                         loadHcubeHashSid = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
+                         datasetsModified = vector(mode = "logical", length = length(modelIn)))
     # list of scenario IDs to load
     sidsToLoad <- list()
     # list with input data
@@ -1021,7 +1046,7 @@ if(!is.null(errMsg)){
           && input$sidebarMenuId == "scenarios"){
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
-        rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
+        rv$jobListPanel <- rv$jobListPanel + 1L
       }
     })
     
@@ -1162,6 +1187,7 @@ if(!is.null(errMsg)){
     
     ####### Paver interaction
     if(config$activateModules$hcubeMode){
+      source("./modules/gams_job_list.R", local = TRUE)
       ####### Hcube import module
       source("./modules/hcube_import.R", local = TRUE)
       ####### Hcube load module
@@ -1170,6 +1196,10 @@ if(!is.null(errMsg)){
       source("./modules/paver_run.R", local = TRUE)
       # Interrupt button clicked
       source("./modules/paver_interrupt.R", local = TRUE)
+    }else if(config$activateModules$remoteExecution){
+      source("./modules/gams_job_list.R", local = TRUE)
+      # remote job import
+      source("./modules/job_import.R", local = TRUE)
     }
     
     # delete scenario 

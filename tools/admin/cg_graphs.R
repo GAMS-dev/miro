@@ -87,7 +87,7 @@ names(langSpecificGraphs$localeChoices) <- lang$adminMode$graphs$pivotOptions$op
 
 scenMetaDb <- NULL
 tryCatch({
-  scenMetaDb <- db$fetchScenList(scode = 0L)
+  scenMetaDb <- db$fetchScenList(scode = SCODEMAP[['scen']])
 }, error = function(e){
   flog.error("Problems fetching list of scenarios from database. Error message: %s.", e)
   errMsg <<- lang$errMsg$fetchScenData$desc
@@ -259,6 +259,7 @@ observeEvent(input$dbInput, {
   loadMode  <-  "scen"
   datasetsToFetch <- modelInTabularData
   overwriteInput <- TRUE
+  
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
     return(NULL)
@@ -306,6 +307,8 @@ observeEvent(input$localInput, {
   }
   # load input data 
   overwriteInput <- TRUE
+  loadModeWorkDir  <- dirname(isolate(input$localInput$datapath))
+  loadModeFileName <- basename(isolate(input$localInput$datapath))
   source("./modules/input_load.R", local = TRUE)
   if(!is.null(errMsg)){
     return(NULL)

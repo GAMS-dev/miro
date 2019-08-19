@@ -13,7 +13,8 @@ observeEvent(input$btImport, {
     # only load single scenario as not in comparison mode
     errMsg <- NULL
     tryCatch({
-      scenMetaDb       <<- db$fetchScenList(scode = if(config$activateModules$hcubeMode) -1L else 0L)
+      scenMetaDb       <<- db$fetchScenList(scode = if(config$activateModules$hcubeMode) 
+        SCODEMAP[['hcube_jobconfig']] else SCODEMAP[['scen']])
       dbTagList        <- csv2Vector(scenMetaDb[[stagIdentifier]])
     }, error = function(e){
       flog.error("Problems fetching list of saved scenarios from database. Error message: %s.", e)

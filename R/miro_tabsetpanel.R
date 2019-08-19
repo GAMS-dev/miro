@@ -11,7 +11,7 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
   div(class = "col-sm-12", content)
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
-                            maxTabsExpanded = 2L, btCollapsedTabs = "")
+                            maxTabsExpanded = 10L, btCollapsedTabs = "")
 {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {

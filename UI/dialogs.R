@@ -15,7 +15,7 @@ showReadonlyDialog <- function(){
   ))
 }
 
-showLoginDialog <- function(cred){
+showLoginDialog <- function(cred, forwardOnSuccess = NULL){
   showModal(modalDialog(
     title = lang$nav$dialogRemoteLogin$title,
     tags$div(class = "gmsalert gmsalert-error", id = "remoteLoginHostNotFound", 
@@ -38,13 +38,20 @@ showLoginDialog <- function(cred){
     checkboxInput_MIRO("remoteCredRemember", lang$nav$dialogRemoteLogin$remember),
     footer = tagList(
       modalButton(lang$nav$dialogRemoteLogin$cancelButton),
-      actionButton("btSaveCredentials", label = lang$nav$dialogRemoteLogin$okButton, 
-                   class = "bt-highlight-1 bt-gms-confirm")),
+      if(length(forwardOnSuccess)){
+        tags$button(class = "btn btn-default bt-highlight-1 bt-gms-confirm",
+                    type = "button", onclick = paste0("Shiny.setInputValue('btSaveCredentials', '", 
+                    forwardOnSuccess,"', {priority:'event'})"),
+                    lang$nav$dialogRemoteLogin$okButton)
+      }else{
+        actionButton("btSaveCredentials", label = lang$nav$dialogRemoteLogin$okButton, 
+                     class = "bt-highlight-1 bt-gms-confirm")
+      }),
     fade = TRUE, easyClose = FALSE
   ))
 }
 
-showNewScenDialog <- function(tmpScenName){
+showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm"){
   if(config$activateModules$hcubeMode){
     modeDescriptor <- "dialogNewHCJob"
   }else{
@@ -67,12 +74,14 @@ showNewScenDialog <- function(tmpScenName){
     footer = tagList(
       tags$div(id = "dialogSaveInit",
                modalButton(lang$nav[[modeDescriptor]]$cancelButton),
-               actionButton("btCheckName", lang$nav[[modeDescriptor]]$okButton, 
-                            class = "bt-highlight-1 bt-gms-confirm")
+               tags$button(class = "btn btn-default bt-highlight-1 bt-gms-confirm",
+                           type = "button", onclick = paste0("Shiny.setInputValue('btCheckName', '", 
+                                                             forwardTo, "', {priority:'event'})"),
+                           lang$nav[[modeDescriptor]]$okButton)
       ),
       tags$div(id = "dialogSaveConfirm", style = "display:none;",
                actionButton("btNewName", lang$nav[[modeDescriptor]]$btNewName),
-               actionButton("btSaveConfirm", lang$nav[[modeDescriptor]]$btOverwrite, 
+               actionButton(forwardTo, lang$nav[[modeDescriptor]]$btOverwrite, 
                             class = "bt-highlight-1 bt-gms-confirm")
       )
     ),
@@ -354,19 +363,21 @@ type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', h
   
   showModal(modalDialog(
     title = lang$nav[[modeDescriptor]]$title,
-    tags$div(id = "importScenMaxNoScen", class = "gmsalert gmsalert-error", 
-             lang$nav$dialogLoadScen$maxNoScenExceeded),
-    tags$div(id = "importScenNoHcubeScen", class = "gmsalert gmsalert-error", 
-             lang$nav$dialogImport$hcubeHashNoMatch),
-    tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
-             lang$nav$dialogImport$scenNameExistsErr),
-    tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
-             lang$errMsg$unknownError),
-    tags$div(id = "importDataTabset",
-             do.call(tabBox, c(list(width = 12, id = "tb_importData"), loadDataTabs))
-    ),
-    tags$div(id = "importDataOverwrite", style = "display:none;",
-             lang$nav[[modeDescriptor]]$descOverwriteInput
+    fluidRow(
+      tags$div(id = "importScenMaxNoScen", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogLoadScen$maxNoScenExceeded),
+      tags$div(id = "importScenNoHcubeScen", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogImport$hcubeHashNoMatch),
+      tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogImport$scenNameExistsErr),
+      tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
+               lang$errMsg$unknownError),
+      tags$div(id = "importDataTabset",
+               do.call(tabBox, c(list(width = 12, id = "tb_importData"), loadDataTabs))
+      ),
+      tags$div(id = "importDataOverwrite", style = "display:none;",
+               lang$nav[[modeDescriptor]]$descOverwriteInput
+      )
     ), footer = {
       tagList(
         modalButton(lang$nav[[modeDescriptor]]$cancelButton),
@@ -386,8 +397,8 @@ getHcubeHashLookupTable <- function(hashLookupResults){
   }else{
     tags$table(class = "cJob-wrapper",
                tags$tr(
-                 tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
-                 tags$th(lang$nav$hcubeMode$importJobsDialog$header$date)
+                 tags$th(lang$nav$importJobsDialog$header$tags),
+                 tags$th(lang$nav$importJobsDialog$header$date)
                ),
                do.call("tagList", lapply(seq_len(nrow(hashLookupResults)), function(i){
                  tags$tr(onclick = paste0("Miro.hcHashImport(", hashLookupResults[[1]][i], ")"),
@@ -789,96 +800,130 @@ showManualJobImportDialog <- function(){
      fade = TRUE, easyClose = TRUE
    ))
 }
-getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
+showNewCompletedJobsDialog <- function(hcubeMode = FALSE){
+  showModal(modalDialog(
+    title = lang$nav$newCompletedJobsDialog$title,
+    lang$nav$newCompletedJobsDialog$desc,
+    footer = tagList(
+      modalButton(lang$nav$newCompletedJobsDialog$cancelButton),
+      tags$button(class = "btn btn-default bt-highlight-1 bt-gms-confirm",
+                  type = "button", onclick = paste0("Miro.showJobsDialog(", 
+                                                    if(hcubeMode) "true" else "false", ")"),
+                  lang$nav$newCompletedJobsDialog$okButton)
+    ),
+    fade = TRUE, easyClose = FALSE
+  ))
+}
+getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
   if(!inherits(hcubeMeta, "data.frame")){
     content <- tags$div(class = "err-msg", 
                         lang$errMsg$unknownError
     )
   }else if(length(hcubeMeta) && nrow(hcubeMeta)){
+    jobIds     <- hcubeMeta[[1]]
+    jobOwners  <- hcubeMeta[[2]]
+    jobTimes   <- hcubeMeta[[4]]
+    jStatuses  <- hcubeMeta[[3]]
     content <- tags$table(class = "cJob-wrapper",
                           tags$tr(
-                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$owner),
-                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$date),
-                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$tags),
-                            tags$th(lang$nav$hcubeMode$importJobsDialog$header$status),
+                            tags$th(lang$nav$importJobsDialog$header$owner),
+                            tags$th(lang$nav$importJobsDialog$header$date),
+                            if(hcubeMode)
+                              tags$th(lang$nav$importJobsDialog$header$tags),
+                            tags$th(lang$nav$importJobsDialog$header$status),
                             if(!jobHist)
-                              tags$th(lang$nav$hcubeMode$importJobsDialog$header$action)
+                              tags$th(lang$nav$importJobsDialog$header$action)
                           ),
                           do.call("tagList", lapply(seq_len(nrow(hcubeMeta)), function(i){
-                            jStatus <- strsplit(hcubeMeta[[3]][i], "_", fixed = TRUE)[[1]][2]
-                            jID     <- hcubeMeta[[1]][i]
-                            
+                            jID     <- jobIds[i]
+                            jStatus <- jStatuses[i]
                             tags$tr(
-                              tags$td(hcubeMeta[[2]][i]),
-                              tags$td(hcubeMeta[[4]][i]),
-                              tags$td(
-                                if(jobHist){
-                                  substr(hcubeMeta[[5]][i], 2, nchar(hcubeMeta[[5]][i]) - 1L)
-                                }else{
-                                  jTags   <- csv2Vector(hcubeMeta[[5]][i])
-                                  selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
-                                                 selected = jTags,
-                                                 multiple = TRUE, options = list(
-                                                   'create' = TRUE,
-                                                   'persist' = FALSE))
-                                }
-                              ),
-                              if(startsWith(jStatus, "corrupted")){
-                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
-                                tags$td(class = "ttip", jStatus[1L], tags$span(
-                                  if(startsWith(jStatus[2L], "noDir")) 
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoDir
-                                  else if(startsWith(jStatus[2L], "noProcess"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedNoProcess
-                                  else if(startsWith(jStatus[2L], "man"))
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$corruptedManual))
-                              }else if(startsWith(jStatus, "discarded")){
-                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
-                                if(length(jStatus) < 2L){
-                                  tags$td(jStatus)
-                                }else{
-                                  tags$td(class = "ttip", jStatus[1L], tags$span(
-                                    if(startsWith(jStatus[2L], "corrupted")) 
-                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedCorrupted
-                                    else if(startsWith(jStatus[2L], "running"))
-                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedActive
-                                    else if(startsWith(jStatus[2L], "scheduled"))
-                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedScheduled
-                                    else if(startsWith(jStatus[2L], "completed"))
-                                      lang$nav$hcubeMode$importJobsDialog$ttips$discardedCompleted))
-                                }
-                              }else if(startsWith(jStatus, "imported")){
-                                jStatus <- strsplit(jStatus, "(", fixed = TRUE)[[1L]]
-                                if(identical(length(jStatus), 2L) && startsWith(jStatus[2L], "man"))
-                                  tags$td(class = "ttip", jStatus[1L], tags$span(
-                                    lang$nav$hcubeMode$importJobsDialog$ttips$importedManual))
-                                else
-                                  tags$td(jStatus)
+                              tags$td(jobOwners[i]),
+                              tags$td(jobTimes[i]),
+                              if(hcubeMode)
+                                tags$td(
+                                  if(jobHist){
+                                    substr(hcubeMeta[[5]][i], 2, nchar(hcubeMeta[[5]][i]) - 1L)
+                                  }else{
+                                    jTags   <- csv2Vector(hcubeMeta[[5]][i])
+                                    selectizeInput("jTag_" %+% jID, label = NULL, choices = jTags,
+                                                   selected = jTags,
+                                                   multiple = TRUE, options = list(
+                                                     'create' = TRUE,
+                                                     'persist' = FALSE))
+                                  }
+                                ),
+                              if(identical(jStatus, JOBSTATUSMAP[['running']])){
+                                tags$td("running")
+                              }else if(identical(jStatus, JOBSTATUSMAP[['completed']])){
+                                tags$td("completed")
+                              }else if(identical(jStatus, JOBSTATUSMAP[['corrupted']])){
+                                tags$td("corrupted")
+                              }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(noDir)']])){
+                                tags$td(class = "ttip", "corrupted", tags$span(
+                                  lang$nav$importJobsDialog$ttips$corruptedNoDir))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(noProcess)']])){
+                                tags$td(class = "ttip", "corrupted", tags$span(
+                                  lang$nav$importJobsDialog$ttips$corruptedNoProcess))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(man)']])){
+                                tags$td(class = "ttip", "corrupted", tags$span(
+                                  lang$nav$importJobsDialog$ttips$corruptedManual))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['discarded']])){
+                                tags$td("discarded")
+                              }else if(identical(jStatus, JOBSTATUSMAP[['discarded(corrupted)']])){
+                                tags$td(class = "ttip", "discarded", tags$span(
+                                  lang$nav$importJobsDialog$ttips$discardedCorrupted))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['discarded(scheduled)']])){
+                                tags$td(class = "ttip", "discarded", tags$span(
+                                  lang$nav$importJobsDialog$ttips$discardedScheduled))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['discarded(running)']])){
+                                tags$td(class = "ttip", "discarded", tags$span(
+                                  lang$nav$importJobsDialog$ttips$discardedActive))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['discarded(completed)']])){
+                                tags$td(class = "ttip", "discarded", tags$span(
+                                  lang$nav$importJobsDialog$ttips$discardedCompleted))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['imported']])){
+                                tags$td("imported")
+                              }else if(identical(jStatus, JOBSTATUSMAP[['imported(man)']])){
+                                tags$td(class = "ttip", "imported", tags$span(
+                                  lang$nav$importJobsDialog$ttips$importedManual))
                               }else{
                                 tags$td(jStatus)
                               },
                               if(!jobHist){
                                 tags$td(
-                                  if(identical(jStatus, "completed")){
+                                  if(identical(jStatus, JOBSTATUSMAP[['completed']])){
                                     tagList(
                                       HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="Miro.confirmModalShow(\'', 
-                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$title, '\', \'', 
-                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$desc, '\', \'', 
-                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$cancelButton, '\', \'', 
-                                                  lang$nav$hcubeMode$importJobsDialog$importConfirm$confirmButton, 
-                                                  '\', \'Miro.importHypercubeJob(', jID, 
-                                                  ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$import, '</button>'))
+                                                  lang$nav$importJobsDialog$importConfirm$title, '\', \'', 
+                                                  lang$nav$importJobsDialog$importConfirm$desc, '\', \'', 
+                                                  lang$nav$importJobsDialog$importConfirm$cancelButton, '\', \'', 
+                                                  lang$nav$importJobsDialog$importConfirm$confirmButton, 
+                                                  '\', \'Shiny.setInputValue(\\\'importJob\\\',', jID, ', {priority:\\\'event\\\'})\')">',
+                                                  lang$nav$importJobsDialog$buttons$import, '</button>'))
                                     )
                                   },
-                                  HTML(paste0('<button type="button" class="btn btn-default" onclick="Miro.showHypercubeLog(', jID, ')">', 
-                                              lang$nav$hcubeMode$importJobsDialog$buttons$log, '</button>
-                                   <button type="button" class="btn btn-default" onclick="Miro.confirmModalShow(\'', 
-                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$title, '\', \'', 
-                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$desc, '\', \'', 
-                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$cancelButton, '\', \'', 
-                                              lang$nav$hcubeMode$importJobsDialog$discardConfirm$confirmButton, 
-                                              '\', \'Miro.discardHypercubeJob(', jID, 
-                                              ')\')">', lang$nav$hcubeMode$importJobsDialog$buttons$discard, '</button>'))
+                                  if(hcubeMode){
+                                    if(identical(jStatus, JOBSTATUSMAP[['running']]))
+                                      tags$button(class = "btn btn-default", 
+                                                  onclick = paste0("Shiny.setInputValue('showJobProgress', '", 
+                                                                   jID, "',{priority:\'event\'});"),
+                                                  lang$nav$importJobsDialog$buttons$progress)
+                                  }else{
+                                    tags$button(class = "btn btn-default", 
+                                                onclick = paste0("Shiny.setInputValue('showJobLog', '", 
+                                                                 jID, "',{priority:\'event\'});"),
+                                                lang$nav$importJobsDialog$buttons$log)
+                                  },
+                                  tags$button(class = "btn btn-default", 
+                                              onclick = paste0("Miro.confirmModalShow('",
+                                              lang$nav$importJobsDialog$discardConfirm$title, "', '", 
+                                              lang$nav$importJobsDialog$discardConfirm$desc, "', '", 
+                                              lang$nav$importJobsDialog$discardConfirm$cancelButton, "', '",  
+                                              lang$nav$importJobsDialog$discardConfirm$confirmButton, 
+                                              "', 'Shiny.setInputValue(\\'discardJob\\',", jID, 
+                                              ",{priority:\\'event\\'})')"),
+                                              lang$nav$importJobsDialog$buttons$discard)
                                 )
                               }
                             )
@@ -887,13 +932,13 @@ getHypercubeJobsTable <- function(hcubeMeta, jobHist = FALSE){
   }else{
     content <- tags$div(style = "padding:20px;text-align:center;",
                         if(jobHist)
-                          lang$nav$hcubeMode$importJobsDialog$noJobsHist
+                          lang$nav$importJobsDialog$noJobsHist
                         else
-                          lang$nav$hcubeMode$importJobsDialog$noJobs
+                          lang$nav$importJobsDialog$noJobs
     )
   }
   if(jobHist){
-    return(getHypercubeJobsTableSkeleton(content = content))
+    return(getJobsTableSkeleton(content = content))
   }else{
     return(content)
   }
@@ -904,14 +949,14 @@ showJobsCompletedDialog <- function(){
     lang$nav$hcubeMode$jobsCompletedDialog$desc,
   fade = TRUE, easyClose = TRUE))
 }
-showJobHistoryDialog <- function(jobMeta){
+showJobHistoryDialog <- function(jobMeta, hcubeMode = TRUE){
   showModal(modalDialog(
-    title = lang$nav$hcubeMode$importJobsDialog$histTitle,
-    getHypercubeJobsTable(jobMeta, jobHist = TRUE),
+    title = lang$nav$importJobsDialog$histTitle,
+    getJobsTable(jobMeta, jobHist = TRUE, hcubeMode = hcubeMode),
     fade = TRUE, easyClose = TRUE, size = "l"
   ))
 }
-showHypercubeLogFileDialog <- function(logContent){
+showJobLogFileDialog <- function(logContent){
   showModal(modalDialog(
     title = lang$nav$hcubeMode$showLogFileDialog$title,
     tags$pre(style = "max-height:500px;max-height:70vh;overflow:auto;",
@@ -921,6 +966,23 @@ showHypercubeLogFileDialog <- function(logContent){
         lang$nav$hcubeMode$showLogFileDialog$noContent
       }
     ),
+    footer = modalButton(lang$nav$hcubeMode$showLogFileDialog$cancelButton),
+    fade = TRUE, easyClose = TRUE
+  ))
+}
+showJobProgressDialog <- function(jID, progressStatus){
+  percentCompleted <- round(progressStatus$noJobsCompleted/progressStatus$noJobs * 100)
+  showModal(modalDialog(
+    title = lang$nav$hcubeMode$showJobProgressDialog$title,
+    tags$div(class = "progress",
+             tags$div(class = "progress-bar progress-bar-striped active", 
+                      id = paste0("hcubeProgress", jID), 
+                      role = "progressbar", `aria-valuenow` = percentCompleted, 
+                      `aria-valuemin` = 0, `aria-valuemax` = 100, 
+                      style = paste0("width:", percentCompleted, "%;"),
+                      paste0(progressStatus$noJobsCompleted, "/", progressStatus$noJobs))
+    ),
+    footer = modalButton(lang$nav$hcubeMode$showJobProgressDialog$cancelButton),
     fade = TRUE, easyClose = TRUE
   ))
 }

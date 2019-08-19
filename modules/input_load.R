@@ -13,11 +13,11 @@ if(!identical(loadMode, "scen")){
       metaDataTmp <- c(metaDataTmp, scalarsInMetaData)
     }
     scenInputData <- loadScenData(scalarsName = scalarsFileName, metaData = metaDataTmp, 
-                                  workDir = dirname(isolate(input$localInput$datapath)), 
+                                  workDir = loadModeWorkDir, 
                                   modelName = modelName, errMsg = lang$errMsg$GAMSInput$badInputData,
                                   scalarsFileHeaders = scalarsFileHeaders,
                                   templates = modelInTemplateTmp, method = loadMode,
-                                  fileName = basename(isolate(input$localInput$datapath)))$tabular
+                                  fileName = loadModeFileName, DDPar = DDPar, GMSOpt = GMSOpt)$tabular
     if(!length(scenInputData)){
       return()
     }

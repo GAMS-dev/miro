@@ -66,6 +66,8 @@
       },
       "boxGamsOutput":{  
         "title":"GAMS output",
+        "tabCurrent": "Current job",
+        "tabJobList": "Job list",
         "gamsOutputTabset":{  
           "logFile":"Log file",
           "lstFile":"Listing file",
@@ -137,6 +139,7 @@
       "submission": "Model is being submitted",
       "queued": "Model queued",
       "exec":"Model execution phase",
+      "collection": "Results are being downloaded",
       "success":"Run successfully terminated.",
       "error":"Run did not terminate successfully: "
     },
@@ -443,6 +446,56 @@
         "desc": "You specified a step size that could not be processed. Please select a valid step size and try again."
       }
     },
+    "importJobsDialog":{
+      "title": "Currently active jobs",
+      "noJobs": "No jobs are currently active",
+      "noJobsHist": "No discarded or imported jobs could be found",
+      "discardSuccess": "Job was discarded",
+      "importSuccess": "Job was imported successfully",
+      "accessDenied": "Access denied",
+      "histTitle": "Job history",
+      "ttips":{
+        "importedManual": "The job was manually imported.",
+        "discardedCorrupted": "The job was corrupted.",
+        "discardedActive": "The job was still active.",
+        "discardedScheduled": "The job was scheduled.",
+        "discardedCompleted": "The job was completed.",
+        "corruptedNoDir": "The working directory of the job could not be located.",
+        "corruptedNoProcess": "The job is terminated, but no results were found.",
+        "corruptedManual": "The manual job import failed."
+      },      
+      "header":{
+        "owner": "Owner",
+        "date": "Submission date",
+        "tags": "Job tags",
+        "status": "Status",
+        "action": "Action"
+      },
+      "buttons":{
+        "import": "Import",
+        "log": "Show log",
+        "progress": "Show progress",
+        "discard": "Discard"
+      },
+      "importConfirm":{
+        "title": "Confirm import",
+        "desc": "Are you sure you want to import the selected job?",
+        "cancelButton": "Cancel",
+        "confirmButton": "Confirm"
+      },
+      "discardConfirm":{
+        "title": "Confirm discard",
+        "desc": "Are you sure you want to discard the selected job? Running jobs will be stopped.",
+        "cancelButton": "Cancel",
+        "confirmButton": "Confirm"
+      }
+    },
+    "newCompletedJobsDialog":{
+      "title": "New completed jobs",
+      "desc": "Some of your jobs have been solved and are now ready for import.",
+      "cancelButton": "Cancel",
+      "okButton": "Show jobs"
+    },
     "hcubeMode":{
       "sliderAllCombinations": "All combinations?",
       "checkboxAliases":["No", "Yes"],
@@ -481,48 +534,6 @@
         "importNewButton": "Import only new",
         "importAllButton": "Import all"
       },
-      "importJobsDialog":{
-        "title": "Currently active Hypercube jobs",
-        "noJobs": "No Hypercube jobs are currently active",
-        "noJobsHist": "No discarded or imported Hypercube jobs could be found",
-        "discardSuccess": "Job was discarded",
-        "importSuccess": "Job was imported successfully",
-        "histTitle": "Job history",
-        "ttips":{
-          "importedManual": "The job was manually imported.",
-          "discardedCorrupted": "The job was corrupted.",
-          "discardedActive": "The job was still active.",
-          "discardedScheduled": "The job was scheduled.",
-          "discardedCompleted": "The job was completed.",
-          "corruptedNoDir": "The working directory of the job could not be located.",
-          "corruptedNoProcess": "The job is terminated, but no results were found.",
-          "corruptedManual": "The manual job import failed."
-        },      
-        "header":{
-          "owner": "Owner",
-          "date": "Submission date",
-          "tags": "Job tags",
-          "status": "Status",
-          "action": "Action"
-        },
-        "buttons":{
-          "import": "Import",
-          "log": "Show log",
-          "discard": "Discard"
-        },
-        "importConfirm":{
-          "title": "Confirm import",
-          "desc": "Are you sure you want to import the selected Hypercube job?",
-          "cancelButton": "Cancel",
-          "confirmButton": "Confirm"
-        },
-        "discardConfirm":{
-          "title": "Confirm discard",
-          "desc": "Are you sure you want to discard the selected Hypercube job? Running jobs will be stopped.",
-          "cancelButton": "Cancel",
-          "confirmButton": "Confirm"
-        }
-      },
       "manualJobImportDialog":{
         "title": "Manual Hypercube job import",
         "uploadZip":"Upload zip file with results here",
@@ -533,7 +544,12 @@
       "showLogFileDialog":{
         "title": "Hypercube job log file",
         "noContent": "The log file could not be accessed or does not contain any data.",
-        "fileSize": "The log file contains too much data to be displayed."
+        "fileSize": "The log file contains too much data to be displayed.",
+        "cancelButton": "Cancel"
+      },
+      "showJobProgressDialog":{
+        "title": "Job progress",
+        "cancelButton": "Cancel"
       },
       "jobsCompletedDialog":{
         "title": "Completed jobs",
@@ -555,6 +571,12 @@
       "title":"Preparing optimization run",
       "sendInput":"Sending input data",
       "downloadAttach": "Downloading attachments"
+    },
+    "importScen":{
+      "title": "Importing scenario",
+      "downloadResults": "Downloading result data",
+      "renderInput": "Rendering input data",
+      "renderOutput": "Rendering output data"
     },
     "loadScenDb":{  
       "title":"Loading scenario data from database",

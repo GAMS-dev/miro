@@ -20,9 +20,6 @@ if(scalarsOutName %in% names(modelOut)){
 gmsColTypes <- db$getDbSchema()$colTypes
 gmsFileHeaders <- db$getDbSchema()$colNames
 
-hcubeMeta <- "e"
-hcubeMetaHistory <- "e"
-
 disableEl(session, "#btUploadHcube")
 
 # initialise hcube import class
@@ -38,59 +35,6 @@ rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
 hcubeTags         <- character(0L)
 zipFilePath       <- NULL
-currentJobID      <- NULL
-
-interruptProcess <- function(pid){
-  currentOs <- tolower(getOS()[[1]])
-  if(currentOs == 'windows'){
-    processx::run(command = 'taskkill', args = c("/F", "/PID", pid, "/T"), 
-                  windows_hide_window = TRUE, timeout = 10L)
-  }else if (currentOs %in% c('linux', 'osx')){
-    processx::run(command = 'kill', args = c("-SIGKILL", -pid), timeout = 10L)
-  }else{
-    stop(sprintf("Operating system: '%s' not supported.", currentOs), call. = FALSE)
-  }
-}
-updateJobMetadata <- function(jID, status = NULL, tags = NULL, scode = NULL){
-  rowId                      <- hcubeMeta[[1]] == jID
-  jobMeta                    <- hcubeMeta[rowId, ]
-  if(identical(status, "discard")){
-    currentStatus <- strsplit(jobMeta[[snameIdentifier]], "_", fixed = TRUE)[[1]]
-    jPid                       <- currentStatus[1]
-    currentStatus              <- currentStatus[2]
-    if(identical(currentStatus, "running")){
-      tryCatch(interruptProcess(jPid), error = function(e){
-        flog.info("Running process (pid: '%s') could not be stopped. Maybe process already terminated?.", jPid)
-      })
-    }
-    status <- paste0("_discarded(", currentStatus, ")_")
-    if(unlink(file.path(currentModelDir, hcubeDirName, jID), recursive = TRUE)){
-      flog.warn("Could not delete working directory for Hypercube job: '%s'. Please remove manually!", jID)
-    }
-  }else if(identical(status, "imported")){
-    if(unlink(file.path(currentModelDir, hcubeDirName, jID), recursive = TRUE)){
-      flog.warn("Could not delete working directory for Hypercube job: '%s'. Please remove manually!", jID)
-    }
-    status <- "_imported_"
-  }
-  jobMeta[, snameIdentifier]   <- status
-  if(length(tags)){
-    jobMeta[, stagIdentifier]  <- vector2Csv(tags)
-  }
-  if(endsWith(status, "_")){
-    hcubeMeta                  <<- hcubeMeta[!rowId, ]
-    hcubeMetaHistory           <<- bind_rows(hcubeMetaHistory, jobMeta)
-  }else{
-    hcubeMeta[rowId, ]         <<- jobMeta
-  }
-  tryCatch({
-    db$updateHypercubeJob(jID, tags = tags, status = status, scode = scode)
-  }, error = function(e){
-    stop(sprintf("Problems updating Hypercube job with job ID: '%s'. Error message: '%s'.", jID, e), 
-         call. = FALSE)
-  })
-  return(invisible())
-}
 
 ##############
 #      1
@@ -200,7 +144,7 @@ observeEvent(virtualActionButton(rv$btSave), {
   errMsg <- NULL
   removeModal()
   tryCatch({
-    hcubeImport$saveScenarios(hcubeTags, jobID = currentJobID, readPerm = uid, 
+    hcubeImport$saveScenarios(hcubeTags, jobID = jobImportID, readPerm = uid, 
                               writePerm = uid, execPerm = uid, progressBar = prog)
   }, error = function(e){
     flog.error("Problems exporting scenarios. Error message: %s.", e)
@@ -212,32 +156,29 @@ observeEvent(virtualActionButton(rv$btSave), {
   prog$inc(amount = 1/2, detail = lang$progressBar$hcubeImport$success)
   # clean up
   if(manualJobImport){
-    statusCode <- "_imported(man)_"
+    statusCode <- JOBSTATUSMAP[["imported(man)"]]
   }else{
-    statusCode <- "imported"
+    statusCode <- JOBSTATUSMAP[["imported"]]
   }
-  tryCatch(updateJobMetadata(currentJobID, status = statusCode, 
-                             tags = hcubeTags, scode = hcubeImport$getNoScen()),
+  tryCatch(worker$updateJobStatus(statusCode, jobImportID, tags = hcubeTags),
            error = function(e){
              flog.error(e)
              showHideEl(session, "#fetchJobsError")
            })
-  showEl(session, "#jImport_load")
-  hcubeMetaDisplay      <- arrange(hcubeMeta, desc(!!as.name(stimeIdentifier)))
-  output$jImport_output <- renderUI(getHypercubeJobsTable(hcubeMetaDisplay))
-  hideEl(session, "#jImport_load")
-  showHideEl(session, "#fetchJobsImported")
+  rv$jobListPanel <- rv$jobListPanel + 1L
 })
 
 observeEvent(input$btManualImport, {
   flog.trace("Import manual Hypercube job button clicked.")
   showManualJobImportDialog()
 })
+
 observeEvent(input$hcubeImport, {
   enableEl(session, "#btUploadHcube")
   tag <- gsub("\\..+$", "", input$hcubeImport$name)
   updateSelectInput(session, "hcubeTags", choices = tag, selected = tag)
 }, priority = 1000)
+
 observeEvent(input$btUploadHcube, {
   req(input$hcubeImport)
   flog.trace("Upload manual Hypercube job button clicked.")
@@ -246,7 +187,12 @@ observeEvent(input$btUploadHcube, {
   zipFilePath       <<- input$hcubeImport$datapath
   noErr <- TRUE
   tryCatch({
-    currentJobID    <<- db$writeMetaHcube(hcubeTags, manual = TRUE)
+    jIDtmp <- worker$addJobDb("", NULL, tags = hcubeTags, 
+                              status = JOBSTATUSMAP[['corrupted(man)']])
+    if(identical(jIDtmp, -1L)){
+      stop(call. = FALSE)
+    }
+    jobImportID    <<- jIDtmp
   }, error = function(e){
     showHideEl(session, "#manHcubeImportUnknownError")
     flog.error("Problems writing Hypercube job metadata to database. Error message: '%s'.", e)
@@ -254,113 +200,96 @@ observeEvent(input$btUploadHcube, {
   })
   if(!noErr)
     return()
-  rv$refreshActiveJobs <- rv$refreshActiveJobs + 1L
+  rv$jobListPanel <- rv$jobListPanel + 1L
   manualJobImport <<- TRUE
   removeModal()
   rv$uploadHcube <- rv$uploadHcube + 1L
 })
 
-observeEvent(virtualActionButton(input$refreshActiveJobs, rv$refreshActiveJobs), {
-  flog.trace("Refresh active jobs button clicked.")
-  showEl(session, "#jImport_load")
-  hcubeMetaDisplay <- NULL
-  tryCatch({
-    hcubeMeta_tmp    <- db$getMetaHcube()
-    hcubeMeta        <<- filter(hcubeMeta_tmp, !endsWith(!!as.name(snameIdentifier), "_")) 
-    hcubeMetaHistory <<- dplyr::setdiff(hcubeMeta_tmp, hcubeMeta)
-  }, error = function(e){
-    flog.error("Problems fetching Hypercube job metadata. Error message: '%s'.", e)
-  })
-  jobsCompleted <- FALSE
-  jobsCorrupted <- FALSE
-  if(length(nrow(hcubeMeta)) && nrow(hcubeMeta)){
-    tryCatch({
-      for(jID in hcubeMeta[[1L]]){
-        jobDir <- file.path(currentModelDir, hcubeDirName, jID)
-        jStatus <- strsplit(hcubeMeta[hcubeMeta[[1L]] == jID, ][[snameIdentifier]], 
-                            "_", fixed = TRUE)[[1L]][2L]
-        if(dir.exists(jobDir)[1]){
-          if(!identical(jStatus, "completed") && file.exists(file.path(jobDir, "4upload.zip"))){
-            updateJobMetadata(jID, status = "_completed")
-          }else if(!startsWith(jStatus, "corrupted")){
-            pid <- strsplit(hcubeMeta[hcubeMeta[[1L]] == jID, , drop = FALSE][[snameIdentifier]], 
-                            "_", fixed = TRUE)[[1L]][1L]
-            if(!identical(pid, "") && !pidExists(pid)){
-              flog.info("Job with ID: '%s' is not running anymore, but results archive could not be found. Job was marked: 'corrupted'.", jID)
-              updateJobMetadata(jID, status = "_corrupted(noProcess)")
-            }
-          } 
-        }else if(!startsWith(jStatus, "corrupted")){
-          flog.info("Job with ID: '%s' could not be accessed (directory is missing or lacks read permissions). Job was marked: 'corrupted'.", jID)
-          updateJobMetadata(jID, status = "_corrupted(noDir)")
-        }
-      }
-    }, error = function(e){
-      flog.error("Problems refreshing Hypercube job statuses. Error message: '%s'.", e)
-      showHideEl(session, "#fetchJobsError")
-    })
-  }
-  if(length(nrow(hcubeMeta))){
-    hcubeMetaDisplay <- arrange(hcubeMeta, desc(!!as.name(stimeIdentifier)))
-  }
-  output$jImport_output <- renderUI(getHypercubeJobsTable(hcubeMetaDisplay))
-  hideEl(session, "#jImport_load")
-  if(jobsCompleted){
-    showJobsCompletedDialog()
-  }
-}, ignoreNULL = FALSE)
-
-observeEvent(input$showHypercubeLog, {
-  jID <- isolate(input$showHypercubeLog)
-  flog.trace("Show Hypercube log button clicked. Job ID: '%s'.", jID)
-  if(!is.integer(jID) || length(jID) != 1L){
-    flog.error("Invalid job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  }
-  hasReadPerm <- jID %in% hcubeMeta[[1]]
-  if(!hasReadPerm){
-    flog.error("A Hypercube job that user has no read permissions was attempted to fetch. Job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  }
-  jobDir      <- file.path(currentModelDir, hcubeDirName, jID)
-  logFilePath <- file.path(jobDir, jID %+% ".log")
-  logContent  <- NULL
-  if(file.access(logFilePath, 4L) != -1L){
-    try(
-      logContent <- readChar(logFilePath, file.info(logFilePath)$size)
-    )
-    logSize    <- file.info(logFilePath)$size
-    logContent <- paste0(if(logSize > (3e4 + 1)) "[...]\n", 
-                         substr(logContent, logSize - 3e4, logSize))
+getJobProgress <- function(jID){
+  if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['running']])){
+    return(NULL)
   }
   
-  showHypercubeLogFileDialog(logContent)
+  if(is.na(jID) || length(jID) != 1L)
+    stop(sprintf("Invalid job ID: '%s'.", jID), call. = FALSE)
+  
+  jobDir      <- file.path(currentModelDir, hcubeDirName, jID)
+  logFilePath <- file.path(jobDir, jID %+% ".log")
+  
+  if(file.access(logFilePath, 4L) != -1L){
+    logContent <- tryCatch(
+      readLines(logFilePath, n = 1L)
+      , error = function(e){
+        stop(sprintf("Could not fetch Hypercube progress status. Error message: '%s'.", 
+                     conditionMessage(e)), call. = FALSE)
+      })
+  }else{
+    stop(sprintf("Could not access Hypercube log file: '%s'. Insufficient access permissions.",
+                 logFilePath), call. = FALSE)
+  }
+  errMsg <- "Progress status could not be determined. Invalid progress file format."
+  progressStatus <- strsplit(logContent, "/", fixed = TRUE)[[1L]]
+  if(length(progressStatus) != 2L)
+    stop(errMsg, call. = FALSE)
+  noJobsCompleted <- suppressWarnings(as.integer(progressStatus[[1L]]))
+  noJobs <- suppressWarnings(as.integer(progressStatus[[2L]]))
+  
+  if(any(is.na(c(noJobsCompleted, noJobs))))
+    stop(errMsg, call. = FALSE)
+  if(identical(noJobsCompleted, noJobs)){
+    rv$jobListPanel <- rv$jobListPanel + 1L
+    removeModal()
+    return(NULL)
+  }
+  return(list(noCompleted = noJobsCompleted, noJobs = noJobs))
+}
+observeEvent(input$updateJobProgress, {
+  jID <- suppressWarnings(as.integer(isolate(input$updateJobProgress)))
+  flog.trace("Update Hypercube progress requested. Job ID: '%s'.", jID)
+  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
+    flog.error(conditionMessage(e))
+    return(NULL)
+  })
+  if(is.null(currentProgress)){
+    return()
+  }
+  session$sendCustomMessage("gms-updateJobProgress", 
+                            list(id = jID, progress = currentProgress))
+})
+observeEvent(input$showJobProgress, {
+  jID <- suppressWarnings(as.integer(isolate(input$showJobProgress)))
+  flog.trace("Show Hypercube progress button clicked. Job ID: '%s'.", jID)
+  currentProgress <- tryCatch(getJobProgress(jID), error = function(e){
+    errMsg <- conditionMessage(e)
+    flog.error(errMsg)
+    showHideEl(session, "#fetchJobsError")
+    return()
+  })
+  if(is.null(currentProgress)){
+    return()
+  }
+  
+  showJobProgressDialog(jID, currentProgress)
+  session$sendCustomMessage("gms-startUpdateJobProgress", 
+                            jID)
 })
 
-observeEvent(input$importHypercubeJob, {
-  jID <- isolate(input$importHypercubeJob)
+observeEvent(input$importJob, {
+  jID <- isolate(input$importJob)
   flog.trace("Import Hypercube job button clicked. Job ID: '%s'.", jID)
   if(!is.integer(jID) || length(jID) != 1L){
     flog.error("Invalid job ID: '%s'.", jID)
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  hasReadPerm <- jID %in% hcubeMeta[[1]]
-  if(!hasReadPerm){
-    flog.error("A Hypercube job that user has no read permissions was attempted to fetch. Job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  }
-  isCompleted <- grepl("completed", hcubeMeta[hcubeMeta[[1]] == jID, snameIdentifier])[[1L]]
-  if(!isCompleted){
+  if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['completed']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
   }
   hcubeTags    <<- vector2Csv(isolate(input[["jTag_" %+% jID]]))
   zipFilePath  <<- file.path(currentModelDir, hcubeDirName, jID, "4upload.zip")
-  currentJobID <<- jID
+  jobImportID  <<- jID
   if(file.access(zipFilePath, 4L) == -1L){
     flog.error("Zip file with Hypercube job results was removed during import process (Job ID: '%s').", jID)
     showHideEl(session, "#fetchJobsError")
@@ -368,40 +297,4 @@ observeEvent(input$importHypercubeJob, {
   manualJobImport <<- FALSE
   disableEl(session, "#jImport_" %+% jID)
   rv$uploadHcube <- rv$uploadHcube + 1L
-})
-
-observeEvent(input$discardHypercubeJob, {
-  removeModal()
-  jID <- isolate(input$discardHypercubeJob)
-  flog.trace("Discard Hypercube job button clicked. Job ID: '%s'.", jID)
-  if(!is.integer(jID) || length(jID) != 1L){
-    flog.error("Invalid job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  }
-  hasReadPerm <- jID %in% hcubeMeta[[1]]
-  if(!hasReadPerm){
-    flog.error("A Hypercube job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
-    return()
-  }
-  noErr <- TRUE
-  tryCatch(updateJobMetadata(jID, status = "discard", tags = isolate(input[["jTag_" %+% jID]])),
-           error = function(e){
-             flog.error(e)
-             showHideEl(session, "#fetchJobsError")
-             noErr <<- FALSE
-           })
-  showEl(session, "#jImport_load")
-  hcubeMetaDisplay           <- arrange(hcubeMeta, desc(!!as.name(stimeIdentifier)))
-  output$jImport_output      <- renderUI(getHypercubeJobsTable(hcubeMetaDisplay))
-  hideEl(session, "#jImport_load")
-  showHideEl(session, "#fetchJobsDiscarded")
-})
-observeEvent(input$btShowHistory, {
-  hcubeMetaDisplay <- tibble()
-  if(length(hcubeMetaHistory)){
-    hcubeMetaDisplay <- arrange(hcubeMetaHistory, desc(!!as.name(stimeIdentifier)))
-  }
-  showJobHistoryDialog(hcubeMetaDisplay)
 })
