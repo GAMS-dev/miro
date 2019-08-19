@@ -942,7 +942,7 @@ Worker <- R6Class("Worker", public = list(
   getGAMSRetCode = function(pID){
     if(private$remote){
       return(private$validateAPIResponse(
-        private$getRemoteStatus(pID))$gams_ret_code)
+        private$getRemoteStatus(pID)))
     }
     return("")
   },
