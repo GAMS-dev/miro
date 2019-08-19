@@ -1,5 +1,5 @@
 #version number
-MIROVersion <- "0.8.3"
+MIROVersion <- "0.8.4"
 MIRORDate   <- "Aug 19 2019"
 #####packages:
 # processx        #MIT

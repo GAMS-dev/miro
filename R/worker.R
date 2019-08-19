@@ -44,33 +44,22 @@ Worker <- R6Class("Worker", public = list(
     if(!startsWith(url, "https://")){
       stop(426, call. = FALSE)
     }
+    ret <- HEAD(url, timeout(2L))$url
+    if(!startsWith(ret, "https://")){
+      stop(426, call. = FALSE)
+    }
     private$metadata$username  <- username
     private$metadata$useRegistered <- useRegistered
     private$metadata$password  <- password
     private$buildAuthHeader(FALSE)
     
-    if(rememberMeFlag){
-      sessionToken <- private$validateAPIResponse(POST(
-        url = paste0(url, "/auth/"), 
-        add_headers(Authorization = private$authHeader,
-                    Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-        timeout(2L)))$token
-      
-      private$metadata$password  <- sessionToken
-      write_json(list(url = url,
-                      username = username, 
-                      password = sessionToken,
-                      namespace = namespace,
-                      reg = useRegistered), 
-                 private$metadata$rememberMeFileName, auto_unbox = TRUE)
-    }
     private$metadata$namespace <- namespace
     ret <- GET(url = paste0(url, "/namespaces/", namespace, "/permissions/me"), 
                 add_headers(Authorization = private$authHeader,
                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                 timeout(2L))
     retContent <- tryCatch({
-      content(ret, type = 'application/json', 
+      content(ret, type = "application/json", 
               encoding = "utf-8")
     }, error = function(e){
       stop(404L, call. = FALSE)
@@ -84,6 +73,22 @@ Worker <- R6Class("Worker", public = list(
       if(identical(useRegistered, TRUE)){
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
+        
+        if(rememberMeFlag){
+          sessionToken <- private$validateAPIResponse(POST(
+            url = paste0(url, "/auth/"), 
+            add_headers(Authorization = private$authHeader,
+                        Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+            timeout(2L)))$token
+          
+          private$metadata$password  <- sessionToken
+          write_json(list(url = url,
+                          username = username, 
+                          password = sessionToken,
+                          namespace = namespace,
+                          reg = useRegistered), 
+                     private$metadata$rememberMeFileName, auto_unbox = TRUE)
+        }
         return(200L)
       }
       if(permissionLevel < 7L)

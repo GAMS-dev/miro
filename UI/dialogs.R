@@ -971,7 +971,7 @@ showJobLogFileDialog <- function(logContent){
   ))
 }
 showJobProgressDialog <- function(jID, progressStatus){
-  percentCompleted <- round(progressStatus$noJobsCompleted/progressStatus$noJobs * 100)
+  percentCompleted <- round(progressStatus$noCompleted/progressStatus$noJobs * 100)
   showModal(modalDialog(
     title = lang$nav$hcubeMode$showJobProgressDialog$title,
     tags$div(class = "progress",
@@ -980,7 +980,7 @@ showJobProgressDialog <- function(jID, progressStatus){
                       role = "progressbar", `aria-valuenow` = percentCompleted, 
                       `aria-valuemin` = 0, `aria-valuemax` = 100, 
                       style = paste0("width:", percentCompleted, "%;"),
-                      paste0(progressStatus$noJobsCompleted, "/", progressStatus$noJobs))
+                      paste0(progressStatus$noCompleted, "/", progressStatus$noJobs))
     ),
     footer = modalButton(lang$nav$hcubeMode$showJobProgressDialog$cancelButton),
     fade = TRUE, easyClose = TRUE

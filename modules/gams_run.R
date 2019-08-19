@@ -282,8 +282,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       }
       worker$runHcube(staticData, scenGmsPar, sid, tags = isolate(input$newHcubeTags), 
                       attachmentFilePaths = attachmentFilePaths)
-      showHideEl(session, "#hcubeSubmitSuccess", 3000)
-      hideModal(session, 3L)
+      showHideEl(session, "#hcubeSubmitSuccess", 2000)
+      hideModal(session, 2L)
     }, error = function(e){
       flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
       showHideEl(session, "#hcubeSubmitUnknownError", 6000)
@@ -316,8 +316,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       }
       worker$runHcube(staticData, hcubeScen, sid, tags = isolate(input$newHcubeTags), 
                       attachmentFilePaths = attachmentFilePaths)
-      showHideEl(session, "#hcubeSubmitSuccess", 3000)
-      hideModal(session, 3L)
+      showHideEl(session, "#hcubeSubmitSuccess", 2000)
+      hideModal(session, 2L)
     }, error = function(e){
       flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
       showHideEl(session, "#hcubeSubmitUnknownError", 6000)
