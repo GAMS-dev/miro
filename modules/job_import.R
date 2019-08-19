@@ -36,7 +36,7 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if(!worker$canImport(jobImportID)){
+  if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
   }
@@ -71,7 +71,7 @@ observeEvent(
   virtualActionButton(input$importJobNew, rv$importJobNew), {
     removeModal()
     errMsg <- NULL
-    if(!worker$canImport(jobImportID)){
+    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
       flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
       showHideEl(session, "#fetchJobsError")
     }
@@ -93,7 +93,7 @@ observeEvent(virtualActionButton(
   input$importJobConfirm,
   rv$importJobConfirm), {
     req(identical(length(jobImportID), 1L), !is.null(activeScen))
-    if(!worker$canImport(jobImportID)){
+    if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
       flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
       showHideEl(session, "#fetchJobsError")
     }

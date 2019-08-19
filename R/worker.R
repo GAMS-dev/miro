@@ -233,7 +233,6 @@ Worker <- R6Class("Worker", public = list(
       colNames <- c(colNames, private$dbColNames[['pid']])
       values   <- c(values, pID)
     }
-    
     private$db$updateRows(private$dbTabName, 
                           tibble(private$dbColNames[[1L]], jID), 
                           colNames = colNames, values = values)
@@ -942,7 +941,7 @@ Worker <- R6Class("Worker", public = list(
   getGAMSRetCode = function(pID){
     if(private$remote){
       return(private$validateAPIResponse(
-        private$getRemoteStatus(pID)))
+        private$getRemoteStatus(pID))$gams_return_code)
     }
     return("")
   },
