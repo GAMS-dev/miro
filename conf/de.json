@@ -1138,7 +1138,8 @@
         "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte"]
       },
       "validate":{
-        "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!"
+        "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
+        "pieValues": "Das ausgewählte Symbol hat zu viele Werte, um als Kuchendiagramm angezeigt zu werden. Die maximale Anzahl der Werte, die in einem Kuchendiagramm dargestellt werden können, beträgt 100."
       },
       "errMsg":{
         "errTitle1": "Keine gültigen Daten",

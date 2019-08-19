@@ -1877,11 +1877,17 @@ observe({
   }
   tryCatch({
     if(isolate(rv$graphConfig$graph$tool) == "plotly"){
-      callModule(renderData, "preview_output_plotly", type = rv$graphConfig$outType, 
-                 data = data, configData = configScalars, 
-                 graphOptions = rv$graphConfig$graph,
-                 roundPrecision = roundPrecision, modelDir = modelDir)
-      showEl(session, "#preview-content-plotly")
+      if(identical(rv$graphConfig$graph$type, "pie") && nrow(data[rv$graphConfig$graph$values]) > 100){
+          showEl(session, "#pieValues")
+          hideEl(session, "#preview-content-plotly")
+      }else{
+        callModule(renderData, "preview_output_plotly", type = rv$graphConfig$outType, 
+                   data = data, configData = configScalars, 
+                   graphOptions = rv$graphConfig$graph,
+                   roundPrecision = roundPrecision, modelDir = modelDir)
+        showEl(session, "#preview-content-plotly")
+        hideEl(session, "#pieValues")
+      }
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
@@ -1894,6 +1900,7 @@ observe({
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
@@ -1907,6 +1914,7 @@ observe({
       showEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
@@ -1917,6 +1925,7 @@ observe({
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraph")
@@ -1932,6 +1941,7 @@ observe({
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
     }else{
@@ -1941,6 +1951,7 @@ observe({
                  roundPrecision = roundPrecision, modelDir = modelDir)
       showEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
@@ -1950,6 +1961,7 @@ observe({
   }, error = function(e) {
     hideEl(session, "#preview-content-dygraph")
     hideEl(session, "#preview-content-plotly")
+    hideEl(session, "#pieValues")
     hideEl(session, "#preview-content-leaflet")
     hideEl(session, "#preview-content-pivot")
     hideEl(session, "#preview-content-timevis")

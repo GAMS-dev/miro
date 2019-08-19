@@ -39,13 +39,16 @@
 @btn-default-color-dark:      @btn-color-custom-darken-dark;   //before: #333;
 
 //** `<input>` background color
-@input-bg-dark:               @modal-bg-dark;                  //before: #fff; (now: e.g. textinput color. same as dropdown:@modal-bg;)
+@input-bg-dark:               @dropdown-background-dark;       //before: #fff; (now: e.g. textinput color. same as dropdown:@modal-bg;)
  
 //** Background for the dropdown menu.
 @dropdown-bg-dark:            @modal-bg-dark;                  //before: #fff;
 
 //** Background color of modal content area
 @modal-content-bg-dark:       @modal-bg-dark;                  //before: #fff;
+
+//** Placeholder text color
+@input-color-placeholder-dark: #646464;                        //before: #999;
 
 ///////////////////////////////////////////////////////
 
@@ -98,6 +101,8 @@
 //** Background color of modal content area
 @modal-content-bg:       #fff;
 
+//** Placeholder text color
+@input-color-placeholder:        #999;
 ///////////////////////////////////////////////////////
 //change mode for static/browser-responsive css compilation
 @mode: "browser";
@@ -222,7 +227,7 @@
 @btn-primary-border-dark:                   darken(@btn-primary-bg-dark, 5%);
 @btn-link-disabled-color-dark:              @gray-light-dark;
 //** Text color for `<input>`s         
-@input-color-dark:                          @gray-dark;
+@input-color-dark:                          #000;
 //** `<input disabled>` background color
 @input-bg-disabled-dark:                    @gray-lighter-dark;
 @legend-color-dark:                         @gray-darken-dark;
@@ -464,9 +469,6 @@
 @input-border-radius-large:      @border-radius-large;
 //** Small `.form-control` border radius
 @input-border-radius-small:      @border-radius-small;
-
-//** Placeholder text color
-@input-color-placeholder:        #999;
 
 //** Default `.form-control` height
 @input-height-base:              (@line-height-computed + (@padding-base-vertical * 2) + 2);

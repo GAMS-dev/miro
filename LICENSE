@@ -126,6 +126,7 @@ these components are included below):
 - MASS, https://cran.r-project.org/web/packages/MASS/index.html
 - gridExtra, https://cran.r-project.org/web/packages/gridExtra/index.html
 - lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
+- fastmap, https://github.com/r-lib/fastmap or https://cran.r-project.org/web/packages/fastmap/index.html
 
 - pandas https://github.com/pandas-dev/pandas
 - pandas_datareader https://github.com/pydata/pandas-datareader
@@ -133,6 +134,7 @@ these components are included below):
 - geopy https://github.com/geopy/geopy
 - Pillow https://github.com/python-pillow/Pillow
 
+- libuv https://github.com/libuv/libuv
 
 jQuery license and license for included components from jQuery UI
 ----------------------------------------------------------------------
@@ -2024,7 +2026,8 @@ Public License instead of this License.
                                                  ,Serphentas ,svalee <triksrimer@gmail.com> ,Svetlana Konovalova ,Sébastien Barré <sheub@users.noreply.github.com>
                                                  ,Thomas <thomas_gratier@yahoo.fr> ,Tom Wallroth <tomwallroth@gmail.com> ,tony <jinzc1@lenovo.com> ,tristan <tristanhomsi@gmail.com>
                                                  ,Vladimir Kalinkin <vova.kalinkin@gmail.com> ,William Hammond <william.t.hammond@gmail.com> ,willr <willr@plotwatt.com> ,Yorick Holkamp <github@nextpulse.nl>
-                                                 
+        - fastmap, Copyright (c) 2019 RStudio
+        
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
 
@@ -4020,3 +4023,97 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.  
+
+
+-----------------------------------------------------------------------------
+
+
+libuv is licensed for use as follows:
+
+====
+Copyright (c) 2015-present libuv project contributors.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+====
+
+This license applies to parts of libuv originating from the
+https://github.com/joyent/libuv repository:
+
+====
+
+Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+====
+
+This license applies to all parts of libuv that are not externally
+maintained libraries.
+
+The externally maintained libraries used by libuv are:
+
+  - tree.h (from FreeBSD), copyright Niels Provos. Two clause BSD license.
+
+  - inet_pton and inet_ntop implementations, contained in src/inet.c, are
+    copyright the Internet Systems Consortium, Inc., and licensed under the ISC
+    license.
+
+  - stdint-msvc2008.h (from msinttypes), copyright Alexander Chemeris. Three
+    clause BSD license.
+
+  - pthread-fixes.c, copyright Google Inc. and Sony Mobile Communications AB.
+    Three clause BSD license.
+
+  - android-ifaddrs.h, android-ifaddrs.c, copyright Berkeley Software Design
+    Inc, Kenneth MacKay and Emergya (Cloud4all, FP7/2007-2013, grant agreement
+    nÂ° 289016). Three clause BSD license.
+
+
+
+
+http_parser.c is based on src/http/ngx_http_parse.c from NGINX copyright
+Igor Sysoev.
+
+Additional changes are licensed under the same terms as NGINX and
+copyright Joyent, Inc. and other Node contributors. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.

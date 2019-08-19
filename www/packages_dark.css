@@ -857,7 +857,7 @@ pre.shiny-text-output {
 }
 .datepicker table tr td.day:hover,
 .datepicker table tr td.focused {
-  background: #eeeeee;
+  background: #848991;
   cursor: pointer;
 }
 .datepicker table tr td.disabled,
@@ -1203,22 +1203,22 @@ fieldset[disabled] .datepicker table tr td.selected.highlighted.focus {
 .datepicker table tr td.active.focus,
 .datepicker table tr td.active.highlighted.focus {
   color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
+  background-color: #76b8bb;
+  border-color: #00adb5;
 }
 .datepicker table tr td.active:hover,
 .datepicker table tr td.active.highlighted:hover {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #76b8bb;
+  border-color: #54a6aa;
 }
 .datepicker table tr td.active:active,
 .datepicker table tr td.active.highlighted:active,
 .datepicker table tr td.active.active,
 .datepicker table tr td.active.highlighted.active {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #76b8bb;
+  border-color: #54a6aa;
 }
 .datepicker table tr td.active:active:hover,
 .datepicker table tr td.active.highlighted:active:hover,
@@ -1233,8 +1233,8 @@ fieldset[disabled] .datepicker table tr td.selected.highlighted.focus {
 .datepicker table tr td.active.active.focus,
 .datepicker table tr td.active.highlighted.active.focus {
   color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
+  background-color: #54a6aa;
+  border-color: #00adb5;
 }
 .datepicker table tr td.active.disabled:hover,
 .datepicker table tr td.active.highlighted.disabled:hover,
@@ -1269,7 +1269,7 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 }
 .datepicker table tr td span:hover,
 .datepicker table tr td span.focused {
-  background: #eeeeee;
+  background: #848991;
 }
 .datepicker table tr td span.disabled,
 .datepicker table tr td span.disabled:hover {
@@ -1295,16 +1295,16 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.focus,
 .datepicker table tr td span.active.disabled:hover.focus {
   color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
+  background-color: #76b8bb;
+  border-color: #00adb5;
 }
 .datepicker table tr td span.active:hover,
 .datepicker table tr td span.active:hover:hover,
 .datepicker table tr td span.active.disabled:hover,
 .datepicker table tr td span.active.disabled:hover:hover {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #76b8bb;
+  border-color: #54a6aa;
 }
 .datepicker table tr td span.active:active,
 .datepicker table tr td span.active:hover:active,
@@ -1315,8 +1315,8 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.active,
 .datepicker table tr td span.active.disabled:hover.active {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #76b8bb;
+  border-color: #54a6aa;
 }
 .datepicker table tr td span.active:active:hover,
 .datepicker table tr td span.active:hover:active:hover,
@@ -1343,8 +1343,8 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.active.focus,
 .datepicker table tr td span.active.disabled:hover.active.focus {
   color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
+  background-color: #54a6aa;
+  border-color: #00adb5;
 }
 .datepicker table tr td span.active.disabled:hover,
 .datepicker table tr td span.active:hover.disabled:hover,
@@ -1402,7 +1402,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .datepicker .prev:hover,
 .datepicker .next:hover,
 .datepicker tfoot tr th:hover {
-  background: #eeeeee;
+  background: #848991;
 }
 .datepicker .cw {
   font-size: 10px;
@@ -4271,7 +4271,7 @@ output {
   padding-top: 7px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #999;
+  color: #000;
 }
 .form-control {
   display: block;
@@ -4280,8 +4280,8 @@ output {
   padding: 6px 12px;
   font-size: 14px;
   line-height: 1.42857143;
-  color: #999;
-  background-color: #393e46;
+  color: #000;
+  background-color: #848991;
   background-image: none;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -4298,14 +4298,14 @@ output {
           box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(0, 173, 181, .6);
 }
 .form-control::-moz-placeholder {
-  color: #999;
+  color: #646464;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
-  color: #999;
+  color: #646464;
 }
 .form-control::-webkit-input-placeholder {
-  color: #999;
+  color: #646464;
 }
 .form-control::-ms-expand {
   background-color: transparent;
@@ -4314,7 +4314,7 @@ output {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-  background-color: #111;
+  background-color: #292d33;
   opacity: 1;
 }
 .form-control[disabled],
@@ -5628,7 +5628,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   font-size: 14px;
   font-weight: normal;
   line-height: 1;
-  color: #999;
+  color: #000;
   text-align: center;
   background-color: #111;
   border: 1px solid #ccc;
@@ -9730,8 +9730,8 @@ a:focus {
     position: absolute;
     right: 5%;
     left: auto;
-    border: 1px solid #ddd;
-    background: #fff;
+    border: 1px solid #eeeeee;
+    background: #393e46;
   }
 }
 /*
@@ -9757,6 +9757,7 @@ a:focus {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  border-radius: 4px;
 }
 .form-group.has-success label {
   color: #00a65a;
@@ -13454,6 +13455,7 @@ table.text-center th {
     color: #ffffff;
     border-bottom: 0 solid transparent;
     border-right: none;
+    display: none;
   }
   .skin-black .main-header > .logo:hover {
     background-color: #1f1f1f;
@@ -13651,7 +13653,7 @@ a > .info-box {
   border-top: none;
 }
 .handsontable tr {
-  background: #ffffff;
+  background: #4e545d;
 }
 .handsontable td {
   background-color: inherit;
@@ -14180,7 +14182,7 @@ a > .info-box {
 }
 .handsontable.listbox tr:hover td,
 .handsontable.listbox tr td.current {
-  background: #eeeeee;
+  background: #76b8bb;
 }
 .ht_clone_top {
   z-index: 101;
@@ -15393,4 +15395,144 @@ table.dataTable td.selected {
 /* In case of scrollX/Y or FixedHeader */
 .dataTables_scrollBody .dataTables_sizing {
   visibility: hidden;
+}
+.pvtUi {
+  color: #333333;
+}
+table.pvtTable {
+  font-size: 8pt;
+  text-align: left;
+  border-collapse: collapse;
+}
+table.pvtTable tbody tr th,
+table.pvtTable thead tr th {
+  background-color: #e6EEEE;
+  border: 1px solid #CDCDCD;
+  font-size: 8pt;
+  padding: 5px;
+}
+table.pvtTable .pvtColLabel {
+  text-align: center;
+}
+table.pvtTable .pvtTotalLabel {
+  text-align: right;
+}
+table.pvtTable tbody tr td {
+  color: #3D3D3D;
+  padding: 5px;
+  background-color: #FFF;
+  border: 1px solid #CDCDCD;
+  vertical-align: top;
+  text-align: right;
+}
+.pvtGrandTotal,
+.pvtTotal {
+  font-weight: 700;
+}
+.pvtVals {
+  text-align: center;
+  white-space: nowrap;
+}
+.pvtColOrder,
+.pvtRowOrder {
+  cursor: pointer;
+  width: 15px;
+  margin-left: 5px;
+  display: inline-block;
+}
+.pvtAggregator {
+  margin-bottom: 5px;
+}
+.pvtAxisContainer,
+.pvtVals {
+  border: 1px solid gray;
+  background: #EEE;
+  padding: 5px;
+  min-width: 20px;
+  min-height: 20px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -ms-user-select: none;
+}
+.pvtAxisContainer li {
+  padding: 8px 6px;
+  list-style-type: none;
+  cursor: move;
+}
+.pvtAxisContainer li.pvtPlaceholder {
+  -webkit-border-radius: 5px;
+  padding: 3px 15px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px dashed #aaaaaa;
+}
+.pvtAxisContainer li span.pvtAttr {
+  -webkit-text-size-adjust: 100%;
+  background: #F3F3F3;
+  border: 1px solid #DEDEDE;
+  padding: 2px 5px;
+  white-space: nowrap;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.pvtTriangle {
+  cursor: pointer;
+  color: #808080;
+}
+.pvtHorizList li {
+  display: inline;
+}
+.pvtVertList {
+  vertical-align: top;
+}
+.pvtFilteredAttribute {
+  font-style: italic;
+}
+.pvtFilterBox {
+  z-index: 100;
+  width: 300px;
+  border: 1px solid gray;
+  background-color: #848991;
+  position: absolute;
+  text-align: center;
+}
+.pvtFilterBox h4 {
+  margin: 15px;
+}
+.pvtFilterBox p {
+  margin: 10px auto;
+}
+.pvtFilterBox label {
+  font-weight: 400;
+}
+.pvtFilterBox input[type=checkbox] {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.pvtFilterBox input[type=text] {
+  width: 230px;
+}
+.pvtFilterBox .count {
+  color: #393e46;
+  font-weight: 400;
+  margin-left: 3px;
+}
+.pvtCheckContainer {
+  text-align: left;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow-y: scroll;
+  width: 100%;
+  max-height: 250px;
+  border-top: 1px solid #d3d3d3;
+  border-bottom: 1px solid #d3d3d3;
+}
+.pvtCheckContainer p {
+  margin: 5px;
+}
+.pvtRendererArea {
+  padding: 5px;
 }

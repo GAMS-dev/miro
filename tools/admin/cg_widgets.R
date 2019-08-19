@@ -61,6 +61,9 @@ if(length(widgetSymbols)){
 }else{
   showEl(session, "#noSymbolMsg")
   showEl(session, "#noWidgetMsg")
+  hideEl(session, "#noWidgetConfigMsg")
+  hideEl(session, "#optionConfigMsg")
+  hideEl(session, "#doubledashConfigMsg")
   noWidgetSymbols <- TRUE
 }
 
@@ -383,6 +386,7 @@ observeEvent(input$widget_symbol_type, {
     hideEl(session, "#noSymbolMsg")
     hideEl(session, "#noWidgetMsg")
     hideEl(session, "#doubledashConfigMsg")
+    hideEl(session, "#noWidgetConfigMsg")
     updateSelectInput(session, "widget_type", choices = langSpecificWidget$widgetOptionsAll)
     if(!length(latest_widget_symbol_type)){
       latest_widget_symbol_type <<- input$widget_symbol_type

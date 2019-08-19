@@ -97,7 +97,12 @@
 }
 .datepicker table tr td.day:hover,
 .datepicker table tr td.focused {
-  background: #eeeeee;
+  .responsiveDark({
+     background: @datepicker-hover2;
+  },
+  {
+     background: @datepicker-hover2-dark;
+  });
   cursor: pointer;
 }
 .datepicker table tr td.disabled,
@@ -443,22 +448,40 @@ fieldset[disabled] .datepicker table tr td.selected.highlighted.focus {
 .datepicker table tr td.active.focus,
 .datepicker table tr td.active.highlighted.focus {
   color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-hover;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color:@datepicker-hover-dark;
+  });
 }
 .datepicker table tr td.active:hover,
 .datepicker table tr td.active.highlighted:hover {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-border;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color: @datepicker-border-dark;
+  });
 }
 .datepicker table tr td.active:active,
 .datepicker table tr td.active.highlighted:active,
 .datepicker table tr td.active.active,
 .datepicker table tr td.active.highlighted.active {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-border;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color: @datepicker-border-dark;
+  });
 }
 .datepicker table tr td.active:active:hover,
 .datepicker table tr td.active.highlighted:active:hover,
@@ -473,8 +496,14 @@ fieldset[disabled] .datepicker table tr td.selected.highlighted.focus {
 .datepicker table tr td.active.active.focus,
 .datepicker table tr td.active.highlighted.active.focus {
   color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
+  .responsiveDark({
+     background-color: @datepicker-border;
+     border-color: @datepicker-hover;
+  },
+  {
+     background-color: @datepicker-border-dark;
+     border-color:@datepicker-hover-dark;
+  });
 }
 .datepicker table tr td.active.disabled:hover,
 .datepicker table tr td.active.highlighted.disabled:hover,
@@ -509,7 +538,12 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 }
 .datepicker table tr td span:hover,
 .datepicker table tr td span.focused {
-  background: #eeeeee;
+  .responsiveDark({
+     background: @datepicker-hover2;
+  },
+  {
+     background: @datepicker-hover2-dark;
+  });
 }
 .datepicker table tr td span.disabled,
 .datepicker table tr td span.disabled:hover {
@@ -535,16 +569,28 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.focus,
 .datepicker table tr td span.active.disabled:hover.focus {
   color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-hover;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color:@datepicker-hover-dark;
+  });
 }
 .datepicker table tr td span.active:hover,
 .datepicker table tr td span.active:hover:hover,
 .datepicker table tr td span.active.disabled:hover,
 .datepicker table tr td span.active.disabled:hover:hover {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-border;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color: @datepicker-border-dark;
+  });
 }
 .datepicker table tr td span.active:active,
 .datepicker table tr td span.active:hover:active,
@@ -555,8 +601,14 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.active,
 .datepicker table tr td span.active.disabled:hover.active {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  .responsiveDark({
+     background-color: @datepicker-selected;
+     border-color: @datepicker-border;
+  },
+  {
+     background-color: @datepicker-selected-dark;
+     border-color: @datepicker-border-dark;
+  });
 }
 .datepicker table tr td span.active:active:hover,
 .datepicker table tr td span.active:hover:active:hover,
@@ -583,8 +635,14 @@ fieldset[disabled] .datepicker table tr td.active.highlighted.focus {
 .datepicker table tr td span.active.disabled.active.focus,
 .datepicker table tr td span.active.disabled:hover.active.focus {
   color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
+  .responsiveDark({
+     background-color: @datepicker-border;
+     border-color: @datepicker-hover;
+  },
+  {
+     background-color: @datepicker-border-dark;
+     border-color:@datepicker-hover-dark;
+  });
 }
 .datepicker table tr td span.active.disabled:hover,
 .datepicker table tr td span.active:hover.disabled:hover,
@@ -642,7 +700,12 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
 .datepicker .prev:hover,
 .datepicker .next:hover,
 .datepicker tfoot tr th:hover {
-  background: #eeeeee;
+  .responsiveDark({
+     background: @datepicker-hover2;
+  },
+  {
+     background: @datepicker-hover2-dark;
+  });
 }
 .datepicker .cw {
   font-size: 10px;

@@ -694,7 +694,7 @@ animation: none !important;
   margin-bottom: 25px;
 }
 .and-wrapper{
-  padding-bottom:10px;
+  padding-bottom:15px;
   padding-left:5px;
   min-width:1000px;
   .responsiveDark({
@@ -867,6 +867,10 @@ animation: none !important;
      fill: @plotly-text-dark !important;
   });
 }
+/* set background color for Gantt charts independent of theme selected (timevis) */
+.vis-timeline {
+    background-color: #fff;
+}
 /* PAVER */
 .dataframe { 
   text-align: right; 
@@ -962,7 +966,6 @@ animation: none !important;
   });
   border-radius: 10px;
 }
- 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   .responsiveDark({

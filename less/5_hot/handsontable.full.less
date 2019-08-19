@@ -15,6 +15,7 @@
 @box-shadow-color-dark:             @light-blue-dark;  //before: #5292f7;
 @current-cell-dark:                 @light-blue-dark;  //new! delete in classes for light mode
 @row-selected-dark:                 #00adb5;           //before: #34a9db;
+@cell-dropdown-dark:                #76b8bb;           //before: #eee;
 
 //light
 @hot-cell-color: #fff;
@@ -32,6 +33,7 @@
 @marked-background: #005eff;
 @box-shadow-color: #5292f7;
 @row-selected: #34a9db;
+@cell-dropdown: #eee;
 @current-cell: @light-blue;        //new! delete in classes for light mode
 
 //change mode for static/browser-responsive css compilation
@@ -88,7 +90,12 @@
 }
 
 .handsontable tr {
-    background: #fff
+    .responsiveDark({
+       background: @hot-cell-color;
+    },
+    {
+       background: @hot-cell-color-dark;
+    });
 }
 
 .handsontable td {
@@ -776,7 +783,12 @@ screen and (-ms-high-contrast:active) {
 
 .handsontable.listbox tr:hover td,
 .handsontable.listbox tr td.current {
-    background: #eee
+    .responsiveDark({
+       background: @cell-dropdown;
+    },
+    {
+       background: @cell-dropdown-dark;
+    });
 }
 
 .ht_clone_top {
