@@ -643,8 +643,8 @@ body {
   padding-bottom: 15px;
   padding-left: 5px;
   min-width: 1000px;
-  background-color: rgba(0, 173, 181, 0.2);
-  border-left: 5px solid #00adb5;
+  background-color: rgba(60, 141, 188, 0.2);
+  border-left: 5px solid #3c8dbc;
 }
 @media (prefers-color-scheme: dark) {
   .and-wrapper {
@@ -656,7 +656,7 @@ body {
   right: 1%;
   bottom: 0;
   line-height: 1;
-  color: #00adb5;
+  color: #3c8dbc;
   font-size: 50px;
   float: right;
   margin-top: 5px;
