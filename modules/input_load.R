@@ -65,7 +65,18 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                 }
               }, logical(1L), USE.NAMES = FALSE)
               dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
-              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              if(length(modelIn[[i]]$pivotCols)){
+                pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
+                dataTmp <- spread(dataTmp, pivotIdx, length(dataTmp),
+                                  fill = NA, convert = FALSE, drop = TRUE)
+                attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
+                attrTmp <- c(attrTmp, 
+                             names(dataTmp)[seq(length(attrTmp) + 1L, 
+                                                length(dataTmp))])
+                attr(dataTmp, "aliases")  <- attrTmp
+              }else{
+                attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              }
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
             }

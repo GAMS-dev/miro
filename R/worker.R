@@ -67,32 +67,23 @@ Worker <- R6Class("Worker", public = list(
     if(identical(status_code(ret), 404L)){
       stop(400L, call. = FALSE)
     }
+    
     if(identical(status_code(ret), 200L)){
       permissionLevel <- retContent$permission
       
       if(identical(useRegistered, TRUE)){
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
-        
         if(rememberMeFlag){
-          sessionToken <- private$validateAPIResponse(POST(
-            url = paste0(url, "/auth/"), 
-            add_headers(Authorization = private$authHeader,
-                        Timestamp = as.character(Sys.time(), usetz = TRUE)), 
-            timeout(2L)))$token
-          
-          private$metadata$password  <- sessionToken
-          write_json(list(url = url,
-                          username = username, 
-                          password = sessionToken,
-                          namespace = namespace,
-                          reg = useRegistered), 
-                     private$metadata$rememberMeFileName, auto_unbox = TRUE)
+          private$saveLoginCredentials()
         }
         return(200L)
       }
       if(permissionLevel < 7L)
         stop(403L, call. = FALSE)
+      if(rememberMeFlag){
+        private$saveLoginCredentials()
+      }
       return(200L)
     }else if(status_code(ret) %in% c(401L, 403L)){
       stop(401L, call. = FALSE)
@@ -619,11 +610,11 @@ Worker <- R6Class("Worker", public = list(
         return(status_code(ret))
       }
       teLength <- tryCatch({
-        headers(ret)[['char_length']]
+        suppressWarnings(as.numeric(headers(ret)[['char_length']]))
       }, error = function(e){
         return(404L)
       })
-      if(identical(teLength, 404L)){
+      if(identical(teLength, 404L) || is.na(teLength)){
         return(404L)
       }
     }else{
@@ -928,6 +919,22 @@ Worker <- R6Class("Worker", public = list(
                                    paste0(private$metadata$username, 
                                           ":", private$metadata$password))))
     return(invisible(self))
+  },
+  saveLoginCredentials = function(){
+    sessionToken <- private$validateAPIResponse(POST(
+      url = paste0(url, "/auth/"), 
+      add_headers(Authorization = private$authHeader,
+                  Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+      timeout(2L)))$token
+    
+    private$metadata$password  <- sessionToken
+    write_json(list(url = url,
+                    username = username, 
+                    password = sessionToken,
+                    namespace = namespace,
+                    reg = useRegistered), 
+               private$metadata$rememberMeFileName, auto_unbox = TRUE)
+    return(ininvisible(self))
   },
   initRun = function(sid){
     private$sid        <- sid

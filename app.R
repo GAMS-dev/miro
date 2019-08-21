@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.8.4"
-MIRORDate   <- "Aug 19 2019"
+MIROVersion <- "0.8.5"
+MIRORDate   <- "Aug 21 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -25,7 +25,7 @@ MIRORDate   <- "Aug 19 2019"
 # leaflet         #GPL-3
 # leaflet.minicharts #GPL >=v2
 
-# odbc (Scenario mode) #GMIT
+# odbc (Scenario mode) #MIT
 # DBI (Scenario mode)  #LGPL >=2
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
@@ -251,7 +251,7 @@ if(is.null(errMsg)){
   }
   if(config$activateModules$remoteExecution){
     requiredPackages <- c(requiredPackages, "future", "httr")
-  }else if(length(externalInputConfig) || length(externalInputConfig)){
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
     requiredPackages <- c(requiredPackages, "httr")
   }
   source("./R/install_packages.R", local = TRUE)

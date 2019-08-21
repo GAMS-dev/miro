@@ -21,14 +21,13 @@
   ],
   "inputWidgets": {
     "price": {
-      "widgetType": "table",
-      "readonlyCols": "date"
+      "widgetType": "table"
     },
     "maxstock": {
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,
-      "max": "card(price$symbol)",
+      "max": 30,
       "default": 3,
       "step": 1,
       "ticks": false,

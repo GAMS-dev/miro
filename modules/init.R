@@ -242,6 +242,11 @@ if(is.null(errMsg)){
         modelIn[[i]]$readonly <- widgetConfig$readonly
         widgetConfig$readonly  <- NULL
       }
+      if(!is.null(widgetConfig[["pivotCols"]])){
+        modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
+        modelIn[[i]]$dtHeaders  <- TRUE
+        widgetConfig$pivotCols  <- NULL
+      }
       if(length(widgetConfig$readonlyCols)){
         for(col in widgetConfig$readonlyCols){
           if(col %in% names(modelIn[[i]]$headers)){
@@ -612,29 +617,33 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     }
   })
   # get remote import/export options
-  externalInputConfig <- vector("list", length(modelIn))
+  externalInputConfig <- vector("list", length(config$remoteImport))
   if(length(config$remoteImport)){
-    lapply(config$remoteImport, function(remoteConfig){
-      symNames <- tolower(remoteConfig[["symNames"]])
-      remoteConfig[["symNames"]] <- NULL
-      symIds <- match(symNames, names(modelIn))
-      
-      if(any(is.na(symIds))){
-        errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote import are not valid: '%s'.", 
-                                         paste(symNames[is.na(symIds)], 
-                                               collapse = "', '")))
-        return()
-      }
-      for(symId in symIds){
-        if(length(externalInputConfig[[symId]])){
-          errMsg <<- paste(errMsg, sprintf("The dataset: '%s' you selected for remote import appears in more than one template.", 
-                                           names(modelIn)[symId]))
-          next
+    for(i in seq_along(config$remoteImport)){
+      lapply(config$remoteImport, function(remoteConfig){
+        symNames <- tolower(remoteConfig[["symNames"]])
+        remoteConfig[["symNames"]] <- NULL
+        symIds <- match(symNames, names(modelIn))
+        
+        if(any(is.na(symIds))){
+          errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote import are not valid: '%s'.", 
+                                           paste(symNames[is.na(symIds)], 
+                                                 collapse = "', '")))
+          return()
         }
-        externalInputConfig[[symId]]      <<- remoteConfig
-        names(externalInputConfig)[symId] <<- names(modelIn)[symId]
-      }
-    })
+        for(symId in symIds){
+          if(length(externalInputConfig[[symId]])){
+            errMsg <<- paste(errMsg, sprintf("The dataset: '%s' you selected for remote import appears in more than one template.", 
+                                             names(modelIn)[symId]))
+            next
+          }
+          externalInputConfig[[i]][[symId]]      <<- remoteConfig
+          names(externalInputConfig[[i]])[symId] <<- names(modelIn)[symId]
+        }
+      })
+    }
+    names(externalInputConfig) <- vapply(config$remoteImport, "[[", 
+                                         character(1L), "name", USE.NAMES = FALSE)
     config$remoteImport <- NULL
   }
   datasetsRemoteExport <- NULL
@@ -1066,6 +1075,10 @@ if(is.null(errMsg)){
         }
         return(alias)
       }, character(1L), USE.NAMES = FALSE)
+      if(length(modelIn[[i]]$pivotCols) && any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))){
+        errMsg <<- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
+                                         modelInAlias[i]))
+      }
       # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
       if(identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
          (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header){
