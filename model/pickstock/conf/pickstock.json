@@ -1,6 +1,24 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
+  "remoteImport": [
+    {
+      "name": "123",
+      "templates": [
+        {
+          "symNames": "price",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "GET",
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "remoteExport": [
     {
       "name": "Testexporter",
