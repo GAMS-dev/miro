@@ -1,62 +1,11 @@
 # load input data from excel sheet
-observeEvent(input$btOverwriteLocal, {
-  if(identical(config$activateModules$loadLocal, FALSE)){
-    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
-    return()
-  }
-  scenName <- isolate(input$local_newScenName)
-  flog.debug("Overwrite existing scenario (name: '%s') button clicked.", scenName)
-  errMsg <- NULL
-  tryCatch({
-    activeScen <<- Scenario$new(db = db, sname = scenName, overwrite = TRUE)
-  }, error = function(e){
-    flog.error("Problems creating scenario. Error message: '%s'.", e)
-    errMsg <<- lang$errMsg$saveScen$desc
-  })
-  if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
-    return(NULL)
-  }
-  rv$activeSname <- scenName
-  rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-})
-observeEvent(input$btCheckSnameLocalConfirm, {
-  if(identical(config$activateModules$loadLocal, FALSE)){
-    flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
-    return()
-  }
-  if(length(isolate(rv$activeSname))){
-    rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-  }
-  scenNameTmp <- isolate(input$local_newScenName)
-  flog.debug("Button to upload local dataset clicked. Validating if scenario name: '%s' is valid and does not yet exist.", 
-             scenNameTmp)
-  if(is.null(isolate(rv$activeSname))){
-    scenNameTmp <- isolate(input$local_newScenName)
-    if(isBadScenName(scenNameTmp)){
-      flog.debug("Scenario name is not valid.")
-      showHideEl(session, "#local_badScenName", 4000L)
-      return()
-    }else{
-      if(identical(config$activateModules$scenario, TRUE)){
-        if(db$checkSnameExists(scenNameTmp)){
-          flog.debug("Scenario name is valid, but already exists.")
-          showEl(session, "#loadLocal_scenNameExists")
-          hideEl(session, "#loadLocal_content")
-          return()
-        }
-        activeScen <<- Scenario$new(db = db, sname = scenNameTmp)
-      }
-      rv$activeSname <- scenNameTmp
-      rv$btLoadLocal <- isolate(rv$btLoadLocal + 1L)
-    }
-  }
-})
-observeEvent(virtualActionButton(rv$btLoadLocal),{
+observeEvent(input$btImportLocal, {
   if(identical(config$activateModules$loadLocal, FALSE)){
     flog.error("Try to load local data even though the loadLocal module is disabled! This is most likely because the user is trying to tamper with the app!")
     return()
   }
   flog.debug("Load local data button clicked.")
+  errMsg <- NULL
   
   # check whether current input datasets are empty
   if(isolate(input$cbSelectManuallyLoc) && length(isolate(input$selInputDataLoc))){

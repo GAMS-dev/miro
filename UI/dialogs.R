@@ -231,7 +231,7 @@ onclick="Shiny.setInputValue(\'btLoadScenConfirm\', 1, {priority: \'event\'})">'
            icon = icon(iconName)
   )
 }
-showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL){
+showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
   if(config$activateModules$hcubeMode){
     modeDescriptor <- "dialogImportHC"
   }else{
@@ -239,9 +239,25 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
   }
   tabLoadFromDb <- NULL
   tabLoadFromLocalFile <- NULL
+  tabLoadFromExternalSource <- NULL
   tabLoadFromBase <- NULL 
   tabLoadFromHcube <- NULL 
-  
+
+  if(length(externalInputConfig)){
+    tabLoadFromExternalSource <- tabPanel(lang$nav[[modeDescriptor]]$tabExternal, vale = "tb_importData_external",
+                                          tags$div(class = "space"),
+                                          fluidRow(
+                                            selectInput("selExternalSource", lang$nav[[modeDescriptor]]$selExternalSource, 
+                                                        names(externalInputConfig), 
+                                                        multiple = FALSE, width = "100%")
+                                          ),
+                                          fluidRow(
+                                            tags$div(style = "text-align: center;",
+                                                     actionButton("btImportExternal", class = "bt-highlight-1 bt-gms-confirm", 
+                                                                  lang$nav[[modeDescriptor]]$okButton)
+                                            )
+                                          ), icon = icon("external-link-alt"))
+  }
   if(config$activateModule$loadLocal){
     tabLoadFromLocalFile <- tabPanel(lang$nav[[modeDescriptor]]$tabLocal, value = "tb_importData_local",
                                      tags$div(class = "space"),
@@ -254,17 +270,7 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                                                  accept = c("application/vnd.ms-excel", 
                                                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
                                                                             ".xlsx",
-                                                                            ".gdx")),
-                                                       if(noDataInUI){
-                                                         tagList(
-                                                           tags$div(id = "local_badScenName",
-                                                                    class = "gmsalert gmsalert-error", 
-                                                                    lang$nav[[modeDescriptor]]$badScenName),
-                                                           textInput("local_newScenName", 
-                                                                     lang$nav[[modeDescriptor]]$newScenName,
-                                                                     width = "100%")
-                                                         )
-                                                       }
+                                                                            ".gdx"))
                                                 )
                                               ),
                                               fluidRow(
@@ -288,30 +294,11 @@ showLoadDataDialog <- function(scenListDb, noDataInUI = FALSE, dbTagList = NULL)
                                               ),
                                               fluidRow(
                                                 tags$div(style = "text-align: center;",
-                                                         HTML(paste0('<button id="btCheckSnameLocal" class="btn btn-default bt-highlight-1 bt-gms-confirm" 
-type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', htmltools::htmlEscape(lang$nav[[modeDescriptor]]$okButton), 
-                                                                     '</button>'))
+                                                         actionButton("btImportLocal", class = "bt-highlight-1 bt-gms-confirm", 
+                                                                      lang$nav[[modeDescriptor]]$okButton)
                                                 )
                                               )
                                      ),
-                                     if(config$activateModules$scenario){
-                                       tags$div(id = "loadLocal_scenNameExists", style = "display:none;",
-                                                fluidRow(
-                                                  tags$div(class = "err-msg",
-                                                           lang$nav[[modeDescriptor]]$scenNameExists
-                                                  )
-                                                ),
-                                                fluidRow(
-                                                  tags$div(style = "text-align: center;",
-                                                           actionButton("btOverwriteLocal", 
-                                                                        lang$nav[[modeDescriptor]]$overwriteButton),
-                                                           actionButton("btNewNameLocal", 
-                                                                        lang$nav[[modeDescriptor]]$newNameButton, 
-                                                                        class = "bt-highlight-1 bt-gms-confirm")
-                                                  )
-                                                )
-                                       )
-                                     },
                                      icon = icon("file"))
   }
   
@@ -358,7 +345,8 @@ type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', h
     }
   }
   
-  loadDataTabs <- list(tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromBase, tabLoadFromHcube)
+  loadDataTabs <- list(tabLoadFromDb, tabLoadFromLocalFile, tabLoadFromExternalSource, 
+                       tabLoadFromBase, tabLoadFromHcube)
   loadDataTabs <- loadDataTabs[!vapply(loadDataTabs, is.null, logical(1L), USE.NAMES = FALSE)]
   
   showModal(modalDialog(
@@ -375,7 +363,7 @@ type="button" onclick="Miro.validateSname(\'#local_newScenName\')" disabled>', h
       tags$div(id = "importDataTabset",
                do.call(tabBox, c(list(width = 12, id = "tb_importData"), loadDataTabs))
       ),
-      tags$div(id = "importDataOverwrite", style = "display:none;",
+      tags$div(id = "importDataOverwrite", class = "col-sm-12", style = "display:none;",
                lang$nav[[modeDescriptor]]$descOverwriteInput
       )
     ), footer = {

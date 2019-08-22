@@ -308,24 +308,22 @@
     "dialogImport":{  
       "title":"Load data",
       "tabLocal":"Local",
+      "tabExternal": "External",
       "tabDatabase":"Database",
       "tabHcube":"Hypercube",
       "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select datasets to load",
+      "selExternalSource": "Select external source",
       "descLocal":"Choose file with data to load",
-      "newScenName": "Choose a name for the new scenario",
-      "badScenName": "Please specify a valid name",
+      "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Load",
-      "overwriteButton": "Overwrite existing data",
-      "newNameButton": "New name"
+      "okButton":"Load"
     },
     "dialogImportHC":{  
       "title":"Import data",
@@ -658,6 +656,10 @@
     "gamsExec":{  
       "title":"Error executing GAMS",
       "desc":"Some error occurred while executing GAMS."
+    },
+    "jobRunning": {
+      "title": "Active job",
+      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
     },
     "gamsTerm":{  
       "title":"Error terminating gams.exe",

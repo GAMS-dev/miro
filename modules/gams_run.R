@@ -382,7 +382,12 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
 
 observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   flog.debug("Solve button clicked (model: '%s').", modelName)
-
+  
+  if(length(modelStatus)){
+    showErrorMsg(lang$errMsg$jobRunning$title, 
+                 lang$errMsg$jobRunning$desc)
+    return(NULL)
+  }
   if(length(activeScen) && !activeScen$hasExecPerm()){
     if(config$activateModules$hcubeMode){
       modeDescriptor <- "dialogNoExecPermHC"
@@ -575,9 +580,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   }
   errMsg <- NULL
   tryCatch({
-    modelStatus    <- worker$getReactiveStatus(session)
-    modelStatusObs <- modelStatus$obs
-    modelStatus    <- modelStatus$re
+    modelStatusRE  <- worker$getReactiveStatus(session)
+    modelStatusObs <- modelStatusRE$obs
+    modelStatus    <<- modelStatusRE$re
   }, error = function(e) {
     flog.error("GAMS status could not be retrieved (model: '%s'). Error message: %s.", modelName, e)
     errMsg <<- lang$errMsg$readLog$desc
@@ -622,7 +627,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       statusText <- lang$nav$gamsModelStatus$collection
     }else{
       modelStatusObs$destroy()
-      modelStatus <- NULL
+      modelStatus <<- NULL
       enableEl(session, "#btSolve")
       disableEl(session, "#btInterrupt")
       

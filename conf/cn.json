@@ -310,22 +310,20 @@
       "tabLocal": "本地",
       "tabDatabase": "数据库",
       "tabHcube": "Hypercube",
+      "tabExternal": "External",
       "hcubeHashDesc":"输入要加载的场景的哈希值（来自Hypercube模式），单击该场景并加载。",
       "hcubeHashButton":"搜索",
       "hcubeHashNoMatch":"未找到与输入的哈希值相匹配的场景。",
       "selInputData":"选择要加载的数据集",
+      "selExternalSource": "Select external source",
       "descLocal":"选择要加载数据的文件",
       "newScenName":"为新场景选择一个名称",
-      "badScenName":"请指定一个有效的名称",
       "scenNameExistsErr":"该场景名称已存在。",
-      "scenNameExists":"该场景名称已存在，要覆盖现有数据吗？",
       "descOverwriteInput":"已加载过该输入数据，要覆盖这些数据吗？",
       "cbSelectManually":"手动选择数据集",
       "overwriteWarning":"已导入的数据集,可能会丢失！",
       "cancelButton": "取消",
-      "okButton": "加载",
-      "overwriteButton":"覆盖现有数据",
-      "newNameButton":"新建名称"
+      "okButton": "加载"
     },
     "dialogImportHC":{
       "title":"导入数据",
@@ -658,6 +656,10 @@
     "gamsExec":{
       "title":"执行GAMS中出错",
       "desc":"执行GAMS过程中出现错误。"
+    },
+    "jobRunning": {
+      "title": "Active job",
+      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
     },
     "gamsTerm":{
       "title":"终止gams.exe时出错",

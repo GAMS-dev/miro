@@ -41,8 +41,7 @@ observeEvent(input$btImport, {
     }
   }
     
-  showLoadDataDialog(scenListDb = scenListDb, 
-                     noDataInUI = is.null(isolate(rv$activeSname)), dbTagList = dbTagList)
+  showLoadDataDialog(scenListDb = scenListDb, dbTagList = dbTagList)
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)
   

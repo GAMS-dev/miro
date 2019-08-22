@@ -350,7 +350,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
     }
     names(scenInputData)         <- inputDsNames
-    newInputCount                <- 0L
     
     if(scalarsFileName %in% inputDsNames){
       scalarDataset <- scenInputData[[length(scenInputData)]]
@@ -360,6 +359,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     
     errMsg    <-  NULL
     loadMode  <-  "scen"
+    newInputCount <- 0L
     source("./modules/input_load.R", local = TRUE)
     if(!is.null(errMsg)){
       return()

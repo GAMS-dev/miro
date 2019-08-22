@@ -308,24 +308,22 @@
     "dialogImport":{  
       "title":"Daten laden",
       "tabLocal":"Lokal",
+      "tabExternal": "Extern",
       "tabDatabase":"Datenbank",
       "tabHcube":"Hypercube",
       "hcubeHashDesc": "Geben Sie hier den Hash-Wert des Szenarios ein, welches Sie aus dem Hypercube-Modus laden möchten. Klicken Sie dann einfach auf das Szenario, um es zu laden.",
       "hcubeHashButton": "Suchen",
       "hcubeHashNoMatch": "Es konnten keine Szenarios gefunden werden.",
       "selInputData":"Wählen Sie die Datensätze, die Sie laden möchten",
+      "selExternalSource": "Wählen Sie die externe Quelle",
       "descLocal":"Wählen Sie eine Datei mit Daten aus",
       "newScenName": "Wählen Sie einen Namen für das neue Szenario",
-      "badScenName": "Bitte wählen Sie einen gültigen Szenarionamen",
       "scenNameExistsErr": "Der von Ihnen gewählte Szenarioname existiert bereits.",
-      "scenNameExists":"Der von Ihnen gewählte Szenarioname existiert bereits. Möchten Sie die existierenden Daten überschreiben?",
       "descOverwriteInput":"Sie haben bereits Eingabedaten geladen. Sind Sie sicher, dass Sie diese Daten überschreiben wollen?",
       "cbSelectManually":"Datensätze manuell auswählen",
       "overwriteWarning":"Bereits importierte Datensätze werden überschrieben!",
       "okButton":"Laden",
-      "cancelButton":"Abbrechen",
-      "overwriteButton": "Existierende Daten überschreiben",
-      "newNameButton": "Neuer Name"
+      "cancelButton":"Abbrechen"
     },
     "dialogImportHC":{  
       "title":"Daten importieren",
@@ -658,6 +656,10 @@
     "gamsExec":{  
       "title":"Fehler beim Ausführen von GAMS",
       "desc":"Bei der Ausführung von GAMS ist ein Fehler aufgetreten."
+    },
+    "jobRunning":{
+      "title":"Aktiver Job",
+      "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können."
     },
     "gamsTerm":{  
       "title":"Fehler beim Beenden von gams.exe",

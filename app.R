@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.8.5"
-MIRORDate   <- "Aug 21 2019"
+MIROVersion <- "0.8.6"
+MIRORDate   <- "Aug 22 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -834,6 +834,7 @@ if(!is.null(errMsg)){
     }
     isInCompareMode    <- FALSE
     isInSolveMode      <- TRUE
+    modelStatus        <- NULL
     
     # currently active scenario (R6 object)
     activeScen         <- NULL

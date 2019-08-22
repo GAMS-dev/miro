@@ -617,70 +617,47 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     }
   })
   # get remote import/export options
-  externalInputConfig <- vector("list", length(config$remoteImport))
-  if(length(config$remoteImport)){
-    for(i in seq_along(config$remoteImport)){
-      lapply(config$remoteImport, function(remoteConfig){
-        symNames <- tolower(remoteConfig[["symNames"]])
-        remoteConfig[["symNames"]] <- NULL
-        symIds <- match(symNames, names(modelIn))
-        
-        if(any(is.na(symIds))){
-          errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote import are not valid: '%s'.", 
-                                           paste(symNames[is.na(symIds)], 
-                                                 collapse = "', '")))
-          return()
-        }
-        for(symId in symIds){
-          if(length(externalInputConfig[[symId]])){
-            errMsg <<- paste(errMsg, sprintf("The dataset: '%s' you selected for remote import appears in more than one template.", 
-                                             names(modelIn)[symId]))
-            next
+  externalDataConfig <- list(remoteImport = NULL, remoteExport = NULL)
+  
+  for(direction in c("remoteImport", "remoteExport")){
+    if(length(config[[direction]])){
+      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
+      for (i in seq_along(config[[direction]])){
+        remoteConfigs <- lapply(config[[direction]][[i]]$templates, function(remoteConfig){
+          symNames <- tolower(remoteConfig[["symNames"]])
+          remoteConfig[["symNames"]] <- NULL
+          
+          symIds <- match(symNames, c(names(modelIn), names(modelOut)))
+          if(any(is.na(symIds))){
+            errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote export: '%s' are not valid: '%s'.", 
+                                             config[[direction]][[i]]$name, 
+                                             paste(symNames[is.na(symIds)], 
+                                                   collapse = "', '")))
+            return()
           }
-          externalInputConfig[[i]][[symId]]      <<- remoteConfig
-          names(externalInputConfig[[i]])[symId] <<- names(modelIn)[symId]
-        }
-      })
+          dupSym <- !is.na(match(symNames, names(externalDataConfig[[direction]][[i]])))
+          if(any(dupSym)){
+            errMsg <<- paste(errMsg, sprintf("Duplicated datasets found in remote export: '%s'. Datasets: '%s'.", 
+                                             config[[direction]][[i]]$name,
+                                             paste(symNames[dupSym], 
+                                                   collapse = "', '")))
+            return()
+          }
+          
+          exportConfig <- rep.int(list(remoteConfig), length(symIds))
+          names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
+          return(exportConfig)
+        })
+        externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
+      }
+      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+                                            character(1L), "name", USE.NAMES = FALSE)
+      config[[direction]] <- NULL
     }
-    names(externalInputConfig) <- vapply(config$remoteImport, "[[", 
-                                         character(1L), "name", USE.NAMES = FALSE)
-    config$remoteImport <- NULL
   }
-  datasetsRemoteExport <- NULL
-  if(length(config$remoteExport)){
-    datasetsRemoteExport <- vector("list", length(config$remoteExport))
-    for (i in seq_along(config$remoteExport)){
-      remoteConfigs <- lapply(config$remoteExport[[i]]$templates, function(remoteConfig){
-        symNames <- tolower(remoteConfig[["symNames"]])
-        remoteConfig[["symNames"]] <- NULL
-        
-        symIds <- match(symNames, c(names(modelIn), names(modelOut)))
-        if(any(is.na(symIds))){
-          errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote export: '%s' are not valid: '%s'.", 
-                                           config$remoteExport[[i]]$name, 
-                                           paste(symNames[is.na(symIds)], 
-                                                 collapse = "', '")))
-          return()
-        }
-        dupSym <- !is.na(match(symNames, names(datasetsRemoteExport[[i]])))
-        if(any(dupSym)){
-          errMsg <<- paste(errMsg, sprintf("Duplicated datasets found in remote export: '%s'. Datasets: '%s'.", 
-                                           config$remoteExport[[i]]$name,
-                                           paste(symNames[dupSym], 
-                                                 collapse = "', '")))
-          return()
-        }
-        
-        exportConfig <- rep.int(list(remoteConfig), length(symIds))
-        names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
-        return(exportConfig)
-      })
-      datasetsRemoteExport[[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
-    }
-    names(datasetsRemoteExport) <- vapply(config$remoteExport, "[[",
-                                          character(1L), "name", USE.NAMES = FALSE)
-    config$remoteExport <- NULL
-  }
+  externalInputConfig  <- externalDataConfig[["remoteImport"]]
+  datasetsRemoteExport <- externalDataConfig[["remoteExport"]]
+  rm(externalDataConfig)
   
   # Hypercube mode configuration
   modelInGmsString <- NULL

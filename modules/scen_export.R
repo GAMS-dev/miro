@@ -76,6 +76,7 @@ output[["export_" %+% i]] <- downloadHandler(
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 observeEvent(input[[paste0("remote_export_", i)]], {
+  removeModal()
   if(length(datasetsRemoteExport) && length(input$exportFileType)){
     exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
     if(!is.na(exportId)){

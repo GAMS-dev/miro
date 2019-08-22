@@ -175,6 +175,9 @@ Worker <- R6Class("Worker", public = list(
   },
   updateJobStatus = function(status, jID = NULL, tags = NULL, updatePid = FALSE){
     if(!private$hcube){
+      if(!private$remote){
+        return()
+      }
       tags <- NULL
     }else if(length(tags)){
       tags <- vector2Csv(tags)

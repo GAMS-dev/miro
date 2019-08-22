@@ -41,10 +41,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       # handsontable, multi dropdown, or daterange
       if(tolower(dataset) %in% modelInTabularData){
         dataTmp <- scenInputData[[dataset]]
-        
-        # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
-        # rather than setting them to NULL
-        if(nrow(dataTmp)){
+        if(length(dataTmp) && nrow(dataTmp)){
           
           if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
