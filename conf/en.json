@@ -420,6 +420,7 @@
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",
       "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",

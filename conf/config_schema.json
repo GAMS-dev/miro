@@ -122,7 +122,7 @@
             "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":false,
+               "default":true,
                "required":false
             },
             "logFile":{  
@@ -146,7 +146,7 @@
             "remoteExecution":{
                "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
-               "default":false,
+               "default":true,
                "required":false
             }
          }

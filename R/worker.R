@@ -75,14 +75,18 @@ Worker <- R6Class("Worker", public = list(
         if(permissionLevel < 5L)
           stop(403L, call. = FALSE)
         if(rememberMeFlag){
-          private$saveLoginCredentials()
+          private$saveLoginCredentials(url, username, 
+                                       namespace, 
+                                       useRegistered)
         }
         return(200L)
       }
       if(permissionLevel < 7L)
         stop(403L, call. = FALSE)
       if(rememberMeFlag){
-        private$saveLoginCredentials()
+        private$saveLoginCredentials(url, username, 
+                                     namespace, 
+                                     useRegistered)
       }
       return(200L)
     }else if(status_code(ret) %in% c(401L, 403L)){
@@ -138,8 +142,38 @@ Worker <- R6Class("Worker", public = list(
     flog.trace("Metadata for Hypercube job was written to database. Hypercube job ID: '%d' was assigned to job.", private$jID)
     
     if(private$remote){
-      stop("not implemented", call. = FALSE)
-      private$runHcubeRemote(dynamicPar, staticData)
+      private$runRemote(staticData, dynamicPar)
+      tryCatch({
+        remoteSubValue <- value(private$fRemoteSub)
+      }, error = function(e){
+        errMsg <- conditionMessage(e)
+        flog.error(errMsg)
+        if(startsWith(errMsg, "Could not") || startsWith(errMsg, "Timeout was")){
+          stop(404L, call. = FALSE)
+        }else{
+          stop(500L, call. = FALSE)
+        }
+      })
+      if(startsWith(remoteSubValue, "error:")){
+        errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7)))
+        flog.info(paste0("Could not execute model remotely. Error code: ", errCode))
+        if(is.na(errCode)){
+          stop(500L, call. = FALSE)
+        }else{
+          stop(errCod, call. = FALSE)
+        }
+      }else{
+        private$process <- value(private$fRemoteSub)
+        if(length(private$db)){
+          tryCatch({
+            private$jID <- self$addJobDb(private$process, private$sid)
+          }, error = function(e){
+            flog.warn("Could not add job to database. Error message; '%s'.", 
+                      conditionMessage(e))
+          })
+        }
+      }
+      private$fRemoteSub <- NULL
       pID <- private$process
     }else{
       private$runHcubeLocal(dynamicPar, staticData, attachmentFilePaths)
@@ -205,16 +239,9 @@ Worker <- R6Class("Worker", public = list(
     gamsRetCode <- NULL
     if(status %in% c(JOBSTATUSMAP[['imported']], 
                      JOBSTATUSMAP[['discarded']])){
-      gamsRetCode <- private$getGAMSRetCode(pID)
-      
-      if(status == JOBSTATUSMAP[['discarded']]){
-        self$interrupt(hardKill = TRUE, process = pID)
-        if(length(gamsRetCode)){
-          status <- JOBSTATUSMAP[['discarded(completed)']]
-        }else{
-          status <- JOBSTATUSMAP[['discarded(running)']]
-        }
-      }
+      jobStatus   <- private$getJobStatus(status, pID) 
+      gamsRetCode <- jobStatus$gamsRetCode
+      status      <- jobStatus$status
     }
     
     colNames <- private$dbColNames[['status']]
@@ -271,7 +298,10 @@ Worker <- R6Class("Worker", public = list(
         next
       newStatus <- NULL
       if(private$remote){
-        gamsRetCode <- private$getGAMSRetCode(pIDs[i])
+        jobStatus   <- private$getJobStatus(jStatus[i], pIDs[i])
+        gamsRetCode <- jobStatus$gamsRetCode
+        newStatus   <- jobStatus$status
+        
         if(length(gamsRetCode)){
           if(!private$jobListInit)
             newCompleted <- TRUE
@@ -543,7 +573,7 @@ Worker <- R6Class("Worker", public = list(
                                    windows_hide_window = TRUE)
     return(invisible(self))
   },
-  runRemote = function(inputData){
+  runRemote = function(inputData, hcubeData = NULL){
     private$status  <- "s"
     private$fRemoteSub  <- future({
       suppressWarnings(suppressMessages({
@@ -551,6 +581,7 @@ Worker <- R6Class("Worker", public = list(
         library(httr)
         library(R6)
         library(readr)
+        library(jsonlite)
       }))
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
                     paste0("execMode=", metadata$gamsExecMode), 
@@ -561,22 +592,27 @@ Worker <- R6Class("Worker", public = list(
       pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
       requestBody <- list(model = metadata$modelName,
-                          use_pf_file = TRUE, text_entities = paste(metadata$text_entities, collapse = ","),
-                          stdout_filename = paste0(metadata$modelName, ".log"),
+                          use_pf_file = TRUE, 
                           namespace = metadata$namespace,
                           data = upload_file(inputData$
                                                writeCSV(workDir, delim = metadata$csvDelim)$
                                                addFilePaths(pfFilePath)$
                                                compress(), 
                                              type = 'application/zip'))
-      
+      if(is.R6(hcubeData)){
+        requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
+                                                  type = 'application/json')
+      }else{
+        requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
+        requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
+      }
       if(identical(metadata$useRegistered, FALSE)){
         requestBody$model_data <- upload_file(DataInstance$new()$
                                                 addFilePaths(metadata$modelData)$
                                                 compress(recurse = TRUE), 
                                               type = 'application/zip')
       }
-      ret <- POST(paste0(metadata$url, "/jobs"), encode = "multipart", 
+      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), encode = "multipart", 
                   body = requestBody,
                   add_headers(Authorization = authHeader, 
                               Timestamp = as.character(Sys.time(), 
@@ -595,7 +631,7 @@ Worker <- R6Class("Worker", public = list(
                       pfFileContent = private$pfFileContent, inputData = inputData,
                       tableNameTracePrefix = tableNameTracePrefix, authHeader = private$authHeader,
                       gmsFilePath = gmsFilePath, DataInstance = DataInstance, 
-                      isWindows = isWindows))
+                      isWindows = isWindows, hcubeData = hcubeData))
     return(self)
   },
   readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL){
@@ -923,7 +959,7 @@ Worker <- R6Class("Worker", public = list(
                                           ":", private$metadata$password))))
     return(invisible(self))
   },
-  saveLoginCredentials = function(){
+  saveLoginCredentials = function(url, username, namespace, useRegistered){
     sessionToken <- private$validateAPIResponse(POST(
       url = paste0(url, "/auth/"), 
       add_headers(Authorization = private$authHeader,
@@ -937,7 +973,7 @@ Worker <- R6Class("Worker", public = list(
                     namespace = namespace,
                     reg = useRegistered), 
                private$metadata$rememberMeFileName, auto_unbox = TRUE)
-    return(ininvisible(self))
+    return(invisible(self))
   },
   initRun = function(sid){
     private$sid        <- sid
@@ -952,6 +988,36 @@ Worker <- R6Class("Worker", public = list(
     private$waitCnt    <- 0L
     
     return(invisible(self))
+  },
+  getJobStatus = function(status, pID){
+    gamsRetCode <- tryCatch(private$getGAMSRetCode(pID),
+                            error = function(e){
+                              errMsg <- conditionMessage(e)
+                              if(errMsg == 405L){
+                                return(-405L)
+                              }else{
+                                stop(errMsg, call. = FALSE)
+                              }
+                            })
+    
+    if(status == JOBSTATUSMAP[['discarded']]){
+      if(!identical(gamsRetCode, -405L))
+        self$interrupt(hardKill = TRUE, process = pID)
+      if(length(gamsRetCode)){
+        if(identical(gamsRetCode, -405L)){
+          status <- JOBSTATUSMAP[['discarded(corrupted)']]
+          gamsRetCode <- NULL
+        }else{
+          status <- JOBSTATUSMAP[['discarded(completed)']]
+        }
+      }else{
+        status <- JOBSTATUSMAP[['discarded(running)']]
+      }
+    }else if(identical(gamsRetCode, -405L)){
+      status <- JOBSTATUSMAP[['corrupted']]
+      gamsRetCode <- NULL
+    }
+    return(list(status = status, gamsRetCode = gamsRetCode))
   },
   getGAMSRetCode = function(pID){
     if(private$remote){

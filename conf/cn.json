@@ -420,6 +420,7 @@
       "title":"Hypercube配置",
       "desc":"您选择了%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
       "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags":"为作业分配一个或多个标签:",
       "manualSwitch":"手动处理作业？",
       "cancelButton": "取消",

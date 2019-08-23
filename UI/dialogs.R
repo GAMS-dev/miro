@@ -244,10 +244,10 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
   tabLoadFromHcube <- NULL 
 
   if(length(externalInputConfig)){
-    tabLoadFromExternalSource <- tabPanel(lang$nav[[modeDescriptor]]$tabExternal, vale = "tb_importData_external",
+    tabLoadFromExternalSource <- tabPanel(lang$nav$dialogImport$tabExternal, vale = "tb_importData_external",
                                           tags$div(class = "space"),
                                           fluidRow(
-                                            selectInput("selExternalSource", lang$nav[[modeDescriptor]]$selExternalSource, 
+                                            selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource, 
                                                         names(externalInputConfig), 
                                                         multiple = FALSE, width = "100%")
                                           ),
@@ -606,17 +606,23 @@ showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
              lang$nav$dialogHcube$waitTime),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
              lang$errMsg$unknownError),
-    tags$div(paste0(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
-                     noIdsExist), if(!identical(noIdsExist, noIdsToSolve)) 
-                       lang$nav$dialogHcube$descSolveAgain)),
-    tags$div(class = "small-space"),
-    conditionalPanel(
-      condition = "input.hcubeSolve_dl == 0",
-      selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
-                     multiple = TRUE, options = list(
-                       'create' = TRUE,
-                       'persist' = FALSE))
-    ),
+    tags$div(id = "jobSubmissionLoad", style = "display:none;text-align:center;",
+             lang$nav$dialogHcube$descJobSubmission,
+             tags$div(class = "space"),
+             genSpinner(hidden = FALSE, absolute = FALSE)),
+    tags$div(id = "jobSubmissionWrapper", 
+             tags$div(paste0(sprintf(lang$nav$dialogHcube$desc, noIdsToSolve, 
+                                     noIdsExist), if(!identical(noIdsExist, noIdsToSolve)) 
+                                       lang$nav$dialogHcube$descSolveAgain)),
+             tags$div(class = "small-space"),
+             conditionalPanel(
+               condition = "input.hcubeSolve_dl == 0",
+               selectizeInput("newHcubeTags", lang$nav$dialogHcube$newTags, c(),
+                              multiple = TRUE, options = list(
+                                'create' = TRUE,
+                                'persist' = FALSE))
+             )
+             ),
     title = lang$nav$dialogHcube$title,
     footer = tagList(
       tags$div(style = "text-align:left;", 

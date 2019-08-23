@@ -1938,6 +1938,11 @@
               "minLength":1,
               "required":true
             },
+            "descJobSubmission":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "newTags":{
               "type": "string",
               "minLength":1,

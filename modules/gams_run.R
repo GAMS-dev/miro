@@ -49,6 +49,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   scenGmsPar <- NULL
   attachmentFilePaths <- NULL
   staticData <- NULL
+  hcubeData <- NULL
   
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
@@ -127,6 +128,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
+    hcubeData <<- HcubeDataInstance$new(config$activateModules$remoteExecution)
     staticData <<- DataInstance$new()
     modelInSorted <- sort(names(modelIn))
     elementValues <- lapply(seq_along(modelIn), function(j){
@@ -203,7 +205,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     })
     par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
-    gmsString <- genGmsString(par = par, val = elementValues, modelName = modelName)
+    gmsString <- hcubeData$genGmsString(par = par, val = elementValues, 
+                                        modelName = modelName)
     attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
       attachmentFilePaths <- activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE)
@@ -217,10 +220,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       }
     }
     updateProgress(incAmount = 15/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    scenIds <- vapply(gmsString, digest, character(1L), algo = "sha256", 
-                      serialize = FALSE, USE.NAMES = FALSE)
+    scenIds <- hcubeData$pushJobIDs(vapply(gmsString, digest, character(1L), algo = "sha256", 
+                                           serialize = FALSE, USE.NAMES = FALSE))
+    
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    gmsString <- paste0(scenIds, ": ", gmsString)
+    gmsString <- paste0(scenIds, ": gams", modelName, ".gms ", gmsString)
     
     return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
@@ -259,6 +263,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   }
   
   observeEvent(input$btHcubeAll, {
+    disableEl(session, "#btHcubeAll")
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(difftime(now, prevJobSubmitted, units = "secs") < 5L){
@@ -280,18 +285,23 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       if(!is.null(activeScen)){
         sid <- activeScen$getSid()
       }
-      worker$runHcube(staticData, scenGmsPar, sid, tags = isolate(input$newHcubeTags), 
+      hideEl(session, "#jobSubmissionWrapper")
+      showEl(session, "#jobSubmissionLoad")
+      worker$runHcube(staticData, if(config$activateModules$remoteExecution) hcubeData else scenGmsPar, 
+                      sid, tags = isolate(input$newHcubeTags), 
                       attachmentFilePaths = attachmentFilePaths)
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
-      hideModal(session, 2L)
     }, error = function(e){
       flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
       showHideEl(session, "#hcubeSubmitUnknownError", 6000)
+    }, finally = {
+      hideEl(session, "#jobSubmissionLoad")
+      hideModal(session, 2L)
     })
-    
   })
   
   observeEvent(input$btHcubeNew, {
+    disableEl(session, "#btHcubeNew")
     flog.trace("Button to schedule only new scenarios for Hypercube submission was clicked.")
     now <- Sys.time()
     if(difftime(now, prevJobSubmitted, units = "secs") < 5L){

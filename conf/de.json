@@ -420,6 +420,7 @@
       "title": "Hypercube-Konfiguration",
       "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden.",
       "descSolveAgain": "Möchten Sie alle Szenarien wieder lösen oder nur die, die noch nicht gelöst sind?",
+      "descJobSubmission": "Bitte warten Sie, während der Job eingereicht wird...",
       "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
       "manualSwitch": "Job manuell verarbeiten?",
       "cancelButton":"Abbrechen",
