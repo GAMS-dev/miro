@@ -1211,10 +1211,10 @@ if(is.null(errMsg)){
                                                   status = '_status', time = '_jtime', 
                                                   tag = stagIdentifier, pid = '_pid', 
                                                   sid = sidIdentifier, gamsret = '_gamsret',
-                                                  scode = scodeIdentifier)),
+                                                  scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciii"))
+                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))

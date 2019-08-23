@@ -1019,7 +1019,9 @@ Db <- R6Class("Db",
                                   if(inherits(private$conn, "PostgreSQL")) 
                                     " smallint," else " integer,",
                                   DBI::dbQuoteIdentifier(private$conn, colNames[[9]]),
-                                  " integer);")
+                                  " integer,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[10]]),
+                                  " varchar(255));")
                   DBI::dbExecute(private$conn, query)
                   return(invisible(self))
                 },
