@@ -1052,10 +1052,19 @@ if(is.null(errMsg)){
         }
         return(alias)
       }, character(1L), USE.NAMES = FALSE)
-      if(length(modelIn[[i]]$pivotCols) && any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))){
-        errMsg <<- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
-                                         modelInAlias[i]))
+      if(length(modelIn[[i]]$pivotCols)){
+        if(any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))){
+          errMsg <<- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
+                                           modelInAlias[i]))
+        }else if(length(modelIn[[i]]$headers) < 3L || 
+                 sum(vapply(modelIn[[i]]$headers, 
+                            function(header) identical(header$type, "parameter"), 
+                            logical(1L), USE.NAMES = FALSE)) > 1L){
+          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least a dimension of 2 and have at most 1 value column (symbol: '%s').", 
+                                           modelInAlias[i]))
+        }
       }
+      
       # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
       if(identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
          (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header){
