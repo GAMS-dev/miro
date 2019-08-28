@@ -1,9 +1,15 @@
 const path = require('path');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: {
       miro: './srcjs/miro.js',
       miro_admin: './srcjs/miro_admin.js'
+    },
+    optimization: {
+      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
     devtool: 'source-map',
     output: {
@@ -14,6 +20,15 @@ module.exports = {
     externals: {
       jquery: 'jQuery'
     },
+    plugins: [
+      new MiniCssExtractPlugin({
+        // Options similar to the same options in webpackOptions.output
+        // all options are optional
+        filename: '[name].css',
+        chunkFilename: '[id].css',
+        ignoreOrder: false, // Enable to remove warnings about conflicting order
+      }),
+    ],
     module: {
         rules: [
           {
@@ -42,6 +57,15 @@ module.exports = {
                 ]]
               }
             }
+          },
+          {
+            test: /\.less$/,
+            exclude: /node_modules/,
+            use: [
+                MiniCssExtractPlugin.loader,
+                "css-loader",
+                "less-loader"
+            ]
           }
         ]
     }
