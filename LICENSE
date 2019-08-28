@@ -17,6 +17,7 @@ these components are included below):
 - ion.rangeSlider, https://github.com/IonDen/ion.rangeSlider
 - strftime for Javascript, https://github.com/samsonjs/strftime
 - DataTables, https://github.com/DataTables/DataTables
+- natural.js (DataTables plugin), https://github.com/DataTables/Plugins/blob/master/sorting/natural.js
 - showdown.js, https://github.com/showdownjs/showdown
 - polyfill, https://github.com/jonathantneal/polyfill
 - subtotal, https://github.com/nagarajanchinnasamy/subtotal
@@ -1965,6 +1966,7 @@ Public License instead of this License.
           Gregor Aisch, Tim Wood, Iskren Chernev, Moment.js contributors, David Bushell, 
           jQuery Foundation, Splunk Inc, Jon Rohan, James M. Greeneand, Företagsplatsen, 
           Kent Russell and Jonathan Owen
+        - natural.js (DataTables plugin), Copyright (c) Jim Palmer (based on chunking idea from Dave Koelle), Mike Grier (mgrier.com), Clint Priest, Kyle Adams, guillermo
         - plotly, Copyright (c) 2017 Plotly, Inc.
         - V8, Copyright (c) 2017 Jeroen Ooms
         - jsonlite, Copyright (c) 2017 Jeroen Ooms
