@@ -43,6 +43,93 @@ storeGAMSOutputFiles <- function(workDir){
     showErrorMsg(lang$errMsg$saveGAMSLog$title, errMsg)
   }
 }
+prepareModelRun <- function(async = FALSE){
+  prog <- Progress$new()
+  on.exit(suppressWarnings(prog$close()))
+  prog$set(message = lang$progressBar$prepRun$title, value = 0)
+  
+  prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
+  # save input data 
+  saveInputDb <- FALSE
+  source("./modules/input_save.R", local = TRUE)
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
+  pfFileContent <- NULL
+  inputData <- DataInstance$new(modelInFileNames)
+  lapply(seq_along(dataTmp), function(i){
+    # write compile time variable file and remove compile time variables from scalar dataset
+    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
+      # scalars file exists, so remove compile time variables from it
+      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
+      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
+      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
+      if(nrow(DDParValues) || nrow(GMSOptValues)){
+        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
+                                function(i){
+                                  if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                    paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
+                                  else
+                                    NA_character_
+                                }, character(1L), USE.NAMES = FALSE)
+        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
+        # do not write '_' in pf file (no selection)
+        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
+                                function(i){
+                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
+                                    paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
+                                  else
+                                    NA_character_
+                                }, character(1L), USE.NAMES = FALSE)
+        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
+        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
+        # remove those rows from scalars file that are compile time variables
+        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
+      }else{
+        csvData <- dataTmp[[i]]
+      }
+      rm(GMSOptValues, DDParValues)
+    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
+      # append alias column
+      choiceIdx         <- match(dataTmp[[i]][[1L]], 
+                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
+      csvData           <- dataTmp[[i]]
+      if(length(choiceIdx)){
+        if(!is.na(choiceIdx)){
+          aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
+          aliasCol[is.na(aliasCol)] <- ""
+          csvData[["text"]] <- aliasCol
+        }else{
+          csvData[["text"]] <- ""
+        }
+      }else{
+        csvData[["text"]] <- character(0L)
+      }
+    }else{
+      csvData <- dataTmp[[i]]
+    }
+    
+    inputData$push(names(dataTmp)[[i]], csvData)
+  })
+  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+    return(NULL)
+  }
+  tryCatch({
+    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
+      prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
+      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
+    }
+    prog$close()
+  }, error = function(e) {
+    errMsg <<- lang$errMsg$gamsExec$desc
+    flog.error("Attachment data could not be downloaded. Error message: %s.", conditionMessage(e))
+  })
+  if(is.null(showErrorMsg(lang$errMsg$gamsExec$title, errMsg))){
+    return(NULL)
+  }
+  return(list(inputData = inputData, pfFileContent = pfFileContent, dataTmp = if(!async) dataTmp))
+}
 if(identical(config$activateModules$hcubeMode, TRUE)){
   idsToSolve <- NULL
   idxDiff <- NULL
@@ -89,6 +176,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(1L)
              },
              hot = {
+               return(1L)
+             },
+             dt = {
                return(1L)
              },
              dropdown = {
@@ -262,6 +352,44 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress(incAmount = 1, detail = lang$nav$dialogHcube$waitDialog$desc)
   }
   
+  runHcubeJob <- function(scenGmsPar){
+    if(!length(scenGmsPar)){
+      flog.debug("No scenarios selected to be solved in Hypercube mode.")
+      return()
+    }
+    tryCatch({
+      sid <- NULL
+      if(length(activeScen)){
+        if(!activeScen$hasExecPerm())
+          stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
+               call. = FALSE)
+        sid <- activeScen$getSid()
+      }
+      hideEl(session, "#jobSubmissionWrapper")
+      showEl(session, "#jobSubmissionLoad")
+      worker$runHcube(staticData, if(config$activateModules$remoteExecution) hcubeData else scenGmsPar, 
+                      sid, tags = isolate(input$newHcubeTags), 
+                      attachmentFilePaths = attachmentFilePaths, 
+                      pfFileContent = c("--HCUBEREM=1"))
+      showHideEl(session, "#hcubeSubmitSuccess", 2000)
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#hcubeSubmitUnknownHost", 6000))
+      
+      if(errMsg %in% c(401L, 403L))
+        return(showHideEl(session, "#hcubeSubmitUnauthorized", 6000))
+      
+      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
+    }, finally = {
+      hideEl(session, "#jobSubmissionLoad")
+      hideModal(session, 2L)
+    })
+  }
+  
   observeEvent(input$btHcubeAll, {
     disableEl(session, "#btHcubeAll")
     flog.trace("Button to schedule all scenarios for Hypercube submission was clicked.")
@@ -272,32 +400,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     prevJobSubmitted <<- Sys.time()
-    if(!length(scenGmsPar)){
-      flog.debug("No scenarios selected to be solved in Hypercube mode.")
-      return()
-    }
-    tryCatch({
-      sid <- NULL
-      if(length(activeScen) && !activeScen$hasExecPerm()){
-        stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
-             call. = FALSE)
-      }
-      if(!is.null(activeScen)){
-        sid <- activeScen$getSid()
-      }
-      hideEl(session, "#jobSubmissionWrapper")
-      showEl(session, "#jobSubmissionLoad")
-      worker$runHcube(staticData, if(config$activateModules$remoteExecution) hcubeData else scenGmsPar, 
-                      sid, tags = isolate(input$newHcubeTags), 
-                      attachmentFilePaths = attachmentFilePaths)
-      showHideEl(session, "#hcubeSubmitSuccess", 2000)
-    }, error = function(e){
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
-      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
-    }, finally = {
-      hideEl(session, "#jobSubmissionLoad")
-      hideModal(session, 2L)
-    })
+    
+    runHcubeJob(scenGmsPar)
   })
   
   observeEvent(input$btHcubeNew, {
@@ -310,28 +414,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       return()
     }
     prevJobSubmitted <<- Sys.time()
-    hcubeScen <- scenGmsPar[idxDiff]
-    if(!length(hcubeScen)){
-      flog.debug("No scenarios selected to be solved in Hypercube mode.")
-      return()
-    }
-    tryCatch({
-      sid <- NULL
-      if(length(activeScen) && !activeScen$hasExecPerm()){
-        stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
-             call. = FALSE)
-      }
-      if(!is.null(activeScen)){
-        sid <- activeScen$getSid()
-      }
-      worker$runHcube(staticData, hcubeScen, sid, tags = isolate(input$newHcubeTags), 
-                      attachmentFilePaths = attachmentFilePaths)
-      showHideEl(session, "#hcubeSubmitSuccess", 2000)
-      hideModal(session, 2L)
-    }, error = function(e){
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", e)
-      showHideEl(session, "#hcubeSubmitUnknownError", 6000)
-    })
+    
+    hcubeData$subsetJobIDs(idxDiff)
+    runHcubeJob(scenGmsPar[idxDiff])
   })
   
   
@@ -387,9 +472,76 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       zip(file, list.files(recursive = TRUE), compression_level = 6)
     },
     contentType = "application/zip")
+}else{
+  observeEvent(virtualActionButton(input$btSubmitJob, rv$btSubmitJob), {
+    flog.debug("Submit new asynchronous job button clicked.")
+    jobNameTmp <- character(1L)
+    if(length(activeScen)){
+      if(!activeScen$hasExecPerm()){
+        showErrorMsg(lang$nav$dialogNoExecPerm$title, 
+                     lang$nav$dialogNoExecPerm$desc)
+        flog.info("User has no execute permission for this scenario.")
+        return(NULL)
+      }
+      jobNameTmp <- activeScen$getScenName()
+    }
+    if(identical(worker$validateCredentials(), FALSE)){
+      showLoginDialog(cred = worker$getCredentials(), 
+                      forwardOnSuccess = "btSubmitJob")
+      return(NULL)
+    }
+    showJobSubmissionDialog(jobNameTmp)
+  })
+  observeEvent(virtualActionButton(input$btSubmitAsyncJob, rv$btSubmitAsyncJob), {
+    flog.debug("Confirm new asynchronous job button clicked.")
+    sid <- NULL
+    jobName <- input$jobSubmissionName
+    if(isBadScenName(jobName)){
+      showHideEl(session, "#jobSubmitBadName", 4000L)
+      return()
+    }
+    if(length(activeScen)){
+      if(!activeScen$hasExecPerm()){
+        flog.error("User has no execute permission for this scenario. This looks like an attempt to tamper with the app!")
+        return()
+      }
+      sid <- activeScen$getSid()
+    }
+    if(identical(worker$validateCredentials(), FALSE)){
+      flog.error("User has no valid credentials. This looks like an attempt to tamper with the app!")
+      return(NULL)
+    }
+    dataModelRun <- prepareModelRun(async = TRUE)
+    if(is.null(dataModelRun)){
+      return(NULL)
+    }
+    # submit job
+    tryCatch({
+      hideEl(session, "#jobSubmissionWrapper")
+      showEl(session, "#jobSubmissionLoad")
+      worker$runAsync(dataModelRun$inputData, dataModelRun$pfFileContent, sid, 
+                      name = jobName)
+      showHideEl(session, "#jobSubmitSuccess", 2000)
+    }, error = function(e){
+      errMsg <- conditionMessage(e)
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
+      
+      if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#jobSubmitUnknownHost", 6000))
+      
+      if(errMsg %in% c(401L, 403L))
+        return(showHideEl(session, "#jobSubmitUnauthorized", 6000))
+      
+      showHideEl(session, "#jobSubmitUnknownError", 6000)
+    }, finally = {
+      hideEl(session, "#jobSubmissionLoad")
+      hideModal(session, 2L)
+    })
+  })
 }
 
-
+logObs <- NULL
 observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   flog.debug("Solve button clicked (model: '%s').", modelName)
   
@@ -477,89 +629,18 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     
     return(NULL)
   }
-  prog <- Progress$new()
-  on.exit(suppressWarnings(prog$close()))
-  prog$set(message = lang$progressBar$prepRun$title, value = 0)
-  
-  prog$inc(amount = 0.5, detail = lang$progressBar$prepRun$sendInput)
-  # save input data 
-  saveInputDb <- FALSE
-  source("./modules/input_save.R", local = TRUE)
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+  dataModelRun <- prepareModelRun(async = FALSE)
+  if(is.null(dataModelRun)){
     return(NULL)
   }
-  pfFileContent <- NULL
-  inputData <- DataInstance$new(modelInFileNames)
-  lapply(seq_along(dataTmp), function(i){
-    # write compile time variable file and remove compile time variables from scalar dataset
-    if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
-      # scalars file exists, so remove compile time variables from it
-      DDParIdx           <- grepl(paste("^", DDPar, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      GMSOptIdx          <- grepl(paste("^", GMSOpt, "(_lo|_up)?$", sep = "", collapse = "|"), dataTmp[[i]][[1]])
-      DDParValues        <- dataTmp[[i]][DDParIdx, , drop = FALSE]
-      GMSOptValues       <- dataTmp[[i]][GMSOptIdx, , drop = FALSE]
-      if(nrow(DDParValues) || nrow(GMSOptValues)){
-        pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
-                                   function(i){
-                                     if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                       paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
-                                     else
-                                       NA_character_
-                                   }, character(1L), USE.NAMES = FALSE)
-        pfGMSPar      <- pfGMSPar[!is.na(pfGMSPar)]
-        # do not write '_' in pf file (no selection)
-        pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
-                                function(i){
-                                  if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                    paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
-                                  else
-                                    NA_character_
-                                }, character(1L), USE.NAMES = FALSE)
-        pfGMSOpt      <- pfGMSOpt[!is.na(pfGMSOpt)]
-        pfFileContent <<- c(pfGMSPar, pfGMSOpt)
-        # remove those rows from scalars file that are compile time variables
-        csvData <- dataTmp[[i]][!(DDParIdx | GMSOptIdx), ]
-      }else{
-        csvData <- dataTmp[[i]]
-      }
-      rm(GMSOptValues, DDParValues)
-    }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
-      # append alias column
-      choiceIdx         <- match(dataTmp[[i]][[1L]], 
-                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
-      csvData           <- dataTmp[[i]]
-      if(length(choiceIdx)){
-        if(!is.na(choiceIdx)){
-          aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
-          aliasCol[is.na(aliasCol)] <- ""
-          csvData[["text"]] <- aliasCol
-        }else{
-          csvData[["text"]] <- ""
-        }
-      }else{
-        csvData[["text"]] <- character(0L)
-      }
-    }else{
-      csvData <- dataTmp[[i]]
-    }
-    
-    inputData$push(names(dataTmp)[[i]], csvData)
-  })
-  if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
-    return(NULL)
-  }
+  dataTmp <- dataModelRun$dataTmp
   # run GAMS
   tryCatch({
-    if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
-      prog$inc(amount = 0, detail = lang$progressBar$prepRun$downloadAttach)
-      inputData$addFilePaths(activeScen$downloadAttachmentData(workDir, allExecPerm = TRUE))
-    }
-    prog$close()
     jobSid <- NULL
     if(length(activeScen)){
       jobSid <- activeScen$getSid()
     }
-    worker$run(inputData, pfFileContent, jobSid)
+    worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)
   }, error = function(e) {
     errMsg <<- lang$errMsg$gamsExec$desc
     flog.error("GAMS did not execute successfully (model: '%s'). Error message: %s.", modelName, e)
@@ -609,13 +690,10 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       }
     }
     emptyEl(session, "#logStatus")
-    logObs <- observe({
+    logObs <<- observe({
       logText    <- logfile()
       if(length(logFilePath)){
         write_file(logText, logFilePath, append = TRUE)
-      }
-      if(is.integer(modelStatus())){
-        return()
       }
       return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
     })
@@ -727,7 +805,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       }else{
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
-        # check whether GAMS output files shall be stored
+        
         storeGAMSOutputFiles(workDir)
         
         #select first tab in current run tabset
@@ -777,10 +855,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         
         
         GAMSResults <- NULL
-        # rendering tables and graphs
+        
         renderOutputData()
         
-        # mark scenario as unsaved
         markUnsaved()
       }
     }

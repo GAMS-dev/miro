@@ -26,6 +26,8 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
                     lang$nav$importJobsDialog$importSuccess),
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsAccessDenied", 
                     lang$nav$importJobsDialog$accessDenied),
+           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsUnknownHost", 
+                    lang$nav$dialogRemoteLogin$hostNotFound),
            tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
                     lang$errMsg$unknownError),
            if(is.null(id)){

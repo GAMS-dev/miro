@@ -88,6 +88,19 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm"){
     fade = TRUE, easyClose = FALSE))
 }
 
+showRemoveScenDialog <- function(forwardTo){
+  showModal(modalDialog(
+    title = lang$nav$dialogRemoveScen$title,
+    lang$nav$dialogRemoveScen$desc,
+    footer = tagList(
+      modalButton(lang$nav$dialogRemoveScen$cancelButton),
+      tags$button(class = "btn btn-default bt-highlight-1 bt-gms-confirm",
+                  type = "button", onclick = paste0("Shiny.setInputValue('", forwardTo, "',1,",
+                                                    "{priority:'event'})"),
+                  lang$nav$dialogRemoveScen$okButton)
+    ), fade = TRUE, easyClose = FALSE))
+}
+
 showCloseScenDialog <- function(scenId){
   if(config$activateModules$hcubeMode){
     modeDescriptor <- "dialogRemoveHCJob"
@@ -252,6 +265,25 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                         multiple = FALSE, width = "100%")
                                           ),
                                           fluidRow(
+                                            div(class= "choose-input", 
+                                                column(6,
+                                                       tags$label(class = "checkbox-material flex-design", 
+                                                                  'for'= "cbSelectManuallyExt", 
+                                                                  checkboxInput("cbSelectManuallyExt", "", FALSE), 
+                                                                  lang$nav[[modeDescriptor]]$cbSelectManually)
+                                                ),
+                                                column(6,
+                                                       conditionalPanel(
+                                                         condition = "input.cbSelectManuallyExt === true",
+                                                         selectInput("selInputDataExt", lang$nav[[modeDescriptor]]$selInputData, 
+                                                                     setNames(names(modelInToImport), 
+                                                                              modelInToImportAlias), 
+                                                                     multiple = TRUE, width = "100%")
+                                                       )
+                                                )
+                                            )
+                                          ),
+                                          fluidRow(
                                             tags$div(style = "text-align: center;",
                                                      actionButton("btImportExternal", class = "bt-highlight-1 bt-gms-confirm", 
                                                                   lang$nav[[modeDescriptor]]$okButton)
@@ -269,7 +301,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                                  multiple = FALSE,
                                                                  accept = c("application/vnd.ms-excel", 
                                                                             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
-                                                                            ".xlsx",
+                                                                            "application/zip", "text/csv", ".xlsx", ".csv", ".xls", ".zip",
                                                                             ".gdx"))
                                                 )
                                               ),
@@ -283,9 +315,9 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                                                     ),
                                                     column(6,
                                                            conditionalPanel(
-                                                             condition = "input.cbSelectManuallyLoc == true",
+                                                             condition = "input.cbSelectManuallyLoc === true",
                                                              selectInput("selInputDataLoc", lang$nav[[modeDescriptor]]$selInputData, 
-                                                                         setNames(as.list(names(modelInToImport)), 
+                                                                         setNames(names(modelInToImport), 
                                                                                   modelInToImportAlias), 
                                                                          multiple = TRUE, width = "100%")
                                                            )
@@ -358,6 +390,10 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
                lang$nav$dialogImport$hcubeHashNoMatch),
       tags$div(id = "importScenSnameExistsErr", class = "gmsalert gmsalert-error", 
                lang$nav$dialogImport$scenNameExistsErr),
+      tags$div(id = "importSceNoDsSelected", class = "gmsalert gmsalert-error", 
+              lang$nav$dialogLoadScen$noDsSelected),
+      tags$div(id = "importScenInvalidFile", class = "gmsalert gmsalert-error", 
+               lang$nav$dialogLoadScen$invalidFile),
       tags$div(id = "importScenError", class = "gmsalert gmsalert-error", 
                lang$errMsg$unknownError),
       tags$div(id = "importDataTabset",
@@ -586,7 +622,26 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
 showScenExportDialog <- function(id, exportTypes){
   showModal(modalDialog(
     title = lang$nav$dialogExportScen$title,
+    tags$div(class = "gmsalert gmsalert-error", id = "exportNoDsSelected", 
+             lang$nav$dialogExportScen$noDsSelected),
     selectInput("exportFileType", lang$nav$dialogExportScen$desc, exportTypes),
+    div(class= "choose-input", 
+        column(6,
+               tags$label(class = "checkbox-material flex-design", 
+                          'for'= "cbSelectManuallyExp", 
+                          checkboxInput("cbSelectManuallyExp", "", FALSE), 
+                          lang$nav$dialogExportScen$cbSelectManually)
+        ),
+        column(6,
+               conditionalPanel(
+                 condition = "input.cbSelectManuallyExp === true",
+                 selectInput("selDataToExport", lang$nav$dialogExportScen$selDatasets, 
+                             setNames(c(inputDsNames, names(modelOut)), 
+                                      c(inputDsAliases, modelOutAlias)), 
+                             multiple = TRUE, width = "100%")
+               )
+        )
+    ),
     footer = tagList(
       modalButton(lang$nav$dialogExportScen$cancelButton),
       downloadButton(paste0("export_", id), lang$nav$dialogExportScen$okButton,  
@@ -597,14 +652,55 @@ showScenExportDialog <- function(id, exportTypes){
       ), fade = TRUE, easyClose = TRUE
   ))
 }
+showJobSubmissionDialog <- function(jobName = ""){
+  showModal(modalDialog(
+    tags$div(class = "gmsalert gmsalert-success", style = "position:relative;",
+             id = "jobSubmitSuccess",
+             lang$nav$dialogJobSubmission$successMsg),
+    tags$div(class = "gmsalert gmsalert-error", id = "jobSubmitBadName",
+             lang$nav$dialogJobSubmission$badName),
+    tags$div(class = "gmsalert gmsalert-error", id = "jobSubmitUnknownHost",
+             style = "position:relative;", 
+             lang$nav$dialogRemoteLogin$hostNotFound),
+    tags$div(class = "gmsalert gmsalert-error", id = "jobSubmitUnauthorized",
+             style = "position:relative;", 
+             lang$nav$dialogRemoteLogin$invalidCred),
+    tags$div(class = "gmsalert gmsalert-error", id = "jobSubmitUnknownError",
+             lang$errMsg$unknownError),
+    tags$div(id = "jobSubmissionLoad", style = "display:none;text-align:center;",
+             lang$nav$dialogJobSubmission$descWait,
+             tags$div(class = "space"),
+             genSpinner(hidden = FALSE, absolute = FALSE)),
+    tags$div(id = "jobSubmissionWrapper", 
+             lang$nav$dialogJobSubmission$desc,
+             tags$div(class = "space"),
+             textInput("jobSubmissionName", lang$nav$dialogJobSubmission$jobName, jobName),
+             tags$div(class = "small-space")
+    ),
+    title = lang$nav$dialogJobSubmission$title,
+    footer = tagList(
+      modalButton(lang$nav$dialogJobSubmission$cancelButton),
+      actionButton("btSubmitAsyncJob", lang$nav$dialogJobSubmission$okButton,
+                   class='bt-highlight-1 bt-gms-confirm')),
+    fade = TRUE, easyClose = TRUE))
+}
 ######## HYPERCUBE MODE
 showHcubeSubmitDialog <- function(noIdsToSolve, noIdsExist){
   showModal(modalDialog(
-    tags$div(class = "gmsalert gmsalert-success", id = "hcubeSubmitSuccess",
-             lang$nav$dialogHcube$success),
+    tags$div(class = "gmsalert gmsalert-success", style = "position:relative;", 
+             id = "hcubeSubmitSuccess",
+             lang$nav$dialogHcube$successMsg),
+    tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownHost",
+             style = "position:relative;", 
+             lang$nav$dialogRemoteLogin$hostNotFound),
+    tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnauthorized",
+             style = "position:relative;", 
+             lang$nav$dialogRemoteLogin$invalidCred),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitWait",
+             style = "position:relative;", 
              lang$nav$dialogHcube$waitTime),
     tags$div(class = "gmsalert gmsalert-error", id = "hcubeSubmitUnknownError",
+             style = "position:relative;", 
              lang$errMsg$unknownError),
     tags$div(id = "jobSubmissionLoad", style = "display:none;text-align:center;",
              lang$nav$dialogHcube$descJobSubmission,
@@ -823,7 +919,9 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
                             tags$th(lang$nav$importJobsDialog$header$owner),
                             tags$th(lang$nav$importJobsDialog$header$date),
                             if(hcubeMode)
-                              tags$th(lang$nav$importJobsDialog$header$tags),
+                              tags$th(lang$nav$importJobsDialog$header$tags)
+                            else
+                              tags$th(lang$nav$importJobsDialog$header$name),
                             tags$th(lang$nav$importJobsDialog$header$status),
                             if(!jobHist)
                               tags$th(lang$nav$importJobsDialog$header$action)
@@ -846,6 +944,10 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
                                                      'create' = TRUE,
                                                      'persist' = FALSE))
                                   }
+                                )
+                              else
+                                tags$td(
+                                  hcubeMeta[[10]][i]
                                 ),
                               if(identical(jStatus, JOBSTATUSMAP[['running']])){
                                 tags$td("running")
@@ -888,27 +990,22 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
                                 tags$td(
                                   if(identical(jStatus, JOBSTATUSMAP[['completed']])){
                                     tagList(
-                                      HTML(paste0('<button id="jImport_', jID, '" type="button" class="btn btn-default" onclick="Miro.confirmModalShow(\'', 
-                                                  lang$nav$importJobsDialog$importConfirm$title, '\', \'', 
-                                                  lang$nav$importJobsDialog$importConfirm$desc, '\', \'', 
-                                                  lang$nav$importJobsDialog$importConfirm$cancelButton, '\', \'', 
-                                                  lang$nav$importJobsDialog$importConfirm$confirmButton, 
-                                                  '\', \'Shiny.setInputValue(\\\'importJob\\\',', jID, ', {priority:\\\'event\\\'})\')">',
-                                                  lang$nav$importJobsDialog$buttons$import, '</button>'))
+                                      tags$button(class = "btn btn-default", 
+                                                  onclick = paste0("Shiny.setInputValue('importJob',", 
+                                                                   jID, ",{priority:\'event\'});"),
+                                                  lang$nav$importJobsDialog$buttons$import),
+                                      if(!hcubeMode)
+                                        tags$button(class = "btn btn-default", 
+                                                    onclick = paste0("Shiny.setInputValue('showJobLog', '", 
+                                                                     jID, "',{priority:\'event\'});"),
+                                                    lang$nav$importJobsDialog$buttons$log)
                                     )
                                   },
-                                  if(hcubeMode){
-                                    if(identical(jStatus, JOBSTATUSMAP[['running']]))
-                                      tags$button(class = "btn btn-default", 
-                                                  onclick = paste0("Shiny.setInputValue('showJobProgress', '", 
-                                                                   jID, "',{priority:\'event\'});"),
-                                                  lang$nav$importJobsDialog$buttons$progress)
-                                  }else{
+                                  if(hcubeMode && identical(jStatus, JOBSTATUSMAP[['running']]))
                                     tags$button(class = "btn btn-default", 
-                                                onclick = paste0("Shiny.setInputValue('showJobLog', '", 
+                                                onclick = paste0("Shiny.setInputValue('showJobProgress', '", 
                                                                  jID, "',{priority:\'event\'});"),
-                                                lang$nav$importJobsDialog$buttons$log)
-                                  },
+                                                lang$nav$importJobsDialog$buttons$progress),
                                   tags$button(class = "btn btn-default", 
                                               onclick = paste0("Miro.confirmModalShow('",
                                               lang$nav$importJobsDialog$discardConfirm$title, "', '", 

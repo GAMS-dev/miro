@@ -951,10 +951,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
-  if(tolower(scalarsFileName) %in% modelInTabularData || length(modelIn) == length(modelInTabularData)){
-    inputDsNames <- modelInTabularData
-  }else{
-    inputDsNames <- c(modelInTabularData, scalarsFileName)
+  inputDsNames   <- modelInTabularData
+  inputDsAliases <- modelInAlias[match(modelInTabularData, names(modelIn))]
+  if(!tolower(scalarsFileName) %in% modelInTabularData && length(modelIn) != length(modelInTabularData)){
+    inputDsNames   <- c(inputDsNames, scalarsFileName)
+    inputDsAliases <- c(inputDsAliases, lang$nav$scalarAliases$scalars)
   }
   # get scalar input names
   scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){

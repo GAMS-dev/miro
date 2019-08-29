@@ -24,6 +24,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
+      "submitJob": "Submit job",
       "solveHcube":"Submit job",
       "splitView":"Split view",
       "tabView":"Tab view",
@@ -150,6 +151,9 @@
     "dialogExportScen":{
       "title": "Export scenario",
       "desc": "Select a file type",
+      "selDatasets":"Select datasets to export",
+      "noDsSelected": "You did not select any datasets to export.",
+      "cbSelectManually":"Manually choose datasets",
       "cancelButton": "Cancel",
       "okButton": "Export"
     },
@@ -276,13 +280,13 @@
     },
     "dialogRemoveScen":{  
       "title":"Close scenario",
-      "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
-      "cancelButton":"No",
-      "okButton":"Yes"
+      "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
+      "cancelButton":"Cancel",
+      "okButton":"Close"
     },
     "dialogRemoveHCJob":{  
       "title":"Close Hypercube job",
-      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data might be lost!",
+      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -354,6 +358,8 @@
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
+      "noDsSelected": "Please select the name of the dataset you want to import.",
+      "invalidFile": "The file you uploaded could not be validated.",
       "sortBy":"Sort by:",
       "btSortNameASC":"Name (ASC)",
       "btSortTimeASC":"Time (ASC)",
@@ -416,6 +422,16 @@
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
     },
+    "dialogJobSubmission":{
+      "title": "Submit job",
+      "desc": "Submit a new job to be solved asynchronously.",
+      "jobName": "Specify a name for your job (optional)",
+      "descWait": "Please wait while the job is being submitted...",
+      "badName": "Please choose a valid name for the new job.",
+      "cancelButton":"Cancel",
+      "okButton": "Submit",
+      "successMsg": "Your job was scheduled successfully. You can retrieve the results as soon as the job finished executing."
+    },
     "dialogHcube":{
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
@@ -467,6 +483,7 @@
         "owner": "Owner",
         "date": "Submission date",
         "tags": "Job tags",
+        "name": "Job name",
         "status": "Status",
         "action": "Action"
       },
@@ -475,12 +492,6 @@
         "log": "Show log",
         "progress": "Show progress",
         "discard": "Discard"
-      },
-      "importConfirm":{
-        "title": "Confirm import",
-        "desc": "Are you sure you want to import the selected job?",
-        "cancelButton": "Cancel",
-        "confirmButton": "Confirm"
       },
       "discardConfirm":{
         "title": "Confirm discard",
@@ -576,6 +587,10 @@
       "downloadResults": "Downloading result data",
       "renderInput": "Rendering input data",
       "renderOutput": "Rendering output data"
+    },
+    "exportScen":{
+      "title": "Eporting scenario",
+      "exportDs": "Exporting dataset %s of %s"
     },
     "loadScenDb":{  
       "title":"Loading scenario data from database",

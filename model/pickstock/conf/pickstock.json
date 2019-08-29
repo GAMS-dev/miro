@@ -1,6 +1,7 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
+  "hiddenOutputScalars": ["lastdaytraining", "firstdaytraining"],
   "remoteImport": [
     {
       "name": "123",
@@ -39,10 +40,15 @@
   ],
   "inputWidgets": {
     "price": {
-      "widgetType": "table"
+      "widgetType": "table",
+      "alias": "Price",
+      "readonly": false,
+      "heatmap": false,
+      "bigData": true
     },
     "maxstock": {
       "widgetType": "slider",
+      "label": "Select the maximum number of stocks",
       "alias": "maximum number of stocks to select",
       "min": 1,
       "max": 30,
@@ -52,7 +58,7 @@
       "noHcube": false
     },
     "trainingdays": {
-      "label": "select the number of days for training",
+      "label": "Select the number of days for training",
       "min": 1,
       "default": 99,
       "step": 1,
@@ -326,9 +332,8 @@
       "members": ["dowvsindex", "abserror"]
     }
   ],
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
-    "stretchH": "all",
+    "stretchH": "none",
     "readonly": false,
     "highlightCol": true,
     "highlightRow": true,

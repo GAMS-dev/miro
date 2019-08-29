@@ -287,7 +287,7 @@ observeEvent(input$localInput, {
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else if(fileType %in% c("xls", "xlsx")){
-    loadMode <- "xls"
+    loadMode <- "xlsx"
     tryCatch({
       xlsWbNames <- excel_sheets(input$localInput$datapath)
     }, error = function(e) {

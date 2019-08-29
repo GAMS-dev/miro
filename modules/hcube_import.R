@@ -210,33 +210,11 @@ getJobProgress <- function(jID){
   if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['running']])){
     return(NULL)
   }
+  jobProgress <- worker$getHcubeJobProgress(jID)
   
-  if(is.na(jID) || length(jID) != 1L)
-    stop(sprintf("Invalid job ID: '%s'.", jID), call. = FALSE)
+  noJobsCompleted <- jobProgress[[1L]]
+  noJobs <- jobProgress[[2L]]
   
-  jobDir      <- file.path(currentModelDir, hcubeDirName, jID)
-  logFilePath <- file.path(jobDir, jID %+% ".log")
-  
-  if(file.access(logFilePath, 4L) != -1L){
-    logContent <- tryCatch(
-      readLines(logFilePath, n = 1L)
-      , error = function(e){
-        stop(sprintf("Could not fetch Hypercube progress status. Error message: '%s'.", 
-                     conditionMessage(e)), call. = FALSE)
-      })
-  }else{
-    stop(sprintf("Could not access Hypercube log file: '%s'. Insufficient access permissions.",
-                 logFilePath), call. = FALSE)
-  }
-  errMsg <- "Progress status could not be determined. Invalid progress file format."
-  progressStatus <- strsplit(logContent, "/", fixed = TRUE)[[1L]]
-  if(length(progressStatus) != 2L)
-    stop(errMsg, call. = FALSE)
-  noJobsCompleted <- suppressWarnings(as.integer(progressStatus[[1L]]))
-  noJobs <- suppressWarnings(as.integer(progressStatus[[2L]]))
-  
-  if(any(is.na(c(noJobsCompleted, noJobs))))
-    stop(errMsg, call. = FALSE)
   if(identical(noJobsCompleted, noJobs)){
     rv$jobListPanel <- rv$jobListPanel + 1L
     removeModal()

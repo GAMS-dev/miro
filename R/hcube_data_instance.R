@@ -29,6 +29,13 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
       private$jobIDs <- jobIDs
     return(jobIDs)
   },
+  subsetJobIDs = function(jobIdx){
+    if(!private$json)
+      return(invisible(self))
+    private$jobIDs     <- private$jobIDs[jobIdx]
+    parValCombinations <- private$parValCombinations[jobIdx]
+    return(invisible(self))
+  },
   writeHcube = function(workDir){
     if(!identical(length(private$jobIDs), length(private$parValCombinations))){
       stop("", call. = FALSE)

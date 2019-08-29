@@ -39,29 +39,11 @@ observeEvent(input$importJob, {
   if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
-  }
-  resetWidgetsOnClose <<- FALSE
-  if(!closeScenario()){
     return()
   }
   
-  sid <- worker$getSid(jobImportID)
-  forward <- FALSE
-  
-  if(length(sid)){
-    tryCatch({
-      activeScen      <<- Scenario$new(db = db, sid = sid, 
-                                       overwrite = TRUE)
-      rv$activeSname  <<- activeScen$getScenName()
-    }, error = function(e){
-      forward <<- TRUE
-    })
-  }else{
-    forward <- TRUE
-  }
-  if(forward){
-    showNewScenDialog(lang$nav$dialogNewScen$newScenName,
-                      forwardTo = "importJobNew")
+  if(rv$unsavedFlag){
+    showRemoveScenDialog("importJobConfirm")
   }else{
     rv$importJobConfirm <- rv$importJobConfirm + 1L
   }
@@ -92,11 +74,17 @@ observeEvent(
 observeEvent(virtualActionButton(
   input$importJobConfirm,
   rv$importJobConfirm), {
-    req(identical(length(jobImportID), 1L), !is.null(activeScen))
+    req(length(jobImportID) == 1L)
+    removeModal()
     if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
       flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
       showHideEl(session, "#fetchJobsError")
     }
+    resetWidgetsOnClose <<- FALSE
+    if(!closeScenario()){
+      return()
+    }
+    rv$activeSname  <- worker$getJobName(jobImportID)
     newInputCount <- 0L
     errMsg <- NULL
     overwriteInput <- TRUE

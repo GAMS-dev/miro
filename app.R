@@ -701,7 +701,7 @@ if(!is.null(errMsg)){
   rm(LAUNCHADMINMODE, installedPackages)
   if(debugMode){
     save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
-                  "modelOut", "config", "lang", "inputDsNames", "outputTabs", 
+                  "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                   "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
                   "modelInTabularData", "externalInputConfig",
                   "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
@@ -713,7 +713,7 @@ if(!is.null(errMsg)){
                   "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
                   "currentModelDir", "modelInToImportAlias", "modelInToImport", 
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                  "GAMSReturnCodeMap", "dependentDatasets",
+                  "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                   "modelInGmsString", "installPackage", "dbSchema", "scalarInputSym",
                   "requiredPackagesCR", "modelFiles"), 
          file = rSaveFilePath)
@@ -848,8 +848,6 @@ if(!is.null(errMsg)){
       scenMetaDb       <- NULL
       scenMetaDbBase   <- NULL
       scenMetaDbBaseList <- NULL
-      # temporary name and sid of the scenario currently active in the UI
-      activeSnameTmp   <- NULL
       scenTags         <- NULL
       scenMetaDbSubset <- NULL
       scenMetaDbBaseSubset <- NULL
@@ -993,10 +991,10 @@ if(!is.null(errMsg)){
       flog.debug("Working directory was created: '%s'.", workDir)
     }
     # initialization of several variables
-    rv <- reactiveValues(scenId = 4L, unsavedFlag = TRUE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
+    rv <- reactiveValues(scenId = 4L, unsavedFlag = FALSE, btLoadScen = 0L, btOverwriteScen = 0L, btSolve = 0L,
                          btOverwriteInput = 0L, btSaveAs = 0L, btSaveConfirm = 0L, btRemoveOutputData = 0L, 
                          btLoadLocal = 0L, btCompareScen = 0L, activeSname = NULL, clear = TRUE, btSave = 0L, 
-                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, 
+                         btSplitView = 0L, noInvalidData = 0L, uploadHcube = 0L, btSubmitJob = 0L,
                          loadHcubeHashSid = 0L, jobListPanel = 0L, importJobConfirm = 0L, importJobNew = 0L,
                          datasetsModified = vector(mode = "logical", length = length(modelIn)))
     # list of scenario IDs to load
@@ -1123,19 +1121,22 @@ if(!is.null(errMsg)){
     }
     
     # print scenario title in input and output sheets
-    getScenTitle <- reactive(
-      if(is.null(rv$activeSname)){
-        return("")
-      }else{
-        nameSuffix <- ""
-        if(rv$unsavedFlag){
-          nameSuffix <- " (*)"
+    getScenTitle <- reactive({
+      nameSuffix <- ""
+      if(rv$unsavedFlag){
+        nameSuffix <- " (*)"
+      }
+      if(is.null(activeScen)){
+        if(length(rv$activeSname)){
+          return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
         }
+        return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))
+      }else{
         return(paste0(htmltools::htmlEscape(rv$activeSname), nameSuffix))
       }
-    )
-    output$inputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
-    output$outputDataTitle <- renderUI(htmltools::htmlEscape(getScenTitle()))
+    })
+    output$inputDataTitle <- renderUI(getScenTitle())
+    output$outputDataTitle <- renderUI(getScenTitle())
     
     # activate solve button once all model input files are imported
     observe({
@@ -1303,9 +1304,14 @@ if(!is.null(errMsg)){
       source("./modules/scen_export.R", local = TRUE)
     }
     observeEvent(input$btExportScen, {
-      exportTypes <- c(if(useGdx) "gdx", "xls")
+      if(useGdx){
+        exportTypes <- c(gdx = "gdx", xlsx = "xls", csv = "csv")
+      }else{
+        exportTypes <- c(csv = "csv", xlsx = "xls")
+      }
       if(length(datasetsRemoteExport)){
-        exportTypes <- c(exportTypes, names(datasetsRemoteExport))
+        exportTypes <- c(exportTypes, setNames(names(datasetsRemoteExport), 
+                                               names(datasetsRemoteExport)))
       }
       showScenExportDialog(input$btExportScen, exportTypes)
     })
@@ -1322,6 +1328,7 @@ if(!is.null(errMsg)){
       switch(input$exportFileType,
              xls = exportFileType <<- "xlsx",
              gdx = exportFileType <<- "gdx",
+             csv = exportFileType <<- "csv",
              flog.warn("Unknown export file type: '%s'.", input$exportFileType))
     })
     if(!isShinyProxy && 

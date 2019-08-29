@@ -10,7 +10,7 @@ function changeActiveButtons(tabId) {
   switch (tabId) {
     case 'inputData':
       $('#btImport').show();
-      $('#btSolve').show();
+      $('.btSolve').show();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -18,7 +18,7 @@ function changeActiveButtons(tabId) {
 
     case 'outputData':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -26,7 +26,7 @@ function changeActiveButtons(tabId) {
 
     case 'gamsinter':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').show();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -34,7 +34,7 @@ function changeActiveButtons(tabId) {
 
     case 'scenarios':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').show();
       $('#btCompareScen').show();
@@ -42,7 +42,7 @@ function changeActiveButtons(tabId) {
 
     default:
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -161,12 +161,23 @@ export function removeAttachment(elId) {
   });
 }
 
+export function changeDDButtonEvent(elText, DDBtnID, actionID) {
+  $(DDBtnID).attr('onclick',
+    `Shiny.setInputValue('${actionID}',1,{priority: 'event'});`);
+  $(DDBtnID).text(elText);
+  if ($(DDBtnID).is(':enabled')) {
+    Shiny.setInputValue(actionID, 1, {
+      priority: 'event',
+    });
+  }
+}
+
 export function showJobsDialog(hcubeMode) {
+  removeModal();
   if (hcubeMode) {
     switchTab('importData');
     return;
   }
-  removeModal();
   switchTab('gamsinter');
   switchTabInTabset('jobListPanel', 'joblist');
 }
@@ -272,7 +283,7 @@ $(document).ready(() => {
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
   $('#btImport').show();
-  $('#btSolve').show();
+  $('.btSolve').show();
   $('#btInterrupt').hide();
   $('#btSplitView').hide();
   $('#btCompareScen').hide();
@@ -399,7 +410,7 @@ $(document).ready(() => {
       Shiny.setInputValue('updateJobProgress', jID, {
         priority: 'event',
       });
-    }, 2000);
+    }, 10000);
   });
   Shiny.addCustomMessageHandler('gms-updateJobProgress', (data) => {
     if (!$(`#hcubeProgress${data.id}`).is(':visible')) {

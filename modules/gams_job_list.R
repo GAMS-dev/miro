@@ -6,6 +6,7 @@ observe({
   rv$jobListPanel
   input$refreshActiveJobs
   showEl(session, "#jImport_load")
+  on.exit(hideEl(session, "#jImport_load"), add = TRUE)
   
   flog.trace("Refreshing job list..")
   isolate({
@@ -26,14 +27,19 @@ observe({
       jobList <- jobList$jobList
     }, error = function(e){
       errMsg <- conditionMessage(e)
+      
+      if(errMsg == 404L || startsWith(errMsg, "Could not") || 
+         startsWith(errMsg, "Timeout"))
+        return(showHideEl(session, "#fetchJobsUnknownHost", 6000L))
+      
       if(errMsg == 401L || errMsg == 403L){
         showLoginDialog(cred = worker$getCredentials(), forward = "jobListPanel")
         redirect <<- TRUE
-        return()
+        return(showHideEl(session, "#fetchJobsAccessDenied", 6000L))
       }
       flog.error("Problems loading job list from database. Error message: '%s'.", 
                  conditionMessage(e))
-      showHideEl(session, "#fetchJobsError")
+      showHideEl(session, "#fetchJobsError", 6000L)
     })
     if(redirect)
       return()
