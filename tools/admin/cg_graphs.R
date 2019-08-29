@@ -1047,7 +1047,7 @@ observeEvent(input$outType, {
     outTypetmp <<- "dtGraph"
   else
     outTypetmp <<- "graph"
-  rv$graphConfig$graph$outType <<- outTypetmp
+  rv$graphConfig$outType <<- outTypetmp
 })
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
@@ -1495,7 +1495,7 @@ getChartOptions <- reactive({
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
     rv$graphConfig$graph$showlegend <<- FALSE
-    rv$graphConfig$graph$outType <<- "graph" 
+    rv$graphConfig$outType <<- "graph" 
   })
   tagList(
     selectInput("chart_xdata", lang$adminMode$graphs$chartOptions$xdata,

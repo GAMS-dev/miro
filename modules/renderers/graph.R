@@ -19,21 +19,23 @@ renderGraph <- function(data, configData, options, height = NULL){
       # bar plot
       p <- NULL
       lapply(seq_along(options$ydata), function(j){
+        yData <- options$ydata[[j]]
+        markerStyle <- list(line = list(color = yData$marker$line$color,
+                                        width = yData$marker$line$width))
+        markerColor <- yData$marker$color
+        if(length(markerColor))
+          markerStyle$color <- markerColor
         if(j==1){
           p <<- plot_ly(data, x = ~try(get(options$xdata)), type = 'bar', 
-                        y = ~try(get(names(options$ydata)[[1]])), 
-                        name = options$ydata[[j]]$label, height = height, 
+                        y = ~try(get(names(options$ydata)[1])), 
+                        name = yData$label, height = height, 
                         color=if(!is.null(options$color)){~try(get(options$color))},
-                        marker = list(color = options$ydata[[1]]$marker$color,
-                                      line = list(color = options$ydata[[1]]$marker$line$color,
-                                                  width = options$ydata[[1]]$marker$line$width)),
+                        marker = markerStyle,
                         width=if(!is.null(options$width)){~try(get(options$width))},
                         orientation = options$orientation) 
         }else{
-          p <<- add_trace(p, y = ~try(get(names(options$ydata)[[j]])), name = options$ydata[[j]]$label,
-                          marker = list(color = options$ydata[[j]]$marker$color,
-                                        line = list(color = options$ydata[[j]]$marker$line$color,
-                                                    width = options$ydata[[j]]$marker$line$width)))
+          p <<- add_trace(p, y = ~try(get(names(options$ydata)[j])), name = yData$label,
+                          marker = markerStyle)
         }
       })
     }else if(options$type=='scatter'){
@@ -200,7 +202,8 @@ renderGraph <- function(data, configData, options, height = NULL){
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
                 xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
                              zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
-                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto)),
+                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
+                             categoryorder = "trace"),
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
                              zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
                              range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),

@@ -1,7 +1,6 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
 modelInWithPrefix <- names(modelIn)
-ignoreRefreshWidgetType <- FALSE
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
@@ -369,9 +368,10 @@ observeEvent({input$widget_symbol
       selectedType <- "sliderrange"
     }
   }
-  ignoreRefreshWidgetType <<- TRUE
-  updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
-  rv$widget_type <- rv$widget_type + 1L
+  if(identical(input$widget_type, selectedType))
+    rv$widget_type <- rv$widget_type + 1L
+  else
+    updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
 })
 observeEvent(input$widget_go, {
   currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
@@ -485,10 +485,6 @@ observeEvent({input$widget_type
   rv$widget_type}, {
     req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
         nchar(currentWidgetSymbolName) > 0L)
-    if(ignoreRefreshWidgetType){
-      ignoreRefreshWidgetType <<- FALSE
-      return()
-    }
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     rv$widgetConfig <- list()
     
@@ -574,6 +570,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -746,6 +743,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            
@@ -865,6 +863,7 @@ observeEvent({input$widget_type
                                    selected = currentConfig$selected,
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    multiple = identical(currentConfig$multiple, TRUE)) 
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            
@@ -961,6 +960,7 @@ observeEvent({input$widget_type
                                    value = identical(currentConfig$value, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    class =  "checkbox-material")
+           rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$checkbox$alias, 
@@ -1008,6 +1008,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            rv$widgetConfig$value <- currentConfig$value
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
            rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
@@ -1130,6 +1131,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$end <- currentConfig$end
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
@@ -1265,6 +1267,7 @@ observeEvent({input$widget_type
                                    alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
+           rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$textinput$alias, 
@@ -1281,7 +1284,6 @@ observeEvent({input$widget_type
            })
          }
   )
-  rv$widgetConfig$label <- currentConfig$widget_label
   #hideEl(session, "#hot_preview")
 })
 observeEvent(input$widget_alias, {

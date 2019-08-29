@@ -54,10 +54,14 @@ Worker <- R6Class("Worker", public = list(
     private$buildAuthHeader(FALSE)
     
     private$metadata$namespace <- namespace
+    
     ret <- GET(url = paste0(url, "/namespaces/", namespace, "/permissions/me"), 
                 add_headers(Authorization = private$authHeader,
                             Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                 timeout(2L))
+    if(identical(status_code(ret), 401L))
+      stop(401L, call. = FALSE)
+    
     retContent <- tryCatch({
       content(ret, type = "application/json", 
               encoding = "utf-8")
@@ -89,7 +93,7 @@ Worker <- R6Class("Worker", public = list(
                                      useRegistered)
       }
       return(200L)
-    }else if(status_code(ret) %in% c(401L, 403L)){
+    }else if(identical(status_code(ret), 403L)){
       stop(401L, call. = FALSE)
     }else{
       stop(500L, call. = FALSE)

@@ -499,33 +499,31 @@ if(config$activateModules$hcubeMode){
   )
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
-            fluidRow(
-              if(config$activateModules$remoteExecution){
-                tabBox(width = 12, id = "jobListPanel", 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                                contentCurrent             
-                       ), 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
-                                fluidRow(
-                                  box(title = tagList(lang$nav$hcubeImport$title,
-                                                      tags$div(style = "float: right;", 
-                                                               actionButton(inputId = "refreshActiveJobs", 
-                                                                            class = "bt-icon", 
-                                                                            icon = icon("refresh"), label = NULL))),
-                                      status="warning", solidHeader = TRUE, width = 12,
-                                      genSpinner("jImport_load", absolute = FALSE),
-                                      getJobsTableSkeleton(id = "jImport_output"),
-                                      tags$div(class = "col-sm-6",
-                                               actionButton("btShowHistory", 
-                                                            lang$nav$hcubeImport$btShowHistory)
-                                      )
-                                  )
+            if(config$activateModules$remoteExecution){
+              tabBox(width = 12, id = "jobListPanel", 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                              contentCurrent             
+                     ), 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                              fluidRow(
+                                box(title = tagList(lang$nav$hcubeImport$title,
+                                                    tags$div(style = "float: right;", 
+                                                             actionButton(inputId = "refreshActiveJobs", 
+                                                                          class = "bt-icon", 
+                                                                          icon = icon("refresh"), label = NULL))),
+                                    status="warning", solidHeader = TRUE, width = 12,
+                                    genSpinner("jImport_load", absolute = FALSE),
+                                    getJobsTableSkeleton(id = "jImport_output"),
+                                    tags$div(class = "col-sm-6",
+                                             actionButton("btShowHistory", 
+                                                          lang$nav$hcubeImport$btShowHistory)
+                                    )
                                 )
-                       ))
-              }else{
-                contentCurrent
-              }
-            )
+                              )
+                     ))
+            }else{
+              contentCurrent
+            }
     ),
     tabItem(tabName = "outputData",
             fluidRow(

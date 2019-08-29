@@ -80,6 +80,16 @@
           "minLength":3
         }
       },
+      "modelFilesToIgnore":{
+        "description":"Specify files that are not necessary to run the model and shall be ignored (e.g. when uploading model to remote server)",
+        "type":["array", "string"],
+        "minLength":3,
+        "required":false,
+        "items":{
+          "type":"string",
+          "minLength":3
+        }
+      },
       "defCompMode":{  
          "description":"Specifies the default scenario comparison mode (the one that is loaded on startup).",
          "type":"string",
@@ -122,7 +132,7 @@
             "hcubeMode":{  
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
-               "default":true,
+               "default":false,
                "required":false
             },
             "logFile":{  
@@ -146,7 +156,7 @@
             "remoteExecution":{
                "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
-               "default":true,
+               "default":false,
                "required":false
             }
          }

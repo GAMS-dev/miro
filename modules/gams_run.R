@@ -812,8 +812,6 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         switchTab(session, "output")
         updateTabsetPanel(session, "scenTabset",
                           selected = "results.current")
-        updateTabsetPanel(session, "contentCurrent",
-                          selected = "contentCurrent_1")
         errMsg <- NULL
         tryCatch({
           GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 

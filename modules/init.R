@@ -114,12 +114,6 @@ if(is.null(errMsg)){
   if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
-  # quote extra command line arguments
-  config$extraClArgs <- vapply(seq_along(config$extraClArgs), function(idx){
-    if(idx %% 2 == 0)
-      return(escapeGAMSCL(config$extraClArgs[[idx]]))
-    return(config$extraClArgs[[idx]])
-  }, character(1L), USE.NAMES = FALSE)
   # handsontable options
   hotOptions        <- config$handsontable
   
@@ -1260,8 +1254,10 @@ if(is.null(errMsg)){
   modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
   modelFiles <- modelFiles[!basename(modelFiles) %in% c(paste0(modelName, "_", hcubeDirName), 
                                                         customRendererDirName, "static",
-                                              "logs", "conf", "runapp.R", paste0("~$", modelNameRaw, ".gms"),
-                                              paste0(miroDataDirPrefix, modelName))]
+                                                        "logs", "conf", "runapp.R", 
+                                                        paste0("~$", modelNameRaw, ".gms"),
+                                                        paste0(miroDataDirPrefix, modelName),
+                                                        config$modelFilesToIgnore)]
   modelFilesExt <- tools::file_ext(modelFiles)
   modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
   modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]
