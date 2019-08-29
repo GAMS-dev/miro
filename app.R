@@ -719,6 +719,18 @@ if(!is.null(errMsg)){
          file = rSaveFilePath)
     rm(listOfCustomRenderers)
     if(identical(getCommandArg("buildonly", FALSE), "true")){
+      tryCatch({
+        writeLines(c(paste0("modelname=", modelNameRaw),
+                     if(isTRUE(config$activateModules$hcubeMode)) 
+                       "is_hcube_mode"),
+                   file.path(currentModelDir, ".metadata"))
+        zip::zipr(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
+                  c(modelFiles, file.path(currentModelDir, ".metadata")))
+        unlink(file.path(currentModelDir, ".metadata"))
+      }, error = function(e){
+        flog.error("Problems creating app bundle. Error message: '%s'.", 
+                   conditionMessage(e))
+      })
       quit("no")
     }
   }
