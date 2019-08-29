@@ -5,6 +5,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: {
+      skin_dark: './less/skins/dark.js',
       miro: './srcjs/miro.js',
       miro_admin: './srcjs/miro_admin.js'
     },
@@ -66,6 +67,16 @@ module.exports = {
                 "css-loader",
                 "less-loader"
             ]
+          },
+          {
+            test: /\.(png|jp(e*)g|svg)$/,  
+            use: [{
+                loader: 'url-loader',
+                options: { 
+                    limit: 8000, // Convert images < 8kb to base64 strings
+                    name: 'images/[hash]-[name].[ext]'
+                } 
+            }]
           }
         ]
     }

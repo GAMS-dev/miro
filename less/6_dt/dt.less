@@ -1,34 +1,5 @@
-//dark
-@row-even-dark:      #848991;   //before: #ffffff;
-@row-odd-dark:       #76797e;   //before: #f9f9f9;
-@text-color-dark:    #ccc;      //before: #333;
-@hover-row-dark:     #9499a0;   //before: #f6f6f6;
-@row-selected-dark:  #00adb5;   //before: #acbad4;
-
-//light
-@row-even:           #ffffff;
-@row-odd:            #f9f9f9;
-@text-color:         #333;
-@hover-row:          #f6f6f6;
-@row-selected:       #acbad4;
-
-//change mode for static/browser-responsive css compilation
-@mode: "browser";
-
-.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
-    @rulesDark();
-}
-.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
-    @rules();
-}
-.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
-    @rules();
-    @media (prefers-color-scheme: dark) {
-        @rulesDark();
-    }
-}
-
-///////////////////////////////////////////////////////////
+@import "../skins/variables/global.less";
+@import "../skins/variables/dt_variables.less";
 
 table.dataTable {
     width: 100%;
@@ -597,4 +568,19 @@ table.dataTable td {
     .dataTables_wrapper .dataTables_filter {
         margin-top: 0.5em
     }
+}
+
+//Extra
+/* Selected rows/cells */
+table.dataTable tr.selected td, table.dataTable td.selected {
+    .responsiveDark({
+       background-color: @row-selected-extra !important;
+    },
+    {
+       background-color: @row-selected-extra-dark !important;
+    });
+}
+/* In case of scrollX/Y or FixedHeader */
+.dataTables_scrollBody .dataTables_sizing {
+    visibility: hidden;
 }
