@@ -26,13 +26,13 @@ renderGraph <- function(data, configData, options, height = NULL){
         if(length(markerColor))
           markerStyle$color <- markerColor
         if(j==1){
-          p <<- plot_ly(data, x = ~try(get(options$xdata)), type = 'bar', 
+          p <<- plot_ly(data) %>% add_bars(x = ~try(get(options$xdata)),
                         y = ~try(get(names(options$ydata)[1])), 
                         name = yData$label, height = height, 
                         color=if(!is.null(options$color)){~try(get(options$color))},
                         marker = markerStyle,
                         width=if(!is.null(options$width)){~try(get(options$width))},
-                        orientation = options$orientation) 
+                        orientation = options$orientation)
         }else{
           p <<- add_trace(p, y = ~try(get(names(options$ydata)[j])), name = yData$label,
                           marker = markerStyle)

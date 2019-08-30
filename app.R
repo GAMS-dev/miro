@@ -725,7 +725,8 @@ if(!is.null(errMsg)){
                        "is_hcube_mode"),
                    file.path(currentModelDir, ".metadata"))
         zip::zipr(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
-                  c(modelFiles, file.path(currentModelDir, ".metadata")))
+                  c(modelFiles, file.path(currentModelDir, "static"),
+                    file.path(currentModelDir, ".metadata")))
         unlink(file.path(currentModelDir, ".metadata"))
       }, error = function(e){
         flog.error("Problems creating app bundle. Error message: '%s'.", 
