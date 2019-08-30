@@ -106,7 +106,7 @@ tabItemList <- list(
                                                                        value = if(length(modelIn[[i]]$slider$default) > 1) 
                                                                          numeric(2L) else numeric(1L), step = sliderStepSize, 
                                                                        width = modelIn[[i]]$slider$width, 
-                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          slider         <- tagList(
                                            tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tagAppendAttributes(slider, style = "display:none;"), 
@@ -124,7 +124,7 @@ tabItemList <- list(
                                                        value = sliderValues[[sliderName]]$def, 
                                                        step = sliderValues[[sliderName]]$step, 
                                                        width = modelIn[[i]]$slider$width, 
-                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          )
                                        }
                                        if(config$activateModules$hcubeMode){
