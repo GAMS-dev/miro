@@ -17,6 +17,20 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     private$data[[datasetName]] <- data
   },
+  addIndexFile = function(workDir, modelDataFiles){
+    if(!length(modelDataFiles))
+      return(NULL)
+    stopifnot(is.character(modelDataFiles), is.character(workDir), 
+              identical(length(workDir), 1L))
+    
+    indexFileName <- "_index_file_"
+    
+    jsonlite::write_json(list(files = modelDataFiles, type = "include"), 
+                         file.path(workDir, indexFileName), auto_unbox = TRUE)
+    self$addFilePaths(file.path(workDir, indexFileName))
+    
+    return(indexFileName)
+  },
   add = function(datasetNames, data){
     stopifnot(identical(length(datasetNames), length(data)))
     for(i in seq_along(datasetNames)){

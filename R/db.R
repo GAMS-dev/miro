@@ -225,6 +225,7 @@ Db <- R6Class("Db",
                     query <- paste0("DROP TABLE IF EXISTS ",  
                                     dbQuoteIdentifier(private$conn, tableName), " ;")
                     dbExecute(private$conn, query)
+                    flog.info("Database table: '%s' deleted.", tableName)
                   }
                   # turn foreign key usage on again
                   dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
@@ -1376,7 +1377,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR table_name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "\\_%"), 
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), 
                                         ");"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -1388,7 +1389,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "\\_%"), " ESCAPE '\\');"))
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\');"))
                   }
                   return(dbGetQuery(private$conn, query)[[1L]])
                 }

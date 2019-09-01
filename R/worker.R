@@ -614,22 +614,31 @@ Worker <- R6Class("Worker", public = list(
         library(readr)
         library(jsonlite)
       }))
+      
+      dataFilesToFetch <- metadata$modelDataFiles
+      
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
                     paste0("execMode=", metadata$gamsExecMode), 
                     metadata$MIROSwitch)
       if(metadata$saveTraceFile){
-        gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, metadata$modelName, '.trc"'), "traceopt=3")
+        traceFileName <- paste0(tableNameTracePrefix, metadata$modelName, '.trc')
+        gamsArgs <- c(gamsArgs, paste0('trace="', traceFileName, '"'), "traceopt=3")
+        if(length(dataFilesToFetch))
+          dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
       }
       pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
+      
       requestBody <- list(model = metadata$modelName,
                           use_pf_file = TRUE, 
-                          namespace = metadata$namespace,
-                          data = upload_file(inputData$
-                                               writeCSV(workDir, delim = metadata$csvDelim)$
-                                               addFilePaths(pfFilePath)$
-                                               compress(), 
-                                             type = 'application/zip'))
+                          namespace = metadata$namespace)
+      
+      requestBody$inex_filename <- inputData$addIndexFile(workDir, dataFilesToFetch)
+      requestBody$data <- upload_file(inputData$
+                                        writeCSV(workDir, delim = metadata$csvDelim)$
+                                        addFilePaths(pfFilePath)$
+                                        compress(), 
+                                      type = 'application/zip')
       if(is.R6(hcubeData)){
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
                                                   type = 'application/json')
@@ -637,13 +646,15 @@ Worker <- R6Class("Worker", public = list(
         requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
+      
       if(identical(metadata$useRegistered, FALSE)){
         requestBody$model_data <- upload_file(DataInstance$new()$
                                                 addFilePaths(metadata$modelData)$
                                                 compress(recurse = TRUE), 
                                               type = 'application/zip')
       }
-      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), encode = "multipart", 
+      ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), 
+                  encode = "multipart", 
                   body = requestBody,
                   add_headers(Authorization = authHeader, 
                               Timestamp = as.character(Sys.time(), 
@@ -701,15 +712,16 @@ Worker <- R6Class("Worker", public = list(
                       URLencode(text_entity)),
                query = if(!is.null(teLength)) 
                  list(start_position = max(0, teLength - maxSize), length = teLength),
-               if(saveDisk)
-                 write_disk(file.path(private$workDir, text_entity), overwrite = TRUE),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(10L))
-    if(saveDisk){
-      return(status_code(ret))
-    }
+    
     if(identical(status_code(ret), 200L)){
+      if(saveDisk){
+        writeLines(content(ret, encoding = "utf-8")$entity_value,
+                   file.path(private$workDir, text_entity))
+        return(200L)
+      }
       return(content(ret, encoding = "utf-8")$entity_value)
     }
     return(status_code(ret))

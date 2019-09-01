@@ -44,8 +44,12 @@ observe({
     if(redirect)
       return()
     
-    output$jImport_output <- renderUI(getJobsTable(jobList, 
-                                                   hcubeMode = config$activateModules$hcubeMode))
+    output$jImport_output <- renderUI(
+      getJobsTable(jobList, 
+                   hcubeMode = config$activateModules$hcubeMode,
+                   showLogFileDialog = any(config$activateModules$logFile, 
+                                           config$activateModules$lstFile, 
+                                           config$activateModules$miroLogFile)))
     hideEl(session, "#jImport_load")
   })
 })

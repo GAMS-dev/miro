@@ -904,7 +904,7 @@ showNewCompletedJobsDialog <- function(hcubeMode = FALSE){
     fade = TRUE, easyClose = FALSE
   ))
 }
-getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
+getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFileDialog = TRUE){
   if(!inherits(hcubeMeta, "data.frame")){
     content <- tags$div(class = "err-msg", 
                         lang$errMsg$unknownError
@@ -994,7 +994,7 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE){
                                                   onclick = paste0("Shiny.setInputValue('importJob',", 
                                                                    jID, ",{priority:\'event\'});"),
                                                   lang$nav$importJobsDialog$buttons$import),
-                                      if(!hcubeMode)
+                                      if(!hcubeMode && showLogFileDialog)
                                         tags$button(class = "btn btn-default", 
                                                     onclick = paste0("Shiny.setInputValue('showJobLog', '", 
                                                                      jID, "',{priority:\'event\'});"),
@@ -1047,16 +1047,37 @@ showJobHistoryDialog <- function(jobMeta, hcubeMode = TRUE){
     fade = TRUE, easyClose = TRUE, size = "l"
   ))
 }
-showJobLogFileDialog <- function(logContent){
+showJobLogFileDialog <- function(jID){
+  logTabsetList <- list()
+  if(config$activateModules$logFile){
+    logTabsetList$log <- tabPanel(title=tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$logFile),
+                                  value = paste0("log_", jID),
+                                  tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
+                                           id = "asyncLogContainer",
+                                           genSpinner()
+                                  ))
+  }
+  if(config$activateModules$lstFile){
+    logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
+                                  value = paste0("listfile_", jID),
+                                  tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
+                                           id = "asyncLstContainer",
+                                           genSpinner()
+                                  ))
+  }
+  if(config$activateModules$miroLogFile){
+    logTabsetList$miroLog <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$miroLogFile),
+                                      value = paste0("mirolog_", jID),
+                                      tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
+                                               id = "asyncMiroLogContainer",
+                                               genSpinner()
+                                      ))
+  }
+  logTabsetList <- unname(logTabsetList)
+  logTabsetList$id <- "asyncLogFileTabsset"
   showModal(modalDialog(
     title = lang$nav$hcubeMode$showLogFileDialog$title,
-    tags$pre(style = "max-height:500px;max-height:70vh;overflow:auto;",
-      if(length(logContent) && nchar(logContent)){
-        logContent
-      }else{
-        lang$nav$hcubeMode$showLogFileDialog$noContent
-      }
-    ),
+    do.call(tabsetPanel, logTabsetList),
     footer = modalButton(lang$nav$hcubeMode$showLogFileDialog$cancelButton),
     fade = TRUE, easyClose = TRUE
   ))

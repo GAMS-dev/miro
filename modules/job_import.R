@@ -1,15 +1,68 @@
 observeEvent(input$showJobLog, {
   flog.trace("Show job log button clicked.")
-  
-  pID <- worker$getPid(input$showJobLog)
-  if(is.null(pID)){
-    flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
+  asyncLogLoaded[] <<- FALSE
+  showJobLogFileDialog(input$showJobLog)
+})
+observeEvent({
+  input$asyncLogFileTabsset
+  input$showJobLog
+  }, {
+    if(!length(input$asyncLogFileTabsset)){
+      return()
+    }
+  jID <- strsplit(input$asyncLogFileTabsset, "_", fixed = TRUE)[[1]]
+  if(length(jID) < 2L){
+    flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  fileType <- jID[[1L]]
+  jID <- suppressWarnings(as.integer(jID[[2L]]))
+  if(is.na(jID)){
+    flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
     return()
   }
   
+  if(identical(fileType, "log")){
+    if(asyncLogLoaded[1L]){
+      flog.debug("Log file not is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[1L] <<- TRUE
+    fileToFetch <- paste0(modelNameRaw, ".log")
+    containerID <- "#asyncLogContainer"
+  }else if(identical(fileType, "listfile")){
+    if(asyncLogLoaded[2L]){
+      flog.debug("Listing file not is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[2L] <<- TRUE
+    fileToFetch <- paste0(modelNameRaw, ".lst")
+    containerID <- "#asyncLstContainer"
+  }else if(identical(fileType, "mirolog")){
+    if(!length(config$miroLogFile)){
+      flog.error("MIRO log file attempted to be fetched, but none is specified. This looks like an attempt to tamper with the app!")
+      return()
+    }
+    if(asyncLogLoaded[3L]){
+      flog.debug("MIRO log file not is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[3L] <<- TRUE
+    fileToFetch <- config$miroLogFile
+    containerID <- "#asyncMiroLogContainer"
+  }else{
+    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  pID <- worker$getPid(jID)
+  if(is.null(pID)){
+    flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
+  }
+  
   logContent <- tryCatch({
-    worker$readTextEntity(paste0(modelName, ".log"), 
+    worker$readTextEntity(fileToFetch, 
                           pID)
   }, error = function(e){
     flog.error("Could not retrieve job log. Error message: '%s'.", 
@@ -19,13 +72,12 @@ observeEvent(input$showJobLog, {
   if(is.integer(logContent)){
     flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
     if(logContent == 401L || logContent == 403L){
-      showHideEl(session, "#fetchJobsAccessDenied")
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
     }else{
-      showHideEl(session, "#fetchJobsError")
+      return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
-    return(NULL)
   }
-  showJobLogFileDialog(logContent)
+  return(showElReplaceTxt(session, containerID, logContent))
 })
 
 observeEvent(input$importJob, {

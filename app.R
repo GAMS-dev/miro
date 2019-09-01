@@ -568,6 +568,7 @@ if(is.null(errMsg)){
   
   worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                        tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = maxSizeToRead,
+                                       modelDataFiles = paste0(c(names(modelOut), inputDsNames), ".csv"),
                                        text_entities = c(paste0(modelName, ".lst"), 
                                                          if(config$activateModules$miroLogFile) config$miroLogFile),
                                        currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
@@ -822,6 +823,7 @@ if(!is.null(errMsg)){
     noOutputData       <- TRUE
     # count number of prepared scenarios for asynchronous solve
     asyncCount         <- 1L
+    asyncLogLoaded     <- vector(mode = "logical", 3L)
     # parameters used for saving scenario data
     scenData           <- list()
     scenData[["scen_1_"]] <- scenDataTemplate

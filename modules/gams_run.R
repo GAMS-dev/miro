@@ -4,7 +4,18 @@ storeGAMSOutputFiles <- function(workDir){
      config$storeLogFilesDuration > 0L && !is.null(activeScen)){
     errMsg <- NULL
     tryCatch({
-      filesToStore  <- c(file.path(workDir, paste0(modelNameRaw, c(".log", ".lst"))))
+      filesToStore <- character(0L)
+      if(any(c(config$activateModules$logFile, config$activateModules$lstFile)))
+        filesToStore  <- c(file.path(workDir, 
+                                     paste0(modelNameRaw, 
+                                            c(if(config$activateModules$logFile) ".log", 
+                                              if(config$activateModules$lstFile)".lst"))))
+      if(config$activateModules$miroLogFile)
+        filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
+      
+      if(!length(filesToStore))
+        return()
+      
       filesNoAccess <- file.access(filesToStore) == -1L
       if(any(filesNoAccess)){
         if(all(filesNoAccess))
