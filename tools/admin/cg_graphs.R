@@ -254,6 +254,11 @@ observeEvent(input$dbInput, {
   }else{
     configScalars <<- tibble()
   }
+  idxScalarOut <- match(scalarsOutName, names(modelOut))
+  if(!is.na(idxScalarOut) && length(modelOutputData[[idxScalarOut]]) && 
+     nrow(modelOutputData[[idxScalarOut]])){
+    configScalars <<- bind_rows(configScalars, modelOutputData[[idxScalarOut]])
+  }
   
   errMsg    <-  NULL
   loadMode  <-  "scen"
