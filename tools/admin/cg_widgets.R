@@ -360,7 +360,7 @@ observeEvent({input$widget_symbol
     showHideEl(session, "#unknownErrorWidgets", 4000L)
     return()
   }
-  selectedType <- NULL
+  selectedType <- widgetOptions[[1L]]
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
     if(identical(selectedType, "slider") && 
