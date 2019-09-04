@@ -2155,6 +2155,16 @@
               "minLength":1,
               "required":true
             },
+            "maxDownloads":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "jobNotFound":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "accessDenied":{
               "type":"string",
               "minLength":1,
@@ -2164,6 +2174,48 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "status":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "downloading":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "downloaded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "running":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "imported":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "completed":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corrupted":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discarded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             },
             "ttips":{
               "type":"object",
@@ -2255,6 +2307,11 @@
               "required":true,
               "properties":{
                 "import":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "download":{
                   "type":"string",
                   "minLength":1,
                   "required":true

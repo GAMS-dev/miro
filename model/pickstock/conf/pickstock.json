@@ -1,7 +1,6 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
-  "hiddenOutputScalars": ["lastdaytraining", "firstdaytraining"],
   "remoteImport": [
     {
       "name": "123",
@@ -332,6 +331,7 @@
       "members": ["dowvsindex", "abserror"]
     }
   ],
+  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
     "stretchH": "none",
     "readonly": false,

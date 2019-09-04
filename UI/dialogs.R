@@ -950,47 +950,79 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                   hcubeMeta[[10]][i]
                                 ),
                               if(identical(jStatus, JOBSTATUSMAP[['running']])){
-                                tags$td("running")
+                                tags$td(lang$nav$importJobsDialog$status$running)
                               }else if(identical(jStatus, JOBSTATUSMAP[['completed']])){
-                                tags$td("completed")
+                                tags$td(tags$div(lang$nav$importJobsDialog$status$completed), 
+                                        tags$div(class = "progress", 
+                                                 style = "display:none;margin-bottom:0;border:1px solid black;",
+                                                 id = paste0("jobImportDlProgressWrapper_", jID),
+                                                 tags$div(class = "progress-bar progress-bar-striped active", 
+                                                          id = paste0("jobImportDlProgress_", jID), 
+                                                          style = "display:none;",
+                                                          role = "progressbar", `aria-valuenow` = 0L, 
+                                                          `aria-valuemin` = 0, `aria-valuemax` = 100, 
+                                                          style = paste0("width:", 0L, "%;"),
+                                                          lang$nav$importJobsDialog$status$downloading)
+                                        ))
+                              }else if(identical(jStatus, JOBSTATUSMAP[['downloaded']])){
+                                tags$td(lang$nav$importJobsDialog$status$downloaded)
                               }else if(identical(jStatus, JOBSTATUSMAP[['corrupted']])){
-                                tags$td("corrupted")
+                                tags$td(lang$nav$importJobsDialog$status$corrupted)
                               }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(noDir)']])){
-                                tags$td(class = "ttip", "corrupted", tags$span(
-                                  lang$nav$importJobsDialog$ttips$corruptedNoDir))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$corrupted, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$corruptedNoDir))
                               }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(noProcess)']])){
-                                tags$td(class = "ttip", "corrupted", tags$span(
-                                  lang$nav$importJobsDialog$ttips$corruptedNoProcess))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$corrupted, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$corruptedNoProcess))
                               }else if(identical(jStatus, JOBSTATUSMAP[['corrupted(man)']])){
-                                tags$td(class = "ttip", "corrupted", tags$span(
-                                  lang$nav$importJobsDialog$ttips$corruptedManual))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$corrupted, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$corruptedManual))
                               }else if(identical(jStatus, JOBSTATUSMAP[['discarded']])){
-                                tags$td("discarded")
+                                tags$td(lang$nav$importJobsDialog$status$discarded)
                               }else if(identical(jStatus, JOBSTATUSMAP[['discarded(corrupted)']])){
-                                tags$td(class = "ttip", "discarded", tags$span(
-                                  lang$nav$importJobsDialog$ttips$discardedCorrupted))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$discardedCorrupted))
                               }else if(identical(jStatus, JOBSTATUSMAP[['discarded(scheduled)']])){
-                                tags$td(class = "ttip", "discarded", tags$span(
-                                  lang$nav$importJobsDialog$ttips$discardedScheduled))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$discardedScheduled))
                               }else if(identical(jStatus, JOBSTATUSMAP[['discarded(running)']])){
-                                tags$td(class = "ttip", "discarded", tags$span(
-                                  lang$nav$importJobsDialog$ttips$discardedActive))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$discardedActive))
                               }else if(identical(jStatus, JOBSTATUSMAP[['discarded(completed)']])){
-                                tags$td(class = "ttip", "discarded", tags$span(
-                                  lang$nav$importJobsDialog$ttips$discardedCompleted))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded, 
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$discardedCompleted))
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported']])){
                                 tags$td("imported")
                               }else if(identical(jStatus, JOBSTATUSMAP[['imported(man)']])){
-                                tags$td(class = "ttip", "imported", tags$span(
-                                  lang$nav$importJobsDialog$ttips$importedManual))
+                                tags$td(class = "ttip", lang$nav$importJobsDialog$status$discarded,
+                                        tags$span(
+                                          lang$nav$importJobsDialog$ttips$importedManual))
                               }else{
                                 tags$td(jStatus)
                               },
                               if(!jobHist){
                                 tags$td(
-                                  if(identical(jStatus, JOBSTATUSMAP[['completed']])){
+                                  if(jStatus %in% c(JOBSTATUSMAP[['completed']],
+                                                    JOBSTATUSMAP[['downloaded']])){
                                     tagList(
+                                      tags$button(class = "btn btn-default",
+                                                  style = if(identical(jStatus, JOBSTATUSMAP[['completed']]))
+                                                    "" else "display:none;",
+                                                  id = paste0("btDownloadJob_", jID),
+                                                  onclick = paste0("Shiny.setInputValue('downloadJobData',", 
+                                                                   jID, ",{priority:\'event\'});"),
+                                                  lang$nav$importJobsDialog$buttons$download),
                                       tags$button(class = "btn btn-default", 
+                                                  style = if(identical(jStatus, JOBSTATUSMAP[['completed']]))
+                                                    "display:none" else "",
+                                                  id = paste0("btImportJob_", jID),
                                                   onclick = paste0("Shiny.setInputValue('importJob',", 
                                                                    jID, ",{priority:\'event\'});"),
                                                   lang$nav$importJobsDialog$buttons$import),
@@ -1061,7 +1093,7 @@ showJobLogFileDialog <- function(jID){
     logTabsetList$lst <- tabPanel(title = tags$div(class="log-tab-color", lang$nav$gams$boxGamsOutput$gamsOutputTabset$lstFile),
                                   value = paste0("listfile_", jID),
                                   tags$pre(style = "max-height:400px;max-height:50vh;overflow:auto;",
-                                           id = "asyncLstContainer",
+                                           id = "asyncLstContainer", 
                                            genSpinner()
                                   ))
   }
@@ -1083,7 +1115,7 @@ showJobLogFileDialog <- function(jID){
   ))
 }
 showJobProgressDialog <- function(jID, progressStatus){
-  percentCompleted <- round(progressStatus$noCompleted/progressStatus$noJobs * 100)
+  percentCompleted <- round(progressStatus$noCompleted/progressStatus$noTotal * 100)
   showModal(modalDialog(
     title = lang$nav$hcubeMode$showJobProgressDialog$title,
     tags$div(class = "progress",
@@ -1092,7 +1124,7 @@ showJobProgressDialog <- function(jID, progressStatus){
                       role = "progressbar", `aria-valuenow` = percentCompleted, 
                       `aria-valuemin` = 0, `aria-valuemax` = 100, 
                       style = paste0("width:", percentCompleted, "%;"),
-                      paste0(progressStatus$noCompleted, "/", progressStatus$noJobs))
+                      paste0(progressStatus$noCompleted, "/", progressStatus$noTotal))
     ),
     footer = modalButton(lang$nav$hcubeMode$showJobProgressDialog$cancelButton),
     fade = TRUE, easyClose = TRUE

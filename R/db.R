@@ -209,7 +209,7 @@ Db <- R6Class("Db",
                   return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
                 },
                 removeTablesModel     = function(){
-                  tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName['_scenAttach'])
+                  tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']])
                   # bring metadata table to front as others depend on it
                   if(inherits(private$conn, "PostgreSQL")){
                     query <- paste0("DROP TABLE IF EXISTS ",  

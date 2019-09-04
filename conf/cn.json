@@ -467,8 +467,19 @@
         "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
         "discardSuccess":"作业已丢弃",
         "importSuccess":"作业已导入",
+        "maxDownloads": "The maximum number of parallel downloads has been reached.",
+        "jobNotFound": "The job was not found on the GAMS Remote Solver.",
         "accessDenied": "Access denied",
         "histTitle":"作业历史",
+        "status":{
+          "downloading": "Downloading results",
+          "downloaded": "Downloaded",
+          "running": "Running",
+          "imported": "Imported",
+          "completed": "Completed",
+          "corrupted": "Corrupted",
+          "discarded": "Discarded"
+        },
         "ttips":{
           "importedManual":"作业已手动导入。",
           "discardedCorrupted":"该作业已损坏。",
@@ -489,6 +500,7 @@
         },
         "buttons":{
           "import":"导入",
+          "download": "Download results",
           "log":"显示日志",
           "progress": "Show progress",
           "discard":"丢弃"

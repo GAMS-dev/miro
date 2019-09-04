@@ -259,7 +259,7 @@ Worker <- R6Class("Worker", public = list(
     gamsRetCode <- NULL
     if(status %in% c(JOBSTATUSMAP[['imported']], 
                      JOBSTATUSMAP[['discarded']])){
-      jobStatus   <- private$getJobStatus(status, pID) 
+      jobStatus   <- private$getJobStatus(status, pID, jID)
       gamsRetCode <- jobStatus$gamsRetCode
       status      <- jobStatus$status
       
@@ -303,6 +303,8 @@ Worker <- R6Class("Worker", public = list(
     if(jobHist)
       return(list(jobList = jobList, newCompleted = FALSE))
     
+    jobList[jobList[[1]] %in% self$getFinishedDownloads(), 
+            3L] <- JOBSTATUSMAP[['downloaded']]
     private$jobList <- jobList
     
     if(!length(jobList) || !nrow(jobList)){
@@ -313,9 +315,8 @@ Worker <- R6Class("Worker", public = list(
     jIDs <- private$jobList[[1]]
     pIDs <- private$jobList[[6]]
     jStatus <- private$jobList[[3]]
-    
     for(i in seq_along(jIDs)){
-      if(jStatus[i] == JOBSTATUSMAP[['completed']])
+      if(jStatus[i] > JOBSTATUSMAP[['running']])
         next
       
       jobStatus   <- private$getJobStatus(jStatus[i], pIDs[i], jIDs[i])
@@ -379,31 +380,135 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$getHcubeJobProgressLocal(jID))
   },
-  readOutput = function(jID){
+  getJobResultsPath = function(jID){
+    if(!private$remote && private$hcube)
+      return(file.path(private$metadata$currentModelDir, hcubeDirName, 
+                       jID, "4upload.zip"))
+    
+    jIDChar <- as.character(jID)
+    if(!jIDChar %in% names(private$jobResultsFile))
+      stop(sprintf("Job directory not found for job: '%s'.", jID), 
+           call. = FALSE)
+    return(private$jobResultsFile[[jIDChar]])
+  },
+  getActiveDownloads = function(){
+    return(as.integer(names(private$resultFileSize)))
+  },
+  getFinishedDownloads = function(){
+    return(setdiff(as.integer(names(private$jobResultsFile)),
+                   self$getActiveDownloads()))
+  },
+  removeActiveDownload = function(jID){
+    jIDChar <- as.character(jID)
+    private$fJobRes[[jIDChar]] <- NULL
+    private$jobResultsFile[[jIDChar]] <- NULL
+    private$resultFileSize[[jIDChar]] <- NULL
+    return(invisible(self))
+  },
+  getJobResults = function(jID){
     req(private$remote)
     
-    tmpdir <- tempdir(TRUE)
-    tmpdir <- file.path(tmpdir, jID)
-    if(dir.exists(tmpdir)){
-      if(!identical(unlink(tmpdir, recursive = TRUE, force = TRUE), 0L)){
-        stop(sprintf("Problems removing existing directory: '%s'.", tmpdir), call. = FALSE)
+    jIDChar <- as.character(jID)
+    if(length(private$fJobRes[[jIDChar]]) && resolved(private$fJobRes[[jIDChar]])){
+      if(private$hcube){
+        if(!file.exists(private$jobResultsFile[[jIDChar]])){
+          file.rename(paste0(private$jobResultsFile[[jIDChar]], ".dl"), 
+                      private$jobResultsFile[[jIDChar]])
+          flog.debug("Hypercube results of job: '%s' were downloaded to: '%s'.",
+                     jIDChar, private$jobResultsFile[[jIDChar]])
+        }
+      }else{
+        if(!identical(value(private$fJobRes[[jIDChar]]), 0L))
+          stop(sprintf("Problems downloading results of job: '%s'. Error message: '%s'.",
+               jIDChar, value(private$fJobRes[[jIDChar]])), call. = FALSE)
+        if(identical(unlink(paste0(private$jobResultsFile[[jIDChar]], ".dl")), 1L))
+          stop(sprintf("Could not remove temporary file: '%s'.", 
+                       paste0(private$jobResultsFile[[jIDChar]], ".dl")), call. = FALSE)
+        private$jobResultsFile[[jIDChar]] <- dirname(private$jobResultsFile[[jIDChar]])
+        flog.debug("Job results of job: '%s' were downloaded to: '%s'.",
+                   jIDChar, private$jobResultsFile[[jIDChar]])
       }
-    }
-    if(!dir.create(tmpdir)){
-      stop("Problems creating temporary directory for saving results.", call. = FALSE)
-    }
-    retCode <- private$readRemoteOutput(jID, tmpdir)
-    if(!identical(retCode, 0L)){
-      stop(retCode, call. = FALSE)
+      
+      private$fJobRes[[jIDChar]] <- NULL
+      private$resultFileSize[[jIDChar]] <- NULL
+      return(100L)
     }
     
+    if(!length(private$jobResultsFile[[jIDChar]])){
+      if(private$hcube){
+        private$jobResultsFile[[jIDChar]] <- file.path(private$metadata$currentModelDir, 
+                                                       hcubeDirName, 
+                                                       jID, "4upload.zip")
+        if(file.exists(private$jobResultsFile[[jIDChar]]))
+          return(100L)
+      }else{
+        private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
+      }
+      
+      if(dir.exists(dirname(private$jobResultsFile[[jIDChar]])) && 
+         identical(unlink(dirname(private$jobResultsFile[[jIDChar]]),
+                          recursive = TRUE, force = TRUE), 1L))
+        stop(sprintf("Problems removing existing directory: '%s'.", 
+                     private$jobResultsFile[[jIDChar]]), call. = FALSE)
+      
+      if(!dir.create(dirname(private$jobResultsFile[[jIDChar]]), recursive = TRUE))
+        stop("Problems creating temporary directory for saving results.", 
+             call. = FALSE)
+      ret <- HEAD(url = paste0(private$metadata$url, 
+                               if(private$hcube) "/hypercube/" else "/jobs/", 
+                               self$getPid(jID), "/result"), 
+                  add_headers(Authorization = private$authHeader,
+                              Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+                  timeout(2L))
+      if(!identical(status_code(ret), 200L))
+        stop(status_code(ret), call. = FALSE)
+      
+      fileSize <- suppressWarnings(
+        as.integer(headers(ret)[["content-length"]]))
+      
+      if(!length(fileSize) || is.na(fileSize))
+        stop(sprintf("Could not determine file size of job results (job id: '%s').", 
+                     jIDChar), call. = FALSE)
+      
+      private$resultFileSize[[jIDChar]] <- fileSize
+      
+      if(private$hcube){
+        private$fJobRes[[jIDChar]] <- future({
+          library(httr)
+          private$getRemoteHcubeResults(resultsPath, pID)
+        }, globals = list(private = private, pID = self$getPid(jID), 
+                          resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl")))
+      }else{
+        private$fJobRes[[jIDChar]] <- future({
+          library(httr)
+          private$readRemoteOutput(self$getPid(jID), workDir = dirname(private$jobResultsFile[[jIDChar]]), 
+                                   resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl"))
+        })
+      }
+      return(0L)
+    }
     
-    return(tmpdir)
+    if(!length(private$resultFileSize[[jIDChar]])){
+      if(length(private$fJobRes[[jIDChar]]))
+        stop("Future is still running, but no file size determined. This should never happen!", 
+             call. = FALSE)
+    }
+    
+    bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[['size']]
+    
+    if(is.na(bytesDownloaded))
+      return(0L)
+    
+    if(identical(private$resultFileSize[[jIDChar]], bytesDownloaded))
+      return(99L)
+    
+    return(round(bytesDownloaded/private$resultFileSize[[jIDChar]]*100))
   },
-  readTextEntity = function(name, jID){
+  readTextEntity = function(name, jID, chunkNo = 0L, getSize = FALSE){
     req(private$remote)
     return(private$readRemoteTextEntity(name, jID, saveDisk = FALSE, 
-                                        maxSize = private$metadata$maxSizeToRead))
+                                        maxSize = private$metadata$maxSizeToRead,
+                                        chunkNo = chunkNo, getSize = getSize))
   },
   pingProcess = function(){
     if(is.integer(private$status)){
@@ -528,6 +633,9 @@ Worker <- R6Class("Worker", public = list(
   waitCnt = integer(1L),
   wait = integer(1L),
   fRemoteSub = NULL,
+  fJobRes = list(),
+  jobResultsFile = list(),
+  resultFileSize = list(),
   fRemoteRes = NULL,
   jobList = NULL,
   runLocal = function(inputData){
@@ -556,7 +664,7 @@ Worker <- R6Class("Worker", public = list(
     
     if(dir.exists(hcubeDir)){
       flog.warn("Hypercube job directory: '%s' already existed. Removing old data.", hcubeDir)
-      if(!identical(unlink(hcubeDir, recursive = TRUE, force = TRUE), 0L))
+      if(identical(unlink(hcubeDir, recursive = TRUE, force = TRUE), 1L))
         stop(sprintf("Problems removing Hypercube job directory: '%s'.", hcubeDir), call. = FALSE)
     }
     
@@ -682,7 +790,8 @@ Worker <- R6Class("Worker", public = list(
                       isWindows = isWindows, hcubeData = hcubeData))
     return(self)
   },
-  readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL){
+  readRemoteTextEntity = function(text_entity, jID = NULL, saveDisk = TRUE, maxSize = NULL, 
+                                  workDir = private$workDir, chunkNo = 0L, getSize = FALSE){
     if(is.null(jID)){
       jID <- private$process
     }
@@ -704,6 +813,7 @@ Worker <- R6Class("Worker", public = list(
       if(identical(teLength, 404L) || is.na(teLength)){
         return(404L)
       }
+      startPos <- maxSize * chunkNo + 1L
     }else{
       teLength <- NULL
     }
@@ -711,7 +821,8 @@ Worker <- R6Class("Worker", public = list(
     ret <- GET(paste0(private$metadata$url, "/jobs/", jID, "/text-entity/", 
                       URLencode(text_entity)),
                query = if(!is.null(teLength)) 
-                 list(start_position = max(0, teLength - maxSize), length = teLength),
+                 list(start_position = startPos, 
+                      length = min(teLength - startPos, maxSize)),
                add_headers(Authorization = private$authHeader,
                            Timestamp = as.character(Sys.time(), usetz = TRUE)),
                timeout(10L))
@@ -719,9 +830,12 @@ Worker <- R6Class("Worker", public = list(
     if(identical(status_code(ret), 200L)){
       if(saveDisk){
         writeLines(content(ret, encoding = "utf-8")$entity_value,
-                   file.path(private$workDir, text_entity))
+                   file.path(workDir, text_entity))
         return(200L)
       }
+      if(getSize)
+        return(list(content = content(ret, encoding = "utf-8")$entity_value, 
+                    chunkNo = ceiling(teLength/maxSize)))
       return(content(ret, encoding = "utf-8")$entity_value)
     }
     return(status_code(ret))
@@ -880,7 +994,7 @@ Worker <- R6Class("Worker", public = list(
     }
     return(private$status)
   },
-  readRemoteOutput = function(jID = NULL, workDir = NULL){
+  readRemoteOutput = function(jID = NULL, workDir = NULL, resultsPath = NULL){
     if(is.null(jID)){
       jID <- private$process
     }
@@ -890,15 +1004,17 @@ Worker <- R6Class("Worker", public = list(
     if(!length(jID)){
       return("Process not started")
     }
-    tmp <- tempfile(pattern="res_", fileext = ".zip")
-    on.exit(unlink(tmp))
+    if(!length(resultsPath)){
+      resultsPath <- tempfile(pattern="res_", fileext = ".zip")
+      on.exit(unlink(resultsPath))
+    }
     timeout <- FALSE
     tryCatch(
       ret <- GET(url = paste0(private$metadata$url, "/jobs/", jID, "/result"), 
-                 write_disk(tmp), 
+                 write_disk(resultsPath), 
                  add_headers(Authorization = private$authHeader,
                              Timestamp = as.character(Sys.time(), usetz = TRUE)),
-                 timeout(100L)),
+                 timeout(1000L)),
       error = function(e){
         timeout <<- TRUE
       })
@@ -906,7 +1022,7 @@ Worker <- R6Class("Worker", public = list(
       return(-100L)
     }
     for(text_entity in c(paste0(private$metadata$modelName, ".log"), private$metadata$text_entities)){
-      tryCatch(private$readRemoteTextEntity(text_entity),
+      tryCatch(private$readRemoteTextEntity(text_entity, workDir = workDir),
                error = function(e){
                  warning(sprintf("Problems fetching text entity: '%s'. Error message: '%s'.", 
                                  text_entity, conditionMessage(e)))
@@ -914,7 +1030,7 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(identical(status_code(ret), 200L)){
-      unzip(tmp, exdir = workDir)
+      unzip(resultsPath, exdir = workDir)
     }else{
       return(content(ret)$message)
     }
@@ -1042,11 +1158,49 @@ Worker <- R6Class("Worker", public = list(
     return(list(status = status, gamsRetCode = NULL))
   },
   getHcubeJobStatusRemote = function(status, pID, jID){
-    jobProgress <- private$getHcubeJobProgressRemote(jID)
-    if(identical(jobProgress[[1L]], jobProgress[[2L]])){
+    jobProgress <- tryCatch(private$getHcubeJobProgressRemote(jID),
+                            error = function(e){
+                              errMsg <- conditionMessage(e)
+                              if(errMsg == 405L){
+                                return(-405L)
+                              }else if(errMsg == 404L){
+                                return(-404L)
+                              }else if(errMsg == -404L){
+                                stop(404L, call. = FALSE)
+                              }else{
+                                stop(errMsg, call. = FALSE)
+                              }
+                            })
+    if(!length(jobProgress))
+      stop("Problems determining job status. If this problem persists, please contact a system administrator!",
+           call. = FALSE)
+    if(status == JOBSTATUSMAP[['discarded']]){
+      if(identical(length(jobProgress), 1L) &&
+         jobProgress %in% c(-404L, -405L)){
+        status <- JOBSTATUSMAP[['discarded(corrupted)']]
+      }else if(identical(length(jobProgress), 2L) &&
+               identical(jobProgress[[1L]], jobProgress[[2L]])){
+        status <- JOBSTATUSMAP[['discarded(completed)']]
+      }else{
+        #self$interrupt(hardKill = TRUE, process = pID)
+        status <- JOBSTATUSMAP[['discarded(running)']]
+      }
+    }else if(identical(length(jobProgress), 1L) &&
+             jobProgress %in% c(-404L, -405L)){
+      status <- JOBSTATUSMAP[['corrupted(noProcess)']]
+    }else if(identical(length(jobProgress), 2L) &&
+             identical(jobProgress[[1L]], jobProgress[[2L]])){
       status <- JOBSTATUSMAP[['completed']]
     }
     return(list(status = status, gamsRetCode = NULL))
+  },
+  getRemoteHcubeResults = function(resultsPath, pID){
+    return(private$validateAPIResponse(
+      GET(url = paste0(private$metadata$url, "/hypercube/", pID, "/result"), 
+          write_disk(resultsPath, overwrite = TRUE),
+          add_headers(Authorization = private$authHeader,
+                      Timestamp = as.character(Sys.time(), usetz = TRUE)), 
+          timeout(private$metadata$timeout))))
   },
   isEmptyString = function(string){
     if(!length(string) || identical(string, ""))
@@ -1104,25 +1258,29 @@ Worker <- R6Class("Worker", public = list(
                                 return(-405L)
                               }else if(errMsg == 404L){
                                 return(-404L)
+                              }else if(errMsg == -404L){
+                                stop(404L, call. = FALSE)
                               }else{
                                 stop(errMsg, call. = FALSE)
                               }
                             })
+    
     if(status == JOBSTATUSMAP[['discarded']]){
-      if(!length(gamsRetCode))
-        self$interrupt(hardKill = TRUE, process = pID)
       if(length(gamsRetCode)){
-        if(gamsRetCode %in% c(-405L, -404L)){
+        if(identical(length(gamsRetCode), 1L) &&
+           gamsRetCode %in% c(-404L, -405L)){
           status <- JOBSTATUSMAP[['discarded(corrupted)']]
           gamsRetCode <- NULL
         }else{
           status <- JOBSTATUSMAP[['discarded(completed)']]
         }
       }else{
+        self$interrupt(hardKill = TRUE, process = pID)
         status <- JOBSTATUSMAP[['discarded(running)']]
       }
-    }else if(identical(gamsRetCode, -405L)){
-      status <- JOBSTATUSMAP[['corrupted']]
+    }else if(identical(length(gamsRetCode), 1L) && 
+             gamsRetCode %in% c(-404L, -405L)){
+      status <- JOBSTATUSMAP[['corrupted(noProcess)']]
       gamsRetCode <- NULL
     }else if(status != JOBSTATUSMAP[['imported']] &&
              length(gamsRetCode)){
@@ -1153,7 +1311,7 @@ Worker <- R6Class("Worker", public = list(
               type = "application/json", 
               encoding = "utf-8")
     }, error = function(e){
-      stop(404L, call. = FALSE)
+      stop(-404L, call. = FALSE)
     })
     
     return(ret)

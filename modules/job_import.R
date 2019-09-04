@@ -11,6 +11,7 @@ observeEvent({
       return()
     }
   jID <- strsplit(input$asyncLogFileTabsset, "_", fixed = TRUE)[[1]]
+  flog.debug("Log file for job: '%s' requested.", jID)
   if(length(jID) < 2L){
     flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
     return()
@@ -32,7 +33,7 @@ observeEvent({
     containerID <- "#asyncLogContainer"
   }else if(identical(fileType, "listfile")){
     if(asyncLogLoaded[2L]){
-      flog.debug("Listing file not is already loaded. No reloading..")
+      flog.debug("Listing file is already loaded. No reloading..")
       return()
     }
     asyncLogLoaded[2L] <<- TRUE
@@ -60,10 +61,9 @@ observeEvent({
     showHideEl(session, "#fetchJobsError")
     return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
   }
-  
   logContent <- tryCatch({
     worker$readTextEntity(fileToFetch, 
-                          pID)
+                          pID, getSize = TRUE)
   }, error = function(e){
     flog.error("Could not retrieve job log. Error message: '%s'.", 
                conditionMessage(e))
@@ -77,7 +77,52 @@ observeEvent({
       return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
   }
-  return(showElReplaceTxt(session, containerID, logContent))
+  return(session$sendCustomMessage('gms-showLogContent', 
+                                   list(id = containerID, 
+                                        jID = jID,
+                                        content = logContent[[1]],
+                                        noChunks = logContent[[2]],
+                                        type = fileType)))
+})
+
+observeEvent(input$loadTextEntityChunk, {
+  fileType <- input$loadTextEntityChunk$type
+  flog.debug("New textentity chunk requested.")
+  if(identical(fileType, "log")){
+    fileToFetch <- paste0(modelNameRaw, ".log")
+    containerID <- "#asyncLogContainer"
+  }else if(identical(fileType, "listfile")){
+    fileToFetch <- paste0(modelNameRaw, ".lst")
+    containerID <- "#asyncLstContainer"
+  }else if(identical(fileType, "mirolog")){
+    if(!length(config$miroLogFile)){
+      flog.error("MIRO log file attempted to be fetched, but none is specified. This looks like an attempt to tamper with the app!")
+      return()
+    }
+    fileToFetch <- config$miroLogFile
+    containerID <- "#asyncMiroLogContainer"
+  }else{
+    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  logContent <- tryCatch({
+    worker$readTextEntity(fileToFetch, 
+                          worker$getPid(input$loadTextEntityChunk$jID), 
+                          chunkNo = input$loadTextEntityChunk$chunkCount)
+  }, error = function(e){
+    flog.error("Could not retrieve job log. Error message: '%s'.", 
+               conditionMessage(e))
+    return(1L)
+  })
+  if(is.integer(logContent)){
+    flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
+    if(logContent == 401L || logContent == 403L){
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
+    }else{
+      return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
+    }
+  }
+  appendEl(session, containerID, logContent, triggerChange = TRUE)
 })
 
 observeEvent(input$importJob, {
@@ -153,16 +198,10 @@ observeEvent(virtualActionButton(
                  value = 0.1)
     
     tryCatch({
-      tmpdir     <- worker$readOutput(worker$getPid(jobImportID))
+      tmpdir     <- worker$getJobResultsPath(jobImportID)
       on.exit(unlink(tmpdir), add = TRUE)
     }, error = function(e){
-      errMsg <<- conditionMessage(e)
-      if(errMsg == 401L || errMsg == 403L){
-        showLoginDialog(cred = worker$getCredentials(), 
-                        forwardOnSuccess = "importJobConfirm")
-        return()
-      }
-      flog.error("Problems loading job list from database. Error message: '%s'.", 
+      flog.error("Problems importing job. Error message: '%s'.", 
                  conditionMessage(e))
       showHideEl(session, "#fetchJobsError")
     })

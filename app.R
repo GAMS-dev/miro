@@ -399,7 +399,6 @@ if(is.null(errMsg)){
     hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
     requiredPackages <- c("digest", "DT")
     source("./R/install_packages.R", local = TRUE)
-    source("./R/hcube.R")
     source("./R/db_hcubeimport.R")
     source("./R/db_hcubeload.R")
   }
@@ -567,7 +566,7 @@ if(is.null(errMsg)){
   }
   
   worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                       tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = maxSizeToRead,
+                                       tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
                                        modelDataFiles = paste0(c(names(modelOut), inputDsNames), ".csv"),
                                        text_entities = c(paste0(modelName, ".lst"), 
                                                          if(config$activateModules$miroLogFile) config$miroLogFile),
@@ -824,6 +823,7 @@ if(!is.null(errMsg)){
     # count number of prepared scenarios for asynchronous solve
     asyncCount         <- 1L
     asyncLogLoaded     <- vector(mode = "logical", 3L)
+    asyncResObs        <- NULL
     # parameters used for saving scenario data
     scenData           <- list()
     scenData[["scen_1_"]] <- scenDataTemplate

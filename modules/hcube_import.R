@@ -7,6 +7,29 @@ scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTab
     return(el)
   }
 }), use.names = FALSE)
+getCombinationsSlider <- function(lowerVal, upperVal, stepSize = 1){
+  # BEGIN error checks
+  stopifnot(is.numeric(lowerVal), length(lowerVal) == 1)
+  stopifnot(is.numeric(upperVal), length(upperVal) == 1)
+  stopifnot(is.numeric(stepSize), length(stepSize) == 1, stepSize > 0)
+  # END error checks
+  
+  ret <- list()
+  repeat{
+    lowTmp  <- seq(lowerVal, upperVal, stepSize)
+    ret$min <- c(ret$min, lowTmp)
+    ret$max  <- c(ret$max, rep.int(upperVal, length(lowTmp)))
+    upperVal <- upperVal - stepSize
+    if(upperVal < lowerVal){
+      if((upperVal + 1e-10) < lowerVal){
+        break 
+      }else{
+        upperVal <- lowerVal
+      }
+    }
+  }
+  return(ret)
+}
 additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
   return(identical(modelIn[[el]]$dropdown$single, TRUE) || 
            identical(modelIn[[el]]$dropdown$checkbox, TRUE))
@@ -220,7 +243,7 @@ getJobProgress <- function(jID){
     removeModal()
     return(NULL)
   }
-  return(list(noCompleted = noJobsCompleted, noJobs = noJobs))
+  return(list(noCompleted = noJobsCompleted, noTotal = noJobs))
 }
 observeEvent(input$updateJobProgress, {
   jID <- suppressWarnings(as.integer(isolate(input$updateJobProgress)))
@@ -232,8 +255,10 @@ observeEvent(input$updateJobProgress, {
   if(is.null(currentProgress)){
     return()
   }
+  print(currentProgress)
   session$sendCustomMessage("gms-updateJobProgress", 
-                            list(id = jID, progress = currentProgress))
+                            list(id = paste0("#hcubeProgress", jID), 
+                                 progress = currentProgress))
 })
 observeEvent(input$showJobProgress, {
   jID <- suppressWarnings(as.integer(isolate(input$showJobProgress)))
@@ -247,10 +272,10 @@ observeEvent(input$showJobProgress, {
   if(is.null(currentProgress)){
     return()
   }
-  
   showJobProgressDialog(jID, currentProgress)
   session$sendCustomMessage("gms-startUpdateJobProgress", 
-                            jID)
+                            list(id = paste0("#hcubeProgress", jID),
+                                 jID = jID))
 })
 
 observeEvent(input$importJob, {
@@ -266,13 +291,13 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
   }
   hcubeTags    <<- vector2Csv(isolate(input[["jTag_" %+% jID]]))
-  zipFilePath  <<- file.path(currentModelDir, hcubeDirName, jID, "4upload.zip")
+  zipFilePath  <<- worker$getJobResultsPath(jID)
   jobImportID  <<- jID
   if(file.access(zipFilePath, 4L) == -1L){
     flog.error("Zip file with Hypercube job results was removed during import process (Job ID: '%s').", jID)
     showHideEl(session, "#fetchJobsError")
   }
   manualJobImport <<- FALSE
-  disableEl(session, "#jImport_" %+% jID)
+  disableEl(session, "#btImportJob_" %+% jID)
   rv$uploadHcube <- rv$uploadHcube + 1L
 })

@@ -468,7 +468,18 @@
       "discardSuccess": "Job was discarded",
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
+      "maxDownloads": "The maximum number of parallel downloads has been reached.",
+      "jobNotFound": "The job was not found on the GAMS Remote Solver.",
       "histTitle": "Job history",
+      "status":{
+        "downloading": "Downloading results",
+        "downloaded": "Downloaded",
+        "running": "Running",
+        "imported": "Imported",
+        "completed": "Completed",
+        "corrupted": "Corrupted",
+        "discarded": "Discarded"
+      },
       "ttips":{
         "importedManual": "The job was manually imported.",
         "discardedCorrupted": "The job was corrupted.",
@@ -489,6 +500,7 @@
       },
       "buttons":{
         "import": "Import",
+        "download": "Download results",
         "log": "Show log",
         "progress": "Show progress",
         "discard": "Discard"

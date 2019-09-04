@@ -467,11 +467,22 @@
       "noJobsHist": "Es konnten keine verworfenen oder importierten Jobs gefunden werden.",
       "discardSuccess": "Job wurde verworfen",
       "importSuccess": "Job wurde erfolgreich importiert",
+      "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
+      "jobNotFound": "Der Job wurde auf dem GAMS Remote Solver nicht gefunden.",
       "accessDenied": "Zugriff verweigert",
       "histTitle": "Jobverlauf",
+      "status":{
+        "downloading": "Ergebnisse werden heruntergeladen",
+        "downloaded": "Heruntergeladen",
+        "running": "Laufend",
+        "imported": "Importiert",
+        "completed": "Abgeschlossen",
+        "corrupted": "Beschädigt",
+        "discarded": "Verworfen"
+      },
       "ttips":{
         "importedManual": "Der Job wurde manuell importiert.",
-        "discardedCorrupted": "Der Job war korrumpiert.",
+        "discardedCorrupted": "Der Job war beschädigt.",
         "discardedActive": "Der Job war noch aktiv.",
         "discardedScheduled": "Der Job wurde eingeplant.",
         "discardedCompleted": "Der Job war abgeschlossen.",
@@ -489,6 +500,7 @@
       },
       "buttons":{
         "import": "Importieren",
+        "download": "Ergebnisse herunterladen",
         "log": "Log-Datei anzeigen",
         "progress": "Fortschritt anzeigen",
         "discard": "Verwerfen"
