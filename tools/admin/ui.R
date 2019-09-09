@@ -13,6 +13,8 @@ header_admin <- dashboardHeader(
           tags$ul(class = "dropdown-menu", role="menu",
                   tags$li(tags$a(href = "https://www.gams.com/miro/", 
                                  target = "_blank", lang$nav$header$help$doc)),
+                  tags$li(tags$a(href = "https://forum.gamsworld.org/viewforum.php?f=14", 
+                                 target = "_blank", lang$nav$header$help$forum)),
                   tags$li(HTML(paste0('<a href="#" class="action-button" onclick="Miro.confirmModalShow(\'',
                                       'About MIRO\', \'', 
                                       htmltools::htmlEscape(aboutDialogText), '\', \'Cancel\')">About</a>')

@@ -49,6 +49,7 @@
       "help":{
         "title":"帮助",
         "doc":"文档",
+        "forum": "GAMS World Forum",
         "about":"关于"
       },
       "tooltips":{
@@ -852,6 +853,9 @@
       "empty":{
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
         "label": "Include empty sheets in the Excel file?"
+      },
+      "remoteExecution":{
+        "label": "Remote Job execution (GAMS MIRO Server only)"
       },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",

@@ -200,6 +200,13 @@ insertUI(selector = "#module_wrapper1",
 insertUI(selector = "#module_wrapper2",
          tagList(
            tags$h2("Computation", class="option-category"),
+           tags$label(class = "cb-label", "for" = "general_remote_execution", tags$div(lang$adminMode$general$remoteExecution$label, tags$a("", class="info-wrapper", 
+                                                                                                                                            href="https://gams.com/miro/", 
+                                                                                                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_remote_execution", value = if(length(configJSON$activateModules$remoteExecution)) configJSON$activateModules$remoteExecution else config$activateModules$remoteExecution, label = NULL)
+             )),
            tags$div(title = lang$adminMode$general$saveTrace$title,
                     tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
                     tags$div(
@@ -351,6 +358,9 @@ observeEvent(input$general_output_scalars, {
     rv$generalConfig$scalarAliases$outputScalars <<- input$general_output_scalars
   else
     rv$generalConfig$scalarAliases$outputScalars <<- NULL
+})
+observeEvent(input$general_remote_execution, {
+  rv$generalConfig$activateModules$remoteExecution <<- input$general_remote_execution
 })
 observeEvent(input$general_save_trace, {
   rv$generalConfig$saveTraceFile <<- input$general_save_trace
