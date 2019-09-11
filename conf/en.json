@@ -59,7 +59,8 @@
     "inputScreen":{  
       "btCollapsedTabs": "More",
       "noDataDep":"Please first import all data this element depends on.",
-      "widgetTabTitle": "Input widgets"
+      "widgetTabTitle": "Input widgets",
+      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data any more."
     },
     "gams":{  
       "boxModelStatus":{  

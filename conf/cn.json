@@ -59,7 +59,8 @@
     "inputScreen":{
       "btCollapsedTabs": "More",
       "noDataDep":"请先导入此元素所依赖的所有数据。",
-      "widgetTabTitle":"输入小部件"
+      "widgetTabTitle":"输入小部件",
+      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data any more."
     },
     "gams":{
       "boxModelStatus":{

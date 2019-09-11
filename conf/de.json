@@ -59,7 +59,8 @@
     "inputScreen":{  
       "btCollapsedTabs": "Mehr",
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
-      "widgetTabTitle": "Eingabe-Widgets"
+      "widgetTabTitle": "Eingabe-Widgets",
+      "dirtyFlag": "Das Szenario enthält Ausgabedaten, die möglicherweise nicht mehr zu den modifizierten Eingabedaten passen."
     },
     "gams":{  
       "boxModelStatus":{  

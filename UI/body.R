@@ -39,8 +39,8 @@ tabItemList <- list(
   tabItem(tabName = "inputData",
           fluidRow(
             box(title = list(
-              tags$div(id = "dirtyFlagIcon", class = "inline-el", style = "display:none;", 
-                       icon("exclamation-triangle")),
+              tags$div(id = "dirtyFlagIcon", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
+                       style = "display:none;", icon("exclamation-triangle")),
               uiOutput("inputDataTitle", inline = TRUE),
               tags$div(style = "float: right;", 
                        HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" id="btRemove1"
@@ -528,8 +528,8 @@ if(config$activateModules$hcubeMode){
     tabItem(tabName = "outputData",
             fluidRow(
               box(title = list(
-                tags$div(id = "dirtyFlagIconO", class = "inline-el", style = "display:none;", 
-                         icon("exclamation-triangle")),
+                tags$div(id = "dirtyFlagIconO", title = lang$nav$inputScreen$dirtyFlag, class = "inline-el", 
+                         style = "display:none;", icon("exclamation-triangle")),
                 uiOutput("outputDataTitle", inline = TRUE),
                 tags$div(style = "float: right;", 
                          HTML(paste0('<button type="button" class="btn btn-default bt-icon btRemove" 

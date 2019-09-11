@@ -285,6 +285,11 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "dirtyFlag":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },
