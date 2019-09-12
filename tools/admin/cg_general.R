@@ -191,7 +191,9 @@ insertUI(selector = "#module_wrapper1",
                       ))
            ),
            tags$div(class="option-wrapper",
-                    sliderInput("general_save_duration", label = lang$adminMode$general$saveDuration$label,
+                    sliderInput("general_save_duration", tags$div(lang$adminMode$general$saveDuration$label, 
+                                                                  tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#general-duration", 
+                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                 min = 0, max = 999, step = 1, value = if(length(configJSON$storeLogFilesDuration)) configJSON$storeLogFilesDuration else config$storeLogFilesDuration
                     ))
          ), 

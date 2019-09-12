@@ -808,7 +808,7 @@
         "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
       },
       "saveDuration":{
-        "label": "Duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode."
+        "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
       "decimal":{
         "label": "Number of decimal places used for rounding output values."
