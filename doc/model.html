@@ -137,6 +137,20 @@ Parameter
                                           <li><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double dash parameters</a></li>
                                         </ul>
                                         <p>The configuration of GAMS Options and double dash parameters differs from the other symbols. Learn more about this <a href="#command-line" class="scrollto">here</a>.</p>
+                                        <div class="callout-block callout-warning">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">File encoding:</b>
+                                                <p>When you want to use non-ASCII characters in MIRO, your GAMS model files need to be encoded with UTF-8. In GAMS Studio you can change the encoding of your file via <i>Edit</i> &rarr; <i>Encoding</i> &rarr; <i>convert to</i> ... &rarr; <i>UTF-8</i>. 
+                                                Other file encodings are not supported in GAMS MIRO!</p>
+                                                <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                                    <img class="img-fluid" src="assets/images/encoding_studio.png" alt="File encoding in GAMS Studio" />
+                                                </div>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        
                                         <p><b>Example:</b><br>Let's try this for our demo model <i>transport</i> now. This is what the input data section of the model looks like when we have loaded it from the GAMS Model Library:</p>
                                         <pre><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
