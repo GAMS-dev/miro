@@ -168,9 +168,35 @@
                                         Scenario management - load, save, edit, delete and export scenario data.
                                       </li>
                                       <li><b>Help:</b><br/>
-                                        Link to this documentation and license information.
+                                        Link to this documentation, the <a href="https://forum.gamsworld.org/viewforum.php?f=14" target="_blank">GAMS World Forum</a> and license information.
                                       </li>
                                     </ul>
+                                    <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                                <p>Take a look at our <a href = "./index.html#cheatsheets">cheat sheets</a> to get to know the MIRO interface and its different components better!</p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                                <div  id="data-concept"  class="section-block">
+                                    <h3 class="block-title">Data concept</h3>
+                                    <p>To understand the concept of data exchange between the GAMS model and its MIRO application, let's start with the following illustration:</p>
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                        <img class="img-fluid" style="max-height:150pt;" src="assets/images/data_flow.png" alt="GAMS MIRO data flow" />
+                                    </div>
+                                    <p><ol>
+                                        <li>Data is loaded into the MIRO interface. These come either from the internal database or from external data sources such as Excel or GDX, but NOT directly from the GAMS model.</li>
+                                        <li>When clicking on solve, the data visible in the MIRO input section is sent to the GAMS model. All data of affected symbols in the model will be overwritten. Symbols that are not visible in MIRO are not touched. </li>
+                                        <li>The model is now run with the updated data.</li>
+                                        <li> Afterwards the results are sent to MIRO and displayed in the output section. From there, data can be saved in the internal database and/or exported as a file.</li>
+                                    </ol></p>
+                                    <p>A little more detail:</p>
+                                    <div class="section-block" style="display:block; margin:auto; text-align:center;">
+                                        <img class="img-fluid" src="assets/images/concept_graphic.png" alt="GAMS MIRO data concept" />
+                                    </div>
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                             <section id="workflow-section" class="doc-section">
@@ -201,37 +227,47 @@
                                                       <img class="img-fluid" src="assets/images/import-local.png" alt="Local Import" />
                                                 </div>
                                             </div>
-                                        <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer.
-                                        When you start a GAMS MIRO app for a specific GAMS model for the first time, GAMS automatically extracts the data from your model and loads this data into the MIRO database. This happens every time you rebuild your MIRO app i.e. every time you launch it from GAMS Studio or via the GAMS option <kbd>miro=launch</kbd>. 
+                                        <p><br>You can decide whether you want to import an existing scenario from the database or load a spreadsheet from your local computer. Scenarios that you have previously named and saved in the MIRO database will be displayed in the section <i>Database</i>. 
+                                        When you start a GAMS MIRO app for the first time, GAMS automatically extracts the data from your model and loads this data into the database. This happens every time you rebuild your MIRO app i.e. every time you launch it from GAMS Studio or via the GAMS option <kbd>miro=launch</kbd>. 
                                         A special scenario with the name <i>default</i> is created for this purpose and overridden every time you rebuild your app!
                                         </p>
-                                        <div class="callout-block callout-warning" id="create-excel">
-                                            <div class="icon-holder">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div><!--//icon-holder-->
-                                            <div class="content">
-                                                <b class="callout-title">Note:</b>
-                                                <p>Every time you start a MIRO app in development mode (via GAMS Studio or the GAMS option <kbd>miro=launch</kbd>), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
-                                            </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                        <p>To import a file from your local machine, either in the form of a gdx container or as an Excel spreadsheet, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
-                                        Now assign a name for the new scenario and confirm the data import with a click on <i>import</i>. A new (currently still unsaved) scenario is now created under the name specified.</p>
                                         <div class="callout-block callout-success">
                                           <div class="icon-holder">
                                               <i class="fas fa-thumbs-up"></i>
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>Instead of importing all the datasets for your model, you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
-                                          </div><!--//content-->
+                                                <p>Every time you start a MIRO app in development mode (via GAMS Studio or the GAMS option <kbd>miro=launch</kbd>), the data relevant to MIRO is extracted from your model and stored in the MIRO database as a special scenario named <i>default</i>.</p>
+                                            </div><!--//content-->
                                         </div><!--//callout-block-->
+                                        <p>To import a file from your local machine, either in the form of a gdx container or as an Excel spreadsheet, select the menu item <i>Local</i> and click on </i>browse</i>. Navigate to the directory where your file resides and select it.
+                                        Confirm the data import with a click on <i>import</i>. If you started with an empty sheet a new, unnamed scenario is now shown in the interface. To save it, click on <i>save</i> or <i>save as</i> and give it a name.</p>
+                                        
+                                        <div class="callout-block callout-warning" id="create-excel">
+                                            <div class="icon-holder">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div><!--//icon-holder-->
+                                            <div class="content">
+                                                <b class="callout-title">What is a <i>scenario</i>?</b>
+                                                <p><ul>
+                                                <li>We call the collection of input and output datasets that result from a particular model run and which are communicated with MIRO a <i>scenario</i>.</li>
+                                                <li>As long as a scenario is unnamed, i.e. it is not saved in the database with an individual name, the data is shown exclusively in the interface and gets lost if the MIRO application is closed.</li>
+                                                <li>If a local file is loaded into an open scenario, the scenario data will be overwritten when saving. Loading data from the database, however, does not overwrite the loaded scenario, but causes the new scenario to be shown instead.</li>
+                                                <li>Saving a scenario and then changing the input data (e.g. by uploading a GDX file) means that you are still working in the same scenario. 
+                                                Clicking on <i>save</i> with the modified input data will overwrite the existing scenario. To create a new scenario with the modifications, you have to give it a new name (<i>save as</i>). 
+                                                A new scenario can also be created by starting from a blank sheet, adding some data (e.g. importing a local file like .xlsx or GDX) and saving it under a name. </li>
+                                                <ul></p>
+                                            </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <p>Instead of importing all the datasets for your model, you can also load individual symbols of your input data. For this click on <i>Manually choose datasets</i> and select the desired symbols to be imported from the selected spreadsheet. The other data remain unchanged. </p>
                                         <p>Besides the local and the database import there is the third option: "Hypercube". This tab allows you to import scenarios that have been generated and saved in the <a href="./hypercube.html">Hypercube mode</a>.
-                                        Since Hypercube scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in base mode, you need to import them differently.
+                                        Such a scenario that is generated in Hypercube mode corresponds to a scenario from the base mode, except that the former additionally contains a trace file. 
+                                        Since those scenarios are identified by their hash value (read more about this <a href="./hypercube.html">here</a>) and not by a user-defined name like in base mode, you need to import them differently.
                                         </p>
                                         <div class="section-block" style="display:block; margin:auto; text-align:center;">
                                             <img class="img-fluid" style="max-height:225pt;" src="assets/images/import-hypercube.png" alt="Import scenario via hash value" />
                                         </div>
-                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">Hypercube scenario import</a> if you do not know how to get the hash value of a Hypercube scenario.</p>
+                                        <p>Please refer to the chapter about <a href="./hypercube.html#scenario-selection">Hypercube scenario import</a> to learn how to get the hash value of a Hypercube scenario.</p>
                                     </div><!--//section-block-->
                                     <div id="data-manipulation"  class="section-block">
                                         <h3 class="block-title">Data manipulation</h3>
@@ -246,13 +282,15 @@
                                     <div id="solve-model"  class="section-block">
                                         <h3 class="block-title">Solve the model</h3>
                                         <p>A click on the <i>Solve model</i> button starts the model run. In the background GAMS is called and the model <span class="code">transport.gms</span> is started. The values set by us in the <a href="#data-manipulation" class="scrollto">previous section</a> now serve as input data for the model.
-                                        <br>During the calculations, MIRO automatically switches to the section <i>GAMS interaction</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>.</p>
+                                        <br>During the calculations, MIRO automatically switches to the section <i>GAMS interaction</i>. There you can see the current <a href="https://www.gams.com/latest/docs/UG_GAMSOutput.html" target="_blank">GAMS log and lst files</a>. If you specified a <a href="./customize.html#miro-log">custom log</a> this is also shown here.</p>
                                         <div class="section-block">
                                               <img class="img-fluid" src="assets/images/gams-inter.png" alt="GAMS interaction screen" />
                                         </div>
                                         <p><b>Note:</b> Since the models of the demo applications are solved very quickly, this step is sometimes hardly visible. The menu entry <i>GAMS interaction</i> can also be viewed at any time after a model run.</p>
-                                        <p>As long as the calculations are running in GAMS, the <i>Stop</i> button on the left can be clicked. This immediately stops the running GAMS process and thus the model calculations.
-                                        <br>After the run, the view of MIRO changes to the <i>Output</i> view.</p>
+                                        <p>As long as the calculations are running in GAMS, the <i>Stop</i> button on the left can be clicked. 
+                                        A first click on this button sends an interrupt request to the running job in order to perform a graceful stop and collect an incumbent result back from the execution if the solver supports this feature. 
+                                        A second click sends a request to stop the running job immediately. 
+                                        <br>After the run, the view of MIRO changes to the <i>Output</i> section.</p>
                                     </div><!--//section-block-->
                                     <div id="inspect-results"  class="section-block">
                                         <h3 class="block-title">Inspect results</h3>
@@ -367,7 +405,7 @@
                                           </div><!--//icon-holder-->
                                           <div class="content">
                                               <b class="callout-title">Tip:</b>
-                                              <p>For many operations in MIRO there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. To learn more about shortcuts, check out our <a href="./index.html#cheatsheet-wrapper">cheat sheets</a>!</p>
+                                              <p>For many operations in MIRO there are shortcuts. Especially when comparing scenarios it can be helpful to switch through the different tabs with shortcuts. To learn more about shortcuts, check out our <a href="./index.html#cheatsheets">cheat sheets</a>!</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
                                     </div><!--//section-block-->
@@ -381,8 +419,14 @@
 
                                 </div>
                                 <div id="miro-server" class="section-block">
-                                  <h6>Run GAMS MIRO on a server</h6>
-                                  <p>You can also run GAMS MIRO on a server. This adds multi-user and multi-application support as well as many enterprise features such as authentication, load balancing, rolling updates and much more.
+                                  <h6>GAMS MIRO Server</h6>
+                                  <p>In the most basic setup - GAMS MIRO Desktop - both the MIRO application and GAMS itself are installed on the same computer and run exclusively on this machine. But MIRO is not limited to this setup: 
+                                  You may also trigger your GAMS jobs to be solved in the cloud. For you nothing changes, the interface remains the same. 
+                                  GAMS MIRO Server also allows you to run both the GAMS execution engine as well as GAMS MIRO in a highly scalable cloud environment. Your optimization applications can then be accessed from any modern web browser.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" src="assets/images/remote-execution.png" alt="GAMS MIRO Server" />
+                                  </div>
+                                  <p>GAMS MIRO Server adds multi-user and multi-application support as well as many enterprise features such as authentication, load balancing, rolling updates and much more.
                                   If you are interested in this version, please <a href="mailto:miro@gams.com" target="_blank">contact us</a>!</p>
                                   <div class="section-block">
                                       <img class="img-fluid" src="assets/images/webui-server.png" alt="GAMS MIRO on a server with multi-user and multi-application support" />
@@ -400,6 +444,7 @@
                                       <nav class="doc-sub-menu nav flex-column">
                                         <a class="nav-link scrollto" href="#demo-applications">Demo Applications</a>
                                         <a class="nav-link scrollto" href="#miro-structure">Structure of GAMS MIRO</a>
+                                        <a class="nav-link scrollto" href="#data-concept">Data concept</a>
                                       </nav><!--//nav-->
                                     <a class="nav-link scrollto" href="#workflow-section">How to work with GAMS MIRO</a>
                                       <nav class="doc-sub-menu nav flex-column">
