@@ -624,22 +624,7 @@ body <- dashboardBody({
         })
       )
     },
-    if(length(config$theme) && identical(config$theme, "light")){
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css")
-      )
-    }else if(length(config$theme) && identical(config$theme, "dark")){
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages_dark.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro_dark.css")
-      )
-    }else{
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
-      )
-    },
+    tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
     tags$script(src = "miro.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)
