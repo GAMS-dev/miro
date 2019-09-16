@@ -161,7 +161,7 @@ Worker <- R6Class("Worker", public = list(
       }
     })
     if(startsWith(remoteSubValue, "error:")){
-      errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7)))
+      errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7L, 9L)))
       flog.info(paste0("Could not execute model remotely. Error code: ", errCode))
       if(is.na(errCode)){
         stop(500L, call. = FALSE)
@@ -206,8 +206,11 @@ Worker <- R6Class("Worker", public = list(
     return(0L)
   },
   interrupt = function(hardKill = NULL, process = NULL){
-    if(!is.null(private$status)){
-      return()
+    if(is.null(process)){
+      if(is.null(private$process)){
+        return()
+      }
+      process <- private$process
     }
     
     if(is.null(hardKill)){
@@ -217,9 +220,6 @@ Worker <- R6Class("Worker", public = list(
       }else{
         private$hardKill <- TRUE
       }
-    }
-    if(is.null(process)){
-      process <- private$process
     }
     
     if(private$remote)
@@ -770,7 +770,7 @@ Worker <- R6Class("Worker", public = list(
                   timeout(metadata$timeout))
       if(identical(status_code(ret), 201L)){
         if(is.R6(hcubeData))
-          return(content(ret)$hypercube_id)
+          return(content(ret)$hypercube_token)
         return(content(ret)$token)
       }else{
         msg <- tryCatch(content(ret, type = 'application/json')$message,
@@ -778,7 +778,7 @@ Worker <- R6Class("Worker", public = list(
                           return("")
                         })
         statusCode <- status_code(ret)
-        if(identical(msg, "") && !statusCode %in% c(401L, 403L)){
+        if(identical(msg, "")){
           statusCode <- 404L
         }
         return(paste0("error:", statusCode, msg))
@@ -1101,12 +1101,12 @@ Worker <- R6Class("Worker", public = list(
       return("Process not started")
     }
     private$validateAPIResponse(DELETE(
-      url = paste0(private$metadata$url, "/jobs/", process), 
+      url = paste0(private$metadata$url, 
+                   if(private$hcube) "/hypercube/" else "/jobs/", process), 
       body = list(hard_kill = hardKill),
       add_headers(Authorization = private$authHeader,
                   Timestamp = as.character(Sys.time(), usetz = TRUE)),
       timeout(2L)))
-    
     return(0L)
   },
   getHcubeJobProgressLocal = function(jID){
@@ -1182,7 +1182,7 @@ Worker <- R6Class("Worker", public = list(
                identical(jobProgress[[1L]], jobProgress[[2L]])){
         status <- JOBSTATUSMAP[['discarded(completed)']]
       }else{
-        #self$interrupt(hardKill = TRUE, process = pID)
+        self$interrupt(hardKill = TRUE, process = pID)
         status <- JOBSTATUSMAP[['discarded(running)']]
       }
     }else if(identical(length(jobProgress), 1L) &&

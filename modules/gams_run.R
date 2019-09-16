@@ -9,7 +9,7 @@ storeGAMSOutputFiles <- function(workDir){
         filesToStore  <- c(file.path(workDir, 
                                      paste0(modelNameRaw, 
                                             c(if(config$activateModules$logFile) ".log", 
-                                              if(config$activateModules$lstFile)".lst"))))
+                                              if(config$activateModules$lstFile) ".lst"))))
       if(config$activateModules$miroLogFile)
         filesToStore <- c(filesToStore, file.path(workDir, config$miroLogFile))
       
