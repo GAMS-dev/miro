@@ -30,6 +30,7 @@ model/**/*.bat
 model/**/*.gdx
 model/**/runapp.R
 model/**/*_miro.gms
+model/**/*_hcube_jobs
 tests/*_kport.R
 tests/*_transport*.R
 tests/*_pickstock*.R
