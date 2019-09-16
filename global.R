@@ -141,6 +141,7 @@ SERVER_SHUTDOWN_DELAY <- 60L
 JOBSTATUSMAP <- c(
   'running' = -1L,
   'completed' = 0L,
+  'downloaded' = 1L,
   'corrupted' = 20L,
   'corrupted(noDir)' = 21L,
   'corrupted(noProcess)' = 22L,

@@ -24,8 +24,14 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
                     lang$nav$importJobsDialog$discardSuccess),
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
                     lang$nav$importJobsDialog$importSuccess),
-           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsAccessDenied", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsAccessDenied", 
                     lang$nav$importJobsDialog$accessDenied),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsUnknownHost", 
+                    lang$nav$dialogRemoteLogin$hostNotFound),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsJobNotFound", 
+                    lang$nav$importJobsDialog$jobNotFound),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsMaxDownloads", 
+                    lang$nav$importJobsDialog$maxDownloads),
            tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
                     lang$errMsg$unknownError),
            if(is.null(id)){
@@ -104,7 +110,7 @@ tabItemList <- list(
                                                                        value = if(length(modelIn[[i]]$slider$default) > 1) 
                                                                          numeric(2L) else numeric(1L), step = sliderStepSize, 
                                                                        width = modelIn[[i]]$slider$width, 
-                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          slider         <- tagList(
                                            tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tagAppendAttributes(slider, style = "display:none;"), 
@@ -122,7 +128,7 @@ tabItemList <- list(
                                                        value = sliderValues[[sliderName]]$def, 
                                                        step = sliderValues[[sliderName]]$step, 
                                                        width = modelIn[[i]]$slider$width, 
-                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          )
                                        }
                                        if(config$activateModules$hcubeMode){
@@ -497,33 +503,31 @@ if(config$activateModules$hcubeMode){
   )
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
-            fluidRow(
-              if(config$activateModules$remoteExecution){
-                tabBox(width = 12, id = "jobListPanel", 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                                contentCurrent             
-                       ), 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
-                                fluidRow(
-                                  box(title = tagList(lang$nav$hcubeImport$title,
-                                                      tags$div(style = "float: right;", 
-                                                               actionButton(inputId = "refreshActiveJobs", 
-                                                                            class = "bt-icon", 
-                                                                            icon = icon("refresh"), label = NULL))),
-                                      status="warning", solidHeader = TRUE, width = 12,
-                                      genSpinner("jImport_load", absolute = FALSE),
-                                      getJobsTableSkeleton(id = "jImport_output"),
-                                      tags$div(class = "col-sm-6",
-                                               actionButton("btShowHistory", 
-                                                            lang$nav$hcubeImport$btShowHistory)
-                                      )
-                                  )
+            if(config$activateModules$remoteExecution){
+              tabBox(width = 12, id = "jobListPanel", 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                              contentCurrent             
+                     ), 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                              fluidRow(
+                                box(title = tagList(lang$nav$hcubeImport$title,
+                                                    tags$div(style = "float: right;", 
+                                                             actionButton(inputId = "refreshActiveJobs", 
+                                                                          class = "bt-icon", 
+                                                                          icon = icon("refresh"), label = NULL))),
+                                    status="warning", solidHeader = TRUE, width = 12,
+                                    genSpinner("jImport_load", absolute = FALSE),
+                                    getJobsTableSkeleton(id = "jImport_output"),
+                                    tags$div(class = "col-sm-6",
+                                             actionButton("btShowHistory", 
+                                                          lang$nav$hcubeImport$btShowHistory)
+                                    )
                                 )
-                       ))
-              }else{
-                contentCurrent
-              }
-            )
+                              )
+                     ))
+            }else{
+              contentCurrent
+            }
     ),
     tabItem(tabName = "outputData",
             fluidRow(

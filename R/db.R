@@ -209,7 +209,7 @@ Db <- R6Class("Db",
                   return(list(names = badTables, headers = headers[names(headers) %in% badTables], errMsg = errMsg))
                 },
                 removeTablesModel     = function(){
-                  tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName['_scenAttach'])
+                  tableNames <- c(private$getTableNamesModel(), private$dbSchema$tabName[['_scenAttach']])
                   # bring metadata table to front as others depend on it
                   if(inherits(private$conn, "PostgreSQL")){
                     query <- paste0("DROP TABLE IF EXISTS ",  
@@ -225,6 +225,7 @@ Db <- R6Class("Db",
                     query <- paste0("DROP TABLE IF EXISTS ",  
                                     dbQuoteIdentifier(private$conn, tableName), " ;")
                     dbExecute(private$conn, query)
+                    flog.info("Database table: '%s' deleted.", tableName)
                   }
                   # turn foreign key usage on again
                   dbExecute(private$conn, "PRAGMA foreign_keys = ON;")
@@ -1019,7 +1020,9 @@ Db <- R6Class("Db",
                                   if(inherits(private$conn, "PostgreSQL")) 
                                     " smallint," else " integer,",
                                   DBI::dbQuoteIdentifier(private$conn, colNames[[9]]),
-                                  " integer);")
+                                  " integer,",
+                                  DBI::dbQuoteIdentifier(private$conn, colNames[[10]]),
+                                  " varchar(255));")
                   DBI::dbExecute(private$conn, query)
                   return(invisible(self))
                 },
@@ -1374,7 +1377,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR table_name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "\\_%"), 
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), 
                                         ");"))
                   }else{
                     query <- SQL(paste0("SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -1386,7 +1389,7 @@ Db <- R6Class("Db",
                                                                             private$dbSchema$tabName[['_scenTrc']])),
                                               collapse = ", "),
                                         ") OR name LIKE ", 
-                                        dbQuoteString(private$conn, modelName %+% "\\_%"), " ESCAPE '\\');"))
+                                        dbQuoteString(private$conn, private$modelName %+% "\\_%"), " ESCAPE '\\');"))
                   }
                   return(dbGetQuery(private$conn, query)[[1L]])
                 }

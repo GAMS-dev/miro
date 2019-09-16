@@ -188,10 +188,6 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
   })
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
   
-  if(!is.null(isolate(rv$activeSname))){
-    enableEl(session, "#btSave")
-  }
-  enableEl(session, "#btSaveAs")
   # set initialisation flags for handsontables to FALSE
   if(any(hotInit)){
     hotInit[]     <<- FALSE

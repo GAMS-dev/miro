@@ -114,12 +114,6 @@ if(is.null(errMsg)){
   if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
-  # quote extra command line arguments
-  config$extraClArgs <- vapply(seq_along(config$extraClArgs), function(idx){
-    if(idx %% 2 == 0)
-      return(escapeGAMSCL(config$extraClArgs[[idx]]))
-    return(config$extraClArgs[[idx]])
-  }, character(1L), USE.NAMES = FALSE)
   # handsontable options
   hotOptions        <- config$handsontable
   
@@ -951,10 +945,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
-  if(tolower(scalarsFileName) %in% modelInTabularData || length(modelIn) == length(modelInTabularData)){
-    inputDsNames <- modelInTabularData
-  }else{
-    inputDsNames <- c(modelInTabularData, scalarsFileName)
+  inputDsNames   <- modelInTabularData
+  inputDsAliases <- modelInAlias[match(modelInTabularData, names(modelIn))]
+  if(!tolower(scalarsFileName) %in% modelInTabularData && length(modelIn) != length(modelInTabularData)){
+    inputDsNames   <- c(inputDsNames, scalarsFileName)
+    inputDsAliases <- c(inputDsAliases, lang$nav$scalarAliases$scalars)
   }
   # get scalar input names
   scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
@@ -1220,10 +1215,10 @@ if(is.null(errMsg)){
                                                   status = '_status', time = '_jtime', 
                                                   tag = stagIdentifier, pid = '_pid', 
                                                   sid = sidIdentifier, gamsret = '_gamsret',
-                                                  scode = scodeIdentifier)),
+                                                  scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciii"))
+                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
@@ -1268,8 +1263,10 @@ if(is.null(errMsg)){
   modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
   modelFiles <- modelFiles[!basename(modelFiles) %in% c(paste0(modelName, "_", hcubeDirName), 
                                                         customRendererDirName, "static",
-                                              "logs", "conf", "runapp.R", paste0("~$", modelNameRaw, ".gms"),
-                                              paste0(miroDataDirPrefix, modelName))]
+                                                        "logs", "conf", "runapp.R", 
+                                                        paste0("~$", modelNameRaw, ".gms"),
+                                                        paste0(miroDataDirPrefix, modelName),
+                                                        config$modelFilesToIgnore)]
   modelFilesExt <- tools::file_ext(modelFiles)
   modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
   modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]

@@ -172,6 +172,9 @@ body_admin <- dashboardBody({
                              )
                     ),
                     tags$div(class = "col-sm-6", style = "text-align:right;",
+                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
+                                      actionButton("deleteGraph", "Delete", icon("trash-alt")),
+                                      actionButton("saveGraph", "Save", icon("save"))),
                              tags$div(class = "space"),
                              tags$div(id = "preview-error", class = "err-msg"),
                              tags$div(id = "preview-content-plotly", 
@@ -203,10 +206,7 @@ body_admin <- dashboardBody({
                                tags$div(id = "preview-content-valuebox", style = "display:none;",
                                         renderDataUI("preview_output_valuebox", type = "valuebox", 
                                                      height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData))},
-                             tags$div(style = "margin-top: 50px; margin-bottom:50px;",
-                                      actionButton("deleteGraph", "Delete", icon("trash-alt")),
-                                      actionButton("saveGraph", "Save", icon("save")))
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData))}
                     )
                 )
               )
@@ -219,7 +219,7 @@ body_admin <- dashboardBody({
                     tags$div(id = "unknownErrorWidgets", class = "gmsalert gmsalert-error",
                              lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                    tags$div(class="main-tab",
+                    tags$div(class="main-tab", 
                              tags$div(style = "padding-bottom: 20px;",
                                       tabsetPanel(id="widget_symbol_type",
                                                   tabPanel(lang$adminMode$widgets$ui$gams, value = "gams"),
@@ -237,7 +237,7 @@ body_admin <- dashboardBody({
                                                lang$adminMode$widgets$ui$optionConfigMsg),
                                       tags$div(id = "doubledashConfigMsg", class="config-message", 
                                                lang$adminMode$widgets$ui$doubledashConfigMsg),
-                                      tags$div(class="main-tab",
+                                      tags$div(class="main-tab", style = "min-height: 600px;",
                                                conditionalPanel(
                                                  condition = "input.widget_symbol_type == 'gams'",
                                                  tags$div(style = "max-width:400px;",
@@ -261,12 +261,12 @@ body_admin <- dashboardBody({
                                       )
                              ),
                              tags$div(class = "col-sm-6",
-                                      uiOutput("widget_preview"),
-                                      rHandsontableOutput("hot_preview"),
-                                      DTOutput("dt_preview"),
-                                      tags$div(style = "margin-top: 50px; margin-bottom:50px;text-align:right;",
+                                      tags$div(style = "margin-bottom:50px;text-align:right;",
                                                actionButton("deleteWidget", "Delete", icon("trash-alt")),
-                                               actionButton("saveWidget", "Save", icon("save")))
+                                               actionButton("saveWidget", "Save", icon("save"))),
+                                      uiOutput("widget_preview"),
+                                      DTOutput("dt_preview"),
+                                      rHandsontableOutput("hot_preview")
                              ))
                 )
               )

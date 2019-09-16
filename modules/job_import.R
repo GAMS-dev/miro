@@ -1,16 +1,69 @@
 observeEvent(input$showJobLog, {
   flog.trace("Show job log button clicked.")
-  
-  pID <- worker$getPid(input$showJobLog)
-  if(is.null(pID)){
-    flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
-    showHideEl(session, "#fetchJobsError")
+  asyncLogLoaded[] <<- FALSE
+  showJobLogFileDialog(input$showJobLog)
+})
+observeEvent({
+  input$asyncLogFileTabsset
+  input$showJobLog
+  }, {
+    if(!length(input$asyncLogFileTabsset)){
+      return()
+    }
+  jID <- strsplit(input$asyncLogFileTabsset, "_", fixed = TRUE)[[1]]
+  flog.debug("Log file for job: '%s' requested.", jID)
+  if(length(jID) < 2L){
+    flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  fileType <- jID[[1L]]
+  jID <- suppressWarnings(as.integer(jID[[2L]]))
+  if(is.na(jID)){
+    flog.error("Log file could not be shown as no job ID could be identified. This looks like an attempt to tamper with the app!")
     return()
   }
   
+  if(identical(fileType, "log")){
+    if(asyncLogLoaded[1L]){
+      flog.debug("Log file not is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[1L] <<- TRUE
+    fileToFetch <- paste0(modelNameRaw, ".log")
+    containerID <- "#asyncLogContainer"
+  }else if(identical(fileType, "listfile")){
+    if(asyncLogLoaded[2L]){
+      flog.debug("Listing file is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[2L] <<- TRUE
+    fileToFetch <- paste0(modelNameRaw, ".lst")
+    containerID <- "#asyncLstContainer"
+  }else if(identical(fileType, "mirolog")){
+    if(!length(config$miroLogFile)){
+      flog.error("MIRO log file attempted to be fetched, but none is specified. This looks like an attempt to tamper with the app!")
+      return()
+    }
+    if(asyncLogLoaded[3L]){
+      flog.debug("MIRO log file not is already loaded. No reloading..")
+      return()
+    }
+    asyncLogLoaded[3L] <<- TRUE
+    fileToFetch <- config$miroLogFile
+    containerID <- "#asyncMiroLogContainer"
+  }else{
+    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  pID <- worker$getPid(jID)
+  if(is.null(pID)){
+    flog.error("A job that user has no read permissions was attempted to be fetched. Job ID: '%s'.", jID)
+    showHideEl(session, "#fetchJobsError")
+    return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
+  }
   logContent <- tryCatch({
-    worker$readTextEntity(paste0(modelName, ".log"), 
-                          pID)
+    worker$readTextEntity(fileToFetch, 
+                          pID, getSize = TRUE)
   }, error = function(e){
     flog.error("Could not retrieve job log. Error message: '%s'.", 
                conditionMessage(e))
@@ -19,13 +72,57 @@ observeEvent(input$showJobLog, {
   if(is.integer(logContent)){
     flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
     if(logContent == 401L || logContent == 403L){
-      showHideEl(session, "#fetchJobsAccessDenied")
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
     }else{
-      showHideEl(session, "#fetchJobsError")
+      return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
     }
-    return(NULL)
   }
-  showJobLogFileDialog(logContent)
+  return(session$sendCustomMessage('gms-showLogContent', 
+                                   list(id = containerID, 
+                                        jID = jID,
+                                        content = logContent[[1]],
+                                        noChunks = logContent[[2]],
+                                        type = fileType)))
+})
+
+observeEvent(input$loadTextEntityChunk, {
+  fileType <- input$loadTextEntityChunk$type
+  flog.debug("New textentity chunk requested.")
+  if(identical(fileType, "log")){
+    fileToFetch <- paste0(modelNameRaw, ".log")
+    containerID <- "#asyncLogContainer"
+  }else if(identical(fileType, "listfile")){
+    fileToFetch <- paste0(modelNameRaw, ".lst")
+    containerID <- "#asyncLstContainer"
+  }else if(identical(fileType, "mirolog")){
+    if(!length(config$miroLogFile)){
+      flog.error("MIRO log file attempted to be fetched, but none is specified. This looks like an attempt to tamper with the app!")
+      return()
+    }
+    fileToFetch <- config$miroLogFile
+    containerID <- "#asyncMiroLogContainer"
+  }else{
+    flog.error("Log file type Could not be identified. This looks like an attempt to tamper with the app!")
+    return()
+  }
+  logContent <- tryCatch({
+    worker$readTextEntity(fileToFetch, 
+                          worker$getPid(input$loadTextEntityChunk$jID), 
+                          chunkNo = input$loadTextEntityChunk$chunkCount)
+  }, error = function(e){
+    flog.error("Could not retrieve job log. Error message: '%s'.", 
+               conditionMessage(e))
+    return(1L)
+  })
+  if(is.integer(logContent)){
+    flog.info("Could not retrieve job log. Return code: '%s'.", logContent)
+    if(logContent == 401L || logContent == 403L){
+      return(showElReplaceTxt(session, containerID, lang$nav$dialogRemoteLogin$insuffPerm))
+    }else{
+      return(showElReplaceTxt(session, containerID, lang$errMsg$unknownError))
+    }
+  }
+  appendEl(session, containerID, logContent, triggerChange = TRUE)
 })
 
 observeEvent(input$importJob, {
@@ -39,29 +136,11 @@ observeEvent(input$importJob, {
   if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
-  }
-  resetWidgetsOnClose <<- FALSE
-  if(!closeScenario()){
     return()
   }
   
-  sid <- worker$getSid(jobImportID)
-  forward <- FALSE
-  
-  if(length(sid)){
-    tryCatch({
-      activeScen      <<- Scenario$new(db = db, sid = sid, 
-                                       overwrite = TRUE)
-      rv$activeSname  <<- activeScen$getScenName()
-    }, error = function(e){
-      forward <<- TRUE
-    })
-  }else{
-    forward <- TRUE
-  }
-  if(forward){
-    showNewScenDialog(lang$nav$dialogNewScen$newScenName,
-                      forwardTo = "importJobNew")
+  if(rv$unsavedFlag){
+    showRemoveScenDialog("importJobConfirm")
   }else{
     rv$importJobConfirm <- rv$importJobConfirm + 1L
   }
@@ -92,11 +171,17 @@ observeEvent(
 observeEvent(virtualActionButton(
   input$importJobConfirm,
   rv$importJobConfirm), {
-    req(identical(length(jobImportID), 1L), !is.null(activeScen))
+    req(length(jobImportID) == 1L)
+    removeModal()
     if(!identical(worker$getStatus(jobImportID), JOBSTATUSMAP[['completed']])){
       flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
       showHideEl(session, "#fetchJobsError")
     }
+    resetWidgetsOnClose <<- FALSE
+    if(!closeScenario()){
+      return()
+    }
+    rv$activeSname  <- worker$getJobName(jobImportID)
     newInputCount <- 0L
     errMsg <- NULL
     overwriteInput <- TRUE
@@ -113,16 +198,10 @@ observeEvent(virtualActionButton(
                  value = 0.1)
     
     tryCatch({
-      tmpdir     <- worker$readOutput(worker$getPid(jobImportID))
+      tmpdir     <- worker$getJobResultsPath(jobImportID)
       on.exit(unlink(tmpdir), add = TRUE)
     }, error = function(e){
-      errMsg <<- conditionMessage(e)
-      if(errMsg == 401L || errMsg == 403L){
-        showLoginDialog(cred = worker$getCredentials(), 
-                        forwardOnSuccess = "importJobConfirm")
-        return()
-      }
-      flog.error("Problems loading job list from database. Error message: '%s'.", 
+      flog.error("Problems importing job. Error message: '%s'.", 
                  conditionMessage(e))
       showHideEl(session, "#fetchJobsError")
     })

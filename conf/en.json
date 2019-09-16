@@ -24,6 +24,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
+      "submitJob": "Submit job",
       "solveHcube":"Submit job",
       "splitView":"Split view",
       "tabView":"Tab view",
@@ -152,6 +153,9 @@
     "dialogExportScen":{
       "title": "Export scenario",
       "desc": "Select a file type",
+      "selDatasets":"Select datasets to export",
+      "noDsSelected": "You did not select any datasets to export.",
+      "cbSelectManually":"Manually choose datasets",
       "cancelButton": "Cancel",
       "okButton": "Export"
     },
@@ -278,13 +282,13 @@
     },
     "dialogRemoveScen":{  
       "title":"Close scenario",
-      "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
-      "cancelButton":"No",
-      "okButton":"Yes"
+      "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
+      "cancelButton":"Cancel",
+      "okButton":"Close"
     },
     "dialogRemoveHCJob":{  
       "title":"Close Hypercube job",
-      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data might be lost!",
+      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -356,6 +360,8 @@
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
+      "noDsSelected": "Please select the name of the dataset you want to import.",
+      "invalidFile": "The file you uploaded could not be validated.",
       "sortBy":"Sort by:",
       "btSortNameASC":"Name (ASC)",
       "btSortTimeASC":"Time (ASC)",
@@ -418,10 +424,21 @@
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
     },
+    "dialogJobSubmission":{
+      "title": "Submit job",
+      "desc": "Submit a new job to be solved asynchronously.",
+      "jobName": "Specify a name for your job (optional)",
+      "descWait": "Please wait while the job is being submitted...",
+      "badName": "Please choose a valid name for the new job.",
+      "cancelButton":"Cancel",
+      "okButton": "Submit",
+      "successMsg": "Your job was scheduled successfully. You can retrieve the results as soon as the job finished executing."
+    },
     "dialogHcube":{
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",
       "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",
@@ -453,7 +470,18 @@
       "discardSuccess": "Job was discarded",
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
+      "maxDownloads": "The maximum number of parallel downloads has been reached.",
+      "jobNotFound": "The job was not found on the GAMS Remote Solver.",
       "histTitle": "Job history",
+      "status":{
+        "downloading": "Downloading results",
+        "downloaded": "Downloaded",
+        "running": "Running",
+        "imported": "Imported",
+        "completed": "Completed",
+        "corrupted": "Corrupted",
+        "discarded": "Discarded"
+      },
       "ttips":{
         "importedManual": "The job was manually imported.",
         "discardedCorrupted": "The job was corrupted.",
@@ -468,20 +496,16 @@
         "owner": "Owner",
         "date": "Submission date",
         "tags": "Job tags",
+        "name": "Job name",
         "status": "Status",
         "action": "Action"
       },
       "buttons":{
         "import": "Import",
+        "download": "Download results",
         "log": "Show log",
         "progress": "Show progress",
         "discard": "Discard"
-      },
-      "importConfirm":{
-        "title": "Confirm import",
-        "desc": "Are you sure you want to import the selected job?",
-        "cancelButton": "Cancel",
-        "confirmButton": "Confirm"
       },
       "discardConfirm":{
         "title": "Confirm discard",
@@ -577,6 +601,10 @@
       "downloadResults": "Downloading result data",
       "renderInput": "Rendering input data",
       "renderOutput": "Rendering output data"
+    },
+    "exportScen":{
+      "title": "Eporting scenario",
+      "exportDs": "Exporting dataset %s of %s"
     },
     "loadScenDb":{  
       "title":"Loading scenario data from database",
@@ -993,6 +1021,7 @@
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
+        "pivotCols": "Select a column to pivot (no preview)",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{

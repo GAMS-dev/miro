@@ -24,6 +24,7 @@
     "sidebarButtons":{
       "importInput":"加载数据",
       "solve":"求解模型",
+      "submitJob": "Submit job",
       "solveHcube":"提交作业",
       "splitView":"拆分视图",
       "tabView":"标签视图",
@@ -152,6 +153,9 @@
     "dialogExportScen":{
       "title":"导出场景",
       "desc":"选择文件类型",
+      "selDatasets":"Select datasets to export",
+      "cbSelectManually":"Manually choose datasets",
+      "noDsSelected": "You did not select any datasets to export.",
       "cancelButton":"取消",
       "okButton":"导出"
     },
@@ -356,6 +360,8 @@
       "titleDataError":"数据已损坏",
       "descDataError":"场景数据似乎已损坏，加载失败。",
       "maxNoScenExceeded":"已超出可显示场景数的上限，仅显示一个子集。",
+      "noDsSelected": "Please select the name of the dataset you want to import.",
+      "invalidFile": "The file you uploaded could not be validated.",
       "sortBy":"排序依据:",
       "btSortNameASC":"名称（ASC）",
       "btSortTimeASC":"时间（ASC）",
@@ -418,10 +424,21 @@
       "downloadButton":"下载",
       "cancelButton": "取消"
     },
+    "dialogJobSubmission":{
+      "title": "Submit job",
+      "desc": "Submit a new job to be solved asynchronously.",
+      "jobName": "Specify a name for your job (optional)",
+      "descWait": "Please wait while the job is being submitted...",
+      "badName": "Please choose a valid name for the new job.",
+      "cancelButton":"Cancel",
+      "okButton": "Submit",
+      "successMsg": "Your job was scheduled successfully. You can retrieve the results as soon as the job finished executing."
+    },
     "dialogHcube":{
       "title":"Hypercube配置",
       "desc":"您选择了%d个场景在Hypercube模式下进行求解。其中, %d个场景已解决。",
       "descSolveAgain":"再次求解所有场景,还是仅解决尚未解出的场景？",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags":"为作业分配一个或多个标签:",
       "manualSwitch":"手动处理作业？",
       "cancelButton": "取消",
@@ -452,8 +469,19 @@
         "noJobsHist":"未发现被丢弃或已导入的Hypercube作业",
         "discardSuccess":"作业已丢弃",
         "importSuccess":"作业已导入",
+        "maxDownloads": "The maximum number of parallel downloads has been reached.",
+        "jobNotFound": "The job was not found on the GAMS Remote Solver.",
         "accessDenied": "Access denied",
         "histTitle":"作业历史",
+        "status":{
+          "downloading": "Downloading results",
+          "downloaded": "Downloaded",
+          "running": "Running",
+          "imported": "Imported",
+          "completed": "Completed",
+          "corrupted": "Corrupted",
+          "discarded": "Discarded"
+        },
         "ttips":{
           "importedManual":"作业已手动导入。",
           "discardedCorrupted":"该作业已损坏。",
@@ -468,20 +496,16 @@
           "owner":"所有者",
           "date":"提交日期",
           "tags":"作业标签",
+          "name": "Job name",
           "status":"状态",
           "action":"行动"
         },
         "buttons":{
           "import":"导入",
+          "download": "Download results",
           "log":"显示日志",
           "progress": "Show progress",
           "discard":"丢弃"
-        },
-        "importConfirm":{
-          "title":"确认导入",
-          "desc":"确定要导入所选的Hypercube作业吗？",
-          "cancelButton":"取消",
-          "confirmButton":"确认"
         },
         "discardConfirm":{
           "title":"确认丢弃",
@@ -577,6 +601,10 @@
       "downloadResults": "Downloading result data",
       "renderInput": "Rendering input data",
       "renderOutput": "Rendering output data"
+    },
+    "exportScen":{
+      "title": "Eporting scenario",
+      "exportDs": "Exporting dataset %s of %s"
     },
     "loadScenDb":{
       "title":"从数据库加载场景数据",
@@ -993,6 +1021,7 @@
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
+        "pivotCols": "Select a column to pivot (no preview)",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{

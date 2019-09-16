@@ -1,4 +1,23 @@
 # import datasets from external data sources
+observe({
+  req(isTRUE(input$cbSelectManuallyExt))
+  if(length(input$selExternalSource) != 1L){
+    flog.error("Bad external source: '%s'. This looks like an attempt to tamper with the app!",
+               input$selExternalSource)
+    return()
+  }
+  extSourceID <- match(input$selExternalSource, names(externalInputConfig))
+  if(is.na(extSourceID)){
+    flog.error("Invalid external source: '%s'. This looks like an attempt to tamper with the app!",
+               input$selExternalSource)
+    return()
+  }
+  extSourceDatasheets <- match(names(externalInputConfig[[extSourceID]]), 
+                               names(modelInToImport))
+  updateSelectInput(session, "selInputDataExt", 
+                    choices = setNames(names(modelInToImport)[extSourceDatasheets], 
+                                       modelInToImportAlias[extSourceDatasheets]))
+})
 
 observeEvent(input$btImportExternal, {
   externalSource <- input$selExternalSource
@@ -16,7 +35,17 @@ observeEvent(input$btImportExternal, {
   extConf <- externalInputConfig[[externalSource]]
   scalarDataset <- NULL
   
-  scenInputData <- lapply(names(modelIn), function(inputName){
+  datasetsToImport <- names(modelIn)
+  
+  if(input$cbSelectManuallyExt){
+    if(!length(input$selInputDataExt)){
+      return()
+    }
+    datasetsToImport <- datasetsToImport[datasetsToImport %in%
+                                           tolower(input$selInputDataExt)]
+  }
+  
+  scenInputData <- lapply(datasetsToImport, function(inputName){
     extIdx <- match(inputName, names(extConf))[1L]
     if(is.na(extIdx)){
       return(NULL)
@@ -90,11 +119,13 @@ observeEvent(input$btImportExternal, {
            }
     )
   })
-  names(scenInputData) <- names(modelIn)
+  names(scenInputData) <- datasetsToImport
   errMsg    <-  NULL
   loadMode  <-  "scen"
   newInputCount <- 0L
-  datasetsToFetch <- names(modelIn)[!vapply(scenInputData, is.null, logical(1L), USE.NAMES = FALSE)]
+  datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null, 
+                                              logical(1L), USE.NAMES = FALSE)]
   source("./modules/input_load.R", local = TRUE)
   showErrorMsg(lang$errMsg$fetchDataset$title, errMsg)
+  markUnsaved()
 })

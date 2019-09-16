@@ -18,7 +18,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
   if(dirtyFlag){
     showRemoveExistingOutputDataDialog()
   }else{
-    if(saveAsFlag || is.null(isolate(rv$activeSname))){
+    if(saveAsFlag || is.null(activeScen)){
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overwrite current scenario data
@@ -29,7 +29,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
 observeEvent(input$btRemoveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be removed.", uid)
   saveOutput <<- FALSE
-  if(saveAsFlag || is.null(isolate(rv$activeSname))){
+  if(saveAsFlag || is.null(activeScen)){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overwrite current scenario data
@@ -39,7 +39,7 @@ observeEvent(input$btRemoveOutput, {
 observeEvent(input$btSaveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be saved regardless of possible corruption", uid)
   saveOutput <<- TRUE
-  if(saveAsFlag || is.null(isolate(rv$activeSname))){
+  if(saveAsFlag || is.null(activeScen)){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overwrite current scenario data
@@ -52,10 +52,8 @@ observeEvent(input$btSaveReadonly,
 # enter scenario name
 observeEvent(virtualActionButton(rv$btSaveAs), {
   saveAsFlag <<- TRUE
-  if(!is.null(isolate(rv$activeSname))){
-    tmpScenName <- isolate(rv$activeSname)
-  }else if(!is.null(activeSnameTmp)){
-    tmpScenName <- activeSnameTmp
+  if(!is.null(rv$activeSname)){
+    tmpScenName <- rv$activeSname
   }else{
     tmpScenName <- lang$nav$dialogNewScen$newScenName
   }

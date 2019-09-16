@@ -24,6 +24,7 @@
     "sidebarButtons":{  
       "importInput":"Daten laden",
       "solve":"Modell lösen",
+      "submitJob": "Job senden",
       "solveHcube":"Jobs absenden",
       "splitView":"Split Screen Ansicht",
       "tabView":"Tabansicht",
@@ -152,6 +153,9 @@
     "dialogExportScen":{
       "title": "Szenario exportieren",
       "desc": "Wählen Sie einen Dateityp aus",
+      "cbSelectManually":"Datensätze manuell auswählen",
+      "selDatasets":"Wählen Sie die zu exportierenden Datensätze",
+      "noDsSelected": "Sie haben keine Datensätze zum Exportieren ausgewählt.",
       "cancelButton": "Abbrechen",
       "okButton": "Exportieren"
     },
@@ -279,8 +283,8 @@
     "dialogRemoveScen":{  
       "title":"Szenario schließen",
       "desc":"Sind Sie sicher, dass Sie das Szenario schließen möchten? Ungespeicherte Daten gehen dadurch verloren!",
-      "cancelButton":"No",
-      "okButton":"Yes"
+      "cancelButton":"Abbrechen",
+      "okButton":"Schließen"
     },
     "dialogRemoveHCJob":{  
       "title":"Hypercube-Job schließen",
@@ -356,6 +360,8 @@
       "titleDataError":"Daten beschädigt",
       "descDataError":"Die Szenariodaten scheinen beschädigt zu sein. Laden fehlgeschlagen.",
       "maxNoScenExceeded": "Die maximale Anzahl der darstellbaren Szenarien wurde überschritten. Es wird nur eine Teilmenge angezeigt.",
+      "noDsSelected": "Bitte wählen Sie den Namen des Datensatzes aus, den Sie importieren möchten.",
+      "invalidFile": "Die von Ihnen hochgeladene Datei konnte nicht validiert werden.",
       "sortBy":"Sortieren nach:",
       "btSortNameASC":"Name (ASC)",
       "btSortTimeASC":"Zeit (ASC)",
@@ -418,10 +424,21 @@
       "downloadButton":"Datei laden",
       "cancelButton":"Abbrechen"
     },
+    "dialogJobSubmission":{
+      "title": "Job senden",
+      "desc": "Einen neuen Job zum asynchronen Lösen senden.",
+      "jobName": "Geben Sie einen Namen für Ihren Job an (optional)",
+      "descWait": "Bitte warten Sie, während der Job gesendet wird...",
+      "badName": "Bitte wählen Sie einen gültigen Namen für den neuen Job.",
+      "cancelButton":"Abbrechen",
+      "okButton": "Senden",
+      "successMsg": "Ihr Job wurde erfolgreich gesendet. Sie können die Ergebnisse abrufen, sobald der Job gelöst wurde."
+    },
     "dialogHcube":{
       "title": "Hypercube-Konfiguration",
       "desc": "Sie haben %d Szenarien zum Lösen im Hypercube-Modus ausgewählt. Von diesen sind bereits %d Szenarien gelöst worden.",
       "descSolveAgain": "Möchten Sie alle Szenarien wieder lösen oder nur die, die noch nicht gelöst sind?",
+      "descJobSubmission": "Bitte warten Sie, während der Job gesendet wird...",
       "newTags": "Weisen Sie dem Auftrag einen oder mehrere Tags zu:",
       "manualSwitch": "Job manuell verarbeiten?",
       "cancelButton":"Abbrechen",
@@ -452,11 +469,22 @@
       "noJobsHist": "Es konnten keine verworfenen oder importierten Jobs gefunden werden.",
       "discardSuccess": "Job wurde verworfen",
       "importSuccess": "Job wurde erfolgreich importiert",
+      "maxDownloads": "Die maximale Anzahl paralleler Downloads ist erreicht.",
+      "jobNotFound": "Der Job wurde auf dem GAMS Remote Solver nicht gefunden.",
       "accessDenied": "Zugriff verweigert",
       "histTitle": "Jobverlauf",
+      "status":{
+        "downloading": "Ergebnisse werden heruntergeladen",
+        "downloaded": "Heruntergeladen",
+        "running": "Laufend",
+        "imported": "Importiert",
+        "completed": "Abgeschlossen",
+        "corrupted": "Beschädigt",
+        "discarded": "Verworfen"
+      },
       "ttips":{
         "importedManual": "Der Job wurde manuell importiert.",
-        "discardedCorrupted": "Der Job war korrumpiert.",
+        "discardedCorrupted": "Der Job war beschädigt.",
         "discardedActive": "Der Job war noch aktiv.",
         "discardedScheduled": "Der Job wurde eingeplant.",
         "discardedCompleted": "Der Job war abgeschlossen.",
@@ -467,21 +495,17 @@
       "header":{
         "owner": "Eigentümer",
         "date": "Übermittlungsdatum",
+        "name": "Job Name",
         "tags": "Job Tags",
         "status": "Status",
         "action": "Aktion"
       },
       "buttons":{
         "import": "Importieren",
+        "download": "Ergebnisse herunterladen",
         "log": "Log-Datei anzeigen",
         "progress": "Fortschritt anzeigen",
         "discard": "Verwerfen"
-      },
-      "importConfirm":{
-        "title": "Import bestätigen",
-        "desc": "Sind Sie sicher, dass Sie den ausgewählten Job importieren möchten?",
-        "cancelButton": "Abbrechen",
-        "confirmButton": "Bestätigen"
       },
       "discardConfirm":{
         "title": "Verwerfen bestätigen",
@@ -573,10 +597,14 @@
       "downloadAttach": "Laden der Anhänge"
     },
     "importScen":{
-      "title": "Szenario importieren",
+      "title": "Szenario wird importiert",
       "downloadResults": "Ergebnisse werden heruntergeladen",
       "renderInput": "Eingabedaten werden gerendert",
       "renderOutput": "Ausgabedaten werden gerendert"
+    },
+    "exportScen":{
+      "title": "Szenario wird exportiert",
+      "exportDs": "Datensatz %s von %s wird exportiert"
     },
     "loadScenDb":{  
       "title":"Laden von Szenariodaten aus der Datenbank",
@@ -993,6 +1021,7 @@
         "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie bestimmte Spalten aus, die schreibgeschützt sein sollen",
+        "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll (ohne Vorschau)",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{

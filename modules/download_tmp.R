@@ -33,12 +33,7 @@ output$btDownloadTmpConfirm <- downloadHandler(
 output$btDownloadTmpZip <- downloadHandler(
   filename = function(){
     if(is.null(isolate(rv$activeSname))){
-      if(is.null(activeSnameTmp)){
-        # as no scenario name could be found set, scenario name to model name
-        return(paste0(modelName, ".zip"))
-      }else{
-        return(paste0(modelName, "_", activeSnameTmp, ".zip"))
-      }
+      return(paste0(modelName, ".zip"))
     }else{
       return(paste0(modelName, "_", isolate(rv$activeSname), ".zip"))
     }

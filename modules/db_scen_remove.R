@@ -13,7 +13,7 @@ closeScenario <- function(){
   tableContent       <<- vector(mode = "list", length = length(modelIn))
   inputInitialized[] <<- FALSE
   isolate(rv$datasetsModified[] <- FALSE)
-  
+  noCheck[]         <<- FALSE
   if(resetWidgetsOnClose){
     lapply(seq_along(modelIn), function(i){
       switch(modelIn[[i]]$type,
@@ -32,6 +32,7 @@ closeScenario <- function(){
                  updateSliderInput(session, "slider_" %+% i, min = 0, max = 1, 
                                    value = 0, step = 1)
                }
+               noCheck[i] <<- TRUE
              },
              dropdown = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]])){
@@ -44,12 +45,13 @@ closeScenario <- function(){
                  hideEl(session, "#dropdown_" %+% i)
                  updateSelectInput(session, "dropdown_" %+% i, choices = "_", selected = "_")
                }
+               noCheck[i] <<- TRUE
              },
              date = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$date$value)){
                  updateDateInput(session, "date_" %+% i, value = modelIn[[i]]$date$value)
+                 noCheck[i] <<- TRUE
                }
-               previousInputData[[i]] <<- isolate(input[["date_" %+% i]])
              },
              daterange = {
                if(is.null(modelInWithDep[[names(modelIn)[[i]]]]) && length(modelIn[[i]]$daterange$start) &&
@@ -57,16 +59,19 @@ closeScenario <- function(){
                  updateDateRangeInput(session, "daterange_" %+% i, 
                                       start = modelIn[[i]]$daterange$start, 
                                       end = modelIn[[i]]$daterange$end)
+                 noCheck[i] <<- TRUE
                }
              },
              checkbox = {
                if(length(modelIn[[i]]$checkbox$value)){
                  updateCheckboxInput(session, "cb_" %+% i, value = modelIn[[i]]$checkbox$value)
+                 noCheck[i] <<- TRUE
                }
              },
              textinput = {
                if(length(modelIn[[i]]$textinput$value)){
                  updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
+                 noCheck[i] <<- TRUE
                }
              }
       )
@@ -94,10 +99,8 @@ closeScenario <- function(){
   activeScenario    <<- NULL
   activeScen        <<- NULL
   gc()
-  activeSnameTmp    <<- NULL
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
-  noCheck[]         <<- FALSE
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
                                execPerm = vector("logical", attachMaxNo))
   if(length(modelInMustImport))

@@ -124,6 +124,11 @@
               "minLength":1,
               "required":true
             },
+            "submitJob":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "solveHcube":{  
               "type":"string",
               "minLength":1,
@@ -691,6 +696,21 @@
               "required":true
             },
             "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "selDatasets":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cbSelectManually":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "noDsSelected":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -1648,6 +1668,16 @@
               "minLength":1,
               "required":true
             },
+            "noDsSelected": {
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "invalidFile": {
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "sortBy":{  
               "type":"string",
               "minLength":1,
@@ -1928,6 +1958,53 @@
             }
          }
         },
+        "dialogJobSubmission":{
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "desc":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "jobName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "descWait":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "badName":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "cancelButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "okButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "successMsg":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
         "dialogHcube":{
           "type":"object",
           "additionalProperties":false,
@@ -1944,6 +2021,11 @@
               "required":true
             },
             "descSolveAgain":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "descJobSubmission":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -2083,6 +2165,16 @@
               "minLength":1,
               "required":true
             },
+            "maxDownloads":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "jobNotFound":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
             "accessDenied":{
               "type":"string",
               "minLength":1,
@@ -2092,6 +2184,48 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "status":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "downloading":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "downloaded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "running":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "imported":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "completed":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "corrupted":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "discarded":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             },
             "ttips":{
               "type":"object",
@@ -2160,6 +2294,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "name":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "status":{
                   "type":"string",
                   "minLength":1,
@@ -2182,6 +2321,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "download":{
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "log":{
                   "type":"string",
                   "minLength":1,
@@ -2193,33 +2337,6 @@
                   "required":true
                 },
                 "discard":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
-            },
-            "importConfirm":{
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{
-                "title":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "desc":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "cancelButton":{
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "confirmButton":{
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -2654,6 +2771,23 @@
               "required":true
             },
             "renderOutput":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            }
+          }
+        },
+        "exportScen":{  
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "title":{
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "exportDs":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -4547,6 +4681,11 @@
                   "required":true
                 },
                 "readonlyCols":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "pivotCols":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
