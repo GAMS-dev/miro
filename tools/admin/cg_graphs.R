@@ -1047,7 +1047,7 @@ observeEvent(input$outType, {
     outTypetmp <<- "dtGraph"
   else
     outTypetmp <<- "graph"
-  rv$graphConfig$graph$outType <<- outTypetmp
+  rv$graphConfig$outType <<- outTypetmp
 })
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
@@ -1451,7 +1451,8 @@ getPieOptions <- reactive({
                                                     value = 0.6, min = 0, max = 1, step = 0.1)
                       )
              )
-    )
+    ),
+    getOptionSection()
   )
 })
 getAxisOptions <- function(id, title, labelOnly = FALSE){
@@ -1495,7 +1496,7 @@ getChartOptions <- reactive({
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
     rv$graphConfig$graph$showlegend <<- FALSE
-    rv$graphConfig$graph$outType <<- "graph" 
+    rv$graphConfig$outType <<- "graph" 
   })
   tagList(
     selectInput("chart_xdata", lang$adminMode$graphs$chartOptions$xdata,
@@ -1505,13 +1506,23 @@ getChartOptions <- reactive({
     getAxisOptions("y", names(scalarIndices)[1]),
     selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
                 choices = c("_", indices)),
+    getOptionSection(),
+    tags$div(id = "plotly_animation_options", class = "shiny-input-container")
+  )
+})
+getOptionSection <- reactive({
+  tagList(
     optionSection(title = lang$adminMode$graphs$chartOptions$options$title, collapsed = TRUE,
                   colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
                   colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
                   checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend),
-                  checkboxInput_MIRO("outType", lang$adminMode$graphs$chartOptions$options$outType, value = FALSE)
-    ),
-    tags$div(id = "plotly_animation_options", class = "shiny-input-container")
+                  getOuttype()
+    )
+  )
+})
+getOuttype <- reactive({
+  tagList(
+    checkboxInput_MIRO("outType", lang$adminMode$graphs$chartOptions$options$outType, value = FALSE)
   )
 })
 getBarOptions  <- reactive({
@@ -1749,7 +1760,8 @@ getDygraphsOptions <- reactive({
                   checkboxInput_MIRO("dyopt_drawPoints", lang$adminMode$graphs$dygraphsOptions$generalOpts$drawPoints),
                   selectInput("dyopt_pointShape", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointShape, 
                               choices = langSpecificGraphs$pointShapeChoices),
-                  numericInput("dyopt_pointSize", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointSize, min = 0L, value = 2L)
+                  numericInput("dyopt_pointSize", lang$adminMode$graphs$dygraphsOptions$generalOpts$pointSize, min = 0L, value = 2L),
+                  getOuttype()
     ),
     optionSection(title = lang$adminMode$graphs$dygraphsOptions$highOpts$title, collapsed = TRUE,
                   numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
@@ -1789,7 +1801,8 @@ getLeafletOptions <- reactive({
                     selectInput("leaflc_position", lang$adminMode$graphs$leafletOptions$layer$position, 
                                 choices = langSpecificGraphs$positionChoices),
                     checkboxInput_MIRO("leaflc_collapsed", lang$adminMode$graphs$leafletOptions$layer$collapsed, value = TRUE)
-      )
+      ),
+      getOuttype()
     )
   )
 })
@@ -1820,7 +1833,8 @@ getTimevisOptions<- reactive({
                     checkboxInput_MIRO("timevis_fit", lang$adminMode$graphs$timevisOptions$options$fit, TRUE),
                     checkboxInput_MIRO("timevis_editable", lang$adminMode$graphs$timevisOptions$options$editable),
                     checkboxInput_MIRO("timevis_multiselect", lang$adminMode$graphs$timevisOptions$options$multiselect),
-                    checkboxInput_MIRO("timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime))
+                    checkboxInput_MIRO("timevis_showCurrentTime", lang$adminMode$graphs$timevisOptions$options$showCurrentTime),
+                    getOuttype())
     )
   )
 })
@@ -1881,7 +1895,7 @@ observe({
           showEl(session, "#pieValues")
           hideEl(session, "#preview-content-plotly")
       }else{
-        callModule(renderData, "preview_output_plotly", type = rv$graphConfig$outType, 
+        callModule(renderData, "preview_output_plotly", type = "graph", 
                    data = data, configData = configScalars, 
                    graphOptions = rv$graphConfig$graph,
                    roundPrecision = roundPrecision, modelDir = modelDir)
@@ -1894,7 +1908,7 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
-      callModule(renderData, "preview_output_dygraph", type = rv$graphConfig$outType, 
+      callModule(renderData, "preview_output_dygraph", type = "graph", 
                  data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
@@ -1919,7 +1933,7 @@ observe({
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
     }else if(isolate(rv$graphConfig$graph$tool) == "timevis"){
-      callModule(renderData, "preview_output_timevis", type = rv$graphConfig$outType, 
+      callModule(renderData, "preview_output_timevis", type = "graph", 
                  data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
@@ -1945,7 +1959,7 @@ observe({
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
     }else{
-      callModule(renderData, "preview_output_leaflet", type = rv$graphConfig$outType, 
+      callModule(renderData, "preview_output_leaflet", type = "graph", 
                  data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)

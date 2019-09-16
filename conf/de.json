@@ -49,6 +49,7 @@
       "help":{
         "title": "Hilfe",
         "doc": "Dokumentation",
+        "forum": "GAMS World Forum",
         "about": "Über"
       },
       "tooltips":{
@@ -58,7 +59,8 @@
     "inputScreen":{  
       "btCollapsedTabs": "Mehr",
       "noDataDep":"Bitte zuerst alle Daten importieren, auf denen dieses Element basiert.",
-      "widgetTabTitle": "Eingabe-Widgets"
+      "widgetTabTitle": "Eingabe-Widgets",
+      "dirtyFlag": "Das Szenario enthält Ausgabedaten, die möglicherweise nicht mehr zu den modifizierten Eingabedaten passen."
     },
     "gams":{  
       "boxModelStatus":{  
@@ -808,7 +810,7 @@
         "label": "Geben Sie den Namen der MIRO Log-Datei ein (mindestens 3 Zeichen). Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
       },
       "saveDuration":{
-        "label": "Dauer, die die GAMS-Logs und lst-Dateien in der Datenbank gespeichert werden sollen (in Tagen). 0 bedeutet, dass Dateien überhaupt nicht gespeichert werden, 999 bedeutet, dass die Dateien nie gelöscht werden sollen. Diese Einstellung wird ignoriert, wenn das Anhangsmodul nicht aktiv ist. Beachten Sie, dass dies derzeit nur im MIRO-Basismodus unterstützt wird."
+        "label": "Dauer, die die GAMS-Logs und lst-Dateien in der Datenbank gespeichert werden sollen (in Tagen)."
       },
       "decimal":{
         "label": "Anzahl der Dezimalstellen, die für die Rundung der Ausgabewerte verwendet werden."
@@ -854,6 +856,9 @@
       "empty":{
         "title": "Blätter können leer sein, z.B. wenn das exportierte Szenario nur Eingabedaten enthält.",
         "label": "Leere Blätter in die Excel-Datei aufnehmen?"
+      },
+      "remoteExecution":{
+        "label": "Remote Job-Ausführung (Nur für GAMS MIRO Server verfügbar)"
       },
       "saveTrace":{
         "title": "Für die Leistungsanalyse mit dem integrierten Analysetool PAVER muss diese Option aktiviert sein.",

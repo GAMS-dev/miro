@@ -49,6 +49,7 @@
       "help":{
         "title":"帮助",
         "doc":"文档",
+        "forum": "GAMS World Forum",
         "about":"关于"
       },
       "tooltips":{
@@ -58,7 +59,8 @@
     "inputScreen":{
       "btCollapsedTabs": "More",
       "noDataDep":"请先导入此元素所依赖的所有数据。",
-      "widgetTabTitle":"输入小部件"
+      "widgetTabTitle":"输入小部件",
+      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data any more."
     },
     "gams":{
       "boxModelStatus":{
@@ -808,7 +810,7 @@
         "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
       },
       "saveDuration":{
-        "label": "Duration the GAMS log and lst files are stored in the database (in days). 0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode."
+        "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
       "decimal":{
         "label": "Number of decimal places used for rounding output values."
@@ -854,6 +856,9 @@
       "empty":{
         "title": "Sheets can be empty e.g. when the exported scenario only contains input data.",
         "label": "Include empty sheets in the Excel file?"
+      },
+      "remoteExecution":{
+        "label": "Remote Job execution (GAMS MIRO Server only)"
       },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",

@@ -42,6 +42,7 @@
       "widgetType": "table"
     },
     "maxstock": {
+      "label": "select the maximum number of stocks",
       "widgetType": "slider",
       "alias": "maximum number of stocks to select",
       "min": 1,

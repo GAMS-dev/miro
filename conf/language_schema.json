@@ -240,6 +240,11 @@
                     "minLength":1,
                     "required":true
                   },
+                 "forum":{  
+                    "type":"string",
+                    "minLength":1,
+                    "required":true
+                  },
                   "about":{  
                     "type":"string",
                     "minLength":1,
@@ -277,6 +282,11 @@
               "required":true
             },
             "widgetTabTitle":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "dirtyFlag":{  
               "type":"string",
               "minLength":1,
               "required":true
@@ -3851,6 +3861,18 @@
                   "minLength":1,
                   "required":true
                 },
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "remoteExecution":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
