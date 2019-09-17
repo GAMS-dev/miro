@@ -46,7 +46,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                    noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId){
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
-  scenTabset <- MIROtabBox(id = paste0("contentScen_", scenId), 
+  scenTabset <- MIROtabBox(id = paste0("contentScen_", scenId), noTabsGrouped = length(outputTabs),
                            btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
                                   lapply(seq_len(length(outputTabs) + length(scenInputTabs)), 
                                   function(groupId) {
