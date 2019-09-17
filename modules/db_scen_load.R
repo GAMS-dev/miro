@@ -350,7 +350,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       }
     }
     names(scenInputData)         <- inputDsNames
-    newInputCount                <- 0L
     
     if(scalarsFileName %in% inputDsNames){
       scalarDataset <- scenInputData[[length(scenInputData)]]
@@ -360,6 +359,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
     
     errMsg    <-  NULL
     loadMode  <-  "scen"
+    newInputCount <- 0L
     source("./modules/input_load.R", local = TRUE)
     if(!is.null(errMsg)){
       return()
@@ -509,43 +509,6 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
              paste(sidsToLoad, collapse = ", "))
   return()
 })
-# import from Hcube via hash module
-observeEvent(input$hcHashLookup, {
-  flog.debug("Look up Hypercube scenario by hash value button clicked.")
-  hashVal <- isolate(input$hcHashLookup)
-  if(!identical(nchar(hashVal), 64L) || 
-     identical(grepl("^[A-Fa-f0-9]{64}$", hashVal)[[1L]], FALSE)){
-    return()
-  }
-  showEl(session, "#hcHashLookup_load")
-  on.exit(hideEl(session, "#hcHashLookup_load"))
-  noErr <- TRUE
-  tryCatch({
-    dbSchemaTmp  <- db$getDbSchema()
-    matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
-                                    colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
-                                    tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
-                                             dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
-                                           c(hashVal, SCODEMAP[['scen']]), c("=", ">")))
-  }, error = function(e){
-    flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
-    showHideEl(session, "#importScenError")
-    noErr <<- FALSE
-  })
-  if(!noErr)
-    return()
-  if(length(matchingScen)){
-    if(identical(nrow(matchingScen), 0L)){
-      showHideEl(session, "#importScenNoHcubeScen", 4000L)
-      return()
-    }else if(identical(nrow(matchingScen), 1L)){
-      sidsToLoad <<- list(-1L, matchingScen[[1L]][1])
-      rv$loadHcubeHashSid <- isolate(rv$loadHcubeHashSid) + 1L
-      return()
-    }
-  }
-  output$hcHashLookupResults <- renderUI(getHcubeHashLookupTable(matchingScen))
-})
 
 if(config$activateModules$hcubeMode){
   observeEvent(input$tb_importData, {
@@ -675,5 +638,43 @@ if(config$activateModules$hcubeMode){
     }
     sidsToLoad         <<- c(scenNameTmp, sidsToLoad)
     rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+  })
+}else{
+  # import from Hcube via hash module
+  observeEvent(input$hcHashLookup, {
+    flog.debug("Look up Hypercube scenario by hash value button clicked.")
+    hashVal <- isolate(input$hcHashLookup)
+    if(!identical(nchar(hashVal), 64L) || 
+       identical(grepl("^[A-Fa-f0-9]{64}$", hashVal)[[1L]], FALSE)){
+      return()
+    }
+    showEl(session, "#hcHashLookup_load")
+    on.exit(hideEl(session, "#hcHashLookup_load"))
+    noErr <- TRUE
+    tryCatch({
+      dbSchemaTmp  <- db$getDbSchema()
+      matchingScen <- db$importDataset(dbSchemaTmp$tabName['_scenMeta'], 
+                                       colNames = dbSchemaTmp$colNames[['_scenMeta']][c('sid', 'stag', 'stime')],
+                                       tibble(c(dbSchemaTmp$colNames[['_scenMeta']][['sname']],
+                                                dbSchemaTmp$colNames[['_scenMeta']][['scode']]), 
+                                              c(hashVal, SCODEMAP[['scen']]), c("=", ">")))
+    }, error = function(e){
+      flog.error("Problems fetching scenario metadata from database. Error message: '%s'.", e)
+      showHideEl(session, "#importScenError")
+      noErr <<- FALSE
+    })
+    if(!noErr)
+      return()
+    if(length(matchingScen)){
+      if(identical(nrow(matchingScen), 0L)){
+        showHideEl(session, "#importScenNoHcubeScen", 4000L)
+        return()
+      }else if(identical(nrow(matchingScen), 1L)){
+        sidsToLoad <<- list(-1L, matchingScen[[1L]][1])
+        rv$loadHcubeHashSid <- isolate(rv$loadHcubeHashSid) + 1L
+        return()
+      }
+    }
+    output$hcHashLookupResults <- renderUI(getHcubeHashLookupTable(matchingScen))
   })
 }

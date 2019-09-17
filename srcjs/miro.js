@@ -1,5 +1,4 @@
 /* global $:false Shiny: false HTMLWidgets:false MathJax:false */
-
 const spinnerActive = {};
 
 function sleep(ms) {
@@ -10,7 +9,7 @@ function changeActiveButtons(tabId) {
   switch (tabId) {
     case 'inputData':
       $('#btImport').show();
-      $('#btSolve').show();
+      $('.btSolve').show();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -18,7 +17,7 @@ function changeActiveButtons(tabId) {
 
     case 'outputData':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -26,7 +25,7 @@ function changeActiveButtons(tabId) {
 
     case 'gamsinter':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').show();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -34,7 +33,7 @@ function changeActiveButtons(tabId) {
 
     case 'scenarios':
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').show();
       $('#btCompareScen').show();
@@ -42,7 +41,7 @@ function changeActiveButtons(tabId) {
 
     default:
       $('#btImport').hide();
-      $('#btSolve').hide();
+      $('.btSolve').hide();
       $('#btInterrupt').hide();
       $('#btSplitView').hide();
       $('#btCompareScen').hide();
@@ -161,12 +160,23 @@ export function removeAttachment(elId) {
   });
 }
 
+export function changeDDButtonEvent(elText, DDBtnID, actionID) {
+  $(DDBtnID).attr('onclick',
+    `Shiny.setInputValue('${actionID}',1,{priority: 'event'});`);
+  $(DDBtnID).text(elText);
+  if ($(DDBtnID).is(':enabled')) {
+    Shiny.setInputValue(actionID, 1, {
+      priority: 'event',
+    });
+  }
+}
+
 export function showJobsDialog(hcubeMode) {
+  removeModal();
   if (hcubeMode) {
     switchTab('importData');
     return;
   }
-  removeModal();
   switchTab('gamsinter');
   switchTabInTabset('jobListPanel', 'joblist');
 }
@@ -272,7 +282,7 @@ $(document).ready(() => {
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
   $('#btImport').show();
-  $('#btSolve').show();
+  $('.btSolve').show();
   $('#btInterrupt').hide();
   $('#btSplitView').hide();
   $('#btCompareScen').hide();
@@ -281,6 +291,7 @@ $(document).ready(() => {
     changeActiveButtons('inputData');
     rerenderHot();
   });
+
   $('a[data-value="outputData"]').click(() => {
     changeActiveButtons('outputData');
   });
@@ -308,6 +319,9 @@ $(document).ready(() => {
   });
   $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
+    if (btn.hasClass('dropdown-toggle')) {
+      return;
+    }
     btn.prop('disabled', true);
     setTimeout(() => {
       btn.prop('disabled', false);
@@ -339,6 +353,44 @@ $(document).ready(() => {
   });
   Shiny.addCustomMessageHandler('gms-showElReplaceTxt', (data) => {
     $(data.id).text(data.txt).show();
+  });
+  Shiny.addCustomMessageHandler('gms-showLogContent', (data) => {
+    $(data.id).text(data.content);
+    if (data.chunkCount <= 1) {
+      return;
+    }
+
+    const { noChunks } = data;
+    if (noChunks === undefined || noChunks <= 1) {
+      return;
+    }
+    let counter = 1;
+    let isLoading = false;
+    $(data.id).on('scroll', () => {
+      if ($(data.id)[0].scrollHeight - $(data.id).scrollTop()
+           < $(data.id).outerHeight() + 200
+          && isLoading === false) {
+        isLoading = true;
+        Shiny.setInputValue('loadTextEntityChunk',
+          {
+            jID: data.jID,
+            chunkCount: counter,
+            type: data.type,
+          }, {
+            priority: 'event',
+          });
+        counter += 1;
+
+        if (counter === noChunks) {
+          $(data.id).off('scroll');
+        }
+      }
+    });
+    $(data.id).on('change', () => {
+      setTimeout(() => {
+        isLoading = false;
+      }, 1000);
+    });
   });
   Shiny.addCustomMessageHandler('gms-hideEl', (id) => {
     if (isInputEl(id)) {
@@ -383,6 +435,11 @@ $(document).ready(() => {
       content = document.createTextNode(content);
     }
     $(data.id).append(content);
+
+    if (data.triggerChange) {
+      $(data.id).trigger('change');
+    }
+
     if (data.scroll) {
       scrollDown(data.id, 50);
     }
@@ -390,27 +447,38 @@ $(document).ready(() => {
   Shiny.addCustomMessageHandler('gms-scrollDown', (id) => {
     scrollDown(id);
   });
-  Shiny.addCustomMessageHandler('gms-startUpdateJobProgress', (jID) => {
+  Shiny.addCustomMessageHandler('gms-startUpdateJobProgress', (data) => {
     const interval = setInterval(() => {
-      if ($(`#hcubeProgress${jID}`).attr('aria-valuenow') === '100'
-        || !$(`#hcubeProgress${jID}`).is(':visible')) {
+      if ($(data.id).attr('aria-valuenow') === '100'
+        || !$(data.id).is(':visible')) {
         clearInterval(interval);
       }
-      Shiny.setInputValue('updateJobProgress', jID, {
+      Shiny.setInputValue('updateJobProgress', data.jID, {
         priority: 'event',
       });
-    }, 2000);
+    }, 5000);
   });
   Shiny.addCustomMessageHandler('gms-updateJobProgress', (data) => {
-    if (!$(`#hcubeProgress${data.id}`).is(':visible')) {
+    if (!$(data.id).is(':visible')) {
       return;
     }
     const percentCompleted = Math.round(parseInt(data.progress.noCompleted, 10)
-          / parseInt(data.progress.noJobs, 10) * 100);
-    $(`#hcubeProgress${data.id}`)
+          / parseInt(data.progress.noTotal, 10) * 100);
+    $(data.id)
       .css('width', `${percentCompleted}%`)
       .attr('aria-valuenow', percentCompleted)
-      .text(`${data.progress.noCompleted}/${data.progress.noJobs}`);
+      .text(`${data.progress.noCompleted}/${data.progress.noTotal}`);
+  });
+  Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
+    $(`#jobImportDlProgressWrapper_${data.id}`).siblings('div:first').text(data.text);
+    $(`#jobImportDlProgressWrapper_${data.id}`).hide();
+    $(`#btDownloadJob_${data.id}`).hide();
+    $(`#btImportJob_${data.id}`).show();
+
+    if (data.triggerImport === true
+      && $(`#jobImportDlProgressWrapper_${data.id}`).is(':visible')) {
+      Shiny.setInputValue('importJob', data.id, { priority: 'event' });
+    }
   });
   Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
     setTimeout(() => {

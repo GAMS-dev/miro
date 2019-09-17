@@ -1,7 +1,6 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
 modelInWithPrefix <- names(modelIn)
-ignoreRefreshWidgetType <- FALSE
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
@@ -361,7 +360,7 @@ observeEvent({input$widget_symbol
     showHideEl(session, "#unknownErrorWidgets", 4000L)
     return()
   }
-  selectedType <- NULL
+  selectedType <- widgetOptions[[1L]]
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     selectedType <- configJSON$inputWidgets[[currentWidgetSymbolName]]$widgetType
     if(identical(selectedType, "slider") && 
@@ -369,9 +368,10 @@ observeEvent({input$widget_symbol
       selectedType <- "sliderrange"
     }
   }
-  ignoreRefreshWidgetType <<- TRUE
-  updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
-  rv$widget_type <- rv$widget_type + 1L
+  if(identical(input$widget_type, selectedType))
+    rv$widget_type <- rv$widget_type + 1L
+  else
+    updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
 })
 observeEvent(input$widget_go, {
   currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
@@ -427,6 +427,7 @@ observeEvent(input$widget_symbol_type, {
 })
 output$hot_preview <- renderRHandsontable({
   req(identical(input$widget_symbol_type, "gams"), input$widget_symbol %in% names(inputSymHeaders))
+  
   headers_tmp <- inputSymHeaders[[input$widget_symbol]]
   data        <- data.frame(matrix(c(letters[1:10], 
                                      replicate(length(headers_tmp) - 1L,
@@ -440,7 +441,8 @@ output$hot_preview <- renderRHandsontable({
                                                headers_tmp)], 
                   readOnly = TRUE)
   }
-  if(identical(rv$widgetConfig$bigData, TRUE)){
+  if(identical(rv$widgetConfig$bigData, TRUE) || 
+     (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
     return()
   }
   if(identical(input$table_heatmap, TRUE)){
@@ -451,26 +453,38 @@ output$hot_preview <- renderRHandsontable({
 })
 output$dt_preview <- renderDT({
   req(input$widget_symbol %in% names(inputSymHeaders))
+  
   headers_tmp <- names(inputSymHeaders[[input$widget_symbol]])
   data        <- data.frame(matrix(c(letters[1:10], 
                                      replicate(length(headers_tmp) - 1L,
                                                1:10)), 10))
+  if(length(input$table_pivotCols) && input$table_pivotCols != "_"){
+    pivotIdx <- match(input$table_pivotCols, inputSymHeaders[[input$widget_symbol]])[[1L]]
+    data <- spread(data, pivotIdx, length(data),
+                   fill = NA, convert = FALSE, drop = TRUE)
+    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
+    attrTmp <- c(attrTmp, 
+                 names(data)[seq(length(attrTmp) + 1L, 
+                                    length(data))])
+    headers_tmp  <- attrTmp
+  }
   dtOptions <- list(editable = !identical(input$table_readonly, 
                                           TRUE),
                     colnames = headers_tmp)
-  if(!identical(rv$widgetConfig$bigData, TRUE)){
+  
+  if(!identical(rv$widgetConfig$bigData, TRUE) &&
+     (!length(rv$widgetConfig$pivotCols) || 
+     rv$widgetConfig$pivotCols == "_")){
+    showEl(session, "#hot_preview")
     return()
   }
+  #hideEl(session, "#hot_preview")
   return(renderDTable(data, dtOptions, render = FALSE))
 })
 observeEvent({input$widget_type
   rv$widget_type}, {
     req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
         nchar(currentWidgetSymbolName) > 0L)
-    if(ignoreRefreshWidgetType){
-      ignoreRefreshWidgetType <<- FALSE
-      return()
-    }
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     rv$widgetConfig <- list()
     
@@ -479,7 +493,6 @@ observeEvent({input$widget_type
     currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
   }
   widgetAlias <- ''
-  
   if(length(currentConfig$alias) && nchar(currentConfig$alias)){
     widgetAlias <- currentConfig$alias
   }else{
@@ -489,17 +502,36 @@ observeEvent({input$widget_type
     }
   }
   if(identical(input$widget_type, "table")){
+    pivotCols <- NULL
+    if(length(inputSymHeaders[[input$widget_symbol]]) > 2L){
+      numericHeaders <- vapply(modelIn[[input$widget_symbol]]$headers, 
+                               function(header) identical(header$type, "parameter"), 
+                               logical(1L), USE.NAMES = FALSE)
+      if(sum(numericHeaders) <= 1L){
+        pivotCols <- inputSymHeaders[[input$widget_symbol]][!numericHeaders]
+      }
+    }
     rv$widgetConfig <- list(widgetType = "table",
                             alias = widgetAlias,
                             readonly = identical(currentConfig$readonly, TRUE),
                             readonlyCols = currentConfig$readonlyCols,
-                            heatmap = identical(currentConfig$heatmap, TRUE))
+                            heatmap = identical(currentConfig$heatmap, TRUE),
+                            bigData = identical(currentConfig$bigData, TRUE))
+    if(length(currentConfig$pivotCols)){
+      rv$widgetConfig$pivotCols <- currentConfig$pivotCols
+    }
     insertUI(selector = "#widget_options",
              tagList(
                tags$div(class="option-wrapper",
                         textInput("widget_alias", lang$adminMode$widgets$table$alias, value = rv$widgetConfig$alias)),
                checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = identical(rv$widgetConfig$bigData, TRUE)),
                checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
+               if(length(pivotCols)){
+                 tags$div(class="option-wrapper",
+                          selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                                      choices = c(`_` = "_", pivotCols), 
+                                      selected = if(length(rv$widgetConfig$pivotCols)) rv$widgetConfig$pivotCols else "_"))
+               },
                conditionalPanel(condition = "input.table_bigdata===false",
                                 tags$div(class="option-wrapper",
                                          selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
@@ -511,8 +543,9 @@ observeEvent({input$widget_type
                )), 
              where = "beforeEnd")
     output$widget_preview <- renderUI("")
-    if(identical(rv$widgetConfig$bigData, TRUE)){
-      hideEl(session, "#hot_preview")
+    if(identical(rv$widgetConfig$bigData, TRUE) || 
+       (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
+      #hideEl(session, "#hot_preview")
     }else{
       showEl(session, "#hot_preview")
     }
@@ -537,6 +570,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            dynamicDef <- getWidgetDependencies("slider", rv$widgetConfig$default)
@@ -709,6 +743,7 @@ observeEvent({input$widget_type
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
                                    ticks = identical(currentConfig$ticks, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE))
+           rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
            
@@ -828,6 +863,7 @@ observeEvent({input$widget_type
                                    selected = currentConfig$selected,
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    multiple = identical(currentConfig$multiple, TRUE)) 
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
            
@@ -924,6 +960,7 @@ observeEvent({input$widget_type
                                    value = identical(currentConfig$value, TRUE),
                                    noHcube = identical(currentConfig$noHcube, TRUE),
                                    class =  "checkbox-material")
+           rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$checkbox$alias, 
@@ -971,6 +1008,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            rv$widgetConfig$value <- currentConfig$value
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
            rv$widgetConfig$daysofweekdisabled <- currentConfig$daysofweekdisabled
@@ -1093,6 +1131,7 @@ observeEvent({input$widget_type
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
                                    noHcube = identical(currentConfig$noHcube, TRUE))
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
+           rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$end <- currentConfig$end
            rv$widgetConfig$min <- currentConfig$min
            rv$widgetConfig$max <- currentConfig$max
@@ -1228,6 +1267,7 @@ observeEvent({input$widget_type
                                    alias = widgetAlias,
                                    value = if(length(currentConfig$value)) currentConfig$value else "",
                                    placeholder = if(length(currentConfig$placeholder)) currentConfig$placeholder else "")
+           rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$textinput$alias, 
@@ -1244,8 +1284,7 @@ observeEvent({input$widget_type
            })
          }
   )
-  rv$widgetConfig$label <- currentConfig$widget_label
-  hideEl(session, "#hot_preview")
+  #hideEl(session, "#hot_preview")
 })
 observeEvent(input$widget_alias, {
   rv$widgetConfig$alias <<- input$widget_alias
@@ -1265,10 +1304,8 @@ observeEvent(input$widget_hcube, {
 
 observeEvent(input$table_bigdata, {
   if(input$table_bigdata == TRUE){
-    hideEl(session, "#hot_preview")
     rv$widgetConfig$bigData <<- TRUE
   }else{
-    showEl(session, "#hot_preview")
     rv$widgetConfig$bigData <<- FALSE
   }
 })
@@ -1280,6 +1317,9 @@ observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
     configJSON$widgetConfig$readonlyCols <<- NULL
   }
   rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
+})
+observeEvent(input$table_pivotCols, {
+  rv$widgetConfig$pivotCols <<- input$table_pivotCols
 })
 observeEvent(input$table_heatmap, {
   rv$widgetConfig$heatmap <<- input$table_heatmap
@@ -1508,7 +1548,10 @@ observeEvent(virtualActionButton(input$saveWidgetConfirm, rv$saveWidgetConfirm),
   
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- rv$widgetConfig
   if(!length(configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols)){
-    configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols <- NULL
+    configJSON$inputWidgets[[currentWidgetSymbolName]]$readonlyCols <<- NULL
+  }
+  if(identical(configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols, "_")){
+    configJSON$inputWidgets[[currentWidgetSymbolName]]$pivotCols <<- NULL
   }
   
   symbolDDNeedsUpdate <- FALSE

@@ -41,8 +41,7 @@ observeEvent(input$btImport, {
     }
   }
     
-  showLoadDataDialog(scenListDb = scenListDb, 
-                     noDataInUI = is.null(isolate(rv$activeSname)), dbTagList = dbTagList)
+  showLoadDataDialog(scenListDb = scenListDb, dbTagList = dbTagList)
   if(maxNoScenExceeded)
     showHideEl(session, "#importScenMaxNoScen", 4000L)
   
@@ -52,21 +51,4 @@ observeEvent(input$btImport, {
       updateTabsetPanel(session, "tb_importData", selected = "tb_importData_local")
     }
   }
-})
-observeEvent(input$localInput$name, {
-  flog.debug("A new input file with name: '%s' was uploaded.", 
-             isolate(input$localInput$name))
-  
-  if(!is.null(isolate(input$localInput$name))){
-    if(is.null(isolate(rv$activeSname))){
-      updateTextInput(session, "local_newScenName", value = gsub("\\.[^\\.]+$", "", 
-                                                                 isolate(input$localInput$name)))
-    }
-    enableEl(session, "#btCheckSnameLocal")
-  }
-})
-observeEvent(input$btNewNameLocal, {
-  flog.debug("Button to choose a different scenario name clicked.")
-  hideEl(session, "#loadLocal_scenNameExists")
-  showEl(session, "#loadLocal_content")
 })

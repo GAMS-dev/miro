@@ -1,12 +1,60 @@
 # import datasets from external data sources
-if(length(externalInputConfig)){
+observe({
+  req(isTRUE(input$cbSelectManuallyExt))
+  if(length(input$selExternalSource) != 1L){
+    flog.error("Bad external source: '%s'. This looks like an attempt to tamper with the app!",
+               input$selExternalSource)
+    return()
+  }
+  extSourceID <- match(input$selExternalSource, names(externalInputConfig))
+  if(is.na(extSourceID)){
+    flog.error("Invalid external source: '%s'. This looks like an attempt to tamper with the app!",
+               input$selExternalSource)
+    return()
+  }
+  extSourceDatasheets <- match(names(externalInputConfig[[extSourceID]]), 
+                               names(modelInToImport))
+  updateSelectInput(session, "selInputDataExt", 
+                    choices = setNames(names(modelInToImport)[extSourceDatasheets], 
+                                       modelInToImportAlias[extSourceDatasheets]))
+})
+
+observeEvent(input$btImportExternal, {
+  externalSource <- input$selExternalSource
+  removeModal()
+  flog.trace("Import remote data button clicked with remote importer: '%s' selected.", 
+             externalSource)
+  
+  if(!length(externalSource) || 
+     !externalSource %in% names(externalInputConfig)){
+    flog.info("Invalid remote importer: '%s'. This should not happen! Possible attempt of user tampering with the app!",
+              externalSource)
+    return(NULL)
+  }
   errMsg <- NULL
-  lapply(seq_along(externalInputConfig), function(extIdx){
-    item <- externalInputConfig[[extIdx]]
+  extConf <- externalInputConfig[[externalSource]]
+  scalarDataset <- NULL
+  
+  datasetsToImport <- names(modelIn)
+  
+  if(input$cbSelectManuallyExt){
+    if(!length(input$selInputDataExt)){
+      return()
+    }
+    datasetsToImport <- datasetsToImport[datasetsToImport %in%
+                                           tolower(input$selInputDataExt)]
+  }
+  
+  scenInputData <- lapply(datasetsToImport, function(inputName){
+    extIdx <- match(inputName, names(extConf))[1L]
+    if(is.na(extIdx)){
+      return(NULL)
+    }
+    item <- extConf[[extIdx]]
     if(!length(item)){
       return()
     }
-    item$name <- names(externalInputConfig)[extIdx]
+    item$name <- inputName
     i <- match(item$name, names(modelIn))
     
     # load from database
@@ -58,17 +106,11 @@ if(length(externalInputConfig)){
                }
                externalInputData_filtered[[i]] <<- externalInputData[[i]][externalInputData[[i]][[item$colSubset[[1]]]] == input[["dropdown_" %+% i]],]
              }, priority = 1e6)
-             
+             return(NULL)
            },
            hot =,
            dt = {
-             modelInputData[[i]] <<- externalInputData[[i]]
-             
-             if(length(isolate(rv[[paste0("in_", i)]]))){
-               rv[[paste0("in_", i)]] <<- isolate(rv[[paste0("in_", i)]]) + 1L
-             }else{
-               rv[[paste0("in_", i)]] <<- 1L
-             }
+             return(externalInputData[[i]])
            },
            {
              flog.error("Input type: '%s' is not supported for share datesets.", modelIn[[i]]$type)
@@ -77,5 +119,13 @@ if(length(externalInputConfig)){
            }
     )
   })
+  names(scenInputData) <- datasetsToImport
+  errMsg    <-  NULL
+  loadMode  <-  "scen"
+  newInputCount <- 0L
+  datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null, 
+                                              logical(1L), USE.NAMES = FALSE)]
+  source("./modules/input_load.R", local = TRUE)
   showErrorMsg(lang$errMsg$fetchDataset$title, errMsg)
-}
+  markUnsaved()
+})

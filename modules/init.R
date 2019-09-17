@@ -114,12 +114,6 @@ if(is.null(errMsg)){
   if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
-  # quote extra command line arguments
-  config$extraClArgs <- vapply(seq_along(config$extraClArgs), function(idx){
-    if(idx %% 2 == 0)
-      return(escapeGAMSCL(config$extraClArgs[[idx]]))
-    return(config$extraClArgs[[idx]])
-  }, character(1L), USE.NAMES = FALSE)
   # handsontable options
   hotOptions        <- config$handsontable
   
@@ -241,6 +235,11 @@ if(is.null(errMsg)){
       if(!is.null(widgetConfig[["readonly"]])){
         modelIn[[i]]$readonly <- widgetConfig$readonly
         widgetConfig$readonly  <- NULL
+      }
+      if(!is.null(widgetConfig[["pivotCols"]])){
+        modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
+        modelIn[[i]]$dtHeaders  <- TRUE
+        widgetConfig$pivotCols  <- NULL
       }
       if(length(widgetConfig$readonlyCols)){
         for(col in widgetConfig$readonlyCols){
@@ -612,66 +611,47 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     }
   })
   # get remote import/export options
-  externalInputConfig <- vector("list", length(modelIn))
-  if(length(config$remoteImport)){
-    lapply(config$remoteImport, function(remoteConfig){
-      symNames <- tolower(remoteConfig[["symNames"]])
-      remoteConfig[["symNames"]] <- NULL
-      symIds <- match(symNames, names(modelIn))
-      
-      if(any(is.na(symIds))){
-        errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote import are not valid: '%s'.", 
-                                         paste(symNames[is.na(symIds)], 
-                                               collapse = "', '")))
-        return()
+  externalDataConfig <- list(remoteImport = NULL, remoteExport = NULL)
+  
+  for(direction in c("remoteImport", "remoteExport")){
+    if(length(config[[direction]])){
+      externalDataConfig[[direction]] <- vector("list", length(config[[direction]]))
+      for (i in seq_along(config[[direction]])){
+        remoteConfigs <- lapply(config[[direction]][[i]]$templates, function(remoteConfig){
+          symNames <- tolower(remoteConfig[["symNames"]])
+          remoteConfig[["symNames"]] <- NULL
+          
+          symIds <- match(symNames, c(names(modelIn), names(modelOut)))
+          if(any(is.na(symIds))){
+            errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote export: '%s' are not valid: '%s'.", 
+                                             config[[direction]][[i]]$name, 
+                                             paste(symNames[is.na(symIds)], 
+                                                   collapse = "', '")))
+            return()
+          }
+          dupSym <- !is.na(match(symNames, names(externalDataConfig[[direction]][[i]])))
+          if(any(dupSym)){
+            errMsg <<- paste(errMsg, sprintf("Duplicated datasets found in remote export: '%s'. Datasets: '%s'.", 
+                                             config[[direction]][[i]]$name,
+                                             paste(symNames[dupSym], 
+                                                   collapse = "', '")))
+            return()
+          }
+          
+          exportConfig <- rep.int(list(remoteConfig), length(symIds))
+          names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
+          return(exportConfig)
+        })
+        externalDataConfig[[direction]][[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
       }
-      for(symId in symIds){
-        if(length(externalInputConfig[[symId]])){
-          errMsg <<- paste(errMsg, sprintf("The dataset: '%s' you selected for remote import appears in more than one template.", 
-                                           names(modelIn)[symId]))
-          next
-        }
-        externalInputConfig[[symId]]      <<- remoteConfig
-        names(externalInputConfig)[symId] <<- names(modelIn)[symId]
-      }
-    })
-    config$remoteImport <- NULL
-  }
-  datasetsRemoteExport <- NULL
-  if(length(config$remoteExport)){
-    datasetsRemoteExport <- vector("list", length(config$remoteExport))
-    for (i in seq_along(config$remoteExport)){
-      remoteConfigs <- lapply(config$remoteExport[[i]]$templates, function(remoteConfig){
-        symNames <- tolower(remoteConfig[["symNames"]])
-        remoteConfig[["symNames"]] <- NULL
-        
-        symIds <- match(symNames, c(names(modelIn), names(modelOut)))
-        if(any(is.na(symIds))){
-          errMsg <<- paste(errMsg, sprintf("Some of the datasets you selected for remote export: '%s' are not valid: '%s'.", 
-                                           config$remoteExport[[i]]$name, 
-                                           paste(symNames[is.na(symIds)], 
-                                                 collapse = "', '")))
-          return()
-        }
-        dupSym <- !is.na(match(symNames, names(datasetsRemoteExport[[i]])))
-        if(any(dupSym)){
-          errMsg <<- paste(errMsg, sprintf("Duplicated datasets found in remote export: '%s'. Datasets: '%s'.", 
-                                           config$remoteExport[[i]]$name,
-                                           paste(symNames[dupSym], 
-                                                 collapse = "', '")))
-          return()
-        }
-        
-        exportConfig <- rep.int(list(remoteConfig), length(symIds))
-        names(exportConfig) <- c(names(modelIn), names(modelOut))[symIds]
-        return(exportConfig)
-      })
-      datasetsRemoteExport[[i]] <- unlist(remoteConfigs, recursive = FALSE, use.names = TRUE)
+      names(externalDataConfig[[direction]]) <- vapply(config[[direction]], "[[",
+                                            character(1L), "name", USE.NAMES = FALSE)
+      config[[direction]] <- NULL
     }
-    names(datasetsRemoteExport) <- vapply(config$remoteExport, "[[",
-                                          character(1L), "name", USE.NAMES = FALSE)
-    config$remoteExport <- NULL
   }
+  externalInputConfig  <- externalDataConfig[["remoteImport"]]
+  datasetsRemoteExport <- externalDataConfig[["remoteExport"]]
+  rm(externalDataConfig)
   
   # Hypercube mode configuration
   modelInGmsString <- NULL
@@ -965,10 +945,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
   # get input dataset names (as they will be saved in database or Excel)
   # get worksheet names
-  if(tolower(scalarsFileName) %in% modelInTabularData || length(modelIn) == length(modelInTabularData)){
-    inputDsNames <- modelInTabularData
-  }else{
-    inputDsNames <- c(modelInTabularData, scalarsFileName)
+  inputDsNames   <- modelInTabularData
+  inputDsAliases <- modelInAlias[match(modelInTabularData, names(modelIn))]
+  if(!tolower(scalarsFileName) %in% modelInTabularData && length(modelIn) != length(modelInTabularData)){
+    inputDsNames   <- c(inputDsNames, scalarsFileName)
+    inputDsAliases <- c(inputDsAliases, lang$nav$scalarAliases$scalars)
   }
   # get scalar input names
   scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
@@ -1066,6 +1047,19 @@ if(is.null(errMsg)){
         }
         return(alias)
       }, character(1L), USE.NAMES = FALSE)
+      if(length(modelIn[[i]]$pivotCols)){
+        if(any(!modelIn[[i]]$pivotCols %in% names(modelIn[[i]]$headers))){
+          errMsg <<- paste(errMsg, sprintf("Some columns you want to pivot could not be found in the symbol: '%s'.", 
+                                           modelInAlias[i]))
+        }else if(length(modelIn[[i]]$headers) < 3L || 
+                 sum(vapply(modelIn[[i]]$headers, 
+                            function(header) identical(header$type, "parameter"), 
+                            logical(1L), USE.NAMES = FALSE)) > 1L){
+          errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least a dimension of 2 and have at most 1 value column (symbol: '%s').", 
+                                           modelInAlias[i]))
+        }
+      }
+      
       # abort since rpivottable crashes when setting table to readonly if there exist columns with the same name
       if(identical(modelIn[[i]]$type, "hot") && any(duplicated(attr(modelInTemplate[[i]], "aliases"))) &&
          (identical(modelIn[[i]]$readonly, TRUE) || any(vapply(modelIn[[i]]$headers, function(header){
@@ -1221,10 +1215,10 @@ if(is.null(errMsg)){
                                                   status = '_status', time = '_jtime', 
                                                   tag = stagIdentifier, pid = '_pid', 
                                                   sid = sidIdentifier, gamsret = '_gamsret',
-                                                  scode = scodeIdentifier)),
+                                                  scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciii"))
+                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))
@@ -1269,8 +1263,10 @@ if(is.null(errMsg)){
   modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
   modelFiles <- modelFiles[!basename(modelFiles) %in% c(paste0(modelName, "_", hcubeDirName), 
                                                         customRendererDirName, "static",
-                                              "logs", "conf", "runapp.R", paste0("~$", modelNameRaw, ".gms"),
-                                              paste0(miroDataDirPrefix, modelName))]
+                                                        "logs", "conf", "runapp.R", 
+                                                        paste0("~$", modelNameRaw, ".gms"),
+                                                        paste0(miroDataDirPrefix, modelName),
+                                                        config$modelFilesToIgnore)]
   modelFilesExt <- tools::file_ext(modelFiles)
   modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
   modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]

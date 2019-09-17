@@ -196,8 +196,12 @@ lapply(modelInTabularData, function(sheet){
            # rendering handsontables for input data 
            output[[paste0("in_", i)]] <- renderRHandsontable({
              noCheck[i] <<- TRUE
+             colnames <- attr(modelInputData[[i]], "aliases")
+             if(!length(colnames)){
+               colnames <- attr(modelInTemplate[[i]], "aliases")
+             }
              ht <- rhandsontable(dataModelIn[[i]](), height = hotOptions$height, 
-                                 colHeaders = attr(modelInTemplate[[i]], "aliases"),
+                                 colHeaders = colnames,
                                  width = hotOptions$width, search = hotOptions$search, 
                                  readOnly = modelIn[[i]]$readonly, selectCallback = TRUE)
              ht <- hot_table(ht, contextMenu = hotOptions$contextMenu$enabled, 
@@ -238,9 +242,15 @@ lapply(modelInTabularData, function(sheet){
            output[["in_" %+% i]] <- renderDT({
              errMsg <- NULL
              tryCatch({
-               dtOptions <- list(editable = !identical(modelIn[[i]]$readonly, 
-                                                       TRUE),
-                                 colnames = attr(modelInTemplate[[i]], "aliases"))
+               colnames <- attr(modelInputData[[i]], "aliases")
+               if(!length(colnames)){
+                 colnames <- attr(modelInTemplate[[i]], "aliases")
+               }
+               dtOptions <- modifyList(config$datatable,
+                                       list(editable = !identical(modelIn[[i]]$readonly, 
+                                                                  TRUE),
+                                            options = list(scrollX = TRUE),
+                                            colnames = colnames))
                
                dt <- renderDTable(dataModelIn[[i]](), dtOptions, 
                                   roundPrecision = roundPrecision, render = FALSE)
@@ -250,7 +260,7 @@ lapply(modelInTabularData, function(sheet){
                errMsg <<- sprintf(lang$errMsg$renderTable$desc, modelInAlias[i])
              })
              if(is.null(showErrorMsg(lang$errMsg$renderTable$title, errMsg))){
-               return(modelInputData[[i]]())
+               return(dataModelIn[[i]]())
              }
              return(dt)
            })

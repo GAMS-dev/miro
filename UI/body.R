@@ -24,8 +24,14 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
                     lang$nav$importJobsDialog$discardSuccess),
            tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsImported", 
                     lang$nav$importJobsDialog$importSuccess),
-           tags$div(class = "gmsalert gmsalert-success", id = "fetchJobsAccessDenied", 
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsAccessDenied", 
                     lang$nav$importJobsDialog$accessDenied),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsUnknownHost", 
+                    lang$nav$dialogRemoteLogin$hostNotFound),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsJobNotFound", 
+                    lang$nav$importJobsDialog$jobNotFound),
+           tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsMaxDownloads", 
+                    lang$nav$importJobsDialog$maxDownloads),
            tags$div(class = "gmsalert gmsalert-error", id = "fetchJobsError", 
                     lang$errMsg$unknownError),
            if(is.null(id)){
@@ -87,6 +93,7 @@ tabItemList <- list(
                                                     renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
                                                                  graphTool = configGraphsIn[[i]]$graph$tool, 
                                                                  customOptions = configGraphsIn[[i]]$options,
+                                                                 filterOptions = configGraphsIn[[i]]$graph$filter,
                                                                  height = configGraphsIn[[i]]$height, 
                                                                  noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                                   }, error = function(e) {
@@ -104,7 +111,7 @@ tabItemList <- list(
                                                                        value = if(length(modelIn[[i]]$slider$default) > 1) 
                                                                          numeric(2L) else numeric(1L), step = sliderStepSize, 
                                                                        width = modelIn[[i]]$slider$width, 
-                                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          slider         <- tagList(
                                            tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
                                            tagAppendAttributes(slider, style = "display:none;"), 
@@ -122,7 +129,7 @@ tabItemList <- list(
                                                        value = sliderValues[[sliderName]]$def, 
                                                        step = sliderValues[[sliderName]]$step, 
                                                        width = modelIn[[i]]$slider$width, 
-                                                       ticks = if(is.null(modelIn[[i]]$slider$ticks)) TRUE else FALSE)
+                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
                                          )
                                        }
                                        if(config$activateModules$hcubeMode){
@@ -497,33 +504,31 @@ if(config$activateModules$hcubeMode){
   )
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
-            fluidRow(
-              if(config$activateModules$remoteExecution){
-                tabBox(width = 12, id = "jobListPanel", 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                                contentCurrent             
-                       ), 
-                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
-                                fluidRow(
-                                  box(title = tagList(lang$nav$hcubeImport$title,
-                                                      tags$div(style = "float: right;", 
-                                                               actionButton(inputId = "refreshActiveJobs", 
-                                                                            class = "bt-icon", 
-                                                                            icon = icon("refresh"), label = NULL))),
-                                      status="warning", solidHeader = TRUE, width = 12,
-                                      genSpinner("jImport_load", absolute = FALSE),
-                                      getJobsTableSkeleton(id = "jImport_output"),
-                                      tags$div(class = "col-sm-6",
-                                               actionButton("btShowHistory", 
-                                                            lang$nav$hcubeImport$btShowHistory)
-                                      )
-                                  )
+            if(config$activateModules$remoteExecution){
+              tabBox(width = 12, id = "jobListPanel", 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                              contentCurrent             
+                     ), 
+                     tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                              fluidRow(
+                                box(title = tagList(lang$nav$hcubeImport$title,
+                                                    tags$div(style = "float: right;", 
+                                                             actionButton(inputId = "refreshActiveJobs", 
+                                                                          class = "bt-icon", 
+                                                                          icon = icon("refresh"), label = NULL))),
+                                    status="warning", solidHeader = TRUE, width = 12,
+                                    genSpinner("jImport_load", absolute = FALSE),
+                                    getJobsTableSkeleton(id = "jImport_output"),
+                                    tags$div(class = "col-sm-6",
+                                             actionButton("btShowHistory", 
+                                                          lang$nav$hcubeImport$btShowHistory)
+                                    )
                                 )
-                       ))
-              }else{
-                contentCurrent
-              }
-            )
+                              )
+                     ))
+            }else{
+              contentCurrent
+            }
     ),
     tabItem(tabName = "outputData",
             fluidRow(
@@ -564,6 +569,7 @@ if(config$activateModules$hcubeMode){
                                                     renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
                                                                  graphTool = configGraphsOut[[i]]$graph$tool, 
                                                                  customOptions = configGraphsOut[[i]]$options,
+                                                                 filterOptions = configGraphsOut[[i]]$graph$filter,
                                                                  height = configGraphsOut[[i]]$height, 
                                                                  noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                            ),
@@ -624,22 +630,7 @@ body <- dashboardBody({
         })
       )
     },
-    if(length(config$theme) && identical(config$theme, "light")){
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css")
-      )
-    }else if(length(config$theme) && identical(config$theme, "dark")){
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages_dark.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro_dark.css")
-      )
-    }else{
-      tagList(
-        tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
-        tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
-      )
-    },
+    tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
     tags$script(src = "miro.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)

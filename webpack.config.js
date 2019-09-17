@@ -2,10 +2,11 @@ const path = require('path');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const RemovePlugin = require('remove-files-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: {
-      skin_dark: './less/skins/dark.js',
+      skin_browser: './less/skins/browser.js',
       miro: './srcjs/miro.js',
       miro_admin: './srcjs/miro_admin.js'
     },
@@ -29,6 +30,16 @@ module.exports = {
         chunkFilename: '[id].css',
         ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
+      new RemovePlugin({
+          after: {
+            test: [{
+              folder: path.resolve(__dirname, "www"),
+              method: (filePath) => {
+                  return new RegExp(/skin_.+\.js$/, 'm').test(filePath);
+              }
+            }]
+          }
+      })
     ],
     module: {
         rules: [

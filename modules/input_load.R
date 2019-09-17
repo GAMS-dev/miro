@@ -41,10 +41,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
       # handsontable, multi dropdown, or daterange
       if(tolower(dataset) %in% modelInTabularData){
         dataTmp <- scenInputData[[dataset]]
-        
-        # assign new input data here as assigning it directly inside the tryCatch environment would result in deleting list elements
-        # rather than setting them to NULL
-        if(nrow(dataTmp)){
+        if(length(dataTmp) && nrow(dataTmp)){
           
           if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
@@ -65,7 +62,18 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                 }
               }, logical(1L), USE.NAMES = FALSE)
               dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
-              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              if(length(modelIn[[i]]$pivotCols)){
+                pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
+                dataTmp <- spread(dataTmp, pivotIdx, length(dataTmp),
+                                  fill = NA, convert = FALSE, drop = TRUE)
+                attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
+                attrTmp <- c(attrTmp, 
+                             names(dataTmp)[seq(length(attrTmp) + 1L, 
+                                                length(dataTmp))])
+                attr(dataTmp, "aliases")  <- attrTmp
+              }else{
+                attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
+              }
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
             }
@@ -180,10 +188,6 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
   })
   showErrorMsg(lang$errMsg$GAMSInput$title, errMsg)
   
-  if(!is.null(isolate(rv$activeSname))){
-    enableEl(session, "#btSave")
-  }
-  enableEl(session, "#btSaveAs")
   # set initialisation flags for handsontables to FALSE
   if(any(hotInit)){
     hotInit[]     <<- FALSE

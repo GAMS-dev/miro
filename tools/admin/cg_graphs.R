@@ -268,6 +268,11 @@ observeEvent(input$dbInput, {
   }else{
     configScalars <<- tibble()
   }
+  idxScalarOut <- match(scalarsOutName, names(modelOut))
+  if(!is.na(idxScalarOut) && length(modelOutputData[[idxScalarOut]]) && 
+     nrow(modelOutputData[[idxScalarOut]])){
+    configScalars <<- bind_rows(configScalars, modelOutputData[[idxScalarOut]])
+  }
   
   errMsg    <-  NULL
   loadMode  <-  "scen"
@@ -301,7 +306,7 @@ observeEvent(input$localInput, {
     loadMode <- "gdx"
     datasetsToFetch <- c(modelInTabularData, scalarsFileName)
   }else if(fileType %in% c("xls", "xlsx")){
-    loadMode <- "xls"
+    loadMode <- "xlsx"
     tryCatch({
       xlsWbNames <- excel_sheets(input$localInput$datapath)
     }, error = function(e) {
@@ -2018,7 +2023,7 @@ observe({
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "custom"){
       nameTmp = rv$graphConfig$outType
-      customJSON <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
+      customR <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
     ns <- NS(id)
  
     # set default height
@@ -2035,8 +2040,7 @@ observe({
     #renderer 
 
 }")
-      callModule(renderData, "preview_output_custom", type = "custom", 
-                 data = customJSON)
+      output[["preview_output_custom"]] <- renderText(customR)
       showEl(session, "#preview-content-custom")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraph")

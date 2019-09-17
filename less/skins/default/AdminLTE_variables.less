@@ -99,24 +99,6 @@
 @sidebar-dark-submenu-color:     lighten(@sidebar-dark-submenu-bg, 40%);
 @sidebar-dark-submenu-hover-color: #fff;
 
-///////////////////////////////////////////////////////
-//change mode for static/browser-responsive css compilation
-@mode: "browser";
-
-.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
-    @rulesDark();
-}
-.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
-    @rules();
-}
-.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
-    @rules();
-    @media (prefers-color-scheme: dark) {
-        @rulesDark();
-    }
-}
-///////////////////////////////////////////////////////////
-
 
 //Danger
 @red: #dd4b39;
@@ -206,3 +188,4 @@
 //Transition global options
 @transition-speed: .3s;
 @transition-fn: ease-in-out;
+@import "../../3_adminlte/less/AdminLTE.less";

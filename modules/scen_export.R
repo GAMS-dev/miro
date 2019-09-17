@@ -1,25 +1,35 @@
 # export scenario data to excel spreadsheet
 output[["export_" %+% i]] <- downloadHandler(
   filename = function() {
-    if(i == 1){
-      # active scenario (editable)
-      if(is.null(isolate(rv$activeSname))){
-        if(is.null(activeSnameTmp)){
-          # as no scenario name could be found set, scenario name to model name
-          activeSnameTmp <<- modelName
-          return(paste0(activeSnameTmp, ".", isolate(input$exportFileType)))
-        }else{
-          return(paste0(modelName, "_", activeSnameTmp, ".", exportFileType))
+    isolate({
+      fileExt <- exportFileType
+      if(identical(fileExt, "csv")){
+        if(isTRUE(input$cbSelectManuallyExp)){
+          if(length(input$selDataToExport) > 1L)
+            fileExt <- "zip"
+        }else if(length(modelOut) + length(inputDsNames) > 1L){
+          fileExt <- "zip"
         }
-      }else{
-        return(paste0(modelName, "_", isolate(rv$activeSname), ".", exportFileType))
       }
-    }
-    fileName <- paste0(modelName, "_", scenMetaData[["scen_" %+% i %+% "_"]][[3]][1], ".", exportFileType)
-    flog.debug("File: '%s' was downloaded.", fileName)
+      if(i == 1){
+        # active scenario (editable)
+        if(is.null(isolate(rv$activeSname))){
+          # as no scenario name could be found, set scenario name to model name
+          return(paste0(modelName, ".", fileExt))
+        }else{
+          return(paste0(modelName, "_", isolate(rv$activeSname), ".", fileExt))
+        }
+      }
+      fileName <- paste0(modelName, "_", scenMetaData[["scen_" %+% i %+% "_"]][[3]][1], ".", fileExt)
+      flog.debug("File: '%s' was downloaded.", fileName)
+    })
     return(fileName)
   },
   content = function(file) {
+    prog <- Progress$new()
+    on.exit(suppressWarnings(prog$close()))
+    prog$set(message = lang$progressBar$exportScen$title, value = 0.1)
+    
     if(i == 1){
       # active scenario (editable)
       saveAsFlag <<- FALSE
@@ -34,16 +44,54 @@ output[["export_" %+% i]] <- downloadHandler(
       }
     }
     removeModal()
-    if(identical(exportFileType, "gdx")){
-      names(data) <- c(names(modelOut), inputDsNames)
-      return(gdxio$wgdx(file, data, squeezeZeros = 'n'))
+    
+    names(data) <- c(names(modelOut), inputDsNames)
+    
+    if(isTRUE(input$cbSelectManuallyExp)){
+      outputDataToExport <- names(modelOut)[names(modelOut) %in% input$selDataToExport]
+      inputDataToExport  <- inputDsNames[inputDsNames %in% input$selDataToExport]
+      
+      if(!length(outputDataToExport) && !length(inputDataToExport)){
+        flog.info("No datasets selected. Nothing will be exported.")
+        showHideEl(session, "#exportNoDsSelected", 4000L)
+        return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
+      }
+      data <- data[names(data) %in% c(outputDataToExport, inputDataToExport)]
     }
-    wsNamesTmp                 <- c(if(length(modelOut))paste0(lang$nav$excelExport$outputPrefix, 
-                                                                names(modelOut), 
-                                                                lang$nav$excelExport$outputSuffix), 
-                                     if(length(inputDsNames))paste0(lang$nav$excelExport$inputPrefix, 
-                                                                    inputDsNames, 
-                                                                    lang$nav$excelExport$inputSuffix))
+    noDatasets <- length(data)
+    prog$set(value = 0.2)
+    
+    if(identical(exportFileType, "gdx")){
+      return(gdxio$wgdx(file, data, squeezeZeros = 'n'))
+    }else if(identical(exportFileType, "csv")){
+      if(length(data) == 1L){
+        return(readr::write_csv(data[[1L]], file))
+      }
+      tmpDir <- file.path(tempdir(), paste0(uid, "_exp_tmp_dir"))
+      if(file.exists(tmpDir) && !identical(unlink(tmpDir, recursive = TRUE), 0L)){
+        flog.error("Could not remove temporary directory: '%s'.", tmpDir)
+        return(downloadHandlerError(file, "Directory could not be removed"))
+      }
+      if(!dir.create(tmpDir, recursive = TRUE)){
+        flog.error("Could not create temporary directory: '%s'.", tmpDir)
+        return(downloadHandlerError(file, "Directory could not be created"))
+      }
+      on.exit(unlink(tmpDir, recursive = TRUE), add = TRUE)
+      for(i in seq_along(data)){
+        dsName <- names(data)[i]
+        prog$inc(amount = 0.8/noDatasets, detail = sprintf(lang$progressBar$exportScen$exportDs, i, noDatasets))
+        readr::write_csv(data[[dsName]], file.path(tmpDir, paste0(dsName, ".csv")))
+        
+      }
+      return(suppressWarnings(zip::zipr(file, list.files(tmpDir, full.names = TRUE), 
+                                        recurse = FALSE, include_directories = FALSE)))
+    }
+    wsNamesTmp                 <- c(if(length(outputDataToExport)) paste0(lang$nav$excelExport$outputPrefix, 
+                                                                          outputDataToExport, 
+                                                                          lang$nav$excelExport$outputSuffix), 
+                                    if(length(inputDataToExport)) paste0(lang$nav$excelExport$inputPrefix, 
+                                                                         inputDataToExport, 
+                                                                         lang$nav$excelExport$inputSuffix))
     if(any(nchar(wsNamesTmp) > 31)){
       wsNameExceedsLength <- nchar(wsNamesTmp) > 31
       wsNamesTmp[wsNameExceedsLength] <- paste0(substr(wsNamesTmp[wsNameExceedsLength], 1, 29), "..")
@@ -76,49 +124,64 @@ output[["export_" %+% i]] <- downloadHandler(
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 observeEvent(input[[paste0("remote_export_", i)]], {
-  if(length(datasetsRemoteExport) && length(input$exportFileType)){
-    exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
-    if(!is.na(exportId)){
-      expConfig  <- datasetsRemoteExport[[input$exportFileType]]
-      dsToExport <- names(expConfig)
-      
-      if(i == 1){
-        # active scenario (editable)
-        saveAsFlag <<- FALSE
-        source("./modules/scen_save.R", local = TRUE)
-        data <- scenData[[scenIdLong]]
-      }else{
-        data <- scenData[[scenIdLong]]
-        # combine hidden and non hidden scalar data
-        scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
-        if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
-          data[[scalarOutIdx]] <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
-        }
-      }
-      names(data) <- c(names(modelOut), inputDsNames)
-      errMsg <- NULL
-      for(dataId in seq_along(data)){
-        dsName <- names(data)[dataId]
-        expId <- match(dsName, dsToExport)
-        if(is.na(expId)){
-          return()
-        }
-        tryCatch(dataio$export(data[[dsName]], expConfig[[expId]]), 
-                 error = function(e){
-                   flog.warn("Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
-                             input$exportFileType, dsName, e)
-                   errMsg <<- lang$errMsg$saveScen$desc
-                 })
-        if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
-          break
-        }
-      }
-      flog.debug("Data exported successfully.")
-      removeModal(session)
-      return()
-    }
+  removeModal()
+  if(!length(datasetsRemoteExport) || !length(input$exportFileType)){
+    flog.error("Remote export button clicked but export file type: '%s' does not exist.", 
+               input$exportFileType)
+    return()
   }
-  flog.error("Remote export button clicked but export file type: '%s' does not exist.", 
-             input$exportFileType)
-  return()
+  exportId <- match(input$exportFileType, names(datasetsRemoteExport))[[1L]]
+  if(!is.na(exportId)){
+    expConfig  <- datasetsRemoteExport[[input$exportFileType]]
+    dsToExport <- names(expConfig)
+    
+    if(isTRUE(input$cbSelectManuallyExp)){
+      dsToExport <- dsToExport[dsToExport %in% input$selDataToExport]
+      if(!length(dsToExport)){
+        flog.info("No datasets selected. Nothing will be exported.")
+        showHideEl(session, "#exportNoDsSelected", 4000L)
+        return()
+      }
+    }
+    prog <- Progress$new()
+    on.exit(suppressWarnings(prog$close()))
+    prog$set(message = lang$progressBar$exportScen$title, value = 0.2)
+    if(i == 1){
+      # active scenario (editable)
+      saveAsFlag <<- FALSE
+      source("./modules/scen_save.R", local = TRUE)
+      data <- scenData[[scenIdLong]]
+    }else{
+      data <- scenData[[scenIdLong]]
+      # combine hidden and non hidden scalar data
+      scalarOutIdx <- match(tolower(scalarsOutName), names(modelOut))[1]
+      if(!is.na(scalarOutIdx) && !is.null(data[[scalarOutIdx]])){
+        data[[scalarOutIdx]] <- filterScalars(scalarData[[scenIdLong]], modelOut[[scalarsOutName]], "output")
+      }
+    }
+    
+    names(data) <- c(names(modelOut), inputDsNames)
+    noDatasets <- length(dsToExport)
+    errMsg <- NULL
+    for(dataId in seq_along(data)){
+      dsName <- names(data)[dataId]
+      expId <- match(dsName, dsToExport)
+      if(is.na(expId)){
+        return()
+      }
+      prog$inc(amount = 0.8/noDatasets, detail = sprintf(lang$progressBar$exportScen$exportDs, dataId, noDatasets))
+      tryCatch(dataio$export(data[[dsName]], expConfig[[expId]]), 
+               error = function(e){
+                 flog.warn("Problems exporting data (export name: '%s', dataset: '%s'). Error message: '%s'.",
+                           input$exportFileType, dsName, e)
+                 errMsg <<- lang$errMsg$saveScen$desc
+               })
+      if(is.null(showErrorMsg(lang$errMsg$saveScen$title, errMsg))){
+        break
+      }
+    }
+    flog.debug("Data exported successfully.")
+    removeModal(session)
+    return()
+  }
 })

@@ -80,6 +80,16 @@
           "minLength":3
         }
       },
+      "modelFilesToIgnore":{
+        "description":"Specify files that are not necessary to run the model and shall be ignored (e.g. when uploading model to remote server)",
+        "type":["array", "string"],
+        "minLength":3,
+        "required":false,
+        "items":{
+          "type":"string",
+          "minLength":3
+        }
+      },
       "defCompMode":{  
          "description":"Specifies the default scenario comparison mode (the one that is loaded on startup).",
          "type":"string",
@@ -146,7 +156,7 @@
             "remoteExecution":{
                "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
-               "default":false,
+               "default":true,
                "required":false
             }
          }
@@ -686,6 +696,15 @@
                     "readonlyCols":{
                       "description":"Either true or false for certain columns of table to be readonly",
                       "type":["array", "string", "null"],
+                      "minLength":1,
+                      "items":{
+                        "type":"string",
+                        "minLength":1
+                      }
+                    },
+                    "pivotCols":{
+                      "description":"Array of columns to pivot",
+                      "type":["array", "string"],
                       "minLength":1,
                       "items":{
                         "type":"string",
@@ -1422,112 +1441,130 @@
          }
       },
       "remoteImport":{  
-         "description":"Import data to a remote service",
-         "type": "array",
-         "uniqueItems":true,
-         "minItems":1,
-         "items":{
-           "type":"object",
-           "additionalProperties":false,
-           "required": ["symNames", "source"],
-           "properties":{
-             "symNames":{
-               "description":"Names of the symbols to import",
-               "type":["array", "string"],
-               "minLength":1,
-               "required":false,
+        "description": "Import data from a remote service",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["name", "templates"],
+          "properties":{
+            "name":{
+              "description":"Specify a name for the remote import option",
+              "type":"string",
+              "minLength":1
+             },
+             "templates":{
+               "description":"Export templates",
+               "type": "array",
                "uniqueItems":true,
+               "minItems":1,
                "items":{
-                 "type":"string",
-                 "minLength":1
+                 "type":"object",
+                 "additionalProperties":false,
+                 "required": ["symNames"],
+                 "properties":{
+                   "symNames":{
+                     "description":"Names of the symbols to import",
+                     "type":["array", "string"],
+                     "minLength":1,
+                     "required":false,
+                     "uniqueItems":true,
+                     "items":{
+                       "type":"string",
+                       "minLength":1
+                     }
+                    },
+                    "source":{  
+                      "description":"Source of the data",
+                      "type":"string",
+                      "default": "REST",
+                      "enum":[
+                        "database",
+                        "REST"
+                      ]
+                    },
+                    "url":{
+                      "description":"URL of REST API",
+                      "type":"string",
+                      "minLength": 10
+                    },
+                    "method":{
+                      "description":"HTTP method (of REST request)",
+                      "type":"string",
+                      "default": "GET",
+                      "enum":[
+                        "GET",
+                        "POST",
+                        "PATCH",
+                        "DELETE",
+                        "HEAD",
+                        "PUT"
+                      ]
+                    },
+                    "httpHeaders":{
+                      "description":"Additional parameters to send alongside the request in the HTTP header",
+                      "type": "array",
+                      "required":false,
+                      "minItems":1,
+                      "items":{
+                        "type":"object",
+                        "additionalProperties":false,
+                        "required": ["key", "value"],
+                        "properties":{
+                           "key":{
+                             "description":"Header key",
+                             "type":"string",
+                             "minLength":1
+                           },
+                           "value":{
+                             "description":"Header value",
+                             "type":"string",
+                             "minLength":1
+                           }
+                        }
+                      }
+                    },
+                    "httpBody":{
+                      "description":"Additional parameters to send alongside the request in the HTTP body",
+                      "type": "array",
+                      "required":false,
+                      "minItems":1,
+                      "items":{
+                        "type":"object",
+                        "additionalProperties":false,
+                        "required": ["key", "value"],
+                        "properties":{
+                           "key":{
+                             "description":"Body key",
+                             "type":"string",
+                             "minLength":1
+                           },
+                           "value":{
+                             "description":"Body value",
+                             "type":"string",
+                             "minLength":1
+                           }
+                        }
+                      }
+                    },
+                    "encode":{
+                      "description": "How should data in body be encoded?",
+                      "type": "string",
+                      "required": false,
+                      "enum": [
+                        "multipart", 
+                        "form", 
+                        "json", 
+                        "raw"
+                      ],
+                      "default": "json"
+                    }
+                 }
                }
-              },
-              "source":{  
-                "description":"Source of the data",
-                "type":"string",
-                "default": "database",
-                "enum":[
-                  "database",
-                  "REST"
-                ]
-              },
-              "url":{
-                "description":"URL of REST API",
-                "type":"string",
-                "minLength": 10
-              },
-              "method":{
-                "description":"HTTP method (of REST request)",
-                "type":"string",
-                "default": "GET",
-                "enum":[
-                  "GET",
-                  "POST",
-                  "PATCH",
-                  "DELETE",
-                  "HEAD",
-                  "PUT"
-                ]
-              },
-              "httpHeaders":{
-                "description":"Additional parameters to send alongside the request in the HTTP header",
-                "type": "array",
-                "required":false,
-                "minItems":1,
-                "items":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required": ["key", "value"],
-                  "properties":{
-                     "key":{
-                       "description":"Header key",
-                       "type":"string",
-                       "minLength":1
-                     },
-                     "value":{
-                       "description":"Header value",
-                       "type":"string",
-                       "minLength":1
-                     }
-                  }
-                }
-              },
-              "httpBody":{
-                "description":"Additional parameters to send alongside the request in the HTTP body",
-                "type": "array",
-                "required":false,
-                "minItems":1,
-                "items":{
-                  "type":"object",
-                  "additionalProperties":false,
-                  "required": ["key", "value"],
-                  "properties":{
-                     "key":{
-                       "description":"Body key",
-                       "type":"string",
-                       "minLength":1
-                     },
-                     "value":{
-                       "description":"Body value",
-                       "type":"string",
-                       "minLength":1
-                     }
-                  }
-                }
-              },
-              "encode":{
-                "description": "How should data in body be encoded?",
-                "type": "string",
-                "required": false,
-                "enum": [
-                  "multipart", 
-                  "form", 
-                  "json", 
-                  "raw"
-                ],
-                "default": "json"
-              }
-           }
+             }
+          }
          }
       },
       "remoteExport":{

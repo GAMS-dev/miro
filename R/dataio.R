@@ -13,41 +13,34 @@ DataIO <- R6Class("DataIO", public = list(
   import = function(item){
     stopifnot(length(item) > 0L, is.list(item))
     data <- NULL
-    switch(tolower(item$source),
-           database = {
-             if(is.null(auth)){
-               stop("No auth object provided. Cannot connect to internal database.", 
-                    call. = FALSE)
-             }
-             data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", item$name), 
-                                       keyCol = if(length(item$colSubset)) item$colSubset else character(0L))
-           },
-           rest = {
-             if(!length(item$method)){
-               stop("No HTTP method specified for REST API call", call. = FALSE)
-             }
-             if(!length(item$url)){
-               stop("No url specified to send HTTP requests to", call. = FALSE)
-             }
-             item$headers <- private$buildHTTPHeader(item)
-             bodyValues <- lapply(item$httpBody, "[[", 
-                                  "value")
-             bodyValues <- c(bodyValues, private$config$modelName, item$name)
-             bodyKeys <- vapply(item$httpBody, "[[", character(1L), 
-                                "key", USE.NAMES = FALSE)
-             bodyKeys <- c(bodyKeys, "modelname", "dataset")
-             if(any(duplicated(bodyKeys))){
-               stop("Duplicated body keys found", call. = FALSE)
-             }
-             names(bodyValues) <- bodyKeys
-             item$body <- bodyValues
-             data <- as_tibble(fromJSON(private$sendHTTPRequest(item)))
-           },
-           {
-             stop(sprintf("Source type: '%s' not supported", 
-                          item$source), call. = FALSE)
-           }
-    )
+    if(identical(item$source, "database")){
+      if(is.null(auth)){
+        stop("No auth object provided. Cannot connect to internal database.", 
+             call. = FALSE)
+      }
+      data <- auth$importShared(tableName = paste0(sharedTablePrefix, "_", item$name), 
+                                keyCol = if(length(item$colSubset)) item$colSubset else character(0L))
+    }else{
+      if(!length(item$method)){
+        stop("No HTTP method specified for REST API call", call. = FALSE)
+      }
+      if(!length(item$url)){
+        stop("No url specified to send HTTP requests to", call. = FALSE)
+      }
+      item$headers <- private$buildHTTPHeader(item)
+      bodyValues <- lapply(item$httpBody, "[[", 
+                           "value")
+      bodyValues <- c(bodyValues, private$config$modelName, item$name)
+      bodyKeys <- vapply(item$httpBody, "[[", character(1L), 
+                         "key", USE.NAMES = FALSE)
+      bodyKeys <- c(bodyKeys, "modelname", "dataset")
+      if(any(duplicated(bodyKeys))){
+        stop("Duplicated body keys found", call. = FALSE)
+      }
+      names(bodyValues) <- bodyKeys
+      item$body <- bodyValues
+      data <- as_tibble(fromJSON(private$sendHTTPRequest(item)))
+    }
     return(private$validateData(item$name, data))
   },
   export = function(data, item){

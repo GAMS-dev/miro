@@ -1,5 +1,5 @@
 renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
-                          modelDir = NULL, noDataTxt = "no data"){
+                         filterOptions = NULL, modelDir = NULL, noDataTxt = "no data"){
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -13,59 +13,45 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     data <- rpivotTableOutput(ns("pivottable"), height = height)
   }else if(type == "datatable"){
     data <- dataTableOutput(ns("datatable"))
-  }else if(type == "dtgraph"){
+  }else if(type %in% c("graph", "dtgraph")){
     if(graphTool == "plotly"){
-      data <- tagList(
-        tags$div(style = "overflow-x:hidden;",
-                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-                 column(6, tags$div(class = "renderer-wrapper", 
-                                    genSpinner(externalStyle = TRUE),
-                                    plotlyOutput(ns("graph"), height = height)), style = "overflow-x:auto;")
-        )
-      )
+      if(type == "graph"){
+        dataGraph <- plotlyOutput(ns("graph"), height = height)
+      }else{
+        dataGraph <- tags$div(class = "renderer-wrapper", 
+                              genSpinner(externalStyle = TRUE),
+                              plotlyOutput(ns("graph"), height = height))
+      }
     }else if(graphTool == "dygraphs"){
-      data <- tagList(
-        tags$div(style = "overflow-x:hidden;",
-          column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-          column(6, dygraphOutput(ns("graph")), height = height, style = "overflow-x:auto;")
-        )
-      )
+      dataGraph <- dygraphOutput(ns("graph"), height = height)
     }else if(graphTool == "leaflet"){
-      data <- tagList(
-        tags$div(style = "overflow-x:hidden;",
-                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-                 column(6, leafletOutput(ns("graph")), height = height, style = "overflow-x:auto;")
-        )
-      )
+      dataGraph <- leafletOutput(ns("graph"), height = height)
     }else if(graphTool == "timevis"){
-      data <- tagList(
-        tags$div(style = "overflow-x:hidden;",
-                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
-                 column(6, timevisOutput(ns("graph")), height = height, style = "overflow-x:auto;")
-        )
-      )
+      dataGraph <- timevisOutput(ns("graph"), height = height)
     }else{
-      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
+      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
-  }else if(type == "graph"){
-    if(graphTool == "plotly"){
-      data <- plotlyOutput(ns("graph"), height = height)
-    }else if(graphTool == "dygraphs"){
-      data <- dygraphOutput(ns("graph"), height = height)
-    }else if(graphTool == "leaflet"){
-      data <- leafletOutput(ns("graph"), height = height)
-    }else if(graphTool == "timevis"){
-      data <- timevisOutput(ns("graph"), height = height)
+    if(length(filterOptions$col)){
+      data <- tagList(selectInput(ns("data_filter"), 
+                                  filterOptions$label, 
+                                  choices = c(), multiple = isTRUE(filterOptions$multiple)),
+                      dataGraph)
     }else{
-      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
+      data <- dataGraph
+    }
+    if(type == "dtgraph"){
+      data <- tagList(
+        tags$div(style = "overflow-x:hidden;",
+                 column(6, dataTableOutput(ns("datatable")), style = "overflow-x:auto;"),
+                 column(6, data, style = "overflow-x:auto;")
+        )
+      )
     }
   }else if(type == "valuebox"){
     data <- lapply(seq_len(customOptions$count), function(i){
       valueBoxOutput(ns("valBox" %+% i),
                      width = if(identical(customOptions$width, NULL)) 4 else customOptions$width)
     })
-  }else if(type == "custom"){
-    data <- verbatimTextOutput(ns("custom"))
   }else{
     tryCatch({
       customOutput <- match.fun(typeCustom %+% "Output")
@@ -75,7 +61,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
                          path = customRendererDirs[[2L]])
-  }
+    }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
     tags$div(id = ns("data"), data)
@@ -83,8 +69,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
 }
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
-                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
-                        roundPrecision = 2, modelDir = NULL){
+                       graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
+                       roundPrecision = 2, modelDir = NULL){
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
@@ -99,15 +85,23 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
-  
+  filterCol <- NULL
+  if(length(graphOptions$filter) && graphOptions$filter$col %in% names(data)){
+    filterCol <- as.name(graphOptions$filter$col)
+    choices <- data[[graphOptions$filter$col]]
+    updateSelectInput(session, "data_filter", choices = choices, 
+                      selected = choices[1])
+  }
   if(type == "pivot"){
     output$pivottable <- renderPivot(data, options = pivotOptions, roundPrecision = roundPrecision)
   }else if(type == "graph"){
-    output$graph <- renderGraph(data, configData = configData, options = graphOptions)
+    output$graph <- renderGraph(data, configData = configData, options = graphOptions, 
+                                input = input, filterCol = if(!is.null(filterCol)) filterCol)
   }else if(type == "datatable" || type == "dtgraph"){
     output$datatable <- renderDTable(data, options = dtOptions, roundPrecision = roundPrecision)
     if(!is.null(graphOptions)){
-      output$graph <- renderGraph(data, configData = configData, options = graphOptions)
+      output$graph <- renderGraph(data, configData = configData, options = graphOptions,
+                                  input = input, filterCol = if(!is.null(filterCol)) filterCol)
     }
   }else if(type == "valuebox"){
     lapply(seq_len(min(length(data[[1]]), customOptions$count)), function(i){
@@ -126,8 +120,6 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         )
       })
     })
-  }else if(type == "custom"){
-    output$custom <- renderText(data)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),

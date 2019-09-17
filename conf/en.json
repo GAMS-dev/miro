@@ -24,6 +24,7 @@
     "sidebarButtons":{  
       "importInput":"Load data",
       "solve":"Solve model",
+      "submitJob": "Submit job",
       "solveHcube":"Submit job",
       "splitView":"Split view",
       "tabView":"Tab view",
@@ -152,6 +153,9 @@
     "dialogExportScen":{
       "title": "Export scenario",
       "desc": "Select a file type",
+      "selDatasets":"Select datasets to export",
+      "noDsSelected": "You did not select any datasets to export.",
+      "cbSelectManually":"Manually choose datasets",
       "cancelButton": "Cancel",
       "okButton": "Export"
     },
@@ -278,13 +282,13 @@
     },
     "dialogRemoveScen":{  
       "title":"Close scenario",
-      "desc":"Are you sure you want to close the currently active scenario? Unsaved data might be lost!",
-      "cancelButton":"No",
-      "okButton":"Yes"
+      "desc":"Are you sure you want to close the currently active scenario? Unsaved data will be lost!",
+      "cancelButton":"Cancel",
+      "okButton":"Close"
     },
     "dialogRemoveHCJob":{  
       "title":"Close Hypercube job",
-      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data might be lost!",
+      "desc":"Are you sure you want to close the currently active Hypercube job configuration? Unsaved data will be lost!",
       "cancelButton":"No",
       "okButton":"Yes"
     },
@@ -310,24 +314,22 @@
     "dialogImport":{  
       "title":"Load data",
       "tabLocal":"Local",
+      "tabExternal": "External",
       "tabDatabase":"Database",
       "tabHcube":"Hypercube",
       "hcubeHashDesc": "Enter the hash value of the scenario you wish to load from the Hypercube mode. Then simply click on the scenario to load it.",
       "hcubeHashButton": "Search",
       "hcubeHashNoMatch": "No scenarios that match the hash you entered were found.",
       "selInputData":"Select datasets to load",
+      "selExternalSource": "Select external source",
       "descLocal":"Choose file with data to load",
-      "newScenName": "Choose a name for the new scenario",
-      "badScenName": "Please specify a valid name",
+      "newScenName": "Wählen Sie einen Namen für das neue Szenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
-      "scenNameExists":"The scenario name you chose does already exist. Do you want to overwrite the existing data?",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Load",
-      "overwriteButton": "Overwrite existing data",
-      "newNameButton": "New name"
+      "okButton":"Load"
     },
     "dialogImportHC":{  
       "title":"Import data",
@@ -358,6 +360,8 @@
       "titleDataError":"Data corrupted",
       "descDataError":"The scenario data seems to be corrupted. Loading failed.",
       "maxNoScenExceeded": "The maximum number of scenarios that can be displayed has been exceeded. Only a subset is displayed.",
+      "noDsSelected": "Please select the name of the dataset you want to import.",
+      "invalidFile": "The file you uploaded could not be validated.",
       "sortBy":"Sort by:",
       "btSortNameASC":"Name (ASC)",
       "btSortTimeASC":"Time (ASC)",
@@ -420,10 +424,21 @@
       "downloadButton":"Download file",
       "cancelButton":"Cancel"
     },
+    "dialogJobSubmission":{
+      "title": "Submit job",
+      "desc": "Submit a new job to be solved asynchronously.",
+      "jobName": "Specify a name for your job (optional)",
+      "descWait": "Please wait while the job is being submitted...",
+      "badName": "Please choose a valid name for the new job.",
+      "cancelButton":"Cancel",
+      "okButton": "Submit",
+      "successMsg": "Your job was scheduled successfully. You can retrieve the results as soon as the job finished executing."
+    },
     "dialogHcube":{
       "title": "Hypercube configuration",
       "desc": "You selected %d scenarios to be solved in Hypercube mode. Out of these, %d scenarios have already been solved either by yourself or someone else.",
       "descSolveAgain": "Do you want to solve all scenarios again or only those that have not yet been solved?",
+      "descJobSubmission": "Please wait while the job is being submitted...",
       "newTags": "Assign one or more tags to your job:",
       "manualSwitch": "Process job manually?",
       "cancelButton":"Cancel",
@@ -455,7 +470,18 @@
       "discardSuccess": "Job was discarded",
       "importSuccess": "Job was imported successfully",
       "accessDenied": "Access denied",
+      "maxDownloads": "The maximum number of parallel downloads has been reached.",
+      "jobNotFound": "The job was not found on the GAMS Remote Solver.",
       "histTitle": "Job history",
+      "status":{
+        "downloading": "Downloading results",
+        "downloaded": "Downloaded",
+        "running": "Running",
+        "imported": "Imported",
+        "completed": "Completed",
+        "corrupted": "Corrupted",
+        "discarded": "Discarded"
+      },
       "ttips":{
         "importedManual": "The job was manually imported.",
         "discardedCorrupted": "The job was corrupted.",
@@ -470,20 +496,16 @@
         "owner": "Owner",
         "date": "Submission date",
         "tags": "Job tags",
+        "name": "Job name",
         "status": "Status",
         "action": "Action"
       },
       "buttons":{
         "import": "Import",
+        "download": "Download results",
         "log": "Show log",
         "progress": "Show progress",
         "discard": "Discard"
-      },
-      "importConfirm":{
-        "title": "Confirm import",
-        "desc": "Are you sure you want to import the selected job?",
-        "cancelButton": "Cancel",
-        "confirmButton": "Confirm"
       },
       "discardConfirm":{
         "title": "Confirm discard",
@@ -580,6 +602,10 @@
       "renderInput": "Rendering input data",
       "renderOutput": "Rendering output data"
     },
+    "exportScen":{
+      "title": "Eporting scenario",
+      "exportDs": "Exporting dataset %s of %s"
+    },
     "loadScenDb":{  
       "title":"Loading scenario data from database",
       "progress":"Loading dataset "
@@ -660,6 +686,10 @@
     "gamsExec":{  
       "title":"Error executing GAMS",
       "desc":"Some error occurred while executing GAMS."
+    },
+    "jobRunning": {
+      "title": "Active job",
+      "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
     },
     "gamsTerm":{  
       "title":"Error terminating gams.exe",
@@ -1008,6 +1038,7 @@
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
+        "pivotCols": "Select a column to pivot (no preview)",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
