@@ -741,7 +741,7 @@ Worker <- R6Class("Worker", public = list(
                           use_pf_file = TRUE, 
                           namespace = metadata$namespace)
       
-      requestBody$inex_filename <- inputData$addIndexFile(workDir, dataFilesToFetch)
+      requestBody$inex_filename <- inputData$addInexFile(workDir, dataFilesToFetch)
       requestBody$data <- upload_file(inputData$
                                         writeCSV(workDir, delim = metadata$csvDelim)$
                                         addFilePaths(pfFilePath)$
