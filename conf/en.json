@@ -96,7 +96,7 @@
         "inputSheet":"model input",
         "outputSheet":"model output",
         "load":"Load saved scenario",
-        "loadActive":"Load active scenario (latest saved state)"
+        "loadActive":"Load active scenario"
       },
       "split":{
         "load":"Load scenario",

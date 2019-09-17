@@ -42,10 +42,6 @@ observeEvent(input$btScenSplit2_open, {
 observeEvent(input$loadActiveScenSplitComp, {
   flog.debug("Load active scenario to split comparison mode pressed. ID: '%s'.", 
              isolate(input$loadActiveScenSplitComp))
-  if(is.null(activeScen)){
-    flog.debug("No scenario currently opened/active. Nothing to load.")
-    return()
-  }
   id <- suppressWarnings(as.integer(isolate(input$loadActiveScenSplitComp)))
   if(identical(id, 2L)){
     loadInLeftBoxSplit <<- TRUE
@@ -62,18 +58,24 @@ observeEvent(input$loadActiveScenSplitComp, {
     updateTabsetPanel(session, paste0("contentScen_", id, "_1"), 
                       paste0("contentScen_", id, "_1_1"))
   }
-  
-  sidsToLoad <<- list(activeScen$getSid())
-  if(!length(scenMetaDb) || !sidsToLoad[[1]] %in% scenMetaDb[[1]]){
-    scenMetaDb <<- db$fetchScenList(scode = SCODEMAP[['scen']])
-  }
-  rv$btOverwriteScen <<- isolate(rv$btOverwriteScen + 1L)
+  scenId   <- id
+  source("./modules/scen_save.R", local = TRUE)
+  scenMetaData[[scenIdLong]] <<- db$getMetadata(sid = NA_integer_, uid = uid, 
+                                                sname = if(length(isolate(rv$activeSname))) rv$activeSname
+                                                else lang$nav$dialogNewScen$newScenName, 
+                                                stime = Sys.time(),
+                                                uidAlias = lang$nav$excelExport$metadataSheet$uid, 
+                                                snameAlias = lang$nav$excelExport$metadataSheet$sname, 
+                                                stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+
+  source("./modules/scen_render.R", local = TRUE)
+  sidsInSplitComp[id - 1L] <<- NA_integer_
 })
 
 observeEvent(input$btScenSplit1_close, {
   flog.debug("%s: Close Scenario button clicked (left box in split view).", uid)
   
-  if(sidsInSplitComp[1] == 0){
+  if(identical(sidsInSplitComp[[1]], 0L)){
     return(NULL)
   }
   
@@ -91,7 +93,7 @@ observeEvent(input$btScenSplit1_close, {
 observeEvent(input$btScenSplit2_close, {
   flog.debug("%s: Close Scenario button clicked (right box in split view).", uid)
   
-  if(sidsInSplitComp[2] == 0){
+  if(identical(sidsInSplitComp[[2]], 0L)){
     return(NULL)
   }
   
