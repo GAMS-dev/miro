@@ -79,8 +79,8 @@ observeEvent(virtualActionButton(rv$btLoadScen), {
       names(uiSidList)[1:4] <- db$getScenMetaColnames()[c('sid', 'uid', 'sname', 'stime')]
       uiSidList <- db$formatScenList(uiSidList, stimeIdentifier, desc = TRUE)
     }
-  }else if(any(sidsInSplitComp != 0L) && !isInSplitView && length(dbSidList)){
-    uiSidList <- vapply(sidsInSplitComp, function(i){
+  }else if(!isInSplitView && any(sidsInSplitComp[!is.na(sidsInSplitComp)] != 0L) && length(dbSidList)){
+    uiSidList <- vapply(sidsInSplitComp[!is.na(sidsInSplitComp)], function(i){
       dbSidList[startsWith(dbSidList, paste0(i, "_"))][1]}, character(1L), USE.NAMES = FALSE)
     uiSidList <- uiSidList[!is.na(uiSidList)]
   }else{
@@ -285,7 +285,7 @@ observeEvent(virtualActionButton(rv$btOverwriteScen), {
       return()
     }
   }
-  sidsInMem <- c(sidsInComp, sidsInSplitComp)
+  sidsInMem <- c(sidsInComp, sidsInSplitComp[!is.na(sidsInSplitComp)])
   if(!isInSolveMode && all(unlist(sidsToLoad, use.names = FALSE) %in% sidsInMem)){
     allSidsInComp <- TRUE
     scenDataTmp   <- match(unlist(sidsToLoad, use.names = FALSE), sidsInMem)

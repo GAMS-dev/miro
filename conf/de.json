@@ -96,7 +96,7 @@
         "inputSheet":"Eingabedaten",
         "outputSheet":"Ausgabedaten",
         "load":"Lade gespeichertes Szenario",
-        "loadActive":"Aktives Szenario laden (letzter gespeicherter Zustand)"
+        "loadActive":"Aktives Szenario laden"
       },
       "split":{
         "load":"Szenario öffnen",

@@ -278,7 +278,6 @@
   "pivottable": {
     "bgColor": "rgb(255,128,0)"
   },
-  "defCompMode": "tab",
   "storeLogFilesDuration": 7,
   "roundingDecimals": 2,
   "activateModules": {

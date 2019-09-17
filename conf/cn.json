@@ -96,7 +96,7 @@
         "inputSheet":"模型输入",
         "outputSheet":"模型输出",
         "load":"加载已有的场景",
-        "loadActive":"加载活跃场景（最新保存）"
+        "loadActive":"加载活跃场景"
       },
       "split":{
         "load":"加载场景",
