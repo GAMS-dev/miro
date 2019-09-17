@@ -45,7 +45,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
         )
       )
     }else{
-      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
+      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
     }
   }else if(type == "graph"){
     if(graphTool == "plotly"){
@@ -57,13 +57,15 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }else if(graphTool == "timevis"){
       data <- timevisOutput(ns("graph"), height = height)
     }else{
-      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
+      stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS MIRO."))
     }
   }else if(type == "valuebox"){
     data <- lapply(seq_len(customOptions$count), function(i){
       valueBoxOutput(ns("valBox" %+% i),
                      width = if(identical(customOptions$width, NULL)) 4 else customOptions$width)
     })
+  }else if(type == "custom"){
+    data <- verbatimTextOutput(ns("custom"))
   }else{
     tryCatch({
       customOutput <- match.fun(typeCustom %+% "Output")
@@ -124,6 +126,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
         )
       })
     })
+  }else if(type == "custom"){
+    output$custom <- renderText(data)
   }else{
     tryCatch({
       customRenderer <- match.fun(paste0("render", toupper(substr(typeCustom, 1, 1)),

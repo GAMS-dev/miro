@@ -240,6 +240,7 @@ if(is.null(errMsg)){
     }
   }
 }
+
 if(is.null(errMsg)){
   # load default and custom renderers (output data)
   requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
@@ -304,36 +305,40 @@ if(is.null(errMsg)){
     }
     listOfCustomRenderers <- Set$new()
     requiredPackagesCR <<- NULL
-    for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
-      # check whether non standard renderers were defined in graph config
-      if(!is.null(customRendererConfig$rendererName)){
-        customRendererConfig$outType <- customRendererConfig$rendererName
-      }
-      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
-        customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
-          substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
-        customRendererOutput <- customRendererConfig$outType %+% "Output"
-        # find render function
-        tryCatch({
-          match.fun(customRendererName)
-          listOfCustomRenderers$push(customRendererName)
-        }, error = function(e){
-          errMsg <<- paste(errMsg, 
-                           sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
-                                   customRendererName), sep = "\n")
-        })
-        # find output function
-        tryCatch({
-          match.fun(customRendererOutput)
-          listOfCustomRenderers$push(customRendererOutput)
-        }, error = function(e){
-          errMsg <<- paste(errMsg, 
-                           sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
-                                   customRendererName), sep = "\n")
-        })
-        # find packages to install and install them
-        if(length(customRendererConfig$packages)){
-          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
+    
+    if(!identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") &&
+       !("LAUNCHADMIN" %in% commandArgs(TRUE))){
+      for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
+        # check whether non standard renderers were defined in graph config
+        if(!is.null(customRendererConfig$rendererName)){
+          customRendererConfig$outType <- customRendererConfig$rendererName
+        }
+        if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+          customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
+            substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
+          customRendererOutput <- customRendererConfig$outType %+% "Output"
+          # find render function
+          tryCatch({
+            match.fun(customRendererName)
+            listOfCustomRenderers$push(customRendererName)
+          }, error = function(e){
+            errMsg <<- paste(errMsg, 
+                             sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
+                                     customRendererName), sep = "\n")
+          })
+          # find output function
+          tryCatch({
+            match.fun(customRendererOutput)
+            listOfCustomRenderers$push(customRendererOutput)
+          }, error = function(e){
+            errMsg <<- paste(errMsg, 
+                             sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
+                                     customRendererName), sep = "\n")
+          })
+          # find packages to install and install them
+          if(length(customRendererConfig$packages)){
+            requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
+          }
         }
       }
     }
@@ -506,6 +511,7 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "along with this program. If not, see ",
                           "<a href=\\'http://www.gnu.org/licenses/\\' target=\\'_blank\\'>http://www.gnu.org/licenses/</a>.",
                           MIROVersionLatest)
+
 if(is.null(errMsg)){
   tryCatch({
     if(useGdx){
@@ -593,7 +599,22 @@ if(!is.null(errMsg)){
   pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
-      tags$link(type = "text/css", rel = "stylesheet", href = "miro.css"),
+      if(length(config$theme) && identical(config$theme, "light")){
+        tagList(
+          tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
+          tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css")
+        )
+      }else if(length(config$theme) && identical(config$theme, "dark")){
+        tagList(
+          tags$link(type = "text/css", rel = "stylesheet", href = "packages_dark.css"),
+          tags$link(type = "text/css", rel = "stylesheet", href = "miro_dark.css")
+        )
+      }else{
+        tagList(
+          tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
+          tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
+        )
+      },
       tags$script(src = "miro.js", type = "application/javascript")
     ),
     titlePanel(

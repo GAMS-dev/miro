@@ -31,6 +31,7 @@ sidebar_admin <- dashboardSidebar(
   )
 )
 
+
 body_admin <- dashboardBody({
   tagList(
     tags$head(
@@ -164,7 +165,7 @@ body_admin <- dashboardBody({
                                                textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
                                                numericInput("chart_height", lang$adminMode$graphs$ui$height, min = 0L, value = 700),
                                                selectInput("chart_tool", lang$adminMode$graphs$ui$tool, 
-                                                           setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot", "valuebox"), 
+                                                           setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot", "valuebox", "custom"), 
                                                                     lang$adminMode$graphs$ui$choices)),
                                                tags$div(id = "tool_options"),
                                                tags$div(class = "space")
@@ -199,11 +200,25 @@ body_admin <- dashboardBody({
                                                    graphTool = "timevis", 
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-content-custom", style = "display:none; overflow:auto;text-align:left;",
+                                      tags$h4(id = NA, paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
+                                      renderDataUI("preview_output_custom", type = "custom", height = 400, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData),
+                                      tags$h4(id = NA, lang$adminMode$uiR$custom$steps),
+                                      tags$ol(
+                                        tags$li(lang$adminMode$uiR$custom$li1a, tags$i("custom_renderer"), lang$adminMode$uiR$custom$li1b, tags$i(paste0(modelName, "_custom.R")), lang$adminMode$uiR$custom$li1c), 
+                                        tags$li(lang$adminMode$uiR$custom$li2a, tags$i(paste0(modelName, "_custom.R")), lang$adminMode$uiR$custom$li2b), 
+                                        tags$li(lang$adminMode$uiR$custom$li3a, tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", lang$adminMode$uiR$custom$li3b, target = "_blank"))
+                                      ),
+                                      tags$div(id = NA, lang$adminMode$uiR$custom$description1, tags$i(lang$adminMode$uiR$custom$description2), lang$adminMode$uiR$custom$description3, tags$i(modelName, "_custom.R"), lang$adminMode$uiR$custom$description4),
+                                      tags$h4(id = NA, lang$adminMode$uiR$custom$description5),
+                                      tags$div(id = NA, lang$adminMode$uiR$custom$description6)
+                                      ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;",
-                                        renderDataUI("preview_output_valuebox", type = "valuebox", 
-                                                     height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData))},
+                                      renderDataUI("preview_output_valuebox", type = "valuebox", 
+                                                   height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData))},
                              tags$div(style = "margin-top: 50px; margin-bottom:50px;",
                                       actionButton("deleteGraph", "Delete", icon("trash-alt")),
                                       actionButton("saveGraph", "Save", icon("save")))
