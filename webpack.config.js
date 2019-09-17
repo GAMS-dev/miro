@@ -7,6 +7,8 @@ module.exports = {
     mode: 'development',
     entry: {
       skin_browser: './less/skins/browser.js',
+      skin_light: './less/skins/light.js',
+      skin_dark: './less/skins/dark.js',
       miro: './srcjs/miro.js',
       miro_admin: './srcjs/miro_admin.js'
     },

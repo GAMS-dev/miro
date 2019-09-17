@@ -17,7 +17,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     private$data[[datasetName]] <- data
   },
-  addIndexFile = function(workDir, modelDataFiles){
+  addInexFile = function(workDir, modelDataFiles){
     if(!length(modelDataFiles))
       return(NULL)
     stopifnot(is.character(modelDataFiles), is.character(workDir), 
