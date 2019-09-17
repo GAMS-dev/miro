@@ -9,7 +9,6 @@ renderGraph <- function(data, configData, options, height = NULL){
   #
   # Returns:
   #   rendered graph for the provided dataframe
-  
   if(options$tool == 'plotly'){
     if(options$type == 'pie'){
       # pie chart
@@ -112,7 +111,7 @@ renderGraph <- function(data, configData, options, height = NULL){
         if(!is.null(maxsize) && !is.null(sizevalues)){
           sizeref <- 2.0 * max(sizevalues) / (maxsize**2)
         }
-          
+         
         if(j==1){
           p <<- plot_ly(data, x = ~try(get(options$xdata)), y = ~try(get(names(options$ydata)[[1]])), 
                         name = options$ydata[[1]]$label, 
@@ -200,10 +199,12 @@ renderGraph <- function(data, configData, options, height = NULL){
     p <- layout(p, title = options$title, barmode = options$barmode, margin = options$margins,
                 xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
                              zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
-                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto)),
+                             range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
+                             categoryorder = options$xaxis$categoryorder),
                 yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
                              zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
-                             range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),
+                             range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
+                             categoryorder = options$yaxis$categoryorder),
                 paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
                 plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
                 showlegend = options$showlegend,
