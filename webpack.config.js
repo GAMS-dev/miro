@@ -13,7 +13,7 @@ module.exports = {
       miro_admin: './srcjs/miro_admin.js'
     },
     optimization: {
-      minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
+      minimizer: [new TerserJSPlugin({sourceMap: true,}), new OptimizeCSSAssetsPlugin({})],
     },
     devtool: 'source-map',
     output: {
