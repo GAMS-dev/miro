@@ -258,8 +258,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     symDF <- dplyr::mutate_if(symDF, is.factor, as.character)
     if(length(pivotHeaders)){
       dfDim     <- length(symDF)
-      symDF     <- tidyr::spread(symDF, !!length(symDF) - 1L, 
-                                 !!length(symDF), fill = 0L)
+      symDF     <- tidyr::pivot_wider(symDF, names_from = !!length(symDF) - 1L, 
+                                      values_from = !!length(symDF), 
+                                      values_fill = setNames(list(0L), names(symDF)[length(symDF)]))
       nonPivotedColNames <- names(symDF)[seq_len(dfDim - 2L)]
       
       # append non pivot column names in case only pivot column names were specified
