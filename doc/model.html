@@ -264,25 +264,6 @@ Positive Variable x;
                                                </div><!--//content-->
                                              </div><!--//callout-block-->
                                     </div><!--//section-block-->
-                                    <div id="create-app-executable" class="section-block">
-                                        <h3 class="block-title">Executable MIRO app</h3>
-                                        <p>As already explained, an app of a GAMS model can be started via GAMS Studio, GAMSIDE or via the command line. However, there is another option: creating an executable shortcut for your GAMS MIRO app.
-                                        By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which you can double-click to directly launch your MIRO app.</p>
-                                        <p style="display:block; text-align:center;"><span class="code">gams transport.gms miro=launch --mkapp=1</span></p>
-                                        <p>You do no longer have to launch Studio or the command line to start your MIRO app. Another advantage of this approach is that the startup phase of your MIRO app is now much faster than the startup via GAMS Studio:
-                                        <br>When an app is started via a shortcut, this file accesses configuration files in binary form (<i>.miroconf</i>). These configuration files are only created when a model is started with miro=launch via GAMS Studio or the command line (we call this the <a href="./faqs.html#def-development-mode">development mode</a>).
-                                        In order to keep the configuration of an app started via an executable up to date, these configuration files must be recreated when MIRO-related changes are made to your model or configuration files. To learn more about this topic, read <a href="./customize.html#development-mode">here</a>.</p>
-                                        <div class="callout-block callout-success">
-                                          <div class="icon-holder">
-                                              <i class="fas fa-thumbs-up"></i>
-                                          </div><!--//icon-holder-->
-                                          <div class="content">
-                                              <b class="callout-title">Tip:</b>
-                                              <p>Under Windwos the standard icon for executables is used for the created file. To give it a custom look, you can create a shortcut to this file (<i>right mouse click &rarr; create shortcut</i>) and customize the icon of the shortcut (<i>right mouse click on shortcut &rarr; Properties &rarr; shortcut</i>). Under MacOS the executable is already provided with an own icon.</p>
-                                          </div><!--//content-->
-                                        </div><!--//callout-block-->
-                                    </div><!--//section-block-->
-                            </section><!--//doc-section-->
                             <section id="gams-symbols" class="doc-section">
                                 <h2 class="section-title">GAMS symbols</h2>
                                 <div  class="section-block">
@@ -554,8 +535,10 @@ $offExternalInput
                                     To be able to set them from MIRO, you must declare them in the <a href="./customize.html#configure-widgets">configuration mode</a> (or in the <a href="./customize.html#widgets-commandLine"><i>&lt;modelname&gt;.json</i></a> file).
                                     </p>
                                 </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="database" class="doc-section">
+                                <h2 class="section-title">Database</h2>
                                 <div  id="database"  class="section-block">
-                                    <h3 class="block-title">Database</h3>
                                     <p>MIRO is connected to a database where all your scenario data is stored. By default, GAMS MIRO uses the relational database <a href="https://www.sqlite.org/index.html" target="_blank">SQLite</a>.</p>
                                     <p>The first time you save a scenario in the database, the schema of your GAMS input and output symbols is analyzed and the database schema derived from that. This has important implications: in case you change the underlying model, the database schema changes as well. If the two schemas are incompatible (e.g. because you added another index to a parameter), MIRO will issue an error as it won't just overwrite existing data.
                                     To resolve this, the database tables of your model must be recreated, resulting in the loss of all previously stored data. To avoid this, you can save your database tables before removing them; manually adjust the saved records to your new schema (e.g. add/remove columns) and then use the result to restore your database. You can do so by using the admin mode built into MIRO. In addition to launching MIRO via <span class="code">miro=launch</span>, you can tell MIRO to launch in admin mode via: <span class="code">miro=launch miromode=2</span>.</p>
@@ -569,12 +552,34 @@ $offExternalInput
                                        </div><!--//content-->
                                    </div><!--//callout-block-->
                                 </div><!--//section-block-->
-                                <div  id="create-custom"  class="section-block">
-                                    <h3 class="block-title">Custom configuration</h3>
+                            </section><!--//doc-section-->
+                            <section id="create-custom" class="doc-section">
+                                <h2 class="section-title">Custom configuration</h2>
+                                <div class="section-block">
                                     <p>When the basic interface between a GAMS model and MIRO is configured, you can start customizing MIRO to leverage its full potential. Have a look at the <a href="./customize.html">next section</a> and learn how to customize MIRO.</p>
                                     <div class="section-block" style="text-align:center;">
                                             <img class="img-fluid" src="assets/images/gams_miro.png" alt="GAMS MIRO - visualization" />
                                     </div>
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="create-app-executable" class="doc-section">
+                                <h2 class="section-title">Executable MIRO app</h2>
+                                <div class="section-block">
+                                    <p>As already explained, an app of a GAMS model can be started via GAMS Studio, GAMSIDE or via the command line. However, there is another option: creating an executable shortcut for your GAMS MIRO app.
+                                    By adding the double-dash parameter <span class="code">--mkapp=1</span> to the GAMS call, a <i>cmd</i> file (Windows) / <i>app</i> file (MacOS) is created which you can double-click to directly launch your MIRO app.</p>
+                                    <p style="display:block; text-align:center;"><span class="code">gams transport.gms miro=launch --mkapp=1</span></p>
+                                    <p>You do no longer have to launch Studio or the command line to start your MIRO app. Another advantage of this approach is that the startup phase of your MIRO app is now much faster than the startup via GAMS Studio:
+                                    <br>When an app is started via a shortcut, this file accesses configuration files in binary form (<i>.miroconf</i>). These configuration files are only created when a model is started with miro=launch via GAMS Studio or the command line (we call this the <a href="./faqs.html#def-development-mode">development mode</a>).
+                                    In order to keep the configuration of an app started via an executable up to date, these configuration files must be recreated when MIRO-related changes are made to your model or configuration files. To learn more about this topic, read <a href="./customize.html#development-mode">here</a>.</p>
+                                    <div class="callout-block callout-success">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-thumbs-up"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Tip:</b>
+                                          <p>On Windwos machines the standard icon for executables is used for the created file. To give it a custom look, you can create a shortcut to this file (<i>right mouse click &rarr; create shortcut</i>) and customize the icon of the shortcut (<i>right mouse click on shortcut &rarr; Properties &rarr; shortcut</i>). Under MacOS the executable is already provided with an own icon.</p>
+                                      </div><!--//content-->
+                                    </div><!--//callout-block-->
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
                         </div><!--//content-inner-->
@@ -586,7 +591,6 @@ $offExternalInput
                                   <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
-                                    <a class="nav-link scrollto" href="#create-app-executable">Executable MIRO app</a>
                                 </nav><!--//nav-->
                                 <a class="nav-link scrollto" href="#gams-symbols">GAMS symbols</a>
                                   <nav class="doc-sub-menu nav flex-column">
@@ -597,10 +601,11 @@ $offExternalInput
                                     <a class="nav-link scrollto" href="#display-var">Variables</a>
                                     <a class="nav-link scrollto" href="#display-eq">Equations</a>
                                     <a class="nav-link scrollto" href="#display-scalar-vareq">Scalar Variables & Equations</a>
+                                    <a class="nav-link scrollto" href="#command-line">Command line Parameters</a>
                                 </nav><!--//nav-->
-                                <a class="nav-link scrollto" href="#command-line">Command line Parameters</a>
                                 <a class="nav-link scrollto" href="#database">Database</a>
                                 <a class="nav-link scrollto" href="#create-custom">Custom configuration</a>
+                                <a class="nav-link scrollto" href="#create-app-executable">Executable MIRO app</a>
 
 	                        </nav><!--//doc-menu-->
                         </div>
