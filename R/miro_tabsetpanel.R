@@ -69,7 +69,7 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
                                        `aria-expanded` = "false",
                                        href = "#", btCollapsedTabs,
                                        tags$i(class = "fa fa-angle-double-right")),
-                                tags$ul(class = "dropdown-menu",
+                                tags$ul(class = "dropdown-menu maxTabsDropdown",
                                         ddLiTagList))))
   }
   
