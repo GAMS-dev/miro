@@ -207,10 +207,11 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
              xaxis = list(title = options$xaxis$title, showgrid = options$xaxis$showgrid,
                           zeroline = options$xaxis$zeroline, showticklabels = options$xaxis$showticklabels, 
                           range = c(options$xaxis$rangefrom, options$xaxis$rangeto),
-                          categoryorder = "trace"),
+                          categoryorder = options$xaxis$categoryorder),
              yaxis = list(title = options$yaxis$title, showgrid = options$yaxis$showgrid, 
                           zeroline = options$yaxis$zeroline, showticklabels = options$yaxis$showticklabels, 
-                          range = c(options$yaxis$rangefrom, options$yaxis$rangeto)),
+                          range = c(options$yaxis$rangefrom, options$yaxis$rangeto),
+                          categoryorder = options$yaxis$categoryorder),
              paper_bgcolor = if(length(options$paper_bgcolor)) options$paper_bgcolor else "rgba(0,0,0,0)",
              plot_bgcolor = if(length(options$plot_bgcolor)) options$plot_bgcolor else "rgba(0,0,0,0)",
              showlegend = options$showlegend,
@@ -288,7 +289,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                            strokePattern = options$ydata[[1]]$strokePattern,
                            strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
                            strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
-            }
+          }
           
         }else{
           p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
@@ -350,7 +351,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
           p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
         })
       }
-    p}))
+      p}))
   }else if(options$tool == 'leaflet'){
     return(renderLeaflet({
       if(length(filterCol)){
@@ -360,25 +361,25 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       
       lapply(seq_along(options$markers), function(j){
         p <<- addAwesomeMarkers(p, lng = data[[options$markers[[j]]$lng]], 
-                               lat = data[[options$markers[[j]]$lat]], layerId = j,
-                               group = options$markers[[j]]$group,
-                               label = if(length(options$markers[[j]]$label)) eval(parseLabel(options$markers[[j]]$label, names(data))),
-                               labelOptions = options$markers[[j]]$labelOptions)
+                                lat = data[[options$markers[[j]]$lat]], layerId = j,
+                                group = options$markers[[j]]$group,
+                                label = if(length(options$markers[[j]]$label)) eval(parseLabel(options$markers[[j]]$label, names(data))),
+                                labelOptions = options$markers[[j]]$labelOptions)
       })
       if(length(options$hideGroups)){
         p <- leaflet::hideGroup(p, options$hideGroups)
       }
       lapply(seq_along(options$flows), function(j){
         p <<- addFlows(p, lng0 = data[[options$flows[[j]]$lng0]], 
-                      lat0 = data[[options$flows[[j]]$lat0]], lng1 = data[[options$flows[[j]]$lng1]], 
-                      lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
-                      flow = data[[options$flows[[j]]$flow]], opacity = options$flows[[j]]$opacity,
-                      minThickness = options$flows[[j]]$minThickness, 
-                      layerId = if(length(options$flows[[j]]$layerId)) eval(parseLabel(options$flows[[j]]$layerId, names(data))),
-                      time = if(length(options$flows[[j]]$time)) data[[options$flows[[j]]$time]], 
-                      maxThickness = options$flows[[j]]$maxThickness,
-                      initialTime = options$flows[[j]]$initialTime,
-                      dir = options$flows[[j]]$dir)
+                       lat0 = data[[options$flows[[j]]$lat0]], lng1 = data[[options$flows[[j]]$lng1]], 
+                       lat1 = data[[options$flows[[j]]$lat1]], color = options$flows[[j]]$color,
+                       flow = data[[options$flows[[j]]$flow]], opacity = options$flows[[j]]$opacity,
+                       minThickness = options$flows[[j]]$minThickness, 
+                       layerId = if(length(options$flows[[j]]$layerId)) eval(parseLabel(options$flows[[j]]$layerId, names(data))),
+                       time = if(length(options$flows[[j]]$time)) data[[options$flows[[j]]$time]], 
+                       maxThickness = options$flows[[j]]$maxThickness,
+                       initialTime = options$flows[[j]]$initialTime,
+                       dir = options$flows[[j]]$dir)
       })
       lapply(seq_along(options$minicharts), function(j){
         p <<- addMinicharts(p, lng = data[[options$minicharts[[j]]$lng]],
@@ -410,9 +411,9 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                               position = options$layersControl$position,
                               options = if(length(options$layersControl$options)) 
                                 do.call(layersControlOptions, options$layersControl$options) else
-                                layersControlOptions())
+                                  layersControlOptions())
       }
-    p}))
+      p}))
   }else if(options$tool == 'timevis'){
     return(renderTimevis({
       if(length(filterCol)){
@@ -529,7 +530,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
                            itemId = paste0("timeline_", j))
       }
       
-    p}))
+      p}))
   }else{
     stop("The tool you selected for plotting graphs is not currently supported.", call. = FALSE)
   }

@@ -787,7 +787,24 @@
       "table": "Tabelleneinstellungen",
       "widgets": "Widgets konfigurieren",
       "graphs": "Graphen konfigurieren",
-      "database": "Datenbankverwaltung"
+      "database": "Datenbankverwaltung",
+      "custom":{
+        "skeleton": "Grundgerüst:",
+        "steps": "Schritte:",
+        "li1a": "Erstelle ein Verzeichnis ",
+        "li1b": " in deinem Modellordner mit der Datei ",
+        "li1c": " darin.",
+        "li2a": "Kopiere den obenstehenden Code in die ",
+        "li2b": " Datei.",
+        "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
+        "li3b": "hier",
+        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf ",
+        "description2": "speichern",
+        "description3": " gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei ",
+        "description4": " . Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
+        "description5": "Beachte:",
+        "description6": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
+      }
     },
     "general":{
       "ui":{
@@ -1171,7 +1188,7 @@
         "chartTitle": "Wählen Sie einen Titel für Ihr Diagramm",
         "height": "Wählen Sie eine Höhe für Ihr Diagramm (px) (keine Live-Vorschau verfügbar)",
         "tool": "Wählen Sie das Charting-Tool aus, das Sie verwenden möchten",
-        "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte"]
+        "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte", "Eigener Renderer"]
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
@@ -1182,7 +1199,7 @@
         "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
-      "updateToolNoScalars": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle"],
+      "updateToolNoScalars": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Eigener Renderer"],
       "chartTypePlotly":{
         "title": "Wählen Sie den Diagrammtyp aus, den Sie verwenden möchten",
         "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm"]
@@ -1201,7 +1218,8 @@
         "range": "Achsbereich einstellen. Das Format muss dem Datenformat entsprechen. Wenn nicht angegeben, wird ein Standard verwendet.",
         "rangeFrom": "Bereichsanfang (%s-Achse).",
         "rangeTo": "Bereichsende (%s-Achse).",
-        "animationDataFormatSelector": "Daten im Datumsformat?"
+        "animationDataFormatSelector": "Daten im Datumsformat?",
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"]
       },
       "chartOptions":{
         "xdata": "Was soll auf der x-Achse dargestellt werden?",

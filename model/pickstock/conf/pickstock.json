@@ -1,24 +1,6 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
-  "remoteImport": [
-    {
-      "name": "123",
-      "templates": [
-        {
-          "symNames": "price",
-          "url": "http://127.0.0.1:5000/io",
-          "method": "GET",
-          "httpBody": [
-            {
-              "key": "filename",
-              "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
-            }
-          ]
-        }
-      ]
-    }
-  ],
   "remoteExport": [
     {
       "name": "Testexporter",
@@ -40,25 +22,21 @@
   "inputWidgets": {
     "price": {
       "widgetType": "table",
-      "alias": "Price",
-      "readonly": false,
-      "heatmap": false,
-      "bigData": true
+      "readonlyCols": "date"
     },
     "maxstock": {
       "label": "select the maximum number of stocks",
       "widgetType": "slider",
-      "label": "Select the maximum number of stocks",
       "alias": "maximum number of stocks to select",
       "min": 1,
-      "max": 30,
+      "max": "card(price$symbol)",
       "default": 3,
       "step": 1,
       "ticks": false,
       "noHcube": false
     },
     "trainingdays": {
-      "label": "Select the number of days for training",
+      "label": "select the number of days for training",
       "min": 1,
       "default": 99,
       "step": 1,
@@ -214,11 +192,6 @@
       "height": 700,
       "graph": {
         "tool": "plotly",
-        "filter":{
-          "col": "date",
-          "multiple": true,
-          "label": "Select date"
-        },
         "type": "hist",
         "histnorm": "percent",
         "nbins": 20,
@@ -250,11 +223,6 @@
       "height": 700,
       "graph": {
         "tool": "dygraphs",
-        "filter":{
-          "col": "uni",
-          "multiple": false,
-          "label": "Select stock symbol"
-        },
         "title": "Price (stocks & dow jones)",
         "color": "uni",
         "dyOptions": {
@@ -344,7 +312,7 @@
   ],
   "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
   "handsontable": {
-    "stretchH": "none",
+    "stretchH": "all",
     "readonly": false,
     "highlightCol": true,
     "highlightRow": true,

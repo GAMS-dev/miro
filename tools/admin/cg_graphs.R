@@ -84,6 +84,13 @@ langSpecificGraphs$localeChoices <- c("cs" = "cs","da" = "da","de" = "de","en" =
                                       "it" = "it","nl" = "nl","pl" = "pl","pt" = "pt","ru" = "ru","sq" = "sq",
                                       "tr" = "tr","zh" = "zh")
 names(langSpecificGraphs$localeChoices) <- lang$adminMode$graphs$pivotOptions$options$localeChoices 
+langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascending" = "category ascending", "category descending" = "category descending", 
+                                      "total ascending" = "total ascending", "total descending" = "total descending", 
+                                      "min ascending" = "min ascending", "min descending" = "min descending", "max ascending" = "max ascending", 
+                                      "max descending" = "max descending", "sum ascending" = "sum ascending", "sum descending" = "sum descending", 
+                                      "mean ascending" = "mean ascending", "mean descending" = "mean descending", "median ascending" = "median ascending", 
+                                      "median descending" = "median descending")
+names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 
 scenMetaDb <- NULL
 tryCatch({
@@ -129,6 +136,9 @@ updatePreviewData <- function(tabularInputWithData, tabularOutputWithData, confi
 validateGraphConfig <- function(graphJSON){
   if(identical(is.na(graphJSON$graph$xaxis$rangefrom), TRUE) || identical(is.na(graphJSON$graph$xaxis$rangeto), TRUE)){
     return(lang$adminMode$graphs$validate$val1)
+  }
+  if(identical(input$chart_tool, "custom") && identical(nchar(trimws(graphJSON$outType)), 0L)){
+    return("please specify a name!")
   }
   return("")
 }
@@ -207,6 +217,10 @@ changeActiveSymbol <- function(id){
   rv$initData <- FALSE
   rv$initData <- TRUE
 }
+
+
+
+
 observeEvent(input$dbInput, {
   req(identical(length(input$scenList), 1L))
   
@@ -1057,6 +1071,9 @@ observeEvent(input$outType, {
 observeEvent(input$x_title, {
   rv$graphConfig$graph$xaxis$title <<- input$x_title
 })
+observeEvent(input$x_categoryorder, {
+  rv$graphConfig$graph$xaxis$categoryorder <<- input$x_categoryorder
+})
 observeEvent(input$x_showgrid, {
   rv$graphConfig$graph$xaxis$showgrid <<- input$x_showgrid
 })
@@ -1087,6 +1104,9 @@ observeEvent(input$x_rangeto, {
 })
 observeEvent(input$y_title, {
   rv$graphConfig$graph$yaxis$title <<- input$y_title
+})
+observeEvent(input$y_categoryorder, {
+  rv$graphConfig$graph$yaxis$categoryorder <<- input$y_categoryorder
 })
 observeEvent(input$y_showgrid, {
   rv$graphConfig$graph$yaxis$showgrid <<- input$y_showgrid
@@ -1344,6 +1364,15 @@ observeEvent(input$chart_ylabel, {
 observeEvent(input$bar_mode, {
   rv$graphConfig$graph$barmode <<- input$bar_mode
 })
+
+observeEvent(input$custom_name, {
+  rv$graphConfig$outType <<- gsub(" ", "", input$custom_name, fixed = TRUE)
+})
+observeEvent(input$custom_packages, {
+  req(length(input$custom_packages))
+  rv$graphConfig$packages <<- input$custom_packages
+})
+
 observeEvent(input$gams_symbols, {
   req(input$gams_symbols)
   symbolID <- match(isolate(input$gams_symbols), names(modelIn))
@@ -1360,7 +1389,7 @@ observeEvent(input$gams_symbols, {
                                                                 lang$adminMode$graphs$updateToolScalars))
     newChartTool <<- "valuebox"
   }else{
-    updateSelectInput(session, "chart_tool", choices = setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot"),
+    updateSelectInput(session, "chart_tool", choices = setNames(c("plotly", "dygraphs", "leaflet", "timevis", "pivot", "custom"),
                                                                 lang$adminMode$graphs$updateToolNoScalars))
     newChartTool <<- "plotly"
   }
@@ -1418,6 +1447,11 @@ observeEvent({
       insertUI(selector = "#tool_options",
                tags$div(id = "pivot_options", getPivotOptions()), where = "beforeEnd")
       allDataAvailable <<- TRUE
+    }else if(identical(chartTool, "custom")){
+      currentSelection$noLayers <<- 1L
+      insertUI(selector = "#tool_options",
+               tags$div(id = "custom_options", getCustomOptions()), where = "beforeEnd")
+      allDataAvailable <<- TRUE
     }else if(identical(chartTool, "valuebox")){
       currentSelection$noLayers <<- 1L
       insertUI(selector = "#tool_options",
@@ -1467,6 +1501,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
       rv$graphConfig$graph[[id %+% "axis"]]$showgrid <<- FALSE
       rv$graphConfig$graph[[id %+% "axis"]]$zeroline <<- FALSE
       rv$graphConfig$graph[[id %+% "axis"]]$showticklabels <<- TRUE
+      rv$graphConfig$graph[[id %+% "axis"]]$categoryorder <<- "trace"
       rv$graphConfig$graph[[id %+% "axis"]]$rangefrom <<- NULL
       rv$graphConfig$graph[[id %+% "axis"]]$rangeto <<- NULL
     }
@@ -1478,6 +1513,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
   }
   tagList(
     textInput(id %+% "_title", sprintf(lang$adminMode$graphs$axisOptions$title, id), value = title),
+    selectInput(id %+% "_categoryorder", "axis order", choices = langSpecificGraphs$categoryorderChoices),
     checkboxInput_MIRO(id %+% "_showgrid", sprintf(lang$adminMode$graphs$axisOptions$showgrid, id)),
     checkboxInput_MIRO(id %+% "_zeroline", sprintf(lang$adminMode$graphs$axisOptions$zeroline, id)),
     checkboxInput_MIRO(id %+% "_showticklabels", sprintf(lang$adminMode$graphs$axisOptions$showticklabels, id), TRUE),
@@ -1884,6 +1920,23 @@ getPivotOptions <- reactive({
     
   )
 }) 
+getCustomOptions <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices       <- activeSymbol$indices
+  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  isolate({
+  })
+  tagList(
+    textInput("custom_name", "Name of the custom renderer function (no space)"),
+    selectizeInput("custom_packages", tags$div("Packages necessary for the renderer", 
+                                                     tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
+                                                            tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                            choices = c(), 
+                            multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))
+    
+  )
+}) 
 observe({
   req(rv$graphConfig$graph$tool, activeSymbol$id > 0L, allDataAvailable)
   if(identical(rv$graphConfig$graph$tool, "plotly") && identical(length(rv$graphConfig$graph$type), 0L))
@@ -1912,6 +1965,7 @@ observe({
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
       callModule(renderData, "preview_output_dygraph", type = "graph", 
                  data = data, configData = configScalars, 
@@ -1924,6 +1978,7 @@ observe({
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "pivot"){
       pivotOptions <- rv$graphConfig$pivottable
       callModule(renderData, "preview_output_pivot", type = "pivot", 
@@ -1937,6 +1992,7 @@ observe({
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "timevis"){
       callModule(renderData, "preview_output_timevis", type = "graph", 
                  data = data, configData = configScalars, 
@@ -1949,6 +2005,7 @@ observe({
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-dygraph")
       hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
       customOptionstmp <- as.vector(rv$graphConfig$options, mode = "list")
       customOptionstmp$count <- configGraphsOut[[i]]$options$count
@@ -1963,6 +2020,35 @@ observe({
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-timevis")
+      hideEl(session, "#preview-content-custom")
+    }else if(isolate(rv$graphConfig$graph$tool) == "custom"){
+      nameTmp = rv$graphConfig$outType
+      customR <- paste0(nameTmp, "Output <- function(id, height = NULL, options = NULL, path = NULL){
+    ns <- NS(id)
+ 
+    # set default height
+    if(is.null(height)){
+      height <- 700
+    } 
+    tagList( 
+      #define rendererOutput function here 
+    ) 
+}
+                            
+",
+"render", toupper(substr(nameTmp, 1, 1)), substr(nameTmp, 2, nchar(nameTmp)), " <- function(input, output, session, data, options = NULL, path = NULL){ 
+    #renderer 
+
+}")
+      output[["preview_output_custom"]] <- renderText(customR)
+      showEl(session, "#preview-content-custom")
+      hideEl(session, "#preview-content-pivot")
+      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-plotly")
+      hideEl(session, "#pieValues")
+      hideEl(session, "#preview-content-leaflet")
+      hideEl(session, "#preview-content-timevis")
+      hideEl(session, "#preview-content-valuebox")
     }else{
       callModule(renderData, "preview_output_leaflet", type = "graph", 
                  data = data, configData = configScalars, 
@@ -1975,6 +2061,7 @@ observe({
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
+      hideEl(session, "#preview-content-custom")
     }
     hideEl(session, "#preview-error")
   }, error = function(e) {
@@ -1985,6 +2072,7 @@ observe({
     hideEl(session, "#preview-content-pivot")
     hideEl(session, "#preview-content-timevis")
     hideEl(session, "#preview-content-valuebox")
+    hideEl(session, "#preview-content-custom")
     showElReplaceTxt(session, "#preview-error", "An error occurred: " %+% toString(e))
   })
 }, priority = -1000)
@@ -2023,6 +2111,10 @@ observeEvent(rv$saveGraphConfirm, {
     configJSON$dataRendering[[activeSymbol$name]]$height <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$outType <<- "valueBox"
+  }else if(rv$graphConfig$graph$tool == "custom"){
+    configJSON$dataRendering[[activeSymbol$name]]$graph <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL
+    configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
   }else{
     configJSON$dataRendering[[activeSymbol$name]]$pivottable <<- NULL
     configJSON$dataRendering[[activeSymbol$name]]$options <<- NULL

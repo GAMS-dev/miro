@@ -3582,6 +3582,88 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "custom":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "skeleton":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "steps":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li1a":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li1b":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li1c":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li2a":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li2b":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li3a":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "li3b":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description1":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description2":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description3":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description4":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description5":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "description6":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
             }
           }
         },      
@@ -5432,8 +5514,8 @@
                 "choices":{  
                   "type":"array",
                   "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
+                  "minItems":7,
+                  "maxItems":7,
                   "items": {
                       "type":"string",
                       "minLength": 1
@@ -5490,8 +5572,8 @@
             "updateToolNoScalars":{
               "type":"array",
               "uniqueItems": true,
-              "minItems":5,
-              "maxItems":5,
+              "minItems":6,
+              "maxItems":6,
               "items": {
                   "type":"string",
                   "minLength": 1
@@ -5591,6 +5673,17 @@
                 "animationDataFormatSelector":{ 
                   "type":"string",
                   "minLength":1,
+                  "required":true
+                },
+                "categoryorderChoices":{ 
+                  "type":"array",
+                  "uniqueItems": true,
+                  "minItems":15,
+                  "maxItems":15,
+                  "items": {
+                      "type":"string",
+                      "minLength": 1
+                  },
                   "required":true
                 }           
               }

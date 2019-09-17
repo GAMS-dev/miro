@@ -787,7 +787,24 @@
       "table": "Table settings",
       "widgets": "Configure widgets",
       "graphs": "Configure graphs",
-      "database": "Database management"
+      "database": "Database management",
+      "custom":{
+        "skeleton": "skeleton:",
+        "steps": "Steps:",
+        "li1a": "Create a directory ",
+        "li1b": " in your model directory with a file ",
+        "li1c": " in it.",
+        "li2a": "Copy the above code and paste it into the ",
+        "li2b": " file.",
+        "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
+        "li3b": "here",
+        "description1": "The next time the application is started after a click on ",
+        "description2": "save",
+        "description3": " MIRO looks for a custom renderer function in the file ",
+        "description4": " . If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
+        "description5": "Note:",
+        "description6": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
+      }
     },
     "general":{
       "ui":{
@@ -1171,7 +1188,7 @@
         "chartTitle": "Choose a title for your chart",
         "height": "Choose a height for your chart (px) (no live preview available)",
         "tool": "Select the charting tool you want to use",
-        "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values"]
+        "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values", "Custom renderer"]
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
@@ -1182,7 +1199,7 @@
         "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
       },
       "updateToolScalars": ["Valuebox for scalar values"],
-      "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table"],
+      "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Custom renderer"],
       "chartTypePlotly":{
         "title": "Select the chart type you want to use",
         "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram"]
@@ -1201,7 +1218,8 @@
         "range": "Set axis range. The format has to match the data format. When not specified, a default is used.",
         "rangeFrom": "Range start (%s axis).",
         "rangeTo": "Range end (%s axis).",
-        "animationDataFormatSelector": "Data in date format?"
+        "animationDataFormatSelector": "Data in date format?",
+        "categoryorderChoices": ["trace", "category ascending", "category descending", "total ascending", "total descending", "min ascending", "min descending", "max ascending", "max descending", "sum ascending", "sum descending", "mean ascending", "mean descending", "median ascending", "median descending"]
       },
       "chartOptions":{
         "xdata": "What should be plotted on the x axis?",

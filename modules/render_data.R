@@ -61,7 +61,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     })
     data <- customOutput(ns("custom"), height = height, options = customOptions,
                          path = customRendererDirs[[2L]])
-  }
+    }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
     tags$div(id = ns("data"), data)
@@ -69,8 +69,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
 }
 
 renderData <- function(input, output, session, data, type, configData = NULL, dtOptions = NULL, 
-                        graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
-                        roundPrecision = 2, modelDir = NULL){
+                       graphOptions = NULL, pivotOptions = NULL, customOptions = NULL, 
+                       roundPrecision = 2, modelDir = NULL){
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
