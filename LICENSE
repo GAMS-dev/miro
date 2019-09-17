@@ -50,6 +50,7 @@ these components are included below):
 - dygraphs https://github.com/rstudio/dygraphs or https://cran.r-project.org/web/packages/dygraphs/index.html
 - xts https://github.com/joshuaulrich/xts or https://cran.r-project.org/web/packages/xts/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
+- lifecycle https://github.com/r-lib/lifecycle or https://cran.r-project.org/web/packages/lifecycle/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
@@ -2402,6 +2403,7 @@ Library.
         - gridExtra, Copyright (c)  Baptiste Auguie [aut, cre], Anton Antonov [ctb]
         - lattice, Copyright (c)  Deepayan Sarkar
         - RGraphics, Copyright (c) 	Paul Murrell
+        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE

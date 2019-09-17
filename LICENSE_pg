@@ -47,6 +47,7 @@ these components are included below):
 - zip https://github.com/r-lib/zip or https://cran.r-project.org/web/packages/zip/index.html    
 - stringi https://github.com/gagolews/stringi or https://cran.r-project.org/web/packages/stringi/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
+- lifecycle https://github.com/r-lib/lifecycle or https://cran.r-project.org/web/packages/lifecycle/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - hms https://github.com/tidyverse/hms or https://cran.r-project.org/web/packages/hms/index.html
 - Rcpp https://github.com/RcppCore/Rcpp or https://cran.r-project.org/web/packages/Rcpp/index.html
@@ -2302,6 +2303,7 @@ Library.
             Kohske Takahashi [ctb], Ed Lee [ctb]
         - shinydashboard (GPL >=2), Copyright (c) 2014 RStudio, Inc.
         - R, Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+        - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
