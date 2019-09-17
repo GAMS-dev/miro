@@ -93,6 +93,7 @@ tabItemList <- list(
                                                     renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
                                                                  graphTool = configGraphsIn[[i]]$graph$tool, 
                                                                  customOptions = configGraphsIn[[i]]$options,
+                                                                 filterOptions = configGraphsIn[[i]]$graph$filter,
                                                                  height = configGraphsIn[[i]]$height, 
                                                                  noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                                   }, error = function(e) {
@@ -568,6 +569,7 @@ if(config$activateModules$hcubeMode){
                                                     renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
                                                                  graphTool = configGraphsOut[[i]]$graph$tool, 
                                                                  customOptions = configGraphsOut[[i]]$options,
+                                                                 filterOptions = configGraphsOut[[i]]$graph$filter,
                                                                  height = configGraphsOut[[i]]$height, 
                                                                  noDataTxt = lang$nav$outputScreen$boxResults$noData)
                                            ),

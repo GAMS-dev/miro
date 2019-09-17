@@ -485,7 +485,7 @@ Worker <- R6Class("Worker", public = list(
                                    resultsPath = paste0(private$jobResultsFile[[jIDChar]], ".dl"))
         })
       }
-      return(0L)
+      return(5L)
     }
     
     if(!length(private$resultFileSize[[jIDChar]])){
@@ -497,12 +497,12 @@ Worker <- R6Class("Worker", public = list(
     bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[['size']]
     
     if(is.na(bytesDownloaded))
-      return(0L)
+      return(5L)
     
     if(identical(private$resultFileSize[[jIDChar]], bytesDownloaded))
       return(99L)
     
-    return(round(bytesDownloaded/private$resultFileSize[[jIDChar]]*100))
+    return(max(5L, round(bytesDownloaded/private$resultFileSize[[jIDChar]]*100)))
   },
   readTextEntity = function(name, jID, chunkNo = 0L, getSize = FALSE){
     req(private$remote)

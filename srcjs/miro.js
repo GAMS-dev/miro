@@ -319,6 +319,9 @@ $(document).ready(() => {
   });
   $('body').on('click', '.bt-highlight-1, .bt-highlight-2, .bt-highlight-3', function () {
     const btn = $(this);
+    if (btn.hasClass('dropdown-toggle')) {
+      return;
+    }
     btn.prop('disabled', true);
     setTimeout(() => {
       btn.prop('disabled', false);

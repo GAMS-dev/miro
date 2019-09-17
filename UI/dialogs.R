@@ -957,11 +957,10 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                                  style = "display:none;margin-bottom:0;border:1px solid black;",
                                                  id = paste0("jobImportDlProgressWrapper_", jID),
                                                  tags$div(class = "progress-bar progress-bar-striped active", 
-                                                          id = paste0("jobImportDlProgress_", jID), 
-                                                          style = "display:none;",
-                                                          role = "progressbar", `aria-valuenow` = 0L, 
+                                                          id = paste0("jobImportDlProgress_", jID),
+                                                          role = "progressbar", `aria-valuenow` = 5L, 
                                                           `aria-valuemin` = 0, `aria-valuemax` = 100, 
-                                                          style = paste0("width:", 0L, "%;"),
+                                                          style = paste0("width:", 5L, "%;"),
                                                           lang$nav$importJobsDialog$status$downloading)
                                         ))
                               }else if(identical(jStatus, JOBSTATUSMAP[['downloaded']])){

@@ -214,6 +214,11 @@
       "height": 700,
       "graph": {
         "tool": "plotly",
+        "filter":{
+          "col": "date",
+          "multiple": true,
+          "label": "Select date"
+        },
         "type": "hist",
         "histnorm": "percent",
         "nbins": 20,
@@ -245,6 +250,11 @@
       "height": 700,
       "graph": {
         "tool": "dygraphs",
+        "filter":{
+          "col": "uni",
+          "multiple": false,
+          "label": "Select stock symbol"
+        },
         "title": "Price (stocks & dow jones)",
         "color": "uni",
         "dyOptions": {

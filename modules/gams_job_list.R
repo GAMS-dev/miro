@@ -87,18 +87,16 @@ observeEvent(input$downloadJobData, {
              }
              showHideEl(session, "#fetchJobsError")
            })
-  if(!identical(res, 0L))
+  if(!identical(res, 5L))
     return()
   showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
   
   if(!length(asyncResObs))
     asyncResObs <<- observe({
       invalidateLater(5000L, session)
-      print('asd')
       activeDownloads <- worker$getActiveDownloads()
       if(identical(length(activeDownloads), 0L) && 
          length(asyncResObs)){
-        print('def')
         asyncResObs$destroy()
         asyncResObs <<- NULL
         return()

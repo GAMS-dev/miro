@@ -43,7 +43,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                                        style = "width:173px;margin:6px 0px 6px 15px;border-right:0px;",
                                        onclick = "Shiny.setInputValue('btSolve',1,{priority:'event'});", 
                                        lang$nav$sidebarButtons$solve),
-                           tags$button(class = "btn btn-default dropdown-toggle", `data-toggle` = "dropdown",
+                           tags$button(class = "btn btn-default bt-highlight-2 dropdown-toggle", `data-toggle` = "dropdown",
                                        style = "margin:6px 0px 6px 0;display:block;",
                                        tags$span(class = "caret"),
                                        tags$span(class = "sr-only", "toggle dropdown")),

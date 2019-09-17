@@ -97,6 +97,7 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                         type = graphConfig$outType, 
                                                                         graphTool = graphConfig$graph$tool, 
                                                                         customOptions = graphConfig$options,
+                                                                        filterOptions = graphConfig$graph$filter,
                                                                         height = graphConfig$height, modelDir = modelDir, 
                                                                         noDataTxt = noDataTxt)
                                                          }, error = function(e) {
