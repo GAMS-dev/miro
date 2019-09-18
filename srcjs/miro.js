@@ -279,6 +279,15 @@ function scrollDown(id, delay = 500) {
 }
 
 $(document).ready(() => {
+  $('.dropdown').on('show.bs.dropdown', (e) => {
+    const ddButton = $(e.target);
+    const dropdown = ddButton.children('.dropdown-menu').first();
+    if (dropdown.width() <= ddButton.width()
+      + ddButton.offset().left - ddButton.parent().offset().left) {
+      dropdown.addClass('dropdown-menu-right');
+    }
+  });
+
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
   $('#btImport').show();
