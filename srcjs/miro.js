@@ -285,6 +285,8 @@ $(document).ready(() => {
     if (dropdown.width() <= ddButton.width()
       + ddButton.offset().left - ddButton.parent().offset().left) {
       dropdown.addClass('dropdown-menu-right');
+    } else {
+      dropdown.removeClass('dropdown-menu-right');
     }
   });
 
