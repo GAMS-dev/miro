@@ -1,8 +1,8 @@
 # modified original shiny tabsetPanel function (see: https://github.com/rstudio/shiny/blob/master/R/bootstrap.R)
 # to add more flexibility in MIRO
 MIROtabBox <- function(tabs, id = NULL, selected = NULL, 
-                       maxTabsExpanded = 10L, btCollapsedTabs = "",
-                       noTabsGrouped = 0L)
+                       maxTabsExpanded = 5L, btCollapsedTabs = "",
+                       noTabsGrouped = -1L)
 {
   content <- MIROtabsetPanel(tabs, id, selected, 
                              maxTabsExpanded, btCollapsedTabs,
@@ -13,8 +13,8 @@ MIROtabBox <- function(tabs, id = NULL, selected = NULL,
   div(class = "col-sm-12", content)
 }
 MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL, 
-                            maxTabsExpanded = 10L, btCollapsedTabs = "",
-                            noTabsGrouped = 0L)
+                            maxTabsExpanded = 5L, btCollapsedTabs = "",
+                            noTabsGrouped = -1L)
 {
   foundSelected <- FALSE
   tabs <- lapply(tabs, function(div) {
@@ -29,7 +29,10 @@ MIROtabsetPanel <- function(tabs, id = NULL, selected = NULL,
         foundSelected <<- TRUE
         div <- markTabAsSelected(div)
       } else {
-        tabValue <- div$attribs$`data-value` %OR% div$attribs$title
+        if (is.null(div$attribs$`data-value`) || isTRUE(is.na(div$attribs$`data-value`)))
+          tabValue <- div$attribs$title
+        else
+          tabValue <- div$attribs$`data-value`
         if (identical(selected, tabValue)) {
           foundSelected <<- TRUE
           div <- markTabAsSelected(div)
@@ -123,7 +126,7 @@ MIROinsertTab <- function(inputId, tab, target,
 
 MIRObuildTabItem <- function(index, tabsetId, tabs = NULL, 
                              divTag = NULL, buttonID = NULL, buttonTT = NULL,
-                             noTabsGrouped = 0L) {
+                             noTabsGrouped = -1L) {
   
   divTag <- if (!is.null(divTag)) divTag else tabs[[index]]
 
@@ -132,7 +135,7 @@ MIRObuildTabItem <- function(index, tabsetId, tabs = NULL,
   liTag <- tags$li(
     tags$a(
       href = paste("#", tabId, sep = ""),
-      class = if(noTabsGrouped > 0L) 
+      class = if(noTabsGrouped > -1L) 
         paste("miro-tabset-group-", if(index <= noTabsGrouped) "1" else "2", sep = ""),
       `data-toggle` = "tab",
       `data-value` = divTag$attribs$`data-value`,

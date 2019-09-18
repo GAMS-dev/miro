@@ -142,12 +142,11 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                       value = paste0("contentScen_", scenId, 
                                                      "_", groupId),
                                       if(length(tabTitles) > 1L){
-                                        do.call(tabsetPanel, 
-                                                c(id = paste0("contentScen_", scenId,
-                                                              "_", groupId), 
-                                                  class = paste0("miro-tabset-group-", 
-                                                                 if(isOutputGroup) "1" else "2"),
-                                                  content))
+                                        MIROtabsetPanel(content,
+                                                        id = paste0("contentScen_", scenId,
+                                                                    "_", groupId),
+                                                        noTabsGrouped = if(isOutputGroup) 
+                                                          length(tabTitles) else 0L)
                                       }else{
                                         tagList(tags$div(class="space"), 
                                                 content,

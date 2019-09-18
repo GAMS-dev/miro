@@ -352,7 +352,9 @@ observe({
   tryCatch({
     if(isolate(rv$tableConfig$tableType) == "hot"){
       hotOptions        <- rv$tableConfig$handsontable
-
+      if(is.null(hotOptions)){
+        return()
+      }
       output[["table_preview_hot"]] <- renderRHandsontable({
         ht <- rhandsontable(data = data, height = hotOptions$height, 
                             colHeaders = letters[1:4],
