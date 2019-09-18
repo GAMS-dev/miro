@@ -927,3 +927,19 @@ animation: none !important;
     max-height: 60vh;
     overflow: auto;
 }
+.miro-tabset-group-1 {
+  .responsiveDark({
+     color: @tabset-group-out !important;
+  },
+  {
+     color: @tabset-group-out-dark !important;
+  });
+}
+.miro-tabset-group-1:hover {
+  .responsiveDark({
+     color: darken(@tabset-group-out, 10%) !important;
+  },
+  {
+     color: darken(@tabset-group-out-dark, 10%) !important;
+  });
+}
