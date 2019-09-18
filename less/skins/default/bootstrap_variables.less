@@ -103,23 +103,6 @@
 
 //** Placeholder text color
 @input-color-placeholder:        #999;
-///////////////////////////////////////////////////////
-//change mode for static/browser-responsive css compilation
-@mode: "browser";
-
-.responsiveDark(@rules;@rulesDark) when (@mode = "dark"){
-    @rulesDark();
-}
-.responsiveDark(@rules;@rulesDark) when not (@mode = "dark"){
-    @rules();
-}
-.responsiveDark(@rules;@rulesDark) when (@mode = "browser") {
-    @rules();
-    @media (prefers-color-scheme: dark) {
-        @rulesDark();
-    }
-}
-///////////////////////////////////////////////////////////
 
 //////////dark/light mode dependent variables//////////////
 //light

@@ -48,7 +48,7 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "zip", "tidyr")
-
+config <- list()
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
@@ -599,21 +599,10 @@ if(!is.null(errMsg)){
   pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
-      if(length(config$theme) && identical(config$theme, "light")){
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css")
-        )
-      }else if(length(config$theme) && identical(config$theme, "dark")){
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages_dark.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro_dark.css")
-        )
+      if(!is.list(config) || !is.character(config$theme)){
+        tags$link(type = "text/css", rel = "stylesheet", href = "skin_light.css")
       }else{
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
-        )
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css"))
       },
       tags$script(src = "miro.js", type = "application/javascript")
     ),
@@ -878,6 +867,7 @@ if(!is.null(errMsg)){
     
     # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
     sidCompOrder     <- NULL
+    
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database

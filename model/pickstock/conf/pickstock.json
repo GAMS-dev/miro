@@ -19,6 +19,25 @@
       ]
     }
   ],
+  "remoteImport": [{
+    "name": "Testimport",
+    "templates": [
+      {
+        "symNames": "price",
+        "url": "http://127.0.0.1:5000/io",
+        "method": "GET",
+        "httpBody": [
+          {
+            "key": "cachetime",
+            "value": "50"
+          },
+          {
+            "key": "filename",
+            "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
+          }
+        ]
+      }]
+  }],
   "inputWidgets": {
     "price": {
       "widgetType": "table",
@@ -225,6 +244,11 @@
         "tool": "dygraphs",
         "title": "Price (stocks & dow jones)",
         "color": "uni",
+        "filter":{
+          "col": "uni",
+          "multiple": true,
+          "label": "Select stock symbol"
+        },
         "dyOptions": {
           "includeZero": true,
           "logscale": false,

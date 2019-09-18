@@ -37,7 +37,7 @@ module.exports = {
             test: [{
               folder: path.resolve(__dirname, "www"),
               method: (filePath) => {
-                  return new RegExp(/skin_.+\.js$/, 'm').test(filePath);
+                  return new RegExp(/skin_.+\.js(\.map)?$/, 'm').test(filePath);
               }
             }]
           }
@@ -76,9 +76,18 @@ module.exports = {
             test: /\.less$/,
             exclude: /node_modules/,
             use: [
-                MiniCssExtractPlugin.loader,
-                "css-loader",
-                "less-loader"
+              {
+                loader: MiniCssExtractPlugin.loader,
+              },
+              {
+                loader: 'css-loader',
+              },
+              {
+                loader: 'less-loader',
+                options: {
+                  sourceMap: true,
+                },
+              },
             ]
           },
           {
