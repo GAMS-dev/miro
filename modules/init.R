@@ -533,10 +533,9 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   
   for(el in names(config$dataRendering)){
     i <- match(tolower(el), names(modelIn))[[1]]
+    isOutputGraph <- FALSE
     # data rendering object was found in list of model input sheets
-    if(!is.na(i)){
-      configGraphsIn[[i]] <- config$dataRendering[[el]]
-    }else{
+    if(is.na(i)){
       i <- match(tolower(el), names(modelOut))[[1]]
       # data rendering object was found in list of model output sheets
       if(!is.na(i)){
@@ -545,6 +544,26 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
         flog.fatal(errMsgTmp)
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
+      }
+      isOutputGraph <- TRUE
+    }else{
+      configGraphsIn[[i]] <- config$dataRendering[[el]]
+    }
+    if(length(config$dataRendering[[el]]$graph$filter)){
+      if(isOutputGraph){
+        categoricalHeaders <- modelOut[[i]]$headers
+      }else{
+        categoricalHeaders <- modelIn[[i]]$headers
+      }
+      categoricalHeaders <- unlist(lapply(seq_along(categoricalHeaders), function(hdrId){
+        if(identical(modelOut[[i]]$headers[[hdrId]]$type, "set"))
+          return(names(modelOut[[i]]$headers)[[hdrId]])
+        return(NULL)
+      }), use.names = FALSE)
+      if(!length(config$dataRendering[[el]]$graph$filter$col) || 
+         !config$dataRendering[[el]]$graph$filter$col %in% categoricalHeaders){
+        errMsg <- paste(errMsg, sprintf("The column: '%s' was defined as a dynamic filter for the chart of element: '%s'. This column could not be found among the categorical columns of this symbol: '%s'.",
+                                        config$dataRendering[[el]]$graph$filter$col, el, paste(categoricalHeaders, collapse = "', '")), setp = "\n")
       }
     }
   }
