@@ -1356,6 +1356,17 @@
           "subtotals": "Should subtotal plugin be used? For examples, see: "
         }
       },
+      "customOptions":{
+        "name": "Name of the custom renderer function (no space)",
+        "packages": "Packages necessary for the renderer"
+      },
+      "filterOptions":{
+        "filter": "Should one dimension of the symbol be selectable via a dropdown menu?",
+        "dimension": "Which dimension should be filterable?",
+        "label": "Label of the filter (no live preview available)",
+        "placeholder": "Filter by element",
+        "multiple": "Should several elements be selectable as filter at the same time? (No live preview for single dropdown menu available)"
+      },
       "saveJson":{
         "warnTitle": "Data exists",
         "warnContent": "A graph configuration already exists for symbol: '%s'. Do you want to overwrite this configuration? This cannot be undone!",

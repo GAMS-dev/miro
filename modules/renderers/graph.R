@@ -11,7 +11,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #   rendered graph for the provided dataframe
   if(options$tool == 'plotly'){
     return(renderPlotly({
-      if(length(filterCol)){
+      if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
       }
       
@@ -220,7 +220,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   }else if(options$tool == 'dygraphs'){
     # time series chart
     return(renderDygraph({
-      if(length(filterCol)){
+      if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
       }
       p <- NULL
@@ -277,7 +277,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
               dateCol <- as.POSIXct(dateCol, tz = "GMT")
             
             xts_data <- xts(data[, idxVector], order.by = dateCol)
-            
+           
             p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
                           ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
             p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
@@ -354,7 +354,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       p}))
   }else if(options$tool == 'leaflet'){
     return(renderLeaflet({
-      if(length(filterCol)){
+      if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
       }
       p   <- leaflet(data) %>% addTiles()
@@ -416,7 +416,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
       p}))
   }else if(options$tool == 'timevis'){
     return(renderTimevis({
-      if(length(filterCol)){
+      if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
       }
       p <- timevis()
