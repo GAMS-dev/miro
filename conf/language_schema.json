@@ -6395,6 +6395,55 @@
                 }
               }
             },
+            "customOptions":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "name":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "packages":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "filterOptions":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "filter":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "dimension":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "placeholder":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "multiple":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "saveJson":{  
               "type":"object",
               "additionalProperties":false,

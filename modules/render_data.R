@@ -32,10 +32,11 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
     if(length(filterOptions$col)){
-      data <- tagList(selectInput(ns("data_filter"), 
+      data <- tagList(tags$div(class = "data-filter-wrapper",
+                      selectInput(ns("data_filter"), 
                                   filterOptions$label, 
                                   choices = c(), multiple = isTRUE(filterOptions$multiple)),
-                      dataGraph)
+                      dataGraph))
     }else{
       data <- dataGraph
     }

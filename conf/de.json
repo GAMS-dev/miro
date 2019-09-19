@@ -1357,6 +1357,17 @@
           "subtotals": "Soll das Zwischensummen-Plugin verwendet werden? Beispiele finden Sie unter: "
         }
       },
+      "customOptions":{
+        "name": "Name der benutzerdefinierten Rendererfunktion (ohne Leerzeichen)",
+        "packages": "Benötigte Pakete für den Renderer"
+      },
+      "filterOptions":{
+        "filter": "Soll eine Dimension des Symbols in einem Dropdownmenü filterbar sein??",
+        "dimension": "Welche Dimension soll filterbar sein?",
+        "label": "Welche Bezeichnung soll verwendet werden? (keine live Vorschau verfügbar)",
+        "placeholder": "Nach Element filtern",
+        "multiple": "Sollen mehrere Elemente gleichzeitig als Filter auswählbar sein? (für das Dropdownmenü mit Einzelauswahl ist keine live Vorschau verfügbar)"
+      },
       "saveJson":{
         "warnTitle": "Daten existieren",
         "warnContent": "Für das Symbol '%s' existiert bereits eine Grafikkonfiguration. Möchten Sie diese Konfiguration überschreiben? Das kann nicht rückgängig gemacht werden!",

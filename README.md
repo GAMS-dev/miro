@@ -51,5 +51,5 @@ shiny::runApp(launch.browser=TRUE)
 
 ## License
 
-GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3), or (at your option) any later version. 
+GAMS MIRO as a whole is distributed under GPL-3 (GNU GENERAL PUBLIC LICENSE version 3). 
 See the [LICENSE](LICENSE) file for more details.

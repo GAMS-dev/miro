@@ -92,6 +92,11 @@ langSpecificGraphs$categoryorderChoices <- c("trace" = "trace", "category ascend
                                       "median descending" = "median descending")
 names(langSpecificGraphs$categoryorderChoices) <- lang$adminMode$graphs$axisOptions$categoryorderChoices
 
+hideEl(session, "#preview_output_plotly-data_filter")
+hideEl(session, "#preview_output_dygraphs-data_filter")
+hideEl(session, "#preview_output_leaflet-data_filter")
+hideEl(session, "#preview_output_timevis-data_filter")
+#hideEl(session, any(startsWith("#preview_output_") && endsWith("-data_filter")))
 scenMetaDb <- NULL
 tryCatch({
   scenMetaDb <- db$fetchScenList(scode = SCODEMAP[['scen']])
@@ -1373,6 +1378,38 @@ observeEvent(input$custom_packages, {
   rv$graphConfig$packages <<- input$custom_packages
 })
 
+observeEvent(input$filter_dim, {
+ if(identical(isolate({input$filter_dim}), FALSE)){
+   rv$graphConfig$graph$filter <<- NULL
+   hideEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+ }else{
+   rv$graphConfig$graph$filter <<- list(col = input$filter_col,
+                                        label = input$filter_label,
+                                        multiple = input$filter_multiple)
+   showEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+ }
+})
+observeEvent(input$filter_col, {
+  req(isTRUE(input$filter_dim))
+  rv$graphConfig$graph$filter$col <<- input$filter_col
+})
+observeEvent(input$filter_label, {
+  req(isTRUE(input$filter_dim))
+  newLabel <- ""
+  if(nchar(input$filter_label)){
+    rv$graphConfig$graph$filter$label <<- input$filter_label
+    newLabel <- input$filter_label
+  }else{
+    rv$graphConfig$graph$filter$label <<- NULL
+  }
+  updateSelectInput(session, paste0("#preview_output_", input$chart_tool, "-data_filter"), 
+                    label = newLabel)
+})
+observeEvent(input$filter_multiple, {
+  req(isTRUE(input$filter_dim))
+  rv$graphConfig$graph$filter$multiple <<- input$filter_multiple
+})
+
 observeEvent(input$gams_symbols, {
   req(input$gams_symbols)
   symbolID <- match(isolate(input$gams_symbols), names(modelIn))
@@ -1547,6 +1584,7 @@ getChartOptions <- reactive({
     getAxisOptions("y", names(scalarIndices)[1]),
     selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
                 choices = c("_", indices)),
+    getFilterOptions(),
     getOptionSection(),
     tags$div(id = "plotly_animation_options", class = "shiny-input-container")
   )
@@ -1774,6 +1812,7 @@ getDygraphsOptions <- reactive({
     createArray(session, "dy_ydata", lang$adminMode$graphs$dygraphsOptions$ydata),
     selectInput("chart_color", lang$adminMode$graphs$dygraphsOptions$color,
                 choices = c("_", indices)),
+    getFilterOptions(),
     if(length(configScalars) && nrow(configScalars)){
       tagList(
         createArray(session, "dy_dyEvent", lang$adminMode$graphs$dygraphsOptions$dyEvent, autoCreate = FALSE),
@@ -1832,6 +1871,7 @@ getLeafletOptions <- reactive({
       createArray(session, "leaflet_markers", lang$adminMode$graphs$leafletOptions$markers, autoCreate = FALSE),
       createArray(session, "leaflet_flows", lang$adminMode$graphs$leafletOptions$flows, autoCreate = FALSE),
       createArray(session, "leaflet_minicharts", lang$adminMode$graphs$leafletOptions$minicharts, autoCreate = FALSE),
+      getFilterOptions(),
       selectInput("leaflet_hideGroups", lang$adminMode$graphs$leafletOptions$hideGroups, choices = c(),
                   multiple = TRUE),
       optionSection(title = lang$adminMode$graphs$leafletOptions$layer$title, collapsed = TRUE,
@@ -1868,6 +1908,7 @@ getTimevisOptions<- reactive({
     tagList(
       createArray(session, "timevis_series", lang$adminMode$graphs$timevisOptions$series),
       createArray(session, "timevis_custom", lang$adminMode$graphs$timevisOptions$custom, autoCreate = FALSE),
+      getFilterOptions(),
       optionSection(title = lang$adminMode$graphs$timevisOptions$options$title, collapsed = TRUE,
                     checkboxInput_MIRO("timevis_showZoom", lang$adminMode$graphs$timevisOptions$options$showZoom, TRUE),
                     numericInput("timevis_zoomFactor", lang$adminMode$graphs$timevisOptions$options$zoomFactor, min = 0, max = 1, value = 0.5, step = 0.1),
@@ -1926,15 +1967,44 @@ getCustomOptions <- reactive({
   indices       <- activeSymbol$indices
   scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
   isolate({
+    rv$graphConfig$packages <- NULL
+    rv$graphConfig$name <- NULL
   })
   tagList(
-    textInput("custom_name", "Name of the custom renderer function (no space)"),
-    selectizeInput("custom_packages", tags$div("Packages necessary for the renderer", 
+    textInput("custom_name", lang$adminMode$graphs$customOptions$name),
+    selectizeInput("custom_packages", tags$div(lang$adminMode$graphs$customOptions$packages, 
                                                      tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#custom-renderers", 
                                                             tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                             choices = c(), 
                             multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE))
     
+  )
+}) 
+getFilterOptions <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices    <- activeSymbol$indices
+  setIndices <- indices[activeSymbol$indexTypes == "set"]
+  isolate({
+    rv$graphConfig$graph$filter <- NULL
+  })
+  tagList(
+    tags$label(class = "cb-label info-position", "for" = "filter_dim", 
+               tags$div(lang$adminMode$graphs$filterOptions$filter, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html", 
+                                                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+    tags$div(
+      tags$label(class = "checkbox-material", 
+                 checkboxInput("filter_dim", value = FALSE, label = NULL)
+      )),
+    tags$div(style = "max-height:800px;max-height: 80vh;overflow:auto;padding-right:30px;padding-left:40px;",
+             conditionalPanel(
+               condition = "input.filter_dim == true",
+               selectInput("filter_col", lang$adminMode$graphs$filterOptions$dimension,
+                           choices = setIndices),
+               textInput("filter_label", lang$adminMode$graphs$filterOptions$label, placeholder = lang$adminMode$graphs$filterOptions$placeholder),
+               checkboxInput_MIRO("filter_multiple", lang$adminMode$graphs$filterOptions$multiple, 
+                                  value = FALSE)
+             ))
   )
 }) 
 observe({
@@ -1960,18 +2030,18 @@ observe({
         showEl(session, "#preview-content-plotly")
         hideEl(session, "#pieValues")
       }
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "dygraphs"){
-      callModule(renderData, "preview_output_dygraph", type = "graph", 
+      callModule(renderData, "preview_output_dygraphs", type = "graph", 
                  data = data, configData = configScalars, 
                  graphOptions = rv$graphConfig$graph,
                  roundPrecision = roundPrecision, modelDir = modelDir)
-      showEl(session, "#preview-content-dygraph")
+      showEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
@@ -1986,7 +2056,7 @@ observe({
                  pivotOptions = pivotOptions,
                  roundPrecision = 2, modelDir = modelDir)
       showEl(session, "#preview-content-pivot")
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
@@ -2003,7 +2073,7 @@ observe({
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-pivot")
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-custom")
     }else if(isolate(rv$graphConfig$graph$tool) == "valuebox"){
@@ -2015,7 +2085,7 @@ observe({
                  modelDir = modelDir)
       showEl(session, "#preview-content-valuebox")
       hideEl(session, "#preview-content-pivot")
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
@@ -2043,7 +2113,7 @@ observe({
       output[["preview_output_custom"]] <- renderText(customR)
       showEl(session, "#preview-content-custom")
       hideEl(session, "#preview-content-pivot")
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
       hideEl(session, "#preview-content-leaflet")
@@ -2057,7 +2127,7 @@ observe({
       showEl(session, "#preview-content-leaflet")
       hideEl(session, "#preview-content-plotly")
       hideEl(session, "#pieValues")
-      hideEl(session, "#preview-content-dygraph")
+      hideEl(session, "#preview-content-dygraphs")
       hideEl(session, "#preview-content-pivot")
       hideEl(session, "#preview-content-timevis")
       hideEl(session, "#preview-content-valuebox")
@@ -2065,7 +2135,7 @@ observe({
     }
     hideEl(session, "#preview-error")
   }, error = function(e) {
-    hideEl(session, "#preview-content-dygraph")
+    hideEl(session, "#preview-content-dygraphs")
     hideEl(session, "#preview-content-plotly")
     hideEl(session, "#pieValues")
     hideEl(session, "#preview-content-leaflet")
