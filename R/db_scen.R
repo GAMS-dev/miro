@@ -571,7 +571,6 @@ Scenario <- R6Class("Scenario",
                         self$deleteRows(private$dbSchema$tabName[["_scenAttach"]], 
                                         private$scenMetaColnames['sid'], 
                                         private$sid)
-                        private$cleanLocalFiles()
                         
                         private$unlock()
                         flog.debug("Scenario: '%s' unlocked.", private$sid)
@@ -579,6 +578,16 @@ Scenario <- R6Class("Scenario",
                         private$sid   <- integer(0)
                         
                         invisible(self)
+                      },
+                      cleanLocalFiles = function(){
+                        if(length(private$localAttachments$filePaths)){
+                          removedLocalFiles <- file.remove(private$localAttachments$filePaths)
+                          if(any(!removedLocalFiles))
+                            flog.warn("Some local attachments could not be removed: '%s'.",
+                                      paste(private$localAttachments$filePaths[!removedLocalFiles], 
+                                            collapse = "', '"))
+                        }
+                        return(invisible(self))
                       },
                       updateMetadata = function(newName = character(0L), newTags = character(0L), 
                                                 newReadPerm = character(0L), newWritePerm = character(0L),
@@ -642,7 +651,6 @@ Scenario <- R6Class("Scenario",
                         }
                       },
                       finalize = function(){
-                        private$cleanLocalFiles()
                         if(length(private$sid)){
                           flog.debug("Scenario: '%s' unlocked.", private$sid)
                           private$unlock()
@@ -1014,16 +1022,6 @@ Scenario <- R6Class("Scenario",
                         return(tibble(fileName = fileNames, fileExt = tools::file_ext(filePaths), 
                                       execPerm = execPerm, 
                                       fileContent = content, timestamp = as.character(Sys.time(), usetz = TRUE, tz = "GMT")))
-                      },
-                      cleanLocalFiles = function(){
-                        if(length(private$localAttachments$filePaths)){
-                          removedLocalFiles <- file.remove(private$localAttachments$filePaths)
-                          if(any(!removedLocalFiles))
-                            flog.warn("Some local attachments could not be removed: '%s'.",
-                                      paste(private$localAttachments$filePaths[!removedLocalFiles], 
-                                            collapse = "', '"))
-                        }
-                        return(invisible(self))
                       }
                     )
 )
