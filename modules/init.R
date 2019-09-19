@@ -122,6 +122,38 @@ if(is.null(errMsg)){
   
   modelIn           <- config$gamsInputFiles
   names(modelIn)    <- tolower(names(modelIn))
+  
+  if(length(config$overwriteHeaderAliases)){
+    for (el in config$overwriteHeaderAliases){
+      i <- match(el$symName, names(modelIn))
+      if(is.na(i)){
+        i <- match(el$symName, names(modelOut))
+        if(is.na(i)){
+          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
+                                          el$symName), sep = "\n")
+          next
+        }
+        if(length(modelOut[[i]]$headers) != length(el$newHeaders)){
+          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
+                                          el$symName), sep = "\n")
+          next
+        }
+        for (j in seq_along(modelOut[[i]]$headers)){
+          modelOut[[i]]$headers[[j]]$alias <- el$newHeaders[j]
+        }
+       next 
+      }
+      if(length(modelIn[[i]]$headers) != length(el$newHeaders)){
+        errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
+                                        el$symName), sep = "\n")
+        next
+      }
+      for (j in seq_along(modelIn[[i]]$headers)){
+        modelIn[[i]]$headers[[j]]$alias <- el$newHeaders[j]
+      }
+    }
+  }
+  
   modelInRaw        <- modelIn
   customPackages    <- vector("list", length(modelIn))
   

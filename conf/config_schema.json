@@ -161,6 +161,33 @@
             }
          }
       },
+      "overwriteHeaderAliases":{
+        "description": "Specify new header aliases that will overwrite those defined in GAMS as explanatory text",
+         "type": "array",
+         "required":false,
+         "minItems":1,
+         "items":{
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["symName", "newHeaders"],
+           "properties":{
+              "symName":{
+                "description":"Specify the name of the symbol whose headers shall be replaced",
+                "type":"string",
+                "minLength":1
+              },
+              "newHeaders":{
+                "description":"Specify new headers (number needs to match dimension of symbol)",
+                "type":"array",
+                "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
+              }
+           }
+         }
+      },
       "aggregateWidgets":{
          "description": "Whether to aggregate all input widgets on a single tab",
          "type": "boolean",
