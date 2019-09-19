@@ -612,6 +612,7 @@
     },
     "saveScenDb":{
       "title":"在数据库中保存场景数据",
+      "attachments": "Saving attachments",
       "progress":"正在保存数据集"
     },
     "hcubeImport":{

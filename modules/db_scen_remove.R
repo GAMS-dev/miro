@@ -97,8 +97,8 @@ closeScenario <- function(){
   # reset model output data
   renderOutputData()
   activeScenario    <<- NULL
-  activeScen        <<- NULL
-  gc()
+  activeScen        <<- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+                                     isNewScen = TRUE)
   rv$activeSname    <<- NULL
   scenTags          <<- NULL
   attachmentList    <<- tibble(name = vector("character", attachMaxNo), 
@@ -115,13 +115,13 @@ closeScenario <- function(){
 }
 
 observeEvent(input$btDelete, {
-  req(activeScen)
+  req(activeScen, activeScen$getSid())
   flog.debug("Button to delete scenario from database clicked.")
   showDeleteScenDialog()
 })
 observeEvent(input$btDeleteConfirm, {
   flog.debug("Button to confirm deleting scenario from database clicked.")
-  if(is.null(activeScen)){
+  if(is.null(activeScen) || !length(activeScen$getSid())){
     flog.error("No active scenario ID found to delete.")
     return()
   }

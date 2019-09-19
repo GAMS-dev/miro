@@ -156,7 +156,7 @@
             "remoteExecution":{
                "description": "Should model be solved remotely (note that credentials/location needs to be specified via environment variables!)?",
                "type": "boolean",
-               "default":true,
+               "default":false,
                "required":false
             }
          }
@@ -1024,8 +1024,30 @@
                                  "dygraphs",
                                  "leaflet",
                                  "timevis"
-                              ],
-                              "required":true
+                              ]
+                           },
+                           "filter":{  
+                             "type":"object",
+                             "description":"Add an interactive filter above the graph to slice the data",
+                             "properties":{  
+                                "col":{  
+                                  "description":"Column to filter on",
+                                   "type":"string",
+                                   "minLength": 1
+                                },
+                                "multiple":{  
+                                   "description":"Allow multiple filter options to be selected",
+                                   "type":"boolean",
+                                   "default":false
+                                },
+                                "label":{  
+                                  "description":"ALabel to be displayed above filter menu",
+                                   "type":"string"
+                                }
+                             },
+                             "required":[
+                               "col"
+                             ]
                            }
                         },
                         "required":[  

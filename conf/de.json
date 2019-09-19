@@ -612,6 +612,7 @@
     },
     "saveScenDb":{  
       "title":"Speichern von Szenariodaten in der Datenbank ",
+      "attachments": "Speichern von Anhängen",
       "progress":"Speichern von Datensatz "
     },
     "hcubeImport":{

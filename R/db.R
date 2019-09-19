@@ -279,22 +279,20 @@ Db <- R6Class("Db",
                   #   dataframe with metadata
                   
                   #BEGIN error checks
+                  if(!length(sid))
+                    sid <- NA_integer_
                   stopifnot(is.integer(sid), length(sid) == 1L)
-                  stopifnot(is.character(uid), length(uid) == 1L)
-                  stopifnot(is.character(sname), length(sname) == 1L)
+                  stopifnot(is.character(uid), length(uid) == 1L,
+                            is.character(sname), length(sname) == 1L)
                   stime <- as.POSIXct(stime)
                   stopifnot(inherits(stime, "POSIXct"), length(stime) == 1L)
-                  stopifnot(is.character(stag))
-                  stopifnot(is.character(readPerm))
-                  stopifnot(is.character(writePerm))
-                  stopifnot(is.character(execPerm))
-                  stopifnot(is.character(uidAlias), length(uidAlias) == 1L)
-                  stopifnot(is.character(snameAlias), length(snameAlias) == 1L)
-                  stopifnot(is.character(stimeAlias), length(stimeAlias) == 1L)
-                  stopifnot(is.character(stagAlias))
-                  stopifnot(is.character(readPermAlias))
-                  stopifnot(is.character(writePermAlias))
-                  stopifnot(is.character(execPermAlias))
+                  stopifnot(is.character(stag), is.character(readPerm),
+                            is.character(writePerm), is.character(execPerm),
+                            is.character(uidAlias), length(uidAlias) == 1L,
+                            is.character(snameAlias), length(snameAlias) == 1L,
+                            is.character(stimeAlias), length(stimeAlias) == 1L,
+                            is.character(stagAlias), is.character(readPermAlias),
+                            is.character(writePermAlias), is.character(execPermAlias))
                   #END error checks
                   
                   metadata <- tibble(sid, uid, sname, stime)

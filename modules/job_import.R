@@ -156,7 +156,8 @@ observeEvent(
     }
     tryCatch({
       activeScen <<- Scenario$new(db = db, sname = rv$activeSname, 
-                                  tags = scenTags, overwrite = TRUE)
+                                  tags = scenTags, overwrite = TRUE, 
+                                  isNewScen = TRUE)
       scenTags   <<- NULL
       rv$importJobConfirm <- rv$importJobConfirm + 1L
     }, error = function(e){

@@ -51,7 +51,8 @@ showLoginDialog <- function(cred, forwardOnSuccess = NULL){
   ))
 }
 
-showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm"){
+showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm", 
+                              scenTags = character(0L)){
   if(config$activateModules$hcubeMode){
     modeDescriptor <- "dialogNewHCJob"
   }else{
@@ -62,7 +63,8 @@ showNewScenDialog <- function(tmpScenName = NULL, forwardTo = "btSaveConfirm"){
     tags$div(id = "scenNameWrapper", 
              textInput("scenName", lang$nav[[modeDescriptor]]$desc,
                        value = tmpScenName),
-             selectizeInput("newScenTags", lang$nav[[modeDescriptor]]$tags, c(),
+             selectizeInput("newScenTags", lang$nav[[modeDescriptor]]$tags, scenTags, 
+                            selected = scenTags,
                             multiple = TRUE, options = list(
                               'create' = TRUE,
                               'persist' = FALSE)
@@ -568,14 +570,16 @@ showEditMetaDialog <- function(metadata, sharedScen = FALSE,
                                    tags$div(class = "gmsalert gmsalert-error", id = "attachUnknownError", 
                                             lang$errMsg$unknownError),
                                    tags$div(class = "space"),
+                                   downloadLink("downloadAttachmentData", "", style = "visibility:hidden;"),
                                    fileInput("file_addAttachments", langData$attachmentsAdd, multiple = TRUE),
                                    if(length(attachmentMetadata[["name"]])){
                                      lapply(seq_along(attachmentMetadata[["name"]]), function(i){
                                        tags$div(class = "row attachment-line", 
                                                 column(width = 6, 
                                                        HTML(paste0('<button class="btn btn-default bt-icon" id="btRemoveAttachment_', i,
-                                                                   '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>')), 
-                                                       downloadLink("downloadAttachment_" %+% i, attachmentMetadata[["name"]][[i]])
+                                                                   '" type="button" onclick="Miro.removeAttachment(', i, ')"><i class="fa fa-times-circle"></i></button>
+                                                                   <a href="#" onclick="Miro.downloadAttachment(', i, ')">', 
+                                                                   htmltools::htmlEscape(attachmentMetadata[["name"]][[i]]), '</a>'))
                                                 ),
                                                 if(attachAllowExec){
                                                   column(width = 6,

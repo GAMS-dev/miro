@@ -612,6 +612,7 @@
     },
     "saveScenDb":{  
       "title":"Saving scenario data in database",
+      "attachments": "Saving attachments",
       "progress":"Saving dataset "
     },
     "hcubeImport":{

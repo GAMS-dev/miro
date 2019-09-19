@@ -159,6 +159,14 @@ export function removeAttachment(elId) {
     priority: 'event',
   });
 }
+export function downloadAttachment(elId) {
+  Shiny.setInputValue('downloadAttachment', elId, {
+    priority: 'event',
+  });
+  setTimeout(() => {
+    $('#downloadAttachmentData')[0].click();
+  }, 200);
+}
 
 export function changeDDButtonEvent(elText, DDBtnID, actionID) {
   $(DDBtnID).attr('onclick',
@@ -497,8 +505,8 @@ $(document).ready(() => {
     }, delay * 1000);
   });
   Shiny.addCustomMessageHandler('gms-updateAttachList', (el) => {
-    const { id } = $.makeArray(el.id);
-    const { name } = $.makeArray(el.name);
+    const id = $.makeArray(el.id);
+    const name = $.makeArray(el.name);
 
     for (let i = 0; i < id.length; i += 1) {
       let checkBoxHTML = '';
@@ -506,7 +514,7 @@ $(document).ready(() => {
         checkBoxHTML = `<div class="col-sm-6"><div class="form-group shiny-input-container"><div class="checkbox"><label><input type="checkbox" onchange="Shiny.setInputValue('execPermAttachment_${id[i]}', $(this).is(':checked'));" checked="checked"><span>${el.labelCb}</span></label></div></div></div>`;
       }
 
-      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button> ${name[i]}</div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
+      $(`<div class="row attachment-line"><div class="col-sm-6"><button class="btn btn-default bt-icon" id="btRemoveAttachment_${id[i]}" type="button" onclick="Miro.removeAttachment(${id[i]})"><i class="fa fa-times-circle"></i></button><a href="#" onclick="Miro.downloadAttachment(${id[i]})"> ${name[i]}</a></div>${checkBoxHTML}</div>`).insertBefore('#endAttachList');
     }
   });
   Shiny.addCustomMessageHandler('gms-fitTitleInBox', (id) => {

@@ -48,7 +48,7 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
                       "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
                       "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "zip", "tidyr")
-
+config <- list()
 gamsSysDir   <- ""
 getCommandArg <- function(argName, exception = TRUE){
   # local mode
@@ -499,9 +499,8 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
                           "Copyright (c) 2019 GAMS Software GmbH <support@gams.com><br/>",
                           "Copyright (c) 2019 GAMS Development Corp. <support@gams.com><br/><br/>",
                           "This program is free software: you can redistribute it and/or modify ",
-                          "it under the terms of the GNU General Public License as published by ",
-                          "the Free Software Foundation, either version 3 of the License, or ",
-                          "(at your option) any later version.<br/><br/>",
+                          "it under the terms of version 3 of the GNU General Public License as published by ",
+                          "the Free Software Foundation.<br/><br/>",
                           "This program is distributed in the hope that it will be useful, ", 
                           "but WITHOUT ANY WARRANTY; without even the implied warranty of ",
                           "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ",
@@ -599,21 +598,10 @@ if(!is.null(errMsg)){
   pb <- NULL
   ui_initError <- fluidPage(
     tags$head(
-      if(length(config$theme) && identical(config$theme, "light")){
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages_light.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro_light.css")
-        )
-      }else if(length(config$theme) && identical(config$theme, "dark")){
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages_dark.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro_dark.css")
-        )
+      if(!is.list(config) || !is.character(config$theme)){
+        tags$link(type = "text/css", rel = "stylesheet", href = "skin_light.css")
       }else{
-        tagList(
-          tags$link(type = "text/css", rel = "stylesheet", href = "packages.css"),
-          tags$link(type = "text/css", rel = "stylesheet", href = "miro.css")
-        )
+        tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css"))
       },
       tags$script(src = "miro.js", type = "application/javascript")
     ),
@@ -779,7 +767,7 @@ if(!is.null(errMsg)){
           }else{
             method <- dataFileExt[i]
           }
-          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
           dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
@@ -873,11 +861,13 @@ if(!is.null(errMsg)){
     modelStatus        <- NULL
     
     # currently active scenario (R6 object)
-    activeScen         <- NULL
+    activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+                                       isNewScen = TRUE)
     exportFileType     <- if(useGdx) "gdx" else "xls"
     
     # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
     sidCompOrder     <- NULL
+    
     if(config$activateModules$scenario){
       scenMetaData     <- list()
       # scenario metadata of scenario saved in database
@@ -1162,8 +1152,10 @@ if(!is.null(errMsg)){
       if(rv$unsavedFlag){
         nameSuffix <- " (*)"
       }
-      if(is.null(activeScen)){
+      if(is.null(activeScen) || !length(activeScen$getSid())){
         if(length(rv$activeSname)){
+          if(length(activeScen))
+            activeScen$updateMetadata(newName = rv$activeSname)
           return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
         }
         return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))
