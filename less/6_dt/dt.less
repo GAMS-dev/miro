@@ -67,6 +67,20 @@ table.dataTable tbody tr {
        background-color: @row-even-dark;
     });
 }
+table.dataTable tbody tr td input[type=text]{
+    .responsiveDark({
+    },
+    {
+       background-color: @textinput-background-dark;
+    });
+}
+table.dataTable tbody tr td input[type=text]:focus{
+    .responsiveDark({
+    },
+    {
+       outline-color: @light-blue-dark;
+    });
+}
 
 table.dataTable tbody tr.selected {
     background-color: #B0BED9
