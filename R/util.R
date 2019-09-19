@@ -1147,3 +1147,13 @@ setDbConfig <- function(configFn){
   }
   return(list(data = config, errMsg = errMsg))
 }
+file.move <- function(from, to){
+  nonExistingDirs <- !dir.exists(dirname(to))
+  if(any(nonExistingDirs)){
+    nonExistingDirs <- dirname(to)[nonExistingDirs]
+    for(nonExistingDir in nonExistingDirs){
+      dir.create(nonExistingDir, recursive=TRUE)
+    }
+  }
+  file.rename(from = from,  to = to)
+}

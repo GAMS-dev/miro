@@ -35,7 +35,7 @@ storeGAMSOutputFiles <- function(workDir){
       }
       filesToStore <- filesToStore[!filesTooLarge]
       activeScen$addAttachments(filesToStore, overwrite = TRUE, 
-                                noSave = TRUE, execPerm = rep.int(FALSE, length(filesToStore)))
+                                execPerm = rep.int(FALSE, length(filesToStore)))
     }, error = function(e){
       switch(conditionMessage(e),
              fileAccessException = {
@@ -370,7 +370,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     }
     tryCatch({
       sid <- NULL
-      if(length(activeScen)){
+      if(length(activeScen) && length(activeScen$getSid())){
         if(!activeScen$hasExecPerm())
           stop("User attempted to execute a scenario that he/she has no access to! This looks like an attempt to tamper with the app!", 
                call. = FALSE)
@@ -511,7 +511,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       showHideEl(session, "#jobSubmitBadName", 4000L)
       return()
     }
-    if(length(activeScen)){
+    if(length(activeScen) && length(activeScen$getSid())){
       if(!activeScen$hasExecPerm()){
         flog.error("User has no execute permission for this scenario. This looks like an attempt to tamper with the app!")
         return()
@@ -648,7 +648,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
   # run GAMS
   tryCatch({
     jobSid <- NULL
-    if(length(activeScen)){
+    if(length(activeScen) && length(activeScen$getSid())){
       jobSid <- activeScen$getSid()
     }
     worker$run(dataModelRun$inputData, dataModelRun$pfFileContent, jobSid)

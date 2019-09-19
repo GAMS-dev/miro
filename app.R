@@ -767,7 +767,7 @@ if(!is.null(errMsg)){
           }else{
             method <- dataFileExt[i]
           }
-          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile))
+          newScen <- Scenario$new(db = db, sname = gsub("\\.[^\\.]*$", "", miroDataFile), isNewScen = TRUE)
           dataOut <- loadScenData(scalarsOutName, modelOut, miroDataDir, modelName, scalarsFileHeaders,
                                   modelOutTemplate, method = method, fileName = miroDataFile)$tabular
           dataIn  <- loadScenData(scalarsFileName, dataModelIn, miroDataDir, modelName, scalarsFileHeaders,
@@ -861,7 +861,8 @@ if(!is.null(errMsg)){
     modelStatus        <- NULL
     
     # currently active scenario (R6 object)
-    activeScen         <- NULL
+    activeScen         <- Scenario$new(db = db, sname = lang$nav$dialogNewScen$newScenName, 
+                                       isNewScen = TRUE)
     exportFileType     <- if(useGdx) "gdx" else "xls"
     
     # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
@@ -1151,8 +1152,10 @@ if(!is.null(errMsg)){
       if(rv$unsavedFlag){
         nameSuffix <- " (*)"
       }
-      if(is.null(activeScen)){
+      if(is.null(activeScen) || !length(activeScen$getSid())){
         if(length(rv$activeSname)){
+          if(length(activeScen))
+            activeScen$updateMetadata(newName = rv$activeSname)
           return(tags$i(paste0("<", htmltools::htmlEscape(rv$activeSname), ">", nameSuffix)))
         }
         return(tags$i(paste0("<", htmltools::htmlEscape(lang$nav$dialogNewScen$newScenName), ">", nameSuffix)))

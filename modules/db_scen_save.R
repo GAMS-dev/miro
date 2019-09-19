@@ -18,7 +18,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
   if(dirtyFlag){
     showRemoveExistingOutputDataDialog()
   }else{
-    if(saveAsFlag || is.null(activeScen)){
+    if(saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())){
       rv$btSaveAs <<- isolate(rv$btSaveAs + 1)
     }else{
       # overwrite current scenario data
@@ -29,7 +29,7 @@ observeEvent(virtualActionButton(rv$btRemoveOutputData), {
 observeEvent(input$btRemoveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be removed.", uid)
   saveOutput <<- FALSE
-  if(saveAsFlag || is.null(activeScen)){
+  if(saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overwrite current scenario data
@@ -39,7 +39,7 @@ observeEvent(input$btRemoveOutput, {
 observeEvent(input$btSaveOutput, {
   flog.debug("%s: User confirmed that output data for scenario will be saved regardless of possible corruption", uid)
   saveOutput <<- TRUE
-  if(saveAsFlag || is.null(activeScen)){
+  if(saveAsFlag || is.null(activeScen) || !length(activeScen$getSid())){
     rv$btSaveAs <<- isolate(rv$btSaveAs + 1L)
   }else{
     # overwrite current scenario data
@@ -57,7 +57,11 @@ observeEvent(virtualActionButton(rv$btSaveAs), {
   }else{
     tmpScenName <- lang$nav$dialogNewScen$newScenName
   }
-  showNewScenDialog(tmpScenName)
+  currentTags <- character(0L)
+  if(length(activeScen) && !length(activeScen$getSid())){
+    currentTags <- activeScen$getStags()
+  }
+  showNewScenDialog(tmpScenName, scenTags = currentTags)
 })
 
 observeEvent(input$btNewName, {
@@ -137,14 +141,21 @@ observeEvent(virtualActionButton(rv$btSaveConfirm), {
   # save to database
   scenStr <- "scen_1_"
   tryCatch({
-    if(is.null(activeScen) || saveAsFlag){
-      if(saveAsFlag){
-        activeScen <<- NULL
-        gc()
-        rv$activeSname <<- isolate(input$scenName)
+    if(saveAsFlag){
+      if(!is.null(activeScen)){
+        if(!length(activeScen$getSid())){
+          activeScen$updateMetadata(newName = input$scenName, newTags = scenTags)
+        }else{
+          activeScen <<- NULL
+          gc()
+        }
       }
+      rv$activeSname <<- input$scenName
+    }
+    if(is.null(activeScen)){
       activeScen <<- Scenario$new(db = db, sname = isolate(rv$activeSname), 
-                                  tags = scenTags, overwrite = identical(saveAsFlag, TRUE))
+                                  tags = scenTags, overwrite = identical(saveAsFlag, TRUE),
+                                  isNewScen = TRUE)
       scenTags   <<- NULL
     }
     activeScen$save(scenData[[scenStr]], msgProgress = lang$progressBar$saveScenDb)
@@ -278,6 +289,7 @@ observeEvent(input$btUpdateMeta, {
       scenMetaData[["scen_1_"]] <<- activeScen$getMetadata(lang$nav$excelExport$metadataSheet)
       hideEl(session, "#editMetaUI")
       showEl(session, "#editMetaSuccess")
+      markUnsaved()
       hideModal(session, 1L)
     }, error = function(e){
       flog.error("Problems updating scenario metadata. Error message: %s.", e)
@@ -297,6 +309,7 @@ if(config$activateModules$attachments){
       req(nchar(attachmentList[["name"]][[i]]) > 0L, activeScen)
       activeScen$removeAttachments(attachmentList[["name"]][[i]])
       attachmentList[i, ] <<- c(NA_character_, FALSE)
+      markUnsaved()
       showHideEl(session, "#attachSuccess")
     })
     observe({
@@ -309,8 +322,9 @@ if(config$activateModules$attachments){
       }
       tryCatch({
         activeScen$setAttachmentExecPerm(attachmentList[["name"]][[i]], 
-                                         value)
+                                         value, workDir = workDir)
         attachmentList[i, "execPerm"] <<- value
+        markUnsaved()
         showHideEl(session, "#attachSuccess")
         }, error = function(e){
           flog.error(e)
@@ -318,14 +332,23 @@ if(config$activateModules$attachments){
         })
       
     })
-    output[['downloadAttachment_' %+% i]] <- downloadHandler(
-      filename = function() { attachmentList[["name"]][[i]] },
-      content = function(file) {
-        req(activeScen)
-        activeScen$downloadAttachmentData(file, fileNames = attachmentList[["name"]][[i]], fullPath = TRUE)
-      }
-    )
   })
+  output$downloadAttachmentData <- downloadHandler(
+    filename = function() { 
+      i <- isolate(input$downloadAttachment)
+      if(!is.integer(i) || length(attachmentList[["name"]]) < i){
+        return("error.txt")
+      }
+      attachmentList[["name"]][[input$downloadAttachment]] },
+    content = function(file) {
+      i <- input$downloadAttachment
+      if(!is.integer(i) || length(attachmentList[["name"]]) < i){
+        return(writeLines("error", file))
+      }
+      activeScen$downloadAttachmentData(file, fileNames = attachmentList[["name"]][[i]], 
+                                        fullPath = TRUE)
+    }
+  )
   observeEvent(input$file_addAttachments$datapath, {
     req(activeScen)
     
@@ -337,7 +360,7 @@ if(config$activateModules$attachments){
     errMsg <- NULL
     
     tryCatch({
-      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), 
+      activeScen$addAttachments(isolate(input$file_addAttachments$datapath), workDir = workDir,
                                 fileNames = isolate(input$file_addAttachments$name),
                                 forbiddenFnames = c(paste0(c(names(modelInTabularData), 
                                                              names(modelOut)), ".csv"), paste0(modelName, c(".log", ".lst"))))
@@ -359,6 +382,7 @@ if(config$activateModules$attachments){
       }
       updateAttachList(session, fileName = isolate(input$file_addAttachments$name), id = idxes, token = session$token, 
                        labelCb = lang$nav$dialogEditMeta$attachmentsExecPerm, allowExec = attachAllowExec)
+      markUnsaved()
       showHideEl(session, "#attachSuccess")
     }, error = function(e){
       errMsg <<- character(1L)
