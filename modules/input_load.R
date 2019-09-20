@@ -46,7 +46,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
           if(identical(names(modelIn)[[i]], tolower(scalarsFileName))){
             if(verifyScalarInput(dataTmp, modelIn[[i]]$headers, scalarInputSym)){
               scalarDataset <<- dataTmp 
-              attr(dataTmp, "aliases")  <- scalarsFileHeaders
+              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
               modelInputData[[i]] <<- dataTmp[!(tolower(dataTmp[[1]]) %in% names(modelIn)), , drop = FALSE]
               inputVerified <- TRUE
             }

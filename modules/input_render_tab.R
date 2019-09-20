@@ -202,6 +202,20 @@ lapply(modelInTabularData, function(sheet){
              if(!length(colnames)){
                colnames <- attr(modelInTemplate[[i]], "aliases")
              }
+             # check for readonly columns
+             colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
+               if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
+                 modelIn[[i]]$headers[[j]]$alias
+               }else{
+                 NA_character_
+               }
+             }, character(1L), USE.NAMES = FALSE)
+             colsReadonly <- colsReadonly[!is.na(colsReadonly)]
+             
+             isRo <- FALSE
+             if(isTRUE(modelIn[[i]]$readonly) || length(colsReadonly) > 0L){
+               isRo <- TRUE
+             }
              ht <- rhandsontable(dataModelIn[[i]](), height = hotOptions$height, 
                                  colHeaders = colnames,
                                  width = hotOptions$width, search = hotOptions$search, 
@@ -213,8 +227,8 @@ lapply(modelInTabularData, function(sheet){
                              enableComments = hotOptions$enableComments, 
                              stretchH = hotOptions$stretchH,
                              overflow = hotOptions$overflow)
-             ht <- hot_context_menu(ht, allowRowEdit = hotOptions$contextMenu$allowRowEdit, 
-                                    allowColEdit = hotOptions$contextMenu$allowColEdit, 
+             ht <- hot_context_menu(ht, allowRowEdit = if(isRo) FALSE else hotOptions$contextMenu$allowRowEdit, 
+                                    allowColEdit = FALSE, 
                                     allowReadOnly = hotOptions$contextMenu$allowReadOnly, 
                                     allowComments = hotOptions$contextMenu$allowComments)
              ht <- hot_cols(ht, columnSorting = hotOptions$columnSorting, 
@@ -223,15 +237,6 @@ lapply(modelInTabularData, function(sheet){
                             colWidths = hotOptions$colWidths, 
                             fixedColumnsLeft = hotOptions$fixedColumnsLeft)
              
-             # check for readonly columns
-             colsReadonly <- vapply(seq_along(modelIn[[i]]$headers), function(j){
-               if(identical(modelIn[[i]]$headers[[j]]$readonly, TRUE)){
-                 modelIn[[i]]$headers[[j]]$alias
-               }else{
-                 NA_character_
-               }
-             }, character(1L), USE.NAMES = FALSE)
-             colsReadonly <- colsReadonly[!is.na(colsReadonly)]
              if(length(colsReadonly)){
                ht <- hot_col(ht, colsReadonly, readOnly = TRUE)
              }

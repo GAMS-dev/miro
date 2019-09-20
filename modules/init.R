@@ -153,6 +153,12 @@ if(is.null(errMsg)){
       }
     }
   }
+  scalarTableIds <- match(c(scalarsFileName), names(modelIn))
+  scalarTableIds <- scalarTableIds[!is.na(scalarTableIds)]
+  for(scalarTableId in scalarTableIds){
+    modelIn[[scalarTableId]]$headers[[1]]$readonly <- TRUE
+    modelIn[[scalarTableId]]$headers[[2]]$readonly <- TRUE
+  }
   
   modelInRaw        <- modelIn
   customPackages    <- vector("list", length(modelIn))
@@ -503,7 +509,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
           }else if(!identical(length(widgetIds), length(widgetIdsMultiDim))){
             scalarAssigned <- TRUE
             tabTitles[[j]] <-  lang$nav$scalarAliases$scalars
-            tabs[[j]]      <-  c(0L, widgetIdsMultiDim)
+            tabs[[j]]      <-  0L
             j <- j + 1L
             next
           }
@@ -556,6 +562,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                               widgetIdsMultiDim = widgetIdsMultiDim)
   scenInputTabTitles <- scenInputTabs$tabTitles
   scenInputTabs    <- scenInputTabs$tabs
+  
   # read graph data for input and output sheets
   strictMode        <- config$activateModules$strictmode
   config$activateModules$miroLogFile <- length(config$miroLogFile) > 0L && 

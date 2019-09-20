@@ -345,6 +345,8 @@ Scenario <- R6Class("Scenario",
                         attachments <- super$importDataset(private$dbSchema$tabName[["_scenAttach"]], 
                                                            colNames = c("fileName", "execPerm"), 
                                                            subsetSids = private$sid)
+                        attachmentNamesDb <- character(0L)
+                        attachmentExecPermDb <- logical(0L)
                         if(length(attachments)){
                           attachmentNamesDb    <- attachments[[1]]
                           attachmentsToKeep    <- !attachmentNamesDb %in% attachmentNames

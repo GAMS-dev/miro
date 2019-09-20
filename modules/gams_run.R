@@ -103,16 +103,16 @@ prepareModelRun <- function(async = FALSE){
       rm(GMSOptValues, DDParValues)
     }else if(identical(modelIn[[names(dataTmp)[[i]]]]$dropdown$multiple, TRUE)){
       # append alias column
-      choiceIdx         <- match(dataTmp[[i]][[1L]], 
-                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
       csvData           <- dataTmp[[i]]
+      choiceIdx         <- match(csvData[[1L]], 
+                                 modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
       if(length(choiceIdx)){
-        if(!is.na(choiceIdx)){
+        if(any(is.na(choiceIdx))){
+          csvData[["text"]] <- ""
+        }else{
           aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
           aliasCol[is.na(aliasCol)] <- ""
           csvData[["text"]] <- aliasCol
-        }else{
-          csvData[["text"]] <- ""
         }
       }else{
         csvData[["text"]] <- character(0L)

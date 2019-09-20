@@ -13,11 +13,10 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   },
   rgdx = function(gdxName, symName, names = character(0L), 
                   pivotHeaders = character(0L), isNewGdx = FALSE){
-    stopifnot(is.character(gdxName), identical(length(gdxName), 1L))
-    stopifnot(is.character(symName), identical(length(symName), 1L))
-    stopifnot(is.logical(isNewGdx), identical(length(isNewGdx), 1L))
-    stopifnot(is.character(names))
-    stopifnot(is.character(pivotHeaders))
+    stopifnot(is.character(gdxName), identical(length(gdxName), 1L),
+              is.character(symName), identical(length(symName), 1L),
+              is.logical(isNewGdx), identical(length(isNewGdx), 1L),
+              is.character(names), is.character(pivotHeaders))
     
     if(isNewGdx || !identical(gdxName, private$rgdxName)){
       private$rgdxName   <- gdxName
@@ -37,6 +36,10 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                               }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
                                 scalarTmp <- private$rgdxSet(scalarSymbols$symnames[[i]])
                                 if(length(scalarTmp)){
+                                  if(length(scalarTmp) == 2 && nchar(scalarTmp[[2]][1])){
+                                    return(paste0(as.character(scalarTmp[[1]])[1], "||", 
+                                                  as.character(scalarTmp[[2]])[1]))
+                                  }
                                   return(as.character(scalarTmp[[1]])[1])
                                 }
                               }
@@ -77,12 +80,14 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     stopifnot(length(names(data)) > 0L)
     squeezeZeros <- match.arg(squeezeZeros)
     # tabular data
+    scalarIdList <- NULL
     wgdxDotList <- lapply(seq_along(data), function(i){
       if(!length(data[[i]]) || !nrow(data[[i]])){
         return(NA)
       }
       symName   <- names(data)[i]
       if(symName %in% c(scalarsFileName, scalarsOutName, scalarEquationsOutName)){
+        scalarIdList <<- c(scalarIdList, symName)
         return(NULL)
       }
       if(symName %in% names(private$metaData)){
@@ -142,9 +147,12 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       ret$val  <- v
       return(ret)
     })
-    isScalarData <- vapply(wgdxDotList, is.null, 
-                           logical(1L), USE.NAMES = FALSE)
+    isScalarData <- FALSE
+    if(length(scalarIdList))
+      isScalarData <- vapply(wgdxDotList, is.null, 
+                             logical(1L), USE.NAMES = FALSE)
     isEmptySymbol <- is.na(wgdxDotList)
+    
     # scalar data
     scalarSymList <- unlist(lapply(which(isScalarData), function(i){
       if(identical(isEmptySymbol[[i]], TRUE)){
@@ -155,8 +163,12 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       if(identical(nc, 3L)){
         symNames <- df[[1L]]
         symTexts <- df[[2L]]
-        symVals  <- df[[3L]]
-        symTypes <- NULL
+        symVals  <- strsplit(df[[3L]], "||", fixed = TRUE)
+        symIds   <- match(symNames, private$metaData[[scalarIdList[[i]]]]$symnames)
+        if(any(is.na(symIds)))
+          stop(sprintf("Symbol(s): '%s' was not found in model data contract", 
+                       paste(symNames[is.na(symIds)], collapse = "', '")), call. = FALSE)
+        symTypes <- private$metaData[[scalarIdList[[i]]]]$symtypes[symIds]
       }else{
         symTypes <- df[[1L]]
         symNames <- df[[2L]]
@@ -165,35 +177,42 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       }
       lapply(seq_along(symNames), function(j){
         symName  <- symNames[j]
+        symType  <- symTypes[j]
+        metaId   <- match(symName, private$metaData[[scalarsFileName]]$symNames)
+        
         form     <- "sparse"
         dim      <- 0L
         uels     <- NULL
+        te       <- NULL
         typeCode <- NULL
-        if(is.null(symTypes)){
-          v     <- suppressWarnings(as.numeric(symVals[j]))
-          if(is.na(v)){
-            # element is singleton set
-            dim     <- 1L
-            v       <- matrix(1L)
-            uels    <- list(symVals[j])
-            symType <- "set"
-          }else{
-            form    <- "full"
-            symType <- "parameter"
-          }
-        }else{
+        if(symType %in% c("variable", "equation")){
           typeCode <- 0L
-          symType  <- if(startsWith(symTypes[j], "va")) "variable" else "equation"
           df       <- tidyr::gather(df[j, ], key = "field", 
                                     "value", factor_key = TRUE)
           uels     <- list(c('l', 'm', 'lo', 'up', 's'))
           v        <- data.matrix(df)
+        }else if(symType == "parameter"){
+          v       <- as.numeric(symVals[[j]][1])
+          form    <- "full"
+        }else if(symType == "set"){
+          # element is singleton set
+          dim     <- 1L
+          v       <- matrix(1L)
+          symVal  <- symVals[[j]]
+          uels    <- symVal[1]
+          te      <- paste0(symVal[-1], collapse = "")
+        }else{
+          stop(sprintf("Unknown symbol type: '%s'.", symType), 
+               call. = FALSE)
         }
         ret <- list(name = symName, ts = symTexts[j], 
                     type = symType, dim = dim, 
                     form = form, val = v)
         if(!is.null(uels)){
           ret$uels <- uels
+        }
+        if(!is.null(te)){
+          ret$te <- te
         }
         if(!is.null(typeCode)){
           ret$typeCode <- typeCode

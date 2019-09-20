@@ -4,6 +4,8 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
   # make output type case insensitive
   typeCustom <- type
   type <- tolower(type)
+  if(!length(type))
+    type <- "datatable"
   
   if(type == "pivot"){
     # set default height
@@ -75,6 +77,8 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   if(!is.null(graphOptions)){
     graphTool <- graphOptions$tool
   }
+  if(!length(type))
+    type <- "datatable"
   if(!length(data) || identical(nrow(data), 0L)){
     showEl(session, "#" %+% session$ns("noData"))
     hideEl(session, "#" %+% session$ns("data"))
