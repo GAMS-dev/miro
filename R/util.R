@@ -161,7 +161,7 @@ getInputType <- function(data, keywordsType, isMultiDropdown = FALSE){
   # Returns:
   # return type corresponding to keyword found or error in case no keywords matched
   if(isTRUE(isMultiDropdown)){
-    return(names(keywordsType)[['dropdown']])
+    return("dropdown")
   }
   for(i in seq_along(keywordsType)){
     if(keywordsType[[i]] %in% names(data)){
@@ -1156,4 +1156,11 @@ file.move <- function(from, to){
     }
   }
   file.rename(from = from,  to = to)
+}
+hotToR <- function(data, metaData){
+  data <- suppressWarnings(fixColTypes(
+    as_tibble(data.table::rbindlist(data, use.names = FALSE)),
+    metaData$colTypes))
+  names(data) <- names(metaData$headers)
+  data
 }

@@ -8,7 +8,8 @@ getInputDataset <- function(id){
       if(length(colsWithDep[[id]])){
         if(!isEmptyInput[id]){
           if(modelIn[[id]]$type == "hot"){
-            dataTmp <- hot_to_r(isolate(input[["in_" %+% id]]))
+            dataTmp <- hotToR(isolate(input[["in_" %+% id]])$data, 
+                              modelIn[[id]])
             if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
                identical(dataTmp[[1L]][1], ""))
               return(bind_rows(modelInputData[[id]], 
@@ -22,7 +23,8 @@ getInputDataset <- function(id){
       }
       if(!isEmptyInput[id]){
         if(modelIn[[id]]$type == "hot"){
-          return(hot_to_r(isolate(input[["in_" %+% id]])))
+          return(hotToR(isolate(input[["in_" %+% id]])$data, 
+                        modelIn[[id]]))
         }
         return(tableContent[[id]])
       }
