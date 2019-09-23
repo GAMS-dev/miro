@@ -84,7 +84,7 @@ getHotOptions <- reactive({
       condition = "input.hot_customWidth===true && input.hot_stretch !== 'all'",
       tags$div(style = "padding-left:40px;max-width:440px;",
                numericInput("hot_colwidth", lang$adminMode$tables$hot$colwidth, min = 0L, 
-                            value = if(length(configJSON$handsontable$colWidths) && !identical(configJSON$handsontable$colWidths, "[]")) configJSON$handsontable$colWidths else 0L))),
+                            value = if(length(configJSON$handsontable$colWidths)) configJSON$handsontable$colWidths else 300L))),
     tags$div(class = "shiny-input-container",
              tags$label(class = "cb-label", "for" = "hot_sort",
                         lang$adminMode$tables$hot$sort),
@@ -241,16 +241,12 @@ observeEvent(input$hot_move, {
 observeEvent(input$hot_resize, {
   rv$tableConfig$handsontable$manualColumnResize <<- input$hot_resize
 })
-observeEvent(input$hot_customWidth, {
-  if(identical(input$hot_customWidth, FALSE))
-    updateNumericInput(session, "hot_colwidth", value = 0L)
-})
 
 observeEvent(input$hot_colwidth, {
   if(!is.na(input$hot_colwidth) && input$hot_colwidth != 0)
     rv$tableConfig$handsontable$colWidths <<- input$hot_colwidth
   else
-    rv$tableConfig$handsontable$colWidths <<- "[]"
+    rv$tableConfig$handsontable$colWidths <<- 300L
 })
 observeEvent(input$hot_context_enable, {
   rv$tableConfig$handsontable$contextMenu$enabled <<- input$hot_context_enable
@@ -413,5 +409,5 @@ observeEvent(rv$tableConfig, {
          {
            return()
          })
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 })

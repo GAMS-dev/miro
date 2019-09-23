@@ -4701,48 +4701,44 @@
               "additionalProperties":false,
               "required":true,
               "properties":{  
-                "input":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":3,
-                  "maxItems":3,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "slider":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "all":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":7,
-                  "maxItems":7,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "sliderrange":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "table":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":1,
-                  "maxItems":1,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "checkbox":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 },
-                "date":{  
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":1,
-                  "maxItems":1,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
+                "dropdown":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "table":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "date":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "daterange":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "text":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }

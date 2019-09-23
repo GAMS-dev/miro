@@ -1239,7 +1239,7 @@
                   "integer"
                ],
                "exclusiveMinimum":0,
-               "default":null,
+               "default":300,
                "required":false
             },
             "fixedColumnsLeft":{  

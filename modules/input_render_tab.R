@@ -11,7 +11,7 @@ getInputDataset <- function(id){
             dataTmp <- hotToR(isolate(input[["in_" %+% id]])$data, 
                               modelIn[[id]])
             if(!length(dataTmp) || identical(nrow(dataTmp), 1L) &&
-               identical(dataTmp[[1L]][1], ""))
+               all(vapply(dataTmp, identical, logical(1L), "", USE.NAMES = FALSE)))
               return(bind_rows(modelInputData[[id]], 
                                modelInputDataVisible[[id]]))
             return(bind_rows(dataTmp, modelInputData[[id]]))

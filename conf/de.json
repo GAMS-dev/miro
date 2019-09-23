@@ -1029,10 +1029,14 @@
         "val46": "Bitte geben Sie Kommandozeilenargumente und -werte separat an."
       },
       "widgetOptions":{
-        "input": ["Schieberegler", "Dropdown-Menü", "Kontrollkästchen"],
-        "all": ["Schieberegler", "Schiebereglerbereich", "Dropdown-Menü", "Kontrollkästchen", "Datum", "Datumsbereich", "Textfeld"],
-        "table": ["Tabelle"],
-        "date": ["Datum"]
+        "slider": "Schieberegler",
+        "sliderrange": "Schiebereglerbereich",
+        "checkbox": "Kontrollkästchen",
+        "dropdown": "Dropdown-Menü",
+        "table": "Tabelle",
+        "date": "Datum",
+        "daterange": "Datumsbereiche",
+        "text": "Textfeld"
       },
       "table":{
         "alias": "Geben Sie den Elementnamen ein, wie er in einem Tab angezeigt werden soll (keine Live-Vorschau verfügbar)",

@@ -1029,10 +1029,14 @@
         "val46": "Please specify command line arguments and values separately."
       },
       "widgetOptions":{
-        "input": ["Slider", "Dropdown menu", "Checkbox"],
-        "all": ["Slider", "Slider range", "Dropdown menu", "Checkbox", "Date", "Date range", "Text box"],
-        "table": ["Table"],
-        "date": ["Date"]
+        "slider": "Slider",
+        "sliderrange": "Slider range",
+        "checkbox": "Checkbox",
+        "dropdown": "Dropdown menu",
+        "table": "Table",
+        "date": "Date",
+        "daterange": "Date range",
+        "text": "Text box"
       },
       "table":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",

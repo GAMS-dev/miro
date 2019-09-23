@@ -2192,7 +2192,7 @@ observeEvent(rv$saveGraphConfirm, {
       configJSON$dataRendering[[activeSymbol$name]]$graph$layersControl <<- NULL
     }
   }
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   showEl(session, "#deleteGraph")
@@ -2214,7 +2214,7 @@ observeEvent(input$deleteGraphConfirm, {
     return()
   }
   configJSON$dataRendering[[graphId]] <<- NULL
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   removeModal()
   showHideEl(session, "#graphUpdateSuccess", 4000L)
   hideEl(session, "#deleteGraph")

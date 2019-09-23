@@ -516,5 +516,5 @@ observeEvent(rv$generalConfig, {
     configJSON <<- modifyList(configJSON, rv$generalConfig)
   }
   
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
 })
