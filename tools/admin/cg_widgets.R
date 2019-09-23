@@ -381,6 +381,8 @@ observeEvent({input$widget_symbol
     }
   }
   if(identical(input$widget_type, selectedType)){
+    updateSelectInput(session, "widget_type", 
+                      choices = widgetOptions)
     rv$widget_type <- rv$widget_type + 1L
   }else{
     updateSelectInput(session, "widget_type", 
