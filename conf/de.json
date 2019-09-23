@@ -1086,8 +1086,7 @@
         "choiceDep":{
           "label": "Wählen Sie Symbol und Spalte aus, von der Sie abhängen möchten",
           "depChoices": ["Alle"],
-          "type": "Wählen Sie die Art der Abhängigkeit",
-          "typeChoices": ["Vorwärts", "Rückwärts", "Vorwärts und Rückwärts"],
+          "type": "Soll die Symboltabelle/Symboltabellen je nach Auswahl im Dropdown-Menü gefiltert werden?",
           "selector": "Statische Auswahlmöglichkeiten?"
         },
         "default": "Standardwert",

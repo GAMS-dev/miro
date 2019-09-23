@@ -4991,17 +4991,6 @@
                       "minLength":1,
                       "required":true
                     },
-                    "typeChoices":{  
-                      "type":"array",
-                      "uniqueItems": true,
-                      "minItems":3,
-                      "maxItems":3,
-                      "items": {
-                          "type":"string",
-                          "minLength": 1
-                      },
-                      "required":true
-                    },
                     "selector":{ 
                       "type":"string",
                       "minLength":1,
