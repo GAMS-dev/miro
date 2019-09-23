@@ -74,7 +74,7 @@
                             <section id="introduction-section" class="doc-section">
                                 <h2 class="section-title">Introduction</h2>
                                 <div id="model-1"  class="section-block">
-                                    <p>After testing the demo applications, let's now turn an existing GAMS model into a MIRO app. When developing GAMS MIRO, we focused on automating this process and making it possible with very few adjustments to your model. In order to get started, it's a good idea to have a look at the GAMS code of the <a href="./start.html#demo-applications">demo applications</a>.</p>
+                                    <p>After testing the demo applications, let's now turn an existing GAMS model into a MIRO app. When developing GAMS MIRO, we focused on automating this process and making it possible with very few adjustments to your model. In order to get started, it's a good idea to have a look at the GAMS code of the <a href="#demo-applications" class="scrollto">demo applications</a>.</p>
                                     <p>The model <i>transport</i> is one of the demo applications that come with your GAMS MIRO installation.
                                         However, for illustration purposes we now take the original <i>trnsport.gms</i> model from the GAMS <a href="https://www.gams.com/latest/gamslib_ml/libhtml/" target="_blank">Model Library</a>.
                                         </p><p>If you want to join us in going step by step from the "raw" model to our first MIRO app, download the corresponding file from the Model Library and put it in a directory of your choice.</p>
@@ -82,31 +82,34 @@
                             </section><!--//doc-section-->
                             <section id="creating-section" class="doc-section">
                                 <h2 class="section-title">Turn your GAMS model into a GAMS MIRO app</h2>
-                                    <div  id="create-1"  class="section-block">
-                                        <p>To be able to use GAMS MIRO, an interface must be created between MIRO and the GAMS model to be deployed. This interface primarily consists of the information which symbols of the GAMS model should be visible (and modifiable) to the user from within MIRO. Those GAMS symbols must be flagged in the code. </p>
-                                        <div class="callout-block callout-success">
+                                    <div  id="demo-applications"  class="section-block">
+                                        <h3 class="block-title">Demo Applications</h3>
+                                        <p>The MIRO demo applications can be found in the GAMS data utilities library. You can get them e.g. in GAMS Studio via the <i>Model Library Explorer</i> (shortcut <i>F6</i>). You can also find those demo applications <a href="./index.html#demo-download" target="_blank">here</a>.</p>
+                                        <p>The following demos are available:</p>
+                                        <ul>
+                                        <li>transport<br>
+                                        This problem looks for a least cost shipping schedule that meets requirements at markets and supplies at factories. More about this transportation problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_trnsport.html" target="_blank">here</a>.
+                                        <div class="callout-block callout-warning">
                                             <div class="icon-holder">
-                                                <i class="fas fa-thumbs-up"></i>
+                                                <i class="fas fa-info-circle"></i>
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Note:</b>
-                                                <p>A GAMS model still can be used in the normal way (via <i>GAMS Studio</i>, <i>GAMSIDE</i> or the console) after the following adjustments</p>
+                                                <p>The well-known model from the GAMS model library is called <i>trnsport</i>. To avoid two models of the same name, the GAMS MIRO Demo model is called <i>transport</i>.</p>
                                             </div><!--//content-->
-                                        </div>
-                                        <p>In principle, only two steps are required:</p>
-                                        <ol>
-                                          <li>Enclose input data with <code class="language-gams">$onExternalInput
-                                          </code> / <code class="language-gams">$offExternalInput
-                                          </code></li>
-                                          <li>Enclose output data with <code class="language-gams">$onExternalOutput
-                                          </code> / <code class="language-gams">$offExternalOutput
-                                          </code></li>
-                                        </ol>
-                                        We will examine these steps more closely in the following.
+                                        </div><!--//callout-block--></li>
+                                        <li>transport_live<br>
+                                        A "live" version of the transport model. Extends transport in the sense that locations of suppliers and markets can be adjusted right from within MIRO. Geographical information about the cities you entered is automatically fetched and the distance matrix calculated via <a href="https://www.gams.com/latest/docs/UG_EmbeddedCode.html" target="_blank">embedded Python code</a>.
+                                        <br>This model needs an internet connection.</li>
+                                        <li>pickstock<br>
+                                        Optimization model to find a small subset of stocks of the Dow Jones index together with some weights, such that this portfolio has a similar behavior to the overall index.</li>
+                                        <li>kport<br>
+                                        This problem computes minimal cost solutions satisfying the demand of certain product portfolios. More about this optimization Problem, see <a href="https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_kport.html" target="_blank">here</a>.</li>
+                                        </ul>
                                     </div><!--//section-block-->
                                     <div  id="model-adjustments"  class="section-block">
                                         <h3 class="block-title">Model adjustments</h3>
-                                        <p>Every GAMS model can be deployed with MIRO in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by enclosing the corresponding symbols with the tags <code class="language-gams">$onExternalInput
+                                        <p>Every GAMS model can be deployed with MIRO in just a few steps. First, those GAMS symbols that you want to be visible in the interface need to be declared. This can be done by enclosing the corresponding <i>symbol declarations</i> with the tags <code class="language-gams">$onExternalInput
                                         </code> / <code class="language-gams">$offExternalInput
                                         </code> for input data and <code class="language-gams">$onExternalOutput
                                         </code> / <code class="language-gams">$offExternalOutput
@@ -151,7 +154,7 @@ Parameter
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                         
-                                        <p><b>Example:</b><br>Let's try this for our demo model <i>transport</i> now. This is what the input data section of the model looks like when we have loaded it from the GAMS Model Library:</p>
+                                        <p><b>Example:</b><br>Let's try this for the model <i>trnsport</i> now. This is what the input data section of the model looks like when we have loaded it from the GAMS Model Library:</p>
                                         <pre><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
@@ -174,7 +177,7 @@ Table d(i,j) 'distance in thousands of miles'
 Scalar f 'freight in dollars per case per thousand miles' / 90 /;
 
 Parameter c(i,j) 'transport cost in thousands of dollars per case';</code></pre>
-                                        <p>Let's import some of the data from MIRO, namely the parameters <span class="code">a</span>, <span class="code">b</span> and <span class="code">d</span> as well as the scalar <span class="code">f</span>. In order to tell MIRO that you want these symbols to come from there, we now flag them with the mentioned annotations:</p>
+                                        <p>Let's import some of the data from MIRO, namely the parameters <span class="code">a</span>, <span class="code">b</span> and <span class="code">d</span> as well as the scalar <span class="code">f</span>. In order to tell MIRO that you want these symbols to come from there, we now flag them with the mentioned annotations in the symbol declarations:</p>
                                         <pre><code class="language-gams">Set
    i 'canning plants' / seattle,  san-diego /
    j 'markets'        / new-york, chicago, topeka /;
@@ -232,7 +235,7 @@ Positive Variable x;
                                             </div><!--//icon-holder-->
                                             <div class="content">
                                                 <b class="callout-title">Note:</b>
-                                                <p>To run GAMS MIRO from the command prompt, it has to be either added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system or called with an absolute path!</p>
+                                                <p>To run GAMS MIRO from the command prompt, it has to be either added to the <a href="https://en.wikipedia.org/wiki/PATH_(variable)" target="_blank">PATH</a> environment variable of your operating system or called using an absolute path!</p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
                                         <p><br>Congratulations! Your firtst MIRO app is now up and running!</p>
@@ -587,8 +590,10 @@ $offExternalInput
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
                         <div id="doc-nav" class="doc-nav">
 	                        <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+	                            <a class="nav-link scrollto" href="#introduction-section">Introduction</a>
 	                            <a class="nav-link scrollto" href="#creating-section">Turn your GAMS model into a MIRO app</a>
                                   <nav class="doc-sub-menu nav flex-column">
+                                    <a class="nav-link scrollto" href="#demo-applications">Demo applications</a>
                                     <a class="nav-link scrollto" href="#model-adjustments">Model adjustments</a>
                                     <a class="nav-link scrollto" href="#launch-miro">Launch MIRO</a>
                                 </nav><!--//nav-->
