@@ -3,16 +3,24 @@ currentWidgetSymbolName <- character(0L)
 modelInWithPrefix <- names(modelIn)
 
 langSpecificWidget <- list()
-langSpecificWidget$widgetOptionsInput <- c("Slider" = "slider", "Dropdown menu" = "dropdown", "Checkbox" = "checkbox")
-names(langSpecificWidget$widgetOptionsInput) <- lang$adminMode$widgets$widgetOptions$input
-langSpecificWidget$widgetOptionsAll <- c("Slider" = "slider", "Slider range" = "sliderrange", "Dropdown menu" = "dropdown", 
-                                           "Checkbox" = "checkbox", "Date" = "date", "Date range" = "daterange", 
-                                           "Text box" = "textinput")
-names(langSpecificWidget$widgetOptionsAll) <- lang$adminMode$widgets$widgetOptions$all
-langSpecificWidget$widgetOptionsTable <- c("Table" = "table")
-names(langSpecificWidget$widgetOptionsTable) <- lang$adminMode$widgets$widgetOptions$table
-langSpecificWidget$widgetOptionsDate <- c("Date" = "date")
-names(langSpecificWidget$widgetOptionsDate) <- lang$adminMode$widgets$widgetOptions$date
+langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox"),
+                                                  c(lang$adminMode$widgets$widgetOptions$slider,
+                                                    lang$adminMode$widgets$widgetOptions$dropdown,
+                                                    lang$adminMode$widgets$widgetOptions$checkbox))
+langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "dropdown", 
+                                                  "checkbox", "date", "daterange", 
+                                                  "textinput"), 
+                                                c(lang$adminMode$widgets$widgetOptions$slider, 
+                                                  lang$adminMode$widgets$widgetOptions$sliderrange,
+                                                  lang$adminMode$widgets$widgetOptions$dropdown,
+                                                  lang$adminMode$widgets$widgetOptions$checkbox,
+                                                  lang$adminMode$widgets$widgetOptions$date,
+                                                  lang$adminMode$widgets$widgetOptions$daterange,
+                                                  lang$adminMode$widgets$widgetOptions$text))
+langSpecificWidget$widgetOptionsTable <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
+langSpecificWidget$widgetOptionsSet <- setNames(c("table", "multidropdown"), c(lang$adminMode$widgets$widgetOptions$table,
+                                                                               lang$adminMode$widgets$widgetOptions$dropdown))
+langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
                                           "Mean" = "mean", "Median" = "median", "Variance" = "var", 
                                           "Standard Deviation" = "sd")
@@ -133,7 +141,8 @@ validateWidgetConfig <- function(widgetJSON){
              return(lang$adminMode$widgets$validate[["val9"]])
            }
          },
-         dropdown = {
+         dropdown = ,
+         multidropdown = {
            if(!length(widgetJSON$choices)){
              return(lang$adminMode$widgets$validate$val38)
            }
@@ -350,10 +359,10 @@ observeEvent({input$widget_symbol
     widgetOptions <- langSpecificWidget$widgetOptionsAll
   }else if(input$widget_symbol %in% names(modelInRaw)){
     currentWidgetSymbolName <<- input$widget_symbol
-    widgetOptions <- langSpecificWidget$widgetOptionsTable
-    if(!input$widget_symbol %in% names(modelInRaw)){
-      flog.warn("Symbol: '%s' is not an input symbol.", input$widget_symbol)
-      return()
+    if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
+      widgetOptions <- langSpecificWidget$widgetOptionsSet
+    }else{
+      widgetOptions <- langSpecificWidget$widgetOptionsTable
     }
   }else{
     flog.error("Unknown input symbol: '%s'.", input$widget_symbol)
@@ -366,12 +375,18 @@ observeEvent({input$widget_symbol
     if(identical(selectedType, "slider") && 
        identical(length(configJSON$inputWidgets[[currentWidgetSymbolName]]$default), 2L)){
       selectedType <- "sliderrange"
+    }else if(identical(selectedType, "dropdown") && 
+             isTRUE(configJSON$inputWidgets[[currentWidgetSymbolName]]$multiple)){
+      selectedType <- "multidropdown"
     }
   }
-  if(identical(input$widget_type, selectedType))
+  if(identical(input$widget_type, selectedType)){
     rv$widget_type <- rv$widget_type + 1L
-  else
-    updateSelectInput(session, "widget_type", choices = widgetOptions, selected = selectedType)
+  }else{
+    updateSelectInput(session, "widget_type", 
+                      choices = widgetOptions, 
+                      selected = selectedType)
+  } 
 })
 observeEvent(input$widget_go, {
   currentWidgetSymbolName <<- prefixGMSOpt %+% tolower(input$widget_go)
@@ -426,7 +441,9 @@ observeEvent(input$widget_symbol_type, {
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
 output$hot_preview <- renderRHandsontable({
-  req(identical(input$widget_symbol_type, "gams"), input$widget_symbol %in% names(inputSymHeaders))
+  req(identical(input$widget_symbol_type, "gams"), 
+      input$widget_symbol %in% names(inputSymHeaders),
+      identical(input$widget_type, "table"))
   
   headers_tmp <- inputSymHeaders[[input$widget_symbol]]
   data        <- data.frame(matrix(c(letters[1:10], 
@@ -436,7 +453,7 @@ output$hot_preview <- renderRHandsontable({
   ht <- rhandsontable(data = data,
                       colHeaders = names(headers_tmp),
                       readOnly = input$table_readonly)
-  if(length(input$table_readonlyCols)){
+  if(length(input$table_readonlyCols) && input$table_readonlyCols %in% headers_tmp){
     ht <- hot_col(ht, names(headers_tmp)[match(input$table_readonlyCols, 
                                                headers_tmp)], 
                   readOnly = TRUE)
@@ -452,7 +469,8 @@ output$hot_preview <- renderRHandsontable({
   }
 })
 output$dt_preview <- renderDT({
-  req(input$widget_symbol %in% names(inputSymHeaders))
+  req(input$widget_symbol %in% names(inputSymHeaders),
+      identical(input$widget_type, "table"))
   
   headers_tmp <- names(inputSymHeaders[[input$widget_symbol]])
   data        <- data.frame(matrix(c(letters[1:10], 
@@ -856,17 +874,26 @@ observeEvent({input$widget_type
                          ticks = rv$widgetConfig$ticks)
            })
          },
-         dropdown = {
+         dropdown = , 
+         multidropdown = {
            rv$widgetConfig <- list(widgetType = "dropdown",
                                    alias = widgetAlias,
                                    choices = currentConfig$choices,
                                    selected = currentConfig$selected,
-                                   noHcube = identical(currentConfig$noHcube, TRUE),
-                                   multiple = identical(currentConfig$multiple, TRUE)) 
+                                   noHcube = isTRUE(currentConfig$noHcube),
+                                   multiple = isTRUE(currentConfig$multiple))
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$aliases <- currentConfig$aliases
            dynamicChoices <- getWidgetDependencies("dropdown", rv$widgetConfig$choices)
-           
+           if(length(dynamicChoices)){
+             if(identical(dynamicChoices[[2]], "")){
+               depHeader <- allInputSymHeaders
+             }else{
+               depHeader <- inputSymHeaders[[dynamicChoices[2]]]
+             }
+           }else{
+             depHeader <- inputSymHeaders[[1]]
+           }
            staticChoiceInput <- tagList(
              selectizeInput("dd_choices", lang$adminMode$widgets$dropdown$choices, 
                             if(!length(dynamicChoices)) currentConfig$choices else c(), 
@@ -898,8 +925,7 @@ observeEvent({input$widget_type
                                                                          choices = c(langSpecificWidget$depChoices, inputSymMultiDim), 
                                                                          selected = dynamicChoices[2]),
                                                              selectInput("dd_choice_dep_header", NULL, 
-                                                                         choices = if(length(dynamicChoices)) inputSymHeaders[[dynamicChoices[2]]] else
-                                                                           inputSymHeaders[[1]],
+                                                                         choices = depHeader,
                                                                          selected = dynamicChoices[3]),
                                                              selectInput("dd_choice_dep_type", lang$adminMode$widgets$dropdown$choiceDep$type, 
                                                                          choices = langSpecificWidget$typeChoices,
@@ -921,17 +947,20 @@ observeEvent({input$widget_type
                                           ))
                                }
                       ),
-                      selectInput("dd_default", lang$adminMode$widgets$dropdown$default, choices = rv$widgetConfig$choices, 
-                                  selected = rv$widgetConfig$selected),
-                      tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_multiple", 
-                                          lang$adminMode$widgets$dropdown$multiple),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_multiple", value = rv$widgetConfig$multiple, 
-                                                          label = NULL)
-                                            ))
-                               ),
+                      selectInput("dd_default", lang$adminMode$widgets$dropdown$default, 
+                                  choices = if(length(dynamicChoices)) "" else rv$widgetConfig$choices, 
+                                  selected = if(length(dynamicChoices)) "" else rv$widgetConfig$selected),
+                      if(input$widget_type == "multidropdown"){
+                        tags$div(class = "shiny-input-container",
+                                 tags$label(class = "cb-label", "for" = "widget_multiple", 
+                                            lang$adminMode$widgets$dropdown$multiple),
+                                 tags$div(
+                                   tags$label(class = "checkbox-material", 
+                                              checkboxInput("widget_multiple", value = rv$widgetConfig$multiple, 
+                                                            label = NULL)
+                                   ))
+                        )
+                      },
                       tags$div(class = "shiny-input-container",
                                tags$label(class = "cb-label", "for" = "widget_hcube", 
                                           lang$adminMode$widgets$dropdown$hcube),
@@ -1519,7 +1548,7 @@ observeEvent(input$saveWidget, {
         rv$widgetConfig$default <<- input$slider_def
       }
     }
-  }else if(identical(rv$widgetConfig$widgetType, "dropdown")){
+  }else if(rv$widgetConfig$widgetType %in% c("dropdown", "multidropdown")){
     if(identical(input$dd_choice_dep_selector, FALSE)){
       switch(input$dd_choice_dep_type,
              "0" = {
@@ -1604,7 +1633,7 @@ observeEvent(input$deleteWidgetConfirm, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   
   configJSON$inputWidgets[[currentWidgetSymbolName]] <<- NULL
-  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE)
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
   if(any(startsWith(currentWidgetSymbolName, c(prefixDDPar, prefixGMSOpt)))){
     widgetSymbols <<- widgetSymbols[widgetSymbols != currentWidgetSymbolName]
     updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
