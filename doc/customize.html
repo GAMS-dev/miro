@@ -794,7 +794,7 @@ putclose log;
                                      <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>.
                                      Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
-                                     </code>. To be able to set them from MIRO, they can be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.
+                                     </code>. To be able to set them from MIRO, they can be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>_gmspar_</kbd> for double dash parameters or <kbd>_gmsopt_</kbd> for GAMS options.
                                      </p>
                                      <div class="callout-block callout-warning">
                                          <div class="icon-holder">
@@ -810,7 +810,7 @@ putclose log;
                                      <div class="code-block">
                                            <pre><code class="language-json">{
   &#x22;inputWidgets&#x22;: {
-    &#x22;GMSPAR_numberPeriods&#x22;: {
+    &#x22;_gmspar_numberPeriods&#x22;: {
       &#x22;widgetType&#x22;: &#x22;slider&#x22;,
       &#x22;alias&#x22;: &#x22;Number of time periods&#x22;,
       &#x22;label&#x22;: &#x22;Select the number of time periods to solve&#x22;,
@@ -819,7 +819,7 @@ putclose log;
       &#x22;default&#x22;: 11,
       &#x22;step&#x22;: 1
     },
-    &#x22;GMSOPT_mip&#x22;: {
+    &#x22;_gmsopt_mip&#x22;: {
       &#x22;widgetType&#x22;: &#x22;dropdown&#x22;,
       &#x22;alias&#x22;: &#x22;MIP Solver&#x22;,
       &#x22;label&#x22;: &#x22;Solver to use for MIP models&#x22;,
@@ -846,7 +846,7 @@ putclose log;
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSPAR_TW": {
+    "_gmspar_TW": {
        "alias": "time window",
        "widgetType": "daterange",
        "label": "Time window",

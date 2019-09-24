@@ -984,8 +984,6 @@
         "val1": "Der Alias des Elements darf nicht leer sein!",
         "val2": "Der Name des Double-Dash-Parameters darf nicht leer sein!",
         "val3": "Der Name der GAMS-Option darf nicht leer sein!",
-        "val4": "Der Name des Double-Dash-Parameters darf nicht mit dem Namen eines anderen verwendeten GAMS-Symbols oder Kommandozeilenparameters übereinstimmen! Bitte wählen Sie einen anderen Namen.",
-        "val5": "Der Name der Option GAMS darf nicht mit dem Namen eines anderen verwendeten GAMS-Symbols oder Kommandoszeilenparameters übereinstimmen!",
         "val6": "Der Standardwert ist fehlerhaft!",
         "val7": "Der Standardwert muss eine Zahl im Bereich[min, max] sein!",
         "val8": "Der Tick-Identifikator muss ein Boolean sein!",

@@ -79,8 +79,8 @@ scalarsFileHeaders <- c("scalar", "description", "value")
 # name of the directory where GAMS models are saved
 modelDir <- "model/"
 # prefix used for identifying compile time variables
-prefixDDPar  <- "GMSPAR_"
-prefixGMSOpt <- "GMSOPT_"
+prefixDDPar  <- "_gmspar_"
+prefixGMSOpt <- "_gmsopt_"
 # language schema name
 languageSchemaName <- "language_schema.json"
 # get maximum number of lines to read for files
@@ -88,6 +88,9 @@ maxSizeToRead <- 5e5
 # Limits on external programs that are allowed to be executed 
 # (0 -> all allowed, 4 -> no shell calls, echo, put etc.) [0,4]
 gamsExecMode <- 0L
+
+MIROGdxInName <- "_miro_gdxin_.gdx"
+MIROGdxOutName <- "_miro_gdxout_.gdx"
 
 # ACCESS CONTROL
 # db table name where group hierarchies are stored
