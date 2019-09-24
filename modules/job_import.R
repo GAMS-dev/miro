@@ -65,8 +65,12 @@ observeEvent({
     worker$readTextEntity(fileToFetch, 
                           pID, getSize = TRUE)
   }, error = function(e){
+    statusCode <- conditionMessage(e)
+    if(identical(statusCode, 404L)){
+      return(lang$nav$hcubeMode$showLogFileDialog$noContent)
+    }
     flog.error("Could not retrieve job log. Error message: '%s'.", 
-               conditionMessage(e))
+               statusCode)
     return(1L)
   })
   if(is.integer(logContent)){

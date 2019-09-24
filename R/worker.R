@@ -833,7 +833,11 @@ Worker <- R6Class("Worker", public = list(
     
     if(identical(status_code(ret), 200L)){
       if(saveDisk){
-        writeLines(content(ret, encoding = "utf-8")$entity_value,
+        entityContent <- content(ret, encoding = "utf-8")$entity_value
+        if(!length(entityContent)){
+          entityContent <- ""
+        }
+        writeLines(entityContent,
                    file.path(workDir, text_entity))
         return(200L)
       }

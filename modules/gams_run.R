@@ -759,6 +759,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
                    modelName, statusText)
         return(htmltools::htmlEscape(statusText))
       }
+      
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
@@ -825,6 +826,12 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         }
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
                    modelName, statusText)
+        tryCatch(
+          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+          error = function(e){
+            flog.warn("Failed to update job status. Error message: '%s'.", 
+                      conditionMessage(e))
+          })
       }else{
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
