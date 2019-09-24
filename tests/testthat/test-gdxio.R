@@ -79,9 +79,24 @@ test_that("Writing of scalars works", {
   data <- list(scalarData)
   names(data) <- scalarsFileName
   filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
-  #on.exit(unlink(filePath), add = TRUE)
+  on.exit(unlink(filePath), add = TRUE)
   gdxio$wgdx(filePath, data)
   
   expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
                scalarData)
+})
+test_that("Writing of scalar variables and equations works", {
+  scalarVe <- tibble::tibble('scalarSymbols$symtypes' = c('variable', 'equation'), 
+                             'scalarSymbols$symnames' = c('z', 'cost'), 
+                             'scalarSymbols$symtext' = c('total transportation costs in thousands of dollars',
+                                                         'define objective function'),
+                             '1' = c(153.675, 0), '2' = c(0, 1), '3' = c(-Inf, 0), 
+                             '4' = c(Inf, 0), '5' = c(1, 1))
+  data <- list(scalarVe)
+  names(data) <- scalarEquationsOutName
+  filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), scalarEquationsOutName), 
+                   scalarVe)
 })
