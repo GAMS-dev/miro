@@ -36,7 +36,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                               }else if(scalarSymbols$symnames[[i]] %in% tolower(private$gdxSymbols$sets)){
                                 scalarTmp <- private$rgdxSet(scalarSymbols$symnames[[i]])
                                 if(length(scalarTmp)){
-                                  if(length(scalarTmp) == 2 && nchar(scalarTmp[[2]][1])){
+                                  if(length(scalarTmp) == 2 && !is.na(nchar(scalarTmp[[2]][1])) && 
+                                     nchar(calarTmp[[2]][1])){
                                     return(paste0(as.character(scalarTmp[[1]])[1], "||", 
                                                   as.character(scalarTmp[[2]])[1]))
                                   }

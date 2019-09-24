@@ -303,13 +303,16 @@ Worker <- R6Class("Worker", public = list(
     if(jobHist)
       return(list(jobList = jobList, newCompleted = FALSE))
     
-    jobList[jobList[[1]] %in% self$getFinishedDownloads(), 
-            3L] <- JOBSTATUSMAP[['downloaded']]
-    private$jobList <- jobList
+    
     
     if(!length(jobList) || !nrow(jobList)){
+      private$jobList <- jobList
       private$jobListInit <- TRUE
       return(list(jobList = private$jobList, newCompleted = newCompleted))
+    }else{
+      jobList[jobList[[1]] %in% self$getFinishedDownloads(), 
+              3L] <- JOBSTATUSMAP[['downloaded']]
+      private$jobList <- jobList
     }
     
     jIDs <- private$jobList[[1]]
