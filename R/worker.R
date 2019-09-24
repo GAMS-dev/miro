@@ -640,13 +640,13 @@ Worker <- R6Class("Worker", public = list(
   jobList = NULL,
   runLocal = function(inputData){
     private$status  <- NULL
-    inputData$writeCSV(private$workDir, delim = private$metadata$csvDelim)
+    inputData$writeDisk(private$workDir, fileName = private$metadata$MIROGdxInName)
     
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
                   paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'),
                   if(private$metadata$includeParentDir) paste0('idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"'), 
-                  paste0('curdir="', private$workDir, '"'), "lo=3", paste0("execMode=", private$metadata$gamsExecMode), 
-                  private$metadata$MIROSwitch, "LstTitleLeftAligned=1")
+                  paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs, 
+                  paste0('implicitGDXInput="', private$metadata$MIROGdxInName, '"'), "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
     }
@@ -677,7 +677,7 @@ Worker <- R6Class("Worker", public = list(
       stop(sprintf("Problems creating static directory: '%s'.", staticDir), call. = FALSE)
     
     if(length(staticData))
-      staticData$writeCSV(staticDir, delim = private$metadata$csvDelim)
+      staticData$writeDisk(staticDir, fileName = private$metadata$MIROGdxInName)
     
     if(length(attachmentFilePaths)){
       if(!dir.create(staticDir) || !all(file.copy(attachmentFilePaths, staticDir)))
@@ -685,7 +685,9 @@ Worker <- R6Class("Worker", public = list(
                      staticDir), call. = FALSE)
     }
     
-    scenGmsPar <- paste0(dynamicPar, ' idir1="', gmsFilePath(private$metadata$currentModelDir), '"')
+    scenGmsPar <- paste0(dynamicPar, paste(private$metadata$clArgs, collapse = " "), 
+                         ' implicitGDXInput="', gmsFilePath(file.path(staticDir, private$metadata$MIROGdxInName)),
+                         '" idir1="', gmsFilePath(private$metadata$currentModelDir), '"')
     
     if(identical(private$metadata$includeParentDir, TRUE))
       scenGmsPar <- paste0(scenGmsPar, ' idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"')
@@ -725,35 +727,37 @@ Worker <- R6Class("Worker", public = list(
       
       dataFilesToFetch <- metadata$modelDataFiles
       
+      requestBody <- list(model = metadata$modelName,
+                          use_pf_file = TRUE, 
+                          namespace = metadata$namespace)
+      
       gamsArgs <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
-                    paste0("execMode=", metadata$gamsExecMode), 
-                    metadata$MIROSwitch)
+                    metadata$clArgs)
       if(metadata$saveTraceFile){
         traceFileName <- paste0(tableNameTracePrefix, metadata$modelName, '.trc')
         gamsArgs <- c(gamsArgs, paste0('trace="', traceFileName, '"'), "traceopt=3")
         if(length(dataFilesToFetch))
           dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
       }
-      pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
-      writeLines(c(pfFileContent, gamsArgs), pfFilePath)
-      
-      requestBody <- list(model = metadata$modelName,
-                          use_pf_file = TRUE, 
-                          namespace = metadata$namespace)
-      
-      requestBody$inex_filename <- inputData$addInexFile(workDir, dataFilesToFetch)
-      requestBody$data <- upload_file(inputData$
-                                        writeCSV(workDir, delim = metadata$csvDelim)$
-                                        addFilePaths(pfFilePath)$
-                                        compress(), 
-                                      type = 'application/zip')
       if(is.R6(hcubeData)){
+        gamsArgs <- c(gamsArgs, paste0('implicitGDXInput="', 
+                                       file.path("..", "static", metadata$MIROGdxInName), '"'))
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
                                                   type = 'application/json')
       }else{
+        gamsArgs <- c(gamsArgs, paste0('implicitGDXInput="', metadata$MIROGdxInName, '"'))
         requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
+      pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
+      writeLines(c(pfFileContent, gamsArgs), pfFilePath)
+      
+      requestBody$inex_filename <- inputData$addInexFile(workDir, dataFilesToFetch)
+      requestBody$data <- upload_file(inputData$
+                                        writeDisk(workDir, fileName = metadata$MIROGdxInName)$
+                                        addFilePaths(pfFilePath)$
+                                        compress(), 
+                                      type = 'application/zip')
       
       if(identical(metadata$useRegistered, FALSE)){
         requestBody$model_data <- upload_file(DataInstance$new()$

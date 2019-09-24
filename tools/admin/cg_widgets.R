@@ -44,12 +44,6 @@ langSpecificWidget$weekdays <- c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L,
                                  "Wednesday" = 3L, "Thursday" = 4L, "Friday" = 5L, "Saturday" = 6L)
 names(langSpecificWidget$weekdays) <- lang$adminMode$widgets$date$weekstart$choices
 
-local({
-  isDDPar  <- modelInWithPrefix %in% DDPar
-  isGMSOpt <- modelInWithPrefix %in% GMSOpt
-  modelInWithPrefix[isDDPar]  <<- prefixDDPar %+% modelInWithPrefix[isDDPar]
-  modelInWithPrefix[isGMSOpt] <<- prefixGMSOpt %+% modelInWithPrefix[isGMSOpt]
-})
 if(length(modelInRaw[[scalarsFileName]])){
   scalarInputSymWithAliases <- setNames(modelInRaw[[scalarsFileName]]$symnames, 
                                         modelInRaw[[scalarsFileName]]$symtext)
@@ -85,20 +79,6 @@ validateWidgetConfig <- function(widgetJSON){
   if(startsWith(currentWidgetSymbolName, prefixGMSOpt) && 
      identical(nchar(trimws(currentWidgetSymbolName)), nchar(prefixGMSOpt))){
     return(lang$adminMode$widgets$validate[["val3"]])
-  }
-  if(startsWith(currentWidgetSymbolName, prefixDDPar)){ 
-    symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixDDPar)+1L, nchar(currentWidgetSymbolName))
-    if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
-      return(lang$adminMode$widgets$validate[["val4"]])
-    }
-    rm(symbolNameTmp)
-  } 
-  if(startsWith(currentWidgetSymbolName, prefixGMSOpt)){ 
-    symbolNameTmp <- substr(currentWidgetSymbolName, nchar(prefixGMSOpt)+1L, nchar(currentWidgetSymbolName))
-    if(!identical(input$widget_symbol_type, "gams") && (any(symbolNameTmp == names(modelInRaw)) || any(symbolNameTmp == scalarInputSym))){
-      return(lang$adminMode$widgets$validate[["val5"]])
-    }
-    rm(symbolNameTmp)
   }
   if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
     return(lang$adminMode$widgets$validate$val39)

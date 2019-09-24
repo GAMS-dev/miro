@@ -20,7 +20,7 @@
         "alias": "number of days for training",
         "widgetType": "slider"
       },
-      "GMSPAR_TW": {
+      "_gmspar_tw": {
          "alias": "time window",
          "widgetType": "daterange",
          "label": "Time window",
@@ -31,7 +31,7 @@
          "autoclose": true,
          "noHcube": true
       },
-      "GMSOPT_mip": {
+      "_gmsopt_mip": {
         "alias": "MIP-Solver",
         "widgetType":"dropdown",
         "label": "Solver to use",

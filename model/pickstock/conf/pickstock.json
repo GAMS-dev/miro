@@ -19,51 +19,41 @@
       ]
     }
   ],
-  "remoteImport": [{
-    "name": "Testimport",
-    "templates": [
-      {
-        "symNames": "price",
-        "url": "http://127.0.0.1:5000/io",
-        "method": "GET",
-        "httpBody": [
-          {
-            "key": "cachetime",
-            "value": "50"
-          },
-          {
-            "key": "filename",
-            "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
-          }
-        ]
-      }]
-  }],
+  "remoteImport": [
+    {
+      "name": "Testimport",
+      "templates": [
+        {
+          "symNames": "price",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "GET",
+          "httpBody": [
+            {
+              "key": "cachetime",
+              "value": "50"
+            },
+            {
+              "key": "filename",
+              "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "inputWidgets": {
     "price": {
       "widgetType": "table",
       "readonlyCols": "date"
     },
-    "maxstock": {
-      "label": "select the maximum number of stocks",
-      "widgetType": "slider",
-      "alias": "maximum number of stocks to select",
-      "min": 1,
-      "max": "card(price$symbol)",
-      "default": 3,
-      "step": 1,
-      "ticks": false,
-      "noHcube": false
+    "_gmsopt_mip": {
+      "alias": "MIP-Solver",
+      "widgetType": "dropdown",
+      "label": "Solver to use",
+      "choices": ["CBC", "CPLEX", "MOSEK", "SCIP", "XPRESS"],
+      "selected": "CPLEX"
     },
-    "trainingdays": {
-      "label": "select the number of days for training",
-      "min": 1,
-      "default": 99,
-      "step": 1,
-      "max": "card(price$date)",
-      "alias": "number of days for training",
-      "widgetType": "slider"
-    },
-    "GMSOPT_mip": {
+    "_gmspar_mip": {
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
       "label": "Solver to use",
@@ -244,7 +234,7 @@
         "tool": "dygraphs",
         "title": "Price (stocks & dow jones)",
         "color": "uni",
-        "filter":{
+        "filter": {
           "col": "uni",
           "multiple": true,
           "label": "Select stock symbol"
@@ -310,7 +300,8 @@
     "loadLocal": true,
     "logFile": true,
     "lstFile": true,
-    "attachments": true
+    "attachments": true,
+    "remoteExecution": false
   },
   "aggregateWidgets": true,
   "includeParentDir": false,
@@ -327,27 +318,11 @@
     }
   },
   "theme": "browser",
+  "defCompMode": "split",
   "outputGroups": [
     {
       "name": "Dow Jones vs. Index Fund 🙀",
       "members": ["dowvsindex", "abserror"]
     }
-  ],
-  "hiddenOutputScalars": ["firstdaytraining", "lastdaytraining"],
-  "handsontable": {
-    "stretchH": "all",
-    "readonly": false,
-    "highlightCol": true,
-    "highlightRow": true,
-    "columnSorting": true,
-    "manualColumnResize": true,
-    "contextMenu": {
-      "enabled": true,
-      "allowRowEdit": true,
-      "allowColEdit": true,
-      "allowReadOnly": false,
-      "allowComments": true
-    },
-    "height": 700
-  }
+  ]
 }

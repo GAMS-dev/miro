@@ -1,7 +1,7 @@
 GdxIO <- R6::R6Class("GdxIO", public = list(
   initialize = function(gamsSysDir, metaData){
-    stopifnot(is.list(metaData), length(metaData) > 0L)
-    stopifnot(is.character(gamsSysDir), identical(length(gamsSysDir), 1L))
+    stopifnot(is.list(metaData), length(metaData) > 0L,
+              is.character(gamsSysDir), identical(length(gamsSysDir), 1L))
     if(gdxrrw::igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
       private$gdxDllLoaded <- TRUE
     }else{
@@ -154,6 +154,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     isEmptySymbol <- is.na(wgdxDotList)
     
     # scalar data
+    j <- 1L
     scalarSymList <- unlist(lapply(which(isScalarData), function(i){
       if(identical(isEmptySymbol[[i]], TRUE)){
         return(NA)
@@ -162,19 +163,22 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       nc       <- length(df)
       if(identical(nc, 3L)){
         symNames <- df[[1L]]
-        symTexts <- df[[2L]]
-        symVals  <- strsplit(df[[3L]], "||", fixed = TRUE)
-        symIds   <- match(symNames, private$metaData[[scalarIdList[[i]]]]$symnames)
+        inclSymNames <- !startsWith(symNames, "_")
+        symNames <- symNames[inclSymNames]
+        symTexts <- df[[2L]][inclSymNames]
+        symVals  <- strsplit(df[[3L]][inclSymNames], "||", fixed = TRUE)
+        symIds   <- match(symNames, private$metaData[[scalarIdList[[j]]]]$symnames)
         if(any(is.na(symIds)))
           stop(sprintf("Symbol(s): '%s' was not found in model data contract", 
                        paste(symNames[is.na(symIds)], collapse = "', '")), call. = FALSE)
-        symTypes <- private$metaData[[scalarIdList[[i]]]]$symtypes[symIds]
+        symTypes <- private$metaData[[scalarIdList[[j]]]]$symtypes[symIds]
       }else{
         symTypes <- df[[1L]]
         symNames <- df[[2L]]
         symTexts <- df[[3L]]
         df       <- df[-seq_len(3)]
       }
+      j <<- j + 1L
       lapply(seq_along(symNames), function(j){
         symName  <- symNames[j]
         symType  <- symTypes[j]
@@ -199,8 +203,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
           dim     <- 1L
           v       <- matrix(1L)
           symVal  <- symVals[[j]]
-          uels    <- symVal[1]
-          te      <- paste0(symVal[-1], collapse = "")
+          uels    <- list(symVal[1])
+          te      <- paste0(symVal[-1], collapse = "||")
         }else{
           stop(sprintf("Unknown symbol type: '%s'.", symType), 
                call. = FALSE)
@@ -232,7 +236,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   gdxSymbols = list(),
   metaData = list(),
   rgdxVe = function(symName, names = NULL){
-    sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE, field = "all"),
+    sym <- gdxrrw::rgdx(private$rgdxName, 
+                        list(name = symName, 
+                             compress = FALSE, 
+                             ts = FALSE, 
+                             field = "all"),
                         squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
@@ -316,7 +324,6 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                                                ts = FALSE, te = TRUE),
                         squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
-    
     if(length(names)){
       stopifnot(is.character(names), identical(length(names), symDim + 1L))
     }

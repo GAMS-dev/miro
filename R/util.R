@@ -602,9 +602,8 @@ getGMSPar <- function(inputNames, prefixPar){
   inputNames       <- tolower(inputNames)
   prefixPar        <- tolower(paste0("^", prefixPar))
   isGMSPar         <- grepl(prefixPar, inputNames)
-  inputRawNames    <- gsub(prefixPar, "", inputNames)
   
-  return(list(inputRawNames, inputRawNames[isGMSPar]))
+  return(inputNames[isGMSPar])
 }
 virtualActionButton <- function(...){
   o <- structure(sum(...), class = "shinyActionButtonValue")

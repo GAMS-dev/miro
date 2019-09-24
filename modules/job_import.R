@@ -222,9 +222,9 @@ observeEvent(virtualActionButton(
                            tolower(names(scenInputData)))[[1L]]
       jobResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = tmpdir, 
                                  modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                 scalarsFileHeaders = scalarsFileHeaders,
-                                 templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                 hiddenOutputScalars = config$hiddenOutputScalars)
+                                 scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                 templates = modelOutTemplate, method = config$fileExchange, 
+                                 csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
     }, error = function(e){
       flog.error("Problems reading job output data. Error message: '%s'.", conditionMessage(e))
       errMsg <<- lang$errMsg$readOutput$desc

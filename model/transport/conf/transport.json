@@ -28,7 +28,7 @@
           "default": 0.95,
           "step": 0.01
        },
-       "GMSPAR_type":{
+       "_gmspar_type":{
           "widgetType": "dropdown",
           "alias": "Model Type",
           "label": "Select model type",
