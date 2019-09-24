@@ -272,8 +272,12 @@ if(is.null(errMsg)){
         next
       }
       if(!is.null(widgetConfig[["readonly"]])){
-        modelIn[[i]]$readonly <- widgetConfig$readonly
+        modelIn[[i]]$readonly <- widgetConfig[["readonly"]]
         widgetConfig$readonly  <- NULL
+      }
+      if(isTRUE(widgetConfig[["heatmap"]])){
+        modelIn[[i]]$heatmap <- TRUE
+        widgetConfig$heatmap  <- NULL
       }
       if(!is.null(widgetConfig[["pivotCols"]])){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
