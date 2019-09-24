@@ -133,11 +133,11 @@
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
-                                  <p>Note: In order for MIRO to recognize whether the symbol is a double dash parameter or a GAMS option, they are prefixed with either <kbd>GMSPAR_</kbd> for double dash parameters or <kbd>GMSOPT_</kbd> for GAMS options.</p>
+                                  <p>Note: In order for MIRO to recognize whether the symbol is a double dash parameter or a GAMS option, they are prefixed with either <kbd>_gmspar_</kbd> for double dash parameters or <kbd>_gmsopt_</kbd> for GAMS options.</p>
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSPAR_range": {
+    "_gmspar_range": {
       "widgetType": "slider",
       "alias": "Range",
       "min": 1,
@@ -169,7 +169,7 @@
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSOPT_keep": {
+    "_gmsopt_keep": {
       "widgetType": "checkbox",
       "alias": "Keep",
       "label": "Keep process directory?",
@@ -217,7 +217,7 @@
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSOPT_mip": {
+    "_gmsopt_mip": {
       "alias": "MIP-Solver",
       "widgetType": "dropdown",
       "label": "Solver to use",
@@ -323,7 +323,7 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSPAR_date": {
+    "_gmspar_date": {
       "widgetType": "date",
       "alias": "Date",
       "format": "yyyy-mm-dd",
@@ -355,7 +355,7 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSPAR_date": {
+    "_gmspar_date": {
       "widgetType": "daterange",
       "alias": "Date range",
       "label": "Select a time range",
@@ -390,7 +390,7 @@ $offExternalInput
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
-    "GMSPAR_comment": {
+    "_gmspar_comment": {
       "widgetType": "textinput",
       "alias": "Comment",
       "value": "",

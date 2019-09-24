@@ -67,7 +67,8 @@ prepareModelRun <- function(async = FALSE){
     return(NULL)
   }
   pfFileContent <- NULL
-  inputData <- DataInstance$new(modelInFileNames)
+  inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
+                                csvDelim = config$csvDelim)
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
@@ -80,7 +81,8 @@ prepareModelRun <- function(async = FALSE){
         pfGMSPar      <- vapply(seq_along(DDParValues[[1]]), 
                                 function(i){
                                   if(!DDParValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                    paste0('--', DDParValues[[1]][i], '=', escapeGAMSCL(DDParValues[[3]][i]))
+                                    paste0('--', substring(DDParValues[[1]][i], nchar(prefixDDPar) + 1L), '=', 
+                                           escapeGAMSCL(DDParValues[[3]][i]))
                                   else
                                     NA_character_
                                 }, character(1L), USE.NAMES = FALSE)
@@ -89,7 +91,8 @@ prepareModelRun <- function(async = FALSE){
         pfGMSOpt      <- vapply(seq_along(GMSOptValues[[1]]), 
                                 function(i){
                                   if(!GMSOptValues[[3]][i] %in% c("_", "system.empty", "")) 
-                                    paste0(GMSOptValues[[1]][i], '=', escapeGAMSCL(GMSOptValues[[3]][i]))
+                                    paste0(substring(GMSOptValues[[1]][i], nchar(prefixGMSOpt) + 1L), '=', 
+                                           escapeGAMSCL(GMSOptValues[[3]][i]))
                                   else
                                     NA_character_
                                 }, character(1L), USE.NAMES = FALSE)
@@ -107,7 +110,8 @@ prepareModelRun <- function(async = FALSE){
       choiceIdx         <- match(csvData[[1L]], 
                                  modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
       if(length(choiceIdx)){
-        if(any(is.na(choiceIdx))){
+        if(any(is.na(choiceIdx)) || 
+           !length(modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases)){
           csvData[["text"]] <- ""
         }else{
           aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
@@ -151,11 +155,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
-      return("")
+      return(names(modelIn)[id])
     }else if(names(modelIn)[id] %in% DDPar){
-      return("--")
+      return(paste0("--", names(modelIn)[id]))
     }else{
-      return("--HCUBE_SCALAR_")
+      return(paste0("--HCUBE_SCALAR_", names(modelIn)[id]))
     }
   }
   noScenToSolve <- reactive({
@@ -230,7 +234,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       prog$inc(amount = incAmount, detail = detail)
     }
     hcubeData <<- HcubeDataInstance$new(config$activateModules$remoteExecution)
-    staticData <<- DataInstance$new()
+    staticData <<- DataInstance$new(fileExchange = config$fileExchange,
+                                    csvDelim = config$csvDelim)
     modelInSorted <- sort(names(modelIn))
     elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
@@ -244,8 +249,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
-                   return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value[1], 
-                                 " ", parPrefix, names(modelIn)[[i]], "_up=", value[2]))
+                   return(paste0(parPrefix, "_lo=", value[1], 
+                                 " ", parPrefix, "_up=", value[2]))
                  }
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
@@ -254,8 +259,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
-                 return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", value$min, 
-                               " ", parPrefix, names(modelIn)[[i]], "_up=", value$max))
+                 return(paste0(parPrefix, "_lo=", value$min, 
+                               " ", parPrefix, "_up=", value$max))
                }
              },
              dropdown = {
@@ -265,12 +270,20 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  return(digest(data, algo = "md5"))
                }
                parPrefix <- getHcubeParPrefix(i)
-               value <- input[["dropdown_" %+% i]]
+               value <- strsplit(input[["dropdown_" %+% i]], "||", fixed = TRUE)
+               text <- vapply(value, function(valEl){
+                 if(length(valEl) > 1L) 
+                   return(paste0(" --HCUBE_SCALARD_", tolower(names(modelIn)[i]), 
+                                 "=", paste(valEl[-1], collapse = "||")))
+                 return("")}, character(1L), USE.NAMES = FALSE)
+               value <- paste0(vapply(value, "[[", character(1L), 1L, USE.NAMES = FALSE),
+                               text)
+               
                if("_" %in% value){
                  value <- value[value != "_"]
-                 return(c(if(length(value)) paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)), ""))
+                 return(c(if(length(value)) paste0(parPrefix, "=", escapeGAMSCL(value)), ""))
                }
-               return(paste0(parPrefix, names(modelIn)[[i]], "=", escapeGAMSCL(value)))
+               return(paste0(parPrefix, "=", escapeGAMSCL(value)))
              },
              date = {
                return(input[["date_" %+% i]])
@@ -279,8 +292,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                value <- as.character(input[["daterange_" %+% i]])
                parPrefix <- getHcubeParPrefix(i)
                
-               return(paste0(parPrefix, names(modelIn)[[i]], "_lo=", escapeGAMSCL(value[1]), 
-                             " ", parPrefix, names(modelIn)[[i]], "_up=", escapeGAMSCL(value[2])))
+               return(paste0(parPrefix, "_lo=", escapeGAMSCL(value[1]), 
+                             " ", parPrefix, "_up=", escapeGAMSCL(value[2])))
              },
              checkbox = {
                return(input[["cb_" %+% i]])
@@ -380,8 +393,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       showEl(session, "#jobSubmissionLoad")
       worker$runHcube(staticData, if(config$activateModules$remoteExecution) hcubeData else scenGmsPar, 
                       sid, tags = isolate(input$newHcubeTags), 
-                      attachmentFilePaths = attachmentFilePaths, 
-                      pfFileContent = c("--HCUBEREM=1"))
+                      attachmentFilePaths = attachmentFilePaths)
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
@@ -619,12 +631,12 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     attachmentFilePaths <<- scenToSolve$attachmentFilePaths
     
     if(length(config$extraClArgs)){
-      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch, 
+      scenGmsPar <<- paste(scenToSolve$gmspar, 
                            paste(config$extraClArgs, collapse = " "),
-                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+                           "lo=3")
     }else{
-      scenGmsPar <<- paste(scenToSolve$gmspar, config$MIROSwitch,
-                           "--HCUBE=1", "execMode=" %+% gamsExecMode, "lo=3")
+      scenGmsPar <<- paste(scenToSolve$gmspar,
+                           "lo=3")
     }
     if(config$saveTraceFile){
       scenGmsPar <<- paste0(scenGmsPar, ' trace="', tableNameTracePrefix, modelName, '.trc"',
@@ -747,6 +759,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
                    modelName, statusText)
         return(htmltools::htmlEscape(statusText))
       }
+      
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
@@ -813,6 +826,12 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         }
         flog.debug("GAMS model was not solved successfully (model: '%s'). Model status: %s.", 
                    modelName, statusText)
+        tryCatch(
+          worker$updateJobStatus(JOBSTATUSMAP['imported']), 
+          error = function(e){
+            flog.warn("Failed to update job status. Error message: '%s'.", 
+                      conditionMessage(e))
+          })
       }else{
         # run terminated successfully
         statusText <- lang$nav$gamsModelStatus$success
@@ -827,9 +846,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         tryCatch({
           GAMSResults <- loadScenData(scalarsName = scalarsOutName, metaData = modelOut, workDir = workDir, 
                                       modelName = modelName, errMsg = lang$errMsg$GAMSOutput$badOutputData,
-                                      scalarsFileHeaders = scalarsFileHeaders,
-                                      templates = modelOutTemplate, method = "csv", csvDelim = config$csvDelim, 
-                                      hiddenOutputScalars = config$hiddenOutputScalars) 
+                                      scalarsFileHeaders = scalarsFileHeaders, fileName = MIROGdxOutName,
+                                      templates = modelOutTemplate, method = config$fileExchange, 
+                                      csvDelim = config$csvDelim, hiddenOutputScalars = config$hiddenOutputScalars)
         }, error = function(e){
           flog.error("Problems loading output data. Error message: %s.", e)
           errMsg <<- lang$errMsg$readOutput$desc

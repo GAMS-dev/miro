@@ -984,8 +984,6 @@
         "val1": "The alias of the element must not be empty!",
         "val2": "The name of the double-dash parameter must not be empty!",
         "val3": "The name of the GAMS option must not be empty!",
-        "val4": "The name of the double-dash parameter must not be the same as the name of another used GAMS symbol or command line parameter! Please choose another name.",
-        "val5": "The name of the GAMS option must not be the same as the name of another used GAMS symbol or command line parameter!",
         "val6": "The default value is falsy!",
         "val7": "The default value must be a number in the range [min, max]!",
         "val8": "The tick identifier must be boolean!",

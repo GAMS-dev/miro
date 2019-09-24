@@ -202,21 +202,22 @@ if(is.null(errMsg)){
           modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
         }
       }else if(any(startsWith(el, c(prefixDDPar, prefixGMSOpt)))){
-        modelIn[[el]]   <- list()
+        elL <- tolower(el)
+        modelIn[[elL]]   <- list()
         
         if(!is.null(widgetConfig$alias)){
-          modelIn[[el]]$alias <- widgetConfig$alias
+          modelIn[[elL]]$alias <- widgetConfig$alias
           widgetConfig$alias <- NULL
         }
         if(!is.null(widgetConfig$noHcube)){
-          modelIn[[el]]$noHcube <- widgetConfig$noHcube
+          modelIn[[elL]]$noHcube <- widgetConfig$noHcube
           widgetConfig$noHcube <- NULL
         }
         if(!is.null(widgetConfig$noImport)){
-          modelIn[[el]]$noImport <- widgetConfig$noImport
+          modelIn[[elL]]$noImport <- widgetConfig$noImport
           widgetConfig$noImport  <- NULL
         }
-        modelIn[[el]][[widgetType]] <- widgetConfig
+        modelIn[[elL]][[widgetType]] <- widgetConfig
       }else{
         errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not amongst the symbols you defined to be input data to your model!")
         flog.fatal(errMsgTmp)
@@ -336,19 +337,14 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){
   # declare GAMS compile time variables and GAMS options
-  tmpDDPar            <- getGMSPar(names(modelIn), prefixDDPar)
-  names(modelIn)      <- tmpDDPar[[1]]
-
-  DDPar               <- tmpDDPar[[2]]
-  rm(tmpDDPar)
-  tmpGMSOpt           <- getGMSPar(names(modelIn), prefixGMSOpt)
-  names(modelIn)      <- tmpGMSOpt[[1]]
-  GMSOpt              <- tmpGMSOpt[[2]]
-  if(any(vapply(names(modelIn), function(el){ identical(nchar(trimws(el)), 0L)}, 
-                logical(1L), USE.NAMES = FALSE))){
+  DDPar               <- getGMSPar(names(modelIn), prefixDDPar)
+  GMSOpt              <- getGMSPar(names(modelIn), prefixGMSOpt)
+  if(any(c(vapply(DDPar, function(el){ identical(nchar(trimws(substring(el, nchar(prefixDDPar) + 1L))), 0L)}, 
+                logical(1L), USE.NAMES = FALSE),
+           vapply(GMSOpt, function(el){ identical(nchar(trimws(substring(el, nchar(prefixGMSOpt) + 1L))), 0L)}, 
+                  logical(1L), USE.NAMES = FALSE)))){
     errMsg <- "Unnamed GAMS command line parameter(s) detected. Empty names are not allowed!"
   }
-  rm(tmpGMSOpt)
   
   modelInToImport     <- getInputToImport(modelIn, keywordsNoImport)
   modelInMustImport   <- getInputToImport(modelIn, keywordsNoMustImport)

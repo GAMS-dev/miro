@@ -1,11 +1,15 @@
 DataInstance <- R6Class("DataInstance", public = list(
-  initialize = function(datasetNames = character(0L)){
+  initialize = function(datasetNames = character(0L), 
+                        fileExchange = c("csv", "gdx"), 
+                        csvDelim = ","){
     if(!length(datasetNames)){
       private$datasetNames <- character(0L)
     }else{
       stopifnot(is.character(datasetNames))
       private$datasetNames <- datasetNames
     }
+    private$fileExchange <- match.arg(fileExchange)
+    private$csvDelim     <- csvDelim
     return(invisible(self))
   },
   push = function(datasetName, data){
@@ -53,7 +57,7 @@ DataInstance <- R6Class("DataInstance", public = list(
     }
     return(invisible(self))
   },
-  writeCSV = function(filePath, datasetName = NULL, delim = ","){
+  writeDisk = function(filePath, datasetName = NULL, fileName = NULL, ...){
     stopifnot(is.character(filePath), identical(length(filePath), 1L))
     if(length(datasetName)){
       stopifnot(is.character(datasetName), identical(datasetName, 1L))
@@ -64,25 +68,10 @@ DataInstance <- R6Class("DataInstance", public = list(
     }else{
       idsToWrite <- seq_along(private$data)
     }
-    for(id in idsToWrite){
-      fileName <- file.path(filePath, 
-                            paste0(names(private$data)[[id]], 
-                                   ".csv"))
-      write_delim(private$data[[id]], fileName, 
-                  delim = delim, na = "")
-    }
-    private$filePaths <- c(private$filePaths, 
-                           paste0(filePath, 
-                                  names(private$data)[idsToWrite], 
-                                  ".csv"))
-    return(invisible(self))
-  },
-  writeGDX = function(fileName, squeezeZeros = c('y', 'n', 'e')){
-    stopifnot(is.character(fileName), identical(length(fileName), 1L))
-    squeezeZeros <- match.arg(squeezeZeros)
-    gdxio$wgdx(fileName, private$data, squeezeZeros)
-    private$filePaths <- c(private$filePaths, fileName)
-    return(invisible(self))
+    if(private$fileExchange == "csv")
+      return(private$writeCSV(filePath, idsToWrite, ...))
+    
+    return(private$writeGDX(file.path(filePath, fileName), idsToWrite, ...))
   },
   compress = function(fileName = NULL, recurse = FALSE){
     if(!is.null(fileName)){
@@ -99,5 +88,27 @@ DataInstance <- R6Class("DataInstance", public = list(
 ), private = list(
   data = list(),
   filePaths = character(0L),
-  datasetNames = character(0L)
+  datasetNames = character(0L),
+  fileExchange = character(1L),
+  csvDelim = character(1L),
+  writeGDX = function(filePath, idsToWrite, squeezeZeros = c('y', 'n', 'e')){
+    squeezeZeros <- match.arg(squeezeZeros)
+    gdxio$wgdx(filePath, private$data[idsToWrite], squeezeZeros)
+    private$filePaths <- c(private$filePaths, filePath)
+    return(invisible(self))
+  },
+  writeCSV = function(filePath, idsToWrite){
+    for(id in idsToWrite){
+      fileName <- file.path(filePath, 
+                            paste0(names(private$data)[[id]], 
+                                   ".csv"))
+      write_delim(private$data[[id]], fileName, 
+                  delim = private$csvDelim, na = "")
+    }
+    private$filePaths <- c(private$filePaths, 
+                           paste0(filePath, 
+                                  names(private$data)[idsToWrite], 
+                                  ".csv"))
+    return(invisible(self))
+  }
 ))

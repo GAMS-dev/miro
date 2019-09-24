@@ -7,8 +7,8 @@ source("../../R/gdxio.R")
 gdxio <- GdxIO$new('', c(modelInRaw, modelOut))
 
 test_that("Reading of set works", {
-  expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "i"), 
-               tibble::tibble('1' = c("seattle", "san-diego"), '2' = rep.int(NA_character_, 2L)))
+  expect_equal(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "i"), 
+               tibble::tibble('1' = c("seattle", "san-diego"), '2' = rep.int(NA, 2L)))
 })
 test_that("Reading of parameter works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "a"), 
@@ -18,15 +18,24 @@ test_that("Reading of (single) scalar works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "f"), 
                   90)
 })
+test_that("Reading of (single) singleton set works", {
+  expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "sub_i"), 
+                   tibble(`1` = "seattle", `2` = 'test'))
+})
 test_that("Reading of input scalars works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), scalarsFileName), 
-                   tibble::tibble())
+                   tibble::tibble(`scalarSymbols$symnames` = c('mins', 'beta', 'sub_i'),
+                                  `scalarSymbols$symtext` = c('minimum shipment (MIP- and MINLP-only)',
+                                                              'beta (MINLP-only)',
+                                                              'sub_i'),
+                                  `vapply(...)` = c(NA_character_, NA_character_, 'seattle||test')))
 })
 test_that("Reading of output scalars works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), scalarsOutName), 
-                   tibble::tibble('scalarSymbols$symnames' = 'f', 
-                          'scalarSymbols$symtext' = 'freight in dollars per case per thousand miles',
-                          'vapply(...)' = '90'))
+                   tibble::tibble('scalarSymbols$symnames' = c('f', 'total_cost'), 
+                          'scalarSymbols$symtext' = c('freight in dollars per case per thousand miles',
+                                                      'total transportation costs in thousands of dollars'),
+                          'vapply(...)' = c('90', NA_character_)))
 })
 test_that("Reading of (single) scalar equation works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "cost"), 
@@ -47,17 +56,32 @@ test_that("Reading of scalar variables and equations works", {
 })
 test_that("Reading of equations works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), 'supply'), 
-                   tibble::tibble('1' = c("san-diego", "seattle"), l = c(550, 350), m = c(0, 0),
-                          lo = c(-Inf, -Inf), up = c(600, 350), s = c(1, 1)))
+                   tibble::tibble('1' = c("seattle", "san-diego"), l = c(350, 550), m = c(0, 0),
+                          lo = c(-Inf, -Inf), up = c(350, 600), s = c(1, 1)))
 })
 test_that("Reading of variables works", {
   expect_equal(as.data.frame(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), 'x')), 
-                   data.frame('1' = c("san-diego", "san-diego", "san-diego",
-                                  "seattle", "seattle", "seattle"),
-                          '2' = c("chicago", "new-york", "topeka",
-                                  "chicago", "new-york", "topeka"), 
-                          l = c(0, 275, 275, 300, 50, 0),
-                          m = c(0.009, 0, 0, 0, 0, 0.036),
-                          lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L), 
-                          stringsAsFactors = FALSE, check.names = FALSE))
+               as.data.frame(tibble('1' = c("seattle", "seattle", "seattle",
+                                            "san-diego", "san-diego", "san-diego"),
+                                    '2' = c("new-york", "chicago", "topeka",
+                                            "new-york", "chicago", "topeka"), 
+                                    l = c(50, 300, 0, 275, 0, 275),
+                                    m = c(0, 0, 0.036, 0, 0.009, 0),
+                                    lo = rep.int(0, 6L), up = rep.int(Inf, 6L), s = rep.int(1, 6L))))
+})
+
+test_that("Writing of scalars works", {
+  scalarData <- tibble::tibble(`scalarSymbols$symnames` = c('mins', 'beta', 'sub_i'),
+                               `scalarSymbols$symtext` = c('minimum shipment (MIP- and MINLP-only)',
+                                                           'beta (MINLP-only)',
+                                                           'sub_i'),
+                               `vapply(...)` = c(NA_character_, NA_character_, 'seattle||test'))
+  data <- list(scalarData)
+  names(data) <- scalarsFileName
+  filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
+  #on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  
+  expect_equal(gdxio$rgdx(filePath, scalarsFileName), 
+               scalarData)
 })
