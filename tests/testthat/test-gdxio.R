@@ -20,7 +20,22 @@ test_that("Reading of (single) scalar works", {
 })
 test_that("Reading of (single) singleton set works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), "sub_i"), 
-                   tibble(`1` = "seattle", `2` = 'test'))
+                   tibble::tibble(`1` = "seattle", `2` = 'test'))
+  ssData <- tibble::tibble(scalar = "sub_i", description = "test", value = "seattle")
+  data <- list(ssData)
+  names(data) <- scalarsFileName
+  filePath <- file.path(getwd(), "data/tests_gdxio.gdx")
+  on.exit(unlink(filePath), add = TRUE)
+  gdxio$wgdx(filePath, data)
+  expect_equal(gdxio$rgdx(file.path(getwd(), "data/tests_gdxio.gdx"), "sub_i"), 
+               tibble::tibble(`1` = "seattle", `2` = NA))
+  unlink(filePath)
+  ssData <- tibble::tibble(scalar = "sub_i", description = "test", value = "topeka||asd")
+  data <- list(ssData)
+  names(data) <- scalarsFileName
+  gdxio$wgdx(filePath, data)
+  expect_equal(gdxio$rgdx(file.path(getwd(), "data/tests_gdxio.gdx"), "sub_i"), 
+               tibble::tibble(`1` = "topeka", `2` = "asd"))
 })
 test_that("Reading of input scalars works", {
   expect_identical(gdxio$rgdx(file.path(getwd(), "data/trnsport.gdx"), scalarsFileName), 
