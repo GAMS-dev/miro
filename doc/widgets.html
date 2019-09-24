@@ -410,8 +410,29 @@ $offExternalInput
                                     <p>By default, every cell in the table is editable and rows can be inserted and removed. 
                                     If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
                                     </div>
+                                    <p>In the above configuration we specified for the tabular representation of the parameter <i>Price</i> that not the entire table, but only the two columns <i>date</i> and <i>symbol</i> should be readonly. 
+                                    Furthermore, the values in the table should be presented as a heatmap in order to visually illustrate strong price differences. 
+                                    </p>
+                                </div><!--//section-block-->
+                                <div class="section-block" id = "widget-table-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a table widget:</p>
+                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab (no live preview available)</h6>
+                                    <div style="display:none"><p></p></div>
+                                    <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
+                                    <div style="display:none"><p></p></div>
+                                    <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should table be readonly?</h6>
+                                    <div style="display:none"><p></p></div>
+                                    <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot (no preview)</h6>
+                                    <div style="display:none"><p></p></div>
+                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select certain columns to be readonly</h6>
+                                    <div style="display:none"><p>Only when no pivot!</p></div>
+                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
+                                    <div style="display:none"><p></p></div>
+                                    
+                                    
                                 </div><!--//section-block-->
                                 <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
@@ -422,8 +443,9 @@ $offExternalInput
       "widgetType": "table",
       "alias": "Price",
       "readonly": false,
+      "readonlyCols": ["date", "symbol"],
       "heatmap": true,
-      "readonlyCols": "date"
+      "bigData": false
     }
 }
                                     </code></pre>

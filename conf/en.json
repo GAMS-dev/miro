@@ -323,7 +323,7 @@
       "selInputData":"Select datasets to load",
       "selExternalSource": "Select external source",
       "descLocal":"Choose file with data to load",
-      "newScenName": "Wählen Sie einen Namen für das neue Szenario",
+      "newScenName": "Choose a name for the new scenario",
       "scenNameExistsErr": "The scenario name you chose does already exist.",
       "descOverwriteInput":"You already have input data loaded. Are you sure you want to overwrite this data?",
       "cbSelectManually":"Manually choose datasets",
