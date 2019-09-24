@@ -110,7 +110,8 @@ prepareModelRun <- function(async = FALSE){
       choiceIdx         <- match(csvData[[1L]], 
                                  modelIn[[names(dataTmp)[[i]]]]$dropdown$choices)
       if(length(choiceIdx)){
-        if(any(is.na(choiceIdx))){
+        if(any(is.na(choiceIdx)) || 
+           !length(modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases)){
           csvData[["text"]] <- ""
         }else{
           aliasCol          <- modelIn[[names(dataTmp)[[i]]]]$dropdown$aliases[choiceIdx]
