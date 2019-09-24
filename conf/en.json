@@ -1084,8 +1084,7 @@
         "choiceDep":{
           "label": "Select symbol and header to depend upon",
           "depChoices": ["All"],
-          "type": "Select type of dependency",
-          "typeChoices": ["Forward", "Backward", "Forward and Backward"],
+          "type": "Should the symbol table(s) be filtered depending on the selection in the dropdown menu?",
           "selector": "Static choices?"
         },
         "default": "Default value",

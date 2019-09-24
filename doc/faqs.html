@@ -129,8 +129,8 @@
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> How can I customize my MIRO app?</h3>
                                     <div class="answer">
-                                        <p>Graphics, tables as well as other customization options are specified via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>.
-                                        In order to generate the <span class="code">&lt;modelname&gt;.json</span> file you can use our <a href="./configgen.html">Configuration Generator</a>.</p>
+                                        <p>The configuration can be done via a <a href ="./customize.html#configurationMode">graphical configuration interface</a>, with which you can create plots and widgets or change certain settings with a few mouse clicks, visually supported by a live preview.
+                                        In addition, the configuration can also be done <a href ="./customize.html#jsonfiles">manually</a> via the <span class="code">&lt;modelname&gt;.json</span> file inside the directory: <span class="code">&lt;modeldirecory&gt;/&lt;modelname&gt;.json</span>.</p>
                                     </div><!--//anwser-->
 
                                     <div class="section-block">
@@ -155,26 +155,31 @@
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> Can I set up GAMS MIRO on a server where multiple users can solve GAMS models?</h3>
                                         <div class="answer">
-                                          Yes. Besides the presented desktop version we also develop an enterprise version, which will run on a server and will offer features like multi-application management, user access management, load balancing, rolling updates, etc.
+                                          Yes. Besides the presented MIRO Desktop version we also develop a <a href="./server.html">MIRO Server version</a>, which will offer features like multi-application management, user access management, load balancing, rolling updates, etc.
                                             </div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> How can I start the MIRO Hypercube mode?</h3>
                                         <div class="answer">
-                                          How to get to the Hyperube mode:
+                                          How to get to the Hypercube mode:
                                           <ul>
                                             <li>When you are in the base mode, you can simply click the “Switch to Hypercube mode” button in the header bar and you will automatically be redirected.</li>
                                             <li>Alternatively, you can start the Hypercube mode directly via the switch: miromode=1 (in addition to miro=launch) from within GAMS Studio or the command line.</li>
                                           </ul>
-                                           See also: <a href="https://www.gams.com/miro/hypercube.html#hypercube-overview">here</a>
+                                           See also: <a href="./hypercube.html#hypercube-overview">here</a>
                                             </div>
                                     </div><!--//section-block-->
 
                                     <div class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What happens when using input data which results in infeasible or unbounded results?</h3>
                                         <div class="answer">
-                                          In GAMS MIRO both the log and the lst file of the current GAMS model run are displayed. Any information about infeasibilities and unboundness is also visible here. Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
+                                          In GAMS MIRO both the log and the lst file of the current GAMS model run can be displayed. Any information about infeasibilities and unboundness is also visible here. 
+                                          Further checks on infeasibilities and unboundness are not performed. If a model is infeasible (or unbounded) this still leads to a normal completion of the GAMS job 
+                                          (unless you check the model status and trigger an abort based on an unexpected model status). A normal completion of GAMS is interpreted by GAMS MIRO as an error-free run. 
+                                          The view switches to the output section and will show the content of your output symbols (even if they are empty or show the infeasible solution provided by some first phase algorithm). 
+                                          If the GAMS model is aborted for any reason, this will also result in an abort in GAMS MIRO. A corresponding message is displayed in GAMS MIRO and no output is displayed.
+                                          <br><b>Note</b>: You can write an <a href = "./customize.html#miro-log">own report / log</a> and integrate it into MIRO which is then visible in the GAMS interaction section. In such a custom report you can also deal with infeasibilities and unboundness. 
                                             </div>
                                     </div><!--//section-block-->
                                 </div><!--//section-block-->
@@ -197,7 +202,7 @@
                                     <h3 class="question"><i class="fas fa-question-circle"></i> &lt;modelname&gt;.json</h3>
                                     <div class="answer">
                                         <p>The <i>&lt;modelname&gt;.json</i> file, for example <i>transport.json</i>, is located in the <i>&lt;modelname&gt;/conf</i> directory. It contains the configuration of graphics, input widgets, language and all other model-specific configurations for a MIRO app.
-                                        This file has to be filled manually by the user.
+                                        This file can be filled manually by the user. However, the easiest way for the configuration is the <a href = "./customize.html#configurationMode">configuration mode</a>.
                                         <br>Like the <i>&lt;modelname&gt;_io.json</i> file, the structure of this file is based on a <a href="./schema.html" target="_blank">schema</a> with which the file is validated when a MIRO app is started.</p>
                                     </div><!--//anwser-->
                                 </div><!--//section-block-->
@@ -237,11 +242,13 @@
 
                             <section id="definitions" class="doc-section">
                                 <h2 class="section-title">Definitions</h2>
-                                <div id="def-model" class="section-block">
-                                    <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of GAMS MIRO?</h3>
-                                    <div class="answer">
-                                        We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
-                                    </div><!--//anwser-->
+                                <div class="section-block">
+                                    <div id="def-model" class="section-block">
+                                        <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>model</b> in the context of GAMS MIRO?</h3>
+                                        <div class="answer">
+                                            We call any <span class="code">.gms</span> file that you run with the command line option <span class="code">miro</span> a model. Inside this <span class="code">.gms</span> file you may include or call other files or applications, just as you would do with any GAMS program.
+                                        </div><!--//anwser-->
+                                    </div><!--//section-block-->
                                     <div id="def-scenario" class="section-block">
                                         <h3 class="question"><i class="fas fa-question-circle"></i> What is a <b>scenario</b> in the context of GAMS MIRO?</h3>
                                         <div class="answer">
@@ -285,8 +292,8 @@
                                 </div><!--//section-block-->
                             </section><!--//doc-section-->
 
-                            <section id="pricing" class="doc-section">
-                                <h2 class="section-title">Pricing</h2>
+                            <section id="licensing" class="doc-section">
+                                <h2 class="section-title">Licensing</h2>
                                 <div class="section-block">
                                     <h3 class="question"><i class="fas fa-question-circle"></i> What license is GAMS MIRO released under?</h3>
                                     <div class="answer">GAMS MIRO is released under version 3 of the GNU General Public License. For a copy of this license, see <a href="http://www.gnu.org/licenses/" target="_blank">http://www.gnu.org/licenses/</a></div>

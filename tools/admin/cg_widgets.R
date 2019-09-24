@@ -35,9 +35,6 @@ langSpecificWidget$defDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" =
 names(langSpecificWidget$defDepOp) <- lang$adminMode$widgets$slider$depOp$choices
 langSpecificWidget$depChoices <- c("All" = "")
 names(langSpecificWidget$depChoices) <- lang$adminMode$widgets$dropdown$choiceDep$depChoices
-langSpecificWidget$typeChoices <- c("Forward" = "0", "Backward" = "1", 
-                                 "Forward and Backward" = "2")
-names(langSpecificWidget$typeChoices) <- lang$adminMode$widgets$dropdown$choiceDep$typeChoices
 langSpecificWidget$startview <- c("Month" = "month", "Year" = "year", "Decade" = "decade")
 names(langSpecificWidget$startview) <- lang$adminMode$widgets$date$startview$choices
 langSpecificWidget$weekdays <- c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L, 
@@ -100,18 +97,18 @@ validateWidgetConfig <- function(widgetJSON){
              return(lang$adminMode$widgets$validate$val41)
            }
            if(any(widgetJSON$max < widgetJSON$min) && 
-              identical(input$slider_min_dep_selector, TRUE) &&
-              identical(input$slider_max_dep_selector, TRUE)){
+              isTRUE(input$slider_min_dep_selector) &&
+              isTRUE(input$slider_max_dep_selector)){
              return(lang$adminMode$widgets$validate$val42)
            }
            if(!is.null(widgetJSON$default) && (any(widgetJSON$default < widgetJSON$min) && 
-              identical(input$slider_min_dep_selector, TRUE) &&
-              identical(input$slider_def_dep_selector, TRUE))){
+              isTRUE(input$slider_min_dep_selector) &&
+              isTRUE(input$slider_def_dep_selector))){
              return(lang$adminMode$widgets$validate[["val7"]])
            }
            if(!is.null(widgetJSON$default) && (any(widgetJSON$max < widgetJSON$default) && 
-              identical(input$slider_max_dep_selector, TRUE) && 
-              identical(input$slider_def_dep_selector, TRUE))){
+              isTRUE(input$slider_max_dep_selector) && 
+              isTRUE(input$slider_def_dep_selector))){
              return(lang$adminMode$widgets$validate[["val7"]])
            }
            if(!is.logical(widgetJSON$tick)){
@@ -130,7 +127,8 @@ validateWidgetConfig <- function(widgetJSON){
               !identical(length(widgetJSON$choices), length(widgetJSON$aliases))){
              return(lang$adminMode$widgets$validate$val10)
            }
-           if(length(widgetJSON$selected) && (!widgetJSON$selected %in% widgetJSON$choices)){
+           if(length(widgetJSON$selected) && !widgetJSON$selected %in% widgetJSON$choices && 
+              isTRUE(input$dd_choice_dep_selector)){
              return(lang$adminMode$widgets$validate$val11)
            }
          },
@@ -141,7 +139,7 @@ validateWidgetConfig <- function(widgetJSON){
            if(!is.logical(widgetJSON$value)){
              return(lang$adminMode$widgets$validate$val12)
            }
-           if(identical(widgetJSON$value, TRUE)){
+           if(isTRUE(widgetJSON$value)){
              rv$widgetConfig$value <<- 1L
            }else{
              rv$widgetConfig$value <<- 0L
@@ -440,11 +438,11 @@ output$hot_preview <- renderRHandsontable({
                                                headers_tmp)], 
                   readOnly = TRUE)
   }
-  if(identical(rv$widgetConfig$bigData, TRUE) || 
+  if(isTRUE(rv$widgetConfig$bigData) || 
      (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
     return()
   }
-  if(identical(input$table_heatmap, TRUE)){
+  if(isTRUE(input$table_heatmap)){
     return(hot_heatmap(ht))
   }else{
     return(ht)
@@ -468,11 +466,10 @@ output$dt_preview <- renderDT({
                                     length(data))])
     headers_tmp  <- attrTmp
   }
-  dtOptions <- list(editable = !identical(input$table_readonly, 
-                                          TRUE),
+  dtOptions <- list(editable = !isTRUE(input$table_readonly),
                     colnames = headers_tmp)
   
-  if(!identical(rv$widgetConfig$bigData, TRUE) &&
+  if(!isTRUE(rv$widgetConfig$bigData) &&
      (!length(rv$widgetConfig$pivotCols) || 
      rv$widgetConfig$pivotCols == "_")){
     showEl(session, "#hot_preview")
@@ -513,10 +510,10 @@ observeEvent({input$widget_type
     }
     rv$widgetConfig <- list(widgetType = "table",
                             alias = widgetAlias,
-                            readonly = identical(currentConfig$readonly, TRUE),
+                            readonly = isTRUE(currentConfig$readonly),
                             readonlyCols = currentConfig$readonlyCols,
-                            heatmap = identical(currentConfig$heatmap, TRUE),
-                            bigData = identical(currentConfig$bigData, TRUE))
+                            heatmap = isTRUE(currentConfig$heatmap),
+                            bigData = isTRUE(currentConfig$bigData))
     if(length(currentConfig$pivotCols)){
       rv$widgetConfig$pivotCols <- currentConfig$pivotCols
     }
@@ -524,7 +521,7 @@ observeEvent({input$widget_type
              tagList(
                tags$div(class="option-wrapper",
                         textInput("widget_alias", lang$adminMode$widgets$table$alias, value = rv$widgetConfig$alias)),
-               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = identical(rv$widgetConfig$bigData, TRUE)),
+               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$widgetConfig$bigData)),
                checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
                if(length(pivotCols)){
                  tags$div(class="option-wrapper",
@@ -543,7 +540,7 @@ observeEvent({input$widget_type
                )), 
              where = "beforeEnd")
     output$widget_preview <- renderUI("")
-    if(identical(rv$widgetConfig$bigData, TRUE) || 
+    if(isTRUE(rv$widgetConfig$bigData) || 
        (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
       #hideEl(session, "#hot_preview")
     }else{
@@ -568,8 +565,8 @@ observeEvent({input$widget_type
                                        2L
                                      },
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
-                                   ticks = identical(currentConfig$ticks, TRUE),
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   ticks = isTRUE(currentConfig$ticks),
+                                   noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -622,13 +619,9 @@ observeEvent({input$widget_type
                         if(length(inputSymMultiDim)){
                           tags$div(class = "col-sm-4",
                                    tags$div(class = "shiny-input-container",
-                                            tags$label(class = "cb-label", "for" = "slider_min_dep_selector", 
-                                                       lang$adminMode$widgets$slider$depSelector),
-                                            tags$div(
-                                              tags$label(class = "checkbox-material", 
-                                                         checkboxInput("slider_min_dep_selector", 
-                                                                       value = is.numeric(rv$widgetConfig$min), label = NULL)
-                                              ))
+                                            checkboxInput_MIRO("slider_min_dep_selector",
+                                                               lang$adminMode$widgets$slider$depSelector,
+                                                               is.numeric(rv$widgetConfig$min))
                                    ))
                         }
                       ),
@@ -657,12 +650,9 @@ observeEvent({input$widget_type
                                if(length(inputSymMultiDim)){
                                  tags$div(class = "col-sm-4",
                                           tags$div(class = "shiny-input-container",
-                                                   tags$label(class = "cb-label", "for" = "slider_min_dep_selector", lang$adminMode$widgets$slider$depSelector),
-                                                   tags$div(
-                                                     tags$label(class = "checkbox-material", 
-                                                                checkboxInput("slider_max_dep_selector", 
-                                                                              value = is.numeric(rv$widgetConfig$max), label = NULL)
-                                                     ))
+                                                   checkboxInput_MIRO("slider_max_dep_selector", 
+                                                                      lang$adminMode$widgets$slider$depSelector,
+                                                                      is.numeric(rv$widgetConfig$max))
                                           ))
                                }
                       ),
@@ -691,31 +681,21 @@ observeEvent({input$widget_type
                                if(length(inputSymMultiDim)){
                                  tags$div(class = "col-sm-4",
                                           tags$div(class = "shiny-input-container",
-                                                   tags$label(class = "cb-label", "for" = "slider_def_dep_selector", lang$adminMode$widgets$slider$depSelector),
-                                                   tags$div(
-                                                     tags$label(class = "checkbox-material", 
-                                                                checkboxInput("slider_def_dep_selector", 
-                                                                              value = is.numeric(rv$widgetConfig$default), label = NULL)
-                                                     ))
+                                                   checkboxInput_MIRO("slider_def_dep_selector", 
+                                                                      lang$adminMode$widgets$slider$depSelector,
+                                                                      is.numeric(rv$widgetConfig$default))
                                           ))
                                }
                       ),
                       tags$div(class="option-wrapper",
                                numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L)),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "slider_ticks", lang$adminMode$widgets$slider$ticks),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("slider_ticks", value = rv$widgetConfig$ticks, label = NULL)
-                                 ))
+                               checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$slider$ticks,
+                                                  rv$widgetConfig$ticks)
                       ),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", lang$adminMode$widgets$slider$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", lang$adminMode$widgets$slider$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
@@ -741,8 +721,8 @@ observeEvent({input$widget_type
                                        c(2L, 5L)
                                      },
                                    step = if(length(currentConfig$step)) currentConfig$step else 1L,
-                                   ticks = identical(currentConfig$ticks, TRUE),
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   ticks = isTRUE(currentConfig$ticks),
+                                   noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$label <- currentConfig$label
            dynamicMin <- getWidgetDependencies("slider", rv$widgetConfig$min)
            dynamicMax <- getWidgetDependencies("slider", rv$widgetConfig$max)
@@ -782,12 +762,9 @@ observeEvent({input$widget_type
                                if(length(inputSymMultiDim)){
                                  tags$div(class = "col-sm-4",
                                           tags$div(class = "shiny-input-container",
-                                                   tags$label(class = "cb-label", "for" = "slider_min_dep_selector", lang$adminMode$widgets$sliderrange$depSelector),
-                                                   tags$div(
-                                                     tags$label(class = "checkbox-material", 
-                                                                checkboxInput("slider_min_dep_selector", 
-                                                                              value = is.numeric(rv$widgetConfig$min), label = NULL)
-                                                     ))
+                                                   checkboxInput_MIRO("slider_min_dep_selector", 
+                                                                      lang$adminMode$widgets$sliderrange$depSelector,
+                                                                      is.numeric(rv$widgetConfig$min))
                                           ))
                                }
                       ),
@@ -816,12 +793,9 @@ observeEvent({input$widget_type
                                if(length(inputSymMultiDim)){
                                  tags$div(class = "col-sm-4",
                                           tags$div(class = "shiny-input-container",
-                                                   tags$label(class = "cb-label", "for" = "slider_min_dep_selector", lang$adminMode$widgets$sliderrange$depSelector),
-                                                   tags$div(
-                                                     tags$label(class = "checkbox-material", 
-                                                                checkboxInput("slider_max_dep_selector", 
-                                                                              value = is.numeric(rv$widgetConfig$max), label = NULL)
-                                                     ))
+                                                   checkboxInput_MIRO("slider_min_dep_selector", 
+                                                                      lang$adminMode$widgets$sliderrange$depSelector,
+                                                                      is.numeric(rv$widgetConfig$max))
                                           ))
                                }
                       ),
@@ -831,20 +805,13 @@ observeEvent({input$widget_type
                                    value = rv$widgetConfig$default[2]),
                       numericInput("slider_step", "Step size", value = rv$widgetConfig$step, min = 0L),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "slider_ticks", lang$adminMode$widgets$sliderrange$ticks),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("slider_ticks", value = rv$widgetConfig$ticks, label = NULL)
-                                 ))
+                               checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$sliderrange$ticks,
+                                                  rv$widgetConfig$ticks)
                       ),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          lang$adminMode$widgets$sliderrange$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", 
+                                                  lang$adminMode$widgets$sliderrange$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
@@ -888,7 +855,10 @@ observeEvent({input$widget_type
                             selected = if(!length(dynamicChoices)) rv$widgetConfig$aliases else "",
                             multiple = TRUE, options = list(
                               'create' = TRUE,
-                              'persist' = FALSE))
+                              'persist' = FALSE)),
+             selectInput("dd_default", lang$adminMode$widgets$dropdown$default, 
+                         choices = if(length(dynamicChoices)) "" else rv$widgetConfig$choices, 
+                         selected = if(length(dynamicChoices)) "" else rv$widgetConfig$selected)
            )
            insertUI(selector = "#widget_options",
                     tagList(
@@ -909,9 +879,9 @@ observeEvent({input$widget_type
                                                              selectInput("dd_choice_dep_header", NULL, 
                                                                          choices = depHeader,
                                                                          selected = dynamicChoices[3]),
-                                                             selectInput("dd_choice_dep_type", lang$adminMode$widgets$dropdown$choiceDep$type, 
-                                                                         choices = langSpecificWidget$typeChoices,
-                                                                         selected = dynamicChoices[1])
+                                                             checkboxInput_MIRO("dd_choice_dep_type", 
+                                                                                lang$adminMode$widgets$dropdown$choiceDep$type, 
+                                                                                identical(dynamicChoices[1], "2"))
                                             )
                                           )
                                         }else{
@@ -919,38 +889,24 @@ observeEvent({input$widget_type
                                         }),
                                if(length(inputSymMultiDim)){
                                  tags$div(class = "col-sm-4",
-                                          tags$div(class = "shiny-input-container",
-                                                   tags$label(class = "cb-label", "for" = "dd_choice_dep_selector", lang$adminMode$widgets$dropdown$choiceDep$selector),
-                                                   tags$div(
-                                                     tags$label(class = "checkbox-material", 
-                                                                checkboxInput("dd_choice_dep_selector", 
-                                                                              value = identical(length(dynamicChoices), 0L), label = NULL)
-                                                     ))
-                                          ))
+                                          checkboxInput_MIRO("dd_choice_dep_selector", 
+                                                             lang$adminMode$widgets$dropdown$choiceDep$selector,
+                                                             identical(length(dynamicChoices), 0L))
+                                          
+                                          )
                                }
                       ),
-                      selectInput("dd_default", lang$adminMode$widgets$dropdown$default, 
-                                  choices = if(length(dynamicChoices)) "" else rv$widgetConfig$choices, 
-                                  selected = if(length(dynamicChoices)) "" else rv$widgetConfig$selected),
                       if(input$widget_type == "multidropdown"){
                         tags$div(class = "shiny-input-container",
-                                 tags$label(class = "cb-label", "for" = "widget_multiple", 
-                                            lang$adminMode$widgets$dropdown$multiple),
-                                 tags$div(
-                                   tags$label(class = "checkbox-material", 
-                                              checkboxInput("widget_multiple", value = rv$widgetConfig$multiple, 
-                                                            label = NULL)
-                                   ))
+                                 checkboxInput_MIRO("widget_multiple", 
+                                                    lang$adminMode$widgets$dropdown$multiple,
+                                                    rv$widgetConfig$multiple)
                         )
                       },
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          lang$adminMode$widgets$dropdown$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", 
+                                                  lang$adminMode$widgets$dropdown$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
@@ -968,8 +924,8 @@ observeEvent({input$widget_type
          checkbox = {
            rv$widgetConfig <- list(widgetType = "checkbox",
                                    alias = widgetAlias,
-                                   value = identical(currentConfig$value, TRUE),
-                                   noHcube = identical(currentConfig$noHcube, TRUE),
+                                   value = isTRUE(currentConfig$value),
+                                   noHcube = isTRUE(currentConfig$noHcube),
                                    class =  "checkbox-material")
            rv$widgetConfig$label <- currentConfig$label
            insertUI(selector = "#widget_options",
@@ -978,35 +934,23 @@ observeEvent({input$widget_type
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_value", 
-                                          lang$adminMode$widgets$checkbox$default),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_value", value = rv$widgetConfig$value, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_value", 
+                                                  lang$adminMode$widgets$checkbox$default,
+                                                  rv$widgetConfig$value)
                       ),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          lang$adminMode$widgets$checkbox$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", 
+                                                  lang$adminMode$widgets$checkbox$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
            
            output$widget_preview <- renderUI({
              tagList(
-               tags$label(class = "cb-label", "for" = "checkbox_preview", 
-                          rv$widgetConfig$label), 
-               tags$div(
-                 tags$label(class = "checkbox-material", "for" = "checkbox_preview", 
-                            checkboxInput("checkbox_preview", label = NULL,
-                                          value = rv$widgetConfig$value))
-               )
+               checkboxInput_MIRO("checkbox_preview", 
+                                  rv$widgetConfig$label,
+                                  rv$widgetConfig$value)
              )
            })
          },
@@ -1017,7 +961,7 @@ observeEvent({input$widget_type
                                    startview = if(length(currentConfig$startview)) currentConfig$startview else "month",
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig$value <- currentConfig$value
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$min <- currentConfig$min
@@ -1034,12 +978,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_def_off", lang$adminMode$widgets$date$defOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_def_off", 
-                                                                            value = is.null(rv$widgetConfig$value), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_def_off", 
+                                                                    lang$adminMode$widgets$date$defOff,
+                                                                    is.null(rv$widgetConfig$value))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1049,12 +990,8 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_min_off", lang$adminMode$widgets$date$minOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_min_off", 
-                                                                            value = is.null(rv$widgetConfig$min), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_min_off", lang$adminMode$widgets$date$minOff,
+                                                                    is.null(rv$widgetConfig$min))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1065,12 +1002,8 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_max_off", lang$adminMode$widgets$date$maxOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_max_off", 
-                                                                            value = is.null(rv$widgetConfig$max), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_max_off", lang$adminMode$widgets$date$maxOff,
+                                                                    is.null(rv$widgetConfig$max))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1087,13 +1020,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_format_custom_selector", lang$adminMode$widgets$date$formatCustomSelector),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_format_custom_selector", 
-                                                                            value = !rv$widgetConfig$format %in% dateFormatChoices, 
-                                                                            label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_format_custom_selector", 
+                                                                    lang$adminMode$widgets$date$formatCustomSelector,
+                                                                    !rv$widgetConfig$format %in% dateFormatChoices)
                                         ))
                       ),
                       selectInput("date_startview", lang$adminMode$widgets$date$startview$label, 
@@ -1105,22 +1034,14 @@ observeEvent({input$widget_type
                                   choices = langSpecificWidget$weekdays,
                                   selected = rv$widgetConfig$daysofweekdisabled, multiple = TRUE),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "date_autoclose", 
-                                          lang$adminMode$widgets$date$autoclose),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("date_autoclose", value = rv$widgetConfig$autoclose, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("date_autoclose", 
+                                                  lang$adminMode$widgets$date$autoclose,
+                                                  rv$widgetConfig$autoclose)
                       ),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          lang$adminMode$widgets$date$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", 
+                                                  lang$adminMode$widgets$date$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
@@ -1140,7 +1061,7 @@ observeEvent({input$widget_type
                                    weekstart = if(length(currentConfig$weekstart)) currentConfig$weekstart else 0L,
                                    separator = if(length(currentConfig$separator)) currentConfig$separator else " to ",
                                    autoclose = if(identical(currentConfig$autoclose, FALSE)) FALSE else TRUE,
-                                   noHcube = identical(currentConfig$noHcube, TRUE))
+                                   noHcube = isTRUE(currentConfig$noHcube))
            rv$widgetConfig[["start"]] <- currentConfig[["start"]]
            rv$widgetConfig$label <- currentConfig$label
            rv$widgetConfig$end <- currentConfig$end
@@ -1159,12 +1080,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_start_off", lang$adminMode$widgets$daterange$startOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_start_off", 
-                                                                            value = !is.null(rv$widgetConfig$start), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_start_off", 
+                                                                    lang$adminMode$widgets$daterange$startOff,
+                                                                    !is.null(rv$widgetConfig$start))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1175,12 +1093,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_end_off", lang$adminMode$widgets$daterange$endOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_end_off", 
-                                                                            value = is.null(rv$widgetConfig$end), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_end_off", 
+                                                                    lang$adminMode$widgets$daterange$endOff,
+                                                                    is.null(rv$widgetConfig$end))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1190,12 +1105,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_min_off", lang$adminMode$widgets$daterange$minOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_min_off", 
-                                                                            value = is.null(rv$widgetConfig$min), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_min_off", 
+                                                                    lang$adminMode$widgets$daterange$minOff,
+                                                                    is.null(rv$widgetConfig$min))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1206,12 +1118,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_max_off", lang$adminMode$widgets$daterange$maxOff),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_max_off", 
-                                                                            value = is.null(rv$widgetConfig$max), label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_max_off", 
+                                                                    lang$adminMode$widgets$daterange$maxOff,
+                                                                    is.null(rv$widgetConfig$max))
                                         ))
                       ),
                       tags$div(class = "shiny-input-container conditional",
@@ -1228,13 +1137,9 @@ observeEvent({input$widget_type
                                         )),
                                tags$div(class = "col-sm-4",
                                         tags$div(class = "shiny-input-container",
-                                                 tags$label(class = "cb-label", "for" = "date_format_custom_selector", lang$adminMode$widgets$daterange$formatCustomSelector),
-                                                 tags$div(
-                                                   tags$label(class = "checkbox-material", 
-                                                              checkboxInput("date_format_custom_selector", 
-                                                                            value = !rv$widgetConfig$format %in% dateFormatChoices, 
-                                                                            label = NULL)
-                                                   ))
+                                                 checkboxInput_MIRO("date_format_custom_selector", 
+                                                                    lang$adminMode$widgets$daterange$formatCustomSelector,
+                                                                    !rv$widgetConfig$format %in% dateFormatChoices)
                                         ))
                       ),
                       selectInput("date_startview", lang$adminMode$widgets$daterange$startview$label, 
@@ -1245,22 +1150,14 @@ observeEvent({input$widget_type
                       textInput("date_separator", lang$adminMode$widgets$daterange$separator, 
                                   value = rv$widgetConfig$separator),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "date_autoclose", 
-                                          lang$adminMode$widgets$daterange$autoclose),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("date_autoclose", value = rv$widgetConfig$autoclose, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("date_autoclose", 
+                                                  lang$adminMode$widgets$daterange$autoclose,
+                                                  rv$widgetConfig$autoclose)
                       ),
                       tags$div(class = "shiny-input-container",
-                               tags$label(class = "cb-label", "for" = "widget_hcube", 
-                                          lang$adminMode$widgets$daterange$hcube),
-                               tags$div(
-                                 tags$label(class = "checkbox-material", 
-                                            checkboxInput("widget_hcube", value = !rv$widgetConfig$noHcube, 
-                                                          label = NULL)
-                                 ))
+                               checkboxInput_MIRO("widget_hcube", 
+                                                  lang$adminMode$widgets$daterange$hcube,
+                                                  !rv$widgetConfig$noHcube)
                       )
                     ), 
                     where = "beforeEnd")
@@ -1448,7 +1345,7 @@ observeEvent(input$date_min, {
   rv$widgetConfig$min <<- input$date_min
 })
 observeEvent(input$date_min_off, {
-  if(identical(input$date_min_off, TRUE)){
+  if(isTRUE(input$date_min_off)){
     rv$widgetConfig$min <<- NULL
   }else{
     rv$widgetConfig$min <<- input$date_min
@@ -1509,13 +1406,13 @@ observeEvent(input$text_placeholder, {
 observeEvent(input$saveWidget, {
   req(length(currentWidgetSymbolName) > 0L, nchar(currentWidgetSymbolName) > 0L)
   if(rv$widgetConfig$widgetType %in% c("slider", "sliderrange")){
-    if(identical(input$slider_min_dep_selector, FALSE)){
+    if(isFALSE(input$slider_min_dep_selector)){
       rv$widgetConfig$min <<- paste0(input$slider_min_dep_op, "(", input$slider_min_dep, 
                                      "$", input$slider_min_dep_header, ")")
     }else{
       rv$widgetConfig$min <<- input$slider_min
     }
-    if(identical(input$slider_max_dep_selector, FALSE)){
+    if(isFALSE(input$slider_max_dep_selector)){
       rv$widgetConfig$max <<- paste0(input$slider_max_dep_op, "(", input$slider_max_dep, 
                                      "$", input$slider_max_dep_header, ")")
     }else{
@@ -1523,7 +1420,7 @@ observeEvent(input$saveWidget, {
     }
     if(identical(rv$widgetConfig$widgetType, "slider") && 
        identical(length(rv$widgetConfig$default), 1L)){
-      if(identical(input$slider_def_dep_selector, FALSE)){
+      if(isFALSE(input$slider_def_dep_selector)){
         rv$widgetConfig$default <<- paste0(input$slider_def_dep_op, "(", input$slider_def_dep, 
                                            "$", input$slider_def_dep_header, ")")
       }else{
@@ -1531,20 +1428,15 @@ observeEvent(input$saveWidget, {
       }
     }
   }else if(rv$widgetConfig$widgetType %in% c("dropdown", "multidropdown")){
-    if(identical(input$dd_choice_dep_selector, FALSE)){
-      switch(input$dd_choice_dep_type,
-             "0" = {
-               rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
-                                                  input$dd_choice_dep_header)
-             },
-             "1" = {
-               rv$widgetConfig$choices <<- paste0(input$dd_choice_dep, 
-                                                  input$dd_choice_dep_header, "$")
-             }, 
-             "2" = {
-               rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
-                                                  input$dd_choice_dep_header, "$")
-             })
+    if(isFALSE(input$dd_choice_dep_selector)){
+      if(isTRUE(input$dd_choice_dep_type)){
+        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+                                           if(nchar(input$dd_choice_dep)){"$"},
+                                           input$dd_choice_dep_header, "$")
+      }else{
+        rv$widgetConfig$choices <<- paste0("$", input$dd_choice_dep, 
+                                           input$dd_choice_dep_header)
+      }
     }
   }
   errMsg <- validateWidgetConfig(rv$widgetConfig)

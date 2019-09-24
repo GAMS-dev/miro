@@ -229,27 +229,81 @@
                                     </code></pre>
                                 </div><!--//section-block-->
                             </section>
-                           <!-- <section id="widget-multidropdown" class="doc-section">
-                                <h2 class="section-title">Multi-dropdown menu</h2>
+                            <section id="widget-multidropdown" class="doc-section">
+                                <h2 class="section-title">Multidropdown menu</h2>
                                 <div class="section-block">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns a string.</p>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>weight</i></p>
-                                    <pre><code class="language-gams">asd;
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>A multidropdown menu can only be used for one-dimensional, dynamic sets.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>Example: Model <i>Pickstock</i>. We define a new dynamic Set <i>subdate(date)</i>. In MIRO we want to fill the elements of <i>subset</i> via a multidropdown menu.<br></p>
+                                    <pre><code class="language-gams">Set       date                 'date'
+          symbol               'stock symbol';
+          
+$onExternalInput
+Parameter price(date<,symbol<) 'Price';
+Scalar    maxstock             'maximum number of stocks to select'  /  2 /
+          trainingdays         'number of days for training'         / 99 /;
+$offExternalInput
+
+* load price information
+$setNames "%gams.input%" fp fn fe
+$if not set fileName $set fileName %fp%dowjones2016.csv
+$if not exist "%fileName%" $abort CSV file with stock prices missing
+$call csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
+$if errorlevel 1 $abort problems reading CSV data
+$gdxin stockdata
+$load price
+
+$onExternalInput
+set       subdate(date)        'subset of dates' /2016-01-04/;
+$offExternalInput
+
 </code></pre>
-                                    <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
+                                    <p>In the configuation mode we can configure a multidropdown menu for symbol <i>subdate</i>:<p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:125pt;" src="assets/images/configuration_mode/pie_table.png" alt="Pie chart data"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_multidropdown_config.png" alt="Multi-dropdown menu configuration"/>
                                     </div>
-                                     <p>In the configuration mode we then can configure a pie chart. Note that index sets are provided with their explanatory text, not with the actual symbol names.</p>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>The only difference between configuring a single and a multi-dropdown menu is the checkbox <i>Should multiple items be selectable?</i>.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>Note that we do not use static choices for the dropdown menu but fill the choices with all dates of the symbol <i>price</i>. 
+                                    Furthermore, we activate the option that the table of symbol <i>price</i> shall be filtered based on the user's selection in the dropdown menu of <i>subdate</i>. 
+                                    This means that if the user selects one or more dates in the dropdown menu, only the entries containing these dates are visible in the <i>Price</i> table. 
+                                    More information on dependencies among widgets can be found <a href = "./customize.html#widgets-dependencies">here</a>.</p>
+                                    <p>In the MIRO application the result of this configuration looks like this:</p>
                                     <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/graphs_pie_config.png" alt="Pie chart configuration"/>
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_multidropdown_config2.png" alt="Multi-dropdown menu in MIRO"/>
                                     </div>
                                 </div><!--//section-block-->
-                               <!-- <div class="section-block">
+                                <div class="section-block">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
-{}
+{
+  "inputWidgets": {
+    "subdate": {
+      "widgetType": "dropdown",
+      "alias": "subset of dates",
+      "selected": "",
+      "noHcube": false,
+      "multiple": true,
+      "label": "Select dates",
+      "choices": "$price$date$"
+    }
+  }
+}
                                     </code></pre>
                                 </div><!--//section-block-->
                             </section>
@@ -384,7 +438,7 @@
                              <a class="nav-link scrollto" href="#widget-sliderrange">Slider range</a>
                              <a class="nav-link scrollto" href="#widget-checkbox">Checkbox</a>
                              <a class="nav-link scrollto" href="#widget-dropdown">Dropdown menu</a>
-                             <!--<a class="nav-link scrollto" href="#widget-multidropdown">Multidropdown menu</a>-->
+                             <a class="nav-link scrollto" href="#widget-multidropdown">Multidropdown menu</a>
                              <a class="nav-link scrollto" href="#widget-date">Date selector</a>
                              <a class="nav-link scrollto" href="#widget-daterange">Daterange selector</a>
                              <a class="nav-link scrollto" href="#widget-textbox">Textbox</a>

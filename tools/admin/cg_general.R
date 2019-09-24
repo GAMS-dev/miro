@@ -134,13 +134,6 @@ insertUI(selector = "#interface_wrapper2",
 insertUI(selector = "#module_wrapper1",
          tagList(
            tags$h2("Scenario & data", class="option-category"),
-           tags$div(title = lang$adminMode$general$actScen$title,
-                    tags$label(class = "cb-label", "for" = "general_act_scen", lang$adminMode$general$actScen$label),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_act_scen", value = if(length(configJSON$activateModules$scenario)) configJSON$activateModules$scenario else config$activateModules$scenario, label = NULL)
-                      ))
-           ),
            tags$div(title = lang$adminMode$general$actUpload$title,
                     tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
                                tags$div(lang$adminMode$general$actUpload$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
@@ -317,9 +310,6 @@ observeEvent(input$general_args, {
 
 observeEvent(input$general_scen, {
   rv$generalConfig$defCompMode <<- input$general_scen
-})
-observeEvent(input$general_act_scen, {
-  rv$generalConfig$activateModules$scenario <<- input$general_act_scen
 })
 observeEvent(input$general_act_strict, {
   rv$generalConfig$activateModules$strictmode <<- input$general_act_strict
