@@ -267,8 +267,8 @@ observeEvent(virtualActionButton(
     switchTab(session, "output")
     updateTabsetPanel(session, "scenTabset",
                       selected = "results.current")
-    updateTabsetPanel(session, "contentCurrent",
-                      selected = "contentCurrent_1")
+    updateTabsetPanel(session, "outputTabset",
+                      selected = "outputTabset_1")
     
     jobResults <- NULL
     # rendering tables and graphs

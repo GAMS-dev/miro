@@ -715,7 +715,7 @@ if(!is.null(errMsg)){
     save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
                   "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                   "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
-                  "modelInTabularData", "externalInputConfig",
+                  "modelInTabularData", "externalInputConfig", "tabSheetMap",
                   "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
                   "choicesNoDep", "sliderValues", "configGraphsOut", 
                   "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
@@ -916,16 +916,16 @@ if(!is.null(errMsg)){
         }
       }else if(isolate(input$sidebarMenuId) == "outputData"){
         flog.debug("Navigated %d output tabs (using shortcut).", direction)
-        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
         if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
-          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentCurrent", 
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
                                                                     currentGroup)]]), "_")[[1]][2])
-          updateTabsetPanel(session, paste0("contentCurrent", currentGroup), 
-                            paste0("contentCurrent", 
+          updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
+                            paste0("outputTabset", 
                                    currentGroup, "_", currentSheet + direction))
         }else{
-          updateTabsetPanel(session, "contentCurrent", 
-                            paste0("contentCurrent_", currentGroup + direction))
+          updateTabsetPanel(session, "outputTabset", 
+                            paste0("outputTabset_", currentGroup + direction))
         }
       }else if(isolate(input$sidebarMenuId) == "scenarios"){
         if(isInSplitView){
@@ -1214,6 +1214,9 @@ if(!is.null(errMsg)){
     obsCompare <- vector("list", maxNumberScenarios)
     # switch between tabular view and output graphs
     source("./modules/output_table_view.R", local = TRUE)
+    if(isTRUE(config$hasSymbolLinks)){
+      source("./modules/symbol_links.R", local = TRUE)
+    }
     
     ####### Advanced options
     source("./modules/download_tmp.R", local = TRUE)

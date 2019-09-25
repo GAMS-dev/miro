@@ -1721,6 +1721,29 @@
              }
            }
         }
+      },
+      "symbolLinks":{
+        "description": "Link output symbols to input symbols so that input data can be populated from output sheets",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["source", "target"],
+          "properties":{
+            "source":{
+              "description":"Source symbol",
+              "type":"string",
+              "minLength":1
+            },
+            "target":{
+              "description":"Target symbol",
+              "type":"string",
+              "minLength":1
+            }
+          }
+        }
       }
    }
 }

@@ -113,7 +113,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                csv = {
                  if(file.exists(file.path(workDir, names(metaData)[[i]] %+% '.csv'))){
                    ret$tabular[[i]] <<- read_delim(file.path(workDir, names(metaData)[[i]] %+% '.csv'), 
-                                                   csvDelim, col_types = cols(), 
+                                                   csvDelim, col_types = metaData[[i]]$colTypes, 
                                                    col_names = TRUE)
                  }else{
                    ret$tabular[[i]] <<- templates[[i]]
@@ -123,7 +123,15 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                xls = {
                  sheetID <- match(names(metaData)[[i]], xlsSheetNames)[[1]]
                  if(!is.na(sheetID)){
-                   ret$tabular[[i]] <<- read_excel(xlsPath, sheetID,
+                   headerTypes <- metaData[[i]]$colTypes
+                   ret$tabular[[i]] <<- read_excel(xlsPath, sheetID, 
+                                                   col_types = 
+                                                     vapply(seq_along(metaData[[i]]$headers), 
+                                                            function(colId){
+                                                              if(identical(substr(headerTypes, colId, colId), "c"))
+                                                                return("text")
+                                                              return("numeric")
+                                                            }, character(1L), USE.NAMES = FALSE), 
                                                    col_names = TRUE)
                  }else{
                    ret$tabular[[i]] <<- templates[[i]]

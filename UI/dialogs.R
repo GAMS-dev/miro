@@ -262,9 +262,11 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
     tabLoadFromExternalSource <- tabPanel(lang$nav$dialogImport$tabExternal, vale = "tb_importData_external",
                                           tags$div(class = "space"),
                                           fluidRow(
-                                            selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource, 
-                                                        names(externalInputConfig), 
-                                                        multiple = FALSE, width = "100%")
+                                            column(12,
+                                              selectInput("selExternalSource", lang$nav$dialogImport$selExternalSource, 
+                                                          names(externalInputConfig), 
+                                                          multiple = FALSE, width = "100%")
+                                            )
                                           ),
                                           fluidRow(
                                             div(class= "choose-input", 

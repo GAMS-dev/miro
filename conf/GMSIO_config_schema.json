@@ -21,7 +21,8 @@
       "description":"Method used to exchange files",
       "type":"string",
       "enum":[  
-        "csv"
+        "csv",
+        "gdx"
       ],
       "default":"csv",
       "required":false
@@ -44,8 +45,20 @@
         "additionalProperties":false,
         "properties":{  
           "alias":{  
+            "description": "Symbol alias",
             "type":"string",
             "minLength":1
+          },
+          "type":{ 
+            "description": "Symbol type",
+            "type":"string",
+            "default":"en",
+            "enum":[  
+               "set",
+               "parameter",
+               "variable",
+               "equation"
+            ]
           },
           "symnames":{ 
             "description": "Symbol names in scalar tables",
@@ -116,8 +129,20 @@
         "additionalProperties":false,
         "properties":{  
           "alias":{  
+            "description": "Symbol alias",
             "type":"string",
             "minLength":1
+          },
+          "type":{
+            "description": "Symbol type",
+            "type":"string",
+            "default":"en",
+            "enum":[  
+               "set",
+               "parameter",
+               "variable",
+               "equation"
+            ]
           },
           "symnames":{ 
             "description": "Symbol names in scalar tables",
@@ -147,12 +172,6 @@
               "type":"string",
               "minLength":1
             }
-          },
-          "count":{  
-            "description":"Only relevant for output scalars. Number of scalars in dataframe.",
-            "type":"integer",
-            "minimum":1,
-            "required":false
           },
           "headers":{  
             "description":"headers of the output sheets containing names of sets/parameters",
