@@ -11,6 +11,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     private$metaData <- metaData
     return(invisible(self))
   },
+  getSymbols = function(gdxName = NULL){
+    if(length(gdxName))
+      return(gdxrrw::gdxInfo(gdxName, returnList = TRUE, dump = FALSE))
+    return(private$gdxSymbols)
+  },
   rgdx = function(gdxName, symName, names = character(0L), 
                   pivotHeaders = character(0L), isNewGdx = FALSE){
     stopifnot(is.character(gdxName), identical(length(gdxName), 1L),
@@ -97,7 +102,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       }
       if(symName %in% names(private$metaData)){
         symText <- private$metaData[[symName]]$alias
-        symType <- private$metaData[[symName]]$type
+        symType <- private$metaData[[symName]]$symtype
       }else{
         stop(sprintf("Symbol: '%s' not found.", symName), call. = FALSE)
       }

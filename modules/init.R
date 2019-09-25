@@ -22,8 +22,8 @@ if(is.null(errMsg)){
   rm(jsonFilesMissing)
   jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
                                    file.path(configDir, "config_schema.json")), 
-                        GMSIO_config = c(jsonFilesWithSchema[2], 
-                                     file.path(configDir, "GMSIO_config_schema.json")),
+                        io_config = c(jsonFilesWithSchema[2], 
+                                     file.path(configDir, "io_config_schema.json")),
                         db_config = c(jsonFilesWithSchema[3], 
                                       file.path(configDir, "db_config_schema.json")))
 }
@@ -47,7 +47,7 @@ if(is.null(errMsg)){
     
     if(names(jsonSchemaMap)[[i]] == "config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "GMSIO_config" && is.null(eval[[2]])){
+    }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
       config$db <<- eval[[1]]
@@ -888,8 +888,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
              if(length(choices$fw)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
-             if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
-               modelIn[[i]]$headers[[names(modelIn)[i]]] <<- list(type = "set")
+             if(identical(modelIn[[i]]$symtype, "set")){
                return(name)
              }else{
                return(NULL)

@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.8.7"
-MIRORDate   <- "Aug 23 2019"
+MIROVersion <- "0.8.9"
+MIRORDate   <- "Sep 25 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -36,8 +36,8 @@ CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 if(R.version[["major"]] < 3 || 
    R.version[["major"]] == 3 && gsub("\\..$", "", 
-                                     R.version[["minor"]]) < 5){
-  errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run GAMS MIRO."
+                                     R.version[["minor"]]) < 6){
+  stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
 tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
@@ -83,7 +83,7 @@ if("gdxrrw" %in% installedPackages){
   requiredPackages <- c(requiredPackages, "gdxrrw")
 }
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
+filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R")
 LAUNCHADMINMODE <- FALSE
@@ -804,6 +804,8 @@ if(!is.null(errMsg)){
   close(pb)
   pb <- NULL
   interruptShutdown <<- FALSE
+  deactivateHcubeSwitch <- config$activateModules$hcubeMode || isShinyProxy || 
+    !config$activateModules$scenario || !config$activateModules$hcubeSwitch
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -1308,7 +1310,7 @@ if(!is.null(errMsg)){
       
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
-      if(!isShinyProxy){
+      if(!deactivateHcubeSwitch){
         # switch to Hypercube mode
         hcubeProcess <- NULL
         observeEvent(input$switchToHcube, {
