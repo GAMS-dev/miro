@@ -342,7 +342,7 @@ showLoadDataDialog <- function(scenListDb, dbTagList = NULL){
     tabLoadFromDb <- getLoadDbPanel(id = "remote", 
                                     title = lang$nav[[modeDescriptor]]$tabDatabase, 
                                     scenList = scenListDb, tagList = dbTagList,
-                                    iconName = if(config$activateModules$hcube) "cube" else "database",
+                                    iconName = if(config$activateModules[["hcubeMode"]]) "cube" else "database",
                                     modeDescriptor = modeDescriptor)
     if(config$activateModules$hcubeMode){
       tabLoadFromBase <- getLoadDbPanel(id = "base", 
