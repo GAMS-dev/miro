@@ -91,6 +91,7 @@
       "tooltips":{  
         "btExport":"export scenario",
         "btTableView":"switch view",
+        "btSymbolLink": "Use as input data",
         "btClose":"close scenario",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"model input",

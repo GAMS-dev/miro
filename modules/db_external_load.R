@@ -123,6 +123,7 @@ observeEvent(input$btImportExternal, {
   errMsg    <-  NULL
   loadMode  <-  "scen"
   newInputCount <- 0L
+  overwriteInput <- TRUE
   datasetsToFetch <- datasetsToImport[!vapply(scenInputData, is.null, 
                                               logical(1L), USE.NAMES = FALSE)]
   source("./modules/input_load.R", local = TRUE)

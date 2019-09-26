@@ -44,8 +44,14 @@ getInputDataset <- function(id){
     stop("No valid input data found.", call. = FALSE)
   }
 }
-observeEvent(input$inputTabset, {
-  i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])
+observe({
+  i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  if(length(inputTabTitles[[i]]) > 1L){
+    j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
+    i <- inputTabs[[i]][j]
+  }else{
+    i <- inputTabs[[i]][1]
+  }
   if(is.null(configGraphsIn[[i]]) || isEmptyInput[i]){
     disableEl(session, "#btGraphIn")
   }else{
@@ -53,9 +59,9 @@ observeEvent(input$inputTabset, {
   }
 })
 observeEvent(input$btGraphIn, {
-  i <- as.integer(strsplit(isolate(input$inputTabset), "_")[[1]][2])
-  if(length(inputTabs[[i]]) > 1L){
-    j <- as.integer(strsplit(isolate(input[[paste0("inputTabset", i)]]), "_")[[1]][2])
+  i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  if(length(inputTabTitles[[i]]) > 1L){
+    j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
     i <- inputTabs[[i]][j]
   }else{
     i <- inputTabs[[i]][1]

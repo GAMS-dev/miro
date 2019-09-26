@@ -183,6 +183,7 @@ onclick="Shiny.setInputValue(\'btExportScen\', ', scenId, ', {priority: \'event\
                     )
                     
            ),
+           tags$div(class="small-space"),
            fluidRow(
              scenTabset
            )

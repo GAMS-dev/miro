@@ -91,6 +91,7 @@
       "tooltips":{  
         "btExport":"Exportiere Szenariodaten",
         "btTableView":"Ansicht wechseln",
+        "btSymbolLink": "Als Eingabedaten verwenden",
         "btClose":"Szenario schließen",
         "btDownloadTmpFiles":"temporary files",
         "inputSheet":"Eingabedaten",

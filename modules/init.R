@@ -22,8 +22,8 @@ if(is.null(errMsg)){
   rm(jsonFilesMissing)
   jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
                                    file.path(configDir, "config_schema.json")), 
-                        GMSIO_config = c(jsonFilesWithSchema[2], 
-                                     file.path(configDir, "GMSIO_config_schema.json")),
+                        io_config = c(jsonFilesWithSchema[2], 
+                                     file.path(configDir, "io_config_schema.json")),
                         db_config = c(jsonFilesWithSchema[3], 
                                       file.path(configDir, "db_config_schema.json")))
 }
@@ -47,7 +47,7 @@ if(is.null(errMsg)){
     
     if(names(jsonSchemaMap)[[i]] == "config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "GMSIO_config" && is.null(eval[[2]])){
+    }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
       config$db <<- eval[[1]]
@@ -327,6 +327,7 @@ if(is.null(errMsg)){
     }
   }
   if(length(modelOut[[scalarsOutName]])){
+    modelOut[[scalarsOutName]]$count <- length(modelOut[[scalarsOutName]]$symnames)
     modelOut[[scalarsOutName]]$alias <- lang$nav$scalarAliases$scalarsOut
     modelOut[[scalarsOutName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
     modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
@@ -428,6 +429,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
     j              <- 1L
     tabs     <- vector("list", length(names))
     tabTitles<- vector("list", length(names))
+    tabSheetMap <- vector("list", length(names))
     isAssigned     <- vector("logical", length(names))
     scalarAssigned <- FALSE
     widgetId     <- NULL
@@ -459,6 +461,11 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
               groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
             }
             tabs[[j]]      <-  groupMemberIds
+            tabSheetMap[groupMemberIds] <- j
+            for(k in seq_along(groupMemberIds)){
+              groupMemberId <- groupMemberIds[k]
+              tabSheetMap[[groupMemberId]] <- c(tabSheetMap[[groupMemberId]], k)
+            }
             groupMemberIdsInWidgets <- match(groupMemberIds, widgetIds)
             
             if(any(!is.na(groupMemberIdsInWidgets))){
@@ -488,6 +495,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
           }
         }
         sheetId <- i
+        tabSheetMap[[sheetId]] <- j
         if(mergeScalars && identical(names(modelIn)[i], scalarsFileName)){
           if(scalarAssigned){
             next
@@ -496,7 +504,9 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
           scalarAssigned <- TRUE
         }
         tabs[[j]]      <-  sheetId
+        
         tabTitles[[j]] <-  aliases[[i]]
+        tabSheetMap[sheetId] <- j
         j <- j + 1L
         next
       }else if(!length(widgetId) && length(widgetIds)){
@@ -518,18 +528,22 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         if(identical(length(widgetIds), 1L)){
           tabs[[j]]      <-  widgetIds
           tabTitles[[j]] <-  aliases[[widgetIds[[1]]]]
+          tabSheetMap[widgetIds] <- j
         }else if(identical(config$aggregateWidgets, TRUE)){
           tabTitles[[j]] <-  lang$nav$inputScreen$widgetTabTitle
           tabs[[j]]      <-  widgetIds
+          tabSheetMap[widgetIds] <- j
         }else{
           tabTitles[[j]] <-  c(lang$nav$inputScreen$widgetTabTitle, aliases[widgetIds])
           tabs[[j]] <-  widgetIds
+          tabSheetMap[widgetIds] <- j
         }
         j <- j + 1L
       }
     }
     return(list(tabs = tabs[!vapply(tabs, is.null, logical(1L), USE.NAMES = FALSE)],
-           tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)]))
+           tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
+           tabSheetMap = tabSheetMap))
   }
   widgetIds    <- lapply(seq_along(modelIn), function(i){
     if(modelIn[[i]]$type %in% c("hot", "dt", "custom")){
@@ -545,6 +559,8 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   inputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
                           widgetIds = widgetIds)
   inputTabTitles <- inputTabs$tabTitles
+  tabSheetMap <- list(input = NULL, output = NULL)
+  tabSheetMap$input <- inputTabs$tabSheetMap
   inputTabs    <- inputTabs$tabs
   
   # get input tabs where scalars are merged to single table (scenario comparison mode)
@@ -872,8 +888,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
              if(length(choices$fw)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
-             if(identical(modelIn[[i]]$dropdown$multiple, TRUE)){
-               modelIn[[i]]$headers[[names(modelIn)[i]]] <<- list(type = "set")
+             if(identical(modelIn[[i]]$symtype, "set")){
                return(name)
              }else{
                return(NULL)
@@ -1001,14 +1016,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   })
   
   modelInTabularData <- unlist(modelInTabularData, use.names = FALSE)
-  # get input dataset names (as they will be saved in database or Excel)
-  # get worksheet names
-  inputDsNames   <- modelInTabularData
-  inputDsAliases <- modelInAlias[match(modelInTabularData, names(modelIn))]
-  if(!tolower(scalarsFileName) %in% modelInTabularData && length(modelIn) != length(modelInTabularData)){
-    inputDsNames   <- c(inputDsNames, scalarsFileName)
-    inputDsAliases <- c(inputDsAliases, lang$nav$scalarAliases$scalars)
-  }
   # get scalar input names
   scalarInputSym <- names(modelIn)[vapply(seq_along(modelIn), function(i){
     if("headers" %in% names(modelIn[[i]])){
@@ -1017,25 +1024,23 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
       return(TRUE)
     }
   }, logical(1L), USE.NAMES = FALSE)]
-  
-  if(tolower(scalarsFileName) %in% modelInTabularData){
-    scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
-  }
   }
 
 if(is.null(errMsg)){
   # determine the filenames for the model input datasets
   if(scalarsFileName %in% modelInTabularData){
+    scalarInputSym <- c(scalarInputSym, modelIn[[scalarsFileName]]$symnames)
     # scalars should always be the highest indexed dataset
     modelInFileNames <- c(modelInTabularData[modelInTabularData != scalarsFileName], scalarsFileName)
+    inputDsAliases   <- modelInAlias[match(modelInFileNames, names(modelIn))]
+  }else if(length(modelIn) > length(modelInTabularData)){
+    modelInFileNames <- c(modelInTabularData, scalarsFileName)
+    inputDsAliases   <- c(modelInAlias[match(modelInTabularData, names(modelIn))], lang$nav$scalarAliases$scalars)
   }else{
-    if(length(modelIn) > length(modelInTabularData)){
-      modelInFileNames <- c(modelInTabularData, scalarsFileName)
-    }else{
-      modelInFileNames <- modelInTabularData
-    }
+    modelInFileNames <- modelInTabularData
+    inputDsAliases   <- modelInAlias[match(modelInTabularData, names(modelIn))]
   }
-  
+  inputDsNames <- modelInFileNames
   # create list of dependencies for each column of input data
   # first define data sheets without forward dependencies on other sheets (tabular data)
   if(length(modelInWithDep)){
@@ -1164,6 +1169,7 @@ if(is.null(errMsg)){
   outputTabs <- getTabs(names(modelOut), modelOutAlias, config$outputGroups,
                         idsToDisplay = seq_along(modelOut)[modelOutToDisplay], isOutput = TRUE)
   outputTabTitles <- outputTabs$tabTitles
+  tabSheetMap$output <- outputTabs$tabSheetMap
   outputTabs <- outputTabs$tabs
   isGroupOfSheets <- vapply(seq_len(length(outputTabTitles) + length(scenInputTabTitles)), function(tabId){
     if(tabId > length(outputTabTitles)){
@@ -1208,6 +1214,48 @@ if(is.null(errMsg)){
                'c'
              })
     }, character(1L), USE.NAMES = FALSE), collapse = "")
+  }
+  # validate symbol links
+  if(length(config[["symbolLinks"]])){
+    for(symbolLink in config[["symbolLinks"]]){
+      source <- tolower(symbolLink[["source"]])
+      target <- tolower(symbolLink[["target"]])
+      if(!source %in% names(modelOut)){ 
+        errMsg <- paste(errMsg, sprintf("The source symbol: '%s' of a symbol link you specified was not found amongst the output symbols.", 
+                                        source))
+        next
+      }
+      if(source %in% c(scalarsOutName, scalarEquationsOutName)){
+        errMsg <- paste(errMsg, sprintf("The source symbol: '%s' must not be the sheet of scalars or the sheet of scalar variables/equations.", 
+                                        source))
+        next
+      }
+      if(!target %in% names(modelIn)){
+        errMsg <- paste(errMsg, sprintf("The target symbol: '%s' of a symbol link you specified was not found amongst the input symbols.", 
+                                        target))
+        next
+      }
+      if(target %in% c(scalarsFileName, scalarEquationsName)){
+        errMsg <- paste(errMsg, sprintf("The target symbol: '%s' must not be the sheet of scalars or the sheet of scalar variables/equations.", 
+                                        target))
+        next
+      }
+      if(length(modelOut[[source]]$headers) != length(modelIn[[target]]$headers) ||
+         any(vapply(modelOut[[source]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE) != 
+             vapply(modelIn[[target]]$headers, "[[", character(1L), "type", USE.NAMES = FALSE))){
+        errMsg <- paste(errMsg, sprintf("The symbols: '%s' - '%s' are incompatible and can therefore not be linked together.", 
+                                        source, target))
+        next
+      }
+      if(length(modelOut[[source]]$symbolLink)){
+        errMsg <- paste(errMsg, sprintf("The symbol: '%s' has multiple symbol links defined. Only one symbol link per output symbol is possible.", 
+                                        source))
+        next
+      }
+      modelOut[[source]]$symbolLink <- target
+    }
+    config$hasSymbolLinks <- TRUE
+    config[["symbolLinks"]] <- NULL
   }
 }
 if(is.null(errMsg)){

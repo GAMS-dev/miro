@@ -27,6 +27,26 @@
          ],
          "required":false
       },
+      "fileExchange":{  
+        "description":"Method used to exchange files",
+        "type":"string",
+        "enum":[  
+          "csv",
+          "gdx"
+        ],
+        "default":"gdx",
+        "required":false
+      },
+      "csvDelim":{  
+        "description":"Column delimiter for csv files",
+        "type":"string",
+        "enum":[  
+          ",",
+          ";"
+        ],
+        "default":",",
+        "required":false
+      },
       "includeParentDir":{
         "description":"Boolean which specifies whether to include the parent directory of the current model folder (e.g. because several models share files)",
          "type":"boolean",
@@ -133,6 +153,12 @@
                "description":"Solve multiple scenarios in Hypercube mode?",
                "type":"boolean",
                "default":false,
+               "required":false
+            },
+            "hcubeSwitch":{  
+               "description":"Activate switch to launch Hypercbe mode?",
+               "type":"boolean",
+               "default":true,
                "required":false
             },
             "logFile":{  
@@ -1720,6 +1746,29 @@
                }
              }
            }
+        }
+      },
+      "symbolLinks":{
+        "description": "Link output symbols to input symbols so that input data can be populated from output sheets",
+        "type": "array",
+        "uniqueItems":true,
+        "minItems":1,
+        "items":{
+          "type":"object",
+          "additionalProperties":false,
+          "required": ["source", "target"],
+          "properties":{
+            "source":{
+              "description":"Source symbol",
+              "type":"string",
+              "minLength":1
+            },
+            "target":{
+              "description":"Target symbol",
+              "type":"string",
+              "minLength":1
+            }
+          }
         }
       }
    }

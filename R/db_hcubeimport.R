@@ -338,7 +338,7 @@ HcubeImport <- R6Class("HcubeImport",
                            scenData <- lapply(seq_along(csvPaths), function(i){
                              csvPath <- csvPaths[[i]]
                              tryCatch({
-                               if(grepl("\\.trc$", csvPath, ignore.case = TRUE)){
+                               if(endsWith(tolower(csvPath), ".trc")){
                                  scenData <- readTraceData(csvPath, private$traceColNames)[1, ]
                                }else{
                                  colTypes <- NULL
@@ -356,7 +356,7 @@ HcubeImport <- R6Class("HcubeImport",
                                }
                                scenData
                              }, error = function(e){
-                               stop(sprintf("Problems reading csv file: '%s'. Error message: %s.", csvPath, e),
+                               stop(sprintf("Problems reading file: '%s'. Error message: %s.", csvPath, e),
                                     call. = FALSE)
                              })
                            })

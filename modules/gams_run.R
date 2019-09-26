@@ -810,17 +810,12 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
           valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
           if(length(valIdHead) && !is.na(valIdHead)){
             valTabId <- 0L
-            for(inputTabId in seq_along(inputTabs)){
-              valTabIdTmp <- inputTabs[[inputTabId]]
-              valTabIdErr <- match(valIdHead, valTabIdTmp)
-              if(!is.na(valTabIdErr)){
-                updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId))
-                if(length(valTabIdTmp) > 1L){
-                  updateTabsetPanel(session, paste0("inputTabset", inputTabId), 
-                                    paste0("inputTabset", inputTabId, "_", valTabIdErr))
-                }
-                break
-              }
+            inputTabId <- tabSheetMap$input[[inputTabId]]
+            updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
+            if(length(inputTabId) > 1L){
+              updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 
+                                paste0("inputTabset", inputTabId[1], "_", 
+                                       inputTabId[2]))
             }
           }
         }

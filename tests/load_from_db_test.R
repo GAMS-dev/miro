@@ -31,7 +31,7 @@ if(identical(Sys.getenv("GMSMODELNAME"), "pickstock_live")){
 }
 switch(Sys.getenv("GMSMODELNAME"), 
        "pickstock" = {
-         app$setInputs(contentCurrent = "contentCurrent_2", wait_ = FALSE, values_ = FALSE)
+         app$setInputs(outputTabset = "outputTabset_2", wait_ = FALSE, values_ = FALSE)
          app$setInputs(outputTableView = "click")
          Sys.sleep(0.5)
          noStocks <- length(app$getAllValues()$input[["tab_1-datatable_rows_all"]])
@@ -39,7 +39,7 @@ switch(Sys.getenv("GMSMODELNAME"),
          app$snapshot(items = list(input = c("table-out_2-datatable_rows_all")), screenshot = TRUE)
        },
        "pickstock_live" = {
-         app$setInputs(contentCurrent = "contentCurrent_2", wait_ = FALSE, values_ = FALSE)
+         app$setInputs(outputTabset = "outputTabset_2", wait_ = FALSE, values_ = FALSE)
          app$setInputs(outputTableView = "click")
          Sys.sleep(0.5)
          noStocks <- length(app$getAllValues()$input[["table-out_2-datatable_rows_all"]])

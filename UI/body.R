@@ -70,6 +70,7 @@ tabItemList <- list(
                               )
                      )
             ),
+            tags$div(class="small-space"),
             MIROtabBox(id = "inputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
                          lapply(seq_along(inputTabs), function(tabId) {
               content <- lapply(inputTabs[[tabId]], function(i){
@@ -465,7 +466,7 @@ if(config$activateModules$hcubeMode){
     )
   ))
 }else{
-  contentCurrent <- tagList(
+  outputTabset <- tagList(
     fluidRow(
       box(title=lang$nav$gams$boxModelStatus$title, status="warning", solidHeader = TRUE, width=12,
           uiOutput("modelStatus"))
@@ -507,7 +508,7 @@ if(config$activateModules$hcubeMode){
             if(config$activateModules$remoteExecution){
               tabBox(width = 12, id = "jobListPanel", 
                      tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                              contentCurrent             
+                              outputTabset             
                      ), 
                      tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
                               fluidRow(
@@ -527,7 +528,7 @@ if(config$activateModules$hcubeMode){
                               )
                      ))
             }else{
-              contentCurrent
+              outputTabset
             }
     ),
     tabItem(tabName = "outputData",
@@ -549,6 +550,19 @@ if(config$activateModules$hcubeMode){
               ), status="primary", solidHeader = TRUE, width = 12,
               tags$div(class="scen-header",
                        tags$div(class = "out-buttons-wrapper",
+                                if(isTRUE(config$hasSymbolLinks)){
+                                  tags$div(title = lang$nav$scen$tooltips$btSymbolLink, class = "scen-button-tt",
+                                           tags$button(class = "btn btn-default scen-button", id = "btSymbolLink",
+                                                       tags$i(class = "fa fa-share"), 
+                                                       onclick = paste0("Miro.confirmModalShow('",
+                                                                        lang$nav$dialogImport$title, "', '", 
+                                                                        lang$nav$dialogImport$descOverwriteInput, "', '", 
+                                                                        lang$nav$dialogImport$cancelButton, "', '",  
+                                                                        lang$nav$dialogImport$okButton, 
+                                                                        "', 'Shiny.setInputValue(\\'btSymbolLink\\',1",
+                                                                        ",{priority:\\'event\\'})')"))
+                                  )
+                                },
                                 tags$div(title = lang$nav$scen$tooltips$btDownloadTmpFiles, class = "scen-button-tt",
                                          actionButton("btDownloadTmpFiles", icon("folder-open"), 
                                                       class="scen-button")
@@ -559,7 +573,8 @@ if(config$activateModules$hcubeMode){
                                 )
                        )
               ),
-              MIROtabBox(id = "contentCurrent", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+              tags$div(class="small-space"),
+              MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
                                      lapply(seq_along(outputTabs), function(tabId){
                                        content <- lapply(outputTabs[[tabId]], function(i){
                                          tabContent <- tagList(
@@ -587,7 +602,7 @@ if(config$activateModules$hcubeMode){
                                            titleId <- match(i, outputTabs[[tabId]]) + 1L
                                            return(tabPanel(
                                              title = outputTabTitles[[tabId]][titleId],
-                                             value = paste0("contentCurrent", tabId, "_", titleId - 1L),
+                                             value = paste0("outputTabset", tabId, "_", titleId - 1L),
                                              tags$div(class="small-space"),
                                              tabContent,
                                              tags$div(class="small-space")
@@ -597,9 +612,9 @@ if(config$activateModules$hcubeMode){
                                        })
                                        return(tabPanel(
                                          title = outputTabTitles[[tabId]][1],
-                                         value = paste0("contentCurrent_", tabId),
+                                         value = paste0("outputTabset_", tabId),
                                          if(length(outputTabTitles[[tabId]]) > 1L){
-                                           do.call(tabsetPanel, c(id = paste0("contentCurrent", tabId), content))
+                                           do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
                                          }else{
                                            tagList(tags$div(class="small-space"), 
                                                    content,

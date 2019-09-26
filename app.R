@@ -1,6 +1,6 @@
 #version number
-MIROVersion <- "0.8.7"
-MIRORDate   <- "Aug 23 2019"
+MIROVersion <- "0.8.9"
+MIRORDate   <- "Sep 25 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -36,8 +36,8 @@ CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
 if(R.version[["major"]] < 3 || 
    R.version[["major"]] == 3 && gsub("\\..$", "", 
-                                     R.version[["minor"]]) < 5){
-  errMsg <- "The R version you are using is not supported. At least version 3.5 is required to run GAMS MIRO."
+                                     R.version[["minor"]]) < 6){
+  stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
 tmpFileDir <- tempdir(check = TRUE)
 # directory of configuration files
@@ -83,7 +83,7 @@ if("gdxrrw" %in% installedPackages){
   requiredPackages <- c(requiredPackages, "gdxrrw")
 }
 # vector of required files
-filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/output_load.R", 
+filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/json.R", "./R/load_scen_data.R", 
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R")
 LAUNCHADMINMODE <- FALSE
@@ -715,7 +715,7 @@ if(!is.null(errMsg)){
     save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
                   "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
                   "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
-                  "modelInTabularData", "externalInputConfig",
+                  "modelInTabularData", "externalInputConfig", "tabSheetMap",
                   "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
                   "choicesNoDep", "sliderValues", "configGraphsOut", 
                   "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
@@ -804,6 +804,8 @@ if(!is.null(errMsg)){
   close(pb)
   pb <- NULL
   interruptShutdown <<- FALSE
+  deactivateHcubeSwitch <- config$activateModules$hcubeMode || isShinyProxy || 
+    !config$activateModules$scenario || !config$activateModules$hcubeSwitch
   #______________________________________________________
   #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   #                   Server
@@ -916,16 +918,16 @@ if(!is.null(errMsg)){
         }
       }else if(isolate(input$sidebarMenuId) == "outputData"){
         flog.debug("Navigated %d output tabs (using shortcut).", direction)
-        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$contentCurrent)))
+        currentGroup <- as.numeric(gsub("\\D", "", isolate(input$outputTabset)))
         if(shortcutNest && length(outputTabs[[currentGroup]]) > 1L){
-          currentSheet <- as.integer(strsplit(isolate(input[[paste0("contentCurrent", 
+          currentSheet <- as.integer(strsplit(isolate(input[[paste0("outputTabset", 
                                                                     currentGroup)]]), "_")[[1]][2])
-          updateTabsetPanel(session, paste0("contentCurrent", currentGroup), 
-                            paste0("contentCurrent", 
+          updateTabsetPanel(session, paste0("outputTabset", currentGroup), 
+                            paste0("outputTabset", 
                                    currentGroup, "_", currentSheet + direction))
         }else{
-          updateTabsetPanel(session, "contentCurrent", 
-                            paste0("contentCurrent_", currentGroup + direction))
+          updateTabsetPanel(session, "outputTabset", 
+                            paste0("outputTabset_", currentGroup + direction))
         }
       }else if(isolate(input$sidebarMenuId) == "scenarios"){
         if(isInSplitView){
@@ -1214,6 +1216,9 @@ if(!is.null(errMsg)){
     obsCompare <- vector("list", maxNumberScenarios)
     # switch between tabular view and output graphs
     source("./modules/output_table_view.R", local = TRUE)
+    if(isTRUE(config$hasSymbolLinks)){
+      source("./modules/symbol_links.R", local = TRUE)
+    }
     
     ####### Advanced options
     source("./modules/download_tmp.R", local = TRUE)
@@ -1305,7 +1310,7 @@ if(!is.null(errMsg)){
       
       # scenario comparison
       source("./modules/scen_compare.R", local = TRUE)
-      if(!isShinyProxy){
+      if(!deactivateHcubeSwitch){
         # switch to Hypercube mode
         hcubeProcess <- NULL
         observeEvent(input$switchToHcube, {
