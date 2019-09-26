@@ -839,6 +839,24 @@
         "input": "Divide input symbols into groups",
         "output": "Divide output symbols into groups"
       },
+      "overwriteSheetOrder":{
+        "input": "Specify the tab order of the input symbols (drag & drop)",
+        "output": "Specify the tab order of the output symbols (drag & drop)"
+      },
+      "overwriteSymbolAliases":{
+        "label": "Specify symbol aliases",
+        "input": "Input symbols",
+        "output": "Output symbols",
+        "symName": "Symbol name",
+        "symAlias": "Symbol alias"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Specify column headers",
+        "input": "Input symbols",
+        "output": "Output symbols",
+        "symName": "Symbol name",
+        "headerAliases": "Headers"
+      },
       "inputScalars":{
         "label": "Alias for the input scalars table",
         "placeholder": "Input scalars"

@@ -839,6 +839,24 @@
         "input": "Eingabesymbole in Gruppen einteilen",
         "output": "Ausgabesymbole in Gruppen einteilen"
       },
+      "overwriteSheetOrder":{
+        "input": "Legen Sie die Tab-Reihenfolge der Eingabesymbole fest (Drag & Drop)",
+        "output": "Legen Sie die Tab-Reihenfolge der Ausgabesymbole fest (Drag & Drop)"
+      },
+      "overwriteSymbolAliases":{
+        "label": "Symbol-Aliase festlegen",
+        "input": "Eingabesymbole",
+        "output": "Ausgabesymbole",
+        "symName": "Symbolname",
+        "symAlias": "Symbol-Alias"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Spaltenüberschriften festlegen",
+        "input": "Eingabesymbole",
+        "output": "Ausgabesymbole",
+        "symName": "Symbolname",
+        "headerAliases": "Spaltenüberschriften"
+      },
       "inputScalars":{
         "label": "Alias für die Tabelle der Inputskalare",
         "placeholder": "Inputskalare"
