@@ -133,8 +133,8 @@
     "hcubeAnalyze":{
       "title":"Analyze Scenarios",
       "loadMsg":"Please wait while the results are calculated. This may take a while.",
-      "failMsg":"Something went wrong while trying to run paver.",
-      "duplicatesMsg": "Paver found a duplicated instance: '%s'. Please make sure that you don't select duplicates.",
+      "failMsg":"Something went wrong while trying to run PAVER.",
+      "duplicatesMsg": "PAVER found a duplicated instance: '%s'. Please make sure that you don't select duplicates.",
 	    "btCancel": "Cancel",
 	    "btNew": "Select scenarios"
     },
@@ -527,11 +527,11 @@
         "title": "Select scenario comparison method",
         "selectMethod": "Which method would you like to use in order to compare your scenarios?",
         "maxScenWarning1": "You may only select up to: '%d' scenarios to load into interactive mode at once.", 
-        "maxScenWarning2": " Select less scenarios or use the Paver module to compare.",
+        "maxScenWarning2": " Select less scenarios or use the PAVER module to compare.",
         "cancelButton": "Cancel",
         "paverButton": "Analyze",
         "desc":"Please select the attributes you want to compare.",
-        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting paver.",
+        "delTrace":"Note: The existing trace files found in the current working directory will be deleted when starting PAVER.",
         "tooManySolvers":"The attributes you selected amount to too many scenarios to compare (no more than %s scenarios can be compared). Please reduce the number of scenarios.",
         "noTrc":"No trace data could be found for at least one of the selected scenarios.",
         "removeConfirm": "Are you sure that you want to delete the %s selected scenarios from the database? This action can not be undone!",
@@ -539,7 +539,7 @@
         "selAttribs":"Attributes to select:",
         "selIgnoreAttribs": "Select attributes to ignore:",
         "selClArgs": "Specify additional arguments to call PAVER with.",
-        "runButton":"Start Paver",
+        "runButton":"Start PAVER",
         "interactiveButton":"Compare",
         "downloadButton":"Download data",
         "removeButton": "Delete scenarios"
@@ -581,7 +581,7 @@
       }
     },
     "dialogPaverInUse":{
-      "title": "Paver is already in use",
+      "title": "PAVER is already in use",
       "desc": "Please wait until the process is finished.",
       "closeButton": "Close"
     }
@@ -869,7 +869,7 @@
         "label": "Activate scenario functionality"
       },
       "actStrict":{
-        "label": "Launch App in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries."
+        "label": "Launch app in strict mode? This results in throwing error messages instead of accepting possibly faulty user entries."
       },
       "actUpload":{
         "title": "Enables the user to use local data for GAMS runs",
@@ -906,6 +906,9 @@
       "remoteExecution":{
         "label": "Remote Job execution (GAMS MIRO Server only)"
       },
+      "hcubeSwitch":{
+        "label": "Should it be possible to start the Hypercube mode from the MIRO base mode?"
+      },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
         "label": "Save trace file with each GAMS run (Hypercube mode)"
@@ -934,7 +937,7 @@
         "enable": "Enable table context menu (accessible via right mouse click).",
         "contextRowedit": "Enable row editing",
         "contextColedit": "Enable column editing",
-        "contextReadonly": "Enable read-only toggle",
+        "contextReadonly": "Enable readonly toggle",
         "contextComments": "Enable comments in table. Will be ignored when solving the model and are not saved in database."
       },
       "dt":{
@@ -957,7 +960,7 @@
         },
         "buttons":{
           "label":"Add export buttons?",
-          "choices": ["copy", "csv", "excel", "pdf", "print"],
+          "choices": ["copy", "CSV", "Excel", "PDF", "print"],
           "select": "Select the buttons to use (minimum of 2 buttons required). Note: All button functions only affect the visible table page."
         }
       }
@@ -984,7 +987,7 @@
         "val1": "The alias of the element must not be empty!",
         "val2": "The name of the double-dash parameter must not be empty!",
         "val3": "The name of the GAMS option must not be empty!",
-        "val6": "The default value is falsy!",
+        "val6": "The default value is invalid!",
         "val7": "The default value must be a number in the range [min, max]!",
         "val8": "The tick identifier must be boolean!",
         "val9": "The step size must be a number!",
@@ -992,24 +995,24 @@
         "val11": "The default value must be one of the choices you specified!",
         "val12": "The value must be boolean!",
         "val13": "Default date is invalid!",
-        "val14": "Minimum date is invalid!",
-        "val15": "Maximum date is invalid!",
+        "val14": "Earliest date is invalid!",
+        "val15": "Latest date is invalid!",
         "val16": "The default date must be after the start date!",
         "val17": "The default date must be before the end date!",
-        "val18": "The minimum date must be before the maximum date!",
+        "val18": "The earliest date must be before the latest date!",
         "val19": "Minimum length for custom date format is 1!",
         "val20": "Start date is invalid!",
         "val21": "End date is invalid!",
-        "val22": "Minimum date is invalid!",
-        "val23": "Maximum date is invalid!",
-        "val24": "The start date must be after the minimum date!",
-        "val25": "The end date must be before the maximum date!",
-        "val26": "The start date must be after the minimum date!",
-        "val27": "The end date must be before the maximum date!",
-        "val28": "The minimum date must be before the maximum date!",
+        "val22": "Earliest date is invalid!",
+        "val23": "Latest date is invalid!",
+        "val24": "The start date must be after the earliest date!",
+        "val25": "The end date must be before the latest date!",
+        "val26": "The start date must be after the earliest date!",
+        "val27": "The end date must be before the latest date!",
+        "val28": "The earliest date must be before the latest date!",
         "val29": "Minimum length for custom date format is 1!",
         "val30": "The start date must be before the end date!",
-        "val31": "The minimum date must be before the maximum date!",
+        "val31": "The earliest date must be before the latest date!",
         "val32": "The readonly identifier must be boolean!",
         "val33": "The heatmap identifier must be boolean!",
         "val34": "Some columns you selected to be readonly do not exist in the symbol currently selected!",
@@ -1041,15 +1044,18 @@
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
-        "pivotCols": "Select a column to pivot (no preview)",
+        "pivotCols": "Select a column to pivot (no preview available)",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
-        "max": "Maximum value",
-        "default": "Default value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "defaultlabel": "Default value",
+        "min": "Set static minimum value",
+        "max": "Set static maximum value",
+        "default": "Set static default value",
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
@@ -1063,14 +1069,16 @@
       "sliderrange":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "min": "Set static minimum value",
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
         "depSelector": "Static value?",
-        "max": "Maximum value",
+        "max": "Set static maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
         "ticks": "Show tick marks?",
@@ -1100,12 +1108,15 @@
       "date":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
+        "defaultlabel": "Default date",
         "default": "Choose the default date",
         "defOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
+        "minlabel": "Earliest date",
+        "min": "Choose the earliest available date",
+        "minOff": "No earliest?",
+        "maxlabel": "Latest date",
+        "max": "Choose the latest available date",
+        "maxOff": "No latest?",
         "format": "Choose how you want the date to be formatted.",
         "formatCustom": "Enter a custom date format",
         "formatCustomSelector": "Custom date format?",
@@ -1128,10 +1139,14 @@
         "startOff": "Use current date",
         "defaultEnd": "Choose the default end date",
         "endOff": "Use current date",
-        "min": "Choose the minimum allowed date",
-        "minOff": "No minimum?",
-        "max": "Choose the maximum allowed date",
-        "maxOff": "No maximum?",
+        "min": "Choose the earliest available date",
+        "minOff": "No earliest?",
+        "max": "Choose the latest available date",
+        "defaultStartlabel": "Default start date",
+        "defaultEndlabel": "Default end date",
+        "minlabel": "Earliest date",
+        "maxlabel": "Latest date",
+        "maxOff": "No latest?",
         "format": "Choose how you want the date to be formatted.",
         "formatCustom": "Enter a custom date format",
         "formatCustomSelector": "Custom date format?",
@@ -1226,7 +1241,7 @@
       "chartOptions":{
         "xdata": "What should be plotted on the x axis?",
         "ydata": "Add data series",
-        "color": "Symbol that is used to select different colors. Note: The color is only valid, when no line or marker colors are set!",
+        "color": "Select the domain to be grouped for plotting. Colors are only valid, when no line or marker colors are set",
         "options":{
           "title": "Options",
           "paperBgColor": "What background color shall the paper have?",
@@ -1240,7 +1255,7 @@
         "choicesMode": ["group", "stack"],
         "orientation": "Orientation",
         "choicesOrientation": ["vertical", "horizontal"],
-        "width": "Symbol that is used to select different bar widths"
+        "width": "Domain that is used to select different bar widths"
       },
       "valueboxOptions":{
         "width": "Select width of the valuebox",
@@ -1281,7 +1296,7 @@
         "previewError": "No scalar indices found in your data.",
         "xdata": "What index do you want to plot on the x-axis?",
         "ydata": "Add data series",
-        "color": "What symbol do you want to use to plot different chart lines?",
+        "color": "Select the domain to be grouped for plotting.",
         "dyEvent": "Add event line",
         "dyLimit": "Add limit line",
         "dyAnnotation": "Add annotation",
@@ -1363,7 +1378,7 @@
         "packages": "Packages necessary for the renderer"
       },
       "filterOptions":{
-        "filter": "Should one dimension of the symbol be selectable via a dropdown menu?",
+        "filter": "Should one domain of the symbol be selectable via a dropdown menu?",
         "dimension": "Which dimension should be filterable?",
         "label": "Label of the filter (no live preview available)",
         "placeholder": "Filter by element",
@@ -1439,7 +1454,7 @@
           "labelPermanent": "Display labels only on hover?",
           "labelcolor": "Choose a font color for the label",
           "labelbgcolor": "Choose a background color for the label",
-          "labelsize": "Choose a font size for the label [in px]"
+          "labelsize": "Choose a font size for the label (in px)"
         },
         "addLeafletFlows":{
           "leafletFlows": "Select latitude data where flow originates",
@@ -1511,7 +1526,7 @@
           "symbol": "Select marker symbol",
           "colorCheck": "Use static color?",
           "colorCheckTrue": "Select marker color",
-          "colorCheckFalse": "Select a Symbol on which the color should depend on.",
+          "colorCheckFalse": "Select a domain on which the color should depend on.",
           "size": "Select marker size",
           "maxsize": "Select maximum marker size (optional)",
           "lineWidth": "Select marker outline width",

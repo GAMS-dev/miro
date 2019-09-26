@@ -4101,6 +4101,18 @@
                 }
               }
             },
+            "hcubeSwitch":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "saveTrace":{          
               "type":"object",
               "additionalProperties":false,
@@ -4833,6 +4845,21 @@
                   "minLength":1,
                   "required":true
                 },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "step":{ 
                   "type":"string",
                   "minLength":1,
@@ -4861,6 +4888,16 @@
                   "required":true
                 },
                 "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5047,6 +5084,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "defaultlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "default":{ 
                   "type":"string",
                   "minLength":1,
@@ -5057,12 +5099,22 @@
                   "minLength":1,
                   "required":true
                 },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "min":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
                 "minOff":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5201,6 +5253,26 @@
                   "required":true
                 },
                 "max":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultStartlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "defaultEndlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minlabel":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "maxlabel":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true

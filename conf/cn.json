@@ -906,6 +906,9 @@
       "remoteExecution":{
         "label": "Remote Job execution (GAMS MIRO Server only)"
       },
+      "hcubeSwitch":{
+        "label": "Should it be possible to start the Hypercube mode from the MIRO base mode?"
+      },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",
         "label": "Save trace file with each GAMS run (Hypercube mode)"
@@ -1041,15 +1044,18 @@
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
-        "pivotCols": "Select a column to pivot (no preview)",
+        "pivotCols": "Select a column to pivot (no preview available)",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
-        "max": "Maximum value",
-        "default": "Default value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "defaultlabel": "Default value",
+        "min": "Set static minimum value",
+        "max": "Set static maximum value",
+        "default": "Set static default value"
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
@@ -1063,14 +1069,16 @@
       "sliderrange":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
-        "min": "Minimum value",
+        "minlabel": "Minimum value",
+        "maxlabel": "Maximum value",
+        "min": "Set static minimum value",
         "dep": "Select symbol and header to depend upon",
         "depOp":{
           "label": "Select operator",
           "choices": ["Minimum", "Maximum", "Count", "Mean", "Median", "Variance", "Standard Deviation"]
         },
         "depSelector": "Static value?",
-        "max": "Maximum value",
+        "max": "Set static maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
         "ticks": "Show tick marks?",
@@ -1100,10 +1108,13 @@
       "date":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
         "label": "Choose a label",
+        "defaultlabel": "Default date",
         "default": "Choose the default date",
         "defOff": "Use current date",
+        "minlabel": "Minimum date",
         "min": "Choose the minimum allowed date",
         "minOff": "No minimum?",
+        "maxlabel": "Maximum date",
         "max": "Choose the maximum allowed date",
         "maxOff": "No maximum?",
         "format": "Choose how you want the date to be formatted.",
@@ -1131,6 +1142,10 @@
         "min": "Choose the minimum allowed date",
         "minOff": "No minimum?",
         "max": "Choose the maximum allowed date",
+        "defaultStartlabel": "Default start date",
+        "defaultEndlabel": "Default end date",
+        "minlabel": "Earliest date",
+        "maxlabel": "Latest date",
         "maxOff": "No maximum?",
         "format": "Choose how you want the date to be formatted.",
         "formatCustom": "Enter a custom date format",
