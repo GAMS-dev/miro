@@ -29,7 +29,11 @@
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- alpaca -->
     <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
-
+<!--<script>
+$(document).ready(function(){
+    $('#dropdown-option-choices')[0].click();
+});
+</script-->
 </head>
 
 <body class="body-orange">
@@ -64,40 +68,100 @@
                         <div class="content-inner">
                             <section id="widget-slider" class="doc-section">
                                 <h2 class="section-title">Slider</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-slider-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>If the desired slider does not change with changing data sets, it is a good idea to configure it as a slider with static values (lower and upper bound, step size).</p>
+                                    <p>Sliders are useful in situations where the user has to select a numeric value from a range. </p>
                                     <p>Example:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_slider_config.png" alt="Slider configuration"/>
                                     </div>
-                                    
-                                    
-                                   <p id="dynamic-limits"><br><br><b>Dynamic limits</b>:
-                                  <br>In many cases it makes sense to assign the limits and default values of a slider not with static but with dynamic values. This is done, for example, in the demo model <i>pickstock</i>. 
-                                  Here, two sliders are used. In the first one the <i>maxmimum number of stocks</i> can be selected, in the second one the <i>number of training days</i>.</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
-                                  </div>
-                                  <p>In both sliders, the maximum value results from the input data of the parameter <i>price</i>.</p>
-                                  <div class="section-block" id="input-symbol-price">
-                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider4.png" alt="Configuration of a slider (4)" />
-                                  </div>
-                                  <p>The maximum value for the <i>maximum number of stocks</i> is 30, because the used data set <i>price</i> contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes dynamically to 29.
-                                  The same is true for the second slider for the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
-                                  <br>In configuration mode we can easily set such dynamic limits. For the first slider the configuration looks like this:</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
-                                  </div>
-                                  <p>The <i>Static value?</i> box was unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, it is selected with the corresponding header <i>stock symbol</i> in which the stocks are contained (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
-                                  The <i>operator</i> is set to <i>count</i> since we want to count all stock symbols in our data to set the maximum value.</p>
-                                  <p>For the calculation of such limits from the data, the following operators are available: </p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider7.png" alt="Configuration of a slider (5)" />
-                                  </div>
-                                  <p>More on Dependencies among Widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-slider-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a slider widget:</p>
+                                    <h6 id="slider-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined, see screenshot below. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>If all scalar widgets are displayed in the same tab (see <a href = "./customize#aggregate-widgets">aggregate widgets</a> in the general options), then the name specified here is not displayed at all.  </p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_slider_aggregate.png" alt="Element name"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="slider-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the slider. In the example below the label 
+                                    <i>select the maximum number of stocks</i> is used. A label is optional.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Element label"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="slider-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum / maximum / default value</h6>
+                                    <div style="display:none"><p><i>Minimum / maximum value</i>: Both a minimum and a maximum value are required for a slider. These limit the range in which the user can select values. 
+                                    <br><i>Default value</i>: A default value is the initial value of the slider i.e. the slider value set when starting the application. This is optional. 
+                                    A warning will be issued if the value doesn't fit between the minimum and maximum value.
+                                    If this value is not specified, the configured minimum value is always used as default value. As soon as data is loaded which contains a value for the slider symbol, the default value is replaced with this value.</p>
+                                    <p>All three values can be set either statically or dynamically. A static value always remains unchanged. If the desired slider does not change with changing data sets, it is a good idea to configure it as a slider with static values
+                                    This means, for example, that the lower and upper limits of a sliders are always 1 and 10. Scenario data do not change these values.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_slider_static.png" alt="Static values"/>
+                                    </div>
+                                    <p id="dynamic-limits"><br><br><b>Dynamic limits</b>:
+                                    <br>In many cases it makes sense to assign the limits and default values of a slider not with static but with dynamic values. This is done, for example, in the demo model <i>pickstock</i>. 
+                                    Here, two sliders are used. In the first one the <i>maxmimum number of stocks</i> can be selected, in the second one the <i>number of training days</i>.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider3.png" alt="Configuration of a slider (3)" />
+                                    </div>
+                                    <p>In both sliders, the maximum value results from the input data of the parameter <i>price</i>.</p>
+                                    <div class="section-block" id="input-symbol-price">
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider4.png" alt="Configuration of a slider (4)" />
+                                    </div>
+                                    <p>The maximum value for the <i>maximum number of stocks</i> is 30, because the used data set <i>price</i> contains 30 stocks. If the user deletes e.g. all values of the stock <i>AAPL</i> from the data, the maximum value of the slider changes dynamically to 29.
+                                    The same is true for the second slider for the <i>number of training days</i>. Here the maximum value of 252 results from the number of available <i>dates</i> in <i>price</i>.
+                                    <br>In configuration mode we can easily set such dynamic limits. For the first slider the configuration looks like this:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:250pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider5.png" alt="Configuration of a slider (4)" />
+                                    </div>
+                                    <p>The <i>Static value?</i> box was unchecked for the maximum value. Since the maximum slider value should result from the data of the symbol <i>price</i>, it is selected with the corresponding header <i>stock symbol</i> in which the stocks are contained (see <a href="#input-symbol-price" class="scrollto">table above</a>). 
+                                    The <i>operator</i> is set to <i>count</i> since we want to count all stock symbols in our data to set the maximum value.</p>
+                                    <p>For the calculation of such limits from the data, the following operators are available: </p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider7.png" alt="Configuration of a slider (5)" />
+                                    </div>
+                                    <p>More on Dependencies among Widgets can be found <a href="./customize.html#widgets-dependencies">here</a>.</p>
+                                    </div>
+                                    <h6 id="slider-option-step" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Step size</h6>
+                                    <div style="display:none"><p>The step size specifies the interval between each selectable value on the slider. The value must be greater than 0 and must not exceed the total range of the slider.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_step.png" alt="Step size"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="slider-option-tick" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Sow tick marks?</h6>
+                                    <div style="display:none"><p>Tick marks are displayed below the sliders and help to visually subdivide the entire slider width. </p>
+                                    <p>Slider without tick marks:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_slider_label.png" alt="Slider without tick marks"/>
+                                    </div>
+                                    <p>Slider with tick marks:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_slider_tick.png" alt="Slider with tick marks"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="slider-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
+                                    <div style="display:none"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
+                                    </div>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-slider-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <p>Slider with dynamic upper bound.</p>
                                     <pre><code class="language-json">
@@ -119,7 +183,7 @@
                             </section>
                             <section id="widget-sliderrange" class="doc-section">
                                 <h2 class="section-title">Slider range</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-sliderrange-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>A slider with a range returns two numeric values. For this reason such a slider is not suitable for GAMS scalars, but only for GAMS command line parameters, i.e. GAMS options and double-dash parameters.</p>
                                     <p>Example:</p>
@@ -131,7 +195,12 @@
                                     <code class="language-gams">%RANGE_LO%</code> for the lower value and <code class="language-gams">%RANGE_UP%</code> for the upper value.</p>
                                     <p>More on widgets with ranges can be found <a href="./customize.html#widgets-ranges">here</a>.</p>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-sliderrange-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The available options of a sliderrange are identical to those of a <a href = "./widgets.html#widget-slider-options" class = "scrollto">normal slider</a>. The only difference is that instead of a single default value, two of these values are set. 
+                                    Since this is the only difference between a sliderrange and a slider, the two default values are not optional.</p>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-sliderrange-json">
                                   <h3 class="block-title">JSON example</h3>
                                   <p>Note: In order for MIRO to recognize whether the symbol is a double dash parameter or a GAMS option, they are prefixed with either <kbd>_gmspar_</kbd> for double dash parameters or <kbd>_gmsopt_</kbd> for GAMS options.</p>
                                     <pre><code class="language-json">
@@ -155,16 +224,34 @@
                             </section>
                             <section id="widget-checkbox" class="doc-section">
                                 <h2 class="section-title">Checkbox</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-checkbox-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns 0 or 1.</p>
+                                    <p>A checkbox returns 0 or 1 and is therefore suitable for specifying logical values.</p>
                                     <p>Example:</p>
                                     <p>Configuration of the GAMS option <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#GAMSAOkeep" target="_blank">keep</a> as a checkbox:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_checkbox_config.png" alt="Checkbox configuration"/>
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-checkbox-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a checkbox widget:</p>
+                                    <h6 id="checkbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    </div>
+                                    <h6 id="checkbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the checkbox. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    </div>
+                                    <h6 id="checkbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
+                                    <div style="display:none"><p>The default value specifies the initial state of the checkbox (checked or unchecked).</p>
+                                    </div>
+                                    <h6 id="checkbox-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
+                                    <div style="display:none"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    In Hypercube mode a checkbox becomes a multi dropdwon menu with the entries <i>yes</i> and <i>no</i>. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-checkbox-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -184,7 +271,7 @@
                             </section>
                             <section id="widget-dropdown" class="doc-section">
                                 <h2 class="section-title">Dropdown menu</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-dropdown-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns a string.</p>
                                     <p>Example: </p>
@@ -212,8 +299,128 @@
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-dropdown-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a checkbox widget:</p>
+                                    <h6 id="dropdown-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    </div>
+                                    <h6 id="dropdown-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the dropdown menu. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    </div>
+                                    <h6 id="dropdown-option-choices" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Static Choices / dynamic choices</h6>
+                                    <div style="display:none"><p>As with a slider, the values/elements of a dropdown menu can be filled either statically or dynamically. 
+                                    Static choices remain unchanged, regardless of the loaded data. In contrast to this the selectable elements of a dropdown menu with dynamic choices are filled depending on the loaded data.</p>
+                                    <br><h4 id="static-dropdown">Static choices:</h4>
+                                    <p>For a static dropdown menu the following options are available:</p>
+                                    <ul>
+                                     
+                                    <li>Choices to select from: 
+                                    <br>Here, a list of values to select from in the resulting dropdwn menu is specified.
+                                    </li> 
+                                    <li>Aliases for choices: 
+                                    <br>If aliases are given, then an alias — rather than the choice — is displayed to the user. Aliases are optional. 
+                                    The choice-alias mapping follows the order in which the elements are specified. If aliases are given, the number of aliases must match the number of choices.
+                                    </li>
+                                    <li>Default value:
+                                    <br>The default value specifies the initial selection of the dropdown menu. This option is only available for static dropdown menus.</li>
+                                    </ul>
+                                    <p>Example: Configuration of a dropdown menu with static choices:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/widget_dropdown_static1.png" alt="Static dropdown menu configration"/>
+                                    </div>
+                                    <p>The user then gets the following dropdown menu:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_static2.png" alt="Static dropdown menu"/>
+                                    </div>
+                                    <br><h4 id="dynamic-dropdown">Dynamic choices:</h4>
+                                    <p>In the following example a dropdown menu with dynamic choices is configured in the model <i>Pickstock</i> for a <i>double-dash parameter</i>. 
+                                    The dropdown menu should always contain all stocks that are included in the existing data.
+                                    Note that this example is not part of the <i>Pickstock</i> demo model.</p>
+                                    <p>The following options are avialable when using dynamic choices.</p>
+                                    <ul>
+                                      <li>Select symbol and header to depend upon:
+                                      <br>If the choices of a dropdown menu are to be filled dynamically, the symbol from whose elements the choices are to be derived must be specified.  
+                                      For this purpose, those symbols are available which are used as <a href = "./model.html#model-adjustments">input symbols</a> in MIRO (i.e. those symbols which were tagged with <code class="language-gams">$onExternalInput</code> / <code class="language-gams">$offExternalInput</code> in the GAMS model). 
+                                      In this example the symbol Price is used, which contains all stocks:
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/table-form.png" alt="Symbol price"/>
+                                      </div>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:100pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic1.png" alt="Symbol selection"/>
+                                      </div>
+                                      <div class="callout-block callout-success" style="margin-top:10px;">
+                                         <div class="icon-holder">
+                                             <i class="fas fa-thumbs-up"></i>
+                                         </div><!--//icon-holder-->
+                                         <div class="content">
+                                             <b class="callout-title">Tip:</b>
+                                              <p>Instead of a single symbol, all input symbols contained in MIRO can also be used for filling. To do this, simply remove the selected symbol. An <i>All</i> is shown then:
+                                              <div class="section-block">
+                                                  <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic_all.png" alt="All symbols"/>
+                                              </div>
+                                              </p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
+                                      <p>Next we specify the column of the symbol <i>Price</i> from which the data for the dropdown menu should come. 
+                                      Since we are interested in the individual stocks, we select the corresponding column <i>stock symbol</i>.</p>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic2.png" alt="Symbol header selection"/>
+                                      </div>
+                                      <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>Only unique elements of a column are extracted. If an element is contained more than once in the selected column, duplicate entries are removed.</p>
+                                        </div><!--//content-->
+                                      </div><!--//callout-block-->
+                                      <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>Only those headers / columns that contain <a href = "https://www.gams.com/latest/docs/UG_SetDefinition.html" target = "_blank">set elements</a> of the selected symbol can be specified. Value columns cannot be used to fill the dropdown choices.</p>
+                                        </div><!--//content-->
+                                     </div><!--//callout-block-->
+                                     <p>These two specifications are sufficient to dynamically fill the choices of the dropdown menu. </p>
+                                     </li>
+                                      <li>Should the symbol table(s) be filtered depending on the selection in the dropdown menu?:
+                                      <br>This option is optional. 
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic3.png" alt="Table filtering"/>
+                                      </div>
+                                      When active, it has the following effects: The user selects a stock in his dynamically filled dropdown menu (e.g. <i>AAPL</i>). 
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic4.png" alt="Filter selection"/>
+                                      </div>
+                                      This has the consequence that all tables containing stock symbols are filtered according to this selection. Only those rows with <i>AAPL</i> are displayed:
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/widget_dropdown_dynamic5.png" alt="Filtered table"/>
+                                      </div>
+                                      <div class="callout-block callout-success" style="margin-top:10px;">
+                                         <div class="icon-holder">
+                                             <i class="fas fa-thumbs-up"></i>
+                                         </div><!--//icon-holder-->
+                                         <div class="content">
+                                             <b class="callout-title">Tip:</b>
+                                              <p>The filter is used exclusively for visual support. A table filtered in this way is always transferred to the GAMS model as a whole, i.e. unfiltered, regardless of the filtered state.</p>
+                                          </div><!--//content-->
+                                      </div><!--//callout-block-->
+                                       </li>
+                                    </ul>
+                                    </div>
+                                    <h6 id="dropdown-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
+                                    <div style="display:none"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    In Hypercube mode a dropdown menu becomes a multi dropdwon menu. With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-dropdown-json">
                                   <h3 class="block-title">JSON example</h3>
+                                    Static dropdown menu:
                                     <pre><code class="language-json">
 {
   "inputWidgets": {
@@ -231,7 +438,7 @@
                             </section>
                             <section id="widget-multidropdown" class="doc-section">
                                 <h2 class="section-title">Multidropdown menu</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-multidropdown-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <div class="callout-block callout-warning">
                                         <div class="icon-holder">
@@ -282,13 +489,17 @@ $offExternalInput
                                     <p>Note that we do not use static choices for the dropdown menu but fill the choices with all dates of the symbol <i>price</i>. 
                                     Furthermore, we activate the option that the table of symbol <i>price</i> shall be filtered based on the user's selection in the dropdown menu of <i>subdate</i>. 
                                     This means that if the user selects one or more dates in the dropdown menu, only the entries containing these dates are visible in the <i>Price</i> table. 
-                                    More information on dependencies among widgets can be found <a href = "./customize.html#widgets-dependencies">here</a>.</p>
+                                    More information on dependencies among widgets can be found in the options of a dynamic <a href = "#dropdown-option-choices" class = "scrollto">dropdown menu</a> and <a href = "./customize.html#widgets-dependencies">here</a>.</p>
                                     <p>In the MIRO application the result of this configuration looks like this:</p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_multidropdown_config2.png" alt="Multi-dropdown menu in MIRO"/>
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-multidropdown-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The available options of a multidropdown menu are identical to those of a <a href = "./widgets.html#widget-dropdown-options" class = "scrollto">single dropdown menu</a>.</p>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-multidropdown-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -309,16 +520,93 @@ $offExternalInput
                             </section>
                             <section id="widget-date" class="doc-section">
                                 <h2 class="section-title">Date selector</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-date-configuration">
                                   <h3 class="block-title">Configuration</h3>
-                                    <p>Returns a date (string).</p>
+                                    <p>Returns a date string in the format yyyy-mm-dd.</p>
                                     <p>Example: </p>
-                                    <p>Date selector for double-dash parameter <i>date</i>:<p>
+                                    <p>Date selector for double-dash parameter <i>date</i> (which can be accessed via <code class="language-gams">%date%</code> in the GAMS model):<p>
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:550pt;" src="assets/images/configuration_mode/widget_date_config.png" alt="Date selector configuration"/>
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-date-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a date selector widget:</p>
+                                    <h6 id="date-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    </div>
+                                    <h6 id="date-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the date selector. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    </div>
+                                    <h6 id="date-option-minmaxdef" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default / earliest / latest date</h6>
+                                    <div style="display:none"><p>When configuring a date selector, the earliest and the latest date that can be selected by the MIRO user can be specified. 
+                                    Data outside this range cannot be selected in the widget. In addition, a specific date can be set as the default date. 
+                                    The dates for the earliest and the latest selectable date are optional. If required, they can be set statically by specifying a fixed date. 
+                                    The default date is not optional. Here either a static date string can be specified or the option <i>Use current date</i> can be activated. 
+                                    The current date is then always selected as the default. </p>
+                                    </div>
+                                    <h6 id="date-option-format" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose how you want the date to be formatted</h6>
+                                    <div style="display:none"><p>This option specifies the format of the date to display in the browser. The defaults is <i>yyyy-mm-dd</i>. 
+                                    This setting does not affect the actual format of the string the widget returns.</p>
+                                    </div>
+                                    <h6 id="date-option-range" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What date range should be displayed per default?</h6>
+                                    <div style="display:none"><p>Specifies the start screen of the date overview. The start screens <i>Month</i>, <i>Year</i> and <i>Decade</i> are available.</p>
+                                    <div class = "row">
+                                        <div class = "col-lg-4 col-6">
+                                            <p>Month:</p>
+                                            <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_date_month.png" alt="Month view"/>
+                                            </div>
+                                        </div>
+                                        <div class = "col-lg-4 col-6">
+                                            <p>Year:</p>
+                                            <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_date_year.png" alt="Year view"/>
+                                            </div>
+                                        </div>
+                                        <div class = "col-lg-4 col-6">
+                                            <p>Decade:</p>
+                                            <div class="section-block">
+                                                <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_date_decade.png" alt="Decade view"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p>If you click on a year, the monthly overview opens. From there, you can click on a month to go to the detailed day view.</p>
+                                    </div>
+                                    <h6 id="date-option-start" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ What day shall be the start of the week?</h6>
+                                    <div style="display:none"><p>This option determines the day of the week with which every row of the date overview shall begin.</p>
+                                        <div class = "row">
+                                            <div class = "col-lg-4 col-6">
+                                                <p>Start on Sunday:</p>
+                                                <div class="section-block">
+                                                    <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_date_start.png" alt="Start on Sunday"/>
+                                                </div>
+                                            </div>
+                                            <div class = "col-lg-4 col-6">
+                                                <p>Start on Monday:</p>
+                                                <div class="section-block">
+                                                    <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_date_start2.png" alt="Start on Monday"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 id="date-option-disable" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select weekdays that you want to disable</h6>
+                                    <div style="display:none"><p>Individual weekdays can be deactivated in the date overview, so that the corresponding days are not selectable by the user. </p>
+                                    </div>
+                                    <h6 id="date-option-close" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should datepicker be closed immediately when a date is selected?</h6>
+                                    <div style="display:none"><p>This option refers only to the handling of the widget itself. If active, the date overview of the widget will be closed as soon as a date is clicked. 
+                                    Otherwise the widget remains open and closes only when you click somewhere else.</p>
+                                    </div>
+                                    <h6 id="date-option-expand" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should element be expanded automatically in Hypercube mode?</h6>
+                                    <div style="display:none"><p>As explained in detail in the <a href = "./hypercube.html#scengen-config">corresponding section</a> on Hypercube mode, the display of configured widgets changes in Hypercube mode. 
+                                    With the option available here, the automatic expansion of a widget can be switched off.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/batch_img/regular_batch.png" alt="Expand in Hypercube mode"/>
+                                    </div>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-date-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -341,7 +629,7 @@ $offExternalInput
                             </section>
                             <section id="widget-daterange" class="doc-section">
                                 <h2 class="section-title">Daterange selector</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-daterange-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns two dates. For more on widget ranges, see <a href="#widgets-advanced" class="scrollto">here</a>.</p>
                                     <p>Example: </p>
@@ -350,7 +638,25 @@ $offExternalInput
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_daterange_config.png" alt="Date range configuration"/>
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-daterange-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The available options of a date range selector are nearly identical to those of a <a href = "./widgets.html#widget-date-options" class = "scrollto">single date selector</a>. 
+                                    The following options are available in addition for a date range selector widget:</p>
+                                    <h6 id="daterange-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default dates</h6>
+                                    <div style="display:none"><p>Since the widget is used for date <i>ranges</i> the date range selector needs two default dates instead of one. 
+                                    The configuration of these does not differ from that of the <a href = "#date-option-minmaxdef" class = "scrollto">singe date selector</a>.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
+                                    </div>
+                                    </div><h6 id="daterange-option-separator" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select the separator between start and end date selector</h6>
+                                    <div style="display:none"><p>With this option you can determine what should be displayed between the two date selectors (default: "<i>to</i>").</p>
+                                    <p>Example with two different separators:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:60pt;" src="assets/images/configuration_mode/widget_daterange_separator.png" alt="Date range separator"/>
+                                    </div>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-daterange-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -376,7 +682,7 @@ $offExternalInput
                             </section>
                             <section id="widget-textbox" class="doc-section">
                                 <h2 class="section-title">Textbox</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-textbox-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Returns the inserted text.</p>
                                     <p>Example: </p>
@@ -385,7 +691,25 @@ $offExternalInput
                                         <img class="img-fluid" style= "max-height:350pt;" src="assets/images/configuration_mode/widget_textbox_config.png" alt="Textbox configuration"/>
                                     </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id = "widget-textbox-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a textbox widget:</p>
+                                    <h6 id="textbox-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    </div>
+                                    <h6 id="textbox-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the textbox. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    </div>
+                                    <h6 id="textbox-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose the default value</h6>
+                                    <div style="display:none"><p>A default value is the initial value of the textbox i.e. the text set when starting the application. This is optional. </p>
+                                    </div>
+                                    <h6 id="textbox-option-placeholder" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a placeholder</h6>
+                                    <div style="display:none"><p>A placeholder is a text that is displayed in the text box as long as no input has been made by the user. 
+                                    This is primarily for orientation purposes. A placeholder does not set a value and is optional.</p>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-textbox-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -404,7 +728,7 @@ $offExternalInput
                             </section>
                             <section id="widget-table" class="doc-section">
                                 <h2 class="section-title">Table</h2>
-                                <div class="section-block">
+                                <div class="section-block" id="widget-table-configuration">
                                   <h3 class="block-title">Configuration</h3>
                                     <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
                                     <p>By default, every cell in the table is editable and rows can be inserted and removed. 
@@ -419,22 +743,45 @@ $offExternalInput
                                 <div class="section-block" id = "widget-table-options">
                                   <h3 class="block-title">Available Options</h3>
                                     <p>The following options are available for a table widget:</p>
-                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab (no live preview available)</h6>
-                                    <div style="display:none"><p></p></div>
+                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined, see screenshot below. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_name.png" alt="Element name"/>
+                                    </div>
+                                    </div>
                                     <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
-                                    <div style="display:none"><p></p></div>
+                                    <div style="display:none"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
+                                    If it is active, a table consisting of several pages is displayed instead of a long, 1-page table. In this table only the currently visible data is loaded on the client side. <br>
+                                    This type of tabular representation corresponds to that of output data.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
+                                    </div></div>
                                     <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should table be readonly?</h6>
-                                    <div style="display:none"><p></p></div>
-                                    <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot (no preview)</h6>
-                                    <div style="display:none"><p></p></div>
+                                    <div style="display:none"><p>This option prevents the user from making manual changes in the input table of a scenario. 
+                                    If active, the table can only be filled with scenario data from the database.</p></div>
+                                    <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot</h6>
+                                    <div style="display:none"><p>Unlike the pivot option <a href = "./model.html#table-header">set in the GAMS model itself</a>, this option does not affect the database structure of the symbol. 
+                                    With the GAMS-side set option (<code class="language-gams">Table symbolname [data];</code>), the symbol is stored in its pivot form in the database and displayed 1:1 in the MIRO user inerface. 
+                                    Since the columns of the database are immutable, the symbol can only be used with exactly these columns.  
+                                    In many cases this may not be a problem. If so, then this is the better performing solution than setting the option in configuration mode. 
+                                    The latter has the advantage, however, that the columns of the symbol remain variable, since the symbol itself is stored in the database in list format. 
+                                    The pivoting of the configured column then happens "live" in the MIRO application.</p></div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select certain columns to be readonly</h6>
-                                    <div style="display:none"><p>Only when no pivot!</p></div>
+                                    <div style="display:none"><p>This option prevents the user from making manual changes in selected columns of the input table. 
+                                    Note that this option is only available for table columns that have not been pivoted (see option above).</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_readonlycols.png" alt="Heatmap"/>
+                                    </div></div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
-                                    <div style="display:none"><p></p></div>
-                                    
-                                    
+                                    <div style="display:none"><p>Colors cells with numeric content according to the relative value. 
+                                    </p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
+                                    </div>
+                                    </div>
                                 </div><!--//section-block-->
-                                <div class="section-block">
+                                <div class="section-block" id="widget-table-json">
                                   <h3 class="block-title">JSON example</h3>
                                     <pre><code class="language-json">
 {
@@ -457,14 +804,59 @@ $offExternalInput
                         <div id="doc-nav" class="doc-nav">
                             <nav id="doc-menu" class="nav doc-menu flex-column sticky">
                              <a class="nav-link scrollto" href="#widget-slider">Slider</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-slider-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-slider-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-slider-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-sliderrange">Slider range</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-sliderrange-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-sliderrange-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-sliderrange-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-checkbox">Checkbox</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-checkbox-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-checkbox-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-checkbox-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-dropdown">Dropdown menu</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-dropdown-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-dropdown-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-dropdown-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-multidropdown">Multidropdown menu</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-multidropdown-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-multidropdown-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-multidropdown-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-date">Date selector</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-date-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-date-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-date-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-daterange">Daterange selector</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-daterange-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-daterange-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-daterange-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-textbox">Textbox</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-textbox-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-textbox-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-textbox-json">JSON example</a>
+                             </nav>
                              <a class="nav-link scrollto" href="#widget-table">Table</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-table-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-table-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-table-json">JSON example</a>
+                             </nav>
                             </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->
