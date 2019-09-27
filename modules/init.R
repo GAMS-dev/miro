@@ -155,20 +155,20 @@ if(is.null(errMsg)){
                                           overwriteSymNames[idx]), sep = "\n")
           next
         }
-        modelOut[[i]]$alias <- config[["overwriteAliases"]][[i]][["newAlias"]]
+        modelOut[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
         next
       }
-      modelIn[[i]]$alias <- config[["overwriteAliases"]][[i]][["newAlias"]]
+      modelIn[[i]]$alias <- config[["overwriteAliases"]][[idx]][["newAlias"]]
     }
     config[["overwriteAliases"]] <- NULL
   }
   if(length(config[["overwriteHeaderAliases"]]) && !LAUNCHADMINMODE){
     overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
     for (idx in seq_along(config[["overwriteHeaderAliases"]])){
-      i <- match(names(config[["overwriteHeaderAliases"]])[[i]], names(modelIn))
+      i <- match(names(config[["overwriteHeaderAliases"]])[[idx]], names(modelIn))
       if(is.na(i)){
         i <- match(overwriteSymNames[idx], names(modelOut))
-        newHeaders <- config[["overwriteHeaderAliases"]][[i]][["newHeaders"]]
+        newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
         if(is.na(i)){
           errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
                                           overwriteSymNames[idx]), sep = "\n")
@@ -184,7 +184,7 @@ if(is.null(errMsg)){
         }
        next 
       }
-      newHeaders <- config[["overwriteHeaderAliases"]][[i]][["newHeaders"]]
+      newHeaders <- config[["overwriteHeaderAliases"]][[idx]][["newHeaders"]]
       if(length(modelIn[[i]]$headers) != length(newHeaders)){
         errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
                                         overwriteSymNames[idx]), sep = "\n")
