@@ -198,17 +198,19 @@ body_admin <- dashboardBody({
                                                    height = 400, 
                                                    noDataTxt = lang$nav$outputScreen$boxResults$noData)),
                              tags$div(id = "preview-content-custom", style = "display:none; overflow:auto;text-align:left;",
-                                      tags$h4(id = NA, paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
+                                      tags$h4(paste0(modelName,"_custom.R ", lang$adminMode$uiR$custom$skeleton)),
                                       verbatimTextOutput("preview_output_custom"),
-                                      tags$h4(id = NA, lang$adminMode$uiR$custom$steps),
+                                      tags$h4(lang$adminMode$uiR$custom$steps),
                                       tags$ol(
                                         tags$li(sprintf(lang$adminMode$uiR$custom$li1, modelName)), 
-                                        tags$li(lang$adminMode$uiR$custom$li2, modelName)), 
-                                      tags$li(sprintf(lang$adminMode$uiR$custom$li3a, tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", lang$adminMode$uiR$custom$li3b, target = "_blank")))
-                             ),
-                             tags$div(id = NA, sprintf(lang$adminMode$uiR$custom$description1, modelName)),
-                             tags$h4(id = NA, lang$adminMode$uiR$custom$description2),
-                             tags$div(id = NA, lang$adminMode$uiR$custom$description3)
+                                        tags$li(lang$adminMode$uiR$custom$li2, modelName), 
+                                        tags$li(lang$adminMode$uiR$custom$li3a, 
+                                                tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 
+                                                       lang$adminMode$uiR$custom$li3b, target = "_blank"))
+                                      ),
+                             tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
+                             tags$h4(lang$adminMode$uiR$custom$description2),
+                             tags$div(lang$adminMode$uiR$custom$description3)
                                       ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;",

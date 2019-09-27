@@ -563,7 +563,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
            tabSheetMap = tabSheetMap))
   }
   
-  if(length(config$overwriteSheetOrder$input)){
+  if(length(config$overwriteSheetOrder$input) && !LAUNCHADMINMODE){
     if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
       errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data model!",
                       sep = "\n")
@@ -1195,7 +1195,7 @@ if(is.null(errMsg)){
     else
       return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)
-  if(length(config$overwriteSheetOrder$output)){
+  if(length(config$overwriteSheetOrder$output) && !LAUNCHADMINMODE){
     if(length(modelOut) != length(config$overwriteSheetOrder$output)){
       errMsg <- paste(errMsg, "Some of the output elements defined in the data contract are missing in the 'overwriteSheetOrder' option!",
                       sep = "\n")

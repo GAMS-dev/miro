@@ -7127,8 +7127,8 @@
                     "symbolChoices":{
                       "type":"array",
                       "uniqueItems": true,
-                      "minItems":142,
-                      "maxItems":142,
+                      "minItems":32,
+                      "maxItems":32,
                       "items": {
                           "type":"string",
                           "minLength": 1
