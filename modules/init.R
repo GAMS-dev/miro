@@ -115,43 +115,86 @@ if(is.null(errMsg)){
     config$activateModules$hcubeMode <- TRUE
   }
   # handsontable options
-  hotOptions        <- config$handsontable
+  hotOptions        <- config[["handsontable"]]
   
-  modelOut          <- config$gamsOutputFiles
-  names(modelOut)   <- tolower(names(modelOut))
-  
-  modelIn           <- config$gamsInputFiles
+  modelIn           <- config[["inputSymbols"]]
   names(modelIn)    <- tolower(names(modelIn))
   
-  if(length(config$overwriteHeaderAliases)){
-    for (el in config$overwriteHeaderAliases){
-      i <- match(el$symName, names(modelIn))
+  modelOut          <- config[["outputSymbols"]]
+  names(modelOut)   <- tolower(names(modelOut))
+  
+  config[["inputSymbols"]]  <- NULL
+  config[["outputSymbols"]] <- NULL
+  
+  if(!length(config$pageTitle) || nchar(config$pageTitle) == 0L){
+    config$pageTitle <- config$modelTitle
+  }
+  config$modelTitle <- NULL
+  # rename input and output scalar aliases
+  if(length(modelIn[[scalarsFileName]])){
+    modelIn[[scalarsFileName]]$alias <-  lang$nav$scalarAliases$scalars
+    modelIn[[scalarsFileName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
+    modelIn[[scalarsFileName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
+    modelIn[[scalarsFileName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
+  }
+  if(length(modelOut[[scalarsOutName]])){
+    modelOut[[scalarsOutName]]$count <- length(modelOut[[scalarsOutName]]$symnames)
+    modelOut[[scalarsOutName]]$alias <- lang$nav$scalarAliases$scalarsOut
+    modelOut[[scalarsOutName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
+    modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
+    modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
+  }
+  if(length(config[["overwriteAliases"]]) && !LAUNCHADMINMODE){
+    overwriteSymNames <- names(config[["overwriteAliases"]])
+    for (idx in seq_along(config[["overwriteAliases"]])){
+      i <- match(overwriteSymNames[idx], names(modelIn))
       if(is.na(i)){
-        i <- match(el$symName, names(modelOut))
+        i <- match(overwriteSymNames[idx], names(modelOut))
         if(is.na(i)){
-          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
-                                          el$symName), sep = "\n")
+          errMsg <- paste(errMsg, sprintf("The alias of symbol: '%s' was selected to be overwritten. However, this symbol could not be found.", 
+                                          overwriteSymNames[idx]), sep = "\n")
           next
         }
-        if(length(modelOut[[i]]$headers) != length(el$newHeaders)){
+        modelOut[[i]]$alias <- config[["overwriteAliases"]][[i]][["newAlias"]]
+        next
+      }
+      modelIn[[i]]$alias <- config[["overwriteAliases"]][[i]][["newAlias"]]
+    }
+    config[["overwriteAliases"]] <- NULL
+  }
+  if(length(config[["overwriteHeaderAliases"]]) && !LAUNCHADMINMODE){
+    overwriteSymNames <- names(config[["overwriteHeaderAliases"]])
+    for (idx in seq_along(config[["overwriteHeaderAliases"]])){
+      i <- match(names(config[["overwriteHeaderAliases"]])[[i]], names(modelIn))
+      if(is.na(i)){
+        i <- match(overwriteSymNames[idx], names(modelOut))
+        newHeaders <- config[["overwriteHeaderAliases"]][[i]][["newHeaders"]]
+        if(is.na(i)){
+          errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, this symbol could not be found.", 
+                                          overwriteSymNames[idx]), sep = "\n")
+          next
+        }
+        if(length(modelOut[[i]]$headers) != length(newHeaders)){
           errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                                          el$symName), sep = "\n")
+                                          overwriteSymNames[idx]), sep = "\n")
           next
         }
         for (j in seq_along(modelOut[[i]]$headers)){
-          modelOut[[i]]$headers[[j]]$alias <- el$newHeaders[j]
+          modelOut[[i]]$headers[[j]]$alias <- newHeaders[j]
         }
        next 
       }
-      if(length(modelIn[[i]]$headers) != length(el$newHeaders)){
+      newHeaders <- config[["overwriteHeaderAliases"]][[i]][["newHeaders"]]
+      if(length(modelIn[[i]]$headers) != length(newHeaders)){
         errMsg <- paste(errMsg, sprintf("The headers of symbol: '%s' were selected to be overwritten. However, the dimensions do not match!", 
-                                        el$symName), sep = "\n")
+                                        overwriteSymNames[idx]), sep = "\n")
         next
       }
       for (j in seq_along(modelIn[[i]]$headers)){
-        modelIn[[i]]$headers[[j]]$alias <- el$newHeaders[j]
+        modelIn[[i]]$headers[[j]]$alias <- newHeaders[j]
       }
     }
+    config[["overwriteHeaderAliases"]] <- NULL
   }
   scalarTableIds <- match(c(scalarsFileName), names(modelIn))
   scalarTableIds <- scalarTableIds[!is.na(scalarTableIds)]
@@ -197,6 +240,10 @@ if(is.null(errMsg)){
         if(!length(modelIn[[tolower(scalarsFileName)]]$symnames)){
           # remove scalar table entirely if no scalar symbols are left
           modelIn[[tolower(scalarsFileName)]] <- NULL
+          scalarIdOverwriteSheetOrder <- match(scalarsFileName, config$overwriteSheetOrder$input)
+          if(!is.na(scalarIdOverwriteSheetOrder)){
+            config$overwriteSheetOrder$input[scalarIdOverwriteSheetOrder] <- NULL
+          }
         }else{
           modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
           modelIn[[tolower(scalarsFileName)]]$symtext  <- modelIn[[tolower(scalarsFileName)]]$symtext[-c(j)]
@@ -227,7 +274,7 @@ if(is.null(errMsg)){
       symDim          <- length(modelIn[[i]]$headers)
       if(symDim > 1L && !(widgetType %in% c("table", "custom"))){
         if(!(identical(symDim, 2L) && identical(names(modelIn[[i]]$headers)[2], "text") && 
-           all(vapply(modelIn[[i]]$headers$type, identical, logical(1L), "set", USE.NAMES = FALSE)) &&
+           all(vapply(modelIn[[i]]$headers$type, identical, logical(1L), "string", USE.NAMES = FALSE)) &&
            identical(widgetType, "dropdown"))){
           errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
                                           names(modelIn)[i]), sep = "\n")
@@ -307,36 +354,6 @@ if(is.null(errMsg)){
   if(any(duplicated(names(modelOut)))){
     errMsg <- "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!"
     flog.fatal(errMsg)
-  }
-  # rename input and output scalar aliases
-  if(length(modelIn[[scalarsFileName]])){
-    modelIn[[scalarsFileName]]$alias <-  lang$nav$scalarAliases$scalars
-    modelIn[[scalarsFileName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
-    modelIn[[scalarsFileName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
-    modelIn[[scalarsFileName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
-  }
-  
-  if(!is.null(config$scalarAliases$inputScalars) && 
-     nchar(config$scalarAliases$inputScalars) && length(modelIn[[scalarsFileName]])){
-    modelIn[[scalarsFileName]]$alias <- config$scalarAliases$inputScalars
-  }else if(!length(config$scalarAliases$inputScalars)){
-    if(!length(modelIn[[scalarsFileName]])){
-      config$scalarAliases$inputScalars <- lang$nav$inputScreen$scalarTabTitle
-    }else{
-      config$scalarAliases$inputScalars <- modelIn[[scalarsFileName]]$alias
-    }
-  }
-  if(length(modelOut[[scalarsOutName]])){
-    modelOut[[scalarsOutName]]$count <- length(modelOut[[scalarsOutName]]$symnames)
-    modelOut[[scalarsOutName]]$alias <- lang$nav$scalarAliases$scalarsOut
-    modelOut[[scalarsOutName]]$headers[[1]]$alias <- lang$nav$scalarAliases$cols$name
-    modelOut[[scalarsOutName]]$headers[[2]]$alias <- lang$nav$scalarAliases$cols$desc
-    modelOut[[scalarsOutName]]$headers[[3]]$alias <- lang$nav$scalarAliases$cols$value
-  }
-  
-  if(!is.null(config$scalarAliases$outputScalars) && 
-     nchar(config$scalarAliases$outputScalars) && length(modelOut[[scalarsOutName]])){
-    modelOut[[scalarsOutName]]$alias <- config$scalarAliases$outputScalars
   }
 }
 
@@ -545,7 +562,25 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
            tabTitles = tabTitles[!vapply(tabTitles, is.null, logical(1L), USE.NAMES = FALSE)],
            tabSheetMap = tabSheetMap))
   }
-  widgetIds    <- lapply(seq_along(modelIn), function(i){
+  
+  if(length(config$overwriteSheetOrder$input)){
+    if(any(is.na(match(config$overwriteSheetOrder$input, names(modelIn))))){
+      errMsg <- paste(errMsg, "Some of the input elements in the 'overwriteSheetOrder' option are not defined in the data model!",
+                      sep = "\n")
+    }else{
+      appendSheetIds <- NULL
+      if(length(config$overwriteSheetOrder$input) != length(modelIn)){
+        appendSheetIds <- seq_along(modelIn)[!names(modelIn) %in% config$overwriteSheetOrder$input]
+      }
+      inputSheetIdsToDisplay <- c(match(config$overwriteSheetOrder$input, 
+                                        names(modelIn)), appendSheetIds)
+    }
+  }else{
+    inputSheetIdsToDisplay <- seq_along(modelIn)
+  }
+}
+if(is.null(errMsg)){
+  widgetIds    <- lapply(inputSheetIdsToDisplay, function(i){
     if(modelIn[[i]]$type %in% c("hot", "dt", "custom")){
       return(NULL)
     }else{
@@ -557,14 +592,14 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
                                            numeric(1L), USE.NAMES = FALSE)], 
                          use.names = FALSE)
   inputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
-                          widgetIds = widgetIds)
+                          idsToDisplay = inputSheetIdsToDisplay, widgetIds = widgetIds)
   inputTabTitles <- inputTabs$tabTitles
   tabSheetMap <- list(input = NULL, output = NULL)
   tabSheetMap$input <- inputTabs$tabSheetMap
   inputTabs    <- inputTabs$tabs
   
   # get input tabs where scalars are merged to single table (scenario comparison mode)
-  widgetIdsMultiDim <- vapply(seq_along(modelIn), function(i){
+  widgetIdsMultiDim <- vapply(inputSheetIdsToDisplay, function(i){
     if(identical(modelIn[[i]]$dropdown$multiple, TRUE) && 
        !identical(modelIn[[i]]$dropdown$checkbox, TRUE) && 
        !identical(modelIn[[i]]$dropdown$single, TRUE)){
@@ -574,6 +609,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
   }, integer(1L), USE.NAMES = FALSE)
   widgetIdsMultiDim <- widgetIdsMultiDim[!is.na(widgetIdsMultiDim)]
   scenInputTabs    <- getTabs(names(modelIn), modelInAlias, config$inputGroups,
+                              idsToDisplay = inputSheetIdsToDisplay, 
                               widgetIds = widgetIds, mergeScalars = TRUE, 
                               widgetIdsMultiDim = widgetIdsMultiDim)
   scenInputTabTitles <- scenInputTabs$tabTitles
@@ -611,7 +647,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
         categoricalHeaders <- modelIn[[i]]$headers
       }
       categoricalHeaders <- unlist(lapply(seq_along(categoricalHeaders), function(hdrId){
-        if(identical(modelOut[[i]]$headers[[hdrId]]$type, "set"))
+        if(identical(modelOut[[i]]$headers[[hdrId]]$type, "string"))
           return(names(modelOut[[i]]$headers)[[hdrId]])
         return(NULL)
       }), use.names = FALSE)
@@ -888,7 +924,7 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
              if(length(choices$fw)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
-             if(identical(modelIn[[i]]$symtype, "set")){
+             if(isTRUE(modelIn[[i]]$dropdown$multiple) || identical(modelIn[[i]]$symtype, "set")){
                return(name)
              }else{
                return(NULL)
@@ -1080,7 +1116,7 @@ if(is.null(errMsg)){
     i <- match(tolower(inputName), names(modelIn))[[1]]
     if(!is.null(modelIn[[i]]$headers) && length(modelIn[[i]]$headers)){
       idsIn[[i]] <- unlist(lapply(1:length(modelIn[[i]]$headers), function(j){
-        if(modelIn[[i]]$headers[[j]]$type == "set"){
+        if(modelIn[[i]]$headers[[j]]$type == "string"){
           return(names(modelIn[[i]]$headers)[[j]])
         }
       }), use.names = FALSE)
@@ -1093,16 +1129,13 @@ if(is.null(errMsg)){
     if(!is.null(modelIn[[i]]$headers)){
       headers   <- vector(mode = "numeric", length = length(modelIn[[i]]$headers))
       headers   <- lapply(modelIn[[i]]$headers, function(header){
-        switch(header$type,
-               "set" = character(),
-               "parameter" = numeric(),
-               "acronym" = character(),
-               "string" = character(),
-               "scalar" = character())
+        if(identical(header$type, "numeric")){
+          return(numeric())
+        }
+        return(character())
       })
       names(headers) <- names(modelIn[[i]]$headers)
       modelInTemplate[[i]] <<- tibble(!!!headers)
-      attr(modelInTemplate[[i]], "type") <<- if(any(vapply(headers, is.numeric, logical(1L), USE.NAMES = FALSE))) "parameter" else "set"
       attr(modelInTemplate[[i]], "aliases") <<- vapply(seq_along(modelIn[[i]]$headers), function(j){
         alias <- modelIn[[i]]$headers[[j]]$alias
         if(!length(alias)){
@@ -1116,7 +1149,7 @@ if(is.null(errMsg)){
                                            modelInAlias[i]))
         }else if(length(modelIn[[i]]$headers) < 3L || 
                  sum(vapply(modelIn[[i]]$headers, 
-                            function(header) identical(header$type, "parameter"), 
+                            function(header) identical(header$type, "numeric"), 
                             logical(1L), USE.NAMES = FALSE)) > 1L){
           errMsg <<- paste(errMsg, sprintf("You may only pivot symbols that have at least a dimension of 2 and have at most 1 value column (symbol: '%s').", 
                                            modelInAlias[i]))
@@ -1143,16 +1176,13 @@ if(is.null(errMsg)){
   modelOutToDisplay <- vapply(seq_along(modelOut), function(i){
     headers   <- vector(mode = "numeric", length = length(modelOut[[i]]$headers))
     headers   <- lapply(modelOut[[i]]$headers, function(header){
-      switch(header$type,
-             "set" = character(),
-             "parameter" = numeric(),
-             "acronym" = character(),
-             "string" = character(),
-             "scalar" = character())
+      if(identical(header$type, "numeric")){
+        return(numeric())
+      }
+      return(character())
     })
     names(headers) <- names(modelOut[[i]]$headers)
     modelOutTemplate[[i]] <<- tibble::tibble(!!!headers)
-    attr(modelOutTemplate[[i]], "type") <<- if(any(vapply(headers, is.numeric, logical(1L), USE.NAMES = FALSE))) "parameter" else "set"
     attr(modelOutTemplate[[i]], "aliases") <<- vapply(seq_along(modelOut[[i]]$headers), function(j){
       alias <- modelOut[[i]]$headers[[j]]$alias
       if(!length(alias)){
@@ -1165,9 +1195,25 @@ if(is.null(errMsg)){
     else
       return(TRUE)
   }, logical(1L), USE.NAMES = FALSE)
+  if(length(config$overwriteSheetOrder$output)){
+    if(length(modelOut) != length(config$overwriteSheetOrder$output)){
+      errMsg <- paste(errMsg, "Some of the output elements defined in the data contract are missing in the 'overwriteSheetOrder' option!",
+                      sep = "\n")
+    }else if(any(is.na(match(config$overwriteSheetOrder$output, names(modelOut))))){
+      errMsg <- paste(errMsg, "Some of the output elements in the 'overwriteSheetOrder' option are not defined in the data model!",
+                      sep = "\n")
+    }else{
+      outputSheetIdsToDisplay <- match(config$overwriteSheetOrder$output, 
+                                       names(modelOut)[modelOutToDisplay])
+    }
+  }else{
+    outputSheetIdsToDisplay <- seq_along(modelOut)[modelOutToDisplay]
+  }
+}
+if(is.null(errMsg)){
   # declare output sheets as they will be displayed in UI
   outputTabs <- getTabs(names(modelOut), modelOutAlias, config$outputGroups,
-                        idsToDisplay = seq_along(modelOut)[modelOutToDisplay], isOutput = TRUE)
+                        idsToDisplay = outputSheetIdsToDisplay, isOutput = TRUE)
   outputTabTitles <- outputTabs$tabTitles
   tabSheetMap$output <- outputTabs$tabSheetMap
   outputTabs <- outputTabs$tabs
@@ -1191,32 +1237,22 @@ if(is.null(errMsg)){
       next
     }
     modelIn[[i]]$colTypes <- paste(vapply(modelIn[[i]]$headers, function(header){
-      switch(header$type,
-             "set" = 'c',
-             "parameter" = 'd',
-             "acronym" = 'c',
-             "string" = 'c',
-             "scalar" = 'c',
-             {
-               'c'
-             })
+      if(identical(header$type, "numeric")){
+        return("d")
+      }
+      return("c")
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   for(i in seq_along(modelOut)){
     modelOut[[i]]$colTypes <- paste(vapply(modelOut[[i]]$headers, function(header){
-      switch(header$type,
-             "set" = 'c',
-             "parameter" = 'd',
-             "acronym" = 'c',
-             "string" = 'c',
-             "scalar" = 'c',
-             {
-               'c'
-             })
+      if(identical(header$type, "numeric")){
+        return("d")
+      }
+      return("c")
     }, character(1L), USE.NAMES = FALSE), collapse = "")
   }
   # validate symbol links
-  if(length(config[["symbolLinks"]])){
+  if(!config$activateModules$hcubeMode && length(config[["symbolLinks"]])){
     for(symbolLink in config[["symbolLinks"]]){
       source <- tolower(symbolLink[["source"]])
       target <- tolower(symbolLink[["target"]])
@@ -1348,9 +1384,9 @@ if(is.null(errMsg)){
     scalarsInMetaData <- list(list(alias = "Input Scalars",
                                    colTypes = "ccc",
                                    headers = list(
-                                     'a' = list(type = "set"),
-                                     'b' = list(type = "set"),
-                                     'c' = list(type = "set")
+                                     'a' = list(type = "string"),
+                                     'b' = list(type = "string"),
+                                     'c' = list(type = "string")
                                    ))
     )
     names(scalarsInMetaData[[1]]$headers) <- scalarsFileHeaders
@@ -1359,7 +1395,6 @@ if(is.null(errMsg)){
                                        'b' = character(0L), 
                                        'c' = character(0L))
     names(scalarsInTemplate) <- scalarsFileHeaders
-    attr(scalarsInTemplate, "type") <- "set"
     attr(scalarsInTemplate, "aliases") <- c(lang$scalarAliases$cols$name, 
                                             lang$scalarAliases$cols$desc,
                                             lang$scalarAliases$cols$value)

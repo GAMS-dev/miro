@@ -810,7 +810,20 @@
     },
     "general":{
       "ui":{
-        "title":"Allgemeine Einstellungen"
+        "title":"Allgemeine Einstellungen",
+        "tabInterface": "Benutzeroberfläche",
+        "tabSymbols": "Symbol-Konfiguration",
+        "tabModules": "Module",
+        "headerGeneral": "Allgemein",
+        "headerLogo": "Logo",
+        "headerScalars": "Skalare",
+        "headerTabGrouping": "Tab-Gruppierung",
+        "headerInputGroups": "Eingabegruppen",
+        "headerOutputGroups": "Ausgabegruppen",
+        "headerSymbolNaming": "Benennung",
+        "headerSymbolGrouping": "Gruppierung",
+        "headerScenData": "Szenario & Daten",
+        "headerComputation": "Berechnung"
       },
       "modalDialog":{
         "title": "Fehler beim Kopieren des Bildes", 
@@ -846,24 +859,10 @@
       "overwriteSymbolAliases":{
         "label": "Symbol-Aliase festlegen",
         "input": "Eingabesymbole",
-        "output": "Ausgabesymbole",
-        "symName": "Symbolname",
-        "symAlias": "Symbol-Alias"
+        "output": "Ausgabesymbole"
       },
       "overwriteSymbolHeaders":{
-        "label": "Spaltenüberschriften festlegen",
-        "input": "Eingabesymbole",
-        "output": "Ausgabesymbole",
-        "symName": "Symbolname",
-        "headerAliases": "Spaltenüberschriften"
-      },
-      "inputScalars":{
-        "label": "Alias für die Tabelle der Inputskalare",
-        "placeholder": "Inputskalare"
-      },
-      "outputScalars":{
-        "label": "Alias für die Tabelle der Outputskalare",
-        "placeholder": "Outputskalare"
+        "label": "Spaltenüberschriften festlegen"
       },
       "hidden":{
         "label": "Skalare, die nicht in der Outputskalartabelle angezeigt werden sollen, aber in Grafiken usw. verwendet werden können."

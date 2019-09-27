@@ -16,6 +16,11 @@
          ],
          "required":false
       },
+      "pageTitle":{
+        "description":"Name of the page (displayed in browser tab)",
+        "type":"string",
+        "required":false
+      },
       "theme":{  
          "description":"Color theme used for MIRO",
          "type":"string",
@@ -28,7 +33,7 @@
          "required":false
       },
       "fileExchange":{  
-        "description":"Method used to exchange files",
+        "description":"Method used to exchange files with GAMS",
         "type":"string",
         "enum":[  
           "csv",
@@ -187,21 +192,32 @@
             }
          }
       },
-      "overwriteHeaderAliases":{
-        "description": "Specify new header aliases that will overwrite those defined in GAMS as explanatory text",
-         "type": "array",
+      "overwriteAliases":{
+        "description": "Specify new aliases that will overwrite those defined in GAMS as explanatory text",
+         "type": "object",
          "required":false,
-         "minItems":1,
-         "items":{
+         "additionalProperties":{  
            "type":"object",
            "additionalProperties":false,
-           "required": ["symName", "newHeaders"],
+           "required": ["newAlias"],
            "properties":{
-              "symName":{
-                "description":"Specify the name of the symbol whose headers shall be replaced",
+              "newAlias":{
+                "description":"Specify new alias",
                 "type":"string",
                 "minLength":1
-              },
+              }
+           }
+         }
+      },
+      "overwriteHeaderAliases":{
+        "description": "Specify new header aliases that will overwrite those defined in GAMS as explanatory text",
+         "type": "object",
+         "required":false,
+         "additionalProperties":{  
+           "type":"object",
+           "additionalProperties":false,
+           "required": ["newHeaders"],
+           "properties":{
               "newHeaders":{
                 "description":"Specify new headers (number needs to match dimension of symbol)",
                 "type":"array",
@@ -212,6 +228,29 @@
                 }
               }
            }
+         }
+      },
+      "overwriteSheetOrder":{
+        "description": "Specify new sheet order as it shall be dispayed in UI",
+        "type":"object",
+         "additionalProperties":false,
+         "properties":{  
+            "input":{  
+               "description":"New order of input sheets",
+               "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
+            },
+            "output":{  
+               "description":"New order of output sheets",
+               "uniqueItems":true,
+                "items":{
+                  "type":"string",
+                  "minLength": 1
+                }
+            }
          }
       },
       "aggregateWidgets":{
@@ -225,25 +264,6 @@
          "type": "string",
          "minLength":3,
          "required":false
-      },
-      "scalarAliases":{  
-         "description":"Specify the aliases for the input and output scalar tables",
-         "type":"object",
-         "additionalProperties":false,
-         "properties":{  
-            "inputScalars":{  
-               "description":"Alias for the input scalar table",
-               "type":"string",
-               "minLength":"1",
-               "required":false
-            },
-            "outputScalars":{  
-               "description":"Alias for the output scalar table",
-               "type":"string",
-               "minLength":"1",
-               "required":false
-            }
-         }
       },
       "hiddenOutputScalars": {
         "description":"Specify symbol names of output scalars that will not be displayed in UI but can be used in graphs etc.",

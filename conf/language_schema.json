@@ -3691,6 +3691,71 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "tabInterface":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabSymbols":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tabModules":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerGeneral":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerLogo":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerScalars":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerTabGrouping":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerInputGroups":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerOutputGroups":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerSymbolNaming":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerSymbolGrouping":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerScenData":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "headerComputation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             }, 
@@ -3862,16 +3927,6 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
-                },
-                "symName":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "symAlias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
                 }
               }
             },
@@ -3881,60 +3936,6 @@
               "required":true,
               "properties":{  
                 "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "input":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "output":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "symName":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "headerAliases":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
-            },
-            "inputScalars":{          
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "placeholder":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                }
-              }
-            },
-            "outputScalars":{          
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{  
-                "label":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "placeholder":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true

@@ -68,7 +68,7 @@ prepareModelRun <- function(async = FALSE){
   }
   pfFileContent <- NULL
   inputData <- DataInstance$new(modelInFileNames, fileExchange = config$fileExchange,
-                                csvDelim = config$csvDelim)
+                                gdxio = gdxio, csvDelim = config$csvDelim)
   lapply(seq_along(dataTmp), function(i){
     # write compile time variable file and remove compile time variables from scalar dataset
     if(identical(tolower(names(dataTmp)[[i]]), scalarsFileName)){
@@ -235,7 +235,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     }
     hcubeData <<- HcubeDataInstance$new(config$activateModules$remoteExecution)
     staticData <<- DataInstance$new(fileExchange = config$fileExchange,
-                                    csvDelim = config$csvDelim)
+                                    gdxio = gdxio, csvDelim = config$csvDelim)
     modelInSorted <- sort(names(modelIn))
     elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)

@@ -1,5 +1,8 @@
 GdxIO <- R6::R6Class("GdxIO", public = list(
-  initialize = function(gamsSysDir, metaData){
+  initialize = function(gamsSysDir, metaData, 
+                        scalarsFileName, scalarsOutName, 
+                        scalarEquationsName, 
+                        scalarEquationsOutName){
     stopifnot(is.list(metaData), length(metaData) > 0L,
               is.character(gamsSysDir), identical(length(gamsSysDir), 1L))
     if(gdxrrw::igdx(gamsSysDir, silent = TRUE, returnStr = FALSE)){
@@ -9,6 +12,10 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                    gamsSysDir), call. = FALSE)
     }
     private$metaData <- metaData
+    private$scalarsFileName <- scalarsFileName
+    private$scalarsOutName <- scalarsOutName
+    private$scalarEquationsName <- scalarEquationsName
+    private$scalarEquationsOutName <- scalarEquationsOutName
     return(invisible(self))
   },
   getSymbols = function(gdxName = NULL){
@@ -28,7 +35,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       private$gdxSymbols <- gdxrrw::gdxInfo(gdxName, returnList = TRUE, dump = FALSE)
     }
     symName <- tolower(symName)
-    if(symName %in% c(scalarsFileName, scalarsOutName)){
+    if(symName %in% c(private$scalarsFileName, private$scalarsOutName)){
       scalarSymbols <- private$metaData[[symName]]
       if(is.null(scalarSymbols)){
         return(tibble::tibble())
@@ -95,8 +102,9 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
         return(NA)
       }
       symName   <- names(data)[i]
-      if(symName %in% c(scalarsFileName, scalarsOutName, scalarEquationsName, 
-                        scalarEquationsOutName)){
+      if(symName %in% c(private$scalarsFileName, private$scalarsOutName, 
+                        private$scalarEquationsName, 
+                        private$scalarEquationsOutName)){
         scalarIdList <<- c(scalarIdList, symName)
         return(NULL)
       }
@@ -132,7 +140,11 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
                                        values_to = "value")
       }
       df[seq_len(length(df) - 1L)] <- dplyr::mutate_if(df[seq_len(length(df) - 1L)], 
-                                                       isNonNumeric, function(el){
+                                                       function(el){
+                                                         if(is.numeric(el))
+                                                           return(FALSE)
+                                                         return(TRUE)
+                                                       }, function(el){
                                                          factor(el, levels = unique(el))
                                                        })
       ret <- list (name = symName, type = symType, 
@@ -201,7 +213,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       lapply(seq_along(symNames), function(j){
         symName  <- symNames[j]
         symType  <- symTypes[j]
-        metaId   <- match(symName, private$metaData[[scalarsFileName]]$symNames)
+        metaId   <- match(symName, 
+                          private$metaData[[private$scalarsFileName]]$symNames)
         
         form     <- "sparse"
         dim      <- 0L
@@ -254,6 +267,10 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
   gdxDllLoaded = FALSE,
   gdxSymbols = list(),
   metaData = list(),
+  scalarsFileName = character(1L),
+  scalarsOutName = character(1L),
+  scalarEquationsName = character(1L),
+  scalarEquationsOutName = character(1L),
   rgdxVe = function(symName, names = NULL){
     sym <- gdxrrw::rgdx(private$rgdxName, 
                         list(name = symName, 

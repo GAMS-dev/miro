@@ -31,7 +31,7 @@ removeUI(selector = "#module_wrapper1 .shiny-input-container", multiple = TRUE)
 
 insertUI(selector = "#interface_wrapper1",
          tagList(
-           tags$h2("General", class="option-category"),
+           tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
            tags$div(
              radioButtons("general_theme", lang$adminMode$general$theme$label, 
                           choices = langSpecific$theme,
@@ -75,7 +75,7 @@ insertUI(selector = "#interface_wrapper1",
                                 min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
                     )),
            tags$hr(),
-           tags$h2("Logo"),
+           tags$h2(lang$adminMode$general$ui$headerLogo),
            tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                     fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
                               width = "100%",
@@ -94,13 +94,7 @@ if(length(configJSON$outputGroups))
   addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
 insertUI(selector = "#interface_wrapper2",
          tagList(
-           tags$h2("Scalars", class="option-category"),
-           tags$div(class="option-wrapper",
-                    textInput("general_input_scalars", lang$adminMode$general$inputScalars$label, value = configJSON$scalarAliases$inputScalars,
-                              placeholder = lang$adminMode$general$inputScalars$placeholder)),
-           tags$div(class="option-wrapper",
-                    textInput("general_output_scalars", lang$adminMode$general$outputScalars$label, value = configJSON$scalarAliases$outputScalars,
-                              placeholder = lang$adminMode$general$outputScalars$placeholder)),
+           tags$h2(lang$adminMode$general$ui$headerScalars, class="option-category"),
            if(length(modelOut[[scalarsOutName]])){
              tags$div(class="option-wrapper",
                       tags$div(class = "info-position", selectInput("general_hidden", 
@@ -119,13 +113,14 @@ insertUI(selector = "#interface_wrapper2",
            ),
            tags$hr(),
            tags$div(class = "info-position",
-                    tags$h2(("Tab grouping"), tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
-                                                     tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
+                    tags$h2((lang$adminMode$general$ui$headerTabGrouping), 
+                            tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
+                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
            ),
-           tags$h4("Inputgroups"),
+           tags$h4(lang$adminMode$general$ui$headerInputGroups),
            tags$div(class="option-wrapper-indented",
                     createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
-           tags$h4("Outputgroups"),
+           tags$h4(lang$adminMode$general$ui$headerOutputGroups),
            tags$div(class="option-wrapper-indented",
                     createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE))
          ), 
@@ -133,7 +128,7 @@ insertUI(selector = "#interface_wrapper2",
 
 insertUI(selector = "#module_wrapper1",
          tagList(
-           tags$h2("Scenario & data", class="option-category"),
+           tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
            tags$div(title = lang$adminMode$general$actUpload$title,
                     tags$label(class = "cb-label info-position", "for" = "general_act_upload", 
                                tags$div(lang$adminMode$general$actUpload$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#local-upload", 
@@ -194,7 +189,7 @@ insertUI(selector = "#module_wrapper1",
 
 insertUI(selector = "#module_wrapper2",
          tagList(
-           tags$h2("Computation", class="option-category"),
+           tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
            tags$label(class = "cb-label", "for" = "general_remote_execution", tags$div(lang$adminMode$general$remoteExecution$label, tags$a("", class="info-wrapper", 
                                                                                                                                             href="https://gams.com/miro/", 
                                                                                                                                             tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
@@ -335,21 +330,44 @@ observeEvent(input$general_act_attach, {
 observeEvent(input$general_aggregate, {
   rv$generalConfig$aggregateWidgets <<- input$general_aggregate
 })
-observeEvent(input$general_input_scalars, {
-  if(!nchar(input$general_input_scalars))
-    configJSON$scalarAliases$inputScalars <<- NULL
-  if(nchar(input$general_input_scalars))
-    rv$generalConfig$scalarAliases$inputScalars <<- input$general_input_scalars
-  else
-    rv$generalConfig$scalarAliases$inputScalars <<- NULL
+observeEvent(input$general_overwriteSheetOrderInput, {
+  rv$generalConfig$overwriteSheetOrder$input <<- input$general_overwriteSheetOrderInput
 })
-observeEvent(input$general_output_scalars, {
-  if(!nchar(input$general_output_scalars))
-    configJSON$scalarAliases$outputScalars <<- NULL
-  if(nchar(input$general_output_scalars))
-    rv$generalConfig$scalarAliases$outputScalars <<- input$general_output_scalars
-  else
-    rv$generalConfig$scalarAliases$outputScalars <<- NULL
+observeEvent(input$general_overwriteSheetOrderOutput, {
+  rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
+})
+observeEvent(input$general_overwriteSheetOrderOutput, {
+  rv$generalConfig$overwriteSheetOrder$output <<- input$general_overwriteSheetOrderOutput
+})
+lapply(c(names(modelInRaw), names(modelOut)), function(name){
+  observeEvent(input[[paste0("general_overwriteSymAlias_", name)]], {
+    if(length(input[[paste0("general_overwriteSymAlias_", name)]]) && 
+       nchar(input[[paste0("general_overwriteSymAlias_", name)]]) > 0L){
+      if(!length(rv$generalConfig$overwriteAliases)){
+        rv$generalConfig$overwriteAliases <- list()
+      }
+      rv$generalConfig$overwriteAliases[[name]] <<- list(newAlias = input[[paste0("general_overwriteSymAlias_", name)]])
+    }
+  })
+  observeEvent(input[[paste0("general_overwriteSymHeaders_", name)]], {
+    i <- match(name, names(modelInRaw))
+    if(is.na(i)){
+      i <- match(name, names(modelOut))
+      if(is.na(i)){
+        return()
+      }
+      headerLen <- length(modelOut[[i]]$headers)
+    }else{
+      headerLen <- length(modelOut[[i]]$headers)
+    }
+    if(length(input[[paste0("general_overwriteSymHeaders_", name)]]) ==
+       headerLen){
+      if(!length(rv$generalConfig$overwriteAliases)){
+        rv$generalConfig$overwriteHeaderAliases <- list()
+      }
+      rv$generalConfig$overwriteHeaderAliases[[name]] <<- list(newHeaders = input[[paste0("general_overwriteSymHeaders_", name)]])
+    }
+  })
 })
 observeEvent(input$general_remote_execution, {
   rv$generalConfig$activateModules$remoteExecution <<- input$general_remote_execution

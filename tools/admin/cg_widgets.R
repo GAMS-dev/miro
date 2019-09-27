@@ -502,7 +502,7 @@ observeEvent({input$widget_type
     pivotCols <- NULL
     if(length(inputSymHeaders[[input$widget_symbol]]) > 2L){
       numericHeaders <- vapply(modelIn[[input$widget_symbol]]$headers, 
-                               function(header) identical(header$type, "parameter"), 
+                               function(header) identical(header$type, "numeric"), 
                                logical(1L), USE.NAMES = FALSE)
       if(sum(numericHeaders) <= 1L){
         pivotCols <- inputSymHeaders[[input$widget_symbol]][!numericHeaders]

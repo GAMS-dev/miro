@@ -55,7 +55,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
               # GAMS sets are always strings to make sure it is not parsed as a numeric
               numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
                 if(is.numeric(dataTmp[[dataColIdx]]) && 
-                   identical(modelIn[[i]]$headers[[dataColIdx]]$type, "set")){
+                   identical(modelIn[[i]]$headers[[dataColIdx]]$type, "string")){
                   return(TRUE)
                 }else{
                   return(FALSE)
