@@ -12,7 +12,7 @@ names(langSpecificTable$class) <- lang$adminMode$tables$dt$class$choices
 langSpecificTable$filter <- c("No column filters" = "none", "Position: bottom" = "bottom", 
                              "Position: top" = "top")
 names(langSpecificTable$filter) <- lang$adminMode$tables$dt$filter$choices
-langSpecificTable$buttons <- c("copy" = "copy", "csv" = "csv", "excel" = "excel", "pdf" = "pdf", "print" = "print")
+langSpecificTable$buttons <- c("copy" = "copy", "CSV" = "csv", "Excel" = "excel", "PDF" = "pdf", "print" = "print")
 names(langSpecificTable$buttons) <- lang$adminMode$tables$dt$buttons$choices
 
 observeEvent(input$table_type, {

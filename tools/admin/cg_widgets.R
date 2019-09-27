@@ -594,98 +594,107 @@ observeEvent({input$widget_type
                                textInput("widget_alias", lang$adminMode$widgets$slider$alias, value = rv$widgetConfig$alias)),
                       tags$div(class="option-wrapper",
                                textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label)),
-                      tags$div(class = "shiny-input-container conditional",
-                        tags$div(class = "col-sm-8",
-                                 if(length(inputSymMultiDim)){
-                                   tagList(
-                                     conditionalPanel(condition = "input.slider_min_dep_selector===true",
-                                                      staticMinInput
-                                     ),
-                                     conditionalPanel(condition = "input.slider_min_dep_selector!==true",
-                                                      selectInput("slider_min_dep", lang$adminMode$widgets$slider$dep, 
-                                                                  choices = inputSymMultiDim, selected = dynamicMin[2]),
-                                                      selectInput("slider_min_dep_header", NULL, 
-                                                                  choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
-                                                                    inputSymHeaders[[1]],
-                                                                  selected = dynamicMin[3]),
-                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$slider$depOp$label, 
-                                                                  choices = langSpecificWidget$minDepOp,
-                                                                  selected = dynamicMin[1])
-                                     )
-                                   )
-                                 }else{
-                                   staticMinInput
-                                 }),
-                        if(length(inputSymMultiDim)){
-                          tags$div(class = "col-sm-4",
-                                   tags$div(class = "shiny-input-container",
-                                            checkboxInput_MIRO("slider_min_dep_selector",
-                                                               lang$adminMode$widgets$slider$depSelector,
-                                                               is.numeric(rv$widgetConfig$min))
-                                   ))
-                        }
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$slider$minlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 if(length(inputSymMultiDim)){
+                                                   tagList(
+                                                     conditionalPanel(condition = "input.slider_min_dep_selector===true",
+                                                                      staticMinInput
+                                                     ),
+                                                     conditionalPanel(condition = "input.slider_min_dep_selector!==true",
+                                                                      selectInput("slider_min_dep", lang$adminMode$widgets$slider$dep, 
+                                                                                  choices = inputSymMultiDim, selected = dynamicMin[2]),
+                                                                      selectInput("slider_min_dep_header", NULL, 
+                                                                                  choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
+                                                                                    inputSymHeaders[[1]],
+                                                                                  selected = dynamicMin[3]),
+                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                                  choices = langSpecificWidget$minDepOp,
+                                                                                  selected = dynamicMin[1])
+                                                     )
+                                                   )
+                                                 }else{
+                                                   staticMinInput
+                                                 }),
                                         if(length(inputSymMultiDim)){
-                                          tagList(
-                                            conditionalPanel(condition = "input.slider_max_dep_selector===true",
-                                                             staticMaxInput
-                                            ),
-                                            conditionalPanel(condition = "input.slider_max_dep_selector!==true",
-                                                             selectInput("slider_max_dep", lang$adminMode$widgets$slider$dep, 
-                                                                         choices = inputSymMultiDim, selected = dynamicMax[2]),
-                                                             selectInput("slider_max_dep_header", NULL, 
-                                                                         choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
-                                                                           inputSymHeaders[[1]],
-                                                                         selected = dynamicMax[3]),
-                                                             selectInput("slider_max_dep_op", lang$adminMode$widgets$slider$depOp$label, 
-                                                                         choices = langSpecificWidget$maxDepOp,
-                                                                         selected = dynamicMax[1])
-                                            )
-                                          )
-                                        }else{
-                                          staticMaxInput
-                                        }),
-                               if(length(inputSymMultiDim)){
-                                 tags$div(class = "col-sm-4",
-                                          tags$div(class = "shiny-input-container",
-                                                   checkboxInput_MIRO("slider_max_dep_selector", 
-                                                                      lang$adminMode$widgets$slider$depSelector,
-                                                                      is.numeric(rv$widgetConfig$max))
-                                          ))
-                               }
+                                          tags$div(class = "col-sm-4",
+                                                   tags$div(class = "shiny-input-container",
+                                                            checkboxInput_MIRO("slider_min_dep_selector",
+                                                                               lang$adminMode$widgets$slider$depSelector,
+                                                                               is.numeric(rv$widgetConfig$min))
+                                                   ))
+                                        }
+                               )
                       ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$slider$maxlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 if(length(inputSymMultiDim)){
+                                                   tagList(
+                                                     conditionalPanel(condition = "input.slider_max_dep_selector===true",
+                                                                      staticMaxInput
+                                                     ),
+                                                     conditionalPanel(condition = "input.slider_max_dep_selector!==true",
+                                                                      selectInput("slider_max_dep", lang$adminMode$widgets$slider$dep, 
+                                                                                  choices = inputSymMultiDim, selected = dynamicMax[2]),
+                                                                      selectInput("slider_max_dep_header", NULL, 
+                                                                                  choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
+                                                                                    inputSymHeaders[[1]],
+                                                                                  selected = dynamicMax[3]),
+                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                                  choices = langSpecificWidget$maxDepOp,
+                                                                                  selected = dynamicMax[1])
+                                                     )
+                                                   )
+                                                 }else{
+                                                   staticMaxInput
+                                                 }),
                                         if(length(inputSymMultiDim)){
-                                          tagList(
-                                            conditionalPanel(condition = "input.slider_def_dep_selector===true",
-                                                             staticDefInput
-                                            ),
-                                            conditionalPanel(condition = "input.slider_def_dep_selector!==true",
-                                                             selectInput("slider_def_dep", lang$adminMode$widgets$slider$dep, 
-                                                                         choices = inputSymMultiDim, selected = dynamicDef[2]),
-                                                             selectInput("slider_def_dep_header", NULL, 
-                                                                         choices = if(length(dynamicDef)) inputSymHeaders[[dynamicDef[2]]] else
-                                                                           inputSymHeaders[[1]],
-                                                                         selected = dynamicDef[3]),
-                                                             selectInput("slider_def_dep_op", lang$adminMode$widgets$slider$depOp$label, 
-                                                                         choices = langSpecificWidget$defDepOp,
-                                                                         selected = dynamicDef[1])
-                                            )
-                                          )
-                                        }else{
-                                          staticDefInput
-                                        }),
-                               if(length(inputSymMultiDim)){
-                                 tags$div(class = "col-sm-4",
-                                          tags$div(class = "shiny-input-container",
-                                                   checkboxInput_MIRO("slider_def_dep_selector", 
-                                                                      lang$adminMode$widgets$slider$depSelector,
-                                                                      is.numeric(rv$widgetConfig$default))
-                                          ))
-                               }
+                                          tags$div(class = "col-sm-4",
+                                                   tags$div(class = "shiny-input-container",
+                                                            checkboxInput_MIRO("slider_max_dep_selector", 
+                                                                               lang$adminMode$widgets$slider$depSelector,
+                                                                               is.numeric(rv$widgetConfig$max))
+                                                   ))
+                                        }
+                               )
+                      ),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$slider$defaultlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 if(length(inputSymMultiDim)){
+                                                   tagList(
+                                                     conditionalPanel(condition = "input.slider_def_dep_selector===true",
+                                                                      staticDefInput
+                                                     ),
+                                                     conditionalPanel(condition = "input.slider_def_dep_selector!==true",
+                                                                      selectInput("slider_def_dep", lang$adminMode$widgets$slider$dep, 
+                                                                                  choices = inputSymMultiDim, selected = dynamicDef[2]),
+                                                                      selectInput("slider_def_dep_header", NULL, 
+                                                                                  choices = if(length(dynamicDef)) inputSymHeaders[[dynamicDef[2]]] else
+                                                                                    inputSymHeaders[[1]],
+                                                                                  selected = dynamicDef[3]),
+                                                                      selectInput("slider_def_dep_op", lang$adminMode$widgets$slider$depOp$label, 
+                                                                                  choices = langSpecificWidget$defDepOp,
+                                                                                  selected = dynamicDef[1])
+                                                     )
+                                                   )
+                                                 }else{
+                                                   staticDefInput
+                                                 }),
+                                        if(length(inputSymMultiDim)){
+                                          tags$div(class = "col-sm-4",
+                                                   tags$div(class = "shiny-input-container",
+                                                            checkboxInput_MIRO("slider_def_dep_selector", 
+                                                                               lang$adminMode$widgets$slider$depSelector,
+                                                                               is.numeric(rv$widgetConfig$default))
+                                                   ))
+                                        }
+                               )
                       ),
                       tags$div(class="option-wrapper",
                                numericInput("slider_step", lang$adminMode$widgets$slider$step, value = rv$widgetConfig$step, min = 0L)),
@@ -737,67 +746,73 @@ observeEvent({input$widget_type
                       textInput("widget_alias", lang$adminMode$widgets$sliderrange$alias, 
                                 value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$sliderrange$minlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 if(length(inputSymMultiDim)){
+                                                   tagList(
+                                                     conditionalPanel(condition = "input.slider_min_dep_selector===true",
+                                                                      staticMinInput
+                                                     ),
+                                                     conditionalPanel(condition = "input.slider_min_dep_selector!==true",
+                                                                      selectInput("slider_min_dep", lang$adminMode$widgets$sliderrange$dep, 
+                                                                                  choices = inputSymMultiDim, selected = dynamicMin[2]),
+                                                                      selectInput("slider_min_dep_header", NULL, 
+                                                                                  choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
+                                                                                    inputSymHeaders[[1]],
+                                                                                  selected = dynamicMin[3]),
+                                                                      selectInput("slider_min_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
+                                                                                  choices = langSpecificWidget$minDepOp,
+                                                                                  selected = dynamicMin[1])
+                                                     )
+                                                   )
+                                                 }else{
+                                                   staticMinInput
+                                                 }),
                                         if(length(inputSymMultiDim)){
-                                          tagList(
-                                            conditionalPanel(condition = "input.slider_min_dep_selector===true",
-                                                             staticMinInput
-                                            ),
-                                            conditionalPanel(condition = "input.slider_min_dep_selector!==true",
-                                                             selectInput("slider_min_dep", lang$adminMode$widgets$sliderrange$dep, 
-                                                                         choices = inputSymMultiDim, selected = dynamicMin[2]),
-                                                             selectInput("slider_min_dep_header", NULL, 
-                                                                         choices = if(length(dynamicMin)) inputSymHeaders[[dynamicMin[2]]] else
-                                                                           inputSymHeaders[[1]],
-                                                                         selected = dynamicMin[3]),
-                                                             selectInput("slider_min_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
-                                                                         choices = langSpecificWidget$minDepOp,
-                                                                         selected = dynamicMin[1])
-                                            )
-                                          )
-                                        }else{
-                                          staticMinInput
-                                        }),
-                               if(length(inputSymMultiDim)){
-                                 tags$div(class = "col-sm-4",
-                                          tags$div(class = "shiny-input-container",
-                                                   checkboxInput_MIRO("slider_min_dep_selector", 
-                                                                      lang$adminMode$widgets$sliderrange$depSelector,
-                                                                      is.numeric(rv$widgetConfig$min))
-                                          ))
-                               }
+                                          tags$div(class = "col-sm-4",
+                                                   tags$div(class = "shiny-input-container",
+                                                            checkboxInput_MIRO("slider_min_dep_selector", 
+                                                                               lang$adminMode$widgets$sliderrange$depSelector,
+                                                                               is.numeric(rv$widgetConfig$min))
+                                                   ))
+                                        }
+                               )
                       ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$slider$maxlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 if(length(inputSymMultiDim)){
+                                                   tagList(
+                                                     conditionalPanel(condition = "input.slider_max_dep_selector===true",
+                                                                      staticMaxInput
+                                                     ),
+                                                     conditionalPanel(condition = "input.slider_max_dep_selector!==true",
+                                                                      selectInput("slider_max_dep", lang$adminMode$widgets$sliderrange$dep, 
+                                                                                  choices = inputSymMultiDim, selected = dynamicMax[2]),
+                                                                      selectInput("slider_max_dep_header", NULL, 
+                                                                                  choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
+                                                                                    inputSymHeaders[[1]],
+                                                                                  selected = dynamicMax[3]),
+                                                                      selectInput("slider_max_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
+                                                                                  choices = langSpecificWidget$maxDepOp,
+                                                                                  selected = dynamicMax[1])
+                                                     )
+                                                   )
+                                                 }else{
+                                                   staticMaxInput
+                                                 }),
                                         if(length(inputSymMultiDim)){
-                                          tagList(
-                                            conditionalPanel(condition = "input.slider_max_dep_selector===true",
-                                                             staticMaxInput
-                                            ),
-                                            conditionalPanel(condition = "input.slider_max_dep_selector!==true",
-                                                             selectInput("slider_max_dep", lang$adminMode$widgets$sliderrange$dep, 
-                                                                         choices = inputSymMultiDim, selected = dynamicMax[2]),
-                                                             selectInput("slider_max_dep_header", NULL, 
-                                                                         choices = if(length(dynamicMax)) inputSymHeaders[[dynamicMax[2]]] else
-                                                                           inputSymHeaders[[1]],
-                                                                         selected = dynamicMax[3]),
-                                                             selectInput("slider_max_dep_op", lang$adminMode$widgets$sliderrange$depOp$label, 
-                                                                         choices = langSpecificWidget$maxDepOp,
-                                                                         selected = dynamicMax[1])
-                                            )
-                                          )
-                                        }else{
-                                          staticMaxInput
-                                        }),
-                               if(length(inputSymMultiDim)){
-                                 tags$div(class = "col-sm-4",
-                                          tags$div(class = "shiny-input-container",
-                                                   checkboxInput_MIRO("slider_min_dep_selector", 
-                                                                      lang$adminMode$widgets$sliderrange$depSelector,
-                                                                      is.numeric(rv$widgetConfig$max))
-                                          ))
-                               }
+                                          tags$div(class = "col-sm-4",
+                                                   tags$div(class = "shiny-input-container",
+                                                            checkboxInput_MIRO("slider_max_dep_selector", 
+                                                                               lang$adminMode$widgets$sliderrange$depSelector,
+                                                                               is.numeric(rv$widgetConfig$max))
+                                                   ))
+                                        }
+                               )
                       ),
                       numericInput("slider_def1", lang$adminMode$widgets$sliderrange$default1, 
                                    value = rv$widgetConfig$default[1]),
@@ -971,43 +986,52 @@ observeEvent({input$widget_type
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$date$alias, value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_def_off!==true",
-                                                         dateInput("date_default", lang$adminMode$widgets$date$default, value = rv$widgetConfig$value)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_def_off", 
-                                                                    lang$adminMode$widgets$date$defOff,
-                                                                    is.null(rv$widgetConfig$value))
-                                        ))
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$date$defaultlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8", 
+                                                 conditionalPanel(condition = "input.date_def_off!==true",
+                                                                  dateInput("date_default", lang$adminMode$widgets$date$default, value = rv$widgetConfig$value)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_def_off", 
+                                                                             lang$adminMode$widgets$date$defOff,
+                                                                             is.null(rv$widgetConfig$value))
+                                                 ))
+                               )
+                      ),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$date$minlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_min_off!==true",
+                                                                  dateInput("date_min", lang$adminMode$widgets$date$min, value = rv$widgetConfig$min)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_min_off", lang$adminMode$widgets$date$minOff,
+                                                                             is.null(rv$widgetConfig$min))
+                                                 ))
+                               )
+                      ),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$date$maxlabel),
+                               tags$div(class = "conditional", 
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_max_off!==true",
+                                                                  dateInput("date_max", lang$adminMode$widgets$date$max, 
+                                                                            value = rv$widgetConfig$max)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_max_off", lang$adminMode$widgets$date$maxOff,
+                                                                             is.null(rv$widgetConfig$max))
+                                                 ))
+                               )
                       ),
                       tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_min_off!==true",
-                                                         dateInput("date_min", lang$adminMode$widgets$date$min, value = rv$widgetConfig$min)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_min_off", lang$adminMode$widgets$date$minOff,
-                                                                    is.null(rv$widgetConfig$min))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_max_off!==true",
-                                                         dateInput("date_max", lang$adminMode$widgets$date$max, 
-                                                                   value = rv$widgetConfig$max)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_max_off", lang$adminMode$widgets$date$maxOff,
-                                                                    is.null(rv$widgetConfig$max))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                               tags$div(class = "col-sm-8 no-padding-left",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$date$format,
                                                                      choices = dateFormatChoices, 
@@ -1072,59 +1096,67 @@ observeEvent({input$widget_type
                     tagList(
                       textInput("widget_alias", lang$adminMode$widgets$daterange$alias, value = rv$widgetConfig$alias),
                       textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$daterange$defaultStartlabel),
+                               tags$div(class = "conditional",
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_start_off!==true",
+                                                                  dateInput("date_start", lang$adminMode$widgets$daterange$defaultStart, 
+                                                                            value = rv$widgetConfig$start)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_start_off", 
+                                                                             lang$adminMode$widgets$daterange$startOff,
+                                                                             !is.null(rv$widgetConfig$start))
+                                                 ))
+                               )),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$daterange$defaultEndlabel),
+                               tags$div(class = "conditional",
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_end_off!==true",
+                                                                  dateInput("date_start", lang$adminMode$widgets$daterange$defaultEnd, 
+                                                                            value = rv$widgetConfig$end)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_end_off", 
+                                                                             lang$adminMode$widgets$daterange$endOff,
+                                                                             is.null(rv$widgetConfig$end))
+                                                 ))
+                               )),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$daterange$minlabel),
+                               tags$div(class = "conditional",
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_min_off!==true",
+                                                                  dateInput("date_min", lang$adminMode$widgets$daterange$min, value = rv$widgetConfig$min)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_min_off", 
+                                                                             lang$adminMode$widgets$daterange$minOff,
+                                                                             is.null(rv$widgetConfig$min))
+                                                 ))
+                               )),
+                      tags$div(class = "shiny-input-container",
+                               tags$label(lang$adminMode$widgets$daterange$maxlabel),
+                               tags$div(class = "conditional",
+                                        tags$div(class = "col-sm-8",
+                                                 conditionalPanel(condition = "input.date_max_off!==true",
+                                                                  dateInput("date_max", lang$adminMode$widgets$daterange$max, 
+                                                                            value = rv$widgetConfig$max)
+                                                 )),
+                                        tags$div(class = "col-sm-4",
+                                                 tags$div(class = "shiny-input-container",
+                                                          checkboxInput_MIRO("date_max_off", 
+                                                                             lang$adminMode$widgets$daterange$maxOff,
+                                                                             is.null(rv$widgetConfig$max))
+                                                 ))
+                               )),
                       tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_start_off!==true",
-                                                         dateInput("date_start", lang$adminMode$widgets$daterange$defaultStart, 
-                                                                   value = rv$widgetConfig$start)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_start_off", 
-                                                                    lang$adminMode$widgets$daterange$startOff,
-                                                                    !is.null(rv$widgetConfig$start))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_end_off!==true",
-                                                         dateInput("date_start", lang$adminMode$widgets$daterange$defaultEnd, 
-                                                                   value = rv$widgetConfig$end)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_end_off", 
-                                                                    lang$adminMode$widgets$daterange$endOff,
-                                                                    is.null(rv$widgetConfig$end))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_min_off!==true",
-                                                         dateInput("date_min", lang$adminMode$widgets$daterange$min, value = rv$widgetConfig$min)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_min_off", 
-                                                                    lang$adminMode$widgets$daterange$minOff,
-                                                                    is.null(rv$widgetConfig$min))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
-                                        conditionalPanel(condition = "input.date_max_off!==true",
-                                                         dateInput("date_max", lang$adminMode$widgets$daterange$max, 
-                                                                   value = rv$widgetConfig$max)
-                                        )),
-                               tags$div(class = "col-sm-4",
-                                        tags$div(class = "shiny-input-container",
-                                                 checkboxInput_MIRO("date_max_off", 
-                                                                    lang$adminMode$widgets$daterange$maxOff,
-                                                                    is.null(rv$widgetConfig$max))
-                                        ))
-                      ),
-                      tags$div(class = "shiny-input-container conditional",
-                               tags$div(class = "col-sm-8",
+                               tags$div(class = "col-sm-8 no-padding-left",
                                         conditionalPanel(condition = "input.date_format_custom_selector!==true",
                                                          selectInput("date_format", lang$adminMode$widgets$daterange$format,
                                                                      choices = dateFormatChoices, 
