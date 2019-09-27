@@ -513,7 +513,8 @@ aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
 if(is.null(errMsg)){
   tryCatch({
     if(useGdx){
-      gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut))
+      gdxio <<- GdxIO$new(gamsSysDir, c(modelInRaw, modelOut), scalarsFileName,
+                          scalarsOutName, scalarEquationsName, scalarEquationsOutName)
     }
   }, error = function(e){
     flog.error(e)
@@ -568,27 +569,6 @@ if(is.null(errMsg)){
       errMsg <<- "Problems reading JSON file: '%s'. Please make sure you have sufficient access permissions."
       flog.error(errMsg)
     }, finally = rm(credConfigTmp))
-  }
-  
-  worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
-                                       tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
-                                       modelDataFiles = paste0(c(names(modelOut), inputDsNames), ".csv"),
-                                       MIROGdxInName = MIROGdxInName,
-                                       clArgs = c(paste0("execMode=", gamsExecMode),
-                                                  paste0("implicitGDXOutput=", MIROGdxOutName)), 
-                                       text_entities = c(paste0(modelName, ".lst"), 
-                                                         if(config$activateModules$miroLogFile) config$miroLogFile),
-                                       currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
-                                       extraClArgs = config$extraClArgs, 
-                                       includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
-                                       modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
-                                       timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = config$activateModules$hcubeMode,
-                                       rememberMeFileName = rememberMeFileName, includeParentDir = config$includeParentDir), 
-                       remote = config$activateModules$remoteExecution,
-                       hcube = config$activateModules$hcubeMode,
-                       db = db)
-  if(length(credConfig)){
-    do.call(worker$setCredentials, credConfig)
   }
 }
 if(!is.null(errMsg)){
@@ -872,6 +852,27 @@ if(!is.null(errMsg)){
     
     # scenId of tabs that are loaded in ui (used for shortcuts) (in correct order)
     sidCompOrder     <- NULL
+    
+    worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
+                                         tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
+                                         modelDataFiles = paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                         MIROGdxInName = MIROGdxInName,
+                                         clArgs = c(paste0("execMode=", gamsExecMode),
+                                                    paste0("implicitGDXOutput=", MIROGdxOutName)), 
+                                         text_entities = c(paste0(modelName, ".lst"), 
+                                                           if(config$activateModules$miroLogFile) config$miroLogFile),
+                                         currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
+                                         extraClArgs = config$extraClArgs, 
+                                         includeParentDir = config$includeParentDir, saveTraceFile = config$saveTraceFile,
+                                         modelGmsName = modelGmsName, gamsSysDir = gamsSysDir, csvDelim = config$csvDelim,
+                                         timeout = 8L, serverOS = getOS(), modelData = modelData, hcubeMode = config$activateModules$hcubeMode,
+                                         rememberMeFileName = rememberMeFileName, includeParentDir = config$includeParentDir), 
+                         remote = config$activateModules$remoteExecution,
+                         hcube = config$activateModules$hcubeMode,
+                         db = db)
+    if(length(credConfig)){
+      do.call(worker$setCredentials, credConfig)
+    }
     
     if(config$activateModules$scenario){
       scenMetaData     <- list()

@@ -853,24 +853,10 @@
       "overwriteSymbolAliases":{
         "label": "指定符号的别名",
         "input": "输入的GAMS符号",
-        "output": "输出的GAMS符号",
-        "symName": "GAMS符号的名称",
-        "symAlias": "GAMS符号的别名"
+        "output": "输出的GAMS符号"
       },
       "overwriteSymbolHeaders":{
-        "label": "指定列标题",
-        "input": "输入的GAMS符号",
-        "output": "输出的GAMS符号",
-        "symName": "GAMS符号的名称",
-        "headerAliases": "标题"
-      },									
-      "inputScalars":{
-        "label": "指定输入标量图表的别名",
-        "placeholder": "输入标量"
-      },
-      "outputScalars":{
-        "label": "指定输出标量图表的别名",
-        "placeholder": "输出标量"
+        "label": "指定列标题"
       },
       "hidden":{
         "label": "不能用标量图表显示的标量而是使用用其他图形表示。"

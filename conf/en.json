@@ -851,26 +851,12 @@
         "output": "Specify the tab order of the output symbols (drag & drop)"
       },
       "overwriteSymbolAliases":{
-        "label": "Specify symbol aliases",
+        "label": "Specify symbol alias",
         "input": "Input symbols",
-        "output": "Output symbols",
-        "symName": "Symbol name",
-        "symAlias": "Symbol alias"
+        "output": "Output symbols"
       },
       "overwriteSymbolHeaders":{
-        "label": "Specify column headers",
-        "input": "Input symbols",
-        "output": "Output symbols",
-        "symName": "Symbol name",
-        "headerAliases": "Headers"
-      },
-      "inputScalars":{
-        "label": "Alias for the input scalars table",
-        "placeholder": "Input scalars"
-      },
-      "outputScalars":{
-        "label": "Alias for the output scalars table",
-        "placeholder": "Output scalars"
+        "label": "Specify column headers"
       },
       "hidden":{
         "label": "Scalars that should not be displayed in the scalars table but can be used in graphs etc."

@@ -13,8 +13,16 @@ inputSymHeaders <- lapply(inputSymMultiDim, function(el){
   return(setNames(names(headers), vapply(headers, "[[", character(1L), "alias", USE.NAMES = FALSE)))
 })
 names(inputSymHeaders) <- unname(inputSymMultiDim)
-allInputSymHeaders <- setNames(unlist(inputSymHeaders, use.names = FALSE), unlist(lapply(inputSymHeaders, names), use.names = FALSE))
+outputSymHeaders <- lapply(modelOut, function(el){
+  vapply(el$headers, "[[", character(1L), "alias", USE.NAMES = FALSE)
+})
+allInputSymHeaders <- setNames(unlist(inputSymHeaders, use.names = FALSE), 
+                               unlist(lapply(inputSymHeaders, names), use.names = FALSE))
 allInputSymHeaders <- allInputSymHeaders[!duplicated(allInputSymHeaders)]
+
+configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
+                                                  simplifyDataFrame = FALSE, 
+                                                  simplifyMatrix = FALSE))
 
 server_admin <- function(input, output, session){
   rv <- reactiveValues(plotly_type = 0L, saveGraphConfirm = 0L, resetRE = 0L,
@@ -22,9 +30,6 @@ server_admin <- function(input, output, session){
                        widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
                        initData = FALSE, refreshContent = 0L, widget_type = 0L, widget_symbol = 0L, 
                        saveWidgetConfirm = 0L, updateLeafletGroups = 0L)
-  configJSON <- suppressWarnings(jsonlite::fromJSON(configJSONFileName, 
-                                                    simplifyDataFrame = FALSE, 
-                                                    simplifyMatrix = FALSE))
   session$sendCustomMessage("gms-setGAMSSymbols", list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                                           inAlias = names(inputSymMultiDim),
                                                                           outSym = names(modelOut),

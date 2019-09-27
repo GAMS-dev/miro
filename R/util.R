@@ -18,11 +18,6 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 isWindows <- function() .Platform$OS.type == 'windows'
-isNonNumeric <- function(el){
-  if(is.numeric(el))
-    return(FALSE)
-  return(TRUE)
-}
 hasContent <- function(x){
   if(inherits(x, "data.frame") && nrow(x) == 0){
     return(FALSE)
@@ -480,10 +475,10 @@ verifyInput <- function(data, headers){
   
   if(!is.null(headers)){
     for(i in seq_along(headers)){
-      if(tolower(headers[[i]]$type) %in% c("scalar", "parameter") && class(data[[i]]) != "numeric"){
+      if(identical(headers[[i]]$type, "numeric") && class(data[[i]]) != "numeric"){
         return(FALSE)
       }
-      if(tolower(headers[[i]]$type) %in% c("acronym", "set") && 
+      if(identical(headers[[i]]$type, "string") && 
          !any(class(data[[i]]) %in% c("factor", "character", "numeric", "POSIXt", "Date"))){
         return(FALSE)
       }
@@ -768,7 +763,7 @@ prepopPivot <- function(symbol){
   setEl     <- vector("character", length(symbol$headers))
   j <- 1L
   for(i in seq_along(symbol$headers)){
-    if(symbol$headers[[i]]$type == "parameter"){
+    if(symbol$headers[[i]]$type == "numeric"){
       pivotConf$vals <- names(symbol$headers)[[i]]
     }else{
       setEl[j] <- names(symbol$headers)[[i]]

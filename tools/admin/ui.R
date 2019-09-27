@@ -284,30 +284,118 @@ body_admin <- dashboardBody({
                 box(title = lang$adminMode$general$ui$title, status="primary", solidHeader = TRUE, width = 12,
                     tags$div(class = "space"),
                     tabsetPanel(
-                      tabPanel("Interface", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                                                     tags$div(class="main-tab",
-                                                              tags$div(id = "interface_wrapper1"),
-                                                              tags$div(class = "space")
-                                                     )
-                      ),
-                      tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                               tags$div(class="main-tab",
-                                        tags$div(id = "interface_wrapper2"),
-                                        tags$div(class = "space")
-                               )
-                      )),
-                      tabPanel("Modules", tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                                                   tags$div(class="main-tab",
-                                                            tags$div(id = "module_wrapper1"),
-                                                            tags$div(class = "space")
-                                                   )      
-                      ),
-                      tags$div(class = "col-sm-6", style = "padding-top: 20px;",
-                               tags$div(class="main-tab",
-                                        tags$div(id = "module_wrapper2"),
-                                        tags$div(class = "space")
-                               )      
-                      ))
+                      tabPanel(lang$adminMode$general$ui$tabInterface, 
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$div(id = "interface_wrapper1"),
+                                                 tags$div(class = "space")
+                                        )
+                               ),
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$div(id = "interface_wrapper2"),
+                                                 tags$div(class = "space")
+                                        )
+                               )),
+                      tabPanel(lang$adminMode$general$ui$tabSymbols, 
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolNaming, class="option-category"),
+                                                 tags$h4(lang$adminMode$general$overwriteSymbolAliases$input, class="option-category"),
+                                                 tags$div(class = "small-space"),
+                                                 lapply(names(modelInRaw), function(name){
+                                                   if(name %in% names(configJSON$overwriteAliases)){
+                                                     symAlias <- configJSON$overwriteAliases[[name]]$newAlias
+                                                   }else{
+                                                     symAlias <- modelInRaw[[name]]$alias
+                                                   }
+                                                   if(name %in% names(configJSON$overwriteHeaderAliases)){
+                                                     symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
+                                                   }else{
+                                                     symHeaders <- names(inputSymHeaders[[name]])
+                                                   }
+                                                   
+                                                   tags$div(
+                                                     column(6L, tags$div(name)),
+                                                     column(6L, 
+                                                            textInput(paste0("general_overwriteSymAlias_", name), 
+                                                                      lang$adminMode$general$overwriteSymbolAliases$label,
+                                                                      symAlias),
+                                                            selectizeInput(paste0("symHeaders_", name), 
+                                                                           lang$adminMode$general$overwriteSymbolHeaders$label,
+                                                                           choices = symHeaders, selected = symHeaders,
+                                                                           multiple = TRUE,  options = list(
+                                                                             'create' = TRUE,
+                                                                             'persist' = FALSE,
+                                                                             'maxItems' = length(symHeaders))))
+                                                   )
+                                                 }),
+                                                 tags$div(class = "space"),
+                                                 tags$h4(lang$adminMode$general$overwriteSymbolAliases$output, class="option-category"),
+                                                 tags$div(class = "small-space"),
+                                                 lapply(names(modelOut), function(name){
+                                                   if(name %in% names(configJSON$overwriteAliases)){
+                                                     symAlias <- configJSON$overwriteAliases[[name]]$newAlias
+                                                   }else{
+                                                     symAlias <- modelOut[[name]]$alias
+                                                   }
+                                                   if(name %in% names(configJSON$overwriteHeaderAliases)){
+                                                     symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
+                                                   }else{
+                                                     symHeaders <- outputSymHeaders[[name]]
+                                                   }
+                                                   
+                                                   tags$div(
+                                                     column(6L, tags$div(name)),
+                                                     column(6L, 
+                                                            textInput(paste0("general_overwriteSymAlias_", name), 
+                                                                      lang$adminMode$general$overwriteSymbolAliases$label,
+                                                                      symAlias),
+                                                            selectizeInput(paste0("general_overwriteSymHeaders_", name), 
+                                                                           lang$adminMode$general$overwriteSymbolHeaders$label,
+                                                                           choices = symHeaders, selected = symHeaders,
+                                                                           multiple = TRUE,  options = list(
+                                                                             'create' = TRUE,
+                                                                             'persist' = FALSE,
+                                                                             'maxItems' = length(symHeaders))))
+                                                   )
+                                                 }),
+                                                 tags$div(class = "space")
+                                        )
+                               ),
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolGrouping, class="option-category"),
+                                                 tags$div(class = "option-wrapper",
+                                                          selectizeInput("general_overwriteSheetOrderInput", lang$adminMode$general$overwriteSheetOrder$input, 
+                                                                         choices = if(length(configJSON$overwriteSheetOrder$input)) 
+                                                                           configJSON$overwriteSheetOrder$input else inputSymMultiDim, 
+                                                                         selected = if(length(configJSON$overwriteSheetOrder$input)) 
+                                                                           configJSON$overwriteSheetOrder$input else inputSymMultiDim, multiple = TRUE, 
+                                                                         options = list(plugins = list("drag_drop", "no_delete"))),
+                                                          selectizeInput("general_overwriteSheetOrderOutput", lang$adminMode$general$overwriteSheetOrder$output, 
+                                                                         choices = if(length(configJSON$overwriteSheetOrder$output)) 
+                                                                           configJSON$overwriteSheetOrder$output else setNames(names(modelOut), modelOutAlias), 
+                                                                         selected = if(length(configJSON$overwriteSheetOrder$output)) 
+                                                                           configJSON$overwriteSheetOrder$output else setNames(names(modelOut), modelOutAlias), 
+                                                                         multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete")))
+                                                 ),
+                                                 tags$div(class = "space")
+                                        )
+                               )),
+                      tabPanel(lang$adminMode$general$ui$tabModules, 
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$div(id = "module_wrapper1"),
+                                                 tags$div(class = "space")
+                                        )      
+                               ),
+                               tags$div(class = "col-sm-6", style = "padding-top: 20px;",
+                                        tags$div(class="main-tab",
+                                                 tags$div(id = "module_wrapper2"),
+                                                 tags$div(class = "space")
+                                        )      
+                               ))
                     )
                 )
               )

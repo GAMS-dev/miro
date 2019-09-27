@@ -195,7 +195,7 @@ changeActiveSymbol <- function(id){
                                               headerAliases), 
                            indexTypes = vapply(headers, '[[', character(1L), 
                                                "type", USE.NAMES = FALSE))
-    scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "parameter"]
+    scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "numeric"]
     session$sendCustomMessage("gms-setIndices", list(indices = names(headers), 
                                                      aliases = headerAliases,
                                                      scalarIndices = unname(scalarIndices),
@@ -211,7 +211,7 @@ changeActiveSymbol <- function(id){
                                              headerAliases), 
                           indexTypes = vapply(headers, '[[', character(1L), 
                                               "type", USE.NAMES = FALSE))
-    scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "parameter"]
+    scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "numeric"]
     session$sendCustomMessage("gms-setIndices", list(indices = names(headers), 
                                                      aliases = headerAliases,
                                                      scalarIndices = unname(scalarIndices),
@@ -1501,7 +1501,7 @@ getPieOptions <- reactive({
   req(rv$initData)
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$labels <<- indices[[1]]
     if(length(scalarIndices)){
@@ -1570,7 +1570,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
 getChartOptions <- reactive({
   req(rv$resetRE > 0L)
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
     rv$graphConfig$graph$showlegend <<- FALSE
@@ -1606,7 +1606,7 @@ getOuttype <- reactive({
 })
 getBarOptions  <- reactive({
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$barmode <<- "group"
     rv$graphConfig$graph$ydata   <<- list()
@@ -1624,7 +1624,7 @@ getBarOptions  <- reactive({
 })
 getScatterOptions  <- reactive({
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$ydata <- list()
     if(length(scalarIndices)){
@@ -1647,7 +1647,7 @@ getScatterOptions  <- reactive({
 })
 getBubbleOptions  <- reactive({
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$ydata <- list()
     if(length(scalarIndices)){
@@ -1670,7 +1670,7 @@ getBubbleOptions  <- reactive({
 })
 getLineOptions  <- reactive({
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$ydata <- list()
     if(length(scalarIndices)){
@@ -1691,7 +1691,7 @@ getValueboxOptions  <- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   #isolate({
   #  rv$graphConfig$options$width <<- 4L
   #  rv$graphConfig$options$color <<- "aqua"
@@ -1742,7 +1742,7 @@ getAnimationSliderOptions  <- reactive({
           colorPickerInput("animation_slider_font_color", lang$adminMode$graphs$animationSliderOptions$fontColor, "#000000"))
 })
 getHistOptions <- reactive({
-  scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- activeSymbol$indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     label <- names(activeSymbol$indices)[match(scalarIndices[1], 
                                                activeSymbol$indices)][1]
@@ -1775,7 +1775,7 @@ getDygraphsOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   if(!length(scalarIndices)){
     showElReplaceTxt(session, "#preview-error", lang$adminMode$graphs$dygraphsOptions$previewError)
     return()
@@ -1857,7 +1857,7 @@ getLeafletOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   leafletGroups$reset()
   isolate({
     rv$graphConfig$graph$markers <<- NULL
@@ -1891,7 +1891,7 @@ getTimevisOptions<- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$showZoom <<- TRUE
     rv$graphConfig$graph$fit <<- TRUE
@@ -1925,7 +1925,7 @@ getPivotOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$pivottable <<- NULL
     rv$graphConfig$pivottable$rows <<- NULL
@@ -1965,7 +1965,7 @@ getCustomOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices       <- activeSymbol$indices
-  scalarIndices <- indices[activeSymbol$indexTypes == "parameter"]
+  scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$packages <- NULL
     rv$graphConfig$name <- NULL
@@ -1984,7 +1984,7 @@ getFilterOptions <- reactive({
   rv$initData
   rv$refreshContent
   indices    <- activeSymbol$indices
-  setIndices <- indices[activeSymbol$indexTypes == "set"]
+  setIndices <- indices[activeSymbol$indexTypes == "string"]
   isolate({
     rv$graphConfig$graph$filter <- NULL
   })

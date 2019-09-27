@@ -141,7 +141,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                gdx = {
                  tryCatch({
                    pivotHeaders <- character(0L)
-                   if(identical(attr(templates[[i]], "type"), "parameter")){
+                   if(identical(modelIn[[i]][["symtype"]], "parameter")){
                      noNonNumCols <- nchar(gsub("d", "", metaData[[i]]$colTypes))
                      if(nchar(metaData[[i]]$colTypes) - noNonNumCols > 1L){
                        # symbol shall be pivoted

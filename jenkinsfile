@@ -266,8 +266,8 @@ pipeline {
                     post {
                         failure {
                             sh '''
-                                hdiutil detach -verbose $WORKSPACE/studio
-                                hdiutil detach -verbose $WORKSPACE/volume
+                                hdiutil detach -verbose -force $WORKSPACE/studio || echo "Detaching studio failed"
+                                hdiutil detach -verbose -force $WORKSPACE/volume || echo "Detaching volume failed"
                             '''
                         }
                     }
