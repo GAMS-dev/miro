@@ -3608,27 +3608,12 @@
                   "minLength":1,
                   "required":true
                 },
-                "li1a":{ 
+                "li1":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
                 },
-                "li1b":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "li1c":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "li2a":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "li2b":{ 
+                "li2":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -3654,21 +3639,6 @@
                   "required":true
                 },
                 "description3":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "description4":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "description5":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "description6":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true

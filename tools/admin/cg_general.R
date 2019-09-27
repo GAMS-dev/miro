@@ -197,6 +197,20 @@ insertUI(selector = "#module_wrapper2",
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_remote_execution", value = if(length(configJSON$activateModules$remoteExecution)) configJSON$activateModules$remoteExecution else config$activateModules$remoteExecution, label = NULL)
              )),
+           tags$label(class = "cb-label", "for" = "general_hcubeSwitch", tags$div(lang$adminMode$general$hcubeSwitch$label, tags$a("", class="info-wrapper", 
+                                                                                                                                   href="https://gams.com/miro/hypercube.html", 
+                                                                                                                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
+           tags$div(
+             tags$label(class = "checkbox-material", 
+                        checkboxInput("general_hcubeSwitch", value = if(length(configJSON$activateModules$hcubeSwitch)) configJSON$activateModules$hcubeSwitch else config$activateModules$hcubeSwitch, label = NULL)
+             )),
+           tags$div(title = lang$adminMode$general$saveTrace$title,
+                    tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_save_trace", value = if(length(configJSON$saveTraceFile)) configJSON$saveTraceFile else config$saveTraceFile, label = NULL)
+                      ))
+           ),
            tags$div(title = lang$adminMode$general$saveTrace$title,
                     tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
                     tags$div(
@@ -371,6 +385,9 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
 })
 observeEvent(input$general_remote_execution, {
   rv$generalConfig$activateModules$remoteExecution <<- input$general_remote_execution
+})
+observeEvent(input$general_hcubeSwitch, {
+  rv$generalConfig$activateModules$hcubeSwitch <<- input$general_hcubeSwitch
 })
 observeEvent(input$general_save_trace, {
   rv$generalConfig$saveTraceFile <<- input$general_save_trace
