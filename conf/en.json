@@ -61,7 +61,7 @@
       "btCollapsedTabs": "More",
       "noDataDep":"Please first import all data this element depends on.",
       "widgetTabTitle": "Input widgets",
-      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data any more."
+      "dirtyFlag": "The scenario contains output data that may not correspond to the modified input data anymore."
     },
     "gams":{  
       "boxModelStatus":{  
@@ -330,7 +330,7 @@
       "cbSelectManually":"Manually choose datasets",
       "overwriteWarning":"Already imported datasets might be lost if you did not save them!",
       "cancelButton":"Cancel",
-      "okButton":"Load"
+      "okButton":"Load"                        
     },
     "dialogImportHC":{  
       "title":"Import data",
@@ -604,7 +604,7 @@
       "renderOutput": "Rendering output data"
     },
     "exportScen":{
-      "title": "Eporting scenario",
+      "title": "Exporting scenario",
       "exportDs": "Exporting dataset %s of %s"
     },
     "loadScenDb":{  
@@ -793,24 +793,31 @@
       "custom":{
         "skeleton": "skeleton:",
         "steps": "Steps:",
-        "li1a": "Create a directory ",
-        "li1b": " in your model directory with a file ",
-        "li1c": " in it.",
-        "li2a": "Copy the above code and paste it into the ",
-        "li2b": " file.",
+        "li1": "Create a directory custom_renderer in your model directory with a file %s_custom.R in it.",
+        "li2": "Copy the above code and paste it into the %s_custom.R file.",
         "li3a": "Write your own custom renderer! For a detailed description of how to write such a custom renderer, see ",
         "li3b": "here",
-        "description1": "The next time the application is started after a click on ",
-        "description2": "save",
-        "description3": " MIRO looks for a custom renderer function in the file ",
-        "description4": " . If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
-        "description5": "Note:",
-        "description6": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
+        "description1": "The next time the application is started after a click on save MIRO looks for a custom renderer function in the file %s_custom.R. If this is not found, the application does not start! Make sure that you have included the custom renderer function correctly. It is always a good idea to first develop a custom renderer isolated from MIRO and, as soon as you are satisfied with the result, to integrate it into the MIRO application.",
+        "description2": "Note:",
+        "description3": "If your application doesn't start because of the reason mentioned above, you can always delete the configured renderer here."
       }
     },
     "general":{
       "ui":{
-        "title":"General settings"
+        "title":"General settings",
+        "tabInterface": "Interface",
+        "tabSymbols": "Symbol configuration",
+        "tabModules": "Modules",
+        "headerGeneral": "General",
+        "headerLogo": "Logo",
+        "headerScalars": "Scalars",
+        "headerTabGrouping": "Tab grouping",
+        "headerInputGroups": "Input groups",
+        "headerOutputGroups": "Output groups",
+        "headerSymbolNaming": "Naming",
+        "headerSymbolGrouping": "Grouping",
+        "headerScenData": "Scenario & data",
+        "headerComputation": "Computation"
       },
       "modalDialog":{
         "title": "Error copying image", 
@@ -838,6 +845,24 @@
       "groups":{
         "input": "Divide input symbols into groups",
         "output": "Divide output symbols into groups"
+      },
+      "overwriteSheetOrder":{
+        "input": "Specify the tab order of the input symbols (drag & drop)",
+        "output": "Specify the tab order of the output symbols (drag & drop)"
+      },
+      "overwriteSymbolAliases":{
+        "label": "Specify symbol aliases",
+        "input": "Input symbols",
+        "output": "Output symbols",
+        "symName": "Symbol name",
+        "symAlias": "Symbol alias"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Specify column headers",
+        "input": "Input symbols",
+        "output": "Output symbols",
+        "symName": "Symbol name",
+        "headerAliases": "Headers"
       },
       "inputScalars":{
         "label": "Alias for the input scalars table",
@@ -1093,7 +1118,7 @@
         "choiceDep":{
           "label": "Select symbol and header to depend upon",
           "depChoices": ["All"],
-          "type": "Should the symbol table(s) be filtered depending on the selection in the dropdown menu?",
+          "type": "Should this dropdown menu be used for filtering other tables?",
           "selector": "Static choices?"
         },
         "default": "Default value",
@@ -1499,7 +1524,7 @@
           "chartYdata": "What should be plotted on the y axis?",
           "chartYlabel": "What label should be used?",
           "symbol": "Select marker symbol",
-          "symbolChoices": ["circle", "circle-open", "circle-dot", "circle-open-dot", "square", "square-open","square-dot", "square-open-dot", "diamond","diamond-open", "diamond-dot", "diamond-open-dot","cross", "cross-open", "cross-dot", "cross-open-dot","x", "x-open", "x-dot", "x-open-dot", "triangle-up","triangle-up-open", "triangle-up-dot", "triangle-up-open-dot","triangle-down", "triangle-down-open", "triangle-down-dot","triangle-down-open-dot", "triangle-left", "triangle-left-open", "triangle-left-dot", "triangle-left-open-dot", "triangle-right","triangle-right-open", "triangle-right-dot", "triangle-right-open-dot","triangle-ne", "triangle-ne-open", "triangle-ne-dot", "triangle-ne-open-dot","triangle-se", "triangle-se-open", "triangle-se-dot", "triangle-se-open-dot","triangle-sw", "triangle-sw-open", "triangle-sw-dot", "triangle-sw-open-dot","triangle-nw", "triangle-nw-open", "triangle-nw-dot", "triangle-nw-open-dot","pentagon", "pentagon-open", "pentagon-dot", "pentagon-open-dot", "hexagon","hexagon-open", "hexagon-dot", "hexagon-open-dot", "hexagon2", "hexagon2-open", "hexagon2-dot", "hexagon2-open-dot", "octagon", "octagon-open", "octagon-dot","octagon-open-dot", "star", "star-open", "star-dot", "star-open-dot", "hexagram","hexagram-open", "hexagram-dot", "hexagram-open-dot", "star-triangle-up","star-triangle-up-open", "star-triangle-up-dot", "star-triangle-up-open-dot","star-triangle-down", "star-triangle-down-open", "star-triangle-down-dot", "star-triangle-down-open-dot","star-square", "star-square-open", "star-square-dot", "star-square-open-dot", "star-diamond", "star-diamond-open", "star-diamond-dot", "star-diamond-open-dot", "diamond-tall","diamond-tall-open", "diamond-tall-dot", "diamond-tall-open-dot", "diamond-wide","diamond-wide-open", "diamond-wide-dot", "diamond-wide-open-dot", "hourglass","hourglass-open", "bowtie", "bowtie-open", "circle-cross", "circle-cross-open", "circle-x", "circle-x-open", "square-cross", "square-cross-open", "square-x", "square-x-open","diamond-cross", "diamond-cross-open", "diamond-x", "diamond-x-open", "cross-thin","cross-thin-open", "x-thin", "x-thin-open", "asterisk", "asterisk-open", "hash", "hash-open","hash-dot", "hash-open-dot", "y-up", "y-up-open", "y-down", "y-down-open", "y-left", "y-left-open", "y-right", "y-right-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open", "line-ne", "line-ne-open", "line-nw", "line-nw-open"],
+          "symbolChoices": ["circle", "circle-open", "square", "square-open","diamond","diamond-open", "cross", "cross-open", "x", "x-open", "triangle-up","triangle-up-open", "triangle-down", "triangle-down-open", "pentagon", "pentagon-open", "hexagon","hexagon-open", "octagon", "octagon-open", "star", "star-open", "hexagram","hexagram-open", "asterisk", "asterisk-open", "hash", "hash-open", "line-ew", "line-ew-open", "line-ns", "line-ns-open"],
           "color": "Select marker color",
           "size": "Select marker size",
           "lineWidth": "Select marker outline width",

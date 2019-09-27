@@ -793,24 +793,31 @@
       "custom":{
         "skeleton": "Grundgerüst:",
         "steps": "Schritte:",
-        "li1a": "Erstelle ein Verzeichnis ",
-        "li1b": " in deinem Modellordner mit der Datei ",
-        "li1c": " darin.",
-        "li2a": "Kopiere den obenstehenden Code in die ",
-        "li2b": " Datei.",
+        "li1": "Erstellen Sie ein Verzeichnis custom_renderer in Ihrem Modellverzeichnis mit einer Datei %s_custom.R darin.",
+        "li2": "Kopiere den obenstehenden Code und füge ihn in die Datei %s_custom.R ein.",
         "li3a": "Schreibe deinen eigenen Renderer! Für eine detaillierte Beschreibung, wie man einen solchen benutzerdefinierten Renderer schreibt, siehe ",
         "li3b": "hier",
-        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf ",
-        "description2": "speichern",
-        "description3": " gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei ",
-        "description4": " . Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
-        "description5": "Beachte:",
-        "description6": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
+        "description1": "Das nächste Mal, wenn die Applikation nach einem Klick auf speichern gestartet wird, sucht MIRO nach einer benutzerdefinierten Rendererfunktion in der Datei %s_custom.R. Wird diese nicht gefunden, startet die Anwendung nicht! Vergewissere dich also immer, dass du die benutzerdefinierte Rendererfunktion korrekt eingebunden hast. Es ist immer eine gute Idee, zunächst einen von MIRO isolierten Renderer zu entwickeln und ihn, sobald du mit dem Ergebnis zufrieden bist, in die MIRO-Anwendung zu integrieren.",
+        "description2": "Beachte:",
+        "description3": "Wenn deine Anwendung aus dem oben genannten Grund nicht startet, kannst du den konfigurierten Renderer hier jederzeit löschen."
       }
     },
     "general":{
       "ui":{
-        "title":"Allgemeine Einstellungen"
+        "title":"Allgemeine Einstellungen",
+        "tabInterface": "Interface",
+        "tabSymbols": "Symbolkonfiguration",
+        "tabModules": "Module",
+        "headerGeneral": "Allgemeines",
+        "headerLogo": "Logo",
+        "headerScalars": "Skalare",
+        "headerTabGrouping": "Tabgruppierungen",
+        "headerInputGroups": "Eingabegruppen",
+        "headerOutputGroups": "Ausgabegruppen",
+        "headerSymbolNaming": "Namensgebung",
+        "headerSymbolGrouping": "Gruppierungen",
+        "headerScenData": "Szenarien & Daten",
+        "headerComputation": "Berechnungen"
       },
       "modalDialog":{
         "title": "Fehler beim Kopieren des Bildes", 
@@ -838,6 +845,24 @@
       "groups":{
         "input": "Eingabesymbole in Gruppen einteilen",
         "output": "Ausgabesymbole in Gruppen einteilen"
+      },
+      "overwriteSheetOrder":{
+        "input": "Legen Sie die Tab-Reihenfolge der Eingabesymbole fest (Drag & Drop).",
+        "output": "Legen Sie die Tab-Reihenfolge der Ausgabesymbole fest (Drag & Drop)."
+      },
+      "overwriteSymbolAliases":{
+        "label": "Symbol-Aliase festlegen",
+        "input": "Eingabesymbole",
+        "output": "Ausgabesymbole",
+        "symName": "Symbolname",
+        "symAlias": "Symbol-Alias"
+      },
+      "overwriteSymbolHeaders":{
+        "label": "Zu verwendende Spaltenüberschrift",
+        "input": "Eingabesymbole",
+        "output": "Ausgabesymbole",
+        "symName": "Symbolname",
+        "headerAliases": "Überschriften"
       },
       "inputScalars":{
         "label": "Alias für die Tabelle der Inputskalare",
@@ -908,8 +933,8 @@
         "label": "Remote Job-Ausführung (Nur für GAMS MIRO Server verfügbar)"
       },
       "hcubeSwitch":{
-        "label": "Soll der Hypercube-Modus aus dem Basismodus heraus gestartet werden können?""
-      },,
+        "label": "Soll der Hypercube-Modus aus dem Basismodus heraus gestartet werden können?"
+      },
       "saveTrace":{
         "title": "Für die Leistungsanalyse mit dem integrierten Analysetool PAVER muss diese Option aktiviert sein.",
         "label": "Trace-Datei bei jedem GAMS-Lauf speichern (Hypercube-Modus)"
@@ -1093,7 +1118,7 @@
         "choiceDep":{
           "label": "Wählen Sie Symbol und Domäne aus, von denen die Auswahlmöglichkeiten abgeleitet werden sollen",
           "depChoices": ["Alle"],
-          "type": "Soll die Symboltabelle/Symboltabellen je nach Auswahl im Dropdown-Menü gefiltert werden?",
+          "type": "Soll dieses Dropdown-Menü zum Filtern anderer Tabellen verwendet werden?",
           "selector": "Statische Auswahlmöglichkeiten?"
         },
         "default": "Standardwert",
@@ -1499,7 +1524,7 @@
           "chartYdata": "Was soll auf der y-Achse dargestellt werden?",
           "chartYlabel": "Welches Label soll verwendet werden?",
           "symbol": "Markersymbol auswählen",
-          "symbolChoices": ["Kreis", "Kreis offen", "Kreispunkt", "Kreispunkt offen", "Quadrat", "Quadrat offen", "Quadratpunkt", "Quadratpunkt offen", "Diamant","Diamant offen", "Diamantpunkt", "Diamantpunkt offen","Kreuz", "Kreuz offen", "Kreuzpunkt", "Kreuzpunkt offen","x", "x offen", "xpunkt", "xpunkt offen", "Dreieck-oben","Dreieck-oben offen", "Dreieck-oben-Punkt", "Dreieck-oben-offen-Punkt","Dreieck-unten", "Dreieck-unten offen", "Dreieck-unten-Punkt","Dreieck-unten-offen-Punkt", "Dreieck-links", "Dreieck-links offen", "Dreieck-links-Punkt", "Dreieck-links-offen-Punkt", "Dreieck-rechts","Dreieck-rechts offen", "Dreieck-rechts-Punkt", "Dreieck-rechts-offen-Punkt","Dreieck-ne", "Dreieck-ne offen", "Dreieck-ne-Punkt", "Dreieck-ne-offen-Punkt","Dreieck-se", "Dreieck-se offen", "Dreieck-se-Punkt", "Dreieck-se-offen-Punkt","Dreieck-sw", "Dreieck-sw offen", "Dreieck-sw-Punkt", "Dreieck-sw-offen-Punkt","Dreieck-nw", "Dreieck-nw offen", "Dreieck-nw-Punkt", "Dreieck-nw-offen-Punkt","Pentagon", "Pentagon offen", "Pentagon-Punkt", "Pentagon-offen-Punkt", "Hexagon","Hexagon offen", "Hexagon-Punkt", "Hexagon-offen-Punkt", "Hexagon2", "Hexagon2 offen", "Hexagon2-Punkt", "Hexagon2-offen-Punkt", "Octagon", "Octagon offen", "Octagon-Punkt","Octagon-offen-Punkt", "Stern", "Stern offen", "Stern-Punkt", "Stern-offen-Punkt", "Hexagram","Hexagram offen", "Hexagram-Punkt", "Hexagram-offen-Punkt", "Stern-Dreieck-oben","Stern-Dreieck-oben offen", "Stern-Dreieck-oben-Punkt", "Stern-Dreieck-oben-offen-Punkt","Stern-Dreieck-unten", "Stern-Dreieck-unten offen", "Stern-Dreieck-unten-Punkt", "Stern-Dreieck-unten-offen-Punkt","Stern-Quadrat", "Stern-Quadrat offen", "Stern-Quadrat-Punkt", "Stern-Quadrat-offen-Punkt", "Stern-Diamant", "Stern-Diamant offen", "Stern-Diamant-Punkt", "Stern-Diamant-offen-Punkt", "Diamant-tall","Diamant-tall offen", "Diamant-tall-Punkt", "Diamant-tall-offen-Punkt", "Diamant-wide","Diamant-wide offen", "Diamant-wide-Punkt", "Diamant-wide-offen-Punkt", "hourglass","hourglass offen", "bowtie", "bowtie offen", "circle-cross", "circle-cross offen", "circle-x", "circle-x offen", "Quadrat-cross", "Quadrat-cross offen", "Quadrat-x", "Quadrat-x offen","Diamant-cross", "Diamant-cross offen", "Diamant-x", "Diamant-x offen", "cross-thin","cross-thin offen", "x-thin", "x-thin offen", "asterisk", "asterisk offen", "hash", "hash offen","hash-Punkt", "hash-offen-Punkt", "y-oben", "y-oben offen", "y-unten", "y-unten offen", "y-left", "y-left offen", "y-rechts", "y-rechts offen", "line-ew", "line-ew offen", "line-ns", "line-ns offen", "line-ne", "line-ne offen", "line-nw", "line-nw offen"],
+          "symbolChoices": ["Kreis", "Kreis ungefüllt", "Quadrat", "Quadrat ungefüllt", "Diamant","Diamant ungefüllt", "Kreuz", "Kreuz ungefüllt","x", "x ungefüllt", "Dreieck-oben","Dreieck-oben ungefüllt","Dreieck-unten", "Dreieck-unten ungefüllt","Pentagon", "Pentagon ungefüllt", "Hexagon","Hexagon ungefüllt", "Octagon", "Octagon ungefüllt", "Stern", "Stern ungefüllt", "Hexagram","Hexagram ungefüllt", "asterisk", "asterisk ungefüllt", "hash", "hash ungefüllt", "line horizontal", "line horizontal ungefüllt", "line vertikal", "line vertikal ungefüllt"],
           "color": "Markerfarbe auswählen",
           "size": "Markergröße auswählen",
           "lineWidth": "Markerumriss-Breite wählen",
