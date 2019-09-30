@@ -831,6 +831,9 @@
         "label": "选择颜色主题",
         "choices": ["使用系统或浏览器的设置", "浅色模式", "深色模式"]
       },
+      "pageTitle":{
+        "label": "Application title (visible in browser tab)"
+      },
       "scen":{
         "label": "指定默认的场景比较模式。",
         "choices": ["分屏视图 （适合比较两个场景）", "标签视图 （适合多于两个的场景之间的比较）"]
@@ -874,6 +877,7 @@
         "label": "指定输出值的精确小数位数。"
       },
       "logo":{
+        "header": "预览标志:",
         "label": "上传该MIRO app的自定义标志： png文件或者jpg文件（最佳格式：4,6：1）"
       }, 
       "actScen":{

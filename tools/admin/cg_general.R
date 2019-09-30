@@ -33,6 +33,10 @@ insertUI(selector = "#interface_wrapper1",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
            tags$div(
+             textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
+                       value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
+             )),
+           tags$div(
              radioButtons("general_theme", lang$adminMode$general$theme$label, 
                           choices = langSpecific$theme,
                           selected = if(length(configJSON$theme)) configJSON$theme else config$theme
@@ -81,7 +85,7 @@ insertUI(selector = "#interface_wrapper1",
                               width = "100%",
                               multiple = FALSE,
                               accept = c(".png", ".PNG", ".jpg", ".JPG"))),
-           tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", "Logo preview:",
+           tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
                       tags$div(class="logo-wrapper",
                                imageOutput("general_logo_preview", height = "50px", width = "230px")
                       ))
@@ -191,7 +195,7 @@ insertUI(selector = "#module_wrapper2",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
            tags$label(class = "cb-label", "for" = "general_remote_execution", tags$div(lang$adminMode$general$remoteExecution$label, tags$a("", class="info-wrapper", 
-                                                                                                                                            href="https://gams.com/miro/", 
+                                                                                                                                            href="https://gams.com/miro/server.html", 
                                                                                                                                             tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))),
            tags$div(
              tags$label(class = "checkbox-material", 
@@ -250,6 +254,9 @@ output$general_logo_preview <- renderImage({
 
 observeEvent(input$general_language, {
   rv$generalConfig$language <<- input$general_language
+})
+observeEvent(input$general_pageTitle, {
+  rv$generalConfig$pageTitle <<- input$general_pageTitle
 })
 observeEvent(input$general_theme, {
   rv$generalConfig$theme <<- input$general_theme

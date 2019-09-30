@@ -3792,6 +3792,18 @@
                 }
               }
             },
+            "pageTitle":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "scen":{          
               "type":"object",
               "additionalProperties":false,
@@ -3977,6 +3989,11 @@
               "additionalProperties":false,
               "required":true,
               "properties":{
+                "header":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "label":{ 
                   "type":"string",
                   "minLength":1,

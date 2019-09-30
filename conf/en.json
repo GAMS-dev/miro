@@ -831,6 +831,9 @@
         "label": "Color theme to use",
         "choices": ["Use system/browser settings", "Light mode", "Dark mode"]
       },
+      "pageTitle":{
+        "label": "Application title (visible in browser tab)"
+      },
       "scen":{
         "label": "Default scenario comparison mode",
         "choices": ["Split screen (suited for 2 scenarios to compare)", "Tab view (suited for > 2 scenarios to compare)"]
@@ -874,6 +877,7 @@
         "label": "Number of decimal places used for rounding output values."
       },
       "logo":{
+        "header": "Logo preview:",
         "label": "Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)"
       }, 
       "actScen":{
