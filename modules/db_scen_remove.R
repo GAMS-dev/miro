@@ -73,6 +73,12 @@ closeScenario <- function(){
                  updateTextInput(session, "text_" %+% i, value = modelIn[[i]]$textinput$value)
                  noCheck[i] <<- TRUE
                }
+             },
+             numericinput = {
+               if(length(modelIn[[i]]$numericinput$value)){
+                 updateNumericInput(session, "numeric_" %+% i, value = modelIn[[i]]$numericinput$value)
+                 noCheck[i] <<- TRUE
+               }
              }
       )
       # make sure data is cleaned even when modified manually 

@@ -803,7 +803,9 @@ if(is.null(errMsg)){
                  }
                },
                date =,
-               daterange = {
+               daterange = ,
+               textinput = ,
+               numericinput = {
                  flog.warn(sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
                                    Thus, it will not be transformed and stays static.", 
                                    names(modelIn)[i]))
@@ -924,7 +926,12 @@ if(is.null(errMsg)){
              if(length(choices$fw)){
                modelInWithDep[[name]]        <<- modelIn[i]
              }
-             if(isTRUE(modelIn[[i]]$dropdown$multiple) || identical(modelIn[[i]]$symtype, "set")){
+             if(identical(modelIn[[i]]$symtype, "set")){
+               return(name)
+             }else if(isTRUE(modelIn[[i]]$dropdown$multiple)){
+               modelIn[[i]]$headers <<- list(list(type = "string", 
+                                                  alias = modelIn[[i]]$alias))
+               names(modelIn[[i]]$headers) <<- names(modelIn)[[i]]
                return(name)
              }else{
                return(NULL)
@@ -988,6 +995,13 @@ if(is.null(errMsg)){
            textinput = {
              if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
                errMsg <<- paste(errMsg, paste0("The textInput: '", modelInAlias[i], 
+                                               "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
+             }
+             return(NULL)
+           },
+           numericinput = {
+             if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName)){
+               errMsg <<- paste(errMsg, paste0("The numericInput: '", modelInAlias[i], 
                                                "' uses a reserved name as its identifier. Please choose a different name."), sep = "\n")
              }
              return(NULL)
@@ -1127,7 +1141,6 @@ if(is.null(errMsg)){
   lapply(modelInTabularData, function(el){
     i <- match(el, names(modelIn))
     if(!is.null(modelIn[[i]]$headers)){
-      headers   <- vector(mode = "numeric", length = length(modelIn[[i]]$headers))
       headers   <- lapply(modelIn[[i]]$headers, function(header){
         if(identical(header$type, "numeric")){
           return(numeric())

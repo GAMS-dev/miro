@@ -155,9 +155,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
   
   getHcubeParPrefix <- function(id){
     if(names(modelIn)[id] %in% GMSOpt){
-      return(names(modelIn)[id])
+      return(substring(names(modelIn)[id],
+                       nchar(prefixGMSOpt) + 1L))
     }else if(names(modelIn)[id] %in% DDPar){
-      return(paste0("--", names(modelIn)[id]))
+      return(paste0("--", substring(names(modelIn)[id],
+                                    nchar(prefixDDPar) + 1L)))
     }else{
       return(paste0("--HCUBE_SCALAR_", names(modelIn)[id]))
     }
@@ -213,6 +215,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              },
              textinput = {
                return(1L)
+             },
+             numericinput = {
+               return(1L)
              })
     }, integer(1L), USE.NAMES = FALSE)
     if(any(numberScenPerElement == -1L)){
@@ -233,7 +238,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
-    hcubeData <<- HcubeDataInstance$new(config$activateModules$remoteExecution)
+    hcubeData <<- HcubeDataInstance$new()
     staticData <<- DataInstance$new(fileExchange = config$fileExchange,
                                     gdxio = gdxio, csvDelim = config$csvDelim)
     modelInSorted <- sort(names(modelIn))
@@ -298,6 +303,9 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              checkbox = {
                return(input[["cb_" %+% i]])
              },
+             numericinput = {
+               return(input[["numeric_" %+% i]])
+             },
              textinput = {
                val <- input[["text_" %+% i]]
                if(!length(val) || !nchar(val))
@@ -338,7 +346,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                                            serialize = FALSE, USE.NAMES = FALSE))
     
     updateProgress(incAmount = 3/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
-    gmsString <- paste0(scenIds, ": gams", modelName, ".gms ", gmsString)
+    gmsString <- paste0(scenIds, ": gams ", modelName, ".gms ", gmsString)
     
     return(list(ids = scenIds, gmspar = gmsString, attachmentFilePaths = attachmentFilePaths))
   })
@@ -391,7 +399,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       }
       hideEl(session, "#jobSubmissionWrapper")
       showEl(session, "#jobSubmissionLoad")
-      worker$runHcube(staticData, if(config$activateModules$remoteExecution) hcubeData else scenGmsPar, 
+      worker$runHcube(staticData, hcubeData, 
                       sid, tags = isolate(input$newHcubeTags), 
                       attachmentFilePaths = attachmentFilePaths)
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
@@ -763,7 +771,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          fileSize <- file.size(file.path(workDir, modelName %+% ".lst")) 
+          fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst")) 
           if(is.na(fileSize))
             stop("Could not access listing file", call. = FALSE)
           if(fileSize > maxSizeToRead){
@@ -810,7 +818,7 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
           valIdHead <- match(names(miroLogAnnotations)[[1L]], names(modelIn))
           if(length(valIdHead) && !is.na(valIdHead)){
             valTabId <- 0L
-            inputTabId <- tabSheetMap$input[[inputTabId]]
+            inputTabId <- tabSheetMap$input[[valIdHead]]
             updateTabsetPanel(session, "inputTabset", paste0("inputTabset_", inputTabId[1]))
             if(length(inputTabId) > 1L){
               updateTabsetPanel(session, paste0("inputTabset", inputTabId[1]), 

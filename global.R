@@ -12,12 +12,12 @@ spModelModeEnvVar <- "GMSMODE"
 # keywords in JSON input data that define that the data is NOT to be imported by an external source
 keywordsNoImport <- c("noImport")
 # keywords that define data does not HAVE TO BE imported in order to run the model
-keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput",
+keywordsNoMustImport <- c("slider", "dropdown", "date", "daterange", "checkbox", "textinput", "numericinput",
                           "noImport")
 # list of return value/keyword pairs that define input data type (example: "hot" = "columns")
 keywordsType <- list("custom" = "rendererName", "dt" = "dtHeaders", "hot" = "headers", "slider" = "slider", 
                      "dropdown" = "dropdown", "dropdowne" = "dropdowne", "daterange" = "daterange", 
-                     "date" = "date", "checkbox" = "checkbox", "textinput" = "textinput")
+                     "date" = "date", "checkbox" = "checkbox", "textinput" = "textinput", "numericinput" = "numericinput")
 listOfOperators <- list("count" = "card", "max" = "max", "min" = "min", 
                         "mean" = "mean", "median" = "median", "var" = "var", "sd" = "sd")
 # define identifier names for user id and scenario id 

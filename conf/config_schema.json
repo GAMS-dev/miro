@@ -742,6 +742,52 @@
                      "description":"Style of widget",
                      "type":"string",
                      "enum":[
+                       "numericinput"
+                     ]
+                   },
+                   "alias":{  
+                     "type":"string",
+                     "minLength":1
+                   },
+                   "noImport":{  
+                    "description":"Boolean that specifies whether data should not be imported from external source",
+                    "type":"boolean"
+                   },
+                   "label":{  
+                     "description":"display label for the numericinput",
+                     "type":["string","null"],
+                     "minLength":1
+                   },
+                   "value":{  
+                     "description":"default value",
+                     "type":["number","null"]
+                   },
+                   "min":{  
+                     "description":"minimum value",
+                     "type":["number","null"]
+                   },
+                   "max":{  
+                     "description":"maximum value",
+                     "type":["number","null"],
+                     "minLength":1
+                   },
+                   "sign":{  
+                     "description":"currency sign",
+                     "type":["string","null"],
+                     "minLength":1
+                   }
+                 },
+                 "required":[  
+                    "widgetType"
+                 ],
+                 "additionalProperties": false
+               },
+               {
+                 "properties":{
+                   "widgetType":{
+                     "description":"Style of widget",
+                     "type":"string",
+                     "enum":[
                        "table"
                      ]
                    },

@@ -36,7 +36,7 @@ for(j in seq_along(modelIn)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]] %+% "_lo", type = "string", alias = modelInAlias[[i]] %+% " (lower)")
     scalarKeyTypeList[[scalarsTabNameIn]][[k + 1L]] <- list(key = names(modelIn)[[i]] %+% "_up", type = "string", alias = modelInAlias[[i]] %+% " (upper)")
     k <- k + 2L
-  }else if(modelIn[[i]]$type %in% c("slider", "checkbox") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
+  }else if(modelIn[[i]]$type %in% c("slider", "checkbox", "numericinput") || identical(modelIn[[i]]$dropdown$checkbox, TRUE)){
     scalarKeyTypeList[[scalarsTabNameIn]][[k]] <- list(key = names(modelIn)[[i]], type = "number", alias = modelInAlias[[i]])
     k <- k + 1L
   }else if(modelIn[[i]]$type %in% c("dropdown", "dropdowne", "date", "textinput") && 

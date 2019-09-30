@@ -283,6 +283,16 @@ tabItemList <- list(
                                                    placeholder = modelIn[[i]]$textinput$placeholder)
                                        )
                                      },
+                                     numericinput = {
+                                       tagList(
+                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                                         autoNumericInput(paste0("numeric_", i), label = modelIn[[i]]$numericinput$label,
+                                                          value = modelIn[[i]]$numericinput$value,
+                                                          min = modelIn[[i]]$numericinput$min,
+                                                          max = modelIn[[i]]$numericinput$max,
+                                                          sign = modelIn[[i]]$numericinput$sign)
+                                       )
+                                     },
                                      {
                                        tagList(
                                          tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
@@ -646,6 +656,7 @@ body <- dashboardBody({
       )
     },
     tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
+    tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
     tags$script(src = "miro.js", type = "application/javascript"),
     # css sheets that depend on data from config JSON file
     # Logo ratio should be 4,6 (width/height)

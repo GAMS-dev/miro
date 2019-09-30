@@ -170,6 +170,27 @@ lapply(seq_along(modelIn), function(id){
              }
            })
          },
+         numericinput = {
+           getSelected[[id]] <<- reactive({
+             if(is.null(rv[["in_" %+% id]])){
+               return(NULL)
+             }
+             if(!length(modelInputData[[id]][[1]])){
+               return(isolate(input[["numeric_" %+% id]]))
+             }else{
+               value <- modelInputData[[id]]
+               modelInputData[[id]] <<- list(NULL)
+               return(value)
+             }
+           })
+           observe({
+             value <- getSelected[[id]]()
+             if(!is.null(value) && !identical(value, isolate(input[["numeric_" %+% id]]))){
+               noCheck[id] <<- TRUE
+               updateNumericInput(session, "numeric_" %+% id, value = value)
+             }
+           })
+         },
          date = {
            getSelected[[id]] <<- reactive({
              if(is.null(rv[["in_" %+% id]])){

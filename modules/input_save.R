@@ -126,6 +126,21 @@ lapply(seq_along(modelIn), function(i){
            description <- modelInAlias[i]
            addScalarVal(scalar, description, value)
          },
+         numericinput = {
+           if(!is.null(isolate(input[[paste0("numeric_", i)]]))){
+             value <- isolate(input[[paste0("numeric_", i)]])
+           }else if(!is.null(modelIn[[i]]$numericinput$value)){
+             value <- modelIn[[i]]$numericinput$value
+           }else{
+             flog.error("Dataset: '%s' could not be loaded.", modelInAlias[i])
+             errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, modelInAlias[i]), sep = "\n")
+             return(NULL)
+           }
+           # add name and description fields
+           scalar      <- names(modelIn)[[i]]
+           description <- modelInAlias[i]
+           addScalarVal(scalar, description, value)
+         },
          dropdown = {
            if(!is.null(isolate(input[[paste0("dropdown_", i)]]))){
              value <- isolate(input[[paste0("dropdown_", i)]])

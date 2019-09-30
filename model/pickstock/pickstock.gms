@@ -128,3 +128,4 @@ Parameter priceMerge(date,*) 'Price (stocks & dow jones)';
 $offExternalOutput
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
+$onmultiR

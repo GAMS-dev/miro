@@ -5,14 +5,14 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
   if(identical(method, "xls")){
     xlsPath <- file.path(workDir, fileName)
     if(!file.exists(xlsPath)){
-      stop(sprintf("File: '%s' could not be found."), xlsPath, call. = FALSE)
+      stop(sprintf("File: '%s' could not be found.", xlsPath), call. = FALSE)
     }
     xlsSheetNames <- tolower(excel_sheets(xlsPath))
     xlsSheetNames <- vapply(strsplit(xlsSheetNames, " ", fixed = TRUE), "[[", character(1L), 1L)
   }else if(identical(method, "gdx")){
     gdxPath <- file.path(workDir, fileName)
     if(!file.exists(gdxPath)){
-      stop(sprintf("File: '%s' could not be found."), gdxPath, call. = FALSE)
+      stop(sprintf("File: '%s' could not be found.", gdxPath), call. = FALSE)
     }
   }else if(!identical(method, "csv")){
     stop(sprintf("Method ('%s') is not suported for loading data.", method), call. = FALSE)
@@ -141,7 +141,7 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                gdx = {
                  tryCatch({
                    pivotHeaders <- character(0L)
-                   if(identical(modelIn[[i]][["symtype"]], "parameter")){
+                   if(identical(metaData[[i]][["symtype"]], "parameter")){
                      noNonNumCols <- nchar(gsub("d", "", metaData[[i]]$colTypes))
                      if(nchar(metaData[[i]]$colTypes) - noNonNumCols > 1L){
                        # symbol shall be pivoted

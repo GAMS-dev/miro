@@ -129,6 +129,7 @@ these components are included below):
 - gridExtra, https://cran.r-project.org/web/packages/gridExtra/index.html
 - lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
 - fastmap, https://github.com/r-lib/fastmap or https://cran.r-project.org/web/packages/fastmap/index.html
+- autoNumeric, https://github.com/autoNumeric/autoNumeric
 
 - pandas https://github.com/pandas-dev/pandas
 - pandas_datareader https://github.com/pydata/pandas-datareader
@@ -698,6 +699,7 @@ Section 8 -- Interpretation.
         - strftime for Javascript, Copyright 2010 - 2016 Sami Samhuri sami@samhuri.net
         - DataTables, Copyright (c) 2008-2015 SpryMedia Limited
         - showdown.js, Copyright (c) 2018 ShowdownJS
+        - autoNumeric, Copyright (c) 2009 Robert J. Knothe <bob@decorplanit.com> and contributors
         
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>

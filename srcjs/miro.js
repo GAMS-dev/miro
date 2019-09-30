@@ -1,4 +1,5 @@
 /* global $:false Shiny: false HTMLWidgets:false MathJax:false Selectize:false */
+
 const spinnerActive = {};
 
 function sleep(ms) {
@@ -557,6 +558,41 @@ $(document).ready(() => {
     });
     $('.input-validation-error').show();
   });
+  const autoNumericBinding = new Shiny.InputBinding();
+  $.extend(autoNumericBinding, {
+    find(scope) {
+      return $(scope).find('.miro-auto-numeric');
+    },
+    getValue(el) {
+      return parseFloat($(el).autoNumeric('get'));
+    },
+    setValue(el, value) {
+      $(el).autoNumeric('set', value);
+    },
+    receiveMessage(el, data) {
+      if (Object.prototype.hasOwnProperty.call(data, 'value')) {
+        $(el).autoNumeric('set', data.value);
+      }
+    },
+    subscribe(el, callback) {
+      $(el).on('change.autoNumericBinding', () => {
+        callback(true);
+      });
+    },
+    getRatePolicy() {
+      return {
+        policy: 'debounce',
+        delay: 250,
+      };
+    },
+    initialize(el) {
+      $(el).autoNumeric('init');
+    },
+    unsubscribe(el) {
+      $(el).autoNumeric('destroy');
+    },
+  });
+  Shiny.inputBindings.register(autoNumericBinding);
 });
 
 // counter

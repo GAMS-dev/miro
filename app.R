@@ -735,12 +735,17 @@ if(!is.null(errMsg)){
     newScen <- NULL
     tryCatch({
       if(length(miroDataFiles)){
-        modelInTabularDataNoScalar <- modelInTabularData[!modelInTabularData %in% scalarsFileName]
+        isScalarDataset <- match(modelInTabularData, scalarsFileName)
+        modelInTabularDataNoScalar <- modelInTabularData[is.na(isScalarDataset)]
         dataModelIn <- modelIn[names(modelIn) %in% modelInTabularDataNoScalar]
         modelInTemplateTmp <- modelInTemplate[!vapply(modelInTemplate, is.null, logical(1L), USE.NAMES = FALSE)]
         if(scalarsFileName %in% names(modelInRaw)){
           dataModelIn <- c(dataModelIn, modelInRaw[scalarsFileName])
           modelInTemplateTmp <- c(modelInTemplateTmp, list(scalarsInTemplate))
+          scalarId <- which(!is.na(isScalarDataset))
+          if(length(scalarId)){
+            modelInTemplateTmp[scalarId] <- NULL
+          }
         }
         for(i in seq_along(miroDataFiles)){
           miroDataFile <- miroDataFiles[i]
@@ -772,7 +777,6 @@ if(!is.null(errMsg)){
       }
     }, error = function(e){
       flog.error("Problems saving MIRO data to database. Error message: '%s'.", e)
-      rm(newScen)
       gc()
     })
   })
@@ -855,10 +859,12 @@ if(!is.null(errMsg)){
     
     worker <- Worker$new(metadata = list(uid = uid, modelName = modelName, noNeedCred = isShinyProxy,
                                          tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
-                                         modelDataFiles = paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                         modelDataFiles = if(identical(config$fileExchange, "gdx")) 
+                                           c(MIROGdxInName, MIROGdxOutName) else 
+                                           paste0(c(names(modelOut), inputDsNames), ".csv"),
                                          MIROGdxInName = MIROGdxInName,
                                          clArgs = c(paste0("execMode=", gamsExecMode),
-                                                    paste0("implicitGDXOutput=", MIROGdxOutName)), 
+                                                    paste0('implicitGDXOutput="', MIROGdxOutName, '"')), 
                                          text_entities = c(paste0(modelName, ".lst"), 
                                                            if(config$activateModules$miroLogFile) config$miroLogFile),
                                          currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
@@ -1108,6 +1114,9 @@ if(!is.null(errMsg)){
                },
                textinput ={
                  input[["text_" %+% i]]
+               }, 
+               numericinput ={
+                 input[["numeric_" %+% i]]
                }, 
                dropdown = {
                  input[["dropdown_" %+% i]]

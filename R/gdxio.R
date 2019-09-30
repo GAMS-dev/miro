@@ -111,6 +111,8 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       if(symName %in% names(private$metaData)){
         symText <- private$metaData[[symName]]$alias
         symType <- private$metaData[[symName]]$symtype
+      }else if(startsWith(symName, "_")){
+        return(NA)
       }else{
         stop(sprintf("Symbol: '%s' not found.", symName), call. = FALSE)
       }

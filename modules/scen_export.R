@@ -57,6 +57,9 @@ output[["export_" %+% i]] <- downloadHandler(
         return(downloadHandlerError(file, lang$nav$dialogExportScen$noDsSelected))
       }
       data <- data[names(data) %in% c(outputDataToExport, inputDataToExport)]
+    }else{
+      outputDataToExport <- names(modelOut)
+      inputDataToExport  <- inputDsNames
     }
     noDatasets <- length(data)
     prog$set(value = 0.2)
