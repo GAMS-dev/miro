@@ -831,6 +831,9 @@
         "label": "Zu verwendendes Farbschema",
         "choices": ["System/Browser Einstellungen", "Heller Modus", "Dunkler Modus"]
       },
+      "pageTitle":{
+        "label": "Titel der Applikation (im Browser Tab sichtbar)"
+      },
       "scen":{
         "label": "Standard-Szenarienvergleichsmodus",
         "choices": ["Geteilter Bildschirm (geeignet für 2 Szenarien zum Vergleichen)", "Registerkartenansicht (geeignet für > 2 Szenarien zum Vergleichen)"]
@@ -874,6 +877,7 @@
         "label": "Anzahl der Dezimalstellen, die für die Rundung der Ausgabewerte verwendet werden."
       },
       "logo":{
+        "header": "Logo Vorschau:",
         "label": "Laden Sie ein eigenes Logo für Ihre MIRO-App hoch: png/jpg-Datei (bestes Format: 4,6:1)"
       }, 
       "actScen":{
