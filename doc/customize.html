@@ -126,6 +126,15 @@
                                   <h3 class="block-title">General settings</h3>
                                   <p>As the name suggests, general options can be set in this section (click on an item to see more information).</p>
                                   <h4 class="docu-general-header">General</h4>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Application title</h6>
+                                  <div style="display:none"><p>With this option the title of the application can be adjusted, which is displayed in the browser window. 
+                                  If a <a href = "https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARtitle" target = "_blank">$title</a> has been 
+                                  defined in the GAMS model, this is used by default. </p>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:200pt;padding-bottom:25pt;" src="assets/images/configuration_mode/general_title.png" alt="Application title" />
+                                      </div>
+                                      <p></p>
+                                  </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Color theme to use</h6>
                                   <div style="display:none"><p>Allows you to choose between MIRO light and dark mode as well as the dynamic adaptation of the theme based on the system settings set by the user.</p>
                                       <div class="row">
@@ -261,14 +270,6 @@ putclose log;
                                   For example, elements of GAMS <i>Sets</i> may contain numbers, but they are not treated as such, but as strings. These are therefore not affected by the set maximum decimal place.  </p>
                                       <p></p>
                                   </div>
-                                  <h4 class="docu-general-header">Logo</h4>
-                                  <h6 id="app-logo" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)</h6>
-                                  <div style="display:none"><p>This option allows you to use your own logo for a single MIRO application, displayed in the top left corner.</p>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/app-logo.png" alt="App logo" />
-                                      </div>
-                                      <p></p>
-                                  </div>
                                   <h4 class="docu-general-header">Scalars</h4>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the input scalars table</h6>
                                   <p style="display:none"><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> are special in the sense that they will not be displayed in one separate table for each scalar value. 
@@ -288,9 +289,55 @@ putclose log;
                                   </div>
                                   <h6 id="aggregate-widgets" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should all input widgets (slider, dropdown menu, etc.) be aggregated on a single tab?</h6>
                                   <p style="display:none">If enabled, all scalar input widgets are displayed in the same tab and separated otherwise.</p>
-                                  <h4 class="docu-general-header">Tab grouping</h4>
-                                  <h6 id="tab-grouping" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide input symbols into groups</h6>
-                                  <div style="display:none"> <p>Multiple tabs of input symbols (also output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
+                                  <h4 class="docu-general-header">Logo</h4>
+                                  <h6 id="app-logo" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Upload a custom logo for your MIRO app: png/jpg file (best format: 4,6:1)</h6>
+                                  <div style="display:none"><p>This option allows you to use your own logo for a single MIRO application, displayed in the top left corner.</p>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/app-logo.png" alt="App logo" />
+                                      </div>
+                                      <p></p>
+                                  </div>
+                                  <h4 class="docu-general-header">Symbol configuration: Naming, ordering, grouping</h4>
+                                  <h6 id="naming" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Naming</h6>
+                                  <div style="display:none"> <p>Under the heading <i>Naming</i>, the names of the GAMS symbols displayed in MIRO can be adapted. 
+                                  This includes the labels of the tabs displayed for each symbol as well as the individual table column labels. 
+                                  Note that the naming only affects the representation of the symbols in the MIRO application and not the symbols in the GAMS model itself.
+                                  </p>
+                                  <ul>
+                                    <li><i>Specify symbol alias:</i>
+                                      <br>Specification of the labels of the symbol tabs.
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/general_naming_tab.png" alt="Symbol alias" />
+                                      </div>
+                                    </li>
+                                    <li><i>Specify column headers:</i>
+                                      <br>To adjust a column header, the corresponding element must be deleted and replaced with a new one. 
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:250pt;" src="assets/images/configuration_mode/general_naming_headers.png" alt="Column headers" />
+                                      </div>
+                                    </li>
+                                  </ul>
+                                  </div>
+                                  <h6 id="tab-ordering" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Ordering</h6>
+                                  <div style="display:none"> <p>Here you can adjust the tab order in which the symbols are to be displayed in MIRO. 
+                                  To do this, the symbols simply have to be dragged and dropped into the desired order. </p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/general_ordering.png" alt="Ordering" />
+                                  </div>
+                                  <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                          <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                          <b class="callout-title">Note:</b>
+                                          <p>If symbols have been grouped using the <a href = "#tab-grouping" class = "scrollto">grouping option</a>, only the individual symbols and not the configured groups are still displayed 
+                                          for ordering. If a defined group is to be displayed more at the beginning or at the end, the corresponding symbols of the group need to be 
+                                          moved for ordering. </p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
+                                  </div>
+                                  <h6 id="tab-grouping" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Tab grouping</h6>
+                                  <div style="display:none"> <p>Multiple tabs of input symbols (or output symbols) can be grouped together. All symbols of a group are displayed in an own tab.</p>
                                   <p>Example:<br>
                                   For the input data of the transport model, one might want to group the symbols with geo data together:</p>
                                   <div class="section-block">
@@ -301,8 +348,6 @@ putclose log;
                                       <img class="img-fluid" style= "max-height:325pt;" src="assets/images/configuration_mode/general_inputGroups2.png" alt="Input group in MIRO" />
                                   </div>
                                   </div>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Divide ouput symbols into groups</h6>
-                                  <p style="display:none">Multiple tabs of output symbols (also input symbols) can be grouped together. All symbols of a group are displayed in an own tab. For an example, see <i>Divide input symbols into groups</i></p>
                                   <h4 class="docu-general-header">Scenario & data</h4>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate scenario functionality</h6>
                                   <p style="display:none">If enabled, scenario data can be saved.</p>
@@ -342,6 +387,10 @@ putclose log;
                                   <h6 id="general-remote" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote Job execution (GAMS MIRO Server only)</h6>
                                   <div style="display:none"><p>If enabled, the GAMS jobs can be executed on a server instead of on the local machine. For this purpose, the corresponding server information must be specified in the MIRO application. 
                                   A detailed description of the remote execution and MIRO server in general can be found <a href = "./index.html" >here</a>.</p>
+                                  </div>
+                                  <h6 id="general-remote" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should it be possible to start the Hypercube mode from the MIRO base mode?</h6>
+                                  <div style="display:none"><p>As described <a href = "./start.html#launch-hcube-button" >here</a>, the MIRO <a href = "./hypercube.html" >Hypercube mode</a> can be started from within the base mode 
+                                  by clicking on the <img class="img-fluid" src="assets/images/hcube-button.png" width="25" height="25" align="middle" alt="Change to Hypercube mode" /> button in the header bar. This option causes said button to disappear in the MIRO base mode.</p>
                                   </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Save trace file with each GAMS run (Hypercube mode)</h6>
                                   <p style="display:none">The trace file gives performance information about a GAMS run. For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.</p>
@@ -506,6 +555,17 @@ putclose log;
                                              <h3 class="title" style="text-align:left;margin-top:15pt;">Textbox</h3>
                                              </div>
                                              <a class="link" href="./widgets.html#widget-textbox"><span></span></a>
+                                         </div><!--//item-inner-->
+                                     </div><!--//item-->
+                                     <div class="item col-lg-4 col-6">
+                                         <div class="item-inner" style="padding-bottom: 10px;">
+                                             <div style="height:60px;">
+                                                 <img class="img-fluid" style= "max-height:50px; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_numeric.png" alt="Numerix box" />
+                                             </div>
+                                             <div>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Numeric box</h3>
+                                             </div>
+                                             <a class="link" href="./widgets.html#widget-numeric"><span></span></a>
                                          </div><!--//item-inner-->
                                      </div><!--//item-->
                                  </div><!--//widgets-wrapper-->
@@ -678,6 +738,15 @@ putclose log;
                                 <div class="section-block" id="database-management">
                                   <h3 class="block-title">Database management</h3>
                                   <p>Create database backups, restore a database, remove database tables.</p>
+                                  <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Warning:</b>
+                                            <p>Deleting data from the database cannot be undone!</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
                                 <div class="section-block">
                                     <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/database_management.png" alt="Database management" />
                                 </div>

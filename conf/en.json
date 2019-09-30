@@ -815,7 +815,7 @@
         "headerInputGroups": "Input groups",
         "headerOutputGroups": "Output groups",
         "headerSymbolNaming": "Naming",
-        "headerSymbolGrouping": "Grouping",
+        "headerSymbolGrouping": "Ordering",
         "headerScenData": "Scenario & data",
         "headerComputation": "Computation"
       },
@@ -930,7 +930,7 @@
         "label": "Save trace file with each GAMS run (Hypercube mode)"
       },
       "auto":{
-        "label": "Generate graphs for each input sheet automatically (pivot tool)"
+        "label": "Generate graphs for each input symbol automatically (pivot tool)"
       }
     },
     "tables":{
@@ -942,12 +942,12 @@
       "hot":{
         "height": "Height of input tables (in px)",
         "readonly": "Restrict editing of tables? If activated, tables can not be modified by the user.",
-        "highcol": "Highlight the column of current active cell (no live preview available).",
-        "highrow": "Highlight the row of current active cell (no live preview available).",
+        "highcol": "Highlight the column of current active cell (no live preview).",
+        "highrow": "Highlight the row of current active cell (no live preview).",
         "stretch": "Default column stretching.",
         "stretchChoices": ["No stretch", "Stretch last column", "Stretch all columns"],
         "stretchCustom": "Set custom column width.",
-        "colwidth": "Width of a single (non-streched) column. Set value to 0 to fit column width to its content.",
+        "colwidth": "Width of a single (non-streched) column.",
         "sort": "Enable column sorting in ascending/descending order (by clicking on column name in header row).",
         "resize": "Enable manual column resizing.",
         "enable": "Enable table context menu (accessible via right mouse click).",
@@ -977,7 +977,7 @@
         "buttons":{
           "label":"Add export buttons?",
           "choices": ["copy", "CSV", "Excel", "PDF", "print"],
-          "select": "Select the buttons to use (minimum of 2 buttons required). Note: All button functions only affect the visible table page."
+          "select": "Select buttons to use. Note: All button functions only affect the visible table page."
         }
       }
     },
@@ -1053,10 +1053,11 @@
         "table": "Table",
         "date": "Date",
         "daterange": "Date range",
-        "text": "Text box"
+        "text": "Text box",
+        "numericinput": "Numeric box"
       },
       "table":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select certain columns to be readonly",
@@ -1064,7 +1065,7 @@
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "minlabel": "Minimum value",
         "maxlabel": "Maximum value",
@@ -1083,7 +1084,7 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "sliderrange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "minlabel": "Minimum value",
         "maxlabel": "Maximum value",
@@ -1097,11 +1098,12 @@
         "max": "Set static maximum value",
         "default1": "Lower default value",
         "default2": "Upper default value",
+        "step": "Step size (also decimal places possible)",
         "ticks": "Show tick marks?",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "dropdown":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "choices": "Choices to select from",
         "choicesAlias": "Aliases for choices (optional)",
@@ -1116,13 +1118,13 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "default": "Default value",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "date":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "defaultlabel": "Default date",
         "default": "Choose the default date",
@@ -1149,7 +1151,7 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "daterange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "defaultStart": "Choose the default start date",
         "startOff": "Use current date",
@@ -1179,10 +1181,18 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "textinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview available)",
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "value": "Choose the default value",
         "placeholder": "Choose a placeholder"
+      },
+      "numericinput":{
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
+        "label": "Choose a label",
+        "value": "Default value (optional)",
+        "min": "Minimum value (optional)",
+        "max": "Maximum value (optional)",
+        "sign": "Currency symbol (optional)"
       },
       "removeDialog":{
         "title": "Please confirm",
@@ -1219,7 +1229,7 @@
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
         "gamsSymbols": "Select which GAMS symbol to plot",
         "chartTitle": "Choose a title for your chart",
-        "height": "Choose a height for your chart (px) (no live preview available)",
+        "height": "Choose a height for your chart (px) (no live preview)",
         "tool": "Select the charting tool you want to use",
         "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values", "Custom renderer"]
       },
@@ -1263,7 +1273,7 @@
           "paperBgColor": "What background color shall the paper have?",
           "plotBgColor": "What background color shall the plot have?",
           "showlegend": "Show legend?",
-          "outType": "Show graphic and data table in split screen? (no live preview available)"
+          "outType": "Show graphic and data table in split screen? (no live preview)"
         }
       },
       "barOptions":{
@@ -1396,7 +1406,7 @@
       "filterOptions":{
         "filter": "Should one domain of the symbol be selectable via a dropdown menu?",
         "dimension": "Which dimension should be filterable?",
-        "label": "Label of the filter (no live preview available)",
+        "label": "Label of the filter (no live preview)",
         "placeholder": "Filter by element",
         "multiple": "Should several elements be selectable as filter at the same time? (No live preview for single dropdown menu available)"
       },

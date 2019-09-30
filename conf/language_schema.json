@@ -4816,6 +4816,11 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "numericinput":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -5025,6 +5030,11 @@
                   "required":true
                 },
                 "default2":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "step":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -5455,6 +5465,43 @@
                   "required":true
                 },
                 "placeholder":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
+            "numericinput":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "alias":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "value":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "min":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "max":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "sign":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true

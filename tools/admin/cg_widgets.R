@@ -3,20 +3,22 @@ currentWidgetSymbolName <- character(0L)
 modelInWithPrefix <- names(modelIn)
 
 langSpecificWidget <- list()
-langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox"),
+langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox", "numericinput"),
                                                   c(lang$adminMode$widgets$widgetOptions$slider,
                                                     lang$adminMode$widgets$widgetOptions$dropdown,
-                                                    lang$adminMode$widgets$widgetOptions$checkbox))
+                                                    lang$adminMode$widgets$widgetOptions$checkbox,
+                                                    lang$adminMode$widgets$widgetOptions$numericinput))
 langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "dropdown", 
                                                   "checkbox", "date", "daterange", 
-                                                  "textinput"), 
+                                                  "textinput", "numericinput"), 
                                                 c(lang$adminMode$widgets$widgetOptions$slider, 
                                                   lang$adminMode$widgets$widgetOptions$sliderrange,
                                                   lang$adminMode$widgets$widgetOptions$dropdown,
                                                   lang$adminMode$widgets$widgetOptions$checkbox,
                                                   lang$adminMode$widgets$widgetOptions$date,
                                                   lang$adminMode$widgets$widgetOptions$daterange,
-                                                  lang$adminMode$widgets$widgetOptions$text))
+                                                  lang$adminMode$widgets$widgetOptions$text,
+                                                  lang$adminMode$widgets$widgetOptions$numericinput))
 langSpecificWidget$widgetOptionsTable <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
 langSpecificWidget$widgetOptionsSet <- setNames(c("table", "multidropdown"), c(lang$adminMode$widgets$widgetOptions$table,
                                                                                lang$adminMode$widgets$widgetOptions$dropdown))
@@ -298,6 +300,17 @@ validateWidgetConfig <- function(widgetJSON){
              return(lang$adminMode$widgets$validate$val34)
            }
          },
+         numericinput = {
+           if(any(widgetJSON$max < widgetJSON$min)){
+             return(lang$adminMode$widgets$validate$val42)
+           }
+           if(!is.null(widgetJSON$value) && (any(widgetJSON$value < widgetJSON$min))){
+             return(lang$adminMode$widgets$validate[["val7"]])
+           }
+           if(!is.null(widgetJSON$value) && (any(widgetJSON$max < widgetJSON$value))){
+             return(lang$adminMode$widgets$validate[["val7"]])
+           }
+         },
          {
            return(lang$adminMode$widgets$validate$val35)
          })
@@ -314,7 +327,7 @@ observeEvent({input$widget_symbol
     hideEl(session, "#optionConfigMsg")
     hideEl(session, "#doubledashConfigMsg")
     
-  if(input$widget_symbol %in% scalarInputSym){
+  if(input$widget_symbol %in% modelInRaw[[scalarsFileName]]$symnames){
     currentWidgetSymbolName <<- input$widget_symbol
     if(!currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
       showEl(session, "#noWidgetConfigMsg")
@@ -483,8 +496,7 @@ observeEvent({input$widget_type
     req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
         nchar(currentWidgetSymbolName) > 0L)
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
-    rv$widgetConfig <- list()
-    
+    rv$widgetConfig <- list() 
   currentConfig <- NULL
   if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
     currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
@@ -818,7 +830,7 @@ observeEvent({input$widget_type
                                    value = rv$widgetConfig$default[1]),
                       numericInput("slider_def2", lang$adminMode$widgets$sliderrange$default2, 
                                    value = rv$widgetConfig$default[2]),
-                      numericInput("slider_step", "Step size", value = rv$widgetConfig$step, min = 0L),
+                      numericInput("slider_step", lang$adminMode$widgets$sliderrange$step, value = rv$widgetConfig$step, min = 0L),
                       tags$div(class = "shiny-input-container",
                                checkboxInput_MIRO("slider_ticks", lang$adminMode$widgets$sliderrange$ticks,
                                                   rv$widgetConfig$ticks)
@@ -1222,6 +1234,41 @@ observeEvent({input$widget_type
              textInput("textinput_preview", rv$widgetConfig$label, value = rv$widgetConfig$value,
                        placeholder = rv$widgetConfig$placeholder)
            })
+         },
+         numericinput = {
+           rv$widgetConfig <- list(widgetType = "numericinput",
+                                   alias = widgetAlias,
+                                   value = if(length(currentConfig$value)) currentConfig$value else 2L,
+                                   min = if(length(currentConfig$min)) currentConfig$min else 0L,
+                                   max = if(length(currentConfig$max)) currentConfig$max else 10L,
+                                   sign = if(length(currentConfig$sign)) currentConfig$sign else NULL)
+           rv$widgetConfig$label <- currentConfig$label
+           insertUI(selector = "#widget_options",
+                    tagList(
+                      textInput("widget_alias", lang$adminMode$widgets$numericinput$alias, 
+                                value = rv$widgetConfig$alias),
+                      textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label),
+                      tags$div(class="option-wrapper",
+                               numericInput("numericinput_value", lang$adminMode$widgets$numericinput$value, 
+                                            value = if(is.numeric(rv$widgetConfig$value)) rv$widgetConfig$value else 0L)),
+                      tags$div(class="option-wrapper",
+                               numericInput("numericinput_min", lang$adminMode$widgets$numericinput$min, 
+                                            value = if(is.numeric(rv$widgetConfig$min)) rv$widgetConfig$min else 0L)),
+                      tags$div(class="option-wrapper",
+                               numericInput("numericinput_max", lang$adminMode$widgets$numericinput$max, 
+                                            value = if(is.numeric(rv$widgetConfig$max)) rv$widgetConfig$max else 0L)),
+                      textInput("numericinput_sign", lang$adminMode$widgets$numericinput$sign, value = rv$widgetConfig$sign)
+                    ), 
+                    where = "beforeEnd")
+           
+           output$widget_preview <- renderUI({
+             autoNumericInput("numericinput_preview", 
+                              label = rv$widgetConfig$label,  
+                              value = rv$widgetConfig$value,
+                              min = rv$widgetConfig$min,
+                              max = rv$widgetConfig$max,
+                              sign = rv$widgetConfig$sign)
+           })
          }
   )
   #hideEl(session, "#hot_preview")
@@ -1419,8 +1466,6 @@ observe({
     isolate(rv$widgetConfig$daysofweekdisabled <<- as.integer(input$date_daysdisabled))
   }
 })
-
-
 observeEvent(input$date_autoclose, {
   rv$widgetConfig$autoclose <<- input$date_autoclose
 })
@@ -1430,6 +1475,24 @@ observeEvent(input$date_separator, {
 
 observeEvent(input$text_placeholder, {
   rv$widgetConfig$placeholder <<- input$text_placeholder
+})
+observeEvent(input$numericinput_value, {
+  if(!is.numeric(input$numericinput_value))
+    return()
+  rv$widgetConfig$value <<- input$numericinput_value
+})
+observeEvent(input$numericinput_min, {
+  if(!is.numeric(input$numericinput_min))
+    return()
+  rv$widgetConfig$min <<- input$numericinput_min
+})
+observeEvent(input$numericinput_max, {
+  if(!is.numeric(input$numericinput_max))
+    return()
+  rv$widgetConfig$max <<- input$numericinput_max
+})
+observeEvent(input$numericinput_sign, {
+  rv$widgetConfig$sign <<- input$numericinput_sign
 })
 
 #  ==============================
