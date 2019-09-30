@@ -688,15 +688,18 @@ Worker <- R6Class("Worker", public = list(
                      staticDir), call. = FALSE)
     }
     
-    scenGmsPar <- paste0(dynamicPar, paste(private$metadata$clArgs, collapse = " "), 
-                         ' implicitGDXInput="', gmsFilePath(file.path(staticDir, private$metadata$MIROGdxInName)),
-                         '" idir1="', gmsFilePath(private$metadata$currentModelDir), '"')
+    scenGmsPar <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
+                    private$metadata$clArgs, 
+                    paste0('implicitGDXInput="', 
+                           gmsFilePath(file.path(staticDir, 
+                                                 private$metadata$MIROGdxInName)),'"'), 
+                    paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'))
     
     if(identical(private$metadata$includeParentDir, TRUE))
       scenGmsPar <- paste0(scenGmsPar, ' idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"')
     
-    writeLines(scenGmsPar, file.path(hcubeDir, tolower(private$metadata$modelName) %+% ".hcube"))
-    
+    writeLines(scenGmsPar, file.path(hcubeDir, tolower(private$metadata$modelName) %+% ".pf"))
+    dynamicPar$writeHcube(paste0(hcubeDir, .Platform$file.sep))
     flog.trace("New folder for Hypercube job was created: '%s'.", hcubeDir)
     
     # create daemon to execute Hypercube job
@@ -744,7 +747,7 @@ Worker <- R6Class("Worker", public = list(
       }
       if(is.R6(hcubeData)){
         gamsArgs <- c(gamsArgs, paste0('implicitGDXInput="', 
-                                       file.path("..", "static", metadata$MIROGdxInName), '"'))
+                                       metadata$MIROGdxInName, '"'))
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
                                                   type = 'application/json')
       }else{

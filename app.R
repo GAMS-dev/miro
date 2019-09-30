@@ -67,6 +67,7 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
+useTempDir <- !identical(getCommandArg('use-tmp-dir', FALSE), "false")
 if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
   
   RLibPath = NULL
@@ -1019,7 +1020,12 @@ if(!is.null(errMsg)){
     roundPrecision <- config$roundingDecimals
     
     # set local working directory
-    workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+    if(isShinyProxy || useTempDir){
+      workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+    }else{
+      workDir <- paste0(currentModelDir, .Platform$file.sep)
+    }
+    
     worker$setWorkDir(workDir)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")

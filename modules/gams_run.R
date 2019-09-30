@@ -238,7 +238,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     updateProgress <- function(incAmount, detail = NULL) {
       prog$inc(amount = incAmount, detail = detail)
     }
-    hcubeData <<- HcubeDataInstance$new()
+    hcubeData <<- HcubeDataInstance$new(modelGmsName)
     staticData <<- DataInstance$new(fileExchange = config$fileExchange,
                                     gdxio = gdxio, csvDelim = config$csvDelim)
     modelInSorted <- sort(names(modelIn))

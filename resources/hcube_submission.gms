@@ -20,155 +20,66 @@ $onEmbeddedCode Python:
 import os
 import re
 import shlex
+import json
 
 bfdir = r"%bfdir%"
-for file in os.listdir(bfdir):
-    if file.endswith(".hcube"):
-        modelpath = file.replace(".hcube", "")
-        bfname = os.path.join(bfdir, file)
-        break
-        
-fJobSubName = r"%fJobSubName%"
-outScript = "%outScript%"
+job_sub_fname = r"%fJobSubName%"
+out_script = "%outScript%"
 zipname = "%zipname%"
-fscalars = "scalars.csv"
+bf_name = os.path.join(bfdir, "hcube.json")
 
-
-# string manipulation (batch file)
-def extractCall(call):
-   call = call[66:]
-   return call.strip()
-
-def extractDir(fdir):
-   fdir = fdir[:64]
-   return fdir.strip()
-
-def getScalars(text):
-   try:
-      if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1]
-         if text.startswith('MIRO='):
-            text = text.split('MIRO=')[0]
-         else:
-            text = text.split(' MIRO=')[0]
-      textTmp = text.split()
-      scalarsRaw = r"Scalar,Description,Value\n"
-      scalars = scalarsRaw
-      fileNames = []
-      for i in textTmp:
-         if i.startswith("--HCUBE_SCALAR_"):
-            i = i[15:]
-            fileNames.append(i[2:].split("=")[0].lower() + ".csv")
-         elif i.startswith("--HCUBE_STATIC_"):
-            fileNames.append(i[2:].split("=")[0].lower() + ".csv")
-            continue
-         elif i.startswith("--"):
-            i = i[2:]
-         itmp = i.split("=")
-         for idx, j in enumerate(itmp):
-            if idx == 0:
-               scalars += j + ",,"
-            else:
-               scalars += j + r"\n"
-      if(scalars == scalarsRaw):
-         scalars = ""
-      return scalars, fileNames
-   except:
-      pass
-
-
-def modelName(text):
-   j=""
-   try:
-      if text.find('.gms ')>=0:
-         text = text.split('.gms ')[0]
-      textTmp = text.split()
-      return textTmp[-1]
-   except:
-      pass
-      
-def trcName(text):
-   j=""
-   try:
-      if text.find('.gms ')>=0:
-         text = text.split('.gms ')[1]
-      textTmp = text.split()
-      for i in textTmp:
-         if (i.startswith("trace")):
-            tracename = i.split("=")[1]
-            return tracename
-   except:
-      pass
-
-def dummyTrace(text):
-   trcFile=""
-   try:
-      trcFile += r"* Trace Record Definition\n* GamsSolve\n"
-      trcFile += r"* InputFileName,ModelType,SolverName,NLP,MIP,"
-      trcFile += r"JulianDate,Direction,NumberOfEquations,NumberOfVariables,"
-      trcFile += r"NumberOfDiscreteVariables,NumberOfNonZeros,NumberOfNonlinearNonZeros,"
-      trcFile += r"OptionFile,ModelStatus,SolverStatus,ObjectiveValue\n"
-      trcFile += r"* ,ObjectiveValueEstimate,SolverTime,NumberOfIterations,"
-      trcFile += r"NumberOfDomainViolations,NumberOfNodes,#User1\n*\n"
-      trcFile += modelName(text) + r",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,13,13,NA,NA,NA,NA,NA,NA,#\n"
-   except:
-      pass
-   return trcFile
+if not os.path.isfile(bf_name):
+   raise OSError(f'Hypercube configuration file: "{bf_name}" does not exist.')
    
+with open(bf_name, 'r') as f:
+   hc_content = json.load(f)
+   
+if ('jobs' not in hc_content or
+      not isinstance(hc_content['jobs'], list) or
+      'model_gms_name' not in hc_content or
+      not hc_content['model_gms_name']):
+   raise ValueError('Malformatted Hypercube configuration file.')
+   
+hc_jobs = hc_content['jobs']
 
-# read batch file
-with open(bfname) as f:
-   content = f.readlines()
-   content = [x.strip() for x in content]
+model_gms_name = hc_content['model_gms_name']
 
-if outScript == "gams":
+use_pf_arg = ""
+model_name = os.path.splitext(os.path.basename(model_gms_name))[0].lower()
+
+if os.path.isfile(os.path.join(bfdir, model_name + ".pf")):
+   use_pf_arg = " pf=" + shlex.quote(os.path.join(bfdir, model_name + ".pf"))
+
+if out_script == "gams":
    # write GAMS $calls into job submission file
-   linestmp = ""
-   linestmp += "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
+   linestmp = "$if dexist " + zipname + " $call rm -r " + zipname + "\n"
    linestmp += "$call mkdir " + zipname + "\n"
-   for index, item in enumerate(content):
-      scalarsCSV,fileNames = getScalars(item)
-      dirname = extractDir(item)
-      tmpdir = "tmp"+str(index)
-      call = extractCall(item)
+   
+   for id, hc_job in enumerate(hc_jobs):
+      dirname = hc_job['id']
+      tmpdir = "tmp"+str(id)
       
       linestmp += "$call cd " + zipname + " && mkdir " + tmpdir + "\n"
       linestmp += "$if errorlevel 1 $abort problems mkdir " + tmpdir + "\n"
-      # dummy trace file (to gurantee that a trace file exists for each run)
-      if trcName(item) is not None:
-         linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + dummyTrace(item) + "\" > " + trcName(item) + "\n"
-      # scalars.csv file manually filled (needed in webui for data validation)
-      if(len(scalarsCSV)):
-         linestmp += "$call cd " + zipname + "/" + tmpdir + " && printf \"" + scalarsCSV + "\" > " + fscalars + "\n"
-
-      # copy static csv files
-      if len(fileNames):
-         linestmp += "$call cp -r static/. " + zipname + "/" + tmpdir + "\n"
          
       # gams call
-      linestmp += "$call cd " + zipname + "/" + tmpdir + " && " + call + "\n"      
+      linestmp += "$call cd " + zipname + "/" + tmpdir + " && gams " + model_gms_name + " " + " ".join(hc_job['arguments']) + use_pf_arg + "\n"      
       linestmp += "$if dexist " + dirname + " $call rm -r " + dirname + "\n"
       linestmp += "$call cd " + zipname + " && " + "mv " + tmpdir + " " + dirname + "\n\n"
       linestmp += "$onecho > \"%jobID%.log\"\n"
-      linestmp += str(index + 1) + "/" + str(len(content)) + "\n"
+      linestmp += str(id + 1) + "/" + str(len(hc_jobs)) + "\n"
       linestmp += "$offecho\n"
    
    # last line of job submission file: zip the results (exclude lst, json, gms and gdx files). Delete existing zip before
-   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -i \"*.csv\" \"*.trc\""
+   linestmp += "$if exist " + zipname + ".zip $call rm -r " + zipname + ".zip\n" + "$call cd " + zipname + " && gmszip -r ../" + zipname + ".zip ./* -i \"_miro_gdxin_.gdx\" \"_miro_gdxout_.gdx\" \"_sys_trace_" + model_name + ".trc\""
 
    # delete all temporary solution directories
    linestmp += "\n$call rm -r " + zipname
 
    #write to file
-   with open(fJobSubName,"w") as fjobsub:
+   with open(job_sub_fname,"w") as fjobsub:
       fjobsub.write(linestmp)
 
-elif outScript == "hpc":
-   pass
 else:
-   pass
+   raise ValueError('out_script option not implemented.')
 $offEmbeddedCode
-
-$ifthen %exec% == "true"
-$   include jobsubmission.gms
-$endif
