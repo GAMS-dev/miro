@@ -726,6 +726,60 @@ $offExternalInput
                                     </code></pre>
                                 </div><!--//section-block-->
                             </section>
+                            <section id="widget-numeric" class="doc-section">
+                                <h2 class="section-title">Numeric box</h2>
+                                <div class="section-block" id="widget-numeric-configuration">
+                                  <h3 class="block-title">Configuration</h3>
+                                    <p>Returns a number.</p>
+                                    <p>Example: </p>
+                                    <p>Numeric box for double-dash parameter <i>numeric</i>:<p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_numeric_config.png" alt="Numeric box configuration"/>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id = "widget-numeric-options">
+                                  <h3 class="block-title">Available Options</h3>
+                                    <p>The following options are available for a Numeric box widget:</p>
+                                    <h6 id="numeric-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
+                                    <div style="display:none"><p>With this option the tab name of the symbol is defined. For an example see the <a href = "#slider-option-name" class = "scrollto">same option</a> for a slider. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    </div>
+                                    <h6 id="numeric-option-label" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Choose a label</h6>
+                                    <div style="display:none"><p>If a label has been specified, it will be displayed above the numeric box. For an example see the <a href = "#slider-option-label" class = "scrollto">same option</a> for a slider.</p>
+                                    </div>
+                                    <h6 id="numeric-option-default" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default value</h6>
+                                    <div style="display:none"><p>A default value is the initial value of the numeric box i.e. the value set when starting the application. This is optional. </p>
+                                    </div>
+                                    <h6 id="numeric-option-minimum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Minimum value</h6>
+                                    <div style="display:none"><p>Specifies the minimum valid value for the widget. This is optional. </p>
+                                    </div>
+                                    <h6 id="numeric-option-maximum" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Maximum value</h6>
+                                    <div style="display:none"><p>Specifies the maximum valid value for the widget. This is optional. </p>
+                                    </div>
+                                    <h6 id="numeric-option-sign" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Currency symbol</h6>
+                                    <div style="display:none"><p>Places a symbol in front of the entered value, e.g. a dollar sign. This option is used exclusively for visual support. 
+                                    As value the plain number is returned by the widget. This is optional. </p>
+                                    </div>
+                                </div><!--//section-block-->
+                                <div class="section-block" id="widget-numeric-json">
+                                  <h3 class="block-title">JSON example</h3>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "_gmspar_numeric": {
+      "widgetType": "numericinput",
+      "alias": "Test numeric input",
+      "label": "Set a value",
+      "value": 1000,
+      "min": 0,
+      "max": 100000,
+      "sign": "$"
+    }
+  }
+}
+                                    </code></pre>
+                                </div><!--//section-block-->
+                            </section>
                             <section id="widget-table" class="doc-section">
                                 <h2 class="section-title">Table</h2>
                                 <div class="section-block" id="widget-table-configuration">
@@ -850,6 +904,12 @@ $offExternalInput
                                  <a class="nav-link scrollto" href="#widget-textbox-configuration">Configuration</a>
                                  <a class="nav-link scrollto" href="#widget-textbox-options">Available options</a>
                                  <a class="nav-link scrollto" href="#widget-textbox-json">JSON example</a>
+                             </nav>
+                             <a class="nav-link scrollto" href="#widget-numeric">Numeric box</a>
+                             <nav class="doc-sub-menu nav flex-column">
+                                 <a class="nav-link scrollto" href="#widget-numeric-configuration">Configuration</a>
+                                 <a class="nav-link scrollto" href="#widget-numeric-options">Available options</a>
+                                 <a class="nav-link scrollto" href="#widget-numeric-json">JSON example</a>
                              </nav>
                              <a class="nav-link scrollto" href="#widget-table">Table</a>
                              <nav class="doc-sub-menu nav flex-column">

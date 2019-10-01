@@ -37,6 +37,7 @@ body_admin <- dashboardBody({
     tags$head(
       tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
       tags$link(type = "text/css", rel = "stylesheet", href = "bootstrap-colorpicker.min.css"),
+      tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
       tags$script(src = "bootstrap-colorpicker.min.js", type = "application/javascript"),
       tags$script(src = "miro_admin.js", type = "application/javascript"),
       tags$style(HTML(paste0('
@@ -302,7 +303,9 @@ body_admin <- dashboardBody({
                       tabPanel(lang$adminMode$general$ui$tabSymbols, 
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$h2(lang$adminMode$general$ui$headerSymbolNaming, class="option-category"),
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolNaming, 
+                                                         tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#naming", 
+                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category"),
                                                  tags$h4(lang$adminMode$general$overwriteSymbolAliases$input, class="option-category"),
                                                  tags$div(class = "small-space"),
                                                  lapply(names(modelInRaw), function(name){
@@ -323,7 +326,7 @@ body_admin <- dashboardBody({
                                                             textInput(paste0("general_overwriteSymAlias_", name), 
                                                                       lang$adminMode$general$overwriteSymbolAliases$label,
                                                                       symAlias),
-                                                            selectizeInput(paste0("symHeaders_", name), 
+                                                            selectizeInput(paste0("general_overwriteSymHeaders_", name), 
                                                                            lang$adminMode$general$overwriteSymbolHeaders$label,
                                                                            choices = symHeaders, selected = symHeaders,
                                                                            multiple = TRUE,  options = list(
@@ -367,7 +370,9 @@ body_admin <- dashboardBody({
                                ),
                                tags$div(class = "col-sm-6", style = "padding-top: 20px;",
                                         tags$div(class="main-tab",
-                                                 tags$h2(lang$adminMode$general$ui$headerSymbolGrouping, class="option-category"),
+                                                 tags$h2(lang$adminMode$general$ui$headerSymbolGrouping, 
+                                                         tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-ordering", 
+                                                                tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"), class="option-category"),
                                                  tags$div(class = "option-wrapper",
                                                           selectizeInput("general_overwriteSheetOrderInput", lang$adminMode$general$overwriteSheetOrder$input, 
                                                                          choices = if(length(configJSON$overwriteSheetOrder$input)) 
@@ -382,7 +387,20 @@ body_admin <- dashboardBody({
                                                                            configJSON$overwriteSheetOrder$output else setNames(names(modelOut), modelOutAlias), 
                                                                          multiple = TRUE, options = list(plugins = list("drag_drop", "no_delete")))
                                                  ),
-                                                 tags$div(class = "space")
+                                                 tags$div(class = "space"),
+                                                 tags$div(class = "option-wrapper",
+                                                   tags$div(class = "info-position",
+                                                            tags$h2((lang$adminMode$general$ui$headerTabGrouping), 
+                                                                    tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
+                                                   ),
+                                                   tags$h4(lang$adminMode$general$ui$headerInputGroups),
+                                                   tags$div(class="option-wrapper-indented",
+                                                            createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
+                                                   tags$h4(lang$adminMode$general$ui$headerOutputGroups),
+                                                   tags$div(class="option-wrapper-indented",
+                                                            createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE))
+                                                 )
                                         )
                                )),
                       tabPanel(lang$adminMode$general$ui$tabModules, 

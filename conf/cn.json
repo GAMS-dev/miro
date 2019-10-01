@@ -947,7 +947,7 @@
         "stretch": "指定默认单元格的列的拉伸样式",
         "stretchChoices": ["无拉伸", "仅拉伸最后一列", "拉伸所有列"],
         "stretchCustom": "设置自定义列宽。",
-        "colwidth": "单个（未拉伸）列的宽度。 值设置为0代表列宽自动适合其内容。",
+        "colwidth": "单个（未拉伸）列的宽度。",
         "sort": "允许用户对列按照升序或降序进行排序（通过单击标题行中的列名称）。",
         "resize": "允许用户手动调整列的大小。",
         "enable": "允许使用表格的上下文菜单（通过鼠标右键单击访问）。",
@@ -977,7 +977,7 @@
         "buttons":{
           "label":"添加导出按钮？",
           "choices": ["copy", "CSV文件", "Excel工作簿", "PDF", "打印"],
-          "select": "选择要使用的按钮（至少选择两个按钮）。 注意：所有按钮功能仅对可见的表格页面有效。"
+          "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }
       }
     },
@@ -1097,6 +1097,7 @@
 		"max": "设置默认的上限值",								  
         "default1": "默认的下限值",
         "default2": "默认的上限值",
+        "step": "步长（支持小数）",
         "ticks": "显示刻度线？",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
@@ -1183,6 +1184,14 @@
         "label": "选择一个标签",
         "value": "选择默认值",
         "placeholder": "选择占位符"
+      },
+      "numericinput":{
+        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
+        "label": "Choose a label",
+        "value": "Default value (optional)",
+        "min": "Minimum value (optional)",
+        "max": "Maximum value (optional)",
+        "sign": "Currency symbol (optional)"
       },
       "removeDialog":{
         "title": "请确认",

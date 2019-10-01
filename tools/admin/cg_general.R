@@ -77,18 +77,7 @@ insertUI(selector = "#interface_wrapper1",
            tags$div(class="option-wrapper",
                     sliderInput("general_decimal", label = lang$adminMode$general$decimal$label,
                                 min = 0, max = 6, step = 1, value = if(length(configJSON$roundingDecimals)) configJSON$roundingDecimals else config$roundingDecimals
-                    )),
-           tags$hr(),
-           tags$h2(lang$adminMode$general$ui$headerLogo),
-           tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
-                    fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
-                              width = "100%",
-                              multiple = FALSE,
-                              accept = c(".png", ".PNG", ".jpg", ".JPG"))),
-           tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
-                      tags$div(class="logo-wrapper",
-                               imageOutput("general_logo_preview", height = "50px", width = "230px")
-                      ))
+                    ))
          ), 
          where = "beforeEnd")
 # set default values for input and output groups
@@ -116,17 +105,16 @@ insertUI(selector = "#interface_wrapper2",
                       ))
            ),
            tags$hr(),
-           tags$div(class = "info-position",
-                    tags$h2((lang$adminMode$general$ui$headerTabGrouping), 
-                            tags$a(class="info-wrapper", style="top:-10px;", href="https://gams.com/miro/customize.html#tab-grouping", 
-                                   tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank"))
-           ),
-           tags$h4(lang$adminMode$general$ui$headerInputGroups),
-           tags$div(class="option-wrapper-indented",
-                    createArray(session, "symbol_inputGroups", lang$adminMode$general$groups$input, autoCreate = FALSE)),
-           tags$h4(lang$adminMode$general$ui$headerOutputGroups),
-           tags$div(class="option-wrapper-indented",
-                    createArray(session, "symbol_outputGroups", lang$adminMode$general$groups$output, autoCreate = FALSE))
+           tags$h2(lang$adminMode$general$ui$headerLogo),
+           tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
+                    fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
+                              width = "100%",
+                              multiple = FALSE,
+                              accept = c(".png", ".PNG", ".jpg", ".JPG"))),
+           tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
+                      tags$div(class="logo-wrapper",
+                               imageOutput("general_logo_preview", height = "50px", width = "230px")
+                      ))
          ), 
          where = "beforeEnd")
 
@@ -208,13 +196,6 @@ insertUI(selector = "#module_wrapper2",
              tags$label(class = "checkbox-material", 
                         checkboxInput("general_hcubeSwitch", value = if(length(configJSON$activateModules$hcubeSwitch)) configJSON$activateModules$hcubeSwitch else config$activateModules$hcubeSwitch, label = NULL)
              )),
-           tags$div(title = lang$adminMode$general$saveTrace$title,
-                    tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
-                    tags$div(
-                      tags$label(class = "checkbox-material", 
-                                 checkboxInput("general_save_trace", value = if(length(configJSON$saveTraceFile)) configJSON$saveTraceFile else config$saveTraceFile, label = NULL)
-                      ))
-           ),
            tags$div(title = lang$adminMode$general$saveTrace$title,
                     tags$label(class = "cb-label", "for" = "general_save_trace", lang$adminMode$general$saveTrace$label),
                     tags$div(
