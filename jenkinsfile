@@ -256,8 +256,9 @@ pipeline {
                             diskutil rename "$WORKSPACE/$DMG_ROOT" "GAMS MIRO $MIRO_VER_SHORT"
                             
                             cd "$WORKSPACE"
-                            hdiutil detach -verbose $STUDIO_ROOT
-                            hdiutil detach -verbose $DMG_ROOT
+                            sleep 8s
+                            hdiutil detach -verbose $STUDIO_ROOT -force
+                            hdiutil detach -verbose $DMG_ROOT -force
                             hdiutil convert $DMG_NAME_TMP -format UDBZ -o $DMG_NAME_FINAL
                             rm studio.dmg
                             rm $DMG_NAME
@@ -266,8 +267,8 @@ pipeline {
                     post {
                         failure {
                             sh '''
-                                hdiutil detach -verbose -force $WORKSPACE/studio || echo "Detaching studio failed"
-                                hdiutil detach -verbose -force $WORKSPACE/volume || echo "Detaching volume failed"
+                                hdiutil detach -verbose $WORKSPACE/studio -force || echo "Detaching studio failed"
+                                hdiutil detach -verbose $WORKSPACE/volume -force || echo "Detaching volume failed"
                             '''
                         }
                     }
