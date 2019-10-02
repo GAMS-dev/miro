@@ -80,11 +80,6 @@ insertUI(selector = "#interface_wrapper1",
                     ))
          ), 
          where = "beforeEnd")
-# set default values for input and output groups
-if(length(configJSON$inputGroups))
-  addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
-if(length(configJSON$outputGroups))
-  addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
 insertUI(selector = "#interface_wrapper2",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerScalars, class="option-category"),
@@ -117,7 +112,6 @@ insertUI(selector = "#interface_wrapper2",
                       ))
          ), 
          where = "beforeEnd")
-
 insertUI(selector = "#module_wrapper1",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
@@ -178,7 +172,6 @@ insertUI(selector = "#module_wrapper1",
                     ))
          ), 
          where = "beforeEnd")
-
 insertUI(selector = "#module_wrapper2",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerComputation, class="option-category"),
@@ -213,12 +206,18 @@ insertUI(selector = "#module_wrapper2",
              )),
            tags$div(class="option-wrapper",
                     selectizeInput("general_args", tags$div(lang$adminMode$general$args$label, 
-                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#include-parent", 
+                                                            tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#command-line-args", 
                                                                    tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
                                                             choices = configJSON$extraClArgs, selected = configJSON$extraClArgs, 
                                                             multiple = TRUE, options = list('create' = TRUE,'persist' = FALSE)))
          ), 
          where = "beforeEnd")
+# set default values for input and output groups
+if(length(configJSON$inputGroups))
+  addArrayEl(session, "symbol_inputGroups", defaults = configJSON$inputGroups)
+if(length(configJSON$outputGroups))
+  addArrayEl(session, "symbol_outputGroups", defaults = configJSON$outputGroups)
+
 
 output$general_logo_preview <- renderImage({
   rv$customLogoChanged
