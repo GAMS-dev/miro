@@ -67,7 +67,6 @@ getCommandArg <- function(argName, exception = TRUE){
   }
 }
 try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
-useTempDir <- !identical(getCommandArg('use-tmp-dir', FALSE), "false")
 if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
   
   RLibPath = NULL
@@ -150,12 +149,19 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
+  miroWorkspace <- NULL
+  miroDbDir     <- NULL
   if(isShinyProxy){
     logFileDir <- file.path(tmpFileDir, logFileDir)
   }else{
     logFileDir <- file.path(currentModelDir, logFileDir)
+    
     # initialise MIRO workspace
     miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
+    miroDbDir     <- getCommandArg("miro-db-dir", FALSE)
+    if(identical(miroDbDir, "")){
+      miroDbDir <- miroWorkspace
+    }
     if(!dir.exists(miroWorkspace)){
       if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
         errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
@@ -239,6 +245,31 @@ if(is.null(errMsg)){
         config$db <- dbConfig$data
       }
     }
+  }
+  
+  GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
+                  paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
+  if(isTRUE(config$activateModules$hcubeMode)){
+    # in Hypercube mode we have to run in a temporary directory
+    useTempDir <- TRUE
+    GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
+                                       MIROGdxInName, '"'))
+  }else{
+    useTempDir <- !identical(getCommandArg('use-tmp-dir', FALSE), "false")
+  }
+  
+  modelData <- NULL
+  
+  if((config$activateModules$remoteExecution || useTempDir) && 
+     file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
+    modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
+  }else if(config$activateModules$remoteExecution){
+    errMsg <- paste(errMsg, sprintf("No model data ('%s') found.", paste0(modelName, ".zip")), 
+                    sep = "\n")
+  }else{
+    GAMSClArgs <- c(GAMSClArgs, paste0('idir1="', gmsFilePath(currentModelDir), '"'),
+                    if(config$includeParentDir) 
+                      paste0('idir2="', gmsFilePath(dirname(currentModelDir)), '"'))
   }
 }
 
@@ -522,7 +553,6 @@ if(is.null(errMsg)){
     errMsg <<- paste(errMsg, e, sep = '\n')
   })
   remoteUser <- uid
-  modelData <- modelFiles
   rememberMeFileName <- paste0(miroWorkspace, .Platform$file.sep, ".cred_", 
                                modelName)
   credConfig <- NULL
@@ -707,8 +737,8 @@ if(!is.null(errMsg)){
                   "currentModelDir", "modelInToImportAlias", "modelInToImport", 
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                   "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                  "modelInGmsString", "installPackage", "dbSchema", "scalarInputSym",
-                  "requiredPackagesCR", "modelFiles"), 
+                  "installPackage", "dbSchema", "scalarInputSym",
+                  "requiredPackagesCR"), 
          file = rSaveFilePath)
     rm(listOfCustomRenderers)
     if(identical(getCommandArg("buildonly", FALSE), "true")){
@@ -798,7 +828,6 @@ if(!is.null(errMsg)){
   #______________________________________________________
   server <- function(input, output, session){
     newTab <- vector("list", maxNumberScenarios + 3L)
-    flog.info("Session started (model: '%s', user: '%s').", modelName, uid)
     btSortNameDesc     <- FALSE
     btSortTimeDesc     <- TRUE
     btSortTime         <- TRUE
@@ -864,8 +893,7 @@ if(!is.null(errMsg)){
                                            c(MIROGdxInName, MIROGdxOutName) else 
                                            paste0(c(names(modelOut), inputDsNames), ".csv"),
                                          MIROGdxInName = MIROGdxInName,
-                                         clArgs = c(paste0("execMode=", gamsExecMode),
-                                                    paste0('implicitGDXOutput="', MIROGdxOutName, '"')), 
+                                         clArgs = GAMSClArgs, 
                                          text_entities = c(paste0(modelName, ".lst"), 
                                                            if(config$activateModules$miroLogFile) config$miroLogFile),
                                          currentModelDir = currentModelDir, gamsExecMode = gamsExecMode,
@@ -1020,11 +1048,23 @@ if(!is.null(errMsg)){
     roundPrecision <- config$roundingDecimals
     
     # set local working directory
-    if(isShinyProxy || useTempDir){
+    unzipModelFilesProcess <- NULL
+    if(config$activateModules$remoteExecution || useTempDir){
       workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+      if(!config$activateModules$remoteExecution && length(modelData)){
+        tryCatch({
+          unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
+                                                        stderr = NULL)
+        }, error = function(e){
+          flog.error("Problems creating process to extract model file archive. Error message: '%s'.", 
+                     conditionMessage(e))
+        })
+      }
     }else{
       workDir <- paste0(currentModelDir, .Platform$file.sep)
     }
+    flog.info("Session started (model: '%s', user: '%s', workdir: '%s').", 
+              modelName, uid, workDir)
     
     worker$setWorkDir(workDir)
     if(!dir.create(file.path(workDir), recursive = TRUE)){
@@ -1445,6 +1485,17 @@ if(!is.null(errMsg)){
                              stopApp()
                            })
         }else{
+          tryCatch({
+            if(length(unzipModelFilesProcess) && 
+               !length(unzipModelFilesProcess$get_exit_status())){
+              unzipModelFilesProcess$kill()
+            }
+          }, error = function(e){
+            flog.error("Problems killing process to extract model files. Error message: '%s'.", 
+                       conditionMessage(e))
+          }, finally = {
+            unzipModelFilesProcess <- NULL
+          })
           stopApp()
         }
       }

@@ -693,6 +693,10 @@
       "title":"Aktiver Job",
       "desc": "Ein GAMS-Job läuft derzeit. Sie müssen diesen Job stoppen oder warten, bis er beendet ist, bevor Sie einen anderen Job ausführen können."
     },
+    "unzipProcessRunning":{
+      "title": "MIRO beschäftigt",
+      "desc": "MIRO ist beschäftigt, die Modelldateien in Ihrem Arbeitsbereich zu extrahieren. Bitte warten Sie und versuchen Sie es dann erneut."
+    },
     "gamsTerm":{  
       "title":"Fehler beim Beenden von gams.exe",
       "desc":"Bei dem Beenden von GAMS ist ein Fehler aufgetreten."

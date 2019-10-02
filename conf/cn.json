@@ -693,6 +693,10 @@
       "title": "正在求解的作业",
       "desc": "正在求解一个GAMS作业。只有停止求解该作业或等待该作业完成后，才能运行其他的作业。"
     },
+    "unzipProcessRunning":{
+      "title": "MIRO busy",
+      "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
+    },
     "gamsTerm":{
       "title":"终止gams.exe时出错",
       "desc":"终止GAMS时出现错误。"

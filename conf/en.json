@@ -693,6 +693,10 @@
       "title": "Active job",
       "desc": "A GAMS job is currently running. You must stop or wait for this job to finish before you can run another job."
     },
+    "unzipProcessRunning":{
+      "title": "MIRO busy",
+      "desc": "MIRO is still busy extracting the model files in your workspace. Please wait and try again."
+    },
     "gamsTerm":{  
       "title":"Error terminating gams.exe",
       "desc":"Some error occurred terminating GAMS."

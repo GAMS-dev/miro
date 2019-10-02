@@ -4,13 +4,13 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
     private$modelGmsName <- modelGmsName
     return(invisible(self))
   },
-  genGmsString = function(par, val, modelName){
+  genGmsString = function(val, modelName){
     allParValCombinations <- do.call("expand.grid", 
                                      c(val, 
                                        stringsAsFactors = FALSE))
     private$parValCombinations <- lapply(seq_len(nrow(allParValCombinations)), 
                                          function(row){
-                                           paste(par, allParValCombinations[row, ], sep = "")
+                                           as.character(allParValCombinations[row, ])
                                          })
     allParValCombinations <- vapply(private$parValCombinations, paste, character(1L),
                                     USE.NAMES = FALSE, collapse = " ")
@@ -35,7 +35,6 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
       parValCombinations <- parValCombinations[!startsWith(parValCombinations, "--HCUBE_STATIC_")]
       return(list(id = private$jobIDs[[i]], arguments = parValCombinations))
     }), model_gms_name = private$modelGmsName), filePath, auto_unbox = TRUE)
-    
     return(filePath)
   }
 ), private = list(

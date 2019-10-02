@@ -31,13 +31,13 @@ DataInstance <- R6Class("DataInstance", public = list(
     stopifnot(is.character(modelDataFiles), is.character(workDir), 
               identical(length(workDir), 1L))
     
-    indexFileName <- "_index_file_"
+    inexFileName <- "_inex_file_"
     
     jsonlite::write_json(list(files = modelDataFiles, type = "include"), 
-                         file.path(workDir, indexFileName), auto_unbox = TRUE)
-    self$addFilePaths(file.path(workDir, indexFileName))
+                         file.path(workDir, inexFileName), auto_unbox = TRUE)
+    self$addFilePaths(file.path(workDir, inexFileName))
     
-    return(indexFileName)
+    return(inexFileName)
   },
   add = function(datasetNames, data){
     stopifnot(identical(length(datasetNames), length(data)))

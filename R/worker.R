@@ -161,8 +161,8 @@ Worker <- R6Class("Worker", public = list(
       }
     })
     if(startsWith(remoteSubValue, "error:")){
+      flog.info(paste0("Could not execute model remotely: ", remoteSubValue))
       errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7L, 9L)))
-      flog.info(paste0("Could not execute model remotely. Error code: ", errCode))
       if(is.na(errCode)){
         stop(500L, call. = FALSE)
       }else{
@@ -646,10 +646,9 @@ Worker <- R6Class("Worker", public = list(
     inputData$writeDisk(private$workDir, fileName = private$metadata$MIROGdxInName)
     
     gamsArgs <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
-                  paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'),
-                  if(private$metadata$includeParentDir) paste0('idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"'), 
                   paste0('curdir="', private$workDir, '"'), "lo=3", private$metadata$clArgs, 
-                  paste0('implicitGDXInput="', private$metadata$MIROGdxInName, '"'), "LstTitleLeftAligned=1")
+                  paste0('ImplicitGDXInput="', private$metadata$MIROGdxInName, '"'), 
+                  "LstTitleLeftAligned=1")
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
     }
@@ -687,16 +686,20 @@ Worker <- R6Class("Worker", public = list(
         stop(sprintf("Problems writing attachment data to: '%s'.", 
                      staticDir), call. = FALSE)
     }
-    
-    scenGmsPar <- c(if(length(metadata$extraClArgs)) metadata$extraClArgs, 
-                    private$metadata$clArgs, 
-                    paste0('implicitGDXInput="', 
+    if(length(private$metadata$modelData)){
+      zip::unzip(private$metadata$modelData, 
+                 overwrite = TRUE, junkpaths = FALSE, 
+                 exdir = hcubeDir)
+    }
+    scenGmsPar <- c(if(length(private$metadata$extraClArgs)) private$metadata$extraClArgs, 
+                    private$metadata$clArgs,
+                    paste0('ImplicitGDXInput="', 
                            gmsFilePath(file.path(staticDir, 
-                                                 private$metadata$MIROGdxInName)),'"'), 
-                    paste0('idir1="', gmsFilePath(private$metadata$currentModelDir), '"'))
-    
-    if(identical(private$metadata$includeParentDir, TRUE))
-      scenGmsPar <- paste0(scenGmsPar, ' idir2="', gmsFilePath(dirname(private$metadata$currentModelDir)), '"')
+                                                 private$metadata$MIROGdxInName)),'"'))
+    if(private$metadata$saveTraceFile){
+      scenGmsPar <- c(scenGmsPar, paste0('trace="', tableNameTracePrefix, 
+                                         private$metadata$modelName, '.trc"'), "traceopt=3")
+    }
     
     writeLines(scenGmsPar, file.path(hcubeDir, tolower(private$metadata$modelName) %+% ".pf"))
     dynamicPar$writeHcube(paste0(hcubeDir, .Platform$file.sep))
@@ -746,12 +749,12 @@ Worker <- R6Class("Worker", public = list(
           dataFilesToFetch <- c(dataFilesToFetch, traceFileName)
       }
       if(is.R6(hcubeData)){
-        gamsArgs <- c(gamsArgs, paste0('implicitGDXInput="', 
+        gamsArgs <- c(gamsArgs, paste0('ImplicitGDXInput="', 
                                        metadata$MIROGdxInName, '"'))
         requestBody$hypercube_file <- upload_file(hcubeData$writeHcube(workDir), 
                                                   type = 'application/json')
       }else{
-        gamsArgs <- c(gamsArgs, paste0('implicitGDXInput="', metadata$MIROGdxInName, '"'))
+        gamsArgs <- c(gamsArgs, paste0('ImplicitGDXInput="', metadata$MIROGdxInName, '"'))
         requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
@@ -766,9 +769,7 @@ Worker <- R6Class("Worker", public = list(
                                       type = 'application/zip')
       
       if(identical(metadata$useRegistered, FALSE)){
-        requestBody$model_data <- upload_file(DataInstance$new()$
-                                                addFilePaths(metadata$modelData)$
-                                                compress(recurse = TRUE), 
+        requestBody$model_data <- upload_file(metadata$modelData, 
                                               type = 'application/zip')
       }
       ret <- POST(paste0(metadata$url, if(is.R6(hcubeData)) "/hypercube" else "/jobs"), 
@@ -899,8 +900,8 @@ Worker <- R6Class("Worker", public = list(
         private$wait    <- 0L
         private$waitCnt <- 0L
         if(startsWith(remoteSubValue, "error:")){
+          flog.info(paste0("Could not execute model remotely: ", remoteSubValue))
           errCode <- suppressWarnings(as.integer(substring(remoteSubValue, 7L, 9L)))
-          flog.info(paste0("Could not execute model remotely. Error code: ", errCode))
           if(is.na(errCode)){
             private$status <- -500L
           }else{

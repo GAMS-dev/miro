@@ -160,6 +160,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     }else if(names(modelIn)[id] %in% DDPar){
       return(paste0("--", substring(names(modelIn)[id],
                                     nchar(prefixDDPar) + 1L)))
+    }else if(names(modelIn)[id] %in% inputDsNames){
+      return(paste0("--HCUBE_STATIC_", names(modelIn)[id]))
     }else{
       return(paste0("--HCUBE_SCALAR_", names(modelIn)[id]))
     }
@@ -245,12 +247,11 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     elementValues <- lapply(seq_along(modelIn), function(j){
       updateProgress(incAmount = 1/(length(modelIn) + 18), detail = lang$nav$dialogHcube$waitDialog$desc)
       i <- match(names(modelIn)[j], modelInSorted)
+      parPrefix <- getHcubeParPrefix(i)
       switch(modelIn[[i]]$type,
              slider = {
                value <- input[["slider_" %+% i]]
                if(length(value) > 1){
-                 parPrefix <- getHcubeParPrefix(i)
-                   
                  if(identical(modelIn[[i]]$slider$double, TRUE)
                     && !identical(input[["hcubeMode_" %+% i]], TRUE)){
                    # double slider in single run mode
@@ -266,15 +267,16 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  value <- getCombinationsSlider(value[1], value[2], stepSize)
                  return(paste0(parPrefix, "_lo=", value$min, 
                                " ", parPrefix, "_up=", value$max))
+               }else{
+                 return(paste0(parPrefix, "=", value))
                }
              },
              dropdown = {
                if(identical(modelIn[[i]]$dropdown$single, FALSE)){
                  data <- tibble(input[["dropdown_" %+% i]])
                  names(data) <- tolower(names(modelIn))[i]
-                 return(digest(data, algo = "md5"))
+                 return(paste0(parPrefix, "=", digest(data, algo = "md5")))
                }
-               parPrefix <- getHcubeParPrefix(i)
                value <- strsplit(input[["dropdown_" %+% i]], "||", fixed = TRUE)
                text <- vapply(value, function(valEl){
                  if(length(valEl) > 1L) 
@@ -291,20 +293,19 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                return(paste0(parPrefix, "=", escapeGAMSCL(value)))
              },
              date = {
-               return(input[["date_" %+% i]])
+               return(paste0(parPrefix, "=", input[["date_" %+% i]]))
              },
              daterange = {
                value <- as.character(input[["daterange_" %+% i]])
-               parPrefix <- getHcubeParPrefix(i)
                
                return(paste0(parPrefix, "_lo=", escapeGAMSCL(value[1]), 
                              " ", parPrefix, "_up=", escapeGAMSCL(value[2])))
              },
              checkbox = {
-               return(input[["cb_" %+% i]])
+               return(paste0(parPrefix, "=", input[["cb_" %+% i]]))
              },
              numericinput = {
-               return(input[["numeric_" %+% i]])
+               return(paste0(parPrefix, "=", input[["numeric_" %+% i]]))
              },
              textinput = {
                val <- input[["text_" %+% i]]
@@ -312,22 +313,21 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  val <- NA
                else 
                  val <- escapeGAMSCL(val)
-               return(val)
+               return(paste0(parPrefix, "=", val))
              },
              dt =,
              hot = {
                input[['in_' %+% i]]
                data <- getInputDataset(i)
                staticData$push(names(modelIn)[[i]], data)
-               return(digest(data, algo = "md5"))
+               return(paste0(parPrefix, "=", digest(data, algo = "md5")))
              },
              {
                stop(sprintf("Widget type: '%s' not supported", modelIn[[i]]$type), call. = FALSE)
              })
     })
-    par <- modelInGmsString[!is.na(elementValues)]
     elementValues <- elementValues[!is.na(elementValues)]
-    gmsString <- hcubeData$genGmsString(par = par, val = elementValues, 
+    gmsString <- hcubeData$genGmsString(val = elementValues, 
                                         modelName = modelName)
     attachmentFilePaths <- NULL
     if(config$activateModules$attachments && attachAllowExec && !is.null(activeScen)){
@@ -405,15 +405,13 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
       showHideEl(session, "#hcubeSubmitSuccess", 2000)
     }, error = function(e){
       errMsg <- conditionMessage(e)
-      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
-      
       if(identical(errMsg, '404') || startsWith(errMsg, "Could not") || 
          startsWith(errMsg, "Timeout"))
         return(showHideEl(session, "#hcubeSubmitUnknownHost", 6000))
       
       if(errMsg %in% c(401L, 403L))
         return(showHideEl(session, "#hcubeSubmitUnauthorized", 6000))
-      
+      flog.error("Some problem occurred while executing Hypercube job. Error message: '%s'.", errMsg)
       showHideEl(session, "#hcubeSubmitUnknownError", 6000)
     }, finally = {
       hideEl(session, "#jobSubmissionLoad")
@@ -580,6 +578,15 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
     showErrorMsg(lang$errMsg$jobRunning$title, 
                  lang$errMsg$jobRunning$desc)
     return(NULL)
+  }
+  if(length(unzipModelFilesProcess)){
+    if(length(unzipModelFilesProcess$get_exit_status())){
+      unzipModelFilesProcess <- NULL
+    }else{
+      showErrorMsg(lang$errMsg$unzipProcessRunning$title, 
+                   lang$errMsg$unzipProcessRunning$desc)
+      return(NULL)
+    }
   }
   if(length(activeScen) && !activeScen$hasExecPerm()){
     if(config$activateModules$hcubeMode){

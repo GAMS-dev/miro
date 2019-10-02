@@ -54,80 +54,82 @@ observe({
   })
 })
 
-observeEvent(input$downloadJobData, {
-  jID <- isolate(input$downloadJobData)
-  flog.trace("Download Hypercube job data button clicked. Job ID: '%s'.", jID)
-  if(!is.integer(jID) || length(jID) != 1L){
-    flog.error("Invalid job ID: '%s'.", jID)
-    return(showHideEl(session, "#fetchJobsError", 6000L))
-  }
-  if(length(worker$getActiveDownloads()) > 10L){
-    flog.info("Can not download job as maximum number of: %d parallel downloads is reached.", 
-              length(resDlIdx))
-    return(showHideEl(session, "#fetchJobsMaxDownloads", 6000L))
-  }
-  res <- tryCatch(worker$getJobResults(jID),
-           error = function(e){
-             errMsg <- conditionMessage(e)
-             flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.", 
-                        jID, errMsg)
-             if(errMsg == 401L || errMsg == 403L){
-               showHideEl(session, "#fetchJobsAccessDenied", 6000L)
-               return()
-             }
-             if(errMsg == 404L){
-               showHideEl(session, "#fetchJobsJobNotFound", 6000L)
-               tryCatch(worker$updateJobStatus(JOBSTATUSMAP[['corrupted(noProcess)']], jID),
-                        error = function(e){
-                          flog.error("Problems updating job status of job ID: '%s'. Error message: '%s'.",
-                                     jID, conditionMessage(e))
-                        })
-               rv$jobListPanel <- rv$jobListPanel + 1L
-               return()
-             }
-             showHideEl(session, "#fetchJobsError")
-           })
-  if(!identical(res, 5L))
-    return()
-  showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
-  
-  if(!length(asyncResObs))
-    asyncResObs <<- observe({
-      invalidateLater(5000L, session)
-      activeDownloads <- worker$getActiveDownloads()
-      if(identical(length(activeDownloads), 0L) && 
-         length(asyncResObs)){
-        asyncResObs$destroy()
-        asyncResObs <<- NULL
-        return()
-      }
-      for(dlID in activeDownloads){
-        dlProgress <- tryCatch(worker$getJobResults(dlID),
-                               error = function(e){
-                                 errMsg <- conditionMessage(e)
-                                 worker$removeActiveDownload(dlID)
-                                 flog.error("Problems downloading job results. Error message: '%s'.",
-                                            errMsg)
-                                 showHideEl(session, "#fetchJobsError")
-                                 return(-1L)
-                               })
-        if(identical(dlProgress, -1L))
-          next
-        
-        if(identical(dlProgress, 100L)){
-          session$sendCustomMessage("gms-markJobDownloadComplete", 
-                                    list(id = dlID, 
-                                         text = lang$nav$importJobsDialog$status$downloaded,
-                                         triggerImport = identical(length(activeDownloads), 1L)))
+if(isTRUE(config$activateModules$remoteExecution)){
+  observeEvent(input$downloadJobData, {
+    jID <- isolate(input$downloadJobData)
+    flog.trace("Download Hypercube job data button clicked. Job ID: '%s'.", jID)
+    if(!is.integer(jID) || length(jID) != 1L){
+      flog.error("Invalid job ID: '%s'.", jID)
+      return(showHideEl(session, "#fetchJobsError", 6000L))
+    }
+    if(length(worker$getActiveDownloads()) > 10L){
+      flog.info("Can not download job as maximum number of: %d parallel downloads is reached.", 
+                length(resDlIdx))
+      return(showHideEl(session, "#fetchJobsMaxDownloads", 6000L))
+    }
+    res <- tryCatch(worker$getJobResults(jID),
+                    error = function(e){
+                      errMsg <- conditionMessage(e)
+                      flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.", 
+                                 jID, errMsg)
+                      if(errMsg == 401L || errMsg == 403L){
+                        showHideEl(session, "#fetchJobsAccessDenied", 6000L)
+                        return()
+                      }
+                      if(errMsg == 404L){
+                        showHideEl(session, "#fetchJobsJobNotFound", 6000L)
+                        tryCatch(worker$updateJobStatus(JOBSTATUSMAP[['corrupted(noProcess)']], jID),
+                                 error = function(e){
+                                   flog.error("Problems updating job status of job ID: '%s'. Error message: '%s'.",
+                                              jID, conditionMessage(e))
+                                 })
+                        rv$jobListPanel <- rv$jobListPanel + 1L
+                        return()
+                      }
+                      showHideEl(session, "#fetchJobsError")
+                    })
+    if(!identical(res, 5L))
+      return()
+    showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
+    
+    if(!length(asyncResObs))
+      asyncResObs <<- observe({
+        invalidateLater(5000L, session)
+        activeDownloads <- worker$getActiveDownloads()
+        if(identical(length(activeDownloads), 0L) && 
+           length(asyncResObs)){
+          asyncResObs$destroy()
+          asyncResObs <<- NULL
           return()
         }
-        session$sendCustomMessage("gms-updateJobProgress", 
-                                  list(id = paste0("#jobImportDlProgress_", dlID), 
-                                       progress = list(noCompleted = dlProgress, 
-                                                       noTotal = 100L)))
-      }
-    })
-})
+        for(dlID in activeDownloads){
+          dlProgress <- tryCatch(worker$getJobResults(dlID),
+                                 error = function(e){
+                                   errMsg <- conditionMessage(e)
+                                   worker$removeActiveDownload(dlID)
+                                   flog.error("Problems downloading job results. Error message: '%s'.",
+                                              errMsg)
+                                   showHideEl(session, "#fetchJobsError")
+                                   return(-1L)
+                                 })
+          if(identical(dlProgress, -1L))
+            next
+          
+          if(identical(dlProgress, 100L)){
+            session$sendCustomMessage("gms-markJobDownloadComplete", 
+                                      list(id = dlID, 
+                                           text = lang$nav$importJobsDialog$status$downloaded,
+                                           triggerImport = identical(length(activeDownloads), 1L)))
+            return()
+          }
+          session$sendCustomMessage("gms-updateJobProgress", 
+                                    list(id = paste0("#jobImportDlProgress_", dlID), 
+                                         progress = list(noCompleted = dlProgress, 
+                                                         noTotal = 100L)))
+        }
+      })
+  })
+}
 
 observeEvent(input$btShowHistory, {
   flog.trace("Show job history button clicked.")

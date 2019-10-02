@@ -959,16 +959,18 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                 tags$td(lang$nav$importJobsDialog$status$running)
                               }else if(identical(jStatus, JOBSTATUSMAP[['completed']])){
                                 tags$td(tags$div(lang$nav$importJobsDialog$status$completed), 
-                                        tags$div(class = "progress", 
-                                                 style = "display:none;margin-bottom:0;border:1px solid black;",
-                                                 id = paste0("jobImportDlProgressWrapper_", jID),
-                                                 tags$div(class = "progress-bar progress-bar-striped active", 
-                                                          id = paste0("jobImportDlProgress_", jID),
-                                                          role = "progressbar", `aria-valuenow` = 5L, 
-                                                          `aria-valuemin` = 0, `aria-valuemax` = 100, 
-                                                          style = paste0("width:", 5L, "%;"),
-                                                          lang$nav$importJobsDialog$status$downloading)
-                                        ))
+                                        if(isTRUE(config$activateModules$remoteExecution)){
+                                          tags$div(class = "progress", 
+                                                   style = "display:none;margin-bottom:0;border:1px solid black;",
+                                                   id = paste0("jobImportDlProgressWrapper_", jID),
+                                                   tags$div(class = "progress-bar progress-bar-striped active", 
+                                                            id = paste0("jobImportDlProgress_", jID),
+                                                            role = "progressbar", `aria-valuenow` = 5L, 
+                                                            `aria-valuemin` = 0, `aria-valuemax` = 100, 
+                                                            style = paste0("width:", 5L, "%;"),
+                                                            lang$nav$importJobsDialog$status$downloading)
+                                          )
+                                        })
                               }else if(identical(jStatus, JOBSTATUSMAP[['downloaded']])){
                                 tags$td(lang$nav$importJobsDialog$status$downloaded)
                               }else if(identical(jStatus, JOBSTATUSMAP[['corrupted']])){
@@ -1016,16 +1018,21 @@ getJobsTable <- function(hcubeMeta, jobHist = FALSE, hcubeMode = TRUE, showLogFi
                                 tags$td(
                                   if(jStatus %in% c(JOBSTATUSMAP[['completed']],
                                                     JOBSTATUSMAP[['downloaded']])){
+                                    if(isTRUE(config$activateModules$remoteExecution)){
+                                      jobStatus <- jStatus
+                                    }else{
+                                      jobStatus <- JOBSTATUSMAP[['downloaded']]
+                                    }
                                     tagList(
                                       tags$button(class = "btn btn-default",
-                                                  style = if(identical(jStatus, JOBSTATUSMAP[['completed']]))
+                                                  style = if(identical(jobStatus, JOBSTATUSMAP[['completed']]))
                                                     "" else "display:none;",
                                                   id = paste0("btDownloadJob_", jID),
                                                   onclick = paste0("Shiny.setInputValue('downloadJobData',", 
                                                                    jID, ",{priority:\'event\'});"),
                                                   lang$nav$importJobsDialog$buttons$download),
                                       tags$button(class = "btn btn-default", 
-                                                  style = if(identical(jStatus, JOBSTATUSMAP[['completed']]))
+                                                  style = if(identical(jobStatus, JOBSTATUSMAP[['completed']]))
                                                     "display:none" else "",
                                                   id = paste0("btImportJob_", jID),
                                                   onclick = paste0("Shiny.setInputValue('importJob',", 

@@ -74,8 +74,8 @@ if(is.null(errMsg)){
   }
   
   if(!is.null(config$db$name) && nchar(config$db$name) &&
-     identical(config$db$type, "sqlite")){
-    config$db$name <- file.path(miroWorkspace, config$db$name %+% ".sqlite3")
+     identical(config$db$type, "sqlite") && length(miroDbDir)){
+    config$db$name <- file.path(miroDbDir, config$db$name %+% ".sqlite3")
   }
 }
 
@@ -764,7 +764,6 @@ if(is.null(errMsg)){
   rm(externalDataConfig)
   
   # Hypercube mode configuration
-  modelInGmsString <- NULL
   if(identical(config$activateModules$hcubeMode, TRUE)){
     lapply(seq_along(modelIn), function(i){
       if(!identical(modelIn[[i]]$noHcube, TRUE)){
@@ -812,27 +811,6 @@ if(is.null(errMsg)){
                })
       }
       })
-    modelInSorted <- sort(names(modelIn))
-    modelInGmsString <- unlist(lapply(seq_along(modelIn), function(j){
-      i <- match(names(modelIn)[j], modelInSorted)
-      if((modelIn[[i]]$type == "slider" 
-          && identical(modelIn[[i]]$slider$double, TRUE)) 
-         || (modelIn[[i]]$type %in% c("dropdown", "daterange"))){
-        ""
-      }else{
-        if(names(modelIn)[i] %in% DDPar){
-          return("--" %+% names(modelIn)[i] %+% "=")
-        }else if(names(modelIn)[i] %in% GMSOpt){
-          return(names(modelIn)[i] %+% "=")
-        }else if(modelIn[[i]]$type %in% c("hot", "dt") ||
-                 (identical(modelIn[[i]]$type, c("dropdown")) &&
-                  identical(modelIn[[i]]$dropdown$single, FALSE))){
-          return("--HCUBE_STATIC_" %+% names(modelIn)[i] %+% "=")
-        }else{
-          return("--HCUBE_SCALAR_" %+% names(modelIn)[i] %+% "=")
-        }
-      }
-    }), use.names = FALSE)
   }
   
   # get input sheets with dependencies on other sheets
@@ -1412,18 +1390,6 @@ if(is.null(errMsg)){
                                             lang$scalarAliases$cols$desc,
                                             lang$scalarAliases$cols$value)
   }
-  
-  # generate list of model files
-  modelFiles <- list.files(currentModelDir, recursive = FALSE, full.names = TRUE)
-  modelFiles <- modelFiles[!basename(modelFiles) %in% c(paste0(modelName, "_", hcubeDirName), 
-                                                        customRendererDirName, "static",
-                                                        "logs", "conf", "runapp.R", 
-                                                        paste0("~$", modelNameRaw, ".gms"),
-                                                        paste0(miroDataDirPrefix, modelName),
-                                                        config$modelFilesToIgnore)]
-  modelFilesExt <- tools::file_ext(modelFiles)
-  modelFiles <- modelFiles[!modelFilesExt %in% c("miroconf", "log", "lst", "lxi")]
-  modelFiles <- modelFiles[!grepl("\\.log~(\\d)+$", modelFiles)]
   
   # generate GAMS return code map
   GAMSReturnCodeMap <- c(

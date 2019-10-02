@@ -1,5 +1,5 @@
 # elements that must be saved in scalar table
-scalarInToVerify <- unlist(lapply(names(modelIn)[!names(modelIn) %in% modelInTabularData], function(el){
+scalarInToVerify <- unlist(lapply(scalarInputSym, function(el){
   if((!is.null(modelIn[[el]]$slider) && identical(modelIn[[el]]$slider$double, TRUE)) || 
      !is.null(modelIn[[el]]$daterange)){
     return(paste0(el, c("_lo", "_up")))
@@ -35,6 +35,7 @@ additionalInputScalars <- inputDsNames[vapply(inputDsNames, function(el){
            identical(modelIn[[el]]$dropdown$checkbox, TRUE))
 }, logical(1L), USE.NAMES = FALSE)]
 scalarInToVerify <- c(scalarInToVerify, additionalInputScalars)
+scalarInToVerify <- scalarInToVerify[!startsWith(scalarInToVerify, "_")]
 scalarOutToVerify <- NULL
 if(scalarsOutName %in% names(modelOut)){
   scalarOutToVerify <- modelOut[[scalarsOutName]]$symnames
@@ -49,10 +50,12 @@ disableEl(session, "#btUploadHcube")
 hcubeImport <- HcubeImport$new(db, scalarsFileName, scalarsOutName, 
                                tableNamesCanHave = c(setdiff(inputDsNames, additionalInputScalars), 
                                                      names(modelOut)),
-                               tableNamesMustHave = c(if(scalarsFileName %in% inputDsNames) scalarsFileName, 
-                                                      if(scalarsOutName %in% names(modelOut)) scalarsOutName, 
+                               tableNamesMustHave = c(if(scalarsFileName %in% inputDsNames) scalarInToVerify, 
+                                                      if(scalarsOutName %in% names(modelOut)) scalarOutToVerify, 
                                                       if(config$saveTraceFile) tableNameTracePrefix %+% modelName),
                                config$csvDelim, workDir, gmsColTypes = gmsColTypes, gmsFileHeaders = gmsFileHeaders,
+                               gdxio = gdxio, inputSym = inputDsNames, outputSym = names(modelOut),
+                               templates = setNames(c(modelInTemplate, modelOutTemplate), c(names(modelIn), names(modelOut))), 
                                strictmode = config$activateModules$strictmode)
 rm(gmsColTypes)
 duplicatedScenIds <- vector("character", 0L)
@@ -89,7 +92,16 @@ observeEvent(rv$uploadHcube, {
   }
   prog$set(detail = lang$progressBar$hcubeImport$zipValidation, value = 1/6)
   # validate here so only valid scenarios will be read
-  hcubeImport$validateScenFiles()
+  invalidScenIds <- hcubeImport$validateScenFiles()
+  if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
+    showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
+                 lang$errMsg$hcubeImport$invalidJob$desc)
+    return(NULL)
+  }
+  if(length(invalidScenIds) >= 1){
+    showInvalidScenIdsDialog(invalidScenIds)
+    return(NULL)
+  }
   
   tryCatch({  
     hcubeImport$readAllScenData()
@@ -103,17 +115,7 @@ observeEvent(rv$uploadHcube, {
   
   prog$inc(amount = 0, detail = lang$progressBar$hcubeImport$scenValidation)
   
-  hcubeImport$validateScenTables(scalarInToVerify, scalarOutToVerify)
-  invalidScenIds <- hcubeImport$getInvalidScenIds()
-  if(length(hcubeImport$getScenNames()) - length(invalidScenIds) == 0){
-    showErrorMsg(lang$errMsg$hcubeImport$invalidJob$title, 
-                 lang$errMsg$hcubeImport$invalidJob$desc)
-    return(NULL)
-  }else if(length(invalidScenIds) >= 1){
-    showInvalidScenIdsDialog(invalidScenIds)
-  }else{
-    rv$noInvalidData <- rv$noInvalidData + 1L
-  }
+  rv$noInvalidData <- rv$noInvalidData + 1L
 })
 
 ##############

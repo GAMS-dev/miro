@@ -4,6 +4,7 @@ HcubeImport <- R6Class("HcubeImport",
                          initialize        = function(db, scalarsInputName, scalarsOutputName, 
                                                       tableNamesCanHave, tableNamesMustHave,
                                                       csvDelim, workDir, gmsColTypes, gmsFileHeaders,
+                                                      gdxio, inputSym, outputSym, templates, 
                                                       strictmode = TRUE){
                            # R6 class to import scenarios in hcube mode
                            #
@@ -19,6 +20,10 @@ HcubeImport <- R6Class("HcubeImport",
                            #   traceColNames:           column names of trace file
                            #   gmsColTypes:             character vector of column types per datasheet
                            #   gmsFileHeaders:          character vector of file headers per datasheet
+                           #   gdxio:                   gdxio class
+                           #   inputSym:                input symbols
+                           #   outputSym:               output symbols
+                           #   templates:               input/output symbol templates
                            #   strictmode:              logical that specifies whether strict mode is active
                            #
                            
@@ -33,6 +38,8 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.character(traceColNames), length(traceColNames) >= 1)
                            stopifnot(is.character(gmsColTypes), length(gmsColTypes) >= 1)
                            stopifnot(is.list(gmsFileHeaders), length(gmsFileHeaders) >= 1)
+                           stopifnot(is.R6(gdxio), is.character(inputSym), is.character(outputSym),
+                                     is.list(templates))
                            stopifnot(is.logical(strictmode), length(strictmode) == 1)
                            # END error checks
                            
@@ -55,10 +62,13 @@ HcubeImport <- R6Class("HcubeImport",
                            private$gmsColTypes        <- gmsColTypes
                            private$gmsFileHeaders     <- gmsFileHeaders
                            private$strictmode         <- strictmode
+                           private$gdxio              <- gdxio
+                           private$inputSym           <- inputSym
+                           private$outputSym          <- outputSym
+                           private$templates          <- templates
                            private$noScen             <- NA_integer_
                          },
                          getScenNames      = function() private$scenNames,
-                         getInvalidScenIds = function() private$invalidScenIds,
                          getNoScen         = function() private$noScen,
                          unzipScenData     = function(zipFilePath, extractDir){
                            # Unzips a zip archive into the extractDir folder
@@ -75,23 +85,23 @@ HcubeImport <- R6Class("HcubeImport",
                            stopifnot(is.character(extractDir), length(extractDir) == 1)
                            # END error checks
                            
-                           csvPaths             <- private$getCsvPaths(zipFilePath)
-                           private$scenNames    <- private$fetchScenNames(csvPaths)
+                           filePaths             <- private$getFilePaths(zipFilePath)
+                           private$scenNames     <- private$fetchScenNames(filePaths)
                            # workaround for unzip function as path with trailing slashes is not found
-                           if(length(csvPaths)){
-                             csvPaths <- utils::unzip(zipFilePath, 
-                                                      exdir = gsub("/?$", "", 
-                                                                   private$workDir))
-                             if(any(Sys.readlink(csvPaths) != "")){
+                           if(length(filePaths)){
+                             filePaths <- utils::unzip(zipFilePath, 
+                                                       exdir = gsub("/?$", "", 
+                                                                    private$workDir))
+                             if(any(Sys.readlink(filePaths) != "")){
                                stop("zip archive contains symlinks.", call. = FALSE)
                              }
                            }
                            
-                           private$csvPaths <- csvPaths
-                           private$csvPaths <- lapply(private$scenNames, 
-                                                      private$getScenFilePaths, csvPaths)
-                           names(private$csvPaths) <- private$scenNames
-                           flog.trace("%s files unzipped in: '%s'.", length(private$csvPaths), private$workDir)
+                           private$filePaths <- filePaths
+                           private$filePaths <- lapply(private$scenNames, 
+                                                       private$getScenFilePaths, filePaths)
+                           names(private$filePaths) <- private$scenNames
+                           flog.trace("%s files unzipped in: '%s'.", length(private$filePaths), private$workDir)
                            invisible(self)
                          },
                          validateScenFiles = function(){
@@ -103,14 +113,14 @@ HcubeImport <- R6Class("HcubeImport",
                            #   reference to itself (importHcube R6 object)
                            
                            
-                           csvNames       <- lapply(private$csvPaths, 
+                           fileNames       <- lapply(private$filePaths, 
                                                     private$verifyScenFiles)
-                           invalidScen    <- vapply(csvNames, is.null, logical(1L), USE.NAMES = FALSE)
+                           invalidScen    <- vapply(fileNames, is.null, logical(1L), USE.NAMES = FALSE)
                            
                            private$invalidScenIds <- private$scenNames[invalidScen]
-                           private$csvPaths[private$invalidScenIds] <- NULL
+                           private$filePaths[private$invalidScenIds] <- NULL
                            
-                           invisible(self)
+                           return(private$invalidScenIds)
                          },
                          readAllScenData   = function(){
                            # Read scenario data and return them as a list of dataframes
@@ -119,40 +129,7 @@ HcubeImport <- R6Class("HcubeImport",
                            # 
                            # Returns:
                            #    R6 object (reference to itself)
-                           private$scenData <- lapply(private$csvPaths, private$readScenData)
-                           invisible(self)
-                         },
-                         validateScenTables = function(scalarInToVerify = NULL, scalarOutToVerify = NULL){
-                           # validates scenario tables
-                           #
-                           # Args:
-                           #   scalarInToVerify:        scalar input elements that must exist 
-                           #                            in order for scenario to be valid (optional)
-                           #   scalarOutToVerify:       scalar output elements that must exist 
-                           #                            in order for scenario to be valid (optional)
-                           #
-                           # Returns:
-                           #   reference to itself (importHcube R6 object)
-                           
-                           # BEGIN error checks
-                           if(length(scalarInToVerify)){
-                             stopifnot(is.character(scalarInToVerify), length(scalarInToVerify) >= 1)
-                           }
-                           if(length(scalarOutToVerify)){
-                             stopifnot(is.character(scalarOutToVerify), length(scalarOutToVerify) >= 1)
-                           }
-                           # END error checks
-                           isValidScen    <- vapply(private$scenData, 
-                                                    private$validateTables,
-                                                    logical(1L),
-                                                    scalarInToVerify, 
-                                                    scalarOutToVerify,
-                                                    USE.NAMES = FALSE)
-                           invalidScenTables <- names(private$scenData)[!isValidScen]
-                           private$scenData[invalidScenTables] <- NULL
-                           private$invalidScenIds <- c(private$invalidScenIds, 
-                                                       invalidScenTables)
-                           
+                           private$scenData <- lapply(private$filePaths, private$readScenData)
                            invisible(self)
                          },
                          removeDuplicates  = function(){
@@ -308,11 +285,12 @@ HcubeImport <- R6Class("HcubeImport",
                          scenData                = NULL,
                          uid                     = character(0L),
                          dbSchema                = vector("list", 3L),
+                         gdxio                   = NULL,
                          tableNamesScenario      = character(0L),
                          tableNameMetadata       = character(0L),
                          scenMetaColnames        = character(0L),
                          scenNames               = character(0L),
-                         csvPaths                = character(0L),
+                         filePaths                = character(0L),
                          gmsColTypes             = character(0L),
                          gmsFileHeaders          = character(0L),
                          scalarsInputName        = character(0L),
@@ -328,120 +306,91 @@ HcubeImport <- R6Class("HcubeImport",
                          strictmode              = logical(1L),
                          includeTrc              = logical(0L),
                          noScen                  = integer(1L),
+                         inputSym                = character(0L),
+                         outputSym               = character(0L),
+                         templates               = list(),
                          getScenFilePaths  = function(scenName, paths){
-                           csvIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
-                           return(paths[csvIdx])
+                           pathIdx <- grepl(scenName %+% "/", paths, fixed = TRUE)
+                           return(paths[pathIdx])
                          },
-                         readScenData      = function(csvPaths){
-                           scenDataNames <- gsub("\\.(csv|trc)$", "", tolower(basename(csvPaths)), 
-                                                 ignore.case = TRUE)
-                           scenData <- lapply(seq_along(csvPaths), function(i){
-                             csvPath <- csvPaths[[i]]
+                         readScenData      = function(filePaths){
+                           scenDataNames <- lapply(tolower(filePaths), function(filePath){
+                             if(endsWith(filePath, ".trc")){
+                               fileName <- basename(filePath)
+                               return(substring(fileName, 1, nchar(fileName) - 4))
+                             }else if(identical(basename(filePath), MIROGdxInName)){
+                               return(private$inputSym)
+                             }else{
+                               return(private$outputSym)
+                             }})
+                           scenData <- unlist(lapply(seq_along(filePaths), function(i){
+                             filePath <- filePaths[[i]]
                              tryCatch({
-                               if(endsWith(tolower(csvPath), ".trc")){
-                                 scenData <- readTraceData(csvPath, private$traceColNames)[1, ]
-                               }else{
-                                 colTypes <- NULL
-                                 if(!is.na(private$gmsColTypes[scenDataNames[[i]]])){
-                                   colTypes <- private$gmsColTypes[[scenDataNames[[i]]]]
-                                 }
-                                 scenData <- read_delim(csvPath, private$csvDelim, col_names = TRUE,
-                                                        col_types = cols())
-                                 if(!is.null(colTypes)){
-                                   scenData <- fixColTypes(scenData, colTypes)
-                                 }
-                                 scenData <- scenData %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
-                                   replace(is.na(.), "")
-                                 
+                               if(endsWith(tolower(filePath), ".trc")){
+                                 return(list(readTraceData(filePath, private$traceColNames)[1, ]))
                                }
-                               scenData
+                               symNames <- scenDataNames[[i]]
+                               return(lapply(symNames, function(symName){
+                                 colTypes <- private$gmsColTypes[[symName]]
+                                 scenData <- tryCatch({
+                                   fixColTypes(private$gdxio$rgdx(filePath, symName), colTypes)
+                                 }, error = function(e){
+                                   private$templates[[symName]]
+                                 })
+                                 names(scenData) <- names(private$templates[[symName]])
+                                 return(scenData %>% mutate_if(is.numeric , replace_na, replace = 0) %>% 
+                                          replace(is.na(.), ""))
+                               }))
                              }, error = function(e){
-                               stop(sprintf("Problems reading file: '%s'. Error message: %s.", csvPath, e),
+                               stop(sprintf("Problems reading file: '%s'. Error message: %s.", filePath, e),
                                     call. = FALSE)
                              })
-                           })
-                           names(scenData) <- scenDataNames
-                           scenData
+                           }), recursive = FALSE, use.names = FALSE)
+                           names(scenData) <- unlist(scenDataNames, use.names = FALSE, recursive = FALSE)
+                           return(scenData)
                          },
-                         verifyScenFiles = function(csvPaths){
-                           if(private$includeTrc){
-                             grepEx <- "\\.(csv|trc)$"
-                           }else{
-                             grepEx <- "\\.csv$"
-                           }
-                           csvNames      <- gsub(grepEx, "", basename(csvPaths), 
-                                                 ignore.case = TRUE)
-                           verifiedIds   <- match(private$tableNamesMustHave, csvNames)
+                         verifyScenFiles = function(filePaths){
+                           tableNames    <- tolower(unlist(lapply(tolower(filePaths), function(filePath){
+                             if(endsWith(filePath, ".trc")){
+                               fileName <- basename(filePath)
+                               return(substring(fileName, 1, nchar(fileName) - 4))
+                             }
+                             gdxSym <- private$gdxio$getSymbols(filePath)
+                             return(c(gdxSym$sets, gdxSym$parameters, gdxSym$variables, gdxSym$equations))}),
+                             use.names = FALSE, recursive = FALSE))
+                           verifiedIds   <- match(private$tableNamesMustHave, tableNames)
                            if(any(is.na(verifiedIds))){
                              flog.info("The scenario misses some tables that must be included: '%s'.", 
                                        paste(private$tableNamesMustHave[is.na(verifiedIds)], collapse = "', '"))
                              return(NULL)
                            }else{
-                             verifiedIds   <- match(tolower(csvNames), private$tableNamesToVerify)
+                             verifiedIds   <- match(tolower(tableNames), private$tableNamesToVerify)
                              if(any(is.na(verifiedIds))){
                                flog.info("The scenario includes invalid datasets: '%s'.", 
-                                         paste(csvNames[is.na(verifiedIds)], collapse = "', '"))
+                                         paste(tableNames[is.na(verifiedIds)], collapse = "', '"))
                                return(NULL)
                              }else{
-                               return(csvNames)
+                               return(tableNames)
                              }
                            }
                          },
-                         validateTables = function(scenTables, scalarInToVerify, scalarOutToVerify){
-                           isInvalidTable <- vapply(seq_along(scenTables), function(tableId){
-                             tableName <- tolower(names(scenTables)[tableId])
-                             if(identical(tableName, private$scalarsInputName) &&
-                                any(!tolower(scenTables[[tableId]][[1]]) %in% scalarInToVerify)){
-                                 flog.info("Additional elements in input scalar table: '%s'.", 
-                                           scenTables[[tableId]][[1]][!scenTables[[tableId]][[1]] %in% scalarInToVerify])
-                                 return(TRUE)
-                             }else if(identical(tableName, private$scalarsOutputName) &&
-                                      (any(!tolower(scenTables[[tableId]][[1]]) %in% scalarOutToVerify) || 
-                                      length(scenTables[[tableId]][[1]]) != length(scalarOutToVerify))){
-                               flog.info("Missing or additional elements in output scalar table.")
-                               return(TRUE)
-                             }else if(identical(tableName, private$traceTabName) &&
-                                      length(scenTables[[tableId]]) != length(private$traceColNames)){
-                               flog.info("Trace file does not have %d columns.", 
-                                         length(private$traceColNames))
-                               return(TRUE)
-                             }else if(!is.null(private$gmsFileHeaders[[tableName]])){
-                               if(!validateHeaders(names(scenTables[[tableId]]), 
-                                                  private$gmsFileHeaders[[tableName]])){
-                                 flog.info("Dataset: '%s' has invalid headers ('%s'). Headers should be: '%s'.", 
-                                           tableName, paste(names(scenTables[[tableId]]), collapse = "', '"), 
-                                           paste(private$gmsFileHeaders[[tableName]], collapse = "', '"))
-                                 if(private$strictmode){
-                                   return(TRUE)
-                                 }
-                               }
-                             }
-                             return(FALSE)
-                           }, logical(1L), USE.NAMES = FALSE)
-                           if(any(isInvalidTable)){
-                             return(FALSE)
-                           }else{
-                             return(TRUE)
-                           }
-                         },
-                         getCsvPaths       = function(zipFilePath){
+                         getFilePaths       = function(zipFilePath){
+                           validFileNames <- c(MIROGdxInName, MIROGdxOutName)
+                            
                            if(private$includeTrc){
-                             grepEx <- "^((?!\\.\\.).)*\\.(csv|trc)$"
-                           }else{
-                             grepEx <- "^((?!\\.\\.).)*\\.csv$"
+                             validFileNames <- c(validFileNames, 
+                                                 paste0(tableNameTracePrefix, modelName, ".trc"))
                            }
                            fileNamesZip   <- zip_list(zipFilePath)
                            fileNamesZip   <- fileNamesZip[fileNamesZip$compressed_size > 0, ]$filename
-                           validFileNames <- grep(grepEx, fileNamesZip, 
-                                                  ignore.case = TRUE, value = TRUE, perl = TRUE)
-                           if(!identical(length(fileNamesZip), length(validFileNames))){
+                           
+                           if(any(!basename(fileNamesZip) %in% validFileNames)){
                              stop("invalidFiles", call. = FALSE)
                            }
-                           
-                           return(validFileNames)
+                           return(fileNamesZip)
                          },
-                         fetchScenNames      = function(csvPaths){
-                           return(unique(dirname(csvPaths)))
+                         fetchScenNames      = function(filePaths){
+                           return(unique(dirname(filePaths)))
                          }
                        )
 )
