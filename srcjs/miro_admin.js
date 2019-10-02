@@ -321,7 +321,7 @@ export function addArrayDataEl(arrayID, defaultsRaw, reinitialize = false) {
   });
 }
 function addArrayDataElWrapper(arrayID, defaults, cnt = 1) {
-  if ($(`#${arrayID}_wrapper`).is(':visible')) {
+  if ($(`#${arrayID}_wrapper`).is(':visible') || cnt === 6) {
     addArrayDataEl(arrayID, defaults, true);
   } else if (cnt <= 6) {
     setTimeout(addArrayDataElWrapper, 200, arrayID, defaults, cnt + 1);
