@@ -541,7 +541,7 @@ observeEvent({input$widget_type
                                       choices = c(`_` = "_", pivotCols), 
                                       selected = if(length(rv$widgetConfig$pivotCols)) rv$widgetConfig$pivotCols else "_"))
                },
-               conditionalPanel(condition = "input.table_bigdata===false",
+               conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
                                 tags$div(class="option-wrapper",
                                          selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                                      choices = inputSymHeaders[[input$widget_symbol]], 
@@ -1292,8 +1292,10 @@ observeEvent(input$widget_hcube, {
 observeEvent(input$table_bigdata, {
   if(input$table_bigdata == TRUE){
     rv$widgetConfig$bigData <<- TRUE
+    rv$widgetConfig$heatmap <<- FALSE
   }else{
     rv$widgetConfig$bigData <<- FALSE
+    rv$widgetConfig$heatmap <<- input$table_heatmap
   }
 })
 observeEvent(input$table_readonly, {
@@ -1307,9 +1309,17 @@ observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
 })
 observeEvent(input$table_pivotCols, {
   rv$widgetConfig$pivotCols <<- input$table_pivotCols
+  if(!identical(rv$widgetConfig$pivotCols, "_")){
+    rv$widgetConfig$heatmap <<- FALSE
+  }else{
+    rv$widgetConfig$heatmap <<- input$table_heatmap
+  }
 })
 observeEvent(input$table_heatmap, {
   rv$widgetConfig$heatmap <<- input$table_heatmap
+  if(!identical(rv$widgetConfig$pivotCols, "_") && isFALSE(rv$widgetConfig$bigData)){
+    rv$widgetConfig$heatmap <<- FALSE
+  }
 })
 
 observeEvent(input$slider_min, {
