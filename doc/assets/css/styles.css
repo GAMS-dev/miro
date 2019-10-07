@@ -685,6 +685,7 @@ body{
 .page-wrapper .callout-success {
   background: #f9f9fb;
   color: #000;
+  border-left: 5px solid #75c181;
 }
 .page-wrapper .callout-success .icon-holder,
 .page-wrapper .callout-success .callout-title{
@@ -693,6 +694,7 @@ body{
 .page-wrapper .callout-warning {
   background: #f9f9fb;
   color: #000;
+  border-left: 5px solid #f90;
 }
 .page-wrapper .callout-warning .icon-holder,
 .page-wrapper .callout-warning .callout-title{
