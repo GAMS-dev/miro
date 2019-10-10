@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <title>GAMS MIRO - Model deployment</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.1.1/js/all.js" integrity="sha384-BtvRZcyfv4r0x/phJt9Y9HhnN5ur1Z+kZbKVgzVBAlQZX4jvAuImlIz+bG7TS00a" crossorigin="anonymous"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- Cookie consent by https://cookieconsent.osano.com -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
+    <script>
+    window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#000"
+        },
+        "button": {
+          "background": "#F39619"
+        }
+      }
+    })});
+    </script>
+</head>
+
+<body class="body-orange">
+    <!--#include virtual="/wbody.html" -->
+    <div class="page-wrapper">
+
+        <!--TYPO3SEARCH_begin-->
+
+        <!-- ******Header****** -->
+        <header id="header" class="sub-header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="index.html">
+                          <img class="img-fluid" style="height:50px;" src="assets/images/logo.svg" onerror="this.onerror=null; this.src='assets/images/logo.png'" alt="GAMS MIRO"/>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">App deployment</li>
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div id="doc-header" class="doc-header text-center">
+                    <h1 class="doc-title"><i class="icon fas fa-box-open"></i> App deployment</h1>
+                </div><!--//doc-header-->
+                <div class="doc-body row">
+                    <div class="doc-content col-md-9 col-12 order-1">
+                        <div class="content-inner">
+                            <section id="deployment-introduction" class="doc-section">
+                                <h2 class="section-title">Introduction</h2>
+                                <div class="section-block">
+                                    <div class="callout-warning" style="padding:5px;">
+                                        <p style="margin: 5px;"> This chapter deals with the deployment of a MIRO application. All configuration should be completed beforehand.</p>
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                            <section id="development-deployment" class="doc-section">
+                                <h2 class="section-title">Development vs. Deployment</h2>
+                                <div class="section-block">
+                                    <p>During the <a href="./model.html#development-mode">development process</a> of a MIRO application, the GAMS symbols 
+                                    and graphics to be displayed and thus the corresponding configuration files are constantly changed. 
+                                    These adjustments are no longer possible once an application has been deployed.</p>
+                                    <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                        <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                        <b class="callout-title">Note:</b>
+                                        <p> The configuration of a deployed MIRO application can not be changed anymore! Only when the app 
+                                        was started in development mode again and the <i>.miroconf</i> files were updated, changes become effective.</p>
+                                      </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    <p>When starting a deployed MIRO app, instead of the JSON files the binary files 
+                                    <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;.miroconf</i></a> and 
+                                    <a href="./faqs.html#file-miroconf"><i>&lt;modelname&gt;_&lt;version_number&gt;_hcube.miroconf</i></a> are used for the startup. 
+                                    These configuration files are only created/updated when an app is started in <a href="./faqs.html#def-development-mode">development mode</a>, i.e. via 
+                                    GAMS Studio or the command line. Thus, they are always up to date with the last launch in that particular mode (Base mode or Hypercube mode).
+                                    If the MIRO app has been changed, e.g. the configuration of a new graphic or the specification of a new GAMS symbol, 
+                                    these changes are not taken into account when starting your app in deployment mode, since these changes are only performed in the JSON files.
+                                    In order to update the deployed app, the <i>.miroconf</i> files must be recreated. For this you first to 
+                                    re-launch your app in development mode. Note that you need to launch the Hypercube 
+                                    mode explicitly for the <i>&lt;modelname&gt;_hcube.miroconf</i> file to be refreshed! </p>
+                                    <div class="callout-block callout-warning">
+                                      <div class="icon-holder">
+                                        <i class="fas fa-info-circle"></i>
+                                      </div><!--//icon-holder-->
+                                      <div class="content">
+                                        <b class="callout-title">Note:</b>
+                                        <p>There is one binary configuration file each for Base mode and Hypercube mode. Both are only updated when the corresponding 
+                                        mode is started in development mode.</p>
+                                      </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                </div><!--//section-block-->
+                            </section><!--//doc-section-->
+                        </div><!--//content-inner-->
+                    </div><!--//doc-content-->
+                    <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
+                        <div id="doc-nav" class="doc-nav">
+	                        <nav id="doc-menu" class="nav doc-menu flex-column sticky">
+	                            <a class="nav-link scrollto" href="#deployment-introduction">Introduction</a>
+	                            <a class="nav-link scrollto" href="#development-deployment">Development vs. Deployment</a>
+                        </div>
+                    </div><!--//doc-sidebar-->
+                </div><!--//doc-body-->
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+
+    <!--TYPO3SEARCH_end-->
+    </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
+
+    <!-- Main Javascript -->
+    <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/stickyfill/dist/stickyfill.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+
+</body>
+</html>
