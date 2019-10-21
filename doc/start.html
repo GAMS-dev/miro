@@ -328,21 +328,37 @@
                                     </div><!--//section-block-->
                                     <div id="scenario-comparison"  class="section-block">
                                         <h3 class="block-title">Scenario comparison</h3>
-                                        <p>The scenario comparison mode is useful if you want to compare the input and/or output data of different model runs.
-                                        <br>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
+                                        <p>The scenario comparison mode is useful if you want to compare the input and/or output data of different model runs. 
+                                        Scenarios from the database as well as the currently loaded sandbox scenario can be used for comparison. 
+                                        There are two different types of comparison available, split screen mode and tab view mode.</p> 
+                                        <h5 class="block-title">Split screen</h5>
+                                        <p>If two scenarios are to be compared, the split-screen view is particularly suitable. Here the data of two scenarios can be compared directly next to each other. </p>
                                         <div class="section-block" style="text-align:center;">
                                               <img class="img-fluid" src="assets/images/batch_img/split_screen_mode.png" alt="Integrated scenario comparison - split screen" />
                                         </div>
-                                        <p>If you are in the split screen view, you can load scenarios you want to compare. You can choose between:</p>
+                                        <p>If you are in the split screen view, you can load scenarios you want to compare.</p> 
+                                        <div class="section-block" style="text-align:center;">
+                                              <img class="img-fluid" src="assets/images/compare_split.png" alt="Split screen" />
+                                        </div>
+                                        <p>You can choose between:</p>
                                         <ul>
                                           <li>Load scenario:<br>
-                                          Load saved scenario data.
+                                          Load saved scenario data from the database.
                                           </li>
                                           <li>Load active:<br>
-                                          Load the scenario which is opened in the Input / Output section.
+                                          Load the sandbox scenario which is opened in the Input / Output section.
                                           </li>
                                         </ul>
-                                        <p>By the way: Via the <img class="img-fluid" src="assets/images/download-spreadsheet-btn.png" width="25" height="25" align="middle" alt="download spreadsheet" /> button in the upper right corner you can access the input and output data which have been communicated with the GAMS model.</p>
+                                        <div class="callout-block callout-success">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-thumbs-up"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Tip:</b>
+                                              <p>Via the <img class="img-fluid" src="assets/images/download-spreadsheet-btn.png" width="25" height="25" align="middle" alt="download spreadsheet" /> button in the upper right corner you can access the input and output data which have been communicated with the GAMS model.</p>
+                                          </div><!--//content-->
+                                        </div><!--//callout-block-->
+                                        <h5 class="block-title">Tab view</h5>
                                         <p>In addition to the split screen mode, more than two scenarios can also be compared lying side by side in individual tabs (like tabs in a browser). You can use the button in the navigation bar to switch between the splitscreen view and the display of scenarios in tab pages. </p>
                                         <div class="section-block" style="text-align:center;">
                                               <img class="img-fluid" src="assets/images/batch_img/tab_view2.png" alt="compare scenarios tab wise" />
@@ -356,7 +372,8 @@
                                               <p>If you have opened scenarios in the split screen mode and switch to the tab view, the scenarios from the split view are pre-selected in the <i>load</i> dialog so that you can easily continue using them.</p>
                                           </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>The <b>comparison mode</b> makes comparing scenarios more convenient.
+                                        <h5 class="block-title">Comparison mode</h5>
+                                        <p>The comparison mode makes comparing scenarios more convenient. It can be used in both the split screen and the tab view.
                                         As soon as this option is activated via the <i>Comparison mode</i> button in the navigation bar, the switch to another data set of a scenario is also performed for all other open scenarios.
                                         This means that if you change the symbol to be displayed in a scenario (e.g. switch from 'Price' to 'absolute error' in the image above), the view also changes accordingly for the other currently open scenario(s).</p>
                                         <div class="callout-block callout-success">
