@@ -1,18 +1,19 @@
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
-  if(!file.exists(paste0(currentModelDir, configDir, modelName, ".json"))){
-    tryCatch(cat("{}\n", file = paste0(currentModelDir, configDir, modelName, ".json")),
+  if(!file.exists(file.path(currentModelDir, "conf", modelName %+% ".json"))){
+    tryCatch(cat("{}\n", file = file.path(currentModelDir, "conf", modelName %+% ".json")),
              error = function(e){
-               errMsg <<- "A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: " %+% currentModelDir %+% configDir
+               errMsg <<- paste0("A configuration file was not found and no data could be written to the location of the config folder. Please check read/write permissions in folder: ",
+                                 file.path(currentModelDir, "conf"))
              })
   }
 }
 
 if(is.null(errMsg)){
   # files that require schema file
-  jsonFilesWithSchema <- c(file.path(currentModelDir, configDir, paste0(modelName,".json")), 
-                           file.path(currentModelDir, configDir, paste0(modelName, "_io.json")),
-                           file.path(configDir, "db_config.json"))
+  jsonFilesWithSchema <- c(file.path(currentModelDir, "conf", paste0(modelName,".json")), 
+                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")),
+                           file.path(getwd(), "conf", "db_config.json"))
   jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
   if(any(jsonFilesMissing)){
     errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
@@ -21,11 +22,11 @@ if(is.null(errMsg)){
   }
   rm(jsonFilesMissing)
   jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
-                                   file.path(configDir, "config_schema.json")), 
+                                   file.path(getwd(), "conf", "config_schema.json")), 
                         io_config = c(jsonFilesWithSchema[2], 
-                                     file.path(configDir, "io_config_schema.json")),
+                                     file.path(getwd(), "conf", "io_config_schema.json")),
                         db_config = c(jsonFilesWithSchema[3], 
-                                      file.path(configDir, "db_config_schema.json")))
+                                      file.path(getwd(), "conf", "db_config_schema.json")))
 }
 
 # validate json files
@@ -89,8 +90,8 @@ if(is.null(errMsg)){
   }else{
     eval <- list(character(), character())
     tryCatch({
-      eval <- validateJson(paste0(configDir, config$language, ".json"), 
-                           configDir %+% languageSchemaName, addDefaults = FALSE)
+      eval <- validateJson(file.path(getwd(), "conf", config$language %+% ".json"), 
+                           file.path(getwd(), "conf", languageSchemaName), addDefaults = FALSE)
     }, error = function(e){
       errMsg <<- paste0("Some error occurred validating language file: '",
                         config$language, ".json'. Error message: ", e)

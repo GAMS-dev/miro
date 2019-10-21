@@ -140,7 +140,7 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
       noDupScen   <- length(unique(duplicatedScenIds))
       showDuplicatedScenDialog(noDupScen, dupScenTags, noScen = length(hcubeImport$getScenNames()))
     }else{
-      rv$btSave <- isolate(rv$btSave + 1L)
+      rv$btSave <- rv$btSave + 1L
     }
   }, error = function(e){
     flog.error("Problems fetching duplicated Scenarios from database. Error message: %s.", e)
@@ -154,10 +154,10 @@ observeEvent(virtualActionButton(rv$noInvalidData), {
 
 observeEvent(input$btHcubeImportNew, {
   hcubeImport$removeDuplicates()
-  rv$btSave <- isolate(rv$btSave + 1L)
+  rv$btSave <- rv$btSave + 1L
 })
 observeEvent(input$btHcubeImportAll,
-             rv$btSave <- isolate(rv$btSave + 1L))
+             rv$btSave <- rv$btSave + 1L)
 
 ##############
 #      3
@@ -185,7 +185,10 @@ observeEvent(virtualActionButton(rv$btSave), {
   }else{
     statusCode <- JOBSTATUSMAP[["imported"]]
   }
-  tryCatch(worker$updateJobStatus(statusCode, jobImportID, tags = hcubeTags),
+  tryCatch({
+    worker$updateJobStatus(statusCode, jobImportID, tags = hcubeTags)
+    worker$removeActiveDownload(jobImportID)
+    },
            error = function(e){
              flog.error(e)
              showHideEl(session, "#fetchJobsError")
@@ -288,7 +291,7 @@ observeEvent(input$importJob, {
     showHideEl(session, "#fetchJobsError")
     return()
   }
-  if(!identical(worker$getStatus(jID), JOBSTATUSMAP[['completed']])){
+  if(!worker$getStatus(jID) %in% c(JOBSTATUSMAP[['completed']], JOBSTATUSMAP[['downloaded']])){
     flog.error("Import button was clicked but job is not yet marked as 'completed' (Job ID: '%s'). The user probably tampered with the app.", jID)
     showHideEl(session, "#fetchJobsError")
   }

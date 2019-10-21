@@ -29,7 +29,7 @@ HcubeDataInstance <- R6Class("HcubeDataInstance", public = list(
     if(!identical(length(private$jobIDs), length(private$parValCombinations))){
       stop("", call. = FALSE)
     }
-    filePath <- paste0(workDir, "hcube.json")
+    filePath <- file.path(workDir, "hcube.json")
     write_json(list(jobs = lapply(seq_along(private$jobIDs), function(i){
       parValCombinations <- private$parValCombinations[[i]]
       parValCombinations <- parValCombinations[!startsWith(parValCombinations, "--HCUBE_STATIC_")]

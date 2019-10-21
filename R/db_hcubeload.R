@@ -176,7 +176,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                            paste0(as.vector(private$groupLabels[i, ], "character"), collapse = "\\")
                          }, character(1L), USE.NAMES = FALSE)
                          lapply(seq_along(private$groupedSids), function(i){
-                           fileName <- workDir %+% i %+% ".trc"
+                           fileName <- file.path(workDir, i %+% ".trc")
                            paverFile <- file(fileName, open = 'wt')
                            writeLines(paste0("* Trace Record Definition\n* GamsSolve\n",
                                              "* ", paste(setdiff(private$traceColNames, exclTraceCols), collapse = ","),

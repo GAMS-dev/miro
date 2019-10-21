@@ -404,6 +404,13 @@ Worker <- R6Class("Worker", public = list(
   removeActiveDownload = function(jID){
     jIDChar <- as.character(jID)
     private$fJobRes[[jIDChar]] <- NULL
+    if(file.exists(private$jobResultsFile[[jIDChar]])){
+      if(identical(unlink(private$jobResultsFile[[jIDChar]], 
+                          force = TRUE), 1L)){
+        flog.error("Problems removing Hypercube job file: '%s'.",
+                   private$jobResultsFile[[jIDChar]])
+      }
+    }
     private$jobResultsFile[[jIDChar]] <- NULL
     private$resultFileSize[[jIDChar]] <- NULL
     return(invisible(self))
@@ -438,15 +445,9 @@ Worker <- R6Class("Worker", public = list(
     }
     
     if(!length(private$jobResultsFile[[jIDChar]])){
-      if(private$hcube){
-        private$jobResultsFile[[jIDChar]] <- file.path(private$metadata$currentModelDir, 
-                                                       hcubeDirName, 
-                                                       jID, "4upload.zip")
-        if(file.exists(private$jobResultsFile[[jIDChar]]))
-          return(100L)
-      }else{
-        private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
-      }
+      private$jobResultsFile[[jIDChar]] <- file.path(tempdir(TRUE), jIDChar, "results.zip")
+      if(file.exists(private$jobResultsFile[[jIDChar]]))
+        return(100L)
       
       if(dir.exists(dirname(private$jobResultsFile[[jIDChar]])) && 
          identical(unlink(dirname(private$jobResultsFile[[jIDChar]]),
@@ -463,8 +464,12 @@ Worker <- R6Class("Worker", public = list(
                   add_headers(Authorization = private$authHeader,
                               Timestamp = as.character(Sys.time(), usetz = TRUE)), 
                   timeout(2L))
-      if(!identical(status_code(ret), 200L))
-        stop(status_code(ret), call. = FALSE)
+      if(!identical(status_code(ret), 200L)){
+        print(paste0(private$metadata$url, 
+                     if(private$hcube) "/hypercube/" else "/jobs/", 
+                     self$getPid(jID), "/result"))
+        stop(status_code(ret), call. = FALSE)}
+        
       
       fileSize <- suppressWarnings(
         as.integer(headers(ret)[["content-length"]]))
@@ -498,7 +503,7 @@ Worker <- R6Class("Worker", public = list(
     }
     
     bytesDownloaded <- file.info(paste0(private$jobResultsFile[[jIDChar]], ".dl"))[['size']]
-    
+
     if(is.na(bytesDownloaded))
       return(5L)
     
@@ -652,7 +657,7 @@ Worker <- R6Class("Worker", public = list(
     if(private$metadata$saveTraceFile){
       gamsArgs <- c(gamsArgs, paste0('trace="', tableNameTracePrefix, private$metadata$modelName, '.trc"'), "traceopt=3")
     }
-    pfFilePath <- gmsFilePath(paste0(private$workDir, tolower(private$metadata$modelName), ".pf"))
+    pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
     writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
     
     private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), 
@@ -758,7 +763,7 @@ Worker <- R6Class("Worker", public = list(
         requestBody$text_entities   <- paste(metadata$text_entities, collapse = ",")
         requestBody$stdout_filename <- paste0(metadata$modelName, ".log")
       }
-      pfFilePath <- gmsFilePath(paste0(workDir, tolower(metadata$modelName), ".pf"))
+      pfFilePath <- gmsFilePath(file.path(workDir, tolower(metadata$modelName) %+% ".pf"))
       writeLines(c(pfFileContent, gamsArgs), pfFilePath)
       
       requestBody$inex_filename <- inputData$addInexFile(workDir, dataFilesToFetch)
@@ -1203,7 +1208,8 @@ Worker <- R6Class("Worker", public = list(
     }else if(identical(length(jobProgress), 1L) &&
              jobProgress %in% c(-404L, -405L)){
       status <- JOBSTATUSMAP[['corrupted(noProcess)']]
-    }else if(identical(length(jobProgress), 2L) &&
+    }else if(status < JOBSTATUSMAP[['imported']] && 
+             length(jobProgress) == 2L &&
              identical(jobProgress[[1L]], jobProgress[[2L]])){
       status <- JOBSTATUSMAP[['completed']]
     }

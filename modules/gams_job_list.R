@@ -70,8 +70,6 @@ if(isTRUE(config$activateModules$remoteExecution)){
     res <- tryCatch(worker$getJobResults(jID),
                     error = function(e){
                       errMsg <- conditionMessage(e)
-                      flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.", 
-                                 jID, errMsg)
                       if(errMsg == 401L || errMsg == 403L){
                         showHideEl(session, "#fetchJobsAccessDenied", 6000L)
                         return()
@@ -86,15 +84,26 @@ if(isTRUE(config$activateModules$remoteExecution)){
                         rv$jobListPanel <- rv$jobListPanel + 1L
                         return()
                       }
+                      flog.error("Problems initiating job results download of job ID: '%s'. Error message: '%s'.", 
+                                 jID, errMsg)
                       showHideEl(session, "#fetchJobsError")
                     })
-    if(!identical(res, 5L))
+    if(identical(res, 100L)){
+      activeDownloads <- worker$getActiveDownloads()
+      session$sendCustomMessage("gms-markJobDownloadComplete", 
+                                list(id = jID, 
+                                     text = lang$nav$importJobsDialog$status$downloaded,
+                                     triggerImport = identical(length(activeDownloads), 0L)))
       return()
+    }else if(!identical(res, 5L)){
+      return()
+    }
     showEl(session, paste0("#jobImportDlProgressWrapper_", jID))
     
     if(!length(asyncResObs))
       asyncResObs <<- observe({
         invalidateLater(5000L, session)
+        flog.debug("Download-results-observer triggered.")
         activeDownloads <- worker$getActiveDownloads()
         if(identical(length(activeDownloads), 0L) && 
            length(asyncResObs)){

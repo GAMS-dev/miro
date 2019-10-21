@@ -1,5 +1,6 @@
 renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions = NULL, 
-                         filterOptions = NULL, modelDir = NULL, noDataTxt = "no data"){
+                         filterOptions = NULL, modelDir = NULL, noDataTxt = "no data",
+                         createdDynamically = FALSE){
   ns <- NS(id)
   # make output type case insensitive
   typeCustom <- type
@@ -34,7 +35,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
       stop(paste0("The tool you selected for: '", id,"' is not supported by the current version of GAMS WebUI."))
     }
     if(length(filterOptions$col)){
-      data <- tagList(tags$div(class = "data-filter-wrapper",
+      data <- tagList(tags$div(class = "data-filter-wrapper", 
                       selectInput(ns("data_filter"), 
                                   filterOptions$label, 
                                   choices = c(), multiple = isTRUE(filterOptions$multiple)),
@@ -67,7 +68,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
     }
   return(tagList(
     tags$div(id = ns("noData"), class = "out-no-data", noDataTxt),
-    tags$div(id = ns("data"), style = "display:none", data)
+    tags$div(id = ns("data"), style = if(createdDynamically) "" else "display:none", data)
   ))
 }
 
@@ -93,6 +94,7 @@ renderData <- function(input, output, session, data, type, configData = NULL, dt
   type <- tolower(type)
   filterCol <- NULL
   if(length(graphOptions$filter) && graphOptions$filter$col %in% names(data)){
+    showEl(session, "#" %+% session$ns("data_filter_wrapper"))
     filterCol <- as.name(graphOptions$filter$col)
     choices <- data[[graphOptions$filter$col]]
     updateSelectInput(session, "data_filter", choices = choices, 

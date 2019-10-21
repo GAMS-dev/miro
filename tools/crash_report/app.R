@@ -13,23 +13,7 @@ uploadFile <- function(file, url, userpwd){
   curl::curl_fetch_memory(url, handle = h)
 }
 
-getCommandArg <- function(argName, exception = TRUE){
-  # local mode
-  args <- commandArgs(trailingOnly = TRUE)
-  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
-                   ignore.case = TRUE)
-  if(any(matches)){
-    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
-                ignore.case = TRUE))
-  }else{
-    if(exception){
-      stop()
-    }else{
-      return("")
-    }
-  }
-}
-modelPath <- getCommandArg("modelPath")
+modelPath <- Sys.getenv("GMSMODELNAME")
 modelName <- basename(modelPath)
 modelPath <- dirname(modelPath)
 

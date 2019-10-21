@@ -784,8 +784,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
           }else{
-            output$listFile <- renderText(read_file(paste0(workDir, 
-                                                           modelNameRaw, ".lst")))
+            output$listFile <- renderText(read_file(
+              file.path(workDir, modelNameRaw %+% ".lst")))
           }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc
@@ -878,7 +878,9 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
         }
         if(config$saveTraceFile){
           tryCatch({
-            traceData <<- readTraceData(workDir %+% tableNameTracePrefix %+% modelName %+%".trc", 
+            traceData <<- readTraceData(file.path(workDir, 
+                                                  paste0(tableNameTracePrefix,
+                                                         modelName, ".trc")), 
                                         traceColNames)
           }, error = function(e){
             flog.info("Problems loading trace data. Error message: %s.", e)

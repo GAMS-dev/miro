@@ -1,8 +1,8 @@
 # run the paver module (python)
 paver <- NULL
-traceFileDir <- paste0(workDir, "trace", .Platform$file.sep)
+traceFileDir <- file.path(workDir, "trace")
 # paver solution files
-paverFileDir <- paste0(workDir, "paver", .Platform$file.sep)
+paverFileDir <- file.path(workDir, "paver")
 
 genPaverArgs <- function(traceFilenames, clArgs = NULL){
   stopifnot(is.character(traceFilenames), length(traceFilenames) >= 1)
@@ -78,7 +78,7 @@ observeEvent(input$btPaver, {
     paverClArgs <- isolate(input$paverClArgs)
     tryCatch({
       if(dir.exists(traceFileDir)){
-        unlink(file.path(traceFileDir,"*"), recursive = TRUE, force = TRUE)
+        unlink(file.path(traceFileDir, "*"), recursive = TRUE, force = TRUE)
       }else{
         dir.create(traceFileDir, showWarnings = FALSE)
       }
@@ -149,7 +149,8 @@ observeEvent(input$btPaver, {
       
       paver <<- processx::process$new(pyExec, args = genPaverArgs(traceFiles, paverClArgs), 
                                       windows_hide_window = TRUE,
-                                      stdout = workDir %+% modelName %+% ".paverlog", stderr = "|")
+                                      stdout = file.path(workDir, modelName %+% ".paverlog"),
+                                      stderr = "|")
       rm(pyExec)
     }, error = function(e) {
       errMsg <<- lang$errMsg$paverExec$desc

@@ -503,15 +503,14 @@ $(document).ready(() => {
       .text(`${data.progress.noCompleted}/${data.progress.noTotal}`);
   });
   Shiny.addCustomMessageHandler('gms-markJobDownloadComplete', (data) => {
-    $(`#jobImportDlProgressWrapper_${data.id}`).siblings('div:first').text(data.text);
-    $(`#jobImportDlProgressWrapper_${data.id}`).hide();
-    $(`#btDownloadJob_${data.id}`).hide();
-    $(`#btImportJob_${data.id}`).show();
-
     if (data.triggerImport === true
       && $(`#jobImportDlProgressWrapper_${data.id}`).is(':visible')) {
       Shiny.setInputValue('importJob', data.id, { priority: 'event' });
     }
+    $(`#jobImportDlProgressWrapper_${data.id}`).siblings('div:first').text(data.text);
+    $(`#jobImportDlProgressWrapper_${data.id}`).hide();
+    $(`#btDownloadJob_${data.id}`).hide();
+    $(`#btImportJob_${data.id}`).show();
   });
   Shiny.addCustomMessageHandler('gms-hideModal', (delay) => {
     setTimeout(() => {

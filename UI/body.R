@@ -516,27 +516,29 @@ if(config$activateModules$hcubeMode){
   tabItemList <- c(tabItemList, list(
     tabItem(tabName="gamsinter",
             if(config$activateModules$remoteExecution){
-              tabBox(width = 12, id = "jobListPanel", 
-                     tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
-                              outputTabset             
-                     ), 
-                     tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
-                              fluidRow(
-                                box(title = tagList(lang$nav$hcubeImport$title,
-                                                    tags$div(style = "float: right;", 
-                                                             actionButton(inputId = "refreshActiveJobs", 
-                                                                          class = "bt-icon", 
-                                                                          icon = icon("refresh"), label = NULL))),
-                                    status="warning", solidHeader = TRUE, width = 12,
-                                    genSpinner("jImport_load", absolute = FALSE),
-                                    getJobsTableSkeleton(id = "jImport_output"),
-                                    tags$div(class = "col-sm-6",
-                                             actionButton("btShowHistory", 
-                                                          lang$nav$hcubeImport$btShowHistory)
-                                    )
+              fluidRow(
+                tabBox(width = 12, id = "jobListPanel", 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabCurrent, value = "current",
+                                outputTabset             
+                       ), 
+                       tabPanel(lang$nav$gams$boxGamsOutput$tabJobList, value = "joblist",
+                                fluidRow(
+                                  box(title = tagList(lang$nav$hcubeImport$title,
+                                                      tags$div(style = "float: right;", 
+                                                               actionButton(inputId = "refreshActiveJobs", 
+                                                                            class = "bt-icon", 
+                                                                            icon = icon("refresh"), label = NULL))),
+                                      status="warning", solidHeader = TRUE, width = 12,
+                                      genSpinner("jImport_load", absolute = FALSE),
+                                      getJobsTableSkeleton(id = "jImport_output"),
+                                      tags$div(class = "col-sm-6",
+                                               actionButton("btShowHistory", 
+                                                            lang$nav$hcubeImport$btShowHistory)
+                                      )
+                                  )
                                 )
-                              )
-                     ))
+                       ))
+              )
             }else{
               outputTabset
             }
@@ -638,8 +640,8 @@ if(config$activateModules$hcubeMode){
   ))
 }
 body <- dashboardBody({
-  if(dir.exists(paste0(currentModelDir, "static"))){
-    addResourcePath("custom", paste0(currentModelDir, "static"))
+  if(dir.exists(file.path(currentModelDir, "static"))){
+    addResourcePath("custom", file.path(currentModelDir, "static"))
   }
   tagList(
   tags$head(
@@ -662,7 +664,7 @@ body <- dashboardBody({
     # Logo ratio should be 4,6 (width/height)
     tags$style(HTML(paste0('
 .main-header .logo {
-  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(paste0(currentModelDir, "static"))) "custom/", config$UILogo, '");
+  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "custom/", config$UILogo, '");
   background-size: contain;
 }
 .pvtRows, .pvtCols { 

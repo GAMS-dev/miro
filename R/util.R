@@ -43,46 +43,46 @@ isShinyProxy <- function(){
     invisible(TRUE)
   }
 }
-
-getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaselDir = NULL){
+getCommandArg <- function(argName, exception = TRUE){
+  # local mode
+  args <- commandArgs(trailingOnly = TRUE)
+  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
+                   ignore.case = TRUE)
+  if(any(matches)){
+    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
+                ignore.case = TRUE))
+  }else{
+    if(exception){
+      stop()
+    }else{
+      return("")
+    }
+  }
+}
+getModelPath <- function(modelPath = NULL, isShinyProxy = FALSE, envVarPath = NULL, modeBaseDir = NULL){
   # returns name of the model currently rendered
   # 
   # Args:
   # modelPath:                  path of the GAMS model as defined externally (e.g. in development mode)
   # isShinyProxy:               boolean that specifies whether shiny proxy is used
   # envVarPath:                 name of the environment variable that specifies model path in shiny proxy
-  # modeBaselDir:               durectory where model folders are located
+  # modeBaseDir:               directory where model folders are located
   #
   # Returns:
   # string with model name or error  in case no model name could be retrieved
   
-  errMsg <- "Model path could not be retrieved."
-  if(isShinyProxy || identical(Sys.getenv("SHINYTEST"), "yes")){
+  envName <- Sys.getenv(envVarPath)
+  if(identical(envName, "")){
+    modelPath <- file.path(getwd(), modelDir, modelName, modelName %+% ".gms")
+  }else if(isShinyProxy || identical(Sys.getenv("SHINYTEST"), "yes")){
     # shiny proxy mode
-    if(is.null(envVarPath)){
-      if(is.null(modelPath)){
-        stop(errMsg, call. = FALSE)
-      }
-    }else{
-      envName <- Sys.getenv(envVarPath)
-      if(length(envName)){
-        modelPath <- paste0(modeBaselDir, envName, .Platform$file.sep, envName, ".gms") 
-      }else if(is.null(modelPath)){
-        stop(errMsg, call. = FALSE)
-      }
-    }
+    modelPath <- file.path(modeBaseDir, envName, envName %+% ".gms")
   }else{
-    tryCatch({
-      modelPath <- getCommandArg("modelPath")
-    }, error = function(e){
-      if(is.null(modelPath)){
-        stop(errMsg, call. = FALSE)
-      }
-    })
+    modelPath <- envName
   }
   gmsFileName  <- basename(modelPath)
   modelNameRaw <- gsub("\\.[[:alpha:]]{2,3}$", "", gmsFileName)
-  modelDir     <- dirname(modelPath) %+% .Platform$file.sep
+  modelDir     <- dirname(modelPath)
   return(list(modelDir, gmsFileName, tolower(modelNameRaw), modelNameRaw))
 }
 getInputToImport <- function(data, keywordsNoImport){

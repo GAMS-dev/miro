@@ -43,7 +43,8 @@ getScenTabData <- function(sheetName){
   return(tabData)
 }
 generateScenarioTabset <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
-                                   noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId){
+                                   noDataTxt = lang$nav$outputScreen$boxResults$noData, scenCounter = scenId,
+                                   createdDynamically = FALSE){
   errMsg <- NULL
   noDataDiv <- tags$div(class = "out-no-data", lang$nav$outputScreen$boxResults$noData)
   scenTabset <- MIROtabBox(id = paste0("contentScen_", scenId), noTabsGrouped = length(outputTabs),
@@ -99,7 +100,8 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
                                                                         customOptions = graphConfig$options,
                                                                         filterOptions = graphConfig$graph$filter,
                                                                         height = graphConfig$height, modelDir = modelDir, 
-                                                                        noDataTxt = noDataTxt)
+                                                                        noDataTxt = noDataTxt, 
+                                                                        createdDynamically = createdDynamically)
                                                          }, error = function(e) {
                                                            flog.error("Problems rendering UI elements for scenario dataset: '%s'. Error message: %s.", 
                                                                       sheetName, e)
@@ -160,9 +162,11 @@ generateScenarioTabset <- function(scenId, noData = vector("logical", length(sce
     return(scenTabset)
   }
 }
-generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), scenCounter = scenId){
+generateScenarioTabsetMulti <- function(scenId, noData = vector("logical", length(scenTableNamesToDisplay)), 
+                                        scenCounter = scenId){
   tryCatch({
-    scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter)
+    scenTabset <- generateScenarioTabset(scenId, noData, noDataTxt = NULL, scenCounter = scenCounter,
+                                         createdDynamically = TRUE)
   }, error = function(e){
     flog.error("Problems generating scenario tabset (multi comparison mode). Error message: %s.", e)
     stop(conditionMessage(e))

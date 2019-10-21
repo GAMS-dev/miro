@@ -67,6 +67,23 @@ observeEvent(input$loadActiveScenSplitComp, {
                                                 uidAlias = lang$nav$excelExport$metadataSheet$uid, 
                                                 snameAlias = lang$nav$excelExport$metadataSheet$sname, 
                                                 stimeAlias = lang$nav$excelExport$metadataSheet$stime)
+  idxScalarOut <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                               "_", scalarsOutName), scenTableNames)[[1]]
+  idxScalarIn <- match(paste0(gsub("_", "", modelName, fixed = TRUE), 
+                              "_", scalarsFileName), scenTableNames)[[1]]
+  # load scalar data if available
+  if(!is.na(idxScalarIn) && nrow(scenData[[scenIdLong]][[idxScalarIn]])){
+    scalarData[[scenIdLong]]               <<- scenData[[scenIdLong]][[idxScalarIn]]
+  }else{
+    scalarData[[scenIdLong]]               <<- tibble()
+  }
+  if(!is.na(idxScalarOut) && nrow(scenData[[scenIdLong]][[idxScalarOut]])){
+    # scalar data exists
+    rowIdsToRemove                         <- tolower(scenData[[scenIdLong]][[idxScalarOut]][[1]]) %in% config$hiddenOutputScalars
+    scalarData[[scenIdLong]]               <<- bind_rows(scalarData[[scenIdLong]], 
+                                                         scenData[[scenIdLong]][[idxScalarOut]])
+    scenData[[scenIdLong]][[idxScalarOut]] <<- scenData[[scenIdLong]][[idxScalarOut]][!rowIdsToRemove, ]
+  }
 
   source("./modules/scen_render.R", local = TRUE)
   sidsInSplitComp[id - 1L] <<- NA_integer_

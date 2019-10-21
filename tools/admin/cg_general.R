@@ -270,8 +270,10 @@ observeEvent(input$widget_general_logo_upload, {
   fileName <- inFile$name
   if(!dir.exists(file.path(currentModelDir, "static"))){
     if(!dir.create(file.path(currentModelDir, "static"))){
-      flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", file.path(currentModelDir, "static"))
-      showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
+      flog.error("A problem occurred creating directory: %s. Maybe you have insufficient permissions?", 
+                 file.path(currentModelDir, "static"))
+      showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
+                            lang$adminMode$general$modalDialog$content))
       return()
     }
   }else{
@@ -284,8 +286,10 @@ observeEvent(input$widget_general_logo_upload, {
     }
   }
   if(!file.copy(filePath, file.path(currentModelDir, "static", fileName))){
-    flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", filePath, file.path(currentModelDir, "static"))
-    showModal(modalDialog(lang$adminMode$general$modalDialog$title, lang$adminMode$general$modalDialog$content))
+    flog.error("A problem occurred copying image (%s) to folder: %s. Maybe you have insufficient permissions?", 
+               filePath, file.path(currentModelDir, "static"))
+    showModal(modalDialog(lang$adminMode$general$modalDialog$title, 
+                          lang$adminMode$general$modalDialog$content))
     return()
   }
   rv$generalConfig$UILogo <<- fileName

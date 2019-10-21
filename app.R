@@ -1,5 +1,6 @@
 #version number
 MIROVersion <- "0.8.9"
+APIVersion  <- "1"
 MIRORDate   <- "Sep 25 2019"
 #####packages:
 # processx        #MIT
@@ -30,7 +31,6 @@ MIRORDate   <- "Sep 25 2019"
 # RSQLite(Scenario mode) #LGPL >=2
 # digest (Hypercube mode) #GPL >=2
 
-
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
@@ -40,8 +40,6 @@ if(R.version[["major"]] < 3 ||
   stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
 tmpFileDir <- tempdir(check = TRUE)
-# directory of configuration files
-configDir <- "./conf/"
 # required packages
 suppressMessages(library(R6))
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
@@ -49,29 +47,15 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
                       "jsonlite", "jsonvalidate", "rpivotTable", 
                       "futile.logger", "zip", "tidyr")
 config <- list()
-gamsSysDir   <- ""
-getCommandArg <- function(argName, exception = TRUE){
-  # local mode
-  args <- commandArgs(trailingOnly = TRUE)
-  matches <- grepl(paste0("^-+", argName, "\\s?=\\s?"), args, 
-                   ignore.case = TRUE)
-  if(any(matches)){
-    return(gsub(paste0("^-+", argName, "\\s?=\\s?"), "", args[matches][1], 
-                ignore.case = TRUE))
-  }else{
-    if(exception){
-      stop()
-    }else{
-      return("")
-    }
-  }
-}
-try(gamsSysDir <- paste0(getCommandArg("gamsSysDir"), .Platform$file.sep), silent = TRUE)
+gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
   
   RLibPath = NULL
   
 }else{
+  if(!endsWith(gamsSysDir, .Platform$file.sep)){
+    gamsSysDir <- paste0(gamsSysDir, .Platform$file.sep)
+  }
   RLibPath = file.path(gamsSysDir, "GMSR", "library")
   assign(".lib.loc", RLibPath, envir = environment(.libPaths))
 }
@@ -122,43 +106,34 @@ if(is.null(errMsg)){
   # check whether shiny proxy is used to access this file
   isShinyProxy <- isShinyProxy()
   # get model path and name
-  tryCatch({
-    modelPath <- paste0(getwd(), .Platform$file.sep, modelDir, modelName, 
-                        .Platform$file.sep, modelName, ".gms")
-    modelPath    <- getModelPath(modelPath, isShinyProxy, spModelPathEnvVar, 
-                                 paste0(getwd(), .Platform$file.sep, modelDir))
-    modelNameRaw <- modelPath[[4]]
-    modelName    <- modelPath[[3]]
-    modelGmsName <- modelPath[[2]]
-    modelPath    <- modelPath[[1]]
-  }, error = function(e){
-    errMsg <<- paste(errMsg,
-                     "The GAMS model name could not be identified. Please make sure you specify the name of the model you want to solve.",
-                     sep = "\n")
-  })
+  modelPath    <- getModelPath(modelPath, isShinyProxy, modelPathEnvVar,
+                               file.path(getwd(), modelDir))
+  modelNameRaw <- modelPath[[4]]
+  modelName    <- modelPath[[3]]
+  modelGmsName <- modelPath[[2]]
+  modelPath    <- modelPath[[1]]
 }
 
 if(is.null(errMsg)){
   # check if GAMS model file exists
-  if(file.exists(modelPath %+% modelGmsName)){
+  if(file.exists(file.path(modelPath, modelGmsName))){
     currentModelDir  <- modelPath
   }else{
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
 "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
-
 if(is.null(errMsg)){
   miroWorkspace <- NULL
   miroDbDir     <- NULL
-  if(isShinyProxy){
-    logFileDir <- file.path(tmpFileDir, logFileDir)
-  }else{
-    logFileDir <- file.path(currentModelDir, logFileDir)
-    
+  
+  if(!isShinyProxy){
     # initialise MIRO workspace
-    miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
-    miroDbDir     <- getCommandArg("miro-db-dir", FALSE)
+    miroWorkspace <- Sys.getenv("WORKSPACEPATH")
+    if (identical(miroWorkspace, "")){
+      miroWorkspace <- file.path(path.expand("~"), miroWorkspaceDir)
+    }
+    miroDbDir     <- Sys.getenv("DBPATH")
     if(identical(miroDbDir, "")){
       miroDbDir <- miroWorkspace
     }
@@ -178,11 +153,19 @@ if(is.null(errMsg)){
       }
     }
   }
+  if(!identical(Sys.getenv("LOGPATH"), "")){
+    logFileDir <- Sys.getenv("LOGPATH")
+  }else if(isShinyProxy){
+    logFileDir <- file.path(tmpFileDir, logFileDir)
+  }else{
+    logFileDir <- file.path(miroWorkspace, logFileDir)
+  }
   # name of the R save file
-  rSaveFilePath <- paste0(currentModelDir, modelName, '_', MIROVersion, 
-                          if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "hcube") ||
-                             "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
-                          '.miroconf')
+  rSaveFilePath <- file.path(currentModelDir, 
+                             paste0(modelNameRaw, '_', APIVersion, '_', MIROVersion, 
+                                    if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube") ||
+                                       "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
+                                    '.miroconf'))
   # set user ID (user name) and user groups
   ugroups <- NULL
   if(isShinyProxy){
@@ -220,24 +203,27 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
-  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.false", 
+  if(identical(Sys.getenv("NODEBUG"), "true")){
+    debugMode <- FALSE
+    logToConsole <- FALSE
+  }else if(isShinyProxy){
+    debugMode <- FALSE
+  }
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
                         list(file = file.path(logFileDir, paste0(modelName, "_", uid, "_", 
                                               format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
   flog.threshold(loggingLevel)
   flog.trace("Logging facility initialised.")
-  if(isShinyProxy || "NODEBUG" %in% commandArgs(TRUE)){
-    debugMode <- FALSE
-  }
-  if(identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") ||
+  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "admin") ||
      "LAUNCHADMIN" %in% commandArgs(TRUE)){
     LAUNCHADMINMODE <- TRUE
   }
   if(!file.exists(rSaveFilePath) || debugMode){
     source("./modules/init.R", local = TRUE)
   }else{
-    load(rSaveFilePath, envir = .GlobalEnv)
+    load(rSaveFilePath)
     if(isShinyProxy){
-      dbConfig <- setDbConfig(paste0(configDir, "db_config.json"))
+      dbConfig <- setDbConfig(file.path(getwd(), "conf", "db_config.json"))
       config$activateModules$remoteExecution <- TRUE
       if(length(dbConfig$errMsg)){
         errMsg <- dbConfig$errMsg
@@ -255,7 +241,7 @@ if(is.null(errMsg)){
     GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
                                        MIROGdxInName, '"'))
   }else{
-    useTempDir <- !identical(getCommandArg('use-tmp-dir', FALSE), "false")
+    useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
   }
   
   modelData <- NULL
@@ -312,14 +298,14 @@ if(is.null(errMsg)){
     }
   }
   if(debugMode){
-    customRendererDirs <<- paste0(c(paste0(currentModelDir, "..", .Platform$file.sep),
-                                    currentModelDir), customRendererDirName, .Platform$file.sep)
+    customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
+                                       currentModelDir), customRendererDirName)
     for(customRendererDir in customRendererDirs){
       rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
       lapply(rendererFiles, function(file){
-        if(!file.access(customRendererDir %+% file, mode = 4)){
+        if(!file.access(file.path(customRendererDir, file), mode = 4)){
           tryCatch({
-            source(customRendererDir %+% file)
+            source(file.path(customRendererDir, file))
           }, error = function(e){
             errMsg <<- paste(errMsg, 
                              sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
@@ -338,7 +324,7 @@ if(is.null(errMsg)){
     listOfCustomRenderers <- Set$new()
     requiredPackagesCR <<- NULL
     
-    if(!identical(tolower(Sys.getenv(spModelModeEnvVar)), "admin") &&
+    if(!identical(tolower(Sys.getenv(modelModeEnvVar)), "admin") &&
        !("LAUNCHADMIN" %in% commandArgs(TRUE))){
       for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
         # check whether non standard renderers were defined in graph config
@@ -738,7 +724,7 @@ if(!is.null(errMsg)){
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                   "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                   "installPackage", "dbSchema", "scalarInputSym",
-                  "requiredPackagesCR"), 
+                  "requiredPackagesCR", "datasetsRemoteExport"), 
          file = rSaveFilePath)
     rm(listOfCustomRenderers)
     if(identical(getCommandArg("buildonly", FALSE), "true")){
@@ -1050,7 +1036,7 @@ if(!is.null(errMsg)){
     # set local working directory
     unzipModelFilesProcess <- NULL
     if(config$activateModules$remoteExecution || useTempDir){
-      workDir <- paste0(tmpFileDir, .Platform$file.sep, session$token, .Platform$file.sep)
+      workDir <- file.path(tmpFileDir, session$token)
       if(!config$activateModules$remoteExecution && length(modelData)){
         tryCatch({
           unzipModelFilesProcess <- unzip_process()$new(modelData, exdir = workDir, 
@@ -1061,13 +1047,13 @@ if(!is.null(errMsg)){
         })
       }
     }else{
-      workDir <- paste0(currentModelDir, .Platform$file.sep)
+      workDir <- currentModelDir
     }
     flog.info("Session started (model: '%s', user: '%s', workdir: '%s').", 
               modelName, uid, workDir)
     
     worker$setWorkDir(workDir)
-    if(!dir.create(file.path(workDir), recursive = TRUE)){
+    if(!dir.create(workDir, recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
       return(NULL)
@@ -1456,7 +1442,7 @@ if(!is.null(errMsg)){
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders
-      unlink(file.path(workDir), recursive=TRUE)
+      unlink(workDir, recursive=TRUE)
       suppressWarnings(rm(activeScen))
       try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
           silent = TRUE)

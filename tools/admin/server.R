@@ -3,8 +3,8 @@ source(file.path("tools", "admin", "util.R"))
 appDisconnected <- FALSE
 oneLayerEl <- c("dygraphs")
 twoLayerEl <- c("pie", "hist")
-configJSONFileName <- paste0(currentModelDir, configDir, 
-                             modelName, ".json")
+configJSONFileName <- file.path(currentModelDir, "conf", 
+                                modelName %+% ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
 inputSymMultiDim <- setNames(names(modelInRaw), vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE))
