@@ -299,18 +299,20 @@ $(document).ready(() => {
     }
   });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
-  Selectize.define('no_delete', function () {
-    const self = this;
-    this.deleteSelection = (function () {
-      const original = self.deleteSelection;
-      return function (e, ...args) {
-        if (!e || (e.keyCode !== 8 && e.keyCode !== 46)) {
-          return original.apply(this, args);
-        }
-        return false;
-      };
-    }());
-  });
+  if (Selectize !== undefined) {
+    Selectize.define('no_delete', function () {
+      const self = this;
+      this.deleteSelection = (function () {
+        const original = self.deleteSelection;
+        return function (e, ...args) {
+          if (!e || (e.keyCode !== 8 && e.keyCode !== 46)) {
+            return original.apply(this, args);
+          }
+          return false;
+        };
+      }());
+    });
+  }
 
   $('body').addClass('fixed'); // besides these updates, gms-switchTab (see below) has always has to be considered as well
 
