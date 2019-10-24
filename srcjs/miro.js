@@ -299,7 +299,7 @@ $(document).ready(() => {
     }
   });
   // code snippet taken from SwishWez: https://stackoverflow.com/questions/21582558/disable-remove-on-backspace-or-remove-ibeam-entirely
-  if (Selectize !== undefined) {
+  if (typeof Selectize !== 'undefined') {
     Selectize.define('no_delete', function () {
       const self = this;
       this.deleteSelection = (function () {
