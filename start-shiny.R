@@ -1,4 +1,7 @@
-assign(".lib.loc", Sys.getenv("R_LIB_PATHS"), envir = environment(.libPaths))
+
+if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+    assign(".lib.loc", Sys.getenv("R_LIB_PATHS"), envir = environment(.libPaths))
+}
 print(R.home())
 print(.libPaths())
 print(sessionInfo())

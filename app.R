@@ -39,6 +39,12 @@ if(R.version[["major"]] < 3 ||
                                      R.version[["minor"]]) < 6){
   stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
+if(identical(Sys.getenv("NODEBUG"), "true")){
+  debugMode <- FALSE
+  logToConsole <- FALSE
+}else if(isShinyProxy){
+  debugMode <- FALSE
+}
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
@@ -71,7 +77,7 @@ filesToInclude <- c("./global.R", "./R/util.R", if(useGdx) "./R/gdxio.R", "./R/j
                     "./R/data_instance.R", "./R/worker.R", "./R/dataio.R", "./R/hcube_data_instance.R", "./R/miro_tabsetpanel.R",
                     "./modules/render_data.R", "./modules/generate_data.R")
 LAUNCHADMINMODE <- FALSE
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- winProgressBar(title = "Loading GAMS MIRO", label = "Loading required packages",
                        min = 0, max = 1, initial = 0, width = 300)
   setWinProgressBar(pb, 0.1)
@@ -79,7 +85,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
   pb <- txtProgressBar(file = stderr())
 }
 source("./R/install_packages.R", local = TRUE)
-if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
   setWinProgressBar(pb, 0.3, label= "Initialising GAMS MIRO")
 }else{
   setTxtProgressBar(pb, 0.3)
@@ -203,12 +209,6 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
-  if(identical(Sys.getenv("NODEBUG"), "true")){
-    debugMode <- FALSE
-    logToConsole <- FALSE
-  }else if(isShinyProxy){
-    debugMode <- FALSE
-  }
   flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
                         list(file = file.path(logFileDir, paste0(modelName, "_", uid, "_", 
                                               format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
@@ -589,7 +589,7 @@ if(is.null(errMsg)){
   }
 }
 if(!is.null(errMsg)){
-  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
     setTxtProgressBar(pb, 1)
@@ -692,7 +692,7 @@ if(!is.null(errMsg)){
   
   shinyApp(ui = ui_initError, server = server_initError)
 }else if(identical(LAUNCHADMINMODE, TRUE)){
-  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
     setTxtProgressBar(pb, 1)
@@ -704,7 +704,7 @@ if(!is.null(errMsg)){
   source("./tools/admin/ui.R", local = TRUE)
   shinyApp(ui = ui_admin, server = server_admin)
 }else{
-  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 0.6, label= "Importing new data")
   }
   rm(LAUNCHADMINMODE, installedPackages)
@@ -720,7 +720,7 @@ if(!is.null(errMsg)){
                   "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
                   "modelOutAlias", "colsWithDep", "scalarsInMetaData",
                   "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
-                  "currentModelDir", "modelInToImportAlias", "modelInToImport", 
+                  "modelInToImportAlias", "modelInToImport", 
                   "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
                   "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
                   "installPackage", "dbSchema", "scalarInputSym",
@@ -797,7 +797,7 @@ if(!is.null(errMsg)){
       gc()
     })
   })
-  if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
+  if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
     setTxtProgressBar(pb, 1)
