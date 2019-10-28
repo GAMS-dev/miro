@@ -39,6 +39,7 @@ if(R.version[["major"]] < 3 ||
                                      R.version[["minor"]]) < 6){
   stop("The R version you are using is not supported. At least version 3.6 is required to run GAMS MIRO.", call. = FALSE)
 }
+isShinyProxy <- identical(!Sys.getenv("SHINYPROXY_USERNAME"), "")
 if(identical(Sys.getenv("NODEBUG"), "true")){
   debugMode <- FALSE
   logToConsole <- FALSE
@@ -54,19 +55,8 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
                       "futile.logger", "zip", "tidyr")
 config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
-if(identical(gamsSysDir, "") || !dir.exists(file.path(gamsSysDir, "GMSR", "library"))){
-  
-  RLibPath = NULL
-  
-}else{
-  if(!endsWith(gamsSysDir, .Platform$file.sep)){
-    gamsSysDir <- paste0(gamsSysDir, .Platform$file.sep)
-  }
-  RLibPath = file.path(gamsSysDir, "GMSR", "library")
-  assign(".lib.loc", RLibPath, envir = environment(.libPaths))
-}
 
-installedPackages <- installed.packages(lib.loc = RLibPath)[, "Package"]
+installedPackages <- installed.packages()[, "Package"]
 useGdx <- FALSE
 if("gdxrrw" %in% installedPackages){
   useGdx <- TRUE
@@ -109,8 +99,6 @@ if(is.null(errMsg)){
   })
   # set maximum upload size
   options(shiny.maxRequestSize = maxUploadSize*1024^2)
-  # check whether shiny proxy is used to access this file
-  isShinyProxy <- isShinyProxy()
   # get model path and name
   modelPath    <- getModelPath(modelPath, isShinyProxy, modelPathEnvVar,
                                file.path(getwd(), modelDir))
