@@ -33,4 +33,4 @@ SURBVBhXYwCC/2AAZYEoOAMs8Z+BgQEAXdcR7/Q1gssAAAAASUVORK5CYII=)
 | col 2 is      | centered      |   $12 |
 | zebra stripes | are neat      |    $1 |
 
-![alt text](custom/pickstock.png =250x250 "Test1")
+![alt text](static/pickstock.png =250x250 "Test1")
