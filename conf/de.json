@@ -1226,15 +1226,41 @@
       "removeDialogConfirm": "Tabellen entfernen"
     },
     "graphs":{
+      "toolCategories": {
+        "main": "Haupt",
+        "general": "Allgemein",
+        "xaxis": "X Achse",
+        "yaxis": "Y Achse",
+        "filterDomain": "Filter & Domäne",
+        "filter": "Filter",
+        "animation": "Animation",
+        "bars": "Bars",
+        "histogram": "Histogramm",
+        "event": "Event (x Achse)",
+        "limit": "Limit (y Achse)",
+        "annotation": "Annotation",
+        "shading": "Schattierung",
+        "rangeSelector": "Bereichswähler",
+        "highlight": "Highlighting",
+        "markers": "Markierungen",
+        "flows": "Flüsse",
+        "minicharts": "Minicharts",
+        "groupsLayers": "Gruppen & Ebenen",
+        "data": "Daten"
+      },
       "ui":{
         "title": "Graphen konfigurieren",
         "graphUpdateSuccess": "Die Grafikkonfiguration wurde erfolgreich aktualisiert",
         "localInput": "Laden Sie eine GDX-Datei oder eine Excel-Tabelle mit Daten hoch, die für Vorschauzwecke verwendet werden",
-        "gamsSymbols": "Wählen Sie aus, welches GAMS Symbol visualisiert werden soll",
+        "gamsSymbols": "GAMS Symbol",
+        "input": "Eingabesymbole",
+        "output": "Ausgbesymbole",
         "chartTitle": "Wählen Sie einen Titel für Ihre Grafik",
         "height": "Wählen Sie eine Höhe für Ihre Grafik (px) (keine Live-Vorschau)",
-        "tool": "Wählen Sie das Charting-Tool aus, das Sie verwenden möchten",
-        "choices": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte", "Eigener Renderer"]
+        "tool": "Charttyp",
+        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Wertebox für skalare Werte", "Eigener Renderer"],
+        "deleteGraph": "Löschen",
+        "saveGraph": "Speichern"
       },
       "validate":{
         "val1": "Der Bereich für die x-Achse konnte nicht eingestellt werden. Überprüfen Sie das korrekte Datenformat!",
@@ -1245,11 +1271,7 @@
         "errContent1": "Es wurden keine gültigen Datensätze gefunden. Bitte laden Sie eine korrekt formatierte Excel- oder gdx-Datei mit Daten hoch."
       },
       "updateToolScalars": ["Wertebox für skalare Werte"],
-      "updateToolNoScalars": ["Diagramm-Tool", "Zeitreihen-Diagramm-Tool", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Eigener Renderer"],
-      "chartTypePlotly":{
-        "title": "Wählen Sie den Diagrammtyp aus, den Sie verwenden möchten",
-        "choices": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm"]
-      },
+      "updateToolNoScalars": ["Kreisdiagramm", "Balkendiagramm", "Streudiagramm", "Liniendiagramm", "Blasendiagramm", "Histogramm", "Zeitreihen-Diagramm", "Kartendiagramm", "Gantt-Diagramm", "Pivot-Tabelle", "Eigener Renderer"],
       "pieOptions":{
         "labels": "Bezeichnung",
         "values": "Werte",
@@ -1305,7 +1327,8 @@
         "easingChoices": ["linear", "quadratisch", "kubisch", "sin", "exp", "Kreis", "elastisch", "zurück", "springend", "linear-in", "quad-in", "kubisch-in", "sin-in", "exp-in", "circle-in", "elastic-in", "back-in", "bounce-in", "linear-out", "quad-out", "kubisch-out","sin-out", "exp-out", "circle-out", "elastic-out", "back-out", "bounce-out", "linear-in-out", "quad-in-out", "kubisch-in-out", "sin-in-out", "exp-in-out", "circle-in-out", "elastic-in-out", "back-in-out", "bounce-in-out"],
         "redraw": "Triggern eines Neuzeichnung der Diagramms nach Abschluss des Übergangs? (Dies kann die Leistung erheblich beeinträchtigen, kann aber notwendig sein, um grafische Elemente zu aktualisieren, die nicht animiert werden können.)",
         "mode": "Wie sollen neue animierte Aufrufe mit aktuell laufenden Animationen interagieren?",
-        "modeChoices": ["sofort", "als nächstes", "nach allem"]
+        "modeChoices": ["sofort", "als nächstes", "nach allem"],
+        "noAnimation": "Keine Domäne für eine Animation ausgewählt (Kategorie: Y-Achse)."
       },
       "animationSliderOptions":{
         "hide": "Entfernen des Animationsschiebereglers?",
@@ -1319,6 +1342,9 @@
         "normChoices": ["Anzahl der Ereignisse", "Prozentsatz der Ereignisse", "Anzahl der Ereignisse/ Klassen n-Intervallgröße"],
         "nbins": "Anzahl der Klassen",
         "barmode": "Wie sollen die Balken angezeigt werden?",
+        "cumulative": "Die kumulierte Verteilung anzeigen?",
+        "horizontal": "Ausrichtung der Balken",
+        "orientationChoices": ["vertikal", "horizontal"],
         "barmodeChoices": ["überlagern", "gesttapelt", "gruppiert", "relativ"]
       },
       "dygraphsOptions":{

@@ -5660,7 +5660,114 @@
           "type":"object",
           "additionalProperties":false,
           "required":true,
-          "properties":{  
+          "properties":{ 
+            "toolCategories":{
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{  
+                "main":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "general":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "xaxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "yaxis":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "filterDomain":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "filter":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "animation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "bars":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "histogram":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "event":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "limit":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "annotation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "shading":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "rangeSelector":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "highlight":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "markers":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "flows":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "minicharts":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "groupsLayers":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "data":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },          
             "ui":{  
               "type":"object",
               "additionalProperties":false,
@@ -5686,6 +5793,16 @@
                   "minLength":1,
                   "required":true
                 },
+                "input":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "output":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "chartTitle":{ 
                   "type":"string",
                   "minLength":1,
@@ -5704,12 +5821,22 @@
                 "choices":{  
                   "type":"array",
                   "uniqueItems": true,
-                  "minItems":7,
-                  "maxItems":7,
+                  "minItems":12,
+                  "maxItems":12,
                   "items": {
                       "type":"string",
                       "minLength": 1
                   },
+                  "required":true
+                },
+                "deleteGraph":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "saveGraph":{ 
+                  "type":"string",
+                  "minLength":1,
                   "required":true
                 }
               }
@@ -5762,36 +5889,13 @@
             "updateToolNoScalars":{
               "type":"array",
               "uniqueItems": true,
-              "minItems":6,
-              "maxItems":6,
+              "minItems":11,
+              "maxItems":11,
               "items": {
                   "type":"string",
                   "minLength": 1
               },
               "required":true
-            },
-            "chartTypePlotly":{  
-              "type":"object",
-              "additionalProperties":false,
-              "required":true,
-              "properties":{ 
-                "title":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
-                "choices":{
-                  "type":"array",
-                  "uniqueItems": true,
-                  "minItems":6,
-                  "maxItems":6,
-                  "items": {
-                      "type":"string",
-                      "minLength": 1
-                  },
-                  "required":true
-                }               
-              }
             },
             "pieOptions":{  
               "type":"object",
@@ -6096,6 +6200,11 @@
                       "minLength": 1
                   },
                   "required":true
+                },
+                "noAnimation":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }         
               }
             },
@@ -6160,6 +6269,27 @@
                 "barmode":{ 
                   "type":"string",
                   "minLength":1,
+                  "required":true
+                },
+                "cumulative":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "horizontal":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "orientationChoices":{
+                  "type":"array",
+                  "uniqueItems": true,
+                  "minItems":2,
+                  "maxItems":2,
+                  "items": {
+                      "type":"string",
+                      "minLength": 1
+                  },
                   "required":true
                 },
                 "barmodeChoices":{

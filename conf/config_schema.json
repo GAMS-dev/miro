@@ -905,11 +905,6 @@
                         "enum":[  
                            "datatable"
                         ]
-                     },
-                     "height":{  
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0
                      }
                   },
                   "additionalProperties":false,
@@ -979,12 +974,6 @@
                         "enum":[  
                            "pivot"
                         ]
-                     },
-                     "height":{  
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0,
-                        "default":null
                      },
                      "pivottable":{  
                         "description":"Parameters used to customize pivottable (used to render input or output data).",
@@ -1126,12 +1115,6 @@
                            "graph"
                         ]
                      },
-                     "height":{  
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0,
-                        "default":null
-                     },
                      "graph":{  
                         "type":"object",
                         "description":"Graph display options",
@@ -1195,13 +1178,6 @@
                               "pivot"
                            ]
                         }
-                     },
-                     "height":{  
-                        "description":"Height of the output element.",
-                        "type":"integer",
-                        "minimum":0,
-                        "default":null,
-                        "required":false
                      },
                      "packages":{  
                         "description":"Packages that need to be installed",

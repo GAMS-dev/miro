@@ -1227,15 +1227,41 @@
       "removeDialogConfirm": "Remove tables"
     },
     "graphs":{
+      "toolCategories": {
+        "main": "Main",
+        "general": "General",
+        "xaxis": "X axis",
+        "yaxis": "Y axis",
+        "filterDomain": "Filter & Domains",
+        "filter": "Filter",
+        "animation": "Animation",
+        "bars": "Bars",
+        "histogram": "Histogram",
+        "event": "Event (x axis)",
+        "limit": "Limit (y axis)",
+        "annotation": "Annotation",
+        "shading": "Shading",
+        "rangeSelector": "Range selector",
+        "highlight": "Highlighting",
+        "markers": "Markers",
+        "flows": "Flows",
+        "minicharts": "Minicharts",
+        "groupsLayers": "Groups & Layers",
+        "data": "Data"
+      },
       "ui":{
         "title": "Configure graphs",
         "graphUpdateSuccess": "Graph configuration was updated successfully",
         "localInput": "Upload a GDX file or an Excel spreadsheet with data that will be used for preview purposes",
-        "gamsSymbols": "Select which GAMS symbol to plot",
+        "gamsSymbols": "GAMS symbol",
+        "input": "Input symbols",
+        "output": "Output symbols",
         "chartTitle": "Choose a title for your chart",
         "height": "Choose a height for your chart (px) (no live preview)",
-        "tool": "Select the charting tool you want to use",
-        "choices": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values", "Custom renderer"]
+        "tool": "Charting type",
+        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table", "Valuebox for scalar values", "Custom renderer"],
+        "deleteGraph": "Delete",
+        "saveGraph": "Save"
       },
       "validate":{
         "val1": "Could not set range for x axis. Check for correct data format!",
@@ -1246,11 +1272,7 @@
         "errContent1": "No valid datasets were found. Please upload a properly formatted Excel or gdx file with data."
       },
       "updateToolScalars": ["Valuebox for scalar values"],
-      "updateToolNoScalars": ["Diagram Tool", "Time Series Diagram Tool", "Map chart", "Gantt chart", "Pivot table", "Custom renderer"],
-      "chartTypePlotly":{
-        "title": "Select the chart type you want to use",
-        "choices": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram"]
-      },
+      "updateToolNoScalars": ["Pie chart", "Bar chart", "Scatter plot", "Line chart", "Bubble chart", "Histogram", "Time Series Diagram", "Map chart", "Gantt chart", "Pivot table", "Custom renderer"],
       "pieOptions":{
         "labels": "Labels",
         "values": "Values",
@@ -1306,7 +1328,8 @@
         "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
         "redraw": "Trigger a redraw of the plot at completion of the transition? (this may significantly impact performance, but may be necessary to update graphical elements that can't be transitioned.)",
         "mode": "How shall new animate calls interact with currently-running animations?",
-        "modeChoices": ["immediate", "next", "afterall"]
+        "modeChoices": ["immediate", "next", "afterall"],
+        "noAnimation": "No domain selected for animation (category: Y axis)."
       },
       "animationSliderOptions":{
         "hide": "remove the animation slider?",
@@ -1320,6 +1343,9 @@
         "normChoices": ["Number of occurances", "Percentage of occurances", "Number of occurances/ Bin interval size"],
         "nbins": "Number of bins",
         "barmode": "How do you want the bars to be displayed?",
+        "cumulative": "Display the cumulative distribution?",
+        "horizontal": "Orientation of the bars",
+        "orientationChoices": ["vertical", "horizontal"],
         "barmodeChoices": ["overlay", "stack", "group", "relative"]
       },
       "dygraphsOptions":{
@@ -1445,7 +1471,7 @@
           "strokePatternChoices": ["dashed", "dotted", "dotdash", "solid"]
         },
         "addDyLimit":{
-          "dyDyLimitCheck": "Use static limit?",
+          "dyDyLimitCheck": "Static limit?",
           "dyDyLimitTrue": "Set a numeric value for the limit",
           "dyDyLimitFalse": "Which symbol shall be used?",
           "limit": "Set a numeric value for the limit",
@@ -1465,15 +1491,15 @@
           "attachAtBottom": "Should annotation be attached to x axis?"
         },
         "addDyShading":{
-          "dyDyShadingCheck": "Use static lower bound?",
-          "dyDyShadingTrue": "Specify the lower bound for shading.",
-          "dyDyShadingFalse": "Which symbol shall be used as lower bound for shading?",
-          "dyDyShadingUpCheck": "Use static upper bound?",
-          "dyDyShadingUpTrue": "Specify the upper bound for shading.",
-          "dyDyShadingUpFalse": "Which symbol shall be used as upper bound for shading?",
-          "axis": "Select axis where shading shall be applied to",
+          "dyDyShadingCheck": "Static value?",
+          "dyDyShadingTrue": "Static lower bound",
+          "dyDyShadingFalse": "Symbol for lower bound",
+          "dyDyShadingUpCheck": "Static value?",
+          "dyDyShadingUpTrue": "Static upper bound",
+          "dyDyShadingUpFalse": "Symbol for upper bound",
+          "axis": "Axis where shading shall be applied to",
           "axisChoices": ["x axis", "y axis"],
-          "color": "What color should the shading have?"
+          "color": "Shading color"
         },
         "addLeafletMarkers":{
           "leafletMarkers": "Select column with latitude data",
