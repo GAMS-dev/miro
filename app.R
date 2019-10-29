@@ -112,11 +112,8 @@ if(is.null(errMsg)){
 
 if(is.null(errMsg)){
   # check if GAMS model file exists
-  readmeFilePath <- character(0L)
   if(file.exists(file.path(modelPath, modelGmsName))){
     currentModelDir  <- modelPath
-    readmeFilePath   <- file.path(currentModelDir, 
-                                  "README.md")
   }else{
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
 "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)

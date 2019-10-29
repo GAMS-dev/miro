@@ -1812,6 +1812,22 @@
             }
           }
         }
+      },
+      "readme":{
+        "type":"object",
+        "additionalProperties":false,
+        "properties":{
+           "tabTitle": {
+            "description":"README tab title",
+            "type":"string",
+            "minLength":1
+          },
+          "altFilename": {
+            "description":"Alternative README file name",
+            "type":"string",
+            "minLength":4
+          }
+        }
       }
    }
 }

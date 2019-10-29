@@ -317,7 +317,9 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
 })
 if(length(config$readmeFile)){
   inputTabContent <- c(list(tabPanel(
-    title = "README",
+    title = if(length(config$readme$tabTitle)) 
+      config$readme$tabTitle else
+      "README",
     value = "inputTabset_0",
     tagList(tags$div(class="small-space"), 
             tags$div(class="readme-wrapper",

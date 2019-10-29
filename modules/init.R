@@ -1456,9 +1456,20 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # parse README.md file 
-  if(file.exists(readmeFilePath)){
+  if(length(config$readme$altFilename)){
+    readmeFilePath   <- file.path(currentModelDir, 
+                                  config$readme$altFilename)
+  }else{
+    readmeFilePath   <- file.path(currentModelDir, 
+                                  "README.md")
+  }
+  tryCatch(if(file.exists(readmeFilePath)){
     source(file.path("R", "md_parser.R"), local = TRUE)
     markdownParser <- MarkdownParser$new()
     config$readmeFile <- markdownParser$parseFile(readmeFilePath)
-  }
+  }, error = function(e){
+    flog.error("Problems parsing README markdown file. Error message: %s", 
+               conditionMessage(e))
+    errMsg <<- "Problems parsing README markdown file. See log for more information."
+  })
 }
