@@ -140,17 +140,9 @@ loadScenData <- function(scalarsName, metaData, workDir, modelName, scalarsFileH
                },
                gdx = {
                  tryCatch({
-                   pivotHeaders <- character(0L)
-                   if(identical(metaData[[i]][["symtype"]], "parameter")){
-                     noNonNumCols <- nchar(gsub("d", "", metaData[[i]]$colTypes))
-                     if(nchar(metaData[[i]]$colTypes) - noNonNumCols > 1L){
-                       # symbol shall be pivoted
-                       pivotHeaders <- names(metaData[[i]]$headers)[-seq_len(noNonNumCols)]
-                     }
-                   }
                    ret$tabular[[i]] <<- gdxio$rgdx(gdxPath, names(metaData)[[i]], 
                                                    names = names(metaData[[i]]$headers),
-                                                   pivotHeaders = pivotHeaders, isNewGdx = isNewGdx)
+                                                   isNewGdx = isNewGdx)
                  }, error = function(e){
                    ret$tabular[[i]] <<- templates[[i]]
                  })
