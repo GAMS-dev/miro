@@ -315,13 +315,13 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
     }
   ))
 })
-if(file.exists(paste0(readmeFilePath, ".html"))){
+if(length(config$readmeFile)){
   inputTabContent <- c(list(tabPanel(
     title = "README",
     value = "inputTabset_0",
     tagList(tags$div(class="small-space"), 
             tags$div(class="readme-wrapper",
-                     includeHTML(paste0(readmeFilePath, ".html"))),
+                     HTML(config$readmeFile)),
             tags$div(class="small-space"))
   )), inputTabContent)
 }

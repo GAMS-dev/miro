@@ -29,7 +29,6 @@ model/**/*.miroconf
 model/**/*.bat
 model/**/*.gdx
 model/**/runapp.R
-model/**/static/README.html
 model/**/*_miro.gms
 model/**/*_hcube_jobs
 tests/*_kport.R

@@ -1456,10 +1456,9 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   # parse README.md file 
-  if(file.exists(paste0(readmeFilePath, ".md"))){
+  if(file.exists(readmeFilePath)){
     source(file.path("R", "md_parser.R"), local = TRUE)
     markdownParser <- MarkdownParser$new()
-    markdownParser$md2html(paste0(readmeFilePath, ".md"), 
-                           paste0(readmeFilePath, ".html"))
+    config$readmeFile <- markdownParser$parseFile(readmeFilePath)
   }
 }
