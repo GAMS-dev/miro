@@ -8,6 +8,53 @@ body{
   background-color: rgba(0,0,0,0);
   transition: all 500ms ease; 
 }
+.readme-wrapper {
+  max-height:65vh;
+  overflow:auto;
+}
+.readme-wrapper table{
+  margin: 10px 0;
+}
+.readme-wrapper td{
+  padding: 10px;
+}
+.readme-wrapper tr:nth-child(even){
+  .responsiveDark({
+     background-color: @table-row-even;
+  },
+  {
+     background-color: @table-row-even-dark;
+  });
+}
+.readme-wrapper tr:nth-child(odd){
+  .responsiveDark({
+     background-color: @table-row-odd;
+  },
+  {
+     background-color: @table-row-odd-dark;
+  });
+}
+.readme-wrapper tr:hover {
+  .responsiveDark({
+     background-color: @table-hover;
+  },
+  {
+     background-color: @table-hover-dark;
+  });
+}
+.readme-wrapper th {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index:500;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  .responsiveDark({
+     background: #fff;
+  },
+  {
+     background: @modal-bg-dark;
+  });
+}
 .btn-default:hover {
   color: #000;
 }

@@ -4,7 +4,7 @@ genSplitCompButtons <- function(id){
     tags$div(id = paste0("scenSplit", id, "_open"),
              actionButton(paste0("btScenSplit", id, "_open"), lang$nav$scen$split$load, 
                           class = "scenSplit-button-load", style = "font-size: 20pt;")
-             )
+    )
   }else{
     tags$div(id = paste0("scenSplit", id, "_open"), class = "split-open",
              tags$div(title = lang$nav$scen$tooltips$load, class = "split-open-cell",
@@ -41,6 +41,290 @@ getJobsTableSkeleton <- function(id = NULL, content = NULL){
            }
   )
 }
+inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
+  content <- lapply(inputTabs[[tabId]], function(i){
+    hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
+    tabContent <- switch(modelIn[[i]]$type,
+                         hot = ,
+                         dt = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             tags$div(id = paste0("data-in_", i), {
+                               if(modelIn[[i]]$type == "hot"){
+                                 rHandsontableOutput(paste0("in_", i))
+                               }else{
+                                 dataTableOutput(paste0("in_", i))
+                               }
+                             }),
+                             tags$div(id = paste0("graph-in_", i), class = "render-output", 
+                                      style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                                        sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
+                                      tryCatch({
+                                        renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
+                                                     graphTool = configGraphsIn[[i]]$graph$tool, 
+                                                     customOptions = configGraphsIn[[i]]$options,
+                                                     filterOptions = configGraphsIn[[i]]$graph$filter,
+                                                     height = configGraphsIn[[i]]$height, 
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                      }, error = function(e) {
+                                        flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                        errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                        showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                      })
+                             ))
+                         },
+                         slider = {
+                           if(hasDependency){
+                             sliderStepSize <- 1L
+                             slider         <- sliderInput(paste0("slider_", i),
+                                                           label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
+                                                           value = if(length(modelIn[[i]]$slider$default) > 1) 
+                                                             numeric(2L) else numeric(1L), step = sliderStepSize, 
+                                                           width = modelIn[[i]]$slider$width, 
+                                                           ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
+                             slider         <- tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               tagAppendAttributes(slider, style = "display:none;"), 
+                               tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                        lang$nav$inputScreen$noDataDep))
+                           }else{
+                             sliderName     <- tolower(names(modelIn)[[i]])
+                             sliderStepSize <- sliderValues[[sliderName]]$step
+                             slider         <- tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               sliderInput(paste0("slider_", i), 
+                                           label = modelIn[[i]]$slider$label, 
+                                           min = sliderValues[[sliderName]]$min, 
+                                           max = sliderValues[[sliderName]]$max, 
+                                           value = sliderValues[[sliderName]]$def, 
+                                           step = sliderValues[[sliderName]]$step, 
+                                           width = modelIn[[i]]$slider$width, 
+                                           ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
+                             )
+                           }
+                           if(config$activateModules$hcubeMode){
+                             if(identical(modelIn[[i]]$slider$double, TRUE)){
+                               tagList(
+                                 column(width = 8, style = "padding-left:0px;",
+                                        slider
+                                 ),
+                                 column(width = 2, style = "min-width: 130px; min-height:100px;",
+                                        tagList(
+                                          tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
+                                                     lang$nav$hcubeMode$sliderAllCombinations), 
+                                          tags$div(
+                                            tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
+                                                       checkboxInput("hcubeMode_" %+% i, label = NULL, 
+                                                                     value = modelIn[[i]]$checkbox$value))
+                                          )
+                                        )
+                                 ),
+                                 conditionalPanel("input.hcubeMode_" %+% i, 
+                                                  column(width = 1, style = "min-width: 100px; min-height:100px;",
+                                                         numericInput("hcubeStep_" %+% i, "Step size", 
+                                                                      sliderStepSize, min = 0)
+                                                  )
+                                 )
+                                 
+                               )
+                             }else if(identical(modelIn[[i]]$slider$single, TRUE)){
+                               tagList(
+                                 column(width = 10, style = "padding-left:0px;",
+                                        slider
+                                 ),
+                                 column(width = 1, style = "min-width: 100px; min-height:100px;",
+                                        numericInput("hcubeStep_" %+% i, "Step size", 
+                                                     sliderStepSize, min = 0)
+                                 )
+                               )
+                             }
+                           }else{
+                             slider
+                           }
+                         },
+                         dropdown = {
+                           if(hasDependency){
+                             tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               tagAppendAttributes(selectInput(paste0("dropdown_", i),
+                                                               label = modelIn[[i]]$dropdown$label, 
+                                                               choices = character(0), selected = character(0),
+                                                               multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                                       TRUE)) TRUE else FALSE), style = "display:none;"),
+                               tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
+                                        style = "float: left;width: 100%;margin: 20px;", 
+                                        lang$nav$inputScreen$noDataDep)
+                             )
+                           }else{
+                             choices <- modelIn[[i]]$dropdown$choices
+                             
+                             if(!is.null(modelIn[[i]]$dropdown$aliases)){
+                               names(choices) <- modelIn[[i]]$dropdown$aliases
+                             }
+                             tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               selectInput(paste0("dropdown_", i), 
+                                           label = modelIn[[i]]$dropdown$label, 
+                                           choices = choices, 
+                                           selected = modelIn[[i]]$dropdown$selected, 
+                                           multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
+                                                                   TRUE)) TRUE else FALSE)
+                             )
+                           }
+                         },
+                         dropdowne = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
+                                         choices = character(0), selected = character(0),
+                                         multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
+                                                                 TRUE)) TRUE else FALSE)
+                           )
+                         },
+                         daterange = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             dateRangeInput(paste0("daterange_", i), 
+                                            label = modelIn[[i]]$daterange$label, 
+                                            start = modelIn[[i]]$daterange$start, 
+                                            end = modelIn[[i]]$daterange$end, 
+                                            min = modelIn[[i]]$daterange$min, 
+                                            max = modelIn[[i]]$daterange$max, 
+                                            format = modelIn[[i]]$daterange$format, 
+                                            startview = modelIn[[i]]$daterange$startview, 
+                                            weekstart = modelIn[[i]]$daterange$weekstart, 
+                                            language = config$language, 
+                                            separator = if(identical(modelIn[[i]]$daterange$separator, 
+                                                                     NULL)) " to " else modelIn[[i]]$daterange$separator, 
+                                            width = modelIn[[i]]$daterange$width, 
+                                            autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
+                                                                     FALSE)) FALSE else TRUE)
+                           )
+                         },
+                         date = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
+                                       value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
+                                       max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
+                                       startview = modelIn[[i]]$date$startview, 
+                                       weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
+                                       width = modelIn[[i]]$date$width)
+                           )
+                         },
+                         checkbox = {
+                           if(hasDependency){
+                             tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               tags$div(id = paste0("cbDiv_", i), style = "display:none;",
+                                        tags$label(class = "cb-label", "for" = paste0("cb_", i), 
+                                                   modelIn[[i]]$checkbox$label), 
+                                        tags$div(
+                                          tags$label(class = modelIn[[i]]$checkbox$class, 
+                                                     "for" = paste0("cb_", i), 
+                                                     checkboxInput(paste0("cb_", i), 
+                                                                   label = NULL, value = NULL, 
+                                                                   width = modelIn[[i]]$checkbox$width))
+                                        )
+                               ),
+                               tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
+                                        lang$nav$inputScreen$noDataDep)
+                             )
+                           }else{
+                             tagList(
+                               tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                               tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
+                               tags$div(
+                                 tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
+                                            checkboxInput(paste0("cb_", i), label = NULL, 
+                                                          value = modelIn[[i]]$checkbox$value, 
+                                                          width = modelIn[[i]]$checkbox$width))
+                               )
+                             )
+                           }
+                         },
+                         textinput = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
+                                       value = modelIn[[i]]$textinput$value,
+                                       width = modelIn[[i]]$textinput$width,
+                                       placeholder = modelIn[[i]]$textinput$placeholder)
+                           )
+                         },
+                         numericinput = {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             autoNumericInput(paste0("numeric_", i), label = modelIn[[i]]$numericinput$label,
+                                              value = modelIn[[i]]$numericinput$value,
+                                              min = modelIn[[i]]$numericinput$min,
+                                              max = modelIn[[i]]$numericinput$max,
+                                              sign = modelIn[[i]]$numericinput$sign)
+                           )
+                         },
+                         {
+                           tagList(
+                             tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
+                             tags$div(id = paste0("data-in_", i), {
+                               tryCatch({
+                                 generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
+                                                customOptions = modelIn[[i]]$options,
+                                                height = modelIn[[i]]$height)
+                               }, error = function(e) {
+                                 flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                 errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                 showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                               })
+                             }),
+                             tags$div(id = paste0("graph-in_", i), class = "render-output", 
+                                      style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
+                                        sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
+                                      tryCatch({
+                                        renderDataUI(paste0("in_", i), type = "datatable",
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                      }, error = function(e) {
+                                        flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
+                                        errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
+                                        showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
+                                      })
+                             ))
+                         }
+    )
+    if(length(inputTabTitles[[tabId]]) > 1L){
+      titleId <- match(i, inputTabs[[tabId]]) + 1L
+      return(tabPanel(
+        title = inputTabTitles[[tabId]][titleId],
+        value = paste0("inputTabset", tabId, "_", titleId - 1L),
+        tags$div(class="small-space"),
+        tabContent,
+        tags$div(class="small-space")
+      ))
+    }
+    return(tabContent)
+  })
+  
+  return(tabPanel(
+    title = inputTabTitles[[tabId]][1],
+    value = paste0("inputTabset_", tabId),
+    if(length(inputTabTitles[[tabId]]) > 1L){
+      do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
+    }else{
+      tagList(tags$div(class="small-space"), 
+              content,
+              tags$div(class="small-space"))
+    }
+  ))
+})
+if(file.exists(paste0(readmeFilePath, ".html"))){
+  inputTabContent <- c(list(tabPanel(
+    title = "README",
+    value = "inputTabset_0",
+    tagList(tags$div(class="small-space"), 
+            tags$div(class="readme-wrapper",
+                     includeHTML(paste0(readmeFilePath, ".html"))),
+            tags$div(class="small-space"))
+  )), inputTabContent)
+}
 tabItemList <- list(
   tabItem(tabName = "inputData",
           fluidRow(
@@ -57,7 +341,7 @@ tabItemList <- list(
                                    lang$nav$dialogRemoveScen$okButton, 
                                    '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
                             <i class="fa fa-times"></i></button>'))
-                       )
+              )
             ), status="primary", solidHeader = TRUE, width = 12L,
             tags$div(class="scen-header",
                      tags$div(class = "out-buttons-wrapper",
@@ -71,280 +355,9 @@ tabItemList <- list(
                      )
             ),
             tags$div(class="small-space"),
-            MIROtabBox(id = "inputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                         lapply(seq_along(inputTabs), function(tabId) {
-              content <- lapply(inputTabs[[tabId]], function(i){
-                hasDependency <- !is.null(modelInWithDep[[names(modelIn)[[i]]]])
-                tabContent <- switch(modelIn[[i]]$type,
-                                     hot = ,
-                                     dt = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         tags$div(id = paste0("data-in_", i), {
-                                           if(modelIn[[i]]$type == "hot"){
-                                             rHandsontableOutput(paste0("in_", i))
-                                           }else{
-                                             dataTableOutput(paste0("in_", i))
-                                           }
-                                         }),
-                                         tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                                  style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                                    sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                                  tryCatch({
-                                                    renderDataUI(paste0("in_", i), type = configGraphsIn[[i]]$outType, 
-                                                                 graphTool = configGraphsIn[[i]]$graph$tool, 
-                                                                 customOptions = configGraphsIn[[i]]$options,
-                                                                 filterOptions = configGraphsIn[[i]]$graph$filter,
-                                                                 height = configGraphsIn[[i]]$height, 
-                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                                  }, error = function(e) {
-                                                    flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                                    errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                                    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                                  })
-                                         ))
-                                     },
-                                     slider = {
-                                       if(hasDependency){
-                                         sliderStepSize <- 1L
-                                         slider         <- sliderInput(paste0("slider_", i),
-                                                                       label = modelIn[[i]]$slider$label, min = NULL, max = NULL, 
-                                                                       value = if(length(modelIn[[i]]$slider$default) > 1) 
-                                                                         numeric(2L) else numeric(1L), step = sliderStepSize, 
-                                                                       width = modelIn[[i]]$slider$width, 
-                                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
-                                         slider         <- tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           tagAppendAttributes(slider, style = "display:none;"), 
-                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                                                    lang$nav$inputScreen$noDataDep))
-                                       }else{
-                                         sliderName     <- tolower(names(modelIn)[[i]])
-                                         sliderStepSize <- sliderValues[[sliderName]]$step
-                                         slider         <- tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           sliderInput(paste0("slider_", i), 
-                                                       label = modelIn[[i]]$slider$label, 
-                                                       min = sliderValues[[sliderName]]$min, 
-                                                       max = sliderValues[[sliderName]]$max, 
-                                                       value = sliderValues[[sliderName]]$def, 
-                                                       step = sliderValues[[sliderName]]$step, 
-                                                       width = modelIn[[i]]$slider$width, 
-                                                       ticks = if(isFALSE(modelIn[[i]]$slider$ticks)) FALSE else TRUE)
-                                         )
-                                       }
-                                       if(config$activateModules$hcubeMode){
-                                         if(identical(modelIn[[i]]$slider$double, TRUE)){
-                                           tagList(
-                                             column(width = 8, style = "padding-left:0px;",
-                                                    slider
-                                             ),
-                                             column(width = 2, style = "min-width: 130px; min-height:100px;",
-                                                    tagList(
-                                                      tags$label(class = "cb-label", "for" = "hcubeMode_" %+% i, 
-                                                                 lang$nav$hcubeMode$sliderAllCombinations), 
-                                                      tags$div(
-                                                        tags$label(class = "checkbox-material", "for" = "hcubeMode_" %+% i, 
-                                                                   checkboxInput("hcubeMode_" %+% i, label = NULL, 
-                                                                                 value = modelIn[[i]]$checkbox$value))
-                                                      )
-                                                    )
-                                             ),
-                                             conditionalPanel("input.hcubeMode_" %+% i, 
-                                                              column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                                     numericInput("hcubeStep_" %+% i, "Step size", 
-                                                                                  sliderStepSize, min = 0)
-                                                              )
-                                             )
-                                             
-                                           )
-                                         }else if(identical(modelIn[[i]]$slider$single, TRUE)){
-                                           tagList(
-                                             column(width = 10, style = "padding-left:0px;",
-                                                    slider
-                                             ),
-                                             column(width = 1, style = "min-width: 100px; min-height:100px;",
-                                                    numericInput("hcubeStep_" %+% i, "Step size", 
-                                                                 sliderStepSize, min = 0)
-                                             )
-                                           )
-                                         }
-                                       }else{
-                                         slider
-                                       }
-                                     },
-                                     dropdown = {
-                                       if(hasDependency){
-                                         tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           tagAppendAttributes(selectInput(paste0("dropdown_", i),
-                                                                           label = modelIn[[i]]$dropdown$label, 
-                                                                           choices = character(0), selected = character(0),
-                                                                           multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                                                   TRUE)) TRUE else FALSE), style = "display:none;"),
-                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep", 
-                                                    style = "float: left;width: 100%;margin: 20px;", 
-                                                    lang$nav$inputScreen$noDataDep)
-                                         )
-                                       }else{
-                                         choices <- modelIn[[i]]$dropdown$choices
-                                         
-                                         if(!is.null(modelIn[[i]]$dropdown$aliases)){
-                                           names(choices) <- modelIn[[i]]$dropdown$aliases
-                                         }
-                                         tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           selectInput(paste0("dropdown_", i), 
-                                                       label = modelIn[[i]]$dropdown$label, 
-                                                       choices = choices, 
-                                                       selected = modelIn[[i]]$dropdown$selected, 
-                                                       multiple = if(identical(modelIn[[i]]$dropdown$multiple, 
-                                                                               TRUE)) TRUE else FALSE)
-                                         )
-                                       }
-                                     },
-                                     dropdowne = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         selectInput(paste0("dropdowne_", i), label = modelIn[[i]]$dropdowne$label, 
-                                                     choices = character(0), selected = character(0),
-                                                     multiple = if(identical(modelIn[[i]]$dropdowne$multiple, 
-                                                                             TRUE)) TRUE else FALSE)
-                                       )
-                                     },
-                                     daterange = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         dateRangeInput(paste0("daterange_", i), 
-                                                        label = modelIn[[i]]$daterange$label, 
-                                                        start = modelIn[[i]]$daterange$start, 
-                                                        end = modelIn[[i]]$daterange$end, 
-                                                        min = modelIn[[i]]$daterange$min, 
-                                                        max = modelIn[[i]]$daterange$max, 
-                                                        format = modelIn[[i]]$daterange$format, 
-                                                        startview = modelIn[[i]]$daterange$startview, 
-                                                        weekstart = modelIn[[i]]$daterange$weekstart, 
-                                                        language = config$language, 
-                                                        separator = if(identical(modelIn[[i]]$daterange$separator, 
-                                                                                 NULL)) " to " else modelIn[[i]]$daterange$separator, 
-                                                        width = modelIn[[i]]$daterange$width, 
-                                                        autoclose = if(identical(modelIn[[i]]$daterange$autoclose, 
-                                                                                 FALSE)) FALSE else TRUE)
-                                       )
-                                     },
-                                     date = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         dateInput(paste0("date_", i), label = modelIn[[i]]$date$label, 
-                                                   value = modelIn[[i]]$date$value, min = modelIn[[i]]$date$min, 
-                                                   max = modelIn[[i]]$date$max, format = modelIn[[i]]$date$format, 
-                                                   startview = modelIn[[i]]$date$startview, 
-                                                   weekstart = modelIn[[i]]$date$weekstart, language = config$language, 
-                                                   width = modelIn[[i]]$date$width)
-                                       )
-                                     },
-                                     checkbox = {
-                                       if(hasDependency){
-                                         tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           tags$div(id = paste0("cbDiv_", i), style = "display:none;",
-                                                    tags$label(class = "cb-label", "for" = paste0("cb_", i), 
-                                                               modelIn[[i]]$checkbox$label), 
-                                                    tags$div(
-                                                      tags$label(class = modelIn[[i]]$checkbox$class, 
-                                                                 "for" = paste0("cb_", i), 
-                                                                 checkboxInput(paste0("cb_", i), 
-                                                                               label = NULL, value = NULL, 
-                                                                               width = modelIn[[i]]$checkbox$width))
-                                                    )
-                                           ),
-                                           tags$div(id = paste0("no_data_dep_", i), class = "in-no-data-dep",  
-                                                    lang$nav$inputScreen$noDataDep)
-                                         )
-                                       }else{
-                                         tagList(
-                                           tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                           tags$label(class = "cb-label", "for" = paste0("cb_", i), modelIn[[i]]$checkbox$label), 
-                                           tags$div(
-                                             tags$label(class = modelIn[[i]]$checkbox$class, "for" = paste0("cb_", i), 
-                                                        checkboxInput(paste0("cb_", i), label = NULL, 
-                                                                      value = modelIn[[i]]$checkbox$value, 
-                                                                      width = modelIn[[i]]$checkbox$width))
-                                           )
-                                         )
-                                       }
-                                     },
-                                     textinput = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         textInput(paste0("text_", i), label = modelIn[[i]]$textinput$label, 
-                                                   value = modelIn[[i]]$textinput$value,
-                                                   width = modelIn[[i]]$textinput$width,
-                                                   placeholder = modelIn[[i]]$textinput$placeholder)
-                                       )
-                                     },
-                                     numericinput = {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         autoNumericInput(paste0("numeric_", i), label = modelIn[[i]]$numericinput$label,
-                                                          value = modelIn[[i]]$numericinput$value,
-                                                          min = modelIn[[i]]$numericinput$min,
-                                                          max = modelIn[[i]]$numericinput$max,
-                                                          sign = modelIn[[i]]$numericinput$sign)
-                                       )
-                                     },
-                                     {
-                                       tagList(
-                                         tags$ul(class="err-msg input-validation-error", id = "valErr_" %+% names(modelIn)[i]),
-                                         tags$div(id = paste0("data-in_", i), {
-                                           tryCatch({
-                                             generateDataUI(paste0("data-in_", i), type = modelIn[[i]]$rendererName,
-                                                            customOptions = modelIn[[i]]$options,
-                                                            height = modelIn[[i]]$height)
-                                           }, error = function(e) {
-                                             flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                             errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                             showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                           })
-                                         }),
-                                         tags$div(id = paste0("graph-in_", i), class = "render-output", 
-                                                  style = paste0("padding:1px;display:none;", if(!is.null(configGraphsIn[[i]]$height)) 
-                                                    sprintf("min-height: %s;", addCssDim(configGraphsIn[[i]]$height, 5))),
-                                                  tryCatch({
-                                                    renderDataUI(paste0("in_", i), type = "datatable",
-                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                                  }, error = function(e) {
-                                                    flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
-                                                    errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
-                                                    showErrorMsg(lang$errMsg$renderGraph$title, errMsg)
-                                                  })
-                                         ))
-                                     }
-                )
-                if(length(inputTabTitles[[tabId]]) > 1L){
-                  titleId <- match(i, inputTabs[[tabId]]) + 1L
-                  return(tabPanel(
-                    title = inputTabTitles[[tabId]][titleId],
-                    value = paste0("inputTabset", tabId, "_", titleId - 1L),
-                    tags$div(class="small-space"),
-                    tabContent,
-                    tags$div(class="small-space")
-                  ))
-                }
-                return(tabContent)
-              })
-              return(tabPanel(
-                title = inputTabTitles[[tabId]][1],
-                value = paste0("inputTabset_", tabId),
-                if(length(inputTabTitles[[tabId]]) > 1L){
-                  do.call(tabsetPanel, c(id = paste0("inputTabset", tabId), content))
-                }else{
-                  tagList(tags$div(class="small-space"), 
-                          content,
-                          tags$div(class="small-space"))
-                }
-              ))
-            }))
+            MIROtabBox(id = "inputTabset", 
+                       btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
+                       inputTabContent)
             )
           )
   ),
@@ -353,10 +366,10 @@ tabItemList <- list(
                    tabsetPanel(id="scenTabset"),
                    tags$div(id = "no-scen", lang$nav$scen$noScen, 
                             tags$div(style = "margin: 10px;",
-                              HTML(paste0('<button class="btn btn-default action-button" ',
-                                          'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
-                                          1, ', {priority: \'event\'})">', 
-                                          lang$nav$scen$btLoad, '</button>')))
+                                     HTML(paste0('<button class="btn btn-default action-button" ',
+                                                 'type="button" onclick="Shiny.setInputValue(\'btLoadScen\', ',
+                                                 1, ', {priority: \'event\'})">', 
+                                                 lang$nav$scen$btLoad, '</button>')))
                    )
           ),
           fluidRow(
@@ -371,7 +384,7 @@ tabItemList <- list(
                          tags$div(id = "scenSplit1_content", style = "display:none;", 
                                   generateScenarioTabsetSplit(2)), 
                          genSplitCompButtons(1)
-                         ),
+                     ),
                      box(width = 6, solidHeader = TRUE, status="primary", 
                          title = tagList(uiOutput("title_3", inline = T), 
                                          tags$div(style = "float: right;", 
@@ -407,26 +420,26 @@ if(config$activateModules$hcubeMode){
                            style = "text-align:center;font-size:16px;font-weight:bold;margin:20px;display:none;",
                            lang$nav$hcubeLoad$noData),
                   tags$div(id = "hcubeLoadButtons", style = "display:none;padding:30px 0 50px 0;",
-                    tags$div(class = "col-sm-6",
-                             tags$div(
+                           tags$div(class = "col-sm-6",
+                                    tags$div(
                                       actionButton("hcubeLoadSelected", lang$nav$hcubeLoad$chooseSelectedButton , 
                                                    class = "bt-highlight-1"),
                                       actionButton("hcubeLoadCurrent", lang$nav$hcubeLoad$chooseCurrentButton , 
                                                    class = "bt-highlight-1"),
                                       actionButton("hcubeLoadAll", lang$nav$hcubeLoad$chooseAllButton, 
                                                    class = "bt-highlight-1")
-                             )
-                    ),
-                    tags$div(class = "col-sm-6", style = "text-align:right;",
-                             tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                      lang$nav$hcubeLoad$msgOnlyOneHash),
-                             tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                      lang$nav$hcubeLoad$msgNoHashFound),
-                             tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
-                                      lang$errMsg$unknownError),
-                             actionButton("btShowHash", 
-                                          lang$nav$hcubeLoad$showHashButton)
-                    )
+                                    )
+                           ),
+                           tags$div(class = "col-sm-6", style = "text-align:right;",
+                                    tags$div(id = "showHashOnlyOne", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                             lang$nav$hcubeLoad$msgOnlyOneHash),
+                                    tags$div(id = "showNoHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                             lang$nav$hcubeLoad$msgNoHashFound),
+                                    tags$div(id = "showHashError", class = "gmsalert gmsalert-error", style = "bottom:10%;",
+                                             lang$errMsg$unknownError),
+                                    actionButton("btShowHash", 
+                                                 lang$nav$hcubeLoad$showHashButton)
+                           )
                   )
               )
             )
@@ -558,7 +571,7 @@ if(config$activateModules$hcubeMode){
                                      lang$nav$dialogRemoveScen$okButton, 
                                      '\', \'Shiny.setInputValue(\\\'btRemoveConfirm\\\', 1, {priority: \\\'event\\\'})\')">
                             <i class="fa fa-times"></i></button>'))
-                         )
+                )
               ), status="primary", solidHeader = TRUE, width = 12,
               tags$div(class="scen-header",
                        tags$div(class = "out-buttons-wrapper",
@@ -587,53 +600,53 @@ if(config$activateModules$hcubeMode){
               ),
               tags$div(class="small-space"),
               MIROtabBox(id = "outputTabset", btCollapsedTabs = lang$nav$inputScreen$btCollapsedTabs, 
-                                     lapply(seq_along(outputTabs), function(tabId){
-                                       content <- lapply(outputTabs[[tabId]], function(i){
-                                         tabContent <- tagList(
-                                           tags$div(id = paste0("graph-out_", i), class = "render-output", 
-                                                    style = if(!is.null(configGraphsOut[[i]]$height)) 
-                                                      sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
-                                                    renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
-                                                                 graphTool = configGraphsOut[[i]]$graph$tool, 
-                                                                 customOptions = configGraphsOut[[i]]$options,
-                                                                 filterOptions = configGraphsOut[[i]]$graph$filter,
-                                                                 height = configGraphsOut[[i]]$height, 
-                                                                 noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                           ),
-                                           tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
-                                             tryCatch({
-                                               renderDataUI(paste0("table-out_",i), type = "datatable", 
-                                                            noDataTxt = lang$nav$outputScreen$boxResults$noData)
-                                             }, error = function(e) {
-                                               flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
-                                               eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
-                                             })
-                                           })
-                                         )
-                                         if(length(outputTabTitles[[tabId]]) > 1L){
-                                           titleId <- match(i, outputTabs[[tabId]]) + 1L
-                                           return(tabPanel(
-                                             title = outputTabTitles[[tabId]][titleId],
-                                             value = paste0("outputTabset", tabId, "_", titleId - 1L),
-                                             tags$div(class="small-space"),
-                                             tabContent,
-                                             tags$div(class="small-space")
-                                           ))
-                                         }
-                                         return(tabContent)
-                                       })
-                                       return(tabPanel(
-                                         title = outputTabTitles[[tabId]][1],
-                                         value = paste0("outputTabset_", tabId),
-                                         if(length(outputTabTitles[[tabId]]) > 1L){
-                                           do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
-                                         }else{
-                                           tagList(tags$div(class="small-space"), 
-                                                   content,
-                                                   tags$div(class="small-space"))
-                                         }
-                                       ))
-                                     }))
+                         lapply(seq_along(outputTabs), function(tabId){
+                           content <- lapply(outputTabs[[tabId]], function(i){
+                             tabContent <- tagList(
+                               tags$div(id = paste0("graph-out_", i), class = "render-output", 
+                                        style = if(!is.null(configGraphsOut[[i]]$height)) 
+                                          sprintf("min-height: %s;", addCssDim(configGraphsOut[[i]]$height, 5)),
+                                        renderDataUI(paste0("tab_",i), type = configGraphsOut[[i]]$outType, 
+                                                     graphTool = configGraphsOut[[i]]$graph$tool, 
+                                                     customOptions = configGraphsOut[[i]]$options,
+                                                     filterOptions = configGraphsOut[[i]]$graph$filter,
+                                                     height = configGraphsOut[[i]]$height, 
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                               ),
+                               tags$div(id = paste0("data-out_", i), class = "render-output", style = "display:none;",{
+                                 tryCatch({
+                                   renderDataUI(paste0("table-out_",i), type = "datatable", 
+                                                noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                 }, error = function(e) {
+                                   flog.error(paste0(sprintf(lang$errMsg$renderTable$desc, name), e))
+                                   eMsg <<- paste(eMsg, sprintf(lang$errMsg$renderTable$desc, name), sep = "\n")
+                                 })
+                               })
+                             )
+                             if(length(outputTabTitles[[tabId]]) > 1L){
+                               titleId <- match(i, outputTabs[[tabId]]) + 1L
+                               return(tabPanel(
+                                 title = outputTabTitles[[tabId]][titleId],
+                                 value = paste0("outputTabset", tabId, "_", titleId - 1L),
+                                 tags$div(class="small-space"),
+                                 tabContent,
+                                 tags$div(class="small-space")
+                               ))
+                             }
+                             return(tabContent)
+                           })
+                           return(tabPanel(
+                             title = outputTabTitles[[tabId]][1],
+                             value = paste0("outputTabset_", tabId),
+                             if(length(outputTabTitles[[tabId]]) > 1L){
+                               do.call(tabsetPanel, c(id = paste0("outputTabset", tabId), content))
+                             }else{
+                               tagList(tags$div(class="small-space"), 
+                                       content,
+                                       tags$div(class="small-space"))
+                             }
+                           ))
+                         }))
               )
             )
     )
@@ -641,37 +654,37 @@ if(config$activateModules$hcubeMode){
 }
 body <- dashboardBody({
   if(dir.exists(file.path(currentModelDir, "static"))){
-    addResourcePath("custom", file.path(currentModelDir, "static"))
+    addResourcePath("static", file.path(currentModelDir, "static"))
   }
   tagList(
-  tags$head(
-    if(config$activateModules$hcubeMode){
-      tagList(
-        tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
-                    type = "application/javascript"),
-        tags$script(type = "text/x-mathjax-config", {
-          "MathJax.Hub.Config({
+    tags$head(
+      if(config$activateModules$hcubeMode){
+        tagList(
+          tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML", 
+                      type = "application/javascript"),
+          tags$script(type = "text/x-mathjax-config", {
+            "MathJax.Hub.Config({
             skipStartupTypeset: true,
             tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
           });"
-        })
-      )
-    },
-    tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
-    tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
-    tags$script(src = "miro.js", type = "application/javascript"),
-    # css sheets that depend on data from config JSON file
-    # Logo ratio should be 4,6 (width/height)
-    tags$style(HTML(paste0('
+          })
+        )
+      },
+      tags$link(type = "text/css", rel = "stylesheet", href = paste0("skin_", config$theme, ".css")),
+      tags$script(src = "autoNumeric.min.js", type = "application/javascript"),
+      tags$script(src = "miro.js", type = "application/javascript"),
+      # css sheets that depend on data from config JSON file
+      # Logo ratio should be 4,6 (width/height)
+      tags$style(HTML(paste0('
 .main-header .logo {
-  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "custom/", config$UILogo, '");
+  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "static/", config$UILogo, '");
   background-size: contain;
 }
 .pvtRows, .pvtCols { 
   background-color: ', config$pivottable$bgColor, '; 
 }')))),
-  if(config$activateModules$hcubeMode){
-  HTML('<!-- Creates modal dialog for images generated by paver -->
+    if(config$activateModules$hcubeMode){
+      HTML('<!-- Creates modal dialog for images generated by paver -->
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -688,7 +701,7 @@ body <- dashboardBody({
     </div>
 </div>
 </div>')},
-  HTML(paste0('<!-- Creates modal dialog for confirm messages -->
+    HTML(paste0('<!-- Creates modal dialog for confirm messages -->
 <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" style="width:685px;">
@@ -704,7 +717,7 @@ body <- dashboardBody({
 </div>
 <div id="loading-screen"><div class="lds-ellipsis" style="position:relative;top:50%;left:50%">
        <div></div><div></div><div></div><div></div></div></div><div class="gmsalert gmsalert-error" id="hcubeRunning">', 
-              lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
-              lang$errMsg$hcubeLaunch$launchError, '</div>')),
-  do.call(tabItems, tabItemList)
-)})
+                lang$errMsg$hcubeLaunch$hcubeRunning, '</div>', '<div class="gmsalert gmsalert-error" id="hcubeLaunchError">', 
+                lang$errMsg$hcubeLaunch$launchError, '</div>')),
+    do.call(tabItems, tabItemList)
+  )})

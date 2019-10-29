@@ -130,13 +130,12 @@ these components are included below):
 - lattice, https://github.com/deepayan/lattice/ or https://cran.r-project.org/web/packages/lattice/index.html
 - fastmap, https://github.com/r-lib/fastmap or https://cran.r-project.org/web/packages/fastmap/index.html
 - autoNumeric, https://github.com/autoNumeric/autoNumeric
+- showdown, https://github.com/showdownjs/showdown
 
 - pandas https://github.com/pandas-dev/pandas
 - pandas_datareader https://github.com/pydata/pandas-datareader
 - geocoder https://github.com/DenisCarriere/geocoder
 - geopy https://github.com/geopy/geopy
-- Pillow https://github.com/python-pillow/Pillow
-
 - libuv https://github.com/libuv/libuv
 
 
@@ -700,6 +699,7 @@ Section 8 -- Interpretation.
         - DataTables, Copyright (c) 2008-2015 SpryMedia Limited
         - showdown.js, Copyright (c) 2018 ShowdownJS
         - autoNumeric, Copyright (c) 2009 Robert J. Knothe <bob@decorplanit.com> and contributors
+        - showdown, Copyright (c) 2018 ShowdownJS
         
 -----------------------------------------------------------------------------
 Based on <http://opensource.org/licenses/MIT>
@@ -2205,30 +2205,6 @@ of the Work.
 d. Affirmer understands and acknowledges that Creative Commons is not 
 a party to this document and has no duty or obligation with respect 
 to this CC0 or use of the Work.
-
------------------------------------------------------------------------------
-            PIL Software License
-        applies to: 
-        - Pillow, Copyright (c) Secret Labs AB, Fredrik Lundh, Alex Clark
------------------------------------------------------------------------------
-
-The Python Imaging Library (PIL) is
-
-    Copyright © 1997-2011 by Secret Labs AB
-    Copyright © 1995-2011 by Fredrik Lundh
-
-Pillow is the friendly PIL fork. It is
-
-    Copyright © 2010-2019 by Alex Clark and contributors
-
-Like PIL, Pillow is licensed under the open source PIL Software License:
-
-By obtaining, using, and/or copying this software and/or its associated documentation, you agree that you have read, understood, and will comply with the following terms and conditions:
-
-Permission to use, copy, modify, and distribute this software and its associated documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appears in all copies, and that both that copyright notice and this permission notice appear in supporting documentation, and that the name of Secret Labs AB or the author not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission.
-
-SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
 
 -----------------------------------------------------------------------------
             The “MPL-2.0 License”

@@ -1454,3 +1454,12 @@ if(is.null(errMsg)){
     '5000' = "Driver error: internal error: cannot load option handling library"
   )
 }
+if(is.null(errMsg)){
+  # parse README.md file 
+  if(file.exists(paste0(readmeFilePath, ".md"))){
+    source(file.path("R", "md_parser.R"), local = TRUE)
+    markdownParser <- MarkdownParser$new()
+    markdownParser$md2html(paste0(readmeFilePath, ".md"), 
+                           paste0(readmeFilePath, ".html"))
+  }
+}
