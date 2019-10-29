@@ -288,6 +288,14 @@ function scrollDown(id, delay = 500) {
 }
 
 $(document).ready(() => {
+  $('#toolCategories').on('click', '.category-btn', function () {
+    const catId = this.dataset.cat;
+    const catBody = $(`.cat-body-${catId}`);
+    $('.cat-body:visible').hide();
+    $('.category-btn').removeClass('category-btn-active');
+    $(this).addClass('category-btn-active');
+    catBody.show();
+  });
   $('.dropdown').on('show.bs.dropdown', (e) => {
     const ddButton = $(e.target);
     const dropdown = ddButton.children('.dropdown-menu').first();

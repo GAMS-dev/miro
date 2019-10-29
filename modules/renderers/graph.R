@@ -9,6 +9,7 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
   #
   # Returns:
   #   rendered graph for the provided dataframe
+  data <- type_convert(data, cols())
   if(options$tool == 'plotly'){
     return(renderPlotly({
       if(length(filterCol) && length(input$data_filter)){
@@ -180,26 +181,42 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
         }
       }else if(options$type == 'hist'){
         # histogram
-        #first calculate the width of the bins
-        minx <- min(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = TRUE)
-        maxx <- max(data[, match(tolower(names(options$xdata)), tolower(colnames(data)))], na.rm = TRUE)
         p <- NULL
-        lapply(seq_along(options$xdata), function(j){
-          if(j==1){
-            p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
-                          autobinx = if(is.null(options$nbins)) TRUE else FALSE, 
-                          xbins = list(start = minx, end = maxx, size = (maxx-minx)/options$nbins)) %>%
-              add_histogram(x = ~try(get(names(options$xdata)[[j]])), 
-                            name = options$xdata[[j]]$labels, 
-                            marker = list(color = toRGB(options$xdata[[j]]$color, 
-                                                        options$xdata[[j]]$alpha)))
-          }else{
-            p <<- add_histogram(p, x = ~try(get(names(options$xdata)[[j]])), 
-                                name = options$xdata[[j]]$labels, 
-                                marker = list(color = toRGB(options$xdata[[j]]$color, 
-                                                            options$xdata[[j]]$alpha)))
-          }
-        })
+        if(identical(options$horizontal, TRUE)){
+          lapply(seq_along(options$xdata), function(j){
+            if(j==1){
+              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
+                            nbinsy = options$nbins,
+                            cumulative = list(enabled = identical(options$cumulative, TRUE))) %>%
+                add_histogram(y = ~try(get(names(options$xdata)[[j]])), 
+                              name = options$xdata[[j]]$labels, 
+                              marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                          options$xdata[[j]]$alpha)))
+            }else{
+              p <<- add_histogram(p, y = ~try(get(names(options$xdata)[[j]])), 
+                                  name = options$xdata[[j]]$labels, 
+                                  marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                              options$xdata[[j]]$alpha)))
+            }
+          })
+        }else{
+          lapply(seq_along(options$xdata), function(j){
+            if(j==1){
+              p <<- plot_ly(data, type = 'histogram', histnorm = options$histnorm, height = height, 
+                            nbinsx = options$nbins,
+                            cumulative = list(enabled = identical(options$cumulative, TRUE))) %>%
+                add_histogram(x = ~try(get(names(options$xdata)[[j]])), 
+                              name = options$xdata[[j]]$labels, 
+                              marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                          options$xdata[[j]]$alpha)))
+            }else{
+              p <<- add_histogram(p, x = ~try(get(names(options$xdata)[[j]])), 
+                                  name = options$xdata[[j]]$labels, 
+                                  marker = list(color = toRGB(options$xdata[[j]]$color, 
+                                                              options$xdata[[j]]$alpha)))
+            }
+          })
+        }
       }else{
         stop("The plot type you selected is currently not supported for tool plotly.", call. = FALSE)
       }
@@ -219,138 +236,141 @@ renderGraph <- function(data, configData, options, height = NULL, input = NULL, 
     
   }else if(options$tool == 'dygraphs'){
     # time series chart
+    p <- NULL
+    lapply(seq_along(options$ydata), function(j){
+      
+      if(j==1){
+        #check whether data is already correctly formatted and if y variables are labeled in config.json
+        if(!is.null(options$color)){
+          key   <- match(tolower(options$color), tolower(colnames(data)))
+          value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
+          # bring data into right matrix format
+          if(length(unique(data[[key]])) > 50L){
+            stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
+                 call. = FALSE)
+          }
+          xts_data <- spread(data, key, value)
+          
+          if(length(options$xdata)){
+            xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
+            if(is.na(xtsIdx))
+              stop(sprintf("Could not find x data column: '%s'.", options$xdata), call. = FALSE)
+            xts_idx <- NULL
+            tryCatch({
+              xts_idx  <- as.Date(xts_data[[xtsIdx]])
+              xts_data <- xts_data[, -c(xtsIdx)]
+              xts_data <- xts(xts_data, order.by = xts_idx)
+            }, error = function(e){
+              xts_data <<- xts_data %>% select(!!sym(colnames(data)[xtsIdx]), everything())
+            })
+          }else{
+            xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
+            if(length(xtsIdx)){
+            }else{
+              xts_idx  <- as.Date(xts_data[[xtsIdx]])
+              xts_data <- xts_data[, -c(xtsIdx)]
+              xts_data <- xts(xts_data, order.by = xts_idx)
+            }
+          }
+          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
+                        ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
+                        elementId = NULL)
+        }else{
+          idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
+          dataColId <- 1L
+          if(length(options$xdata)){
+            dataColId <- match(tolower(options$xdata[1]), tolower(names(data)))
+            if(is.na(dataColId)){
+              dataColId <- 1L
+            }
+          }
+          dateCol <- data[[dataColId]]
+          if (!inherits(dateCol, "POSIXct"))
+            dateCol <- tryCatch(as.POSIXct(dateCol, tz = "GMT"), 
+                                error = function(e) {
+                                  stop('X axis data could not be identified as dates. Try: yyyy-mm-dd format.', call. = FALSE)
+                                })
+          
+          xts_data <- xts(data[, idxVector], order.by = dateCol)
+          
+          p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
+                        ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
+          p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
+                         color = options$ydata[[1]]$color, axis = "y",
+                         stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
+                         fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
+                         pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
+                         strokeWidth = options$ydata[[1]]$strokeWidth, 
+                         strokePattern = options$ydata[[1]]$strokePattern,
+                         strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
+                         strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
+        }
+        
+      }else{
+        p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
+                       stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
+                       pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
+                       strokePattern = options$ydata[[j]]$strokePattern,
+                       strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
+      }
+    })
+    # add graph options specified in config.json
+    if(!is.null (options$dyOptions)){
+      p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
+    }
+    # lenged options
+    if(!is.null (options$dylegend)){
+      p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
+    }
+    # highlighting options - highlight hovered series
+    if(!is.null (options$dyHighlight)){
+      p <- do.call(dyHighlight, c(list(dygraph = p), options$dyHighlight))
+    }
+    # use a selector for panning and zooming
+    if(!is.null (options$dyRangeSelector)){
+      p <- do.call(dyRangeSelector, c(list(dygraph = p), options$dyRangeSelector))
+    }
+    # Candlestick charts: use the first four data series to plot, the rest of the data series (if any) are rendered with line plotter.
+    if(!is.null (options$dyCandlestick)){
+      p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
+    }
+    if(!is.null (options$dyAxis)){
+      p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
+    }
+    # Event lines to note points within a time series. 
+    if(!is.null (options$dyEvent)){
+      lapply(seq_along(options$dyEvent), function(j){
+        event <- getEvent(configData, names(options$dyEvent)[[j]])
+        p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
+      })
+    }
+    # Limit lines to highlight data levels. 
+    if(!is.null (options$dyLimit)){
+      lapply(seq_along(options$dyLimit), function(j){
+        options$dyLimit[[j]]$limit <- getEvent(configData, options$dyLimit[[j]]$limit)
+        p <<- do.call(dyLimit, c(list(dygraph = p), options$dyLimit[[j]]))
+      })
+    }
+    # Annotations to note points within a time series. 
+    if(!is.null (options$dyAnnotation)){
+      lapply(seq_along(options$dyAnnotation), function(j){
+        event <- getEvent(configData, names(options$dyAnnotation)[[j]])
+        p <<- do.call(dyAnnotation, c(list(dygraph = p, x = event), options$dyAnnotation[[j]]))
+      })
+    }
+    # Add a shading effect to the graph background for one or more time ranges. 
+    if(length(options$dyShading)){
+      lapply(seq_along(options$dyShading), function(j){
+        options$dyShading[[j]]$from <- getEvent(configData, options$dyShading[[j]]$from)
+        options$dyShading[[j]]$to <- getEvent(configData, options$dyShading[[j]]$to)
+        p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
+      })
+    }
     return(renderDygraph({
       if(length(filterCol) && length(input$data_filter)){
         data <- filter(data, !!filterCol %in% input$data_filter)
       }
-      p <- NULL
-      lapply(seq_along(options$ydata), function(j){
-        
-        if(j==1){
-          #check whether data is already correctly formatted and if y variables are labeled in config.json
-          if(!is.null(options$color)){
-            key   <- match(tolower(options$color), tolower(colnames(data)))
-            value <- match(tolower(names(options$ydata)[1]), tolower(colnames(data)))
-            # bring data into right matrix format
-            if(length(unique(data[[key]])) > 50L){
-              stop("The column you selected to pivot on contains too many (unique) elements: maximum of 50 elements allowed.", 
-                   call. = FALSE)
-            }
-            xts_data <- spread(data, key, value)
-            
-            if(length(options$xdata)){
-              xtsIdx  <- match(tolower(options$xdata), tolower(colnames(data)))[[1]]
-              if(is.na(xtsIdx))
-                stop(sprintf("Could not find x data column: '%s'.", options$xdata), call. = FALSE)
-              xts_idx <- NULL
-              tryCatch({
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
-                xts_data <- xts_data[, -c(xtsIdx)]
-                xts_data <- xts(xts_data, order.by = xts_idx)
-              }, error = function(e){
-                xts_data <<- xts_data %>% select(!!sym(colnames(data)[xtsIdx]), everything())
-              })
-            }else{
-              xtsIdx   <- seq_along(xts_data)[vapply(xts_data, isDate, logical(1L), USE.NAMES = FALSE)][1]
-              if(length(xtsIdx)){
-              }else{
-                xts_idx  <- as.Date(xts_data[[xtsIdx]])
-                xts_data <- xts_data[, -c(xtsIdx)]
-                xts_data <- xts(xts_data, order.by = xts_idx)
-              }
-            }
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
-                          ylab = options$yaxis$title,  periodicity = NULL, group = NULL, 
-                          elementId = NULL)
-          }else{
-            idxVector <- match(tolower(names(options$ydata)), tolower(names(data)))
-            dataColId <- 1L
-            if(length(options$xdata)){
-              dataColId <- match(tolower(options$xdata[1]), tolower(names(data)))
-              if(is.na(dataColId)){
-                dataColId <- 1L
-              }
-            }
-            dateCol <- data[[dataColId]]
-            
-            if (!inherits(dateCol, "POSIXct"))
-              dateCol <- as.POSIXct(dateCol, tz = "GMT")
-            
-            xts_data <- xts(data[, idxVector], order.by = dateCol)
-           
-            p <<- dygraph(xts_data, main = options$title, xlab = options$xaxis$title, 
-                          ylab = options$yaxis$title,  periodicity = NULL, group = NULL, elementId = NULL)
-            p <<- dySeries(p, name = names(options$ydata)[[1]], label = options$ydata[[1]]$label, 
-                           color = options$ydata[[1]]$color, axis = "y",
-                           stepPlot = options$ydata[[1]]$stepPlot, stemPlot = options$ydata[[1]]$stemPlot, 
-                           fillGraph = options$ydata[[1]]$fillGraph, drawPoints = options$ydata[[1]]$drawPoints,
-                           pointSize = options$ydata[[1]]$pointSize, pointShape = options$ydata[[1]]$pointShape,
-                           strokeWidth = options$ydata[[1]]$strokeWidth, 
-                           strokePattern = options$ydata[[1]]$strokePattern,
-                           strokeBorderWidth = options$ydata[[1]]$strokeBorderWidth, 
-                           strokeBorderColor = options$ydata[[1]]$strokeBorderColor)
-          }
-          
-        }else{
-          p <<- dySeries(p, name = names(options$ydata)[[j]], label = options$ydata[[j]]$label, color = options$ydata[[j]]$color, axis = "y",
-                         stepPlot = options$ydata[[j]]$stepPlot, stemPlot = options$ydata[[j]]$stemPlot, fillGraph = options$ydata[[j]]$fillGraph, drawPoints = options$ydata[[j]]$drawPoints,
-                         pointSize = options$ydata[[j]]$pointSize, pointShape = options$ydata[[j]]$pointShape, strokeWidth = options$ydata[[j]]$strokeWidth, 
-                         strokePattern = options$ydata[[j]]$strokePattern,
-                         strokeBorderWidth = options$ydata[[j]]$strokeBorderWidth, strokeBorderColor = options$ydata[[j]]$strokeBorderColor)
-        }
-      })
-      # add graph options specified in config.json
-      if(!is.null (options$dyOptions)){
-        p <- do.call(dyOptions, c(list(dygraph = p), options$dyOptions))
-      }
-      # lenged options
-      if(!is.null (options$dylegend)){
-        p <- do.call(dyLegend, c(list(dygraph = p), options$dylegend))
-      }
-      # highlighting options - highlight hovered series
-      if(!is.null (options$dyHighlight)){
-        p <- do.call(dyHighlight, c(list(dygraph = p), options$dyHighlight))
-      }
-      # use a selector for panning and zooming
-      if(!is.null (options$dyRangeSelector)){
-        p <- do.call(dyRangeSelector, c(list(dygraph = p), options$dyRangeSelector))
-      }
-      # Candlestick charts: use the first four data series to plot, the rest of the data series (if any) are rendered with line plotter.
-      if(!is.null (options$dyCandlestick)){
-        p <- do.call(dyCandlestick, c(list(dygraph = p), options$dyCandlestick))
-      }
-      if(!is.null (options$dyAxis)){
-        p <- do.call(dyAxis, c(list(dygraph = p), options$dyAxis))
-      }
-      # Event lines to note points within a time series. 
-      if(!is.null (options$dyEvent)){
-        lapply(seq_along(options$dyEvent), function(j){
-          event <- getEvent(configData, names(options$dyEvent)[[j]])
-          p <<- do.call(dyEvent, c(list(dygraph = p, x = event), options$dyEvent[[j]]))
-        })
-      }
-      # Limit lines to highlight data levels. 
-      if(!is.null (options$dyLimit)){
-        lapply(seq_along(options$dyLimit), function(j){
-          options$dyLimit[[j]]$limit <- getEvent(configData, options$dyLimit[[j]]$limit)
-          p <<- do.call(dyLimit, c(list(dygraph = p), options$dyLimit[[j]]))
-        })
-      }
-      # Annotations to note points within a time series. 
-      if(!is.null (options$dyAnnotation)){
-        lapply(seq_along(options$dyAnnotation), function(j){
-          event <- getEvent(configData, names(options$dyAnnotation)[[j]])
-          p <<- do.call(dyAnnotation, c(list(dygraph = p, x = event), options$dyAnnotation[[j]]))
-        })
-      }
-      # Add a shading effect to the graph background for one or more time ranges. 
-      if(length(options$dyShading)){
-        lapply(seq_along(options$dyShading), function(j){
-          options$dyShading[[j]]$from <- getEvent(configData, options$dyShading[[j]]$from)
-          options$dyShading[[j]]$to <- getEvent(configData, options$dyShading[[j]]$to)
-          p <<- do.call(dyShading, c(list(dygraph = p), options$dyShading[[j]]))
-        })
-      }
+      
       p}))
   }else if(options$tool == 'leaflet'){
     return(renderLeaflet({

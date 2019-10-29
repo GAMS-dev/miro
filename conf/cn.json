@@ -1226,15 +1226,41 @@
       "removeDialogConfirm": "删除表格"
     },
     "graphs":{
+      "toolCategories": {
+        "main": "Main",
+        "general": "General",
+        "xaxis": "X axis",
+        "yaxis": "Y axis",
+        "filterDomain": "Filter & Domains",
+        "filter": "Filter",
+        "animation": "Animation",
+        "bars": "Bars",
+        "histogram": "Histogram",
+        "event": "Event (x axis)",
+        "limit": "Limit (y axis)",
+        "annotation": "Annotation",
+        "shading": "Shading",
+        "rangeSelector": "Range selector",
+        "highlight": "Highlighting",
+        "markers": "Markers",
+        "flows": "Flows",
+        "minicharts": "Minicharts",
+        "groupsLayers": "Groups & Layers",
+        "data": "Data"
+      },
       "ui":{
         "title": "配置图表",
         "graphUpdateSuccess": "图表配置已更新",
         "localInput": "上传GDX文件或Excel电子表格，其中包含可用于预览的数据",
         "gamsSymbols": "选择要绘制的GAMS符号",
+        "input": "输入的GAMS符号",
+        "output": "输出的GAMS符号",
         "chartTitle": "指定图表的标题",
         "height": "选择图表的高度（px，不支持实时预览）",
         "tool": "选择要使用的图表工具",
-        "choices": ["图形工具", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"]
+        "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "标量值的值框", "自定义绘制器"],
+        "deleteGraph": "Delete",
+        "saveGraph": "Save"
       },
       "validate":{
         "val1": "无法设置x轴的范围。 请检查数据格式是否正确！",
@@ -1245,11 +1271,7 @@
         "errContent1": "找不到有效的数据集。 请上传格式正确的Excel或者包含数据gdx的文件。"
       },
       "updateToolScalars": ["标量值的值框"],
-      "updateToolNoScalars": ["图形工具", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
-      "chartTypePlotly":{
-        "title": "选择要使用的图表类型",
-        "choices": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图"]
-      },
+      "updateToolNoScalars": ["饼图", "柱形图", "散点图", "折线图", "气泡图", "直方图", "时间序列图形工具", "地图工具", "甘特图", "数据透视表", "自定义绘制器"],
       "pieOptions":{
         "labels": "标签",
         "values": "值",
@@ -1305,7 +1327,8 @@
         "easingChoices": ["linear","quad","cubic","sin","exp","circle","elastic","back","bounce","linear-in", "quad-in","cubic-in","sin-in","exp-in","circle-in","elastic-in","back-in","bounce-in","linear-out","quad-out","cubic-out","sin-out","exp-out", "circle-out","elastic-out","back-out","bounce-out","linear-in-out","quad-in-out","cubic-in-out","sin-in-out","exp-in-out","circle-in-out", "elastic-in-out","back-in-out","bounce-in-out"],
         "redraw": "在转换后立即重新绘图？（尽管这可能会显着影响性能，但更新无法转换的图形元素是必要的。）",
         "mode": "新动画的调用如何与当前运行的动画进行交互？",
-        "modeChoices": ["立即开始", "等当前动画结束后", "等所有安排的动画结束后"]
+        "modeChoices": ["立即开始", "等当前动画结束后", "等所有安排的动画结束后"],
+        "noAnimation": "No domain selected for animation (category: Y axis)."
       },
       "animationSliderOptions":{
         "hide": "删除动画滑动条？",
@@ -1319,6 +1342,9 @@
         "normChoices": ["出现次数", "事件发生的百分比", "出现次数/组宽度"],
         "nbins": "组数",
         "barmode": "如何显示柱形图的柱形？",
+        "cumulative": "Display the cumulative distribution?",
+        "horizontal": "Orientation of the bars",
+        "orientationChoices": ["vertical", "horizontal"],
         "barmodeChoices": ["重叠", "堆积", "簇状", "相对"]
       },
       "dygraphsOptions":{
