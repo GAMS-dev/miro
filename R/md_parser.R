@@ -5,7 +5,8 @@ MarkdownParser <- R6Class("MarkdownParser",
                               private$ctx$source(libPath)
                               private$ctx$assign("converter", 
                                                  JS("new showdown.Converter({tables: true,
-                                                    tasklists:true, strikethrough:true})"))
+                                                    tasklists:true, strikethrough:true,
+                                                    noHeaderId: true})"))
                               return(invisible(self))
                             },
                             parse = function(markdown){
