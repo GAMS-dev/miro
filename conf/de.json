@@ -998,7 +998,7 @@
         "noWidgetConfigMsg": "Derzeit ist kein Widget für dieses Symbol konfiguriert",
         "optionConfigMsg": "Info: Das von Ihnen gewählte Symbol ist eine GAMS-Option",
         "doubledashConfigMsg": "Info: Das von Ihnen gewählte Symbol ist ein Double-Dash-Parameter",
-        "inputSymbol": "Für welches Eingabesymbol möchten Sie ein Widget erstellen?",
+        "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
         "widgetType": "Wählen Sie ein Widget, das Sie verwenden möchten."
@@ -1063,8 +1063,8 @@
         "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
-        "readonlyCols": "Wählen Sie bestimmte Spalten aus, die schreibgeschützt sein sollen",
-        "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll (keine Vorschau verfügbar)",
+        "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
+        "pivotCols": "Wählen Sie eine Spalte, die pivotiert werden soll",
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{

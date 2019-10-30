@@ -998,9 +998,9 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
-        "inputSymbol": "Which input symbol would you like to create a widget for?",
+        "inputSymbol": "Select input symbol",
         "widgetGo": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
-        "widgetDd": "Name of the double-dash parameter (without '--')",
+        "widgetDd": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select the type of widget you want to use"
       },
       "validate":{
@@ -1064,8 +1064,8 @@
         "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
-        "readonlyCols": "Select certain columns to be readonly",
-        "pivotCols": "Select a column to pivot (no preview available)",
+        "readonlyCols": "Select columns to be readonly",
+        "pivotCols": "Select a column to pivot",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
