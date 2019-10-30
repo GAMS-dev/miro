@@ -24,11 +24,10 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     return(private$gdxSymbols)
   },
   rgdx = function(gdxName, symName, names = character(0L), 
-                  pivotHeaders = character(0L), isNewGdx = FALSE){
+                  isNewGdx = FALSE){
     stopifnot(is.character(gdxName), identical(length(gdxName), 1L),
               is.character(symName), identical(length(symName), 1L),
-              is.logical(isNewGdx), identical(length(isNewGdx), 1L),
-              is.character(names), is.character(pivotHeaders))
+              is.logical(isNewGdx), identical(length(isNewGdx), 1L))
     
     if(isNewGdx || !identical(gdxName, private$rgdxName)){
       private$rgdxName   <- gdxName
@@ -84,7 +83,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(symName %in% tolower(private$gdxSymbols$sets)){
       return(private$rgdxSet(symName, names = names))
     }else if(symName %in% tolower(private$gdxSymbols$parameters)){
-      return(private$rgdxParam(symName, names = names, pivotHeaders = pivotHeaders))
+      return(private$rgdxParam(symName, names = names))
     }else if(symName %in% tolower(c(private$gdxSymbols$variables, private$gdxSymbols$equations))){
       return(private$rgdxVe(symName, names = names))
     }else{
@@ -284,7 +283,7 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     if(identical(symDim, 0L)){
       return(private$rgdxScalarVe(sym = sym))
     }
-    private$rgdxTibble(sym, symDim + 1L, names, c("l", "m", "lo", "up", "s"))
+    private$rgdxTibble(sym, symDim + 1L, names)
   },
   rgdxScalarVe = function(symName = NULL, sym = NULL){
     if(!length(sym)){
@@ -294,16 +293,32 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
     }
     return(sym$val[, 2L])
   },
-  rgdxParam = function(symName, names = NULL, pivotHeaders = character(0L)){
+  rgdxParam = function(symName, names = NULL){
     sym <- gdxrrw::rgdx(private$rgdxName, list(name = symName, compress = FALSE, ts = FALSE),
                         squeeze = FALSE, useDomInfo = TRUE)
     symDim <- sym$dim
     if(identical(symDim, 0L)){
       return(private$rgdxScalar(sym = sym))
     }
-    private$rgdxTibble(sym, symDim, names, pivotHeaders)
+    private$rgdxTibble(sym, symDim, names)
   },
-  rgdxTibble = function(sym, symDim, names = NULL, pivotHeaders = character(0L)){
+  rgdxTibble = function(sym, symDim, names = NULL){
+    # check if symbol has to be pivoted
+    symHeaders <- private$metaData[[tolower(sym$name)]]$headers
+    pivotHeaders <- character(0L)
+    
+    if(sym$type %in% c('variable', 'equation')){
+      pivotHeaders <- c("l", "m", "lo", "up", "s")
+    }else{
+      noNonNumCols <- sum(vapply(symHeaders, function(el){
+        identical(el$type, "string")
+      }, logical(1L), USE.NAMES = FALSE))
+      if(length(symHeaders) - noNonNumCols > 1L){
+        # symbol shall be pivoted
+        pivotHeaders <- names(symHeaders)[-seq_len(noNonNumCols)]
+      }
+    }
+    
     if(length(names) && !length(pivotHeaders)){
       stopifnot(is.character(names), identical(length(names), symDim + 1L))
     }
@@ -330,17 +345,28 @@ GdxIO <- R6::R6Class("GdxIO", public = list(
       
       # append non pivot column names in case only pivot column names were specified
       pivotHeaders <- c(nonPivotedColNames, tolower(pivotHeaders))
-      newIdx    <- match(pivotHeaders, 
-                         c(nonPivotedColNames, tolower(names(symDF)[seq(dfDim - 1L, length(symDF))])))
-      if(any(is.na(newIdx))){
+      tableColNames <- c(nonPivotedColNames, tolower(names(symDF)[seq(dfDim - 1L, 
+                                                                      length(symDF))]))
+      if(any(!tableColNames %in% pivotHeaders)){
         errMsg <- sprintf("Dataset: '%s' has invalid headers. Headers are: '%s'. Headers should be: '%s'.", 
                           sym$name, paste(names(symDF), collapse = "', '"), 
                           paste(pivotHeaders, collapse = "', '"))
         flog.warn(errMsg)
         stop(errMsg, call. = FALSE)
-      }else{
-        symDF <- symDF[, newIdx]
       }
+      newIdx    <- match(pivotHeaders, 
+                         tableColNames)
+      
+      if(length(tableColNames) != length(pivotHeaders)){
+        missingCols <- pivotHeaders[is.na(newIdx)]
+        # add missing columns (columns with only zeros are squeezed out in gdx)
+        missingCols <- setNames(numeric(length(missingCols)), 
+                                missingCols)
+        symDF <- tibble::add_column(symDF, !!!missingCols)
+        newIdx <- match(pivotHeaders, 
+                        c(tableColNames, names(missingCols)))
+      }
+      symDF <- symDF[, newIdx]
     }else if(length(names)){
       names(symDF) <- names
     }

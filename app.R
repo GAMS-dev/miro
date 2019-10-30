@@ -222,7 +222,8 @@ if(is.null(errMsg)){
       }
     }
   }
-  
+}
+if(is.null(errMsg)){
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
   if(isTRUE(config$activateModules$hcubeMode)){
