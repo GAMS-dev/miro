@@ -662,6 +662,7 @@ pre.shiny-text-output {
 }
 @media (prefers-color-scheme: dark) {
   .selectize-dropdown .optgroup-header {
+    color: #ffffff;
     background: #848991;
   }
 }
@@ -19722,16 +19723,45 @@ body {
   margin-bottom: 5px;
 }
 .save-delete-save-btn {
-  width: 100%;
   text-shadow: none;
-  border: 1px solid green;
+  border: none;
   margin-top: 2px;
+  background-color: #ecf0f5;
+}
+@media (prefers-color-scheme: dark) {
+  .save-delete-save-btn {
+    background-color: #292D33;
+  }
+}
+.save-delete-save-btn:hover {
+  background-color: #d9f1d9;
+}
+@media (prefers-color-scheme: dark) {
+  .save-delete-save-btn:hover {
+    background-color: #4a614a;
+  }
 }
 .save-delete-delete-btn {
-  width: 100%;
-  border: 1px solid red;
+  border: none;
   margin: 2px 0px;
   cursor: pointer;
+  background-color: #ecf0f5;
+}
+@media (prefers-color-scheme: dark) {
+  .save-delete-delete-btn {
+    background-color: #292D33;
+  }
+}
+.save-delete-delete-btn:hover {
+  background-color: #ffd6d6;
+}
+@media (prefers-color-scheme: dark) {
+  .save-delete-delete-btn:hover {
+    background-color: #864c4c;
+  }
+}
+.full-width {
+  width: 100%;
 }
 .two-col-wrapper {
   position: relative;

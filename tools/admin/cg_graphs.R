@@ -541,13 +541,13 @@ observe(rv$graphConfig$graph$layersControl$overlayGroups <<- input$leaflc_overla
 observe(rv$graphConfig$graph$layersControl$position <<- input$leaflc_position)
 observe(rv$graphConfig$graph$layersControl$options$collapsed <<- input$leaflc_collapsed)
 
-observeEvent(input$pivot_rows, {
+observeEvent(input$pivot_rows, ignoreNULL = FALSE, {
   if(length(input$pivot_rows) > 0)
     rv$graphConfig$pivottable$rows <<- input$pivot_rows
   else
     rv$graphConfig$pivottable$rows <<- NULL
 })
-observeEvent(input$pivot_cols, {
+observeEvent(input$pivot_cols, ignoreNULL = FALSE, {
   if(length(input$pivot_cols) > 0)
     rv$graphConfig$pivottable$cols <<- input$pivot_cols
   else
@@ -1389,14 +1389,21 @@ observeEvent(input$custom_packages, {
 })
 
 observeEvent(input$filter_dim, {
- if(identical(isolate({input$filter_dim}), FALSE)){
+  if(input$chart_tool %in% plotlyChartTools){
+    chartToolTmp <- "plotly"
+  }else{
+    chartToolTmp <- input$chart_tool
+  }
+ if(isFALSE(input$filter_dim)){
+   print("is false")
    rv$graphConfig$graph$filter <<- NULL
-   hideEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+   hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }else{
+   print("is true")
    rv$graphConfig$graph$filter <<- list(col = input$filter_col,
                                         label = input$filter_label,
                                         multiple = input$filter_multiple)
-   showEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+   showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }
 })
 observeEvent(input$filter_col, {
@@ -1614,8 +1621,7 @@ getChartOptions <- reactive({
              getAxisOptions("y", names(scalarIndices)[1])
     ),
     tags$div(class="cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style="display:none;",
-             selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
-                         choices = c("_", indices)),
+             getColorPivotOptions(),
              getFilterOptions()
     ),
     tags$div(class="cat-body cat-body-6 cat-body-12 cat-body-17 cat-body-22", style="display:none;",
@@ -1852,7 +1858,8 @@ getHistOptions <- reactive({
              getAxisOptions("x", label, labelOnly = TRUE),
              getAxisOptions("y", "", labelOnly = TRUE)),
     tags$div(class="cat-body cat-body-25", style="display:none;",
-    getFilterOptions()),
+             getColorPivotOptions(),
+             getFilterOptions()),
     tags$div(class="cat-body cat-body-26", style="display:none;",
              getOptionSection()
     )
@@ -2097,6 +2104,14 @@ getCustomOptions <- reactive({
     
   )
 }) 
+getColorPivotOptions <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices    <- activeSymbol$indices
+  tagList(
+  selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
+              choices = c("_", indices)))
+})
 getFilterOptions <- reactive({
   rv$initData
   rv$refreshContent

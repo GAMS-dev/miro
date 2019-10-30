@@ -1018,17 +1018,46 @@ animation: none !important;
   margin-bottom:5px;
 }
 .save-delete-save-btn {
-  width: 100%;
   text-shadow: none;
-  border: 1px solid green;
+  border: none;
   margin-top: 2px;
+  .responsiveDark({
+     background-color: @highlight-bg;
+  },
+  {
+     background-color: @highlight-bg-dark;
+  });
+}
+.save-delete-save-btn:hover {
+  .responsiveDark({
+     background-color: @highlight-bg-save;
+  },
+  {
+     background-color: @highlight-bg-save-dark;
+  });
 }
 .save-delete-delete-btn {
-  width: 100%;
-  border: 1px solid red;
+  border: none;
   cursor: pointer;
   margin: 2px 0px;
   cursor: pointer;
+  .responsiveDark({
+     background-color: @highlight-bg;
+  },
+  {
+     background-color: @highlight-bg-dark;
+  });
+}
+.save-delete-delete-btn:hover {
+  .responsiveDark({
+     background-color: @highlight-bg-delete;
+  },
+  {
+     background-color: @highlight-bg-delete-dark;
+  });
+}
+.full-width {
+  width: 100%;
 }
 .two-col-wrapper {
   position:relative

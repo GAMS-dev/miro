@@ -616,7 +616,7 @@ pre.shiny-text-output {
   border-top: 0 none;
 }
 .selectize-dropdown .optgroup-header {
-  color: #777777;
+  color: #ffffff;
   background: #848991;
   cursor: default;
 }
@@ -17167,16 +17167,25 @@ body {
   margin-bottom: 5px;
 }
 .save-delete-save-btn {
-  width: 100%;
   text-shadow: none;
-  border: 1px solid green;
+  border: none;
   margin-top: 2px;
+  background-color: #292D33;
+}
+.save-delete-save-btn:hover {
+  background-color: #4a614a;
 }
 .save-delete-delete-btn {
-  width: 100%;
-  border: 1px solid red;
+  border: none;
   margin: 2px 0px;
   cursor: pointer;
+  background-color: #292D33;
+}
+.save-delete-delete-btn:hover {
+  background-color: #864c4c;
+}
+.full-width {
+  width: 100%;
 }
 .two-col-wrapper {
   position: relative;

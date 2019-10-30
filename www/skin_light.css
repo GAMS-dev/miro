@@ -17146,16 +17146,25 @@ body {
   margin-bottom: 5px;
 }
 .save-delete-save-btn {
-  width: 100%;
   text-shadow: none;
-  border: 1px solid green;
+  border: none;
   margin-top: 2px;
+  background-color: #ecf0f5;
+}
+.save-delete-save-btn:hover {
+  background-color: #d9f1d9;
 }
 .save-delete-delete-btn {
-  width: 100%;
-  border: 1px solid red;
+  border: none;
   margin: 2px 0px;
   cursor: pointer;
+  background-color: #ecf0f5;
+}
+.save-delete-delete-btn:hover {
+  background-color: #ffd6d6;
+}
+.full-width {
+  width: 100%;
 }
 .two-col-wrapper {
   position: relative;
