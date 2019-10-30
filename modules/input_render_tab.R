@@ -47,6 +47,7 @@ getInputDataset <- function(id){
 observe({
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
   if(is.na(i) || i < 1L){
+    disableEl(session, "#btGraphIn")
     return()
   }
   if(length(inputTabTitles[[i]]) > 1L){
@@ -63,6 +64,9 @@ observe({
 })
 observeEvent(input$btGraphIn, {
   i <- as.integer(strsplit(input$inputTabset, "_")[[1]][2])
+  if(is.na(i) || i < 1){
+    return()
+  }
   if(length(inputTabTitles[[i]]) > 1L){
     j <- as.integer(strsplit(input[[paste0("inputTabset", i)]], "_")[[1]][2])
     i <- inputTabs[[i]][j]

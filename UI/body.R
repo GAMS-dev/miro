@@ -65,7 +65,8 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                                      customOptions = configGraphsIn[[i]]$options,
                                                      filterOptions = configGraphsIn[[i]]$graph$filter,
                                                      height = configGraphsIn[[i]]$height, 
-                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData)
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData,
+                                                     createdDynamically = TRUE)
                                       }, error = function(e) {
                                         flog.error(paste0(sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i]), e))
                                         errMsg <- sprintf(lang$errMsg$renderGraph$desc, modelInAlias[i])
