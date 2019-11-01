@@ -210,7 +210,6 @@ if(is.null(errMsg)){
   }
   if(!file.exists(rSaveFilePath) || debugMode){
     source("./modules/init.R", local = TRUE)
-    config$db <- dbConfig
   }else{
     load(rSaveFilePath)
     if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
@@ -219,12 +218,12 @@ if(is.null(errMsg)){
       if(length(dbConfig$errMsg)){
         errMsg <- dbConfig$errMsg
       }else{
-        config$db <- dbConfig$data
+        dbConfig <- dbConfig$data
       }
     }else{
-      config$db <- list(type = "sqlite",
+      dbConfig <- list(type = "sqlite",
                         name = file.path(miroDbDir, 
-                                         config$db$name %+% ".sqlite3"))
+                                         "miro.sqlite3"))
     }
   }
 }
@@ -372,7 +371,7 @@ if(is.null(errMsg)){
   auth <- NULL
   db <- NULL
   if(config$activateModules$scenario){
-    if(identical(tolower(config$db$type), "sqlite")){
+    if(identical(tolower(dbConfig$type), "sqlite")){
       requiredPackages <- c("DBI", "RSQLite")
     }else{
       requiredPackages <- c("DBI", "odbc")
@@ -383,7 +382,7 @@ if(is.null(errMsg)){
     source("./R/db_scen.R")
     tryCatch({
       scenMetadataTable <- scenMetadataTablePrefix %+% modelName
-      db   <- Db$new(uid = uid, dbConf = config$db, dbSchema = dbSchema,
+      db   <- Db$new(uid = uid, dbConf = dbConfig, dbSchema = dbSchema,
                      slocktimeLimit = slocktimeLimit, modelName = modelName,
                      attachmentConfig = if(config$activateModules$attachments) 
                        list(maxSize = attachMaxFileSize, maxNo = attachMaxNo)
