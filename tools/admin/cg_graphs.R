@@ -691,6 +691,9 @@ observeEvent(input$hist_nbins, {
 observeEvent(input$hist_barmode, {
   rv$graphConfig$graph$barmode <<- input$hist_barmode
 })
+observeEvent(input$hist_alpha, {
+  rv$graphConfig$graph$alpha <<- input$hist_alpha
+})
 observeEvent(input$hist_cumulative, {
   rv$graphConfig$graph$cumulative <<- input$hist_cumulative
 })
@@ -1157,11 +1160,11 @@ observeEvent(input$hist_label, {
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_label[1])]]]]$labels <<- NULL
 })
 observeEvent(input$hist_color, {
-  if(nchar(input$hist_color[[2]]))
+  if(nchar(input$hist_color[[2]])){
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
-  else
+  }else{
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- NULL
-#  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
+  }
 })
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_")){
@@ -1298,7 +1301,7 @@ observeEvent(input$add_array_el, {
     }
   }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    newContent  <- list(labels = label, color = "#000000", alpha = 1L)
+    newContent  <- list(labels = label, color = "#000000")
   }else if(identical(el_id, "dy_dyEvent")){
     newContent  <- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyLimit")){
@@ -1395,11 +1398,9 @@ observeEvent(input$filter_dim, {
     chartToolTmp <- input$chart_tool
   }
  if(isFALSE(input$filter_dim)){
-   print("is false")
    rv$graphConfig$graph$filter <<- NULL
    hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }else{
-   print("is true")
    rv$graphConfig$graph$filter <<- list(col = input$filter_col,
                                         label = input$filter_label,
                                         multiple = input$filter_multiple)
@@ -1826,11 +1827,11 @@ getHistOptions <- reactive({
                                                activeSymbol$indices)][1]
     rv$graphConfig$graph$xdata <<- list()
     rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, 
-                                                            color = "#000000", 
-                                                            alpha = 1L)
-    rv$graphConfig$graph$histnorm   <<- ""
-    rv$graphConfig$graph$nbins      <<- 2L
-    rv$graphConfig$graph$barmode    <<- "overlay"
+                                                            color = "#000000")
+    rv$graphConfig$graph$histnorm    <<- ""
+    rv$graphConfig$graph$nbins       <<- 2L
+    rv$graphConfig$graph$barmode     <<- "overlay"
+    rv$graphConfig$graph$alpha       <<- 0.6
     rv$graphConfig$graph$xaxis$title <<- label
     rv$graphConfig$graph$cumulative  <<- FALSE
     rv$graphConfig$graph$horizontal  <<- FALSE
@@ -1851,6 +1852,8 @@ getHistOptions <- reactive({
                           min = 0L, value = 2L),
              selectInput("hist_barmode", lang$adminMode$graphs$histOptions$barmode,
                          choices = langSpecificGraphs$barmodeChoices),
+             numericInput("hist_alpha", lang$adminMode$graphs$histOptions$alpha,
+                          min = 0L, max = 1L, step = 0.1, value = 0.6),
              checkboxInput_MIRO("hist_cumulative", lang$adminMode$graphs$histOptions$cumulative,
                                 value = FALSE),
              selectInput("hist_horizontal", lang$adminMode$graphs$histOptions$horizontal,

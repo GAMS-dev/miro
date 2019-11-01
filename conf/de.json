@@ -1342,6 +1342,7 @@
         "normChoices": ["Anzahl der Ereignisse", "Prozentsatz der Ereignisse", "Anzahl der Ereignisse/ Klassen n-Intervallgröße"],
         "nbins": "Anzahl der Klassen",
         "barmode": "Wie sollen die Balken angezeigt werden?",
+        "alpha": "Deckkraft der Balken (nur gültig, wenn keine Balkenfarben gesetzt sind)",
         "cumulative": "Die kumulierte Verteilung anzeigen?",
         "horizontal": "Ausrichtung der Balken",
         "orientationChoices": ["vertikal", "horizontal"],

@@ -1343,6 +1343,7 @@
         "normChoices": ["Number of occurances", "Percentage of occurances", "Number of occurances/ Bin interval size"],
         "nbins": "Number of bins",
         "barmode": "How do you want the bars to be displayed?",
+        "alpha": "Opacity of bars (only valid if no bar color is set)",
         "cumulative": "Display the cumulative distribution?",
         "horizontal": "Orientation of the bars",
         "orientationChoices": ["vertical", "horizontal"],

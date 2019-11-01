@@ -1342,6 +1342,7 @@
         "normChoices": ["出现次数", "事件发生的百分比", "出现次数/组宽度"],
         "nbins": "组数",
         "barmode": "如何显示柱形图的柱形？",
+        "alpha": "Opacity of bars (only valid if no bar color is set)",
         "cumulative": "Display the cumulative distribution?",
         "horizontal": "Orientation of the bars",
         "orientationChoices": ["vertical", "horizontal"],
