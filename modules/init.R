@@ -51,7 +51,7 @@ if(is.null(errMsg)){
     }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
-      config$db <<- eval[[1]]
+      dbConfig <<- eval[[1]]
     }else if(!is.null(eval[[2]])){
       errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
                            basename(jsonFilesWithSchema[i]), 
@@ -72,11 +72,6 @@ if(is.null(errMsg)){
       flog.info("Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated.")
       config$activateModules$attachments <- FALSE
     }
-  }
-  
-  if(!is.null(config$db$name) && nchar(config$db$name) &&
-     identical(config$db$type, "sqlite") && length(miroDbDir)){
-    config$db$name <- file.path(miroDbDir, config$db$name %+% ".sqlite3")
   }
 }
 

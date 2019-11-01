@@ -1099,8 +1099,8 @@ filterScalars <- function(scalars, scalarsOutList, type = c("input", "output")){
   }
   return(scalars[tolower(scalars[[1]]) %in% scalarsToFilter, ])
 }
-setDbConfig <- function(configFn){
-  config <- fromJSON(configFn)
+setDbConfig <- function(){
+  config <- list()
   errMsg <- NULL
   
   envNameDbDataMap <- list(

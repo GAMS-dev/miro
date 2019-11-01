@@ -210,16 +210,21 @@ if(is.null(errMsg)){
   }
   if(!file.exists(rSaveFilePath) || debugMode){
     source("./modules/init.R", local = TRUE)
+    config$db <- dbConfig
   }else{
     load(rSaveFilePath)
-    if(isShinyProxy){
-      dbConfig <- setDbConfig(file.path(getwd(), "conf", "db_config.json"))
+    if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+      dbConfig <- setDbConfig()
       config$activateModules$remoteExecution <- TRUE
       if(length(dbConfig$errMsg)){
         errMsg <- dbConfig$errMsg
       }else{
         config$db <- dbConfig$data
       }
+    }else{
+      config$db <- list(type = "sqlite",
+                        name = file.path(miroDbDir, 
+                                         config$db$name %+% ".sqlite3"))
     }
   }
 }
@@ -364,6 +369,8 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){ 
   # try to create the DB connection (PostgreSQL)
+  auth <- NULL
+  db <- NULL
   if(config$activateModules$scenario){
     if(identical(tolower(config$db$type), "sqlite")){
       requiredPackages <- c("DBI", "RSQLite")
@@ -406,9 +413,15 @@ if(is.null(errMsg)){
       errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
     })
   }
-  dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
-                                     modelName = modelName),
-                       db = db, auth = auth)
+  tryCatch({
+    dataio <- DataIO$new(config = list(modelIn = modelIn, modelOut = modelOut, 
+                                       modelName = modelName),
+                         db = db, auth = auth)
+  }, error = function(e) {
+    flog.error("Problems initialising dataio class. Error message: %s", e)
+    errMsg <<- paste(errMsg, conditionMessage(e), sep = '\n')
+  })
+  
   if(config$activateModules$hcubeMode){
     hcubeDirName <<- paste0(modelName, "_", hcubeDirName)
     requiredPackages <- c("digest", "DT")
