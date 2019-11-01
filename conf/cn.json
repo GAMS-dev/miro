@@ -874,6 +874,11 @@
       "mirologfile":{
         "label": "输入MIRO日志文件的名称（最少3个字符）。如果您没有MIRO日志文件，请将该字段留空。"
       },
+      "readme":{
+        "label": "README file",
+        "tabTitle": "README tab title (if available)",
+        "fileName": "Alternative README file name"
+      },
       "saveDuration":{
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"
       },

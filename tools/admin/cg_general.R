@@ -32,7 +32,7 @@ removeUI(selector = "#module_wrapper1 .shiny-input-container", multiple = TRUE)
 insertUI(selector = "#interface_wrapper1",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerGeneral, class="option-category"),
-           tags$div(
+           tags$div(class = "option-wrapper",
              textInput("general_pageTitle", lang$adminMode$general$pageTitle$label,
                        value = if(!is.null(configJSON$pageTitle ) && nchar(configJSON$pageTitle )) configJSON$pageTitle  else configJSON$modelTitle
              )),
@@ -86,10 +86,10 @@ insertUI(selector = "#interface_wrapper2",
            if(length(modelOut[[scalarsOutName]])){
              tags$div(class="option-wrapper",
                       tags$div(class = "info-position", selectInput("general_hidden", 
-                                                                       tags$div(lang$adminMode$general$hidden$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#hidden-scalars", 
-                                                                              tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
-                                                                       choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
-                                                                       selected = configJSON$hiddenOutputScalars, multiple = TRUE)
+                                                                    tags$div(lang$adminMode$general$hidden$label, tags$a("", class="info-wrapper", href="https://gams.com/miro/customize.html#hidden-scalars", 
+                                                                                                                         tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                                                                    choices = setNames(modelOut[[scalarsOutName]]$symnames, modelOut[[scalarsOutName]]$symtext), 
+                                                                    selected = configJSON$hiddenOutputScalars, multiple = TRUE)
                       ))
            },
            tags$div(class="option-wrapper", title = lang$adminMode$general$aggregate$title,
@@ -100,7 +100,7 @@ insertUI(selector = "#interface_wrapper2",
                       ))
            ),
            tags$hr(),
-           tags$h2(lang$adminMode$general$ui$headerLogo),
+           tags$h2(lang$adminMode$general$ui$headerLogo, class="option-category"),
            tags$div(class = "option-wrapper", style = "margin-bottom: 5px;",
                     fileInput("widget_general_logo_upload", lang$adminMode$general$logo$label,
                               width = "100%",
@@ -109,9 +109,22 @@ insertUI(selector = "#interface_wrapper2",
            tags$label(class = "cb-label", "for" = "general_logo_preview", style = "padding-left: 25px;", lang$adminMode$general$logo$header,
                       tags$div(class="logo-wrapper",
                                imageOutput("general_logo_preview", height = "50px", width = "230px")
-                      ))
-         ), 
-         where = "beforeEnd")
+                      )),
+           tags$hr(),
+           tags$h2(lang$adminMode$general$readme$label, class="option-category"),
+           tags$div(class = "option-wrapper info-position",
+                    textInput("general_readmeTabtitle", tags$div(lang$adminMode$general$readme$tabTitle, 
+                                                                 tags$a("", class="info-wrapper", href="https://gams.com/miro/", 
+                                                                        tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                              value = if(!is.null(configJSON$readme$tabTitle) && nchar(configJSON$readme$tabTitle)) configJSON$readme$tabTitle else "")
+           ),
+           tags$div(class = "option-wrapper info-position",
+                    textInput("general_readmeAltFileName", tags$div(lang$adminMode$general$readme$fileName, 
+                                                                    tags$a("", class="info-wrapper", href="https://gams.com/miro/", 
+                                                                           tags$span(class="fas fa-info-circle", class="info-icon"), target="_blank")),
+                              value = if(!is.null(configJSON$readme$altFilename) && nchar(configJSON$readme$altFilename)) configJSON$readme$altFilename else "")
+           )
+         ),where = "beforeEnd")
 insertUI(selector = "#module_wrapper1",
          tagList(
            tags$h2(lang$adminMode$general$ui$headerScenData, class="option-category"),
@@ -295,7 +308,26 @@ observeEvent(input$widget_general_logo_upload, {
   rv$generalConfig$UILogo <<- fileName
   rv$customLogoChanged <<- rv$customLogoChanged + 1L
 })
-
+observeEvent(input$general_readmeTabtitle, {
+  if(!nchar(input$general_readmeTabtitle))
+    configJSON$readme$tabTitle <<- NULL
+  if(length(input$general_readmeTabtitle) && 
+     nchar(trimws(input$general_readmeTabtitle))){
+    rv$generalConfig$readme$tabTitle <<- input$general_readmeTabtitle
+    return()
+  }
+  rv$generalConfig$readme$tabTitle <<- NULL
+})
+observeEvent(input$general_readmeAltFileName, {
+  if(!nchar(input$general_readmeAltFileName))
+    configJSON$readme$altFilename <<- NULL
+  if(length(input$general_readmeAltFileName) && 
+     nchar(trimws(input$general_readmeAltFileName))){
+    rv$generalConfig$readme$altFilename <<- input$general_readmeAltFileName
+    return()
+  }
+  rv$generalConfig$readme$altFilename <<- NULL
+})
 observeEvent(input$general_auto, {
   rv$generalConfig$autoGenInputGraphs <<- input$general_auto
 })

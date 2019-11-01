@@ -874,6 +874,11 @@
       "mirologfile":{
         "label": "Geben Sie den Namen der MIRO Log-Datei ein (mindestens 3 Zeichen). Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
       },
+      "readme":{
+        "label": "README Datei",
+        "tabTitle": "README Reitertitel (falls vorhanden)",
+        "fileName": "Alternativer README-Dateiname"
+      },
       "saveDuration":{
         "label": "Speicherdauer für GAMS Log und lst Dateien in der Datenbank (in Tagen)."
       },

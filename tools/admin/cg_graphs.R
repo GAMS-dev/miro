@@ -2068,7 +2068,7 @@ getPivotOptions <- reactive({
     rv$graphConfig$pivottable <<- NULL
     rv$graphConfig$pivottable$rows <<- NULL
     rv$graphConfig$pivottable$cols <<- NULL
-    rv$graphConfig$pivottable$aggregatorName <<- "Sum"
+    rv$graphConfig$pivottable$aggregatorName <<- "Count"
     rv$graphConfig$pivottable$vals <<- "_"
     rv$graphConfig$pivottable$rendererName <<- "Table"
     rv$graphConfig$pivottable$locale <<- "en"
