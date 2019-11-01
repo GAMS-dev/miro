@@ -1056,7 +1056,7 @@ if(!is.null(errMsg)){
               modelName, uid, workDir)
     
     worker$setWorkDir(workDir)
-    if(!dir.create(workDir, recursive = TRUE)){
+    if(!dir.exists(workDir) && !dir.create(workDir, recursive = TRUE)){
       flog.fatal("Working directory could not be initialised.")
       showErrorMsg(lang$errMsg$fileWrite$title, lang$errMsg$fileWrite$desc)
       return(NULL)
