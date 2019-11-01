@@ -541,13 +541,13 @@ observe(rv$graphConfig$graph$layersControl$overlayGroups <<- input$leaflc_overla
 observe(rv$graphConfig$graph$layersControl$position <<- input$leaflc_position)
 observe(rv$graphConfig$graph$layersControl$options$collapsed <<- input$leaflc_collapsed)
 
-observeEvent(input$pivot_rows, {
+observeEvent(input$pivot_rows, ignoreNULL = FALSE, {
   if(length(input$pivot_rows) > 0)
     rv$graphConfig$pivottable$rows <<- input$pivot_rows
   else
     rv$graphConfig$pivottable$rows <<- NULL
 })
-observeEvent(input$pivot_cols, {
+observeEvent(input$pivot_cols, ignoreNULL = FALSE, {
   if(length(input$pivot_cols) > 0)
     rv$graphConfig$pivottable$cols <<- input$pivot_cols
   else
@@ -690,6 +690,9 @@ observeEvent(input$hist_nbins, {
 })
 observeEvent(input$hist_barmode, {
   rv$graphConfig$graph$barmode <<- input$hist_barmode
+})
+observeEvent(input$hist_alpha, {
+  rv$graphConfig$graph$alpha <<- input$hist_alpha
 })
 observeEvent(input$hist_cumulative, {
   rv$graphConfig$graph$cumulative <<- input$hist_cumulative
@@ -963,14 +966,28 @@ observeEvent(input$dyopt_pointSize, {
     rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
   }
 })
+observeEvent(input$dyhighlight_activate, {
+  if(isTRUE(input$dyhighlight_activate)){
+    rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = input$dyhigh_circleSize, 
+                                              highlightSeriesBackgroundAlpha = input$dyhigh_seriesBackgroundAlpha,
+                                              hideOnMouseOut = input$dyhigh_hideOnMouseOut)
+  }else{
+    rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = 0L, 
+                                              highlightSeriesBackgroundAlpha = 1L,
+                                              hideOnMouseOut = TRUE)
+  }
+})
 observeEvent(input$dyhigh_circleSize, {
-  rv$graphConfig$graph$dyHighlight$highlightCircleSize <<- input$dyhigh_circleSize
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightCircleSize <<- input$dyhigh_circleSize
 })
 observeEvent(input$dyhigh_seriesBackgroundAlpha, {
-  rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha <<- input$dyhigh_seriesBackgroundAlpha
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha <<- input$dyhigh_seriesBackgroundAlpha
 })
 observeEvent(input$dyhigh_hideOnMouseOut, {
-  rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
 })
 
 observeEvent(input$dyEvent_label, {
@@ -1157,11 +1174,11 @@ observeEvent(input$hist_label, {
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_label[1])]]]]$labels <<- NULL
 })
 observeEvent(input$hist_color, {
-  if(nchar(input$hist_color[[2]]))
+  if(nchar(input$hist_color[[2]])){
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
-  else
+  }else{
     rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- NULL
-#  rv$graphConfig$graph$xdata[[idLabelMap$hist_xdata[[as.integer(input$hist_color[1])]]]]$color <<- input$hist_color[2]
+  }
 })
 observeEvent(input$chart_color, {
   if(identical(input$chart_color, "_")){
@@ -1298,7 +1315,7 @@ observeEvent(input$add_array_el, {
     }
   }else if(identical(el_id, "hist_xdata")){
     label       <- names(activeSymbol$indices)[match(chart_label, activeSymbol$indices)][1]
-    newContent  <- list(labels = label, color = "#000000", alpha = 1L)
+    newContent  <- list(labels = label, color = "#000000")
   }else if(identical(el_id, "dy_dyEvent")){
     newContent  <- list(labelLoc = "top", color = "rgb(0,0,0)", strokePattern = "dashed")
   }else if(identical(el_id, "dy_dyLimit")){
@@ -1389,14 +1406,19 @@ observeEvent(input$custom_packages, {
 })
 
 observeEvent(input$filter_dim, {
- if(identical(isolate({input$filter_dim}), FALSE)){
+  if(input$chart_tool %in% plotlyChartTools){
+    chartToolTmp <- "plotly"
+  }else{
+    chartToolTmp <- input$chart_tool
+  }
+ if(isFALSE(input$filter_dim)){
    rv$graphConfig$graph$filter <<- NULL
-   hideEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+   hideEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }else{
    rv$graphConfig$graph$filter <<- list(col = input$filter_col,
                                         label = input$filter_label,
                                         multiple = input$filter_multiple)
-   showEl(session, paste0("#preview_output_", input$chart_tool, "-data_filter"))
+   showEl(session, paste0("#preview_output_", chartToolTmp, "-data_filter"))
  }
 })
 observeEvent(input$filter_col, {
@@ -1599,7 +1621,7 @@ getChartOptions <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$graph$showlegend <<- FALSE
+    rv$graphConfig$graph$showlegend <<- TRUE
     rv$graphConfig$outType <<- "graph" 
   })
   tagList(
@@ -1614,8 +1636,7 @@ getChartOptions <- reactive({
              getAxisOptions("y", names(scalarIndices)[1])
     ),
     tags$div(class="cat-body cat-body-5 cat-body-10 cat-body-15 cat-body-20", style="display:none;",
-             selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
-                         choices = c("_", indices)),
+             getColorPivotOptions(),
              getFilterOptions()
     ),
     tags$div(class="cat-body cat-body-6 cat-body-12 cat-body-17 cat-body-22", style="display:none;",
@@ -1691,7 +1712,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
 getOptionSection <- reactive({
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
-    checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend),
+    checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
     getOuttype()
@@ -1820,11 +1841,11 @@ getHistOptions <- reactive({
                                                activeSymbol$indices)][1]
     rv$graphConfig$graph$xdata <<- list()
     rv$graphConfig$graph$xdata[[scalarIndices[1]]] <<- list(labels = label, 
-                                                            color = "#000000", 
-                                                            alpha = 1L)
-    rv$graphConfig$graph$histnorm   <<- ""
-    rv$graphConfig$graph$nbins      <<- 2L
-    rv$graphConfig$graph$barmode    <<- "overlay"
+                                                            color = "#000000")
+    rv$graphConfig$graph$histnorm    <<- ""
+    rv$graphConfig$graph$nbins       <<- 2L
+    rv$graphConfig$graph$barmode     <<- "overlay"
+    rv$graphConfig$graph$alpha       <<- 0.6
     rv$graphConfig$graph$xaxis$title <<- label
     rv$graphConfig$graph$cumulative  <<- FALSE
     rv$graphConfig$graph$horizontal  <<- FALSE
@@ -1845,6 +1866,8 @@ getHistOptions <- reactive({
                           min = 0L, value = 2L),
              selectInput("hist_barmode", lang$adminMode$graphs$histOptions$barmode,
                          choices = langSpecificGraphs$barmodeChoices),
+             numericInput("hist_alpha", lang$adminMode$graphs$histOptions$alpha,
+                          min = 0L, max = 1L, step = 0.1, value = 0.6),
              checkboxInput_MIRO("hist_cumulative", lang$adminMode$graphs$histOptions$cumulative,
                                 value = FALSE),
              selectInput("hist_horizontal", lang$adminMode$graphs$histOptions$horizontal,
@@ -1852,7 +1875,8 @@ getHistOptions <- reactive({
              getAxisOptions("x", label, labelOnly = TRUE),
              getAxisOptions("y", "", labelOnly = TRUE)),
     tags$div(class="cat-body cat-body-25", style="display:none;",
-    getFilterOptions()),
+             getColorPivotOptions(),
+             getFilterOptions()),
     tags$div(class="cat-body cat-body-26", style="display:none;",
              getOptionSection()
     )
@@ -1947,10 +1971,11 @@ getDygraphsOptions <- reactive({
                   getOuttype()
     ),
     tags$div(class="cat-body cat-body-35", style="display:none;",
-                  numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
-                  sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
-                              min = 0L, max = 1L, step = 0.1, value = 0.5),
-                  checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
+             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate),
+             numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
+             sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
+                         min = 0L, max = 1L, step = 0.1, value = 0.5),
+             checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
     )
   )
 })
@@ -2043,7 +2068,7 @@ getPivotOptions <- reactive({
     rv$graphConfig$pivottable <<- NULL
     rv$graphConfig$pivottable$rows <<- NULL
     rv$graphConfig$pivottable$cols <<- NULL
-    rv$graphConfig$pivottable$aggregatorName <<- "Sum"
+    rv$graphConfig$pivottable$aggregatorName <<- "Count"
     rv$graphConfig$pivottable$vals <<- "_"
     rv$graphConfig$pivottable$rendererName <<- "Table"
     rv$graphConfig$pivottable$locale <<- "en"
@@ -2097,6 +2122,14 @@ getCustomOptions <- reactive({
     
   )
 }) 
+getColorPivotOptions <- reactive({
+  rv$initData
+  rv$refreshContent
+  indices    <- activeSymbol$indices
+  tagList(
+  selectInput("chart_color", lang$adminMode$graphs$chartOptions$color,
+              choices = c("_", indices)))
+})
 getFilterOptions <- reactive({
   rv$initData
   rv$refreshContent

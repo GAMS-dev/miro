@@ -874,6 +874,11 @@
       "mirologfile":{
         "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
       },
+      "readme":{
+        "label": "README file",
+        "tabTitle": "README tab title (if available)",
+        "fileName": "Alternative README file name"
+      },
       "saveDuration":{
         "label": "Duration the GAMS log and lst files are stored in the database (in days)."
       },
@@ -998,9 +1003,9 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
-        "inputSymbol": "Which input symbol would you like to create a widget for?",
+        "inputSymbol": "Select input symbol",
         "widgetGo": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
-        "widgetDd": "Name of the double-dash parameter (without '--')",
+        "widgetDd": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select the type of widget you want to use"
       },
       "validate":{
@@ -1064,8 +1069,8 @@
         "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
-        "readonlyCols": "Select certain columns to be readonly",
-        "pivotCols": "Select a column to pivot (no preview available)",
+        "readonlyCols": "Select columns to be readonly",
+        "pivotCols": "Select a column to pivot",
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
@@ -1343,6 +1348,7 @@
         "normChoices": ["Number of occurances", "Percentage of occurances", "Number of occurances/ Bin interval size"],
         "nbins": "Number of bins",
         "barmode": "How do you want the bars to be displayed?",
+        "alpha": "Opacity of bars (only valid if no bar color is set)",
         "cumulative": "Display the cumulative distribution?",
         "horizontal": "Orientation of the bars",
         "orientationChoices": ["vertical", "horizontal"],
@@ -1382,6 +1388,7 @@
         },
         "highOpts":{
           "title": "Highlighting options",
+          "activate": "Would you like to see highlighting effects?",
           "circleSize": "What shall the circle size be (in px)?",
           "seriesBackgroundAlpha": "Choose the opacity of the background",
           "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"

@@ -874,6 +874,11 @@
       "mirologfile":{
         "label": "输入MIRO日志文件的名称（最少3个字符）。如果您没有MIRO日志文件，请将该字段留空。"
       },
+      "readme":{
+        "label": "README file",
+        "tabTitle": "README tab title (if available)",
+        "fileName": "Alternative README file name"
+      },
       "saveDuration":{
         "label": "数据库中保留GAMS日志和lst文件的时长（以天为单位）。"
       },
@@ -1064,7 +1069,7 @@
         "bigData": "表格中是否存储了大量的数据（超过20,000条记录）？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
-		"pivotCols": "选择要旋转的列（不支持预览）",
+		"pivotCols": "选择要旋转的列",
         "heatmap": "把表格转换成热图？"
       },
       "slider":{
@@ -1342,6 +1347,7 @@
         "normChoices": ["出现次数", "事件发生的百分比", "出现次数/组宽度"],
         "nbins": "组数",
         "barmode": "如何显示柱形图的柱形？",
+        "alpha": "Opacity of bars (only valid if no bar color is set)",
         "cumulative": "Display the cumulative distribution?",
         "horizontal": "Orientation of the bars",
         "orientationChoices": ["vertical", "horizontal"],
@@ -1381,6 +1387,7 @@
         },
         "highOpts":{
           "title": "突出显示选项",
+          "activate": "Would you like to see highlighting effects?",
           "circleSize": "圆圈的大小设置为多少（以px为单位）？",
           "seriesBackgroundAlpha": "选择背景的不透明度",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"

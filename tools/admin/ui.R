@@ -215,7 +215,7 @@ body_admin <- dashboardBody({
                                                                 tags$li(id = "categoryHist2", class = "category-btn category-btn-hist", `data-cat`="24",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$histogram)),
                                                                 tags$li(id = "categoryHist2", class = "category-btn category-btn-hist", `data-cat`="25",
-                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filter)),
+                                                                        tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$filterDomain)),
                                                                 tags$li(id = "categoryHist2", class = "category-btn category-btn-hist", `data-cat`="26",
                                                                         tags$div(class = "side-tab-item", lang$adminMode$graphs$toolCategories$general)),
                                                                 #dygraphs 
@@ -273,8 +273,8 @@ body_admin <- dashboardBody({
                                                         )
                                                ),
                                                tags$div(class="save-delete-wrapper",
-                                                        actionButton("deleteGraph,", lang$adminMode$graphs$ui$deleteGraph, icon("trash-alt"), class="save-delete-delete-btn"),
-                                                        actionButton("saveGraph", lang$adminMode$graphs$ui$saveGraph, icon("save"), class="save-delete-save-btn")
+                                                        actionButton("deleteGraph", lang$adminMode$graphs$ui$deleteGraph, icon("trash-alt"), class="save-delete-delete-btn full-width"),
+                                                        actionButton("saveGraph", lang$adminMode$graphs$ui$saveGraph, icon("save"), class="save-delete-save-btn full-width")
                                                )
                                       ),
                                       tags$div(class="main-tab", style = "padding: 7px; max-height:66vh",
@@ -333,15 +333,15 @@ body_admin <- dashboardBody({
                                                 tags$a(href = "https://gams.com/miro/customize.html#custom-renderers", 
                                                        lang$adminMode$uiR$custom$li3b, target = "_blank"),".")
                                       ),
-                             tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
-                             tags$h4(lang$adminMode$uiR$custom$description2),
-                             tags$div(lang$adminMode$uiR$custom$description3)
-                                      ),
+                                      tags$div(sprintf(lang$adminMode$uiR$custom$description1, modelName)),
+                                      tags$h4(lang$adminMode$uiR$custom$description2),
+                                      tags$div(lang$adminMode$uiR$custom$description3)
+                             ),
                              if(scalarsOutName %in% names(modelOut)){
                                tags$div(id = "preview-content-valuebox", style = "display:none;text-align:left",
-                                      renderDataUI("preview_output_valuebox", type = "valuebox", 
-                                                   height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
-                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData))}
+                                        renderDataUI("preview_output_valuebox", type = "valuebox", 
+                                                     height = 400, customOptions = list(count = modelOut[[scalarsOutName]]$count),
+                                                     noDataTxt = lang$nav$outputScreen$boxResults$noData))}
                     )
                 )
               )
@@ -373,32 +373,32 @@ body_admin <- dashboardBody({
                                       tags$div(id = "doubledashConfigMsg", class="config-message", 
                                                lang$adminMode$widgets$ui$doubledashConfigMsg),
                                       tags$div(class="main-tab", style = "min-height: 600px;",
-                                               conditionalPanel(
-                                                 condition = "input.widget_symbol_type == 'gams'",
-                                                 tags$div(style = "max-width:400px;",
-                                                          selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
-                                                                      choices = c()))
-                                               ),
-                                               conditionalPanel(
-                                                 condition = "input.widget_symbol_type == 'go'",
-                                                 tags$div(style = "max-width:400px;",
-                                                          textInput("widget_go", lang$adminMode$widgets$ui$widgetGo))
-                                               ),
-                                               conditionalPanel(
-                                                 condition = "input.widget_symbol_type == 'dd'",
-                                                 tags$div(style = "max-width:400px;",
-                                                          textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd))
-                                               ),
-                                               tags$div(style = "max-width:400px;",
-                                                        selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c())),
+                                               tags$div(class = "two-col-wrapper",
+                                                        tags$div(class = "two-col-left",
+                                                                 conditionalPanel(
+                                                                   condition = "input.widget_symbol_type == 'gams'",
+                                                                   selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
+                                                                               choices = c())
+                                                                 ),
+                                                                 conditionalPanel(
+                                                                   condition = "input.widget_symbol_type == 'go'",
+                                                                   textInput("widget_go", lang$adminMode$widgets$ui$widgetGo)
+                                                                 ),
+                                                                 conditionalPanel(
+                                                                   condition = "input.widget_symbol_type == 'dd'",
+                                                                   textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd)
+                                                                 )),
+                                                        tags$div(class = "two-col-right",
+                                                                 selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c()))),
+                                               tags$hr(),
                                                tags$div(id = "widget_options"),
                                                tags$div(class = "space")
                                       )
                              ),
                              tags$div(class = "col-sm-6",
                                       tags$div(style = "margin-bottom:50px;text-align:right;",
-                                               actionButton("deleteWidget", "Delete", icon("trash-alt")),
-                                               actionButton("saveWidget", "Save", icon("save"))),
+                                               actionButton("deleteWidget", "Delete", icon("trash-alt"), class = "save-delete-delete-btn"),
+                                               actionButton("saveWidget", "Save", icon("save"), class = "save-delete-save-btn")),
                                       uiOutput("widget_preview"),
                                       DTOutput("dt_preview"),
                                       rHandsontableOutput("hot_preview")

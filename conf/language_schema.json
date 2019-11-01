@@ -3977,6 +3977,27 @@
                 }
               }
             },
+            "readme":{          
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "label":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },"tabTitle":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "fileName":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            },
             "saveDuration":{          
               "type":"object",
               "additionalProperties":false,
@@ -6271,6 +6292,11 @@
                   "minLength":1,
                   "required":true
                 },
+                "alpha":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "cumulative":{ 
                   "type":"string",
                   "minLength":1,
@@ -6471,6 +6497,11 @@
                   "required":true,
                   "properties":{ 
                     "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "activate":{ 
                       "type":"string",
                       "minLength":1,
                       "required":true
