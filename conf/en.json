@@ -1383,6 +1383,7 @@
         },
         "highOpts":{
           "title": "Highlighting options",
+          "activate": "Would you like to see highlighting effects?",
           "circleSize": "What shall the circle size be (in px)?",
           "seriesBackgroundAlpha": "Choose the opacity of the background",
           "hideOnMouseOut": "Hide highlighting effects when mouse is moved out of chart?"

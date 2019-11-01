@@ -1382,6 +1382,7 @@
         },
         "highOpts":{
           "title": "Hervorhebungsoptionen",
+          "activate": "Möchten Sie Hervorhebungseffekte sehen?",
           "circleSize": "Wie groß soll der Kreis sein (in px)?",
           "seriesBackgroundAlpha": "Wählen Sie die Deckkraft des Hintergrunds",
           "hideOnMouseOut": "Hervorhebungseffekte ausblenden, wenn die Maus aus dem Diagramm bewegt wird?"

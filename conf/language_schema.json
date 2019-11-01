@@ -6480,6 +6480,11 @@
                       "minLength":1,
                       "required":true
                     },
+                    "activate":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
                     "circleSize":{ 
                       "type":"string",
                       "minLength":1,

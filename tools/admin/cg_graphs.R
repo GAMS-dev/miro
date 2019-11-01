@@ -966,14 +966,28 @@ observeEvent(input$dyopt_pointSize, {
     rv$graphConfig$graph$dyOptions$pointSize <<- input$dyopt_pointSize
   }
 })
+observeEvent(input$dyhighlight_activate, {
+  if(isTRUE(input$dyhighlight_activate)){
+    rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = input$dyhigh_circleSize, 
+                                              highlightSeriesBackgroundAlpha = input$dyhigh_seriesBackgroundAlpha,
+                                              hideOnMouseOut = input$dyhigh_hideOnMouseOut)
+  }else{
+    rv$graphConfig$graph$dyHighlight <<- list(highlightCircleSize = 0L, 
+                                              highlightSeriesBackgroundAlpha = 1L,
+                                              hideOnMouseOut = TRUE)
+  }
+})
 observeEvent(input$dyhigh_circleSize, {
-  rv$graphConfig$graph$dyHighlight$highlightCircleSize <<- input$dyhigh_circleSize
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightCircleSize <<- input$dyhigh_circleSize
 })
 observeEvent(input$dyhigh_seriesBackgroundAlpha, {
-  rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha <<- input$dyhigh_seriesBackgroundAlpha
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$highlightSeriesBackgroundAlpha <<- input$dyhigh_seriesBackgroundAlpha
 })
 observeEvent(input$dyhigh_hideOnMouseOut, {
-  rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
+  if(isTRUE(input$dyhighlight_activate))
+    rv$graphConfig$graph$dyHighlight$hideOnMouseOut <<- input$dyhigh_hideOnMouseOut
 })
 
 observeEvent(input$dyEvent_label, {
@@ -1607,7 +1621,7 @@ getChartOptions <- reactive({
   scalarIndices <- indices[activeSymbol$indexTypes == "numeric"]
   isolate({
     rv$graphConfig$graph$xdata      <<- indices[[1]]
-    rv$graphConfig$graph$showlegend <<- FALSE
+    rv$graphConfig$graph$showlegend <<- TRUE
     rv$graphConfig$outType <<- "graph" 
   })
   tagList(
@@ -1698,7 +1712,7 @@ getAxisOptions <- function(id, title, labelOnly = FALSE){
 getOptionSection <- reactive({
   tagList(
     textInput("chart_title", lang$adminMode$graphs$ui$chartTitle),
-    checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend),
+    checkboxInput_MIRO("showlegend", lang$adminMode$graphs$chartOptions$options$showlegend, value = TRUE),
     colorPickerInput("paper_bgcolor", lang$adminMode$graphs$chartOptions$options$paperBgColor, value = NULL),
     colorPickerInput("plot_bgcolor", lang$adminMode$graphs$chartOptions$options$plotBgColor, value = NULL),
     getOuttype()
@@ -1957,10 +1971,11 @@ getDygraphsOptions <- reactive({
                   getOuttype()
     ),
     tags$div(class="cat-body cat-body-35", style="display:none;",
-                  numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
-                  sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
-                              min = 0L, max = 1L, step = 0.1, value = 0.5),
-                  checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
+             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate),
+             numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
+             sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
+                         min = 0L, max = 1L, step = 0.1, value = 0.5),
+             checkboxInput_MIRO("dyhigh_hideOnMouseOut", lang$adminMode$graphs$dygraphsOptions$highOpts$hideOnMouseOut, TRUE)
     )
   )
 })

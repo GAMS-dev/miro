@@ -1382,6 +1382,7 @@
         },
         "highOpts":{
           "title": "突出显示选项",
+          "activate": "Would you like to see highlighting effects?",
           "circleSize": "圆圈的大小设置为多少（以px为单位）？",
           "seriesBackgroundAlpha": "选择背景的不透明度",
           "hideOnMouseOut": "鼠标移出图表时是否隐藏突出显示效果？"
