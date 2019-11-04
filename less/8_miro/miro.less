@@ -225,7 +225,12 @@ animation: none !important;
   font-size: 0;
 }
 .skin-black .main-header .logo {
-  background-color:#fff;
+  .responsiveDark({
+     background-image: url('../../www/images/miro_logo_light.png');
+  },
+  {
+     background-image: url('../../www/images/miro_logo_dark.png');
+  });
 }
 /* sidebar*/
 .bt-highlight-1{
