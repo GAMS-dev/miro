@@ -1971,7 +1971,7 @@ getDygraphsOptions <- reactive({
                   getOuttype()
     ),
     tags$div(class="cat-body cat-body-35", style="display:none;",
-             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate),
+             checkboxInput_MIRO("dyhighlight_activate", lang$adminMode$graphs$dygraphsOptions$highOpts$activate, value = TRUE),
              numericInput("dyhigh_circleSize", lang$adminMode$graphs$dygraphsOptions$highOpts$circleSize, min = 0L, value = 3L),
              sliderInput("dyhigh_seriesBackgroundAlpha", lang$adminMode$graphs$dygraphsOptions$highOpts$seriesBackgroundAlpha, 
                          min = 0L, max = 1L, step = 0.1, value = 0.5),

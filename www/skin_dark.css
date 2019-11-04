@@ -14823,8 +14823,7 @@ a > .info-box {
   width: auto;
 }
 .handsontable .htDimmed {
-  color: #c4c4c4;
-  background-color: #979a9f !important;
+  color: #848991;
 }
 .handsontable .htSubmenu {
   position: relative;
