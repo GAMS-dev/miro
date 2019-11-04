@@ -680,7 +680,7 @@ body <- dashboardBody({
       # Logo ratio should be 4,6 (width/height)
       tags$style(HTML(paste0('
 .main-header .logo {
-  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "static/", config$UILogo, '");
+  background-image: url("', if(!identical(config$UILogo, "gams_logo.png") && dir.exists(file.path(currentModelDir, "static"))) "static/", config$UILogo, '") !important;
   background-size: contain;
 }
 .pvtRows, .pvtCols { 
