@@ -225,7 +225,12 @@ animation: none !important;
   font-size: 0;
 }
 .skin-black .main-header .logo {
-  background-color:#fff;
+  .responsiveDark({
+     background-image: url('images/miro_logo_light.png');
+  },
+  {
+     background-image: url('images/miro_logo_dark.png');
+  });
 }
 /* sidebar*/
 .bt-highlight-1{
@@ -914,9 +919,8 @@ animation: none !important;
   max-height:50px; 
   margin-left: 25px; 
   vertical-align: top; 
-  border-style: solid; 
-  border-color: #eeeeee; 
-  border-width: 1px;
+  outline: 1px solid #eeeeee;
+  background-color: white; 
 }
 .option-category{
   margin-top:0px;

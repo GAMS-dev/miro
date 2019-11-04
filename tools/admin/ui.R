@@ -397,8 +397,10 @@ body_admin <- dashboardBody({
                              ),
                              tags$div(class = "col-sm-6",
                                       tags$div(style = "margin-bottom:50px;text-align:right;",
-                                               actionButton("deleteWidget", "Delete", icon("trash-alt"), class = "save-delete-delete-btn"),
-                                               actionButton("saveWidget", "Save", icon("save"), class = "save-delete-save-btn")),
+                                               actionButton("deleteWidget", "Delete", icon("trash-alt"), class = "save-delete-delete-btn",
+                                                            style = "width:100px;"),
+                                               actionButton("saveWidget", "Save", icon("save"), class = "save-delete-save-btn",
+                                                            style = "width:100px;")),
                                       uiOutput("widget_preview"),
                                       DTOutput("dt_preview"),
                                       rHandsontableOutput("hot_preview")
