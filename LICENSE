@@ -35,6 +35,7 @@ these components are included below):
 - dplyr https://github.com/tidyverse/dplyr or https://cran.r-project.org/web/packages/dplyr/index.html
 - readxl https://github.com/tidyverse/readxl or https://cran.r-project.org/web/packages/readxl/index.html
 - writexl https://github.com/ropensci/writexl or https://cran.r-project.org/web/packages/writexl/index.html
+- leaflet.providers https://github.com/rstudio/leaflet.providers or https://cran.r-project.org/web/packages/leaflet.providers/index.html
 - rhandsontable https://github.com/jrowen/rhandsontable or https://cran.r-project.org/web/packages/rhandsontable/index.html
 - shiny https://github.com/rstudio/shiny or https://cran.r-project.org/web/packages/shiny/index.html
 - shinydashboard https://github.com/rstudio/shinydashboard or https://cran.r-project.org/web/packages/shinydashboard/index.html
@@ -51,6 +52,9 @@ these components are included below):
 - xts https://github.com/joshuaulrich/xts or https://cran.r-project.org/web/packages/xts/index.html
 - tidyr https://github.com/tidyverse/tidyr or https://cran.r-project.org/web/packages/tidyr/index.html
 - lifecycle https://github.com/r-lib/lifecycle or https://cran.r-project.org/web/packages/lifecycle/index.html
+- backports https://github.com/r-lib/backports or https://cran.r-project.org/web/packages/backports/index.html
+- vctrs https://github.com/r-lib/vctrs or https://cran.r-project.org/web/packages/vctrs/index.html
+- ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
@@ -86,6 +90,7 @@ these components are included below):
 - future https://github.com/HenrikBengtsson/future or https://cran.r-project.org/web/packages/future/index.html
 - globals https://github.com/HenrikBengtsson/globals or https://cran.r-project.org/web/packages/globals/index.html
 - listenv https://github.com/HenrikBengtsson/listenv or https://cran.r-project.org/web/packages/listenv/index.html
+- zeallot https://github.com/nteetor/zeallot or https://cran.r-project.org/web/packages/zeallot/index.html
 - viridisLite https://github.com/sjmgarnier/viridisLite or https://cran.r-project.org/web/packages/viridisLite/index.html
 - base64enc https://github.com/cran/base64enc or https://cran.r-project.org/web/packages/base64enc/index.html
 - RColorBrewer https://github.com/cran/RColorBrewer or https://cran.r-project.org/web/packages/RColorBrewer/index.html
@@ -760,6 +765,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         - future, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - globals, Copyright (c) Henrik Bengtsson [aut, cre, cph]
         - listenv, Copyright (c) Henrik Bengtsson [aut, cre, cph]
+        - zeallot, Copyright (c) Nathan Teetor [aut, cre], Paul Teetor [ctb]
 
 -----------------------------------------------------------------------------
 
@@ -1075,6 +1081,9 @@ Library.
         - lattice, Copyright (c)  Deepayan Sarkar
         - RGraphics, Copyright (c) 	Paul Murrell
         - lifecycle, Copyright (c) 	Lionel Henry [aut, cre], RStudio [cph]
+        - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
+        - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
+        - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
@@ -1757,6 +1766,7 @@ Public License instead of this License.  But first, please read
             The “2-Clause BSD License” (BSD-2-Clause)
         applies to: 
         - writexl, Copyright (c) 2017 Jeroen Ooms
+        - leaflet.providers, Copyright (c) 2019 Leslie Huang [aut, cre], Leaflet Providers contributors [ctb, cph] (Leaflet Providers plugin), RStudio [cph, fnd]
 -----------------------------------------------------------------------------
 
 Redistribution and use in source and binary forms, with or without
