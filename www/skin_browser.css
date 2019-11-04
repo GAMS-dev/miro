@@ -19618,9 +19618,8 @@ body {
   max-height: 50px;
   margin-left: 25px;
   vertical-align: top;
-  border-style: solid;
-  border-color: #eeeeee;
-  border-width: 1px;
+  outline: 1px solid #eeeeee;
+  background-color: white;
 }
 .option-category {
   margin-top: 0px;
