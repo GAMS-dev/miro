@@ -120,8 +120,8 @@
                                   <div class="tab-pane fade" id="macos" role="tabpanel" aria-labelledby="macos-tab">
                                       <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
-                                        <p>To install GAMS MIRO and its components, download the beta version.<br>
-                                        <br><b>Note:</b> In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
+                                        <p>To install GAMS MIRO and its components, download the latest version.<br>
+                                        <br><b>Note:</b> In case a current R version (3.6 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
                                         </p>
                                     </div><!--//section-block-->
                                     <div class="section-block">
@@ -134,28 +134,21 @@
                                   <div class="tab-pane fade" id="linux" role="tabpanel" aria-labelledby="linux-tab">
                                       <div class="section-block">
                                         <h3 class="block-title">GAMS MIRO installation</h3>
-                                        <p>Currently there is no GAMS MIRO installer available for Linux. Please visit us again later!</p>
-                                        <!-- <p>In case a current R version (3.5.1 or later) it is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
-                                        <br>For MIRO to work, some package-dependent R libraries must also be installed. For the Ubuntu system (tested on Ubuntu 16.04 and 18.04) these are:
-                                        <ul>
-                                          <li>sudo</li>
-                                          <li>pandoc</li>
-                                          <li>pandoc-citeproc</li>
-                                          <li>libcurl4-gnutls-dev</li>
-                                          <li>libcairo2-dev</li>
-                                          <li>libxt-dev</li>
-                                          <li>libssl-dev</li>
-                                          <li>libssh2-1-dev</li>
-                                          <li>libv8-3.14-dev</li>
-                                          <li>libssl1.0.0</li>
-                                          <li>libpq-dev</li>
-                                          <li>libmpfr-dev</li>
-                                          <li>libudunits2-dev</li>
-                                          <li>libgdal-dev</li>
-                                          <li>libgeos-dev</li>
-                                        </ul>
-                                        <p>When everything is in place, download the GAMS MIRO <i>dmg</i> file and install the software.<br>
-                                        </p> -->
+                                        <ol>
+                                          <li>
+                                            In case a current R version (3.6 or later) is not yet installed on your system, you need to do this first. You can download R <a href="https://cloud.r-project.org/" target="_blank">here</a>.
+                                          </li>
+                                          <li>
+                                            For MIRO to work, the system libraries V8 and libcurl need to be installed. On Debian / Ubuntu you need libcurl4-gnutls-dev and either libv8-dev or libnode-dev, on Fedora use libcurl-devel and v8-devel.
+                                            For example, to install both libraries on Ubuntu, run:
+                                            <code>sudo apt install libcurl4-gnutls-dev libv8-dev</code>
+                                          </li>
+                                          <li>
+                                            The first time you launch the GAMS MIRO AppImage, some R packages need to be installed in your R installation path. In order to so, run the AppImage via:
+                                            <code>sudo ./GAMS-MIRO.AppImage --no-sandbox</code>
+                                            This should compile and install the required R packages.
+                                          </li>
+                                        </ol>
                                     </div><!--//section-block-->
                                     <div class="section-block">
                                         <h3 class="block-title">Demo applications</h3>
