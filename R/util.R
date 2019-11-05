@@ -1155,3 +1155,24 @@ hotToR <- function(data, metaData){
   names(data) <- names(metaData$headers)
   data
 }
+isAbsolutePath <- function(path){
+  if(isWindows()){
+    # credits to: agent-j @ https://stackoverflow.com/questions/6416065/c-sharp-regex-for-file-paths-e-g-c-test-test-exe
+    return(grepl("^(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\.]+\\\\[\\w.$]+)\\\\(?:[\\w]+\\\\)*\\w([\\w.])+$", 
+          path, perl = TRUE))
+  }
+  return(startsWith(path, "/"))
+}
+zipMiro <- function(zipfile, files, baseDir, ...){
+  if(any(isAbsolutePath(files))){
+    stop("Absolute paths not allowed when zipping!", call. = FALSE)
+  }
+  if(any(grepl("[.][.][/\\\\]", files))){
+    stop("Directory climbing not allowed when zipping!", call. = FALSE)
+  }
+  currentWd <- getwd()
+  on.exit(setwd(currentWd))
+  setwd(baseDir)
+  
+  suppressMessages(zip::zip(zipfile, files, ...))
+}
