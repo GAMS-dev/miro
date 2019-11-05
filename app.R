@@ -201,8 +201,11 @@ if(is.null(errMsg)){
                                     if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube") ||
                                        "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
                                     '.miroconf'))
-  if(!file.exists(rSaveFilePath) || debugMode){
+  if(debugMode){
     source("./modules/init.R", local = TRUE)
+  }else if(!file.exists(rSaveFilePath)){
+    errMsg <- sprintf("Miroconf file: '%s' does not exist.", 
+                      rSaveFilePath)
   }else{
     load(rSaveFilePath)
     if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
