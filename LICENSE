@@ -55,6 +55,7 @@ these components are included below):
 - backports https://github.com/r-lib/backports or https://cran.r-project.org/web/packages/backports/index.html
 - vctrs https://github.com/r-lib/vctrs or https://cran.r-project.org/web/packages/vctrs/index.html
 - ellipsis https://github.com/r-lib/ellipsis or https://ellipsis.r-lib.org or https://cran.r-project.org/web/packages/ellipsis/index.html
+- withr http://withr.r-lib.org or http://github.com/r-lib/withr or https://cran.r-project.org/web/packages/withr/index.html
 - DBI https://github.com/r-dbi/DBI or https://cran.r-project.org/web/packages/DBI/index.html
 - readr https://github.com/tidyverse/readr or https://cran.r-project.org/web/packages/readr/index.html
 - blob https://github.com/tidyverse/blob or https://cran.r-project.org/web/packages/blob/index.html
@@ -1084,6 +1085,7 @@ Library.
         - backports, Copyright (c)  Michel Lang [cre, aut], R Core Team [aut]
         - vctrs, Copyright (c)  Hadley Wickham [aut, cre], Lionel Henry [aut], Davis Vaughan [aut], RStudio [cph]
         - ellipsis, Copyright (c)  Hadley Wickham [aut, cre], RStudio [cph]
+        - withr, Copyright (c) Jim Hester [aut, cre], Kirill Müller [aut], Kevin Ushey [aut], Hadley Wickham [aut], Winston Chang [aut], Richard Cotton [ctb], RStudio [cph]
 -----------------------------------------------------------------------------
 
                     GNU GENERAL PUBLIC LICENSE
