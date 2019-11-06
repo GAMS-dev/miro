@@ -19285,7 +19285,12 @@ body {
   margin-left: 25px;
   vertical-align: top;
   outline: 1px solid #eeeeee;
-  background-color: white;
+  background-color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .logo-wrapper {
+    background-color: #222d32;
+  }
 }
 .option-category {
   margin-top: 0px;
