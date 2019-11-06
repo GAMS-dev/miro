@@ -660,7 +660,7 @@ Worker <- R6Class("Worker", public = list(
     pfFilePath <- gmsFilePath(file.path(private$workDir, tolower(private$metadata$modelName) %+% ".pf"))
     writeLines(c(private$pfFileContent, gamsArgs), pfFilePath)
     
-    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), 
+    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(private$metadata$modelGmsName, "pf", pfFilePath), 
                                    stdout = "|", windows_hide_window = TRUE)
     return(self)
@@ -721,7 +721,7 @@ Worker <- R6Class("Worker", public = list(
       flog.warn("Log file: '%s' could not be written. Check whether you have sufficient permissions to write files to: '%s'.",
                 private$jID %+% ".log", hcubeDir)
     })
-    private$process <- process$new(paste0(private$metadata$gamsSysDir, "gams"), 
+    private$process <- process$new(file.path(private$metadata$gamsSysDir, "gams"), 
                                    args = c(hcubeSubmDir, 'curdir', curdir, "lo=3",
                                             paste0("--jobID=", private$jID)),
                                    cleanup = FALSE, cleanup_tree = FALSE, supervise = FALSE,

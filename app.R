@@ -1,7 +1,7 @@
 #version number
-MIROVersion <- "0.8.9"
+MIROVersion <- "0.9.0"
 APIVersion  <- "1"
-MIRORDate   <- "Sep 25 2019"
+MIRORDate   <- "Nov 06 2019"
 #####packages:
 # processx        #MIT
 # dplyr           #MIT
@@ -34,6 +34,8 @@ MIRORDate   <- "Sep 25 2019"
 # specify CRAN mirror (for list of mirrors, see: https://cran.r-project.org/mirrors.html)
 CRANMirror <- "http://cran.us.r-project.org"
 errMsg <- NULL
+warningMsg <- NULL
+loggerInitialised <- FALSE
 if(R.version[["major"]] < 3 || 
    R.version[["major"]] == 3 && gsub("\\..$", "", 
                                      R.version[["minor"]]) < 6){
@@ -42,7 +44,8 @@ if(R.version[["major"]] < 3 ||
 isShinyProxy <- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
-if(identical(Sys.getenv("NODEBUG"), "true")){
+miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+if(identical(Sys.getenv("NODEBUG"), "true") && !miroBuildonly){
   debugMode <- FALSE
   logToConsole <- FALSE
 }else if(isShinyProxy){
@@ -51,10 +54,8 @@ if(identical(Sys.getenv("NODEBUG"), "true")){
 tmpFileDir <- tempdir(check = TRUE)
 # required packages
 suppressMessages(library(R6))
-requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
-                      "V8", "dplyr", "readr", "readxl", "writexl", "rhandsontable", 
-                      "jsonlite", "jsonvalidate", "rpivotTable", 
-                      "futile.logger", "zip", "tidyr")
+requiredPackages <- c("jsonlite", "zip", "tibble", "readr")
+
 config <- list()
 gamsSysDir <- Sys.getenv("GAMS_SYS_DIR")
 
@@ -116,7 +117,7 @@ if(is.null(errMsg)){
     currentModelDir  <- modelPath
   }else{
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
-"Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
+                        "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
 if(is.null(errMsg)){
@@ -133,21 +134,6 @@ if(is.null(errMsg)){
     if(identical(miroDbDir, "")){
       miroDbDir <- miroWorkspace
     }
-    if(!dir.exists(miroWorkspace)){
-      if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
-        errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
-                                        miroWorkspace), sep = "\n")
-      }
-      if(isWindows()){
-        tryCatch(
-          processx::run("attrib", args = c("+h", miroWorkspace))
-        , error = function(e){
-          errMsg <- paste(errMsg, sprintf("Failed to hide MIRO workspace directory: '%s'. Error message: '%s'.", 
-                                          miroWorkspace, conditionMessage(e)), sep = "\n")
-        })
-        
-      }
-    }
   }
   if(!identical(Sys.getenv("LOGPATH"), "")){
     logFileDir <- Sys.getenv("LOGPATH")
@@ -156,12 +142,6 @@ if(is.null(errMsg)){
   }else{
     logFileDir <- file.path(miroWorkspace, logFileDir)
   }
-  # name of the R save file
-  rSaveFilePath <- file.path(currentModelDir, 
-                             paste0(modelNameRaw, '_', APIVersion, '_', MIROVersion, 
-                                    if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube") ||
-                                       "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
-                                    '.miroconf'))
   # set user ID (user name) and user groups
   ugroups <- NULL
   if(isShinyProxy){
@@ -199,35 +179,6 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
-  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
-                        list(file = file.path(logFileDir, paste0(modelName, "_", uid, "_", 
-                                              format(Sys.time(), "%y.%m.%d_%H.%M.%S"), ".log")))))
-  flog.threshold(loggingLevel)
-  flog.trace("Logging facility initialised.")
-  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "admin") ||
-     "LAUNCHADMIN" %in% commandArgs(TRUE)){
-    LAUNCHADMINMODE <- TRUE
-  }
-  if(!file.exists(rSaveFilePath) || debugMode){
-    source("./modules/init.R", local = TRUE)
-  }else{
-    load(rSaveFilePath)
-    if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
-      dbConfig <- setDbConfig()
-      config$activateModules$remoteExecution <- TRUE
-      if(length(dbConfig$errMsg)){
-        errMsg <- dbConfig$errMsg
-      }else{
-        dbConfig <- dbConfig$data
-      }
-    }else{
-      dbConfig <- list(type = "sqlite",
-                        name = file.path(miroDbDir, 
-                                         "miro.sqlite3"))
-    }
-  }
-}
-if(is.null(errMsg)){
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
   if(isTRUE(config$activateModules$hcubeMode)){
@@ -238,10 +189,75 @@ if(is.null(errMsg)){
   }else{
     useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
   }
-  
+  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config") ||
+     "LAUNCHADMIN" %in% commandArgs(TRUE)){
+    LAUNCHADMINMODE <- TRUE
+  }
+  # name of the R save file
+  rSaveFilePath <- file.path(currentModelDir, 
+                             paste0(modelNameRaw, '_',
+                                    if(useTempDir) '1' else '0', 
+                                    '_', APIVersion, '_', MIROVersion, 
+                                    if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube") ||
+                                       "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
+                                    '.miroconf'))
+  if(debugMode){
+    source("./modules/init.R", local = TRUE)
+  }else if(!file.exists(rSaveFilePath)){
+    errMsg <- sprintf("Miroconf file: '%s' does not exist.", 
+                      rSaveFilePath)
+  }else{
+    load(rSaveFilePath)
+  }
+  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+    dbConfig <- setDbConfig()
+    config$activateModules$remoteExecution <- TRUE
+    if(length(dbConfig$errMsg)){
+      errMsg <- dbConfig$errMsg
+    }else{
+      dbConfig <- dbConfig$data
+    }
+  }else{
+    dbConfig <- list(type = "sqlite",
+                     name = file.path(miroDbDir, 
+                                      "miro.sqlite3"))
+  }
+  if(debugMode){
+    if(file.exists(file.path(currentModelDir, "model_files.txt"))){
+      tryCatch({
+        modelFiles <- gsub("^[.][/\\\\]", "", readLines(file.path(currentModelDir, 
+                                                                  "model_files.txt"),
+                                                        warn = FALSE))
+      }, error = function(e){
+        errMsg <<- paste(errMsg, sprintf("Problems reading file: 'model_files.txt'. Error message: '%s'.", 
+                                         conditionMessage(e)),
+                         sep = "\n")
+      })
+      if(is.null(errMsg) && useTempDir && 
+         (identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "true") ||
+          miroBuildonly)){
+        tryCatch({
+          zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
+                  modelFiles, currentModelDir)
+          modelFiles <- paste0(modelName, ".zip")
+        }, error = function(e){
+          errMsg <<- paste(errMsg, sprintf("Problems creating file: '%s'. Error message: '%s'.", 
+                                           paste0(modelName, ".zip"), conditionMessage(e)),
+                           sep = "\n")
+        })
+      }
+    }else if(miroBuildonly){
+      errMsg <- paste(errMsg, "No model data ('model_files.txt') found.", 
+                      sep = "\n")
+    }
+  }
+}
+if(is.null(errMsg)){
   modelData <- NULL
-  
-  if((config$activateModules$remoteExecution || useTempDir) && 
+  if(config$activateModules$remoteExecution){
+    useTempDir <- TRUE
+  }
+  if(useTempDir && 
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
   }else if(config$activateModules$remoteExecution){
@@ -254,26 +270,8 @@ if(is.null(errMsg)){
   }
 }
 
-if(is.null(errMsg)){
+if(is.null(errMsg) && debugMode){
   # load default and custom renderers (output data)
-  requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
-                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
-  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
-    requiredPackages <- c(requiredPackages, "DT")
-  }
-  if(config$activateModules$remoteExecution){
-    requiredPackages <- c(requiredPackages, "future", "httr")
-  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
-    requiredPackages <- c(requiredPackages, "httr")
-  }
-  source("./R/install_packages.R", local = TRUE)
-  options("DT.TOJSON_ARGS" = list(na = "string"))
-  
-  if(config$activateModules$remoteExecution && identical(LAUNCHADMINMODE, FALSE)){
-    plan(multiprocess)
-  }
   rendererFiles <- list.files("./modules/renderers/", pattern = "\\.R$")
   for(file in rendererFiles){
     if(!file.access("./modules/renderers/" %+% file, mode = 4)){
@@ -292,81 +290,169 @@ if(is.null(errMsg)){
       errMsg <- "File: '" %+% file %+% "' could not be found or user has no read permissions."
     }
   }
-  if(debugMode){
-    customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
-                                       currentModelDir), customRendererDirName)
-    for(customRendererDir in customRendererDirs){
-      rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
-      lapply(rendererFiles, function(file){
-        if(!file.access(file.path(customRendererDir, file), mode = 4)){
-          tryCatch({
-            source(file.path(customRendererDir, file))
-          }, error = function(e){
-            errMsg <<- paste(errMsg, 
-                             sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                     file, e), sep = "\n")
-          }, warning = function(w){
-            errMsg <<- paste(errMsg, 
-                             sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
-                                     file, w), sep = "\n")
-          })
-        }else{
-          errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
-                                           file), sep = "\n")
-        }
-      })
-    }
-    listOfCustomRenderers <- Set$new()
-    requiredPackagesCR <<- NULL
-    
-    if(!identical(tolower(Sys.getenv(modelModeEnvVar)), "admin") &&
-       !("LAUNCHADMIN" %in% commandArgs(TRUE))){
-      for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
-        # check whether non standard renderers were defined in graph config
-        if(!is.null(customRendererConfig$rendererName)){
-          customRendererConfig$outType <- customRendererConfig$rendererName
-        }
-        if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
-          customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
-            substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
-          customRendererOutput <- customRendererConfig$outType %+% "Output"
-          # find render function
-          tryCatch({
-            match.fun(customRendererName)
-            listOfCustomRenderers$push(customRendererName)
-          }, error = function(e){
-            errMsg <<- paste(errMsg, 
-                             sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
-                                     customRendererName), sep = "\n")
-          })
-          # find output function
-          tryCatch({
-            match.fun(customRendererOutput)
-            listOfCustomRenderers$push(customRendererOutput)
-          }, error = function(e){
-            errMsg <<- paste(errMsg, 
-                             sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
-                                     customRendererName), sep = "\n")
-          })
-          # find packages to install and install them
-          if(length(customRendererConfig$packages)){
-            requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
-          }
+  customRendererDirs <<- file.path(c(file.path(currentModelDir, ".."),
+                                     currentModelDir), customRendererDirName)
+  for(customRendererDir in customRendererDirs){
+    rendererFiles <- list.files(customRendererDir, pattern = "\\.R$")
+    lapply(rendererFiles, function(file){
+      if(!file.access(file.path(customRendererDir, file), mode = 4)){
+        tryCatch({
+          source(file.path(customRendererDir, file))
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, e), sep = "\n")
+        }, warning = function(w){
+          errMsg <<- paste(errMsg, 
+                           sprintf("Some error occurred while sourcing custom renderer file '%s'. Error message: %s.", 
+                                   file, w), sep = "\n")
+        })
+      }else{
+        errMsg <<- paste(errMsg, sprintf("Custom renderer file: '%s' could not be found or user has no read permissions.",
+                                         file), sep = "\n")
+      }
+    })
+  }
+  listOfCustomRenderers <- Set$new()
+  requiredPackagesCR <<- NULL
+  
+  if(!identical(tolower(Sys.getenv(modelModeEnvVar)), "config") &&
+     !("LAUNCHADMIN" %in% commandArgs(TRUE))){
+    for(customRendererConfig in c(configGraphsOut, configGraphsIn)){
+      # check whether non standard renderers were defined in graph config
+      if(!is.null(customRendererConfig$rendererName)){
+        customRendererConfig$outType <- customRendererConfig$rendererName
+      }
+      if(any(is.na(match(tolower(customRendererConfig$outType), standardRenderers)))){
+        customRendererName <- "render" %+% toupper(substr(customRendererConfig$outType, 1, 1)) %+% 
+          substr(customRendererConfig$outType, 2, nchar(customRendererConfig$outType))
+        customRendererOutput <- customRendererConfig$outType %+% "Output"
+        # find render function
+        tryCatch({
+          match.fun(customRendererName)
+          listOfCustomRenderers$push(customRendererName)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("A custom renderer function: '%s' was not found. Please make sure first define such a function.", 
+                                   customRendererName), sep = "\n")
+        })
+        # find output function
+        tryCatch({
+          match.fun(customRendererOutput)
+          listOfCustomRenderers$push(customRendererOutput)
+        }, error = function(e){
+          errMsg <<- paste(errMsg, 
+                           sprintf("No output function for custom renderer function: '%s' was found. Please make sure you define such a function.", 
+                                   customRendererName), sep = "\n")
+        })
+        # find packages to install and install them
+        if(length(customRendererConfig$packages)){
+          requiredPackagesCR <- c(requiredPackagesCR, customRendererConfig$packages)
         }
       }
     }
-    requiredPackagesCR <- unique(requiredPackagesCR)
-    if(!is.null(requiredPackagesCR)){
-      requiredPackages <- requiredPackagesCR
-      source("./R/install_packages.R", local = TRUE)
+  }
+  requiredPackagesCR <- unique(requiredPackagesCR)
+  
+  save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
+                "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
+                "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
+                "modelInTabularData", "externalInputConfig", "tabSheetMap",
+                "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
+                "choicesNoDep", "sliderValues", "configGraphsOut", 
+                "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
+                "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets", 
+                "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
+                "modelOutAlias", "colsWithDep", "scalarsInMetaData",
+                "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
+                "modelInToImportAlias", "modelInToImport", 
+                "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
+                "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
+                "installPackage", "dbSchema", "scalarInputSym",
+                "requiredPackagesCR", "datasetsRemoteExport"), 
+       file = rSaveFilePath)
+  rm(listOfCustomRenderers)
+}
+if(miroBuildonly){
+  if(!is.null(errMsg)){
+    warning(errMsg)
+    if(identical(errMsg, "\nNo model data ('model_files.txt') found.")){
+      quit("no", status = 2)
+    }else{
+      quit("no", status = 1) 
     }
-  }else if(!is.null(requiredPackagesCR)){
+  }
+  tryCatch({
+    if(file.exists(file.path(currentModelDir, "static"))){
+      modelFiles <- c(modelFiles, "static")
+    }
+    if(file.exists(file.path(currentModelDir, 
+                             paste0(miroDataDirPrefix, modelName)))){
+      modelFiles <- c(modelFiles, paste0(miroDataDirPrefix, modelName))
+    }
+    zipMiro(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
+            c(modelFiles, basename(rSaveFilePath)), currentModelDir)
+  }, error = function(e){
+    stop(sprintf("Problems creating app bundle. Error message: '%s'.", 
+                 conditionMessage(e)), call. = FALSE)
+  })
+  if(interactive())
+    stop()
+  quit("no")
+}
+if(is.null(errMsg) && !dir.exists(miroWorkspace)){
+  if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+    errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
+                                    miroWorkspace), sep = "\n")
+  }else{
+    if(isWindows()){
+      tryCatch(
+        processx::run("attrib", args = c("+h", miroWorkspace))
+        , error = function(e){
+          warningMsg <<- paste(warningMsg, 
+                               sprintf("Failed to hide MIRO workspace directory: '%s'. Error message: '%s'.", 
+                                       miroWorkspace, conditionMessage(e)), sep = "\n")
+        })
+    }
+    flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
+                          list(file = file.path(logFileDir, 
+                                                paste0(modelName, "_", uid, "_", 
+                                                       format(Sys.time(), 
+                                                              "%y.%m.%d_%H.%M.%S"), ".log")))))
+    flog.threshold(loggingLevel)
+    flog.trace("Logging facility initialised.")
+    loggerInitialised <- TRUE
+  }
+}
+requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
+                      "dplyr", "readxl", "writexl", "rhandsontable", 
+                      "rpivotTable", "futile.logger", "tidyr")
+source("./R/install_packages.R", local = TRUE)
+
+if(is.null(errMsg)){
+  if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
     source("./R/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-}
-if(is.null(errMsg)){ 
+  requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
+                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
+    requiredPackages <- c(requiredPackages, "DT")
+  }
+  if(config$activateModules$remoteExecution){
+    requiredPackages <- c(requiredPackages, "future", "httr")
+  }else if(length(externalInputConfig) || length(datasetsRemoteExport)){
+    requiredPackages <- c(requiredPackages, "httr")
+  }
+  source("./R/install_packages.R", local = TRUE)
+  options("DT.TOJSON_ARGS" = list(na = "string"))
+  
+  if(config$activateModules$remoteExecution && identical(LAUNCHADMINMODE, FALSE)){
+    plan(multiprocess)
+  }
   # try to create the DB connection (PostgreSQL)
   auth <- NULL
   db <- NULL
@@ -438,7 +524,7 @@ if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(
       orphanedTables <- db$getOrphanedTables(hcubeScalars = names(modelIn)[vapply(seq_along(modelIn), 
                                                                                   function(i) 
                                                                                     identical(modelIn[[i]]$type, "dropdown"), 
-                                                                                 logical(1L), USE.NAMES = FALSE)])
+                                                                                  logical(1L), USE.NAMES = FALSE)])
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -504,15 +590,15 @@ if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
           MIROVersionLatestTmp[[2]][1] == currentMIROVersion[2] && 
           MIROVersionLatestTmp[[3]][1] > currentMIROVersion[3])){
         MIROVersionLatest <<- paste0("<br/><br/><b style=\\'color:#f90;\\'>A new version of GAMS MIRO is available! The latest version is: v.",
-                                    MIROVersionLatestTmp[[1]][1], ".",
-                                    MIROVersionLatestTmp[[2]][1], ".",
-                                    MIROVersionLatestTmp[[3]][1], 
-                                    "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
+                                     MIROVersionLatestTmp[[1]][1], ".",
+                                     MIROVersionLatestTmp[[2]][1], ".",
+                                     MIROVersionLatestTmp[[3]][1], 
+                                     "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
         
         
       }
     })
-  , silent = TRUE)
+    , silent = TRUE)
 }
 
 aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
@@ -568,10 +654,10 @@ if(is.null(errMsg)){
       credConfigTmp <- NULL
       if(file.exists(rememberMeFileName)){
         credConfigTmp <- suppressWarnings(fromJSON(rememberMeFileName, 
-                                                simplifyDataFrame = FALSE, 
-                                                simplifyMatrix = FALSE))
+                                                   simplifyDataFrame = FALSE, 
+                                                   simplifyMatrix = FALSE))
         if(!is.list(credConfigTmp) || !all(c('url', 'username', 'password', 'namespace', 'reg') 
-                                        %in% names(credConfigTmp)) || 
+                                           %in% names(credConfigTmp)) || 
            !all(vapply(credConfigTmp[1:4], is.character, 
                        logical(1L), USE.NAMES = FALSE)) ||
            !is.logical(credConfigTmp[[5L]])){
@@ -592,6 +678,13 @@ if(is.null(errMsg)){
   }
 }
 if(!is.null(errMsg)){
+  if(loggerInitialised){
+    if(length(warningMsg)) flog.warn(warningMsg)
+    flog.fatal(errMsg)
+  }
+  if(isShinyProxy){
+    stop('An error occured. Check log for more information!', call. = FALSE)
+  }
   if(debugMode && identical(tolower(Sys.info()[["sysname"]]), "windows")){
     setWinProgressBar(pb, 1, label= "GAMS MIRO initialised")
   }else{
@@ -674,9 +767,9 @@ if(!is.null(errMsg)){
       observeEvent(input$removeDbTablesPre, {
         showModal(modalDialog(title = removeDbTabLang$title,
                               removeDbTabLang$desc, footer = tagList(
-                      modalButton(removeDbTabLang$cancel),
-                      actionButton("removeDbTables", label = removeDbTabLang$confirm, 
-                                   class = "bt-highlight-1"))))
+                                modalButton(removeDbTabLang$cancel),
+                                actionButton("removeDbTables", label = removeDbTabLang$confirm, 
+                                             class = "bt-highlight-1"))))
       })
       source(file.path('tools', 'admin', 'db_management.R'), local = TRUE)
     }
@@ -711,42 +804,7 @@ if(!is.null(errMsg)){
     setWinProgressBar(pb, 0.6, label= "Importing new data")
   }
   rm(LAUNCHADMINMODE, installedPackages)
-  if(debugMode){
-    save(list = c(listOfCustomRenderers$get(), "modelIn", "modelInRaw", 
-                  "modelOut", "config", "lang", "inputDsNames", "inputDsAliases", 
-                  "outputTabTitles", "modelInTemplate", "scenDataTemplate", 
-                  "modelInTabularData", "externalInputConfig", "tabSheetMap",
-                  "modelInFileNames", "ddownDep", "aliasesNoDep", "idsIn",
-                  "choicesNoDep", "sliderValues", "configGraphsOut", 
-                  "configGraphsIn", "hotOptions", "inputTabs", "inputTabTitles", 
-                  "scenInputTabs", "scenInputTabTitles", "isGroupOfSheets", 
-                  "groupSheetToTabIdMap", "scalarsInTemplate", "modelInWithDep",
-                  "modelOutAlias", "colsWithDep", "scalarsInMetaData",
-                  "modelInMustImport", "modelInAlias", "DDPar", "GMSOpt", 
-                  "modelInToImportAlias", "modelInToImport", 
-                  "scenTableNames", "modelOutTemplate", "scenTableNamesToDisplay", 
-                  "GAMSReturnCodeMap", "dependentDatasets", "outputTabs", 
-                  "installPackage", "dbSchema", "scalarInputSym",
-                  "requiredPackagesCR", "datasetsRemoteExport"), 
-         file = rSaveFilePath)
-    rm(listOfCustomRenderers)
-    if(identical(getCommandArg("buildonly", FALSE), "true")){
-      tryCatch({
-        writeLines(c(paste0("modelname=", modelNameRaw),
-                     if(isTRUE(config$activateModules$hcubeMode)) 
-                       "is_hcube_mode"),
-                   file.path(currentModelDir, ".metadata"))
-        zip::zipr(file.path(currentModelDir, paste0(modelNameRaw, ".miroapp")), 
-                  c(modelFiles, file.path(currentModelDir, "static"),
-                    file.path(currentModelDir, ".metadata")))
-        unlink(file.path(currentModelDir, ".metadata"))
-      }, error = function(e){
-        flog.error("Problems creating app bundle. Error message: '%s'.", 
-                   conditionMessage(e))
-      })
-      quit("no")
-    }
-  }
+  
   local({
     miroDataDir   <- file.path(currentModelDir, paste0(miroDataDirPrefix, modelName))
     miroDataFiles <- list.files(miroDataDir)
@@ -880,7 +938,7 @@ if(!is.null(errMsg)){
                                          tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
                                          modelDataFiles = if(identical(config$fileExchange, "gdx")) 
                                            c(MIROGdxInName, MIROGdxOutName) else 
-                                           paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                             paste0(c(names(modelOut), inputDsNames), ".csv"),
                                          MIROGdxInName = MIROGdxInName,
                                          clArgs = GAMSClArgs, 
                                          text_entities = c(paste0(modelName, ".lst"), 
@@ -1038,7 +1096,7 @@ if(!is.null(errMsg)){
     
     # set local working directory
     unzipModelFilesProcess <- NULL
-    if(config$activateModules$remoteExecution || useTempDir){
+    if(useTempDir){
       workDir <- file.path(tmpFileDir, session$token)
       if(!config$activateModules$remoteExecution && length(modelData)){
         tryCatch({
@@ -1109,13 +1167,13 @@ if(!is.null(errMsg)){
     gams <- NULL
     # boolean that specifies whether input data should be overridden
     inputOverwriteConfirmed <- FALSE
-
+    
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       # reset nest level
       shortcutNest <<- 0L
       if((config$activateModules$scenario || config$activateModules$hcubeMode)
-          && input$sidebarMenuId == "scenarios"){
+         && input$sidebarMenuId == "scenarios"){
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
         rv$jobListPanel <- rv$jobListPanel + 1L
@@ -1254,7 +1312,7 @@ if(!is.null(errMsg)){
     # Interrupt button clicked
     source("./modules/gams_interrupt.R", local = TRUE)
     
-
+    
     ####### Model output
     # render output graphs
     source("./modules/output_render.R", local = TRUE)
@@ -1373,7 +1431,7 @@ if(!is.null(errMsg)){
               return()
             }
           }
-         
+          
           hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), 
                                        c("--vanilla", file.path(currentModelDir, "runApp.R"), 
                                          "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
@@ -1419,7 +1477,7 @@ if(!is.null(errMsg)){
                             paste0("MIRO discovered it was behaving unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
                             The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
-                            "_io.json' and '", modelName, ".json' as well as the error log. 
+                                   "_io.json' and '", modelName, ".json' as well as the error log. 
                             None of your .gms model files will be sent!"), 
                             footer = tagList(actionButton("crash_dontsend", "Don't send"),
                                              actionButton("crash_send", "Send", class = "bt-highlight-1"))))
@@ -1436,7 +1494,7 @@ if(!is.null(errMsg)){
                          "_", substr(modelName, 1L, 3L), ".zip"), 
             userpwd = paste0(bugReportUrl$dir, ":")
           )
-        , silent = TRUE)
+          , silent = TRUE)
         
         removeModal()
       })
@@ -1445,7 +1503,9 @@ if(!is.null(errMsg)){
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders
-      unlink(workDir, recursive=TRUE)
+      if(useTempDir){
+        unlink(workDir, recursive=TRUE)
+      }
       suppressWarnings(rm(activeScen))
       try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
           silent = TRUE)

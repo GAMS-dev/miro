@@ -1,3 +1,5 @@
+requiredPackages <- c("jsonvalidate", "V8")
+source("./R/install_packages.R", local = TRUE)
 # check whether there exists a config file and if not create an empty one
 if(is.null(errMsg)){
   if(!file.exists(file.path(currentModelDir, "conf", modelName %+% ".json"))){
@@ -12,8 +14,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # files that require schema file
   jsonFilesWithSchema <- c(file.path(currentModelDir, "conf", paste0(modelName,".json")), 
-                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")),
-                           file.path(getwd(), "conf", "db_config.json"))
+                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")))
   jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
   if(any(jsonFilesMissing)){
     errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
@@ -24,9 +25,7 @@ if(is.null(errMsg)){
   jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
                                    file.path(getwd(), "conf", "config_schema.json")), 
                         io_config = c(jsonFilesWithSchema[2], 
-                                     file.path(getwd(), "conf", "io_config_schema.json")),
-                        db_config = c(jsonFilesWithSchema[3], 
-                                      file.path(getwd(), "conf", "db_config_schema.json")))
+                                     file.path(getwd(), "conf", "io_config_schema.json")))
 }
 
 # validate json files
@@ -50,8 +49,6 @@ if(is.null(errMsg)){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
-      dbConfig <<- eval[[1]]
     }else if(!is.null(eval[[2]])){
       errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
                            basename(jsonFilesWithSchema[i]), 
@@ -65,11 +62,14 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   if(identical(config$activateModules$scenario, FALSE)){
     if(identical(config$activateModules$sharedScenarios, TRUE)){
-      flog.info("Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated.")
+      warningMsg <- "Can not use module 'share scenarios' without having module 'scenario' activated. 'Share scenarios' module was deactivated."
+      warning(warningMsg)
       config$activateModules$sharedScenarios <- FALSE
     }
     if(identical(config$activateModules$attachments, TRUE)){
-      flog.info("Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated.")
+      warningMsgTmp <- "Can not use module 'attachments' without having module 'scenario' activated. 'Attachments' module was deactivated."
+      warning(warningMsgTmp)
+      warningMsg <- paste(warningMsg, warningMsgTmp, sep = "\n")
       config$activateModules$attachments <- FALSE
     }
   }
@@ -81,7 +81,6 @@ if(is.null(errMsg)){
   if(!file.exists(paste0('./conf/', config$language, ".json"))){
     errMsg <- paste0("The JSON language file: '", config$language,
                      ".json' could not be located. Please make sure file is available and accessible.")
-    flog.fatal(errMsg)
   }else{
     eval <- list(character(), character())
     tryCatch({
@@ -90,7 +89,6 @@ if(is.null(errMsg)){
     }, error = function(e){
       errMsg <<- paste0("Some error occurred validating language file: '",
                         config$language, ".json'. Error message: ", e)
-      flog.fatal(errMsg)
     })
     if(is.null(eval[[2]])){
       lang <- eval[[1]]
@@ -98,7 +96,6 @@ if(is.null(errMsg)){
       errMsgTmp <- paste0("Some error occurred parsing JSON language file: '",
                           config$language, ".json'. See below for more detailed information.")
       errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
-      flog.fatal(errMsgTmp)
       jsonErrors <- rbind(jsonErrors, cbind(file_name = paste0(config$language, ".json"), eval[[2]]))
     }
   }
@@ -106,7 +103,6 @@ if(is.null(errMsg)){
 
 # load model input and output parameters
 if(is.null(errMsg)){
-  flog.trace("Language files loaded.")
   if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
     config$activateModules$hcubeMode <- TRUE
   }
@@ -263,7 +259,6 @@ if(is.null(errMsg)){
         modelIn[[elL]][[widgetType]] <- widgetConfig
       }else{
         errMsgTmp <- paste0("'", el, "' was defined to be an input widget, but is not amongst the symbols you defined to be input data to your model!")
-        flog.fatal(errMsgTmp)
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
     }else{
@@ -274,14 +269,12 @@ if(is.null(errMsg)){
            identical(widgetType, "dropdown"))){
           errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent multi-dimensional data.", 
                                           names(modelIn)[i]), sep = "\n")
-          flog.fatal(errMsg)
           next
         }
       }
       if(identical(symDim, 1L) && !(widgetType %in% c("table", "dropdown"))){
         errMsg <- paste(errMsg, sprintf("The output type for the GAMS symbol: '%s' is not valid. This widget type can not represent 1 dimensional data.", 
                                         names(modelIn)[i]), sep = "\n")
-        flog.fatal(errMsg)
         next
       }
       widgetConfig$widgetType <- NULL
@@ -334,7 +327,6 @@ if(is.null(errMsg)){
           }else{
             errMsg <- paste(errMsg, sprintf("The column: '%s' of table: '%s' was set to be readonly. However, such a column does not exist in the table.", 
                                             names(modelIn)[[i]], names(modelIn[[i]]$headers)[[j]]))
-            flog.fatal(errMsg)
             break
           }
         }
@@ -345,11 +337,9 @@ if(is.null(errMsg)){
   # make sure two input or output data sheets dont share the same name (case insensitive)
   if(any(duplicated(names(modelIn)))){
     errMsg <- "Two or more input datasets share the same name. Please make sure the identifiers are unique for each input datasheet!"
-    flog.fatal(errMsg)
   }
   if(any(duplicated(names(modelOut)))){
     errMsg <- "Two or more output datasets share the same name. Please make sure the identifiers are unique for each output datasheet!"
-    flog.fatal(errMsg)
   }
 }
 
@@ -464,13 +454,18 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
           if(any(!is.na(groupId))){
             groupId <- groupId[!is.na(groupId)]
             if(length(groupId) > 1L){
-              flog.warn("Dataset: '%s' appears in more than one group. Only the first group will be used.", aliases[i])
+              warningMsgTmp <- sprintf("Dataset: '%s' appears in more than one group. Only the first group will be used.", 
+                                       aliases[i])
+              warning(warningMsgTmp)
+              warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
             }
             groupMemberIds      <- match(groups[[groupId]]$members, names)
             if(any(is.na(groupMemberIds))){
-              flog.warn("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
-                        paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
-                        groups[[groupId]]$name)
+              warningMsgTmp <- sprintf("The table(s): '%s' that you specified in group: '%s' do not exist. Thus, they were ignored.", 
+                                       paste(groups[[groupId]]$members[is.na(groupMemberIds)], collapse = "', '"),
+                                       groups[[groupId]]$name)
+              warning(warningMsgTmp)
+              warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
               groupMemberIds <- groupMemberIds[!is.na(groupMemberIds)]
             }
             tabs[[j]]      <-  groupMemberIds
@@ -484,7 +479,6 @@ These scalars are: '%s'. Please either add them in your model or remove them fro
             if(any(!is.na(groupMemberIdsInWidgets))){
               #groupMemberIdsInWidgets <- groupMemberIdsInWidgets[!is.na(groupMemberIdsInWidgets)]
               #widgetIds <- widgetIds[-groupMemberIdsInWidgets]
-              flog.error("It is currently not possible to specify widgets and tables in the same group!")
               errMsg <<- paste(errMsg, "It is currently not possible to specify widgets and tables in the same group!", sep = "\n")
             }
             if(mergeScalars){
@@ -629,7 +623,6 @@ if(is.null(errMsg)){
         configGraphsOut[[i]] <- config$dataRendering[[el]]
       }else if(strictMode){
         errMsgTmp <- paste0("'", el, "' was defined to be an object to render, but was not found in either the list of model input or the list of model output sheets.")
-        flog.fatal(errMsgTmp)
         errMsg <- paste(errMsg, errMsgTmp, sep = "\n")
       }
       isOutputGraph <- TRUE
@@ -801,9 +794,11 @@ if(is.null(errMsg)){
                daterange = ,
                textinput = ,
                numericinput = {
-                 flog.warn(sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
+                 warningMsgTmp <- sprintf("The dataset: '%s' uses a widget that is not supported in Hypercube mode.
                                    Thus, it will not be transformed and stays static.", 
-                                   names(modelIn)[i]))
+                                          names(modelIn)[i])
+                 warning(warningMsgTmp)
+                 warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                })
       }
       })
@@ -1016,8 +1011,10 @@ if(is.null(errMsg)){
              # check that in case dataset is scalar ds, it has correct headers
              if(names(modelIn)[[i]] %in% c(scalarsFileName, scalarsOutName) && 
                 !identical(names(modelIn[[i]]$headers), scalarsFileHeaders)){
-               warning(paste0(modelInAlias[i], " is defined to be the scalar input dataset, " %+%
-                                "but has incorrect headers. The headers were adjusted accordingly."))
+               warningMsgTmp <- paste0(modelInAlias[i], " is defined to be the scalar input dataset, ",
+                                         "but has incorrect headers. The headers were adjusted accordingly.")
+               warning(warningMsgTmp)
+               warningMsg <<- paste(warningMsg, warningMsgTmp, sep = "\n")
                names(modelIn[[i]]$headers) <- scalarsFileHeaders
              }
              return(name)
@@ -1467,8 +1464,7 @@ if(is.null(errMsg)){
       config$readmeFile <- markdownParser$parseFile(readmeFilePath)
     }
   }, error = function(e){
-    flog.error("Problems parsing README markdown file. Error message: %s", 
-               conditionMessage(e))
-    errMsg <<- "Problems parsing README markdown file. See log for more information."
+    errMsg <<- sprintf("Problems parsing README markdown file. Error message: %s",
+                       conditionMessage(e))
   })
 }

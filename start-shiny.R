@@ -5,6 +5,7 @@ if(identical(tolower(Sys.info()[["sysname"]]), "windows")){
 print(R.home())
 print(.libPaths())
 print(sessionInfo())
+options(shiny.autoload.r = FALSE)
 suppressMessages(shiny::runApp(
   Sys.getenv("RE_SHINY_PATH"),
   host = "127.0.0.1",
