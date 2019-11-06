@@ -395,7 +395,7 @@ lapply(c(names(modelInRaw), names(modelOut)), function(name){
       }
       headerLen <- length(modelOut[[i]]$headers)
     }else{
-      headerLen <- length(modelOut[[i]]$headers)
+      headerLen <- length(modelInRaw[[i]]$headers)
     }
     if(length(input[[paste0("general_overwriteSymHeaders_", name)]]) ==
        headerLen){
