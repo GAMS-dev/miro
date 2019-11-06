@@ -253,7 +253,10 @@ if(is.null(errMsg)){
 }
 if(is.null(errMsg)){
   modelData <- NULL
-  if((config$activateModules$remoteExecution || useTempDir) && 
+  if(config$activateModules$remoteExecution){
+    useTempDir <- TRUE
+  }
+  if(useTempDir && 
      file.exists(file.path(currentModelDir, paste0(modelName, ".zip")))){
     modelData <- file.path(currentModelDir, paste0(modelName, ".zip"))
   }else if(config$activateModules$remoteExecution){
@@ -392,7 +395,7 @@ if(miroBuildonly){
     stop()
   quit("no")
 }
-if(!dir.exists(miroWorkspace)){
+if(is.null(errMsg) && !dir.exists(miroWorkspace)){
   if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
     errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
                                     miroWorkspace), sep = "\n")
@@ -1088,7 +1091,7 @@ if(!is.null(errMsg)){
     
     # set local working directory
     unzipModelFilesProcess <- NULL
-    if(config$activateModules$remoteExecution || useTempDir){
+    if(useTempDir){
       workDir <- file.path(tmpFileDir, session$token)
       if(!config$activateModules$remoteExecution && length(modelData)){
         tryCatch({
@@ -1495,7 +1498,9 @@ if(!is.null(errMsg)){
     # This code will be run after the client has disconnected
     session$onSessionEnded(function() {
       # remove temporary files and folders
-      unlink(workDir, recursive=TRUE)
+      if(useTempDir){
+        unlink(workDir, recursive=TRUE)
+      }
       suppressWarnings(rm(activeScen))
       try(flog.info("Session ended (model: '%s', user: '%s').", modelName, uid), 
           silent = TRUE)
