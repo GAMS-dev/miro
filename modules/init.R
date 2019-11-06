@@ -14,8 +14,7 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # files that require schema file
   jsonFilesWithSchema <- c(file.path(currentModelDir, "conf", paste0(modelName,".json")), 
-                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")),
-                           file.path(getwd(), "conf", "db_config.json"))
+                           file.path(currentModelDir, "conf", paste0(modelName, "_io.json")))
   jsonFilesMissing    <- !file.exists(jsonFilesWithSchema)
   if(any(jsonFilesMissing)){
     errMsg <- paste(errMsg, paste0("JSON file(s): '", basename(jsonFilesWithSchema[jsonFilesMissing]), 
@@ -26,9 +25,7 @@ if(is.null(errMsg)){
   jsonSchemaMap <- list(config = c(jsonFilesWithSchema[1], 
                                    file.path(getwd(), "conf", "config_schema.json")), 
                         io_config = c(jsonFilesWithSchema[2], 
-                                     file.path(getwd(), "conf", "io_config_schema.json")),
-                        db_config = c(jsonFilesWithSchema[3], 
-                                      file.path(getwd(), "conf", "db_config_schema.json")))
+                                     file.path(getwd(), "conf", "io_config_schema.json")))
 }
 
 # validate json files
@@ -52,8 +49,6 @@ if(is.null(errMsg)){
       config <<- c(config, eval[[1]])
     }else if (names(jsonSchemaMap)[[i]] == "io_config" && is.null(eval[[2]])){
       config <<- c(config, eval[[1]])
-    }else if (names(jsonSchemaMap)[[i]] == "db_config" && is.null(eval[[2]])){
-      dbConfig <<- eval[[1]]
     }else if(!is.null(eval[[2]])){
       errMsgTmp  <- paste0("Some error occurred parsing JSON file: '", 
                            basename(jsonFilesWithSchema[i]), 

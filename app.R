@@ -117,7 +117,7 @@ if(is.null(errMsg)){
     currentModelDir  <- modelPath
   }else{
     errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
-"Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
+                        "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
 if(is.null(errMsg)){
@@ -208,19 +208,19 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
-    if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
-      dbConfig <- setDbConfig()
-      config$activateModules$remoteExecution <- TRUE
-      if(length(dbConfig$errMsg)){
-        errMsg <- dbConfig$errMsg
-      }else{
-        dbConfig <- dbConfig$data
-      }
+  }
+  if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
+    dbConfig <- setDbConfig()
+    config$activateModules$remoteExecution <- TRUE
+    if(length(dbConfig$errMsg)){
+      errMsg <- dbConfig$errMsg
     }else{
-      dbConfig <- list(type = "sqlite",
-                        name = file.path(miroDbDir, 
-                                         "miro.sqlite3"))
+      dbConfig <- dbConfig$data
     }
+  }else{
+    dbConfig <- list(type = "sqlite",
+                     name = file.path(miroDbDir, 
+                                      "miro.sqlite3"))
   }
   if(debugMode){
     if(file.exists(file.path(currentModelDir, "model_files.txt"))){
@@ -519,7 +519,7 @@ if(is.null(errMsg) && debugMode && config$activateModules$scenario && identical(
       orphanedTables <- db$getOrphanedTables(hcubeScalars = names(modelIn)[vapply(seq_along(modelIn), 
                                                                                   function(i) 
                                                                                     identical(modelIn[[i]]$type, "dropdown"), 
-                                                                                 logical(1L), USE.NAMES = FALSE)])
+                                                                                  logical(1L), USE.NAMES = FALSE)])
     }, error = function(e){
       flog.error("Problems fetching orphaned database tables. Error message: '%s'.", e)
       errMsg <<- paste(errMsg, sprintf("Problems fetching orphaned database tables. Error message: '%s'.", 
@@ -585,15 +585,15 @@ if(is.null(errMsg) && !isShinyProxy && curl::has_internet()){
           MIROVersionLatestTmp[[2]][1] == currentMIROVersion[2] && 
           MIROVersionLatestTmp[[3]][1] > currentMIROVersion[3])){
         MIROVersionLatest <<- paste0("<br/><br/><b style=\\'color:#f90;\\'>A new version of GAMS MIRO is available! The latest version is: v.",
-                                    MIROVersionLatestTmp[[1]][1], ".",
-                                    MIROVersionLatestTmp[[2]][1], ".",
-                                    MIROVersionLatestTmp[[3]][1], 
-                                    "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
+                                     MIROVersionLatestTmp[[1]][1], ".",
+                                     MIROVersionLatestTmp[[2]][1], ".",
+                                     MIROVersionLatestTmp[[3]][1], 
+                                     "</b><br/>To download the latest version, click <a href=\\'https://gams.com/miro/\\' target=\\'_blank\\'>here</a>")
         
         
       }
     })
-  , silent = TRUE)
+    , silent = TRUE)
 }
 
 aboutDialogText <- paste0("<b>GAMS MIRO v.", MIROVersion, "</b><br/><br/>",
@@ -649,10 +649,10 @@ if(is.null(errMsg)){
       credConfigTmp <- NULL
       if(file.exists(rememberMeFileName)){
         credConfigTmp <- suppressWarnings(fromJSON(rememberMeFileName, 
-                                                simplifyDataFrame = FALSE, 
-                                                simplifyMatrix = FALSE))
+                                                   simplifyDataFrame = FALSE, 
+                                                   simplifyMatrix = FALSE))
         if(!is.list(credConfigTmp) || !all(c('url', 'username', 'password', 'namespace', 'reg') 
-                                        %in% names(credConfigTmp)) || 
+                                           %in% names(credConfigTmp)) || 
            !all(vapply(credConfigTmp[1:4], is.character, 
                        logical(1L), USE.NAMES = FALSE)) ||
            !is.logical(credConfigTmp[[5L]])){
@@ -762,9 +762,9 @@ if(!is.null(errMsg)){
       observeEvent(input$removeDbTablesPre, {
         showModal(modalDialog(title = removeDbTabLang$title,
                               removeDbTabLang$desc, footer = tagList(
-                      modalButton(removeDbTabLang$cancel),
-                      actionButton("removeDbTables", label = removeDbTabLang$confirm, 
-                                   class = "bt-highlight-1"))))
+                                modalButton(removeDbTabLang$cancel),
+                                actionButton("removeDbTables", label = removeDbTabLang$confirm, 
+                                             class = "bt-highlight-1"))))
       })
       source(file.path('tools', 'admin', 'db_management.R'), local = TRUE)
     }
@@ -933,7 +933,7 @@ if(!is.null(errMsg)){
                                          tableNameTracePrefix = tableNameTracePrefix, maxSizeToRead = 5000,
                                          modelDataFiles = if(identical(config$fileExchange, "gdx")) 
                                            c(MIROGdxInName, MIROGdxOutName) else 
-                                           paste0(c(names(modelOut), inputDsNames), ".csv"),
+                                             paste0(c(names(modelOut), inputDsNames), ".csv"),
                                          MIROGdxInName = MIROGdxInName,
                                          clArgs = GAMSClArgs, 
                                          text_entities = c(paste0(modelName, ".lst"), 
@@ -1162,13 +1162,13 @@ if(!is.null(errMsg)){
     gams <- NULL
     # boolean that specifies whether input data should be overridden
     inputOverwriteConfirmed <- FALSE
-
+    
     observeEvent(input$sidebarMenuId,{
       flog.debug("Sidebar menu item: '%s' selected.", isolate(input$sidebarMenuId))
       # reset nest level
       shortcutNest <<- 0L
       if((config$activateModules$scenario || config$activateModules$hcubeMode)
-          && input$sidebarMenuId == "scenarios"){
+         && input$sidebarMenuId == "scenarios"){
         isInSolveMode <<- FALSE
       }else if(identical(input$sidebarMenuId, "importData")){
         rv$jobListPanel <- rv$jobListPanel + 1L
@@ -1307,7 +1307,7 @@ if(!is.null(errMsg)){
     # Interrupt button clicked
     source("./modules/gams_interrupt.R", local = TRUE)
     
-
+    
     ####### Model output
     # render output graphs
     source("./modules/output_render.R", local = TRUE)
@@ -1426,7 +1426,7 @@ if(!is.null(errMsg)){
               return()
             }
           }
-         
+          
           hcubeProcess <<- process$new(file.path(R.home("bin"), "RScript"), 
                                        c("--vanilla", file.path(currentModelDir, "runApp.R"), 
                                          "LAUNCHHCUBE", commandArgs(TRUE)), stderr = "|")
@@ -1472,7 +1472,7 @@ if(!is.null(errMsg)){
                             paste0("MIRO discovered it was behaving unexpectedly. We are constantly striving to improve MIRO.
                             Would you like to send the error report to GAMS in order to avoid such crashes in the future?
                             The ONLY files that we send (encrypted via HTTPS) are the configuration files: '", modelName, 
-                            "_io.json' and '", modelName, ".json' as well as the error log. 
+                                   "_io.json' and '", modelName, ".json' as well as the error log. 
                             None of your .gms model files will be sent!"), 
                             footer = tagList(actionButton("crash_dontsend", "Don't send"),
                                              actionButton("crash_send", "Send", class = "bt-highlight-1"))))
@@ -1489,7 +1489,7 @@ if(!is.null(errMsg)){
                          "_", substr(modelName, 1L, 3L), ".zip"), 
             userpwd = paste0(bugReportUrl$dir, ":")
           )
-        , silent = TRUE)
+          , silent = TRUE)
         
         removeModal()
       })
