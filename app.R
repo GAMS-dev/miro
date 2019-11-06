@@ -226,7 +226,8 @@ if(is.null(errMsg)){
     if(file.exists(file.path(currentModelDir, "model_files.txt"))){
       tryCatch({
         modelFiles <- gsub("^[.][/\\\\]", "", readLines(file.path(currentModelDir, 
-                                                                  "model_files.txt")))
+                                                                  "model_files.txt"),
+                                                        warn = FALSE))
       }, error = function(e){
         errMsg <<- paste(errMsg, sprintf("Problems reading file: 'model_files.txt'. Error message: '%s'.", 
                                          conditionMessage(e)),
@@ -374,8 +375,12 @@ if(is.null(errMsg) && debugMode){
 }
 if(miroBuildonly){
   if(!is.null(errMsg)){
-    stop(errMsg, call. = FALSE)
-    quit("no")
+    warning(errMsg)
+    if(identical(errMsg, "\nNo model data ('model_files.txt') found.")){
+      quit("no", status = 2)
+    }else{
+      quit("no", status = 1) 
+    }
   }
   tryCatch({
     if(file.exists(file.path(currentModelDir, "static"))){
