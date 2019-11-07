@@ -1062,8 +1062,8 @@
         "table": "Table",
         "date": "Date",
         "daterange": "Date range",
-        "text": "Text box",
-        "numericinput": "Numeric box"
+        "text": "Text input",
+        "numericinput": "Numeric input"
       },
       "table":{
         "alias": "Enter the element name as it should be displayed in a tab (no live preview)",

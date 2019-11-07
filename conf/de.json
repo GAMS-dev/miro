@@ -1062,7 +1062,8 @@
         "table": "Tabelle",
         "date": "Datum",
         "daterange": "Datumsbereich",
-        "text": "Textfeld"
+        "text": "Textfeld",
+        "numericinput": "Numerische Eingabe"
       },
       "table":{
         "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",

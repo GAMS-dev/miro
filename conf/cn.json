@@ -1062,7 +1062,8 @@
         "table": "表格",
         "date": "日期",
         "daterange": "日期范围",
-        "text": "文本框"						  
+        "text": "文本框",
+        "numericinput": "Numeric input"						  
       },
       "table":{
         "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
