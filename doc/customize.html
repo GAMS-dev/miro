@@ -404,7 +404,7 @@ putclose log;
                                   </div>
                                   
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should users be allowed to add attachments to scenarios?</h6>
-                                  <p class="collapsed">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachment">here</a>.</p>
+                                  <p class="collapsed">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachments">here</a>.</p>
                                   <h6 id="general-duration" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Duration the GAMS log and lst files are stored in the database (in days)</h6>
                                   <div class="collapsed"><p>If you want to save the log and lst files of individual GAMS jobs, you can use this option to specify how long the files should be saved. 
                                   0 means files are not stored at all, 999 means files are stored indefinitely. This setting is ignored when the attachment module is not active. Note that this is currently only supported in the MIRO base mode. </p>
@@ -487,18 +487,29 @@ putclose log;
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                     </li>
-                                    <li><b>New GAMS option</b> / <b>New double dash parameter</b>
+                                    <li><p><b>New GAMS option</b> / <b>New double dash parameter</b>
                                       <br>As the name suggests, <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameterss</a>can be configured here as an input widget. All widget types are available. 
                                       <br>Since those parameters are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
-                                     </code>. In order that they can be set via MIRO for a GAMS run, they must be given explicitly in the configuration.
-                                      <div class="callout-block callout-success" style="margin-top:10px;">
-                                         <div class="icon-holder">
-                                             <i class="fas fa-thumbs-up"></i>
-                                         </div><!--//icon-holder-->
-                                         <div class="content">
-                                             <b class="callout-title">Tip:</b>
-                                              <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called with these command line parameters. Those values the user selected are therefore available to the GAMS model at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.</p>
+                                     </code>. In order that they can be set via MIRO for a GAMS run, they must be given explicitly in the configuration.</p>
+                                      <p>If a GAMS option or a double dash parameter is set via MIRO, your GAMS model will automatically be called 
+                                      with these command line parameters. Those values the user selected are therefore available to the GAMS model 
+                                      at <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_TwoPass" target="_blank">compile time</a>.</p>
+                                      <div class="callout-block callout-warning">
+                                          <div class="icon-holder">
+                                              <i class="fas fa-info-circle"></i>
+                                          </div><!--//icon-holder-->
+                                          <div class="content">
+                                              <b class="callout-title">Note:</b>
+                                              <p>GAMS options and double-dash parameters associated with a scenario are stored in the 
+                                              MIRO internal database. However, the information about them is lost when a scenario is 
+                                              exported as a GDX or Excel spreadsheet. We therefore recommend the use of GAMS Singleton 
+                                              Sets instead of command line parameters, whose explanatory text in the model can then 
+                                              be migrated to compile-time variables using the Dollar Control Options 
+                                              <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
+                                              <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
+                                              and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a> 
+                                              during compile time.</p>
                                           </div><!--//content-->
                                       </div><!--//callout-block-->
                                       <p>Example:<br>If we set the double dash parameter <span class="code">numberPeriods</span> to 11 and for the GAMS option <span class="code">mip</span> we select CPLEX from within MIRO, then the GAMS model is run with: <pre><span class="code">gams &lt;modelname&gt;.gms --numberPeriods=11 MIP=CPLEX</span></pre></p>
@@ -584,10 +595,10 @@ putclose log;
                                      <div class="item col-lg-4 col-6">
                                          <div class="item-inner" style="padding-bottom: 10px;">
                                              <div style="height:60px;">
-                                                 <img class="img-fluid" style= "max-height:50px; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_textbox.png" alt="Textbox" />
+                                                 <img class="img-fluid" style= "max-height:50px; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_textbox.png" alt="Text input" />
                                              </div>
                                              <div>
-                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Textbox</h3>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Text input</h3>
                                              </div>
                                              <a class="link" href="./widgets.html#widget-textbox"><span></span></a>
                                          </div><!--//item-inner-->
@@ -598,7 +609,7 @@ putclose log;
                                                  <img class="img-fluid" style= "max-height:50px; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_numeric.png" alt="Numerix box" />
                                              </div>
                                              <div>
-                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Numeric box</h3>
+                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Numeric input</h3>
                                              </div>
                                              <a class="link" href="./widgets.html#widget-numeric"><span></span></a>
                                          </div><!--//item-inner-->
@@ -641,8 +652,19 @@ putclose log;
                                   <h3 class="block-title">Configure graphs</h3>
                                   <p>In addition to the always available tabular format, multidimensional GAMS symbols can be visualized as graphs. GAMS MIRO offers comprehensive visualization options. 
                                   A lot of plotting types are available and only need to be configured, i.e. adapted to your model-specific data. 
-                                  The selection of these pre-implemented graphics currently includes scatter plots, line charts, bubble charts, histograms, pie charts, donut charts, gantt charts, pivot tables and maps and is constantly being expanded.</p>
-                                  
+                                  </p>
+                                  <p>If you want to configure a graphic for a GAMS symbol, you have to be aware of how dimensions of a GAMS symbol can be displayed in graphics. 
+                                  GAMS symbols sometimes have many dimensions. In charts such as pie charts or bar charts, however, only a very limited number of dimensions can be displayed, 
+                                  namely one in the pie chart and two in the bar chart. As an example we can look at the parameter <code class="language-gams">a(i) 'capacity of plant i in cases'</code> 
+                                  in the model <i>transport</i>. In addition to the dimension '<i>i</i>' with the plants, there is also the dimension of the value column, i.e. a total of 2 dimensions:</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:50pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions2.png" alt="two dimensions" />
+                                  </div>
+                                  <p>Chart types like line charts, bar charts or scatter plots are well suited for the representation of two dimensions: </p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:200pt; display: block; margin:auto;" src="assets/images/configuration_mode/graphs_dimensions.png" alt="Bar chart - two dimensions" />
+                                  </div>
+                                  <p>However, the bar chart cannot represent a further, third dimension in this way.</p>
                                   <p>It would not make sense to document all configuration possibilities of all available graphics. Therefore the following section shows a possible configuration for each graphic type. The easiest way to find out more about the possibilities is to try it yourself! 
                                   Start the configuration mode and play around with the data until you see a result that you like. </p>
                                   <p>To create graphics that are perfectly tailored to your data and not available in MIRO yet, you can also use MIRO's R-API. More information can be found <a href="#custom-renderers" class="scrollto">here</a>.
@@ -891,13 +913,9 @@ putclose log;
                                       </div>
                                       <p>In the sections on <a href="./widgets.html">widgets</a> and <a href="./charts.html">charts</a> you will find a JSON example for each widget or graph type.</p>
                                 </div><!--//section-block-->
-                            </section>
-                            <section id="advanced" class="doc-section">
-                                <h2 class="section-title">Advanced topics</h2>
                                 <div class="section-block" id="widgets-commandLine">
                                   <h3 class="block-title">Command line parameters</h3>
-                                  <p>In this section, the configuration of GAMS command line parameters via JSON is dealt with in detail. This can easily be done with the <a href="#configurationMode" class="scrollto">configuration mode</a>. For those who prefer to configure directly in JSON, this section is for you.</p>
-                                     <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>.
+                                  <p>We have already mentioned the possibility of <a href="./model.html#command-line">setting GAMS command line parameters via MIRO</a>.
                                      Since <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS Options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">Double Dash Parameters</a> are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code>. To be able to set them from MIRO, they can be specified in the <span class="code">&lt;modelname&gt;.json</span> file. In order for MIRO to recognize whether your symbol is a double dash parameter or a GAMS option, you must prefix the symbol name with either <kbd>_gmspar_</kbd> for double dash parameters or <kbd>_gmsopt_</kbd> for GAMS options.
@@ -908,7 +926,7 @@ putclose log;
                                          </div><!--//icon-holder-->
                                          <div class="content">
                                              <b class="callout-title">Note:</b>
-                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector or textinput.</p>
+                                             <p>Command line parameters can not be displayed as a table, but only as a slider, dropdown menu, checkbox, date(-range) selector, text input or numeric input.</p>
                                          </div><!--//content-->
                                      </div><!--//callout-block-->
                                      <p>Let's assume you want MIRO to call your GAMS model with the double dash parameter <kbd>--numberPeriods</kbd>, which can be set to a value between 1 and 14. You also want to be able to select the MIP solver to use.
@@ -945,8 +963,20 @@ putclose log;
                                           <img class="img-fluid" style= "display: block; margin-left: auto; margin-right: auto; max-height:125pt;" src="assets/images/input-widgets-command-line.png" alt="Input widgets for command line parameters"/>
                                        </div>
                                 </div><!--//section-block-->
+                            </section>
+                            <section id="advanced" class="doc-section">
+                                <h2 class="section-title">Advanced topics</h2>
                                 <div class="section-block" id="widgets-advanced">
                                 <h3 class="block-title" id="widgets-ranges">Widgets with ranges</h3>
+                                  <div class="callout-block callout-success" style="margin-top:10px;">
+                                     <div class="icon-holder">
+                                         <i class="fas fa-thumbs-up"></i>
+                                     </div><!--//icon-holder-->
+                                     <div class="content">
+                                         <b class="callout-title">Tip:</b>
+                                          <p>In the MIRO Base mode, widgets with ranges are only available for double-dash parameters!</p>
+                                      </div><!--//content-->
+                                  </div><!--//callout-block-->
                                    <p>We covered the basics of how to use widgets for your scalar inputs as well as command line parameters. Let's now take a look at how widgets that return two scalars instead of one are treated. Those widgets include a slider with two handles (also referred to as a slider range) and a date range selector:</p>
                                    <p>The lower value (or starting date of the date range) is postfixed with <kbd>_lo</kbd> and the upper value (or end date of the date range) is postfixed with <kbd>_up</kbd>. This means that if you specified a slider range for your double dash parameter <kbd>--RANGE</kbd>, you can access the lower value of the range with <kbd>%RANGE_LO%</kbd> and the upper value with <kbd>%RANGE_UP%</kbd> while <kbd>%RANGE%</kbd> will not be set at all. Let's look at the following example: We would like to specify a time window that we want to fetch stock data for. Thus, we define a new double dash parameter <kbd>--TW</kbd> that we want to be visualized in the form of a date range selector. We add the following JSON snippet to our <span class="code">&lt;modelName&gt;.json</span> configuration file:</p>
                                     <pre><code class="language-json">
@@ -1173,10 +1203,10 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#widgets-tables">Example: tables</a>
                                     <a class="nav-link scrollto" href="#widgets-scalars">Example: scalars</a>
+                                    <a class="nav-link scrollto" href="#widgets-commandLine">Command line parameters</a>
                                 </nav>
                                 <a class="nav-link scrollto" href="#advanced">Advanced topics</a>
                                 <nav class="doc-sub-menu nav flex-column">
-                                    <a class="nav-link scrollto" href="#widgets-commandLine">Command line parameters</a>
                                     <a class="nav-link scrollto" href="#widgets-advanced">Widgets with ranges</a>
                                     <a class="nav-link scrollto" href="#widgets-dependencies">Dependencies among Widgets</a>
                                     <a class="nav-link scrollto" href="#custom-renderers">Custom graphics</a>
@@ -1193,6 +1223,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     </div><!--//page-wrapper--><!--#include virtual="/footer_miro.html" -->
 
     <!-- Main Javascript -->
+
     <script type="text/javascript" src="assets/plugins/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/prism/min/prism-min.js"></script>
@@ -1221,6 +1252,5 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     <script>
     	$('.gifplayer').gifplayer();
     </script>
-
 </body>
 </html>

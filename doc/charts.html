@@ -257,7 +257,7 @@ error(d)  = abs(index(d)-fund(d));
 Set errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /; 
   
 $onExternalOutput    
-Parameter abserror(date,errHdr)          'absolute error [MIRO:table]';  
+Table abserror(date,errHdr)          'absolute error';  
 $offExternalOutput
 
 abserror(td, 'absolute error train')   = error(td);
@@ -525,7 +525,7 @@ abserror(ntd,'absolute error test')    = error(ntd);
     scheduleHdr 'schedule header' / 'lngP', 'latP', 'lngM', 'latM', 'cap', 'demand', 'quantities' /;
   
 $onExternalOutput
-Parameter  schedule(i,j,scheduleHdr) 'shipment quantities in cases [MIRO:table]';
+Table  schedule(i,j,scheduleHdr) 'shipment quantities in cases';
 $offExternalOutput
 
 schedule(i,j, 'lngP')       = iLocData(i,'lng');
@@ -542,7 +542,17 @@ schedule(i,j, 'quantities') = x.l(i,j);
                                         </div><!--//icon-holder-->
                                         <div class="content">
                                             <b class="callout-title">Note:</b>
-                                            <p>With the keyword <i>[MIRO:table]</i> in the explanatory text of parameter <i>schedule</i> we define the parameter to be displayed in the <a href="./model.html#table-header">table view</a> in MIRO.</p>
+                                            <p>In order to set markers on a map, the map-tool needs corresponding geoinformation as 
+                                            latitude and longitude data. Since MIRO never communicates set elements with regard to graphics 
+                                            configurations, but only the headers of an index, the symbol to be visualized must be declared as a 
+                                            <a href="./model.html#display-tables">table</a> in GAMS. In this way, the set elements of 
+                                            the last dimension of the symbol are folded up and communicated as columns which MIRO now 
+                                            has access to. 
+                                            By declaring the parameter <code class="language-gams">schedule</code> as a 
+                                            <code class="language-gams">table</code>, the elements of the last index set 
+                                            <code class="language-gams">scheduleHdr</code> (<code class="language-gams">lngP, latP, lngM, latM, 
+                                            cap, demand, quantities</code>) can be used for the map configuration. 
+                                            You can find a detailed example <a href = "./model.html#table-miro">here</a></p>
                                         </div><!--//content-->
                                     </div><!--//callout-block-->
                                     <p>In a resulting <i>GDX</i> this parameter looks as follows:</p>
@@ -672,7 +682,7 @@ schedule(i,j, 'quantities') = x.l(i,j);
     fHdr      'fund header'   / dj 'dow jones','index fund'  /;
                                     
 $onExternalOutput    
-Parameter   dowVSindex(date,fHdr)  'dow jones vs. index fund [MIRO:table]';
+Table   dowVSindex(date,fHdr)  'dow jones vs. index fund';
 $offExternalOutput
 
 dowVSindex(d,'dj')             = index(d);
