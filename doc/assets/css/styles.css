@@ -903,6 +903,13 @@ body{
   padding-left: 34px;
   background: none;
 }
+.page-wrapper .doc-sub-menu .sub-sub-menu .nav-link {
+  padding-left: 55px;
+  margin-bottom: 5px;
+}
+.page-wrapper .doc-sub-menu .has-sub-sub {
+    margin-bottom: 0;    
+}
 .page-wrapper .doc-sub-menu .nav-link:first-child {
   padding-top: 5px;
 }
@@ -922,6 +929,9 @@ body{
   color: #494d55;
 }
 .body-orange .page-wrapper .doc-sub-menu .nav-link.active {
+  color: #f90;
+}
+.body-orange .page-wrapper .sub-sub-menu .nav-link.active {
   color: #f90;
 }
 .page-wrapper .promo-block {
