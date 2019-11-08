@@ -174,15 +174,13 @@ if(is.null(errMsg)){
   # name of the R save file
   useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
   # check if GAMS model file exists
-  if(!useTempDir){
-    if(file.exists(file.path(modelPath, modelGmsName))){
-      currentModelDir  <- modelPath
-    }else{
-      errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
-                          "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
-    }
+  currentModelDir  <- modelPath
+  if(!useTempDir && ! file.exists(file.path(modelPath, modelGmsName))){
+    errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
+                        "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
-  
+}
+if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir, 
                              paste0(modelNameRaw, "_",
                                     if(useTempDir) "1" else "0", "_",
