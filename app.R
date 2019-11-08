@@ -183,11 +183,15 @@ if(is.null(errMsg)){
   # name of the R save file
   useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
   rSaveFilePath <- file.path(currentModelDir, 
-                             paste0(modelNameRaw, '_',
-                                    if(useTempDir) '1' else '0', 
-                                    '_', APIVersion, '_', MIROVersion, 
+                             paste0(modelNameRaw, "_",
+                                    if(useTempDir) "1" else "0", "_",
+                                    APIVersion, "_",
+                                    if(identical(Sys.getenv("MIRO_VERSION_STRING"), ""))
+                                      MIROVersion
+                                    else
+                                      Sys.getenv(MIRO_VERSION_STRING), 
                                     if(identical(Sys.getenv(modelModeEnvVar), "hcube")) "_hcube",
-                                    '.miroconf'))
+                                    ".miroconf"))
   if(debugMode){
     source("./modules/init.R", local = TRUE)
   }else if(!file.exists(rSaveFilePath)){
