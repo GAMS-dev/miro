@@ -18,6 +18,7 @@ logs
 *.sqlite3
 .matplotlib
 tmp
+examples
 tools/paver/examples
 tools/paver/__pycache__
 tools/paver/results
@@ -26,6 +27,8 @@ doc/latest.ver
 doc/schema.html
 model/**/*.xlsx
 model/**/*.miroconf
+model/**/*.miroapp
+model/**/*.zip
 model/**/*.bat
 model/**/*.gdx
 model/**/runapp.R
