@@ -139,7 +139,7 @@
                                       </div>
                                       <p></p>
                                   </div>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Color theme to use</h6>
+                                  <h6 id = "dark-mode" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Color theme to use</h6>
                                   <div class="collapsed"><p>Allows you to choose between MIRO light and dark mode as well as the dynamic adaptation of the 
                                   theme based on the system settings set by the user.</p>
                                       <div class="row">
@@ -329,6 +329,33 @@ putclose log;
                                   <div class="collapsed"><p>This option allows you to use your own logo for a single MIRO application, displayed in the top left corner.</p>
                                       <div class="section-block">
                                           <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/app-logo.png" alt="App logo" />
+                                      </div>
+                                      <p></p>
+                                  </div>
+                                  <h4 id="app-readme" class="docu-general-header">README file</h4>
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Create an individual starting page</h6>
+                                  <div class="collapsed"><p>You have the possibility to integrate a README file into the MIRO application. 
+                                  Its content is displayed in the input section in the first tab and is therefore the first thing the user 
+                                  sees after starting the application. This separate and individual starting page can be used by the developer 
+                                  to introduce and explain the MIRO application or the underlying GAMS model before the user starts working 
+                                  with it.</p>
+                                  <p><b>Usage:</b><br>
+                                  The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">markdown</a> 
+                                  document and has to be located in your model directory. If MIRO finds a READEME.md file there, it is included 
+                                  without the need for configuration.</p> 
+                                  <p>Two options are available in the configuraiton mode: 
+                                  <ul>
+                                    <li><b>README tab title</b><br>
+                                    With this option you can customize the title of the README tab in the input seciton. Default: <i>README</i></li>
+                                    <li><b>Alternative README file name</b><br>
+                                    With this option you can specify an alternative file name for the readme file (minimum 4 characters). 
+                                    Default: <i>README.md</i></li>
+                                  </ul>
+                                  <p><b>Note:</b><br>
+                                  If images are used, they have to be located in the <i>static</i> folder of your model directory. In the markdown file 
+                                  the path of used images has to be prefixed with "static".</p>
+                                      <div class="section-block">
+                                          <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
                                       </div>
                                       <p></p>
                                   </div>
