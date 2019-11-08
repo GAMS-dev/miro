@@ -113,15 +113,6 @@ if(is.null(errMsg)){
 }
 
 if(is.null(errMsg)){
-  # check if GAMS model file exists
-  if(file.exists(file.path(modelPath, modelGmsName))){
-    currentModelDir  <- modelPath
-  }else{
-    errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
-                        "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
-  }
-}
-if(is.null(errMsg)){
   miroWorkspace <- NULL
   miroDbDir     <- NULL
   
@@ -182,12 +173,24 @@ if(is.null(errMsg)){
 if(is.null(errMsg)){
   # name of the R save file
   useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
+  # check if GAMS model file exists
+  currentModelDir  <- modelPath
+  if(!useTempDir && ! file.exists(file.path(modelPath, modelGmsName))){
+    errMsg <- sprintf("The GAMS model file: '%s' could not be found in the directory: '%s'." %+%
+                        "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
+  }
+}
+if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir, 
-                             paste0(modelNameRaw, '_',
-                                    if(useTempDir) '1' else '0', 
-                                    '_', APIVersion, '_', MIROVersion, 
+                             paste0(modelNameRaw, "_",
+                                    if(useTempDir) "1" else "0", "_",
+                                    APIVersion, "_",
+                                    if(identical(Sys.getenv("MIRO_VERSION_STRING"), ""))
+                                      MIROVersion
+                                    else
+                                      Sys.getenv("MIRO_VERSION_STRING"), 
                                     if(identical(Sys.getenv(modelModeEnvVar), "hcube")) "_hcube",
-                                    '.miroconf'))
+                                    ".miroconf"))
   if(debugMode){
     source("./modules/init.R", local = TRUE)
   }else if(!file.exists(rSaveFilePath)){
