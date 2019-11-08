@@ -188,7 +188,7 @@ if(is.null(errMsg)){
                                     if(identical(Sys.getenv("MIRO_VERSION_STRING"), ""))
                                       MIROVersion
                                     else
-                                      Sys.getenv(MIRO_VERSION_STRING), 
+                                      Sys.getenv("MIRO_VERSION_STRING"), 
                                     if(identical(Sys.getenv(modelModeEnvVar), "hcube")) "_hcube",
                                     ".miroconf"))
   if(debugMode){
