@@ -1,43 +1,6 @@
 {
   "UILogo": "pickstock.png",
   "miroLogFile": "miro.log",
-  "remoteExport": [
-    {
-      "name": "Testexporter",
-      "templates": [
-        {
-          "symNames": "stock_weight",
-          "url": "http://127.0.0.1:5000/io",
-          "method": "POST",
-          "httpBody": [
-            {
-              "key": "filename",
-              "value": "/Users/fproske/Documents/products/miro/model/pickstock/test123.csv"
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "remoteImport": [{
-    "name": "Testimport",
-    "templates": [
-      {
-        "symNames": "price",
-        "url": "http://127.0.0.1:5000/io",
-        "method": "GET",
-        "httpBody": [
-          {
-            "key": "cachetime",
-            "value": "50"
-          },
-          {
-            "key": "filename",
-            "value": "/Users/fproske/Documents/products/miro/model/pickstock/dowjones2016.csv"
-          }
-        ]
-      }]
-  }],
   "inputWidgets": {
     "price": {
       "widgetType": "table",
