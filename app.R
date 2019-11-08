@@ -45,6 +45,7 @@ isShinyProxy <- !identical(Sys.getenv("SHINYPROXY_USERNAME"), "")
 debugMode <- TRUE
 RLibPath <- NULL
 miroBuildonly <- identical(Sys.getenv("MIRO_BUILD"), "true")
+logToConsole <- TRUE
 if(identical(Sys.getenv("NODEBUG"), "true") && !miroBuildonly){
   debugMode <- FALSE
   logToConsole <- FALSE
@@ -179,27 +180,13 @@ if(is.null(errMsg)){
   }
 }
 if(is.null(errMsg)){
-  GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
-                  paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
-  if(isTRUE(config$activateModules$hcubeMode)){
-    # in Hypercube mode we have to run in a temporary directory
-    useTempDir <- TRUE
-    GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
-                                       MIROGdxInName, '"'))
-  }else{
-    useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
-  }
-  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config") ||
-     "LAUNCHADMIN" %in% commandArgs(TRUE)){
-    LAUNCHADMINMODE <- TRUE
-  }
   # name of the R save file
+  useTempDir <- !identical(Sys.getenv("USETMPDIR"), "false")
   rSaveFilePath <- file.path(currentModelDir, 
                              paste0(modelNameRaw, '_',
                                     if(useTempDir) '1' else '0', 
                                     '_', APIVersion, '_', MIROVersion, 
-                                    if(identical(tolower(Sys.getenv(modelModeEnvVar)), "hcube") ||
-                                       "LAUNCHHCUBE" %in% commandArgs(TRUE)) "_hcube",
+                                    if(identical(Sys.getenv(modelModeEnvVar), "hcube")) "_hcube",
                                     '.miroconf'))
   if(debugMode){
     source("./modules/init.R", local = TRUE)
@@ -208,6 +195,25 @@ if(is.null(errMsg)){
                       rSaveFilePath)
   }else{
     load(rSaveFilePath)
+  }
+  GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
+                  paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
+  
+  if(identical(Sys.getenv(modelModeEnvVar), "hcube")){
+    config$activateModules$hcubeMode <- TRUE
+  }
+  if(isTRUE(config$activateModules$hcubeMode)){
+    # in Hypercube mode we have to run in a temporary directory
+    if(!identical(useTempDir, TRUE)){
+      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USE_TMP_DIR=false not allowed!",
+                      sep = "\n")
+    }
+    GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
+                                       MIROGdxInName, '"'))
+  }
+  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config") ||
+     "LAUNCHADMIN" %in% commandArgs(TRUE)){
+    LAUNCHADMINMODE <- TRUE
   }
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
@@ -400,8 +406,9 @@ if(miroBuildonly){
     stop()
   quit("no")
 }
-if(is.null(errMsg) && !dir.exists(miroWorkspace)){
-  if(!dir.create(miroWorkspace, showWarnings = FALSE)[1]){
+if(is.null(errMsg)){
+  if(!dir.exists(miroWorkspace) &&
+     !dir.create(miroWorkspace, showWarnings = FALSE)[1]){
     errMsg <- paste(errMsg, sprintf("Could not create MIRO workspace directory: '%s'. Please make sure you have sufficient permissions. '", 
                                     miroWorkspace), sep = "\n")
   }else{
@@ -414,14 +421,6 @@ if(is.null(errMsg) && !dir.exists(miroWorkspace)){
                                        miroWorkspace, conditionMessage(e)), sep = "\n")
         })
     }
-    flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
-                          list(file = file.path(logFileDir, 
-                                                paste0(modelName, "_", uid, "_", 
-                                                       format(Sys.time(), 
-                                                              "%y.%m.%d_%H.%M.%S"), ".log")))))
-    flog.threshold(loggingLevel)
-    flog.trace("Logging facility initialised.")
-    loggerInitialised <- TRUE
   }
 }
 requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx", 
@@ -430,6 +429,14 @@ requiredPackages <- c("stringi", "shiny", "shinydashboard", "processx",
 source("./R/install_packages.R", local = TRUE)
 
 if(is.null(errMsg)){
+  flog.appender(do.call(if(identical(logToConsole, TRUE)) "appender.tee" else "appender.file", 
+                        list(file = file.path(logFileDir, 
+                                              paste0(modelName, "_", uid, "_", 
+                                                     format(Sys.time(), 
+                                                            "%y.%m.%d_%H.%M.%S"), ".log")))))
+  flog.threshold(loggingLevel)
+  flog.trace("Logging facility initialised.")
+  loggerInitialised <- TRUE
   if(!is.null(requiredPackagesCR)){
     requiredPackages <- requiredPackagesCR
     source("./R/install_packages.R", local = TRUE)
