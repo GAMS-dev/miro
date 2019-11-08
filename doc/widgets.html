@@ -820,12 +820,26 @@ $offExternalInput
                                     <div class="section-block">
                                         <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_pivot.png" alt="Pivot column"/>
                                     </div>
-                                    <p>Unlike the pivot option <a href = "./model.html#table-header">set in the GAMS model itself</a>, this option does not affect the database structure of the symbol. 
-                                    With the GAMS-side set option (<code class="language-gams">Table symbolname [data];</code>), the symbol is stored in its pivot form in the database and displayed 1:1 in the MIRO user interface. 
-                                    Since the columns of the database are immutable, the symbol can only be used with exactly these columns.  
-                                    In many cases this may not be a problem. If so, then this is the better performing solution than setting the option in configuration mode. 
-                                    The latter has the advantage, however, that the columns of the symbol remain variable, since the symbol itself is stored in the database in list format. 
-                                    The pivoting of the configured column then happens "live" in the MIRO application.</p></div>
+                                    <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./start.html#data-contract">data contract</a> between GAMS and MIRO. 
+                                    Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. 
+                                    The pivoting of the configured column then happens "live" in the MIRO application.</p>
+                                    <p id = "avoid-table">Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: 
+                                    For this we take a look at the Parameter <code class="language-gams">Price</code> of the <i>Pickstock</i> model:</p>
+                                    <pre><code class="language-gams">Set date   'date'
+    symbol 'stockSymbol';
+
+$onExternalInput
+Parameter price(date,symbol) 'Price';
+$offExternalInput
+</pre></code>
+                                    If we decide to pivot the index <span class="code">symbol</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
+                                    </div>
+                                    <p>A table width quickly increases when the number of set elements of the header index gets large. 
+                                    A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. 
+                                    In this case we should stick to the <i>parameter view</i>.</p>
+                                    </div>
                                     <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select certain columns to be readonly</h6>
                                     <div class="collapsed"><p>This option prevents the user from making manual changes in selected columns of the input table. 
                                     Note that this option is only available for table columns that have not been pivoted (see option above).</p>
@@ -910,7 +924,7 @@ $offExternalInput
                                  <a class="nav-link scrollto" href="#widget-textbox-options">Available options</a>
                                  <a class="nav-link scrollto" href="#widget-textbox-json">JSON example</a>
                              </nav>
-                             <a class="nav-link scrollto" href="#widget-numeric">Numeric box</a>
+                             <a class="nav-link scrollto" href="#widget-numeric">Numeric input</a>
                              <nav class="doc-sub-menu nav flex-column">
                                  <a class="nav-link scrollto" href="#widget-numeric-configuration">Configuration</a>
                                  <a class="nav-link scrollto" href="#widget-numeric-options">Available options</a>
