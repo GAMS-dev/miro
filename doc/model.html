@@ -441,21 +441,6 @@ $offExternalInput
 </pre></code></p>
                                             </div><!--//content-->
                                         </div><!--//callout-block-->
-                                        <p>pivotCols option:</p>
-                                        <p id = "avoid-table">Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: If we were to decide to pivot the index <span class="code">symbol</span> of the parameter <span class="code">price</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:
-                                            <pre><code class="language-gams">Set date   'date'
-    symbol 'stockSymbol';
-
-$onExternalInput
-Parameter price(date,symbol) 'Price [MIRO:table]';
-$offExternalInput
-</pre></code>
-                                          </p>
-                                        <div class="section-block" style="text-align:center;">
-                                            <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
-                                        </div>
-                                        <p>A table width quickly increases when the number of set elements of the header index gets large. A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. In this case we should stick to the <i>parameter view</i> as shown <a href="#no-header" class="scrollto">above</a>. Please note also that you should only use the <i>table view</i> for parameters where the header remains fixed! The database schema used internally directly depends on the structure of your parameters. This means that adding and removing columns dynamically is not possible! More on this also in the next section.</p>
-                                        <p>This means that MIRO now knows the names of the set elements and can use them, for example, for graphics. </p>
                                     </div><!--//section-block-->
                                     <div id = "table-miro" class="section-block">
                                         <h5 class="block-title">Tables in MIRO</h5>

@@ -445,10 +445,14 @@ if(is.null(errMsg)){
     source("./R/install_packages.R", local = TRUE)
     rm(requiredPackagesCR)
   }
-  requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
-                        if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
-                        if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
-                        if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  if(LAUNCHADMINMODE){
+    requiredPackages <- c("plotly", "dygraphs", "leaflet", "leaflet.minicharts", "timevis")
+  }else{
+    requiredPackages <- c(if(identical(installPackage$plotly, TRUE)) "plotly",
+                          if(identical(installPackage$dygraphs, TRUE)) c("xts", "dygraphs"),
+                          if(identical(installPackage$leaflet, TRUE)) c("leaflet", "leaflet.minicharts"),
+                          if(identical(installPackage$timevis, TRUE)) c("timevis"))
+  }
   if(identical(installPackage$DT, TRUE) || ("DT" %in% installedPackages)){
     requiredPackages <- c(requiredPackages, "DT")
   }
