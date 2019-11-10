@@ -778,14 +778,16 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       if(config$activateModules$lstFile){
         errMsg <- NULL
         tryCatch({
-          fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst")) 
+          fileSize <- file.size(file.path(workDir, modelNameRaw %+% ".lst"))
           if(is.na(fileSize))
             stop("Could not access listing file", call. = FALSE)
           if(fileSize > maxSizeToRead){
             output$listFile <- renderText(lang$errMsg$readLst$fileSize)
-          }else{
+          }else if(file.exists(file.path(workDir, modelNameRaw %+% ".lst"))){
             output$listFile <- renderText(read_file(
               file.path(workDir, modelNameRaw %+% ".lst")))
+          }else{
+            output$listFile <- renderText(lang$errMsg$readLst$fileNotFound)
           }
         }, error = function(e) {
           errMsg <<- lang$errMsg$readLst$desc

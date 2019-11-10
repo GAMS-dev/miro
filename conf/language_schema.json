@@ -3246,6 +3246,11 @@
               "type":"string",
               "minLength":1,
               "required":true
+            },
+            "fileNotFound": {  
+              "type":"string",
+              "minLength":1,
+              "required":true
             }
           }
         },
