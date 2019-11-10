@@ -11,8 +11,7 @@ Scalar    maxstock             'maximum number of stocks to select'  /  2 /
           trainingdays         'number of days for training'         / 99 /;
 $setNames "%gams.input%" fp fn fe
 $if not set fileName $set fileName %fp%dowjones2016.csv
-$call csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
-$if errorlevel 1 $abort problems reading CSV data
+$call.errorlevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $gdxin stockdata
 $load price
 $offExternalInput

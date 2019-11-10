@@ -208,7 +208,7 @@ if(is.null(errMsg)){
   if(isTRUE(config$activateModules$hcubeMode)){
     # in Hypercube mode we have to run in a temporary directory
     if(!identical(useTempDir, TRUE)){
-      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USE_TMP_DIR=false not allowed!",
+      errMsg <- paste(errMsg, "In Hypercube mode, MIRO must be executed in a temporary directory! USETMPDIR=false not allowed!",
                       sep = "\n")
     }
     GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
@@ -243,7 +243,7 @@ if(is.null(errMsg)){
                          sep = "\n")
       })
       if(is.null(errMsg) && useTempDir && 
-         (identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "true") ||
+         (!identical(Sys.getenv("MIRO_BUILD_ARCHIVE"), "false") ||
           miroBuildonly)){
         tryCatch({
           zipMiro(file.path(currentModelDir, paste0(modelName, ".zip")),
