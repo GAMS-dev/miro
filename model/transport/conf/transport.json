@@ -1,61 +1,163 @@
 {
-    "miroLogFile": "miro.log",
-    "inputWidgets":{
-       "f":{
-          "widgetType": "slider",
-          "alias": "freight in dollars per case per thousand miles",
-          "label": "freight in dollars per case per thousand miles",
-          "min": 1,
-          "max": 500,
-          "default": 90,
-          "step": 1
-       },
-       "mins":{
-          "widgetType": "slider",
-          "alias": "minimum shipment (MIP- and MINLP-only)",
-          "label": "minimum shipment (MIP- and MINLP-only)",
-          "min": 0,
-          "max": 500,
-          "default": 100,
-          "step": 1
-       },
-       "beta":{
-          "widgetType": "slider",
-          "alias": "beta (MINLP-only)",
-          "label": "beta (MINLP-only)",
-          "min": 0,
-          "max": 1,
-          "default": 0.95,
-          "step": 0.01
-       },
-       "_gmspar_type":{
-          "widgetType": "dropdown",
-          "alias": "Model Type",
-          "label": "Select model type",
-          "aliases": [
-              "LP",
-              "MIP",
-              "MINLP"
-          ],
-          "choices": [
-              "lp",
-              "mip",
-              "minlp"
-          ],
-          "selected": "lp"
-       }
+  "miroLogFile": "miro.log",
+  "inputWidgets": {
+    "f": {
+      "widgetType": "slider",
+      "alias": "freight in dollars per case per thousand miles",
+      "label": "freight in dollars per case per thousand miles",
+      "min": 1,
+      "max": 500,
+      "default": 90,
+      "step": 1
     },
-    "dataRendering"      : {
-        "schedule"			: {
-		    "outType"			: "transport1",
-		    "height"			: 700,
-		    "packages"			: ["leaflet", "leaflet.minicharts"]
-	    },
-        "scalars_out"   : {
-            "outType"			: "valueBox",
-            "options"  :{
-                "color":"aqua"
-            }
-        }
+    "mins": {
+      "widgetType": "slider",
+      "alias": "minimum shipment (MIP- and MINLP-only)",
+      "label": "minimum shipment (MIP- and MINLP-only)",
+      "min": 0,
+      "max": 500,
+      "default": 100,
+      "step": 1
+    },
+    "beta": {
+      "widgetType": "slider",
+      "alias": "beta (MINLP-only)",
+      "label": "beta (MINLP-only)",
+      "min": 0,
+      "max": 1,
+      "default": 0.95,
+      "step": 0.01
+    },
+    "_gmspar_type": {
+      "widgetType": "dropdown",
+      "alias": "Model Type",
+      "label": "Select model type",
+      "aliases": ["LP", "MIP", "MINLP"],
+      "choices": ["lp", "mip", "minlp"],
+      "selected": "lp"
+    },
+    "d": {
+      "widgetType": "table",
+      "alias": "distance in thousands of miles",
+      "readonly": false,
+      "heatmap": false,
+      "bigData": false,
+      "pivotCols": "i"
     }
+  },
+  "dataRendering": {
+    "schedule": {
+      "outType": "transport1",
+      "packages": ["leaflet", "leaflet.minicharts"]
+    },
+    "_scalars_out": {
+      "outType": "valueBox",
+      "options": {
+        "color": "aqua"
+      }
+    }
+  },
+  "overwriteSheetOrder": {
+    "input": ["a", "b", "d", "_scalars", "ilocdata", "jlocdata"],
+    "output": ["schedule", "_scalars_out"]
+  },
+  "overwriteAliases": {
+    "a": {
+      "newAlias": "capacity of plant i in cases"
+    },
+    "b": {
+      "newAlias": "demand at market j in cases"
+    },
+    "d": {
+      "newAlias": "distance in thousands of miles"
+    },
+    "_scalars": {
+      "newAlias": "Scalars"
+    },
+    "ilocdata": {
+      "newAlias": "Plant location information"
+    },
+    "jlocdata": {
+      "newAlias": "Market location information"
+    },
+    "schedule": {
+      "newAlias": "shipment quantities in cases"
+    },
+    "_scalars_out": {
+      "newAlias": "Output Scalars"
+    }
+  },
+  "overwriteHeaderAliases": {
+    "a": {
+      "newHeaders": ["canning plants", "capacity of plant i in cases"]
+    },
+    "b": {
+      "newHeaders": ["markets", "demand at market j in cases"]
+    },
+    "d": {
+      "newHeaders": ["canning plants", "markets", "distance in thousands of miles"]
+    },
+    "_scalars": {
+      "newHeaders": ["Scalar Name", "Scalar Description", "Scalar Value"]
+    },
+    "ilocdata": {
+      "newHeaders": ["canning plants", "lat", "lng"]
+    },
+    "jlocdata": {
+      "newHeaders": ["markets", "lat", "lng"]
+    },
+    "schedule": {
+      "newHeaders": ["canning plants", "markets", "lngp", "latp", "lngm", "latm", "cap", "demand", "quantities"]
+    },
+    "_scalars_out": {
+      "newHeaders": ["Scalar Name", "Scalar Description", "Scalar Value"]
+    }
+  },
+  "pivottable": {
+    "bgColor": "rgb(255,128,0)"
+  },
+  "theme": "browser",
+  "defCompMode": "split",
+  "roundingDecimals": 2,
+  "activateModules": {
+    "logFile": true,
+    "lstFile": true,
+    "loadLocal": true,
+    "attachments": true,
+    "remoteExecution": false,
+    "hcubeSwitch": true
+  },
+  "autoGenInputGraphs": true,
+  "pageTitle": "asd",
+  "aggregateWidgets": true,
+  "storeLogFilesDuration": 7,
+  "excelIncludeMeta": true,
+  "excelIncludeEmptySheets": true,
+  "saveTraceFile": true,
+  "includeParentDir": false,
+  "handsontable": {
+    "stretchH": "none",
+    "readonly": false,
+    "highlightCol": true,
+    "highlightRow": true,
+    "columnSorting": true,
+    "manualColumnResize": true,
+    "contextMenu": {
+      "enabled": true,
+      "allowRowEdit": true,
+      "allowColEdit": true,
+      "allowReadOnly": false,
+      "allowComments": true
+    },
+    "height": 700,
+    "colWidths": 300
+  },
+  "datatable": {
+    "class": "display",
+    "filter": "none",
+    "rownames": false,
+    "options": {
+      "pageLength": 15
+    }
+  }
 }
