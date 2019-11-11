@@ -32,14 +32,15 @@ getInputDataset <- function(id, visible = FALSE){
   keyIdx        <- match(modelIn[[id]]$pivotCols[[1]], 
                          names(modelIn[[id]]$headers))[[1L]]
   intermDataTmp <- fixColTypes(pivot_longer(intermDataTmp, 
-                                            cols = seq(keyIdx, length(intermDataTmp)),
+                                            cols = seq(length(modelIn[[id]]$headers) - 1L, 
+                                                       length(intermDataTmp)),
                                             names_to = modelIn[[id]]$pivotCols[[1]], 
-                                      values_to = "_value"), 
+                                      values_to = names(modelIn[[id]]$headers)[length(modelIn[[id]]$headers)]) %>%
+                                 select(!!!names(modelIn[[id]]$headers)), 
                                modelIn[[id]]$colTypes) %>%
     mutate_if(is.numeric , 
               replace_na, replace = 0) %>% 
     replace(is.na(.), "")
-  names(intermDataTmp) <- names(modelIn[[id]]$headers)
   
   return(intermDataTmp)
 }

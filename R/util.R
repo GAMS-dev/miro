@@ -1152,15 +1152,16 @@ hotToR <- function(data, metaData, fixType = TRUE){
   dataTmp <- suppressWarnings(as_tibble(
     data.table::rbindlist(data$data, use.names = FALSE)))
   if(length(metaData[["pivotCols"]])){
-    if(length(dataTmp) == length(data$params$colHeaders)){
-      names(dataTmp) <- unlist(data$params$colHeaders)
-    }
+    fixedCols <- length(metaData$headers) - 2L
+    names(dataTmp) <- unlist(data$params$colHeaders)
+    names(dataTmp)[1:fixedCols] <- unlist(data$params$rColHeaders)[1:fixedCols]
+    print(dataTmp)
     return(dataTmp)
   }
   dataTmp <- fixColTypes(dataTmp,
                          metaData$colTypes)
-  names(data) <- names(metaData$headers)
-  return(data)
+  names(dataTmp) <- names(metaData$headers)
+  return(dataTmp)
 }
 isAbsolutePath <- function(path){
   if(isWindows()){
