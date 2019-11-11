@@ -1197,6 +1197,12 @@
                            ]
                         }
                      },
+                     "height":{  
+                        "description":"Height of the output element.",
+                        "type":"integer",
+                        "minimum":0,
+                        "default":null
+                     },
                      "packages":{  
                         "description":"Packages that need to be installed",
                         "type":["array", "string"],
