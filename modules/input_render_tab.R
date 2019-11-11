@@ -133,7 +133,18 @@ observeEvent(input$btGraphIn, {
   if(is.null(configGraphsIn[[i]])){
     return()
   }else if(modelIn[[i]]$type %in% c("hot", "dt")){
-    data <- getInputDataset(i, visible = TRUE)
+    errMsg <- NULL
+    tryCatch({
+      data <- getInputDataset(i, visible = TRUE)
+    }, error = function(e){
+      flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
+                 modelInAlias[i], e)
+      errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
+                         modelInAlias[i])
+    })
+    if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+      return()
+    }
   }else{
     data <- isolate(modelInputDataVisible[[i]]())
   }

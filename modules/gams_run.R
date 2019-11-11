@@ -318,7 +318,18 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
              dt =,
              hot = {
                input[['in_' %+% i]]
-               data <- getInputDataset(i)
+               errMsg <- NULL
+               tryCatch({
+                 data <- getInputDataset(i)
+               }, error = function(e){
+                 flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", 
+                            modelInAlias[i], e)
+                 errMsg <<- sprintf(lang$errMsg$GAMSInput$noData, 
+                                    modelInAlias[i])
+               })
+               if(is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
+                 return(paste0(parPrefix, "=NA"))
+               }
                staticData$push(names(modelIn)[[i]], data)
                return(paste0(parPrefix, "=", digest(data, algo = "md5")))
              },

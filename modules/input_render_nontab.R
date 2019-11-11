@@ -442,7 +442,14 @@ lapply(seq_along(modelIn), function(id){
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                          !is.null(input[["in_" %+% k]]) || 
                                                          (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
-                     dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
+                     tryCatch({
+                       dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
+                     }, error = function(e){
+                       flog.error("Some problem occurred attempting to fetch values for slider: '%s' " %+%
+                                    "(forward dependency on dataset: '%s'). Error message: %s.", 
+                                  modelInAlias[id], modelInAlias[k], e)
+                       errMsg <<- paste(errMsg, lang$errMsg$dataError$desc, sep = "\n")
+                     })
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))
