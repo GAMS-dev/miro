@@ -9,15 +9,12 @@ $onExternalInput
 Parameter price(date<,symbol<) 'Price';
 Scalar    maxstock             'maximum number of stocks to select'  /  2 /
           trainingdays         'number of days for training'         / 99 /;
-$offExternalInput
-
 $setNames "%gams.input%" fp fn fe
 $if not set fileName $set fileName %fp%dowjones2016.csv
-$if not exist "%fileName%" $abort CSV file with stock prices missing
-$call csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
-$if errorlevel 1 $abort problems reading CSV data
+$call.errorlevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
 $gdxin stockdata
 $load price
+$offExternalInput
 
 Alias (d,date), (s,symbol);
 Parameter
@@ -101,8 +98,10 @@ Scalar error_train                     'Absolute error in entire training phase'
        error_ratio                     'Ratio between error test and error train'
 Parameter
        stock_weight(symbol)            'weight'   
-       dowVSindex(date,fHdr)           'dow jones vs. index fund [MIRO:table]'     
-       abserror(date,errHdr)           'absolute error [MIRO:table]'               
+       dowVSindex(date,fHdr)           'dow jones vs. index fund'     
+       abserror(date,errHdr)           'absolute error'
+table dowVSindex;
+table abserror;
 Singleton Set
 firstDayTraining(date)   'first date of training period'
 lastDayTraining(date)    'last date of training period' ;
@@ -128,4 +127,3 @@ Parameter priceMerge(date,*) 'Price (stocks & dow jones)';
 $offExternalOutput
 priceMerge(d,symbol)        = price(d,symbol);
 priceMerge(d,'DowJones')    = index(d);
-$onmultiR

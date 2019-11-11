@@ -708,7 +708,8 @@
     "readLst":{
       "title":"读取列表文件时出错",
       "desc":"读取GAMS列表文件时出现错误。",
-      "fileSize":"尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。"
+      "fileSize":"尝试读取的lst文件太大而无法显示,请下载lst文件后再读取。",
+      "fileNotFound": "The listing file could not be found."
     },
     "saveScen":{
       "title":"保存场景时出错",

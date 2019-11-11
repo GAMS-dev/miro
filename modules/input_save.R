@@ -185,17 +185,7 @@ lapply(seq_along(modelIn), function(i){
          {
            if(names(modelIn)[[i]] != scalarsFileName){
              tryCatch({
-               if(length(modelIn[[i]]$pivotCols)){
-                 intermDataTmp <- getInputDataset(i)
-                 keyIdx        <- match(modelIn[[i]]$pivotCols[[1]], 
-                                        names(modelIn[[i]]$headers))[[1L]]
-                 intermDataTmp <- gather(intermDataTmp, !!modelIn[[i]]$pivotCols[[1]], 
-                                         "value",
-                                         seq(keyIdx, length(intermDataTmp)))
-                 dataTmp[[j]] <<- intermDataTmp
-               }else{
-                 dataTmp[[j]] <<- getInputDataset(i)
-               }
+               dataTmp[[j]] <<- getInputDataset(i)
              }, error = function(e){
                flog.error("Dataset: '%s' could not be loaded. Error message: '%s'.", modelInAlias[i], e)
                errMsg <<- paste(errMsg, sprintf(lang$errMsg$GAMSInput$noData, 

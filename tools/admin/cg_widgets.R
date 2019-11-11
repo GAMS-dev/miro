@@ -433,27 +433,48 @@ observeEvent(input$widget_symbol_type, {
   latest_widget_symbol_type <<- input$widget_symbol_type
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
+createTableData <- function(symbol, pivotCol){
+  headers_tmp <- names(inputSymHeaders[[symbol]])
+  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
+                                               letters[1:10]), 1:10),
+                                   10))
+  isPivotTable <- FALSE
+  if(length(pivotCol) && pivotCol != "_"){
+    isPivotTable <- TRUE
+    pivotIdx <- match(pivotCol, inputSymHeaders[[input$widget_symbol]])[[1L]]
+    data[length(data)] <- as.integer(data[[length(data)]])
+    data <- pivot_wider(data, names_from = !!pivotIdx, 
+                        values_from = !!length(data), 
+                        values_fill = setNames(list(0L), names(data)[length(data)]))
+    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
+    attrTmp <- c(attrTmp, 
+                 names(data)[seq(length(attrTmp) + 1L, 
+                                 length(data))])
+    headers_tmp  <- attrTmp
+  }
+  return(list(data = data, headers = headers_tmp, isPivotTable = isPivotTable))
+}
 output$hot_preview <- renderRHandsontable({
   req(identical(input$widget_symbol_type, "gams"), 
       input$widget_symbol %in% names(inputSymHeaders),
       identical(input$widget_type, "table"))
+  if(isTRUE(rv$widgetConfig$bigData)){
+    return()
+  }
+  data <- createTableData(input$widget_symbol, input$table_pivotCols)
   
-  headers_tmp <- inputSymHeaders[[input$widget_symbol]]
-  data        <- data.frame(matrix(c(letters[1:10], 
-                                     replicate(length(headers_tmp) - 1L,
-                                               1:10)), 10))
+  headers_tmp <- data$headers
+  pivotTable <- data$isPivotTable
+  data <- data$data
   
   ht <- rhandsontable(data = data,
-                      colHeaders = names(headers_tmp),
+                      colHeaders = headers_tmp,
                       readOnly = input$table_readonly)
-  if(length(input$table_readonlyCols) && input$table_readonlyCols %in% headers_tmp){
+  if(!pivotTable && length(input$table_readonlyCols) && 
+     input$table_readonlyCols %in% headers_tmp){
     ht <- hot_col(ht, names(headers_tmp)[match(input$table_readonlyCols, 
                                                headers_tmp)], 
                   readOnly = TRUE)
-  }
-  if(isTRUE(rv$widgetConfig$bigData) || 
-     (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
-    return()
   }
   if(isTRUE(input$table_heatmap)){
     return(hot_heatmap(ht))
@@ -461,30 +482,34 @@ output$hot_preview <- renderRHandsontable({
     return(ht)
   }
 })
+
 output$dt_preview <- renderDT({
   req(input$widget_symbol %in% names(inputSymHeaders),
       identical(input$widget_type, "table"))
   
-  headers_tmp <- names(inputSymHeaders[[input$widget_symbol]])
-  data        <- data.frame(matrix(c(letters[1:10], 
-                                     replicate(length(headers_tmp) - 1L,
-                                               1:10)), 10))
+  data <- createTableData(input$widget_symbol, input$table_pivotCols)
+  
+  headers_tmp <- data$headers
+  data <- data$data
+  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
+                                               letters[1:10]), 1:10),
+                                   10))
   if(length(input$table_pivotCols) && input$table_pivotCols != "_"){
     pivotIdx <- match(input$table_pivotCols, inputSymHeaders[[input$widget_symbol]])[[1L]]
-    data <- spread(data, pivotIdx, length(data),
-                   fill = NA, convert = FALSE, drop = TRUE)
+    data[length(data)] <- as.integer(data[[length(data)]])
+    data <- pivot_wider(data, names_from = !!pivotIdx, 
+                        values_from = !!length(data), 
+                        values_fill = setNames(list(0L), names(data)[length(data)]))
     attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
     attrTmp <- c(attrTmp, 
                  names(data)[seq(length(attrTmp) + 1L, 
-                                    length(data))])
+                                 length(data))])
     headers_tmp  <- attrTmp
   }
   dtOptions <- list(editable = !isTRUE(input$table_readonly),
                     colnames = headers_tmp)
   
-  if(!isTRUE(rv$widgetConfig$bigData) &&
-     (!length(rv$widgetConfig$pivotCols) || 
-     rv$widgetConfig$pivotCols == "_")){
+  if(!isTRUE(rv$widgetConfig$bigData)){
     showEl(session, "#hot_preview")
     return()
   }
@@ -545,15 +570,17 @@ observeEvent({input$widget_type
                                 tags$div(class="option-wrapper",
                                          selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
                                                      choices = inputSymHeaders[[input$widget_symbol]], 
-                                                     selected = rv$widgetConfig$readonlyCols, multiple = TRUE)),
-                                checkboxInput_MIRO("table_heatmap", 
-                                                   lang$adminMode$widgets$table$heatmap, 
-                                                   value = rv$widgetConfig$heatmap)
+                                                     selected = rv$widgetConfig$readonlyCols, multiple = TRUE))
+               ),
+               conditionalPanel(condition = "input.table_bigdata===false",
+                                tags$div(class="option-wrapper",
+                                         checkboxInput_MIRO("table_heatmap", 
+                                                            lang$adminMode$widgets$table$heatmap, 
+                                                            value = rv$widgetConfig$heatmap))
                )), 
              where = "beforeEnd")
     output$widget_preview <- renderUI("")
-    if(isTRUE(rv$widgetConfig$bigData) || 
-       (length(rv$widgetConfig$pivotCols) && rv$widgetConfig$pivotCols != "_")){
+    if(isTRUE(rv$widgetConfig$bigData)){
       #hideEl(session, "#hot_preview")
     }else{
       showEl(session, "#hot_preview")
@@ -1382,17 +1409,9 @@ observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
 })
 observeEvent(input$table_pivotCols, {
   rv$widgetConfig$pivotCols <<- input$table_pivotCols
-  if(!identical(rv$widgetConfig$pivotCols, "_")){
-    rv$widgetConfig$heatmap <<- FALSE
-  }else{
-    rv$widgetConfig$heatmap <<- input$table_heatmap
-  }
 })
 observeEvent(input$table_heatmap, {
   rv$widgetConfig$heatmap <<- input$table_heatmap
-  if(!identical(rv$widgetConfig$pivotCols, "_") && isFALSE(rv$widgetConfig$bigData)){
-    rv$widgetConfig$heatmap <<- FALSE
-  }
 })
 
 observeEvent(input$slider_min, {

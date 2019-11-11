@@ -234,7 +234,7 @@ if(is.null(errMsg)){
           modelIn[[tolower(scalarsFileName)]] <- NULL
           scalarIdOverwriteSheetOrder <- match(scalarsFileName, config$overwriteSheetOrder$input)
           if(!is.na(scalarIdOverwriteSheetOrder)){
-            config$overwriteSheetOrder$input[scalarIdOverwriteSheetOrder] <- NULL
+            config$overwriteSheetOrder$input <- config$overwriteSheetOrder$input[-scalarIdOverwriteSheetOrder]
           }
         }else{
           modelIn[[tolower(scalarsFileName)]]$symtypes <- modelIn[[tolower(scalarsFileName)]]$symtypes[-c(j)]
@@ -317,7 +317,6 @@ if(is.null(errMsg)){
       }
       if(!is.null(widgetConfig[["pivotCols"]])){
         modelIn[[i]]$pivotCols  <- widgetConfig$pivotCols
-        modelIn[[i]]$dtHeaders  <- TRUE
         widgetConfig$pivotCols  <- NULL
       }
       if(length(widgetConfig$readonlyCols)){

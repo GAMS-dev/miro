@@ -708,7 +708,8 @@
     "readLst":{  
       "title":"Fehler beim Lesen der listing-Datei",
       "desc":"Beim Lesen der GAMS listing-Datei ist ein Fehler aufgetreten.",
-      "fileSize":"Die lst-Datei, die sie versuchen zu lesen ist zu groß, um hier dargestellt zu werden. Bitte laden Sie die Datei herunter, um sie zu öffnen."
+      "fileSize":"Die lst-Datei, die sie versuchen zu lesen ist zu groß, um hier dargestellt zu werden. Bitte laden Sie die Datei herunter, um sie zu öffnen.",
+      "fileNotFound": "Die lst-Datei konnte nicht gefunden werden."
     },
     "saveScen":{  
       "title":"Fehler beim Speichern des Szenarien",

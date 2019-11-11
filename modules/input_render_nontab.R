@@ -442,11 +442,7 @@ lapply(seq_along(modelIn), function(id){
                    if(length(rv[["in_" %+% k]]) && (modelIn[[k]]$type == "hot" && 
                                                          !is.null(input[["in_" %+% k]]) || 
                                                          (!is.null(tableContent[[i]]) && nrow(tableContent[[i]]))) && !isEmptyInput[k]){
-                     if(modelIn[[k]]$type == "hot"){
-                       dataTmp <- unique(hot_to_r(isolate(input[["in_" %+% k]]))[[el[[1]][1]]])
-                     }else{
-                       dataTmp <- unique(tableContent[[i]][[el[[1]][1]]])
-                     } 
+                     dataTmp <- unique(getInputDataset(k, visible = TRUE)[[el[[1]][1]]])
                    }else if(length(modelInputData[[k]][[1]]) && isEmptyInput[k]){
                      # no input is shown in UI, so get hidden data
                      try(dataTmp <- unique(modelInputData[[k]][[el[[1]][1]]]))

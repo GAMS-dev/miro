@@ -1148,12 +1148,19 @@ file.move <- function(from, to){
   }
   file.rename(from = from,  to = to)
 }
-hotToR <- function(data, metaData){
-  data <- suppressWarnings(fixColTypes(
-    as_tibble(data.table::rbindlist(data, use.names = FALSE)),
-    metaData$colTypes))
+hotToR <- function(data, metaData, fixType = TRUE){
+  dataTmp <- suppressWarnings(as_tibble(
+    data.table::rbindlist(data$data, use.names = FALSE)))
+  if(length(metaData[["pivotCols"]])){
+    if(length(dataTmp) == length(data$params$colHeaders)){
+      names(dataTmp) <- unlist(data$params$colHeaders)
+    }
+    return(dataTmp)
+  }
+  dataTmp <- fixColTypes(dataTmp,
+                         metaData$colTypes)
   names(data) <- names(metaData$headers)
-  data
+  return(data)
 }
 isAbsolutePath <- function(path){
   if(isWindows()){

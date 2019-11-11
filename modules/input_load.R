@@ -52,7 +52,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
             }
           }else{
             if(verifyInput(dataTmp, modelIn[[i]]$headers)){
-              # GAMS sets are always strings to make sure it is not parsed as a numeric
+              # GAMS sets are always strings so make sure it is not parsed as a numeric
               numericSet <- vapply(seq_along(dataTmp), function(dataColIdx){
                 if(is.numeric(dataTmp[[dataColIdx]]) && 
                    identical(modelIn[[i]]$headers[[dataColIdx]]$type, "string")){
@@ -62,18 +62,7 @@ if(!is.null(showErrorMsg(lang$errMsg$GAMSInput$title, errMsg))){
                 }
               }, logical(1L), USE.NAMES = FALSE)
               dataTmp[numericSet] <- lapply(dataTmp[numericSet], as.character)
-              if(length(modelIn[[i]]$pivotCols)){
-                pivotIdx <- match(modelIn[[i]]$pivotCols[[1]], names(modelIn[[i]]$headers))[[1L]]
-                dataTmp <- spread(dataTmp, pivotIdx, length(dataTmp),
-                                  fill = NA, convert = FALSE, drop = TRUE)
-                attrTmp <- attr(modelInTemplate[[i]], "aliases")[-c(pivotIdx, length(modelInTemplate[[i]]))]
-                attrTmp <- c(attrTmp, 
-                             names(dataTmp)[seq(length(attrTmp) + 1L, 
-                                                length(dataTmp))])
-                attr(dataTmp, "aliases")  <- attrTmp
-              }else{
-                attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
-              }
+              attr(dataTmp, "aliases")  <- attr(modelInTemplate[[i]], "aliases")
               modelInputData[[i]] <<- dataTmp
               inputVerified <- TRUE
             }
