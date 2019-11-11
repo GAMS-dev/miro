@@ -1011,7 +1011,8 @@
         "widgetGoTooltip": "GAMS option的名称（例如：'LP'或者'OptCR'）",
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "选择要使用的小部件类型",
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）"
+        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
       },
       "validate":{
         "val1": "元素的别名不能为空！",

@@ -822,7 +822,15 @@ $offExternalInput
                                     </div>
                                     <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./start.html#data-contract">data contract</a> between GAMS and MIRO. 
                                     Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. 
-                                    The pivoting of the configured column then happens "live" in the MIRO application.</p>
+                                    The pivoting of the configured column then happens "live" in the MIRO application.</br>
+                                    Variable columns do not only mean that the column elements can change their names. It is also possible to add or delete whole columns. 
+                                    On the GAMS model side, this is equivalent to adding or deleting a set element of the affected index.</p>
+                                    <p>When using the pivot option, note the following:
+                                    <ul>
+                                      <li>The table columns displayed with the pivot option can no longer be sorted alphabetically or numerically.</li>
+                                      <li>It is not possible to add or delete columns in the symbol table if it is write-protected or displayed as a heatmap.</li>
+                                    </ul>
+                                    </p>
                                     <p id = "avoid-table">Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: 
                                     For this we take a look at the Parameter <code class="language-gams">Price</code> of the <i>Pickstock</i> model:</p>
                                     <pre><code class="language-gams">Set date   'date'

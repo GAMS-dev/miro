@@ -1011,7 +1011,8 @@
         "widgetGoTooltip": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
         "widgetType": "Wählen Sie ein Widget",
-        "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)"
+        "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)",
+        "pivotColsRestriction": "Hinweis: Es ist nicht möglich, Spalten in der Symboltabelle hinzuzufügen oder zu löschen, wenn sie schreibgeschützt ist oder als Heatmap dargestellt wird."
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",

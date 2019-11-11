@@ -1011,7 +1011,8 @@
         "widgetGoTooltip": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select widget type",
-        "alias": "Name of the widget tab (no live preview)"
+        "alias": "Name of the widget tab (no live preview)",
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",

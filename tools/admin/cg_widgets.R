@@ -1413,7 +1413,16 @@ observeEvent(input$table_pivotCols, {
 observeEvent(input$table_heatmap, {
   rv$widgetConfig$heatmap <<- input$table_heatmap
 })
-
+observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
+  if(!identical(input$table_pivotCols, "_")){
+    if(isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))
+      showEl(session, "#pivotColsRestriction")
+    else
+      hideEl(session, "#pivotColsRestriction")
+  }else{
+    hideEl(session, "#pivotColsRestriction")
+  }
+})
 observeEvent(input$slider_min, {
   if(!is.numeric(input$slider_min))
     return()
