@@ -443,9 +443,9 @@ body_admin <- dashboardBody({
                                                    }else{
                                                      symAlias <- modelInRaw[[name]]$alias
                                                    }
-                                                   if(name %in% names(configJSON$overwriteHeaderAliases)){
-                                                     symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
-                                                   }else{
+                                                   symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
+                                                   if(!name %in% names(configJSON$overwriteHeaderAliases) ||
+                                                      length(modelInRaw[[name]]$headers) != length(symHeaders)){
                                                      symHeaders <- names(inputSymHeaders[[name]])
                                                    }
                                                    
@@ -473,9 +473,9 @@ body_admin <- dashboardBody({
                                                    }else{
                                                      symAlias <- modelOut[[name]]$alias
                                                    }
-                                                   if(name %in% names(configJSON$overwriteHeaderAliases)){
-                                                     symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
-                                                   }else{
+                                                   symHeaders <- configJSON$overwriteHeaderAliases[[name]]$newHeaders
+                                                   if(!name %in% names(configJSON$overwriteHeaderAliases) ||
+                                                      length(symHeaders) != length(modelOut[[name]]$headers)){
                                                      symHeaders <- outputSymHeaders[[name]]
                                                    }
                                                    
