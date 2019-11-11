@@ -95,7 +95,7 @@ HcubeLoad <- R6Class("HcubeLoad",
                          if(any(!vapply(c(private$tabNameMeta, innerTables), function(table){ 
                            dbExistsTable(private$conn, table)}, logical(1L), USE.NAMES = FALSE))){
                            
-                           flog.error("Db: One of the tables: '%s' does not exist (HcubeLoad.fetchResults).", 
+                           flog.info("Db: One of the tables: '%s' does not exist (HcubeLoad.fetchResults).", 
                                       paste(c(private$tabNameMeta, innerTables), collapse = ", "))
                            return(tibble())
                          }

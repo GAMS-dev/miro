@@ -138,6 +138,10 @@ inputTabContent <- lapply(seq_along(inputTabs), function(tabId) {
                                                      sliderStepSize, min = 0)
                                  )
                                )
+                             }else{
+                               column(width = 10, style = "padding-left:0px;",
+                                      slider
+                               )
                              }
                            }else{
                              slider

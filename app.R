@@ -205,9 +205,6 @@ if(is.null(errMsg)){
   GAMSClArgs <- c(paste0("execMode=", gamsExecMode),
                   paste0('ImplicitGDXOutput="', MIROGdxOutName, '"'))
   
-  if(identical(Sys.getenv(modelModeEnvVar), "hcube")){
-    config$activateModules$hcubeMode <- TRUE
-  }
   if(isTRUE(config$activateModules$hcubeMode)){
     # in Hypercube mode we have to run in a temporary directory
     if(!identical(useTempDir, TRUE)){

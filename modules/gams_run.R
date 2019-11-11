@@ -261,7 +261,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                  
                  stepSize <- input[["hcubeStep_" %+% i]]
                  if(identical(modelIn[[i]]$slider$single, TRUE)){
-                   return(seq(value[1], value[2], stepSize))
+                   return(paste0(parPrefix, "=", seq(value[1], value[2], stepSize)))
                  }
                  # double slider all combinations
                  value <- getCombinationsSlider(value[1], value[2], stepSize)

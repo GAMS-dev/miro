@@ -103,7 +103,7 @@ if(is.null(errMsg)){
 
 # load model input and output parameters
 if(is.null(errMsg)){
-  if("LAUNCHHCUBE" %in% commandArgs(TRUE)){
+  if(identical(Sys.getenv(modelModeEnvVar), "hcube")){
     config$activateModules$hcubeMode <- TRUE
   }
   # handsontable options
