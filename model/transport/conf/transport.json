@@ -128,7 +128,6 @@
     "hcubeSwitch": true
   },
   "autoGenInputGraphs": true,
-  "pageTitle": "asd",
   "aggregateWidgets": true,
   "storeLogFilesDuration": 7,
   "excelIncludeMeta": true,
