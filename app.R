@@ -180,6 +180,9 @@ if(is.null(errMsg)){
                         "Please make sure you specify a valid gms file path.", modelGmsName, modelPath)
   }
 }
+if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config")){
+  LAUNCHADMINMODE <- TRUE
+}
 if(is.null(errMsg)){
   rSaveFilePath <- file.path(currentModelDir, 
                              paste0(modelNameRaw, "_",
@@ -213,10 +216,6 @@ if(is.null(errMsg)){
     }
     GAMSClArgs <- c(GAMSClArgs, paste0('ImplicitDataContractGDX="', 
                                        MIROGdxInName, '"'))
-  }
-  if(identical(tolower(Sys.getenv(modelModeEnvVar)), "config") ||
-     "LAUNCHADMIN" %in% commandArgs(TRUE)){
-    LAUNCHADMINMODE <- TRUE
   }
   if(identical(Sys.getenv("MIRO_DB_TYPE"), "postgres")){
     dbConfig <- setDbConfig()
