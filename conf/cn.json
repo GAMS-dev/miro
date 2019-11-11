@@ -1004,9 +1004,13 @@
         "optionConfigMsg": "消息：您选择的符号是GAMS选项",
         "doubledashConfigMsg": "消息： 您选择的符号是一个double-dash parameter",
         "inputSymbol": "为哪个输入符号创建一个小部件？",
-        "widgetGo": "GAMS option的名称（例如：'LP'或者'OptCR'）",
-        "widgetDd": "double-dash parameter的名称（不带 '--')",
-        "widgetType": "选择要使用的小部件类型"
+        "widgetGo": "GAMS option",
+        "widgetDd": "double-dash parameter",
+        "inputSymbolTooltip": "为哪个输入符号创建一个小部件？",
+        "widgetGoTooltip": "GAMS option的名称（例如：'LP'或者'OptCR'）",
+        "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
+        "widgetType": "选择要使用的小部件类型",
+        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）"
       },
       "validate":{
         "val1": "元素的别名不能为空！",
@@ -1066,15 +1070,12 @@
         "numericinput": "Numeric input"						  
       },
       "table":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
-        "bigData": "表格中是否存储了大量的数据（超过20,000条记录）？",
         "readonly": "设定表格为只读吗？",
         "readonlyCols": "设定表格的某些列为只读",
 		"pivotCols": "选择要旋转的列",
         "heatmap": "把表格转换成热图？"
       },
       "slider":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
 		"minlabel": "最小值",
         "maxlabel": "最大值",
@@ -1093,7 +1094,6 @@
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "sliderrange":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
 		"minlabel": "最小值",
         "maxlabel": "最大值",	
@@ -1112,7 +1112,6 @@
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "dropdown":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
         "choices": "可供选择的选项",
         "choicesAlias": "选项的别名（可选）",
@@ -1127,13 +1126,11 @@
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "checkbox":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
         "default": "默认值",
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "date":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
 		"defaultlabel": "默认日期",							   
         "default": "选择默认日期",
@@ -1160,7 +1157,6 @@
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "daterange":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
         "defaultStart": "选择默认开始日期",
         "startOff": "使用当前日期",
@@ -1190,13 +1186,11 @@
         "hcube": "是否允许元素在Hypercube模式下自动扩展？"
       },
       "textinput":{
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
         "label": "选择一个标签",
         "value": "选择默认值",
         "placeholder": "选择占位符"
       },
       "numericinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "value": "Default value (optional)",
         "min": "Minimum value (optional)",

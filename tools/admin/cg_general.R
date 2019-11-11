@@ -64,12 +64,13 @@ insertUI(selector = "#interface_wrapper1",
                                 choices = langSpecific$scen,
                                 selected = if(length(configJSON$defCompMode)) configJSON$defCompMode else config$defCompMode
                     )),
-           tags$label(class = "cb-label", "for" = "general_auto",
-                      lang$adminMode$general$auto$label),
-           tags$div(
-             tags$label(class = "checkbox-material", 
-                        checkboxInput("general_auto", value = if(length(configJSON$autoGenInputGraphs)) configJSON$autoGenInputGraphs else config$autoGenInputGraphs, label = NULL)
-             )),
+           tags$div(class = "option-wrapper",
+                    tags$label(class = "cb-label", "for" = "general_auto",
+                               lang$adminMode$general$auto$label),
+                    tags$div(
+                      tags$label(class = "checkbox-material", 
+                                 checkboxInput("general_auto", value = if(length(configJSON$autoGenInputGraphs)) configJSON$autoGenInputGraphs else config$autoGenInputGraphs, label = NULL)
+                      ))),
            tags$div(class="option-wrapper",
                     colorPickerInput("general_pivotcolor", label = lang$adminMode$general$pivotcolor$label,
                                      value = if(length(configJSON$pivottable$bgColor)) configJSON$pivottable$bgColor else "rgb(255, 128, 0)"

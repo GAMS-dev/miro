@@ -4576,7 +4576,27 @@
                   "minLength":1,
                   "required":true
                 },
+                "inputSymbolTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "widgetGoTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "widgetDdTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
                 "widgetType":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "alias":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4866,12 +4886,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "bigData":{ 
                   "type":"string",
                   "minLength":1,
@@ -4903,12 +4918,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -4998,12 +5008,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5093,12 +5098,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5168,12 +5168,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5195,12 +5190,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{ 
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5333,12 +5323,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5486,12 +5471,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,
@@ -5513,12 +5493,7 @@
               "type":"object",
               "additionalProperties":false,
               "required":true,
-              "properties":{  
-                "alias":{ 
-                  "type":"string",
-                  "minLength":1,
-                  "required":true
-                },
+              "properties":{
                 "label":{ 
                   "type":"string",
                   "minLength":1,

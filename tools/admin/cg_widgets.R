@@ -532,7 +532,7 @@ observeEvent({input$widget_type
     insertUI(selector = "#widget_options",
              tagList(
                tags$div(class="option-wrapper",
-                        textInput("widget_alias", lang$adminMode$widgets$table$alias, value = rv$widgetConfig$alias)),
+                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
                checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$widgetConfig$bigData)),
                checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
                if(length(pivotCols)){
@@ -601,7 +601,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$slider$alias, value = rv$widgetConfig$alias)),
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$slider$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container highlight-block",
@@ -773,7 +773,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$sliderrange$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$sliderrange$label, value = rv$widgetConfig$label))),
@@ -927,7 +927,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$dropdown$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$dropdown$label, value = rv$widgetConfig$label))),
@@ -1004,7 +1004,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$checkbox$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$checkbox$label, value = rv$widgetConfig$label))),
@@ -1046,7 +1046,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$date$alias, value = rv$widgetConfig$alias)),
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$date$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container",
@@ -1162,7 +1162,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$daterange$alias, value = rv$widgetConfig$alias)),
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$daterange$label, value = rv$widgetConfig$label))),
                       tags$div(class = "shiny-input-container",
@@ -1285,7 +1285,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$textinput$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$textinput$label, value = rv$widgetConfig$label))),
@@ -1314,7 +1314,7 @@ observeEvent({input$widget_type
                     tagList(
                       tags$div(class="shiny-input-container two-col-wrapper",
                                tags$div(class="two-col-left",
-                                        textInput("widget_alias", lang$adminMode$widgets$numericinput$alias, 
+                                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, 
                                                   value = rv$widgetConfig$alias)),
                                tags$div(class="two-col-right",
                                         textInput("widget_label", lang$adminMode$widgets$numericinput$label, value = rv$widgetConfig$label))),

@@ -373,22 +373,25 @@ body_admin <- dashboardBody({
                                       tags$div(id = "doubledashConfigMsg", class="config-message", 
                                                lang$adminMode$widgets$ui$doubledashConfigMsg),
                                       tags$div(class="main-tab", style = "min-height: 600px;",
-                                               tags$div(class = "two-col-wrapper",
-                                                        tags$div(class = "two-col-left",
+                                               tags$div(class = "row",
+                                                        tags$div(class = "col-sm-6 col-6-left",
                                                                  conditionalPanel(
                                                                    condition = "input.widget_symbol_type == 'gams'",
-                                                                   selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
-                                                                               choices = c())
-                                                                 ),
+                                                                   tags$div(title = lang$adminMode$widgets$ui$inputSymbolTooltip,
+                                                                            selectInput("widget_symbol", lang$adminMode$widgets$ui$inputSymbol, 
+                                                                                        choices = c())
+                                                                   )),
                                                                  conditionalPanel(
                                                                    condition = "input.widget_symbol_type == 'go'",
-                                                                   textInput("widget_go", lang$adminMode$widgets$ui$widgetGo)
-                                                                 ),
+                                                                   tags$div(title = lang$adminMode$widgets$ui$widgetGoTooltip,
+                                                                            textInput("widget_go", lang$adminMode$widgets$ui$widgetGo)
+                                                                   )),
                                                                  conditionalPanel(
                                                                    condition = "input.widget_symbol_type == 'dd'",
-                                                                   textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd)
-                                                                 )),
-                                                        tags$div(class = "two-col-right",
+                                                                   tags$div(title = lang$adminMode$widgets$ui$widgetDdTooltip,
+                                                                            textInput("widget_dd", lang$adminMode$widgets$ui$widgetDd)
+                                                                   ))),
+                                                        tags$div(class = "col-sm-6 col-6-right",
                                                                  selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c()))),
                                                tags$hr(),
                                                tags$div(id = "widget_options"),

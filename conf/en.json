@@ -872,7 +872,7 @@
         "label": "Background color of row and column headers in pivot tables."
       },
       "mirologfile":{
-        "label": "Enter the name of the MIRO log file (minimum 3 characters). Leave the field empty if you do not have a MIRO log file."
+        "label": "Enter the name of the MIRO log file (if available). Minimum 3 characters."
       },
       "readme":{
         "label": "README file",
@@ -1003,10 +1003,14 @@
         "noWidgetConfigMsg": "Currently, there is no widget configured for this symbol",
         "optionConfigMsg": "Info: The symbol you selected is a GAMS option",
         "doubledashConfigMsg": "Info: The symbol you selected is a double-dash parameter",
-        "inputSymbol": "Select input symbol",
-        "widgetGo": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
-        "widgetDd": "Name of the double-dash parameter (no '--')",
-        "widgetType": "Select the type of widget you want to use"
+        "inputSymbol": "Input symbol",
+        "widgetGo": "GAMS option",
+        "widgetDd": "Double-dash parameter",
+        "inputSymbolTooltip": "Select input symbol to create a widget for",
+        "widgetGoTooltip": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
+        "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
+        "widgetType": "Select widget type",
+        "alias": "Name of the widget tab (no live preview)"
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",
@@ -1066,7 +1070,6 @@
         "numericinput": "Numeric input"
       },
       "table":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "bigData": "Are large amounts of data stored in the table (i.e. more than 20,000 records)?",
         "readonly": "Should table be readonly?",
         "readonlyCols": "Select columns to be readonly",
@@ -1074,7 +1077,6 @@
         "heatmap": "Turn table into a heatmap?"
       },
       "slider":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "minlabel": "Minimum value",
         "maxlabel": "Maximum value",
@@ -1093,7 +1095,6 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "sliderrange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "minlabel": "Minimum value",
         "maxlabel": "Maximum value",
@@ -1112,7 +1113,6 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "dropdown":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "choices": "Choices to select from",
         "choicesAlias": "Aliases for choices (optional)",
@@ -1127,13 +1127,11 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "checkbox":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "default": "Default value",
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "date":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "defaultlabel": "Default date",
         "default": "Choose the default date",
@@ -1160,7 +1158,6 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "daterange":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "defaultStart": "Choose the default start date",
         "startOff": "Use current date",
@@ -1190,13 +1187,11 @@
         "hcube": "Should element be expanded automatically in Hypercube mode?"
       },
       "textinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "value": "Choose the default value",
         "placeholder": "Choose a placeholder"
       },
       "numericinput":{
-        "alias": "Enter the element name as it should be displayed in a tab (no live preview)",
         "label": "Choose a label",
         "value": "Default value (optional)",
         "min": "Minimum value (optional)",

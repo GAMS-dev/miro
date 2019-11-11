@@ -872,7 +872,7 @@
         "label": "Hintergrundfarbe der Zeilen- und Spaltenüberschriften in Pivot-Tabellen."
       },
       "mirologfile":{
-        "label": "Geben Sie den Namen der MIRO Log-Datei ein (mindestens 3 Zeichen). Lassen Sie das Feld leer, wenn Sie keine MIRO Log-Datei haben."
+        "label": "Geben Sie den Namen der MIRO Log-Datei ein (falls verfügbar). Mindestens 3 Zeichen."
       },
       "readme":{
         "label": "README Datei",
@@ -1006,7 +1006,11 @@
         "inputSymbol": "Wählen Sie ein Eingabesymbol",
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
-        "widgetType": "Wählen Sie ein Widget, das Sie verwenden möchten."
+        "inputSymbolTooltip": "Wählen Sie ein Eingabesymbol, für welches ein Widget konfiguriert werden soll",
+        "widgetGoTooltip": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
+        "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
+        "widgetType": "Wählen Sie ein Widget",
+        "alias": "Beschriftung für den Reiter des Elements (keine Live-Vorschau)"
       },
       "validate":{
         "val1": "Der Alias des Elements darf nicht leer sein!",
@@ -1066,7 +1070,6 @@
         "numericinput": "Numerische Eingabe"
       },
       "table":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "bigData": "Werden große Datenmengen in der Tabelle gespeichert (d.h. mehr als 20.000 Zeilen)?",
         "readonly": "Soll die Tabelle schreibgeschützt sein?",
         "readonlyCols": "Wählen Sie Spalten aus, die schreibgeschützt sein sollen",
@@ -1074,7 +1077,6 @@
         "heatmap": "Die Tabelle in eine Heatmap wandeln?"
       },
       "slider":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "minlabel": "Minimalwert",
         "maxlabel": "Maximalwert",
@@ -1093,7 +1095,6 @@
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "sliderrange":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "minlabel": "Minimalwert",
         "maxlabel": "Maximalwert",
@@ -1112,7 +1113,6 @@
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "dropdown":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "choices": "Auswahlmöglichkeiten",
         "choicesAlias": "Aliase für Wahlmöglichkeiten (optional)",
@@ -1127,13 +1127,11 @@
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "checkbox":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "default": "Standardwert",
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "date":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "defaultlabel": "Standarddatum",
         "default": "Standarddatum auswählen",
@@ -1160,7 +1158,6 @@
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "daterange":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "defaultStart": "Wählen Sie das Standardstartdatum",
         "startOff": "Aktuelles Datum verwenden",
@@ -1190,13 +1187,11 @@
         "hcube": "Soll das Element im Hypercube-Modus automatisch erweitert werden?"
       },
       "textinput":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "value": "Wählen Sie einen Standardwert",
         "placeholder": "Wählen Sie einen Platzhalter"
       },
       "numericinput":{
-        "alias": "Geben Sie eine Beschriftung für den Reiter / Tab des Elements an (keine Live-Vorschau)",
         "label": "Wählen Sie eine Widget-Beschriftung",
         "value": "Standardwert (optional)",
         "min": "Minimalwert (optional)",
