@@ -948,7 +948,7 @@
         "title": "Table settings",
         "input": "input tables (global)",
         "output": "output tables (global)",
-        "symbol": "Symbol table",
+        "symbol": "symbol tables",
         "resetTable": "Reset",
         "saveTable": "Save"
       },

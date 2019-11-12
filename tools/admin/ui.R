@@ -395,8 +395,6 @@ body_admin <- dashboardBody({
                                                                  selectInput("widget_type", lang$adminMode$widgets$ui$widgetType, choices = c()))),
                                                tags$hr(),
                                                tags$div(id = "widget_options"),
-                                               tags$div(id = "pivotColsRestriction", class="config-message", 
-                                                        lang$adminMode$widgets$ui$pivotColsRestriction),
                                                tags$div(class = "space")
                                       )
                              ),
@@ -576,6 +574,8 @@ body_admin <- dashboardBody({
                                           tags$hr()
                                         )),
                                       tags$div(id = "table_wrapper"),
+                                      tags$div(id = "pivotColsRestriction", class="config-message", 
+                                               lang$adminMode$widgets$ui$pivotColsRestriction),
                                       tags$div(class = "space")
                              )
                     ),

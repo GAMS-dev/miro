@@ -620,9 +620,9 @@ validateTableConfig <- function(configJSON){
 }
   
   
-#  =======================================
-#          SAVE JSON (automatically)
-#  =======================================
+#  =====================================================================
+#          SAVE JSON (global settings are saved automatically)
+#  =====================================================================
 observeEvent(rv$tableConfig, {
   req(length(rv$tableConfig$tableType))
   switch(rv$tableConfig$tableType,

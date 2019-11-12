@@ -948,7 +948,7 @@
         "title": "通用表格设置",
         "input": "输入表格",
         "output": "输出表格",
-        "symbol": "Symbol table",
+        "symbol": "symbol tables",
         "resetTable": "Reset",
         "saveTable": "Save"
       },
