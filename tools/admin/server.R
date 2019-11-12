@@ -27,6 +27,7 @@ inputSymHeaderChoices <- lapply(inputSymMultiDim, function(el){
   return(setNames(names(headers), vapply(seq_along(headers), function(idx){
     paste0(names(headers)[idx], ": ", headers[[idx]][["alias"]])}, character(1L),  USE.NAMES = FALSE)))
 })
+
 widgetSymbols <- c(unlist(lapply(seq_along(modelIn), function(idx){
   if(identical(modelIn[[idx]][["type"]], "set") &&
      length(modelIn[[idx]]$headers) == 2L){
@@ -36,16 +37,22 @@ widgetSymbols <- c(unlist(lapply(seq_along(modelIn), function(idx){
   }
   return(names(modelIn)[idx])
 }), use.names = FALSE),
-modelIn[[scalarsFileName]]$symnames)
+if(length(modelIn[[scalarsFileName]]))
+  modelIn[[scalarsFileName]]$symnames)
+
+widgetSymbolIds <- match(widgetSymbols, names(modelIn))
+widgetSymbolIds <- widgetSymbolIds[!is.na(widgetSymbolIds)]
 
 widgetSymbolsChoices <- setNames(widgetSymbols, paste0(widgetSymbols, ": ", c(
-  modelInAlias[match(widgetSymbols, names(modelIn))], 
-  modelIn[[scalarsFileName]]$symtext
+  modelInAlias[widgetSymbolIds], 
+  if(length(modelIn[[scalarsFileName]]))
+    modelIn[[scalarsFileName]]$symtext
 )))
 
 widgetSymbols <- setNames(widgetSymbols, c(
-  modelInAlias[match(widgetSymbols, names(modelIn))], 
-  modelIn[[scalarsFileName]]$symtext
+  modelInAlias[widgetSymbolIds], 
+  if(length(modelIn[[scalarsFileName]]))
+    modelIn[[scalarsFileName]]$symtext
 ))
 
 names(inputSymHeaders) <- unname(inputSymMultiDim)
