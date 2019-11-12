@@ -294,11 +294,10 @@ observeEvent(input$dbInput, {
     return(NULL)
   }
   isEmptyInput         <<- isNonemptyDataset(modelInputData)
-  tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
-                                   modelInAlias[!isEmptyInput])
-  isEmptyOutput         <<- isNonemptyDataset(modelOutputData)
-  tabularOutputWithData <- setNames(names(modelOut)[!isEmptyOutput], 
-                                    modelOutAlias[!isEmptyOutput])
+  tabularInputWithData <- inputSymMultiDimChoices[!isEmptyInput]
+  isEmptyOutput        <<- isNonemptyDataset(modelOutputData)
+  tabularOutputWithData <- outputSymMultiDimChoices[!isEmptyOutput]
+  
   updatePreviewData(tabularInputWithData, 
                     tabularOutputWithData, 
                     configScalars)
@@ -343,8 +342,8 @@ observeEvent(input$localInput, {
     return(NULL)
   }
   isEmptyInput         <<- isNonemptyDataset(modelInputData)
-  tabularInputWithData <- setNames(names(modelIn)[!isEmptyInput], 
-                                   modelInAlias[!isEmptyInput])
+  tabularInputWithData <- inputSymMultiDimChoices[!isEmptyInput]
+  
   scalarIdTmp <- match(scalarsFileName, tolower(names(scenInputData)))[[1L]]
   if(!is.na(scalarIdTmp)){
     configScalars <<- scenInputData[[scalarIdTmp]]
@@ -376,8 +375,7 @@ observeEvent(input$localInput, {
       names(modelOutputData) <<- names(modelOut)
     }
     isEmptyOutput         <<- isNonemptyDataset(modelOutputData)
-    tabularOutputWithData <- setNames(names(modelOut)[!isEmptyOutput], 
-                                      modelOutAlias[!isEmptyOutput])
+    tabularOutputWithData <- outputSymMultiDimChoices[!isEmptyOutput]
   }
   updatePreviewData(tabularInputWithData, 
                     tabularOutputWithData, 

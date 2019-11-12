@@ -791,7 +791,7 @@
     "uiR":{
       "adminPanel": "GAMS MIRO Administrationsoberfläche",
       "general": "Allgemeine Einstellungen",
-      "table": "Tabelleneinstellungen",
+      "table": "Tabellen konfigurieren",
       "widgets": "Widgets konfigurieren",
       "graphs": "Graphen konfigurieren",
       "database": "Datenbankverwaltung",
@@ -945,9 +945,12 @@
     },
     "tables":{
       "ui":{
-        "title": "Allgemeine Tabelleneinstellungen",
+        "title": "Tabelleneinstellungen",
         "input": "Eingabetabellen",
-        "output": "Ausgabetabellen"
+        "output": "Ausgabetabellen",
+        "symbol": "Symboltabelle",
+        "resetTable": "Zurücksetzen",
+        "saveTable": "Speichern"
       },
       "hot":{
         "height": "Höhe der Eingabetabellen (in px)",
@@ -989,12 +992,21 @@
           "choices": ["Zwischenablage", "csv", "Excel", "pdf", "Druck"],
           "select": "Wählen Sie zu verwendende Buttons aus. Hinweis: Eine Buttonfunktion wirkt sich stets nur auf die sichtbare Tabellenseite aus."
         }
+      },
+      "symbol":{
+        "removeDialog":{
+          "title": "Bitte bestätigwen",
+          "message": "Sind Sie sicher, dass Sie die bestehende Konfiguration für dieses Symbol zurücksetzen wollen? Dies kann nicht rückgängig gemacht werden!",
+          "cancel": "Abbrechen",
+          "confirm": "Bestätigen"
+        }
       }
     },
     "widgets":{
       "ui":{
         "title":"Eingabe-Widgets konfigurieren",
         "widgetUpdateSuccess": "Die Widget-Konfiguration wurde erfolgreich aktualisiert",
+        "widgetTableUpdateSuccess": "Die Tabellenkonfiguration wurde erfolgreich aktualisiert",
         "gams": "Symbol",
         "go": "Neue GAMS Option",
         "dd": "Neuer double-dash Parameter",
@@ -1008,6 +1020,7 @@
         "widgetGo": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDd": "Name des Double-Dash-Parameters (ohne '--')",
         "inputSymbolTooltip": "Wählen Sie ein Eingabesymbol, für welches ein Widget konfiguriert werden soll",
+        "tableTooltip": "Wählen Sie das Eingabesymbol, dessen Tabelle sie konfigurieren möchten",
         "widgetGoTooltip": "Name der GAMS Option (z.B.'LP' oder 'OptCR')",
         "widgetDdTooltip": "Name des Double-Dash-Parameters (ohne '--')",
         "widgetType": "Wählen Sie ein Widget",

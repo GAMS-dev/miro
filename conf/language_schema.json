@@ -4285,6 +4285,21 @@
                   "type":"string",
                   "minLength":1,
                   "required":true
+                },
+                "symbol":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "resetTable":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "saveTable":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
                 }
               }
             },
@@ -4492,6 +4507,40 @@
                   }
                 }
               }
+            },
+            "symbol":{  
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{ 
+                "removeDialog":{          
+                  "type":"object",
+                  "additionalProperties":false,
+                  "required":true,
+                  "properties":{  
+                    "title":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "message":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "cancel":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    },
+                    "confirm":{ 
+                      "type":"string",
+                      "minLength":1,
+                      "required":true
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -4511,6 +4560,11 @@
                   "required":true
                 },
                 "widgetUpdateSuccess":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "widgetTableUpdateSuccess":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true
@@ -4582,6 +4636,11 @@
                   "required":true
                 },
                 "inputSymbolTooltip":{ 
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "tableTooltip":{ 
                   "type":"string",
                   "minLength":1,
                   "required":true

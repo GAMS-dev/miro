@@ -1,6 +1,5 @@
 latest_widget_symbol_type  <- NULL
 currentWidgetSymbolName <- character(0L)
-modelInWithPrefix <- names(modelIn)
 
 langSpecificWidget <- list()
 langSpecificWidget$widgetOptionsInput <- setNames(c("slider", "dropdown", "checkbox", "numericinput"),
@@ -19,9 +18,7 @@ langSpecificWidget$widgetOptionsAll <- setNames(c("slider", "sliderrange", "drop
                                                   lang$adminMode$widgets$widgetOptions$daterange,
                                                   lang$adminMode$widgets$widgetOptions$text,
                                                   lang$adminMode$widgets$widgetOptions$numericinput))
-langSpecificWidget$widgetOptionsTable <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
-langSpecificWidget$widgetOptionsSet <- setNames(c("table", "multidropdown"), c(lang$adminMode$widgets$widgetOptions$table,
-                                                                               lang$adminMode$widgets$widgetOptions$dropdown))
+langSpecificWidget$widgetOptionsSet <- setNames("multidropdown", lang$adminMode$widgets$widgetOptions$dropdown)
 langSpecificWidget$widgetOptionsDate <- setNames("date", lang$adminMode$widgets$widgetOptions$date)
 langSpecificWidget$minDepOp <- c("Minimum" = "min", "Maximum" = "max", "Count" = "card",
                                           "Mean" = "mean", "Median" = "median", "Variance" = "var", 
@@ -44,17 +41,11 @@ langSpecificWidget$weekdays <- c("Sunday" = 0L, "Monday" = 1L, "Tuesday" = 2L,
 names(langSpecificWidget$weekdays) <- lang$adminMode$widgets$date$weekstart$choices
 
 if(length(modelInRaw[[scalarsFileName]])){
-  scalarInputSymWithAliases <- setNames(modelInRaw[[scalarsFileName]]$symnames, 
-                                        modelInRaw[[scalarsFileName]]$symtext)
+  scalarInputSymWithAliases <- modelInRaw[[scalarsFileName]]$symnames
 }else{
   scalarInputSymWithAliases <- c()
 }
-widgetSymbols <- setNames(c(modelInWithPrefix, 
-                          if(length(modelIn[[scalarsFileName]])) 
-                            modelIn[[scalarsFileName]]$symnames), 
-                          c(modelInAlias, 
-                            if(length(modelIn[[scalarsFileName]]))
-                              modelIn[[scalarsFileName]]$symtext))
+
 if(length(widgetSymbols)){
   updateSelectInput(session, "widget_symbol", choices = widgetSymbols)
   noWidgetSymbols <- FALSE
@@ -289,17 +280,6 @@ validateWidgetConfig <- function(widgetJSON){
                return(lang$adminMode$widgets$validate$val44)
            }
          },
-         table = {
-           if(!is.logical(widgetJSON$readonly)){
-             return(lang$adminMode$widgets$validate$val32)
-           }
-           if(!is.logical(widgetJSON$heatmap)){
-             return(lang$adminMode$widgets$validate$val33)
-           }
-           if(any(!widgetJSON$readonlyCols %in% inputSymHeaders[[currentWidgetSymbolName]])){
-             return(lang$adminMode$widgets$validate$val34)
-           }
-         },
          numericinput = {
            if(any(widgetJSON$max < widgetJSON$min)){
              return(lang$adminMode$widgets$validate$val42)
@@ -433,160 +413,25 @@ observeEvent(input$widget_symbol_type, {
   latest_widget_symbol_type <<- input$widget_symbol_type
   rv$widget_symbol <- rv$widget_symbol + 1L
 })
-createTableData <- function(symbol, pivotCol){
-  headers_tmp <- names(inputSymHeaders[[symbol]])
-  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
-                                               letters[1:10]), 1:10),
-                                   10))
-  isPivotTable <- FALSE
-  if(length(pivotCol) && pivotCol != "_"){
-    isPivotTable <- TRUE
-    pivotIdx <- match(pivotCol, inputSymHeaders[[input$widget_symbol]])[[1L]]
-    data[length(data)] <- as.integer(data[[length(data)]])
-    data <- pivot_wider(data, names_from = !!pivotIdx, 
-                        values_from = !!length(data), 
-                        values_fill = setNames(list(0L), names(data)[length(data)]))
-    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
-    attrTmp <- c(attrTmp, 
-                 names(data)[seq(length(attrTmp) + 1L, 
-                                 length(data))])
-    headers_tmp  <- attrTmp
-  }
-  return(list(data = data, headers = headers_tmp, isPivotTable = isPivotTable))
-}
-output$hot_preview <- renderRHandsontable({
-  req(identical(input$widget_symbol_type, "gams"), 
-      input$widget_symbol %in% names(inputSymHeaders),
-      identical(input$widget_type, "table"))
-  if(isTRUE(rv$widgetConfig$bigData)){
-    return()
-  }
-  data <- createTableData(input$widget_symbol, input$table_pivotCols)
-  
-  headers_tmp <- data$headers
-  pivotTable <- data$isPivotTable
-  data <- data$data
-  
-  ht <- rhandsontable(data = data,
-                      colHeaders = headers_tmp,
-                      readOnly = input$table_readonly)
-  if(!pivotTable && length(input$table_readonlyCols) && 
-     input$table_readonlyCols %in% headers_tmp){
-    ht <- hot_col(ht, names(headers_tmp)[match(input$table_readonlyCols, 
-                                               headers_tmp)], 
-                  readOnly = TRUE)
-  }
-  if(isTRUE(input$table_heatmap)){
-    return(hot_heatmap(ht))
-  }else{
-    return(ht)
-  }
-})
-
-output$dt_preview <- renderDT({
-  req(input$widget_symbol %in% names(inputSymHeaders),
-      identical(input$widget_type, "table"))
-  
-  data <- createTableData(input$widget_symbol, input$table_pivotCols)
-  
-  headers_tmp <- data$headers
-  data <- data$data
-  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
-                                               letters[1:10]), 1:10),
-                                   10))
-  if(length(input$table_pivotCols) && input$table_pivotCols != "_"){
-    pivotIdx <- match(input$table_pivotCols, inputSymHeaders[[input$widget_symbol]])[[1L]]
-    data[length(data)] <- as.integer(data[[length(data)]])
-    data <- pivot_wider(data, names_from = !!pivotIdx, 
-                        values_from = !!length(data), 
-                        values_fill = setNames(list(0L), names(data)[length(data)]))
-    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
-    attrTmp <- c(attrTmp, 
-                 names(data)[seq(length(attrTmp) + 1L, 
-                                 length(data))])
-    headers_tmp  <- attrTmp
-  }
-  dtOptions <- list(editable = !isTRUE(input$table_readonly),
-                    colnames = headers_tmp)
-  
-  if(!isTRUE(rv$widgetConfig$bigData)){
-    showEl(session, "#hot_preview")
-    return()
-  }
-  #hideEl(session, "#hot_preview")
-  return(renderDTable(data, dtOptions, render = FALSE))
-})
 observeEvent({input$widget_type
   rv$widget_type}, {
     req(length(input$widget_type) > 0L, length(currentWidgetSymbolName) > 0L, 
         nchar(currentWidgetSymbolName) > 0L)
     removeUI(selector = "#widget_options .shiny-input-container", multiple = TRUE)
     rv$widgetConfig <- list() 
-  currentConfig <- NULL
-  if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
-    currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
-  }
-  widgetAlias <- ''
-  if(length(currentConfig$alias) && nchar(currentConfig$alias)){
-    widgetAlias <- currentConfig$alias
-  }else{
-    widgetSymbolID <- match(isolate(input$widget_symbol), widgetSymbols)
-    if(!is.na(widgetSymbolID)){
-      widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
+    currentConfig <- NULL
+    if(currentWidgetSymbolName %in% names(configJSON$inputWidgets)){
+      currentConfig <- configJSON$inputWidgets[[currentWidgetSymbolName]]
     }
-  }
-  if(identical(input$widget_type, "table")){
-    pivotCols <- NULL
-    if(length(inputSymHeaders[[input$widget_symbol]]) > 2L){
-      numericHeaders <- vapply(modelIn[[input$widget_symbol]]$headers, 
-                               function(header) identical(header$type, "numeric"), 
-                               logical(1L), USE.NAMES = FALSE)
-      if(sum(numericHeaders) <= 1L){
-        pivotCols <- inputSymHeaders[[input$widget_symbol]][!numericHeaders]
+    widgetAlias <- ''
+    if(length(currentConfig$alias) && nchar(currentConfig$alias)){
+      widgetAlias <- currentConfig$alias
+    }else{
+      widgetSymbolID <- match(isolate(input$widget_symbol), widgetSymbols)
+      if(!is.na(widgetSymbolID)){
+        widgetAlias <- names(widgetSymbols)[[widgetSymbolID]]
       }
     }
-    rv$widgetConfig <- list(widgetType = "table",
-                            alias = widgetAlias,
-                            readonly = isTRUE(currentConfig$readonly),
-                            readonlyCols = currentConfig$readonlyCols,
-                            heatmap = isTRUE(currentConfig$heatmap),
-                            bigData = isTRUE(currentConfig$bigData))
-    if(length(currentConfig$pivotCols)){
-      rv$widgetConfig$pivotCols <- currentConfig$pivotCols
-    }
-    insertUI(selector = "#widget_options",
-             tagList(
-               tags$div(class="option-wrapper",
-                        textInput("widget_alias", lang$adminMode$widgets$ui$alias, value = rv$widgetConfig$alias)),
-               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$widgetConfig$bigData)),
-               checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$widgetConfig$readonly),
-               if(length(pivotCols)){
-                 tags$div(class="option-wrapper",
-                          selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
-                                      choices = c(`_` = "_", pivotCols), 
-                                      selected = if(length(rv$widgetConfig$pivotCols)) rv$widgetConfig$pivotCols else "_"))
-               },
-               conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
-                                tags$div(class="option-wrapper",
-                                         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
-                                                     choices = inputSymHeaders[[input$widget_symbol]], 
-                                                     selected = rv$widgetConfig$readonlyCols, multiple = TRUE))
-               ),
-               conditionalPanel(condition = "input.table_bigdata===false",
-                                tags$div(class="option-wrapper",
-                                         checkboxInput_MIRO("table_heatmap", 
-                                                            lang$adminMode$widgets$table$heatmap, 
-                                                            value = rv$widgetConfig$heatmap))
-               )), 
-             where = "beforeEnd")
-    output$widget_preview <- renderUI("")
-    if(isTRUE(rv$widgetConfig$bigData)){
-      #hideEl(session, "#hot_preview")
-    }else{
-      showEl(session, "#hot_preview")
-    }
-    return()
-  }
   switch(input$widget_type,
          slider = {
            rv$widgetConfig <- list(widgetType = "slider",
@@ -1387,41 +1232,6 @@ observeEvent(input$widget_multiple, {
 })
 observeEvent(input$widget_hcube, {
   rv$widgetConfig$noHcube <<- !input$widget_hcube
-})
-
-observeEvent(input$table_bigdata, {
-  if(input$table_bigdata == TRUE){
-    rv$widgetConfig$bigData <<- TRUE
-    rv$widgetConfig$heatmap <<- FALSE
-  }else{
-    rv$widgetConfig$bigData <<- FALSE
-    rv$widgetConfig$heatmap <<- input$table_heatmap
-  }
-})
-observeEvent(input$table_readonly, {
-  rv$widgetConfig$readonly <<- input$table_readonly
-})
-observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
-  if(!length(input$table_readonlyCols)){
-    configJSON$widgetConfig$readonlyCols <<- NULL
-  }
-  rv$widgetConfig$readonlyCols <<- input$table_readonlyCols
-})
-observeEvent(input$table_pivotCols, {
-  rv$widgetConfig$pivotCols <<- input$table_pivotCols
-})
-observeEvent(input$table_heatmap, {
-  rv$widgetConfig$heatmap <<- input$table_heatmap
-})
-observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
-  if(!identical(input$table_pivotCols, "_")){
-    if(isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))
-      showEl(session, "#pivotColsRestriction")
-    else
-      hideEl(session, "#pivotColsRestriction")
-  }else{
-    hideEl(session, "#pivotColsRestriction")
-  }
 })
 observeEvent(input$slider_min, {
   if(!is.numeric(input$slider_min))

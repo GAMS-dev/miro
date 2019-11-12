@@ -1,3 +1,13 @@
+langSpecificWidget$widgetOptionsTable <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
+langSpecificWidget$widgetOptionsSet <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
+
+tableSymbols <- inputSymMultiDimChoices
+if(length(tableSymbols)){
+  updateSelectInput(session, "table_symbol", choices = tableSymbols)
+  noTableSymbols <- FALSE
+}
+
+
 data <- tibble("Column 1" = 1:10, "Column 2" = 11:20, "Column 3" = letters[1:10], "Column 4" = letters[11:20])
 attr(data, "aliases") <- c("Column 1", "Column 2", "Column 3", "Column 4")
 dtExtensions <- Set$new()
@@ -25,11 +35,17 @@ observeEvent(input$table_type, {
   if(identical(input$table_type, "hot")){
     insertUI(selector = "#table_wrapper", getHotOptions(), where = "beforeEnd")
     hideEl(session, "#preview-output-dt")
+    hideEl(session, "#preview-output-tableWidget")
     showEl(session, "#preview-output-hot")
   }else if(identical(input$table_type, "dt")){
     insertUI(selector = "#table_wrapper", getDtOptions(), where = "beforeEnd")
     hideEl(session, "#preview-output-hot")
+    hideEl(session, "#preview-output-tableWidget")
     showEl(session, "#preview-output-dt")
+  }else if(identical(input$table_type, "symbol")){
+    hideEl(session, "#preview-output-hot")
+    hideEl(session, "#preview-output-dt")
+    showEl(session, "#preview-output-tableWidget")
     
   }
 })
@@ -208,6 +224,156 @@ getDtOptions <- reactive({
   )
 })
 
+observeEvent({input$table_symbol
+  input$table_type}, {
+    req(identical(input$table_type, "symbol"), length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
+    currentTableSymbolName <<- input$table_symbol
+    pivotCols <- NULL
+    if(length(inputSymHeaders[[input$table_symbol]]) > 2L){
+      numericHeaders <- vapply(modelIn[[input$table_symbol]]$headers, 
+                               function(header) identical(header$type, "numeric"), 
+                               logical(1L), USE.NAMES = FALSE)
+      if(sum(numericHeaders) <= 1L){
+        pivotCols <- inputSymHeaders[[input$table_symbol]][!numericHeaders]
+      }
+    }
+    rv$tableWidgetConfig <- list() 
+    currentConfig <- NULL
+    if(currentTableSymbolName %in% names(configJSON$inputWidgets)){
+      currentConfig <- configJSON$inputWidgets[[currentTableSymbolName]]
+    }
+    tableAlias <- ''
+    if(length(currentConfig$alias) && nchar(currentConfig$alias)){
+      tableAlias <- currentConfig$alias
+    }else{
+      tablesymbolID <- match(isolate(input$table_symbol), tableSymbols)
+      if(!is.na(tablesymbolID)){
+        tableAlias <- names(inputSymMultiDim)[[tablesymbolID]]
+      }
+    }
+    
+    rv$tableWidgetConfig <- list(widgetType = "table",
+                                 alias = tableAlias,
+                                 readonly = isTRUE(currentConfig$readonly),
+                                 readonlyCols = currentConfig$readonlyCols,
+                                 heatmap = isTRUE(currentConfig$heatmap),
+                                 bigData = isTRUE(currentConfig$bigData))
+    if(length(currentConfig$pivotCols)){
+      rv$tableWidgetConfig$pivotCols <- currentConfig$pivotCols
+    }
+    removeUI(selector = "#table_wrapper .shiny-input-container", multiple = TRUE)
+    insertUI(selector = "#table_wrapper",
+             tagList(
+               tags$div(class="option-wrapper",
+                        textInput("table_alias", lang$adminMode$widgets$ui$alias, value = rv$tableWidgetConfig$alias)),
+               checkboxInput_MIRO("table_bigdata", lang$adminMode$widgets$table$bigData, value = isTRUE(rv$tableWidgetConfig$bigData)),
+               checkboxInput_MIRO("table_readonly", lang$adminMode$widgets$table$readonly, value = rv$tableWidgetConfig$readonly),
+               if(length(pivotCols)){
+                 tags$div(class="option-wrapper",
+                          selectInput("table_pivotCols", lang$adminMode$widgets$table$pivotCols, 
+                                      choices = c(`_` = "_", pivotCols), 
+                                      selected = if(length(rv$tableWidgetConfig$pivotCols)) rv$tableWidgetConfig$pivotCols else "_"))
+               },
+               conditionalPanel(condition = "input.table_bigdata===false && input.table_pivotCols === '_'",
+                                tags$div(class="option-wrapper",
+                                         selectInput("table_readonlyCols", lang$adminMode$widgets$table$readonlyCols, 
+                                                     choices = inputSymHeaders[[input$table_symbol]], 
+                                                     selected = rv$tableWidgetConfig$readonlyCols, multiple = TRUE))
+               ),
+               conditionalPanel(condition = "input.table_bigdata===false",
+                                tags$div(class="option-wrapper",
+                                         checkboxInput_MIRO("table_heatmap", 
+                                                            lang$adminMode$widgets$table$heatmap, 
+                                                            value = rv$tableWidgetConfig$heatmap))
+               )), 
+             where = "beforeEnd")
+    if(isTRUE(rv$tableWidgetConfig$bigData)){
+      #hideEl(session, "#hot_preview")
+    }else{
+      showEl(session, "#hot_preview")
+    }
+})
+
+createTableData <- function(symbol, pivotCol){
+  headers_tmp <- names(inputSymHeaders[[symbol]])
+  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
+                                               letters[1:10]), 1:10),
+                                   10))
+  isPivotTable <- FALSE
+  if(length(pivotCol) && pivotCol != "_"){
+    isPivotTable <- TRUE
+    pivotIdx <- match(pivotCol, inputSymHeaders[[input$table_symbol]])[[1L]]
+    data[length(data)] <- as.integer(data[[length(data)]])
+    data <- pivot_wider(data, names_from = !!pivotIdx, 
+                        values_from = !!length(data), 
+                        values_fill = setNames(list(0L), names(data)[length(data)]))
+    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
+    attrTmp <- c(attrTmp, 
+                 names(data)[seq(length(attrTmp) + 1L, 
+                                 length(data))])
+    headers_tmp  <- attrTmp
+  }
+  return(list(data = data, headers = headers_tmp, isPivotTable = isPivotTable))
+}
+output$hot_preview <- renderRHandsontable({
+  req(input$table_symbol %in% names(inputSymHeaders))
+  if(isTRUE(rv$tableWidgetConfig$bigData)){
+    return()
+  }
+  data <- createTableData(input$table_symbol, input$table_pivotCols)
+  
+  headers_tmp <- data$headers
+  pivotTable <- data$isPivotTable
+  data <- data$data
+  
+  ht <- rhandsontable(data = data,
+                      colHeaders = headers_tmp,
+                      readOnly = input$table_readonly)
+  if(!pivotTable && length(input$table_readonlyCols) && 
+     input$table_readonlyCols %in% headers_tmp){
+    ht <- hot_col(ht, names(headers_tmp)[match(input$table_readonlyCols, 
+                                               headers_tmp)], 
+                  readOnly = TRUE)
+  }
+  if(isTRUE(input$table_heatmap)){
+    return(hot_heatmap(ht))
+  }else{
+    return(ht)
+  }
+})
+
+output$dt_preview <- renderDT({
+  req(input$table_symbol %in% names(inputSymHeaders))
+
+  data <- createTableData(input$table_symbol, input$table_pivotCols)
+  
+  headers_tmp <- data$headers
+  data <- data$data
+  data        <- data.frame(matrix(c(replicate(length(headers_tmp) - 1L,
+                                               letters[1:10]), 1:10),
+                                   10))
+  if(length(input$table_pivotCols) && input$table_pivotCols != "_"){
+    pivotIdx <- match(input$table_pivotCols, inputSymHeaders[[input$table_symbol]])[[1L]]
+    data[length(data)] <- as.integer(data[[length(data)]])
+    data <- pivot_wider(data, names_from = !!pivotIdx, 
+                        values_from = !!length(data), 
+                        values_fill = setNames(list(0L), names(data)[length(data)]))
+    attrTmp <- headers_tmp[-c(pivotIdx, length(headers_tmp))]
+    attrTmp <- c(attrTmp, 
+                 names(data)[seq(length(attrTmp) + 1L, 
+                                 length(data))])
+    headers_tmp  <- attrTmp
+  }
+  dtOptions <- list(editable = !isTRUE(input$table_readonly),
+                    colnames = headers_tmp)
+  
+  if(!isTRUE(rv$tableWidgetConfig$bigData)){
+    showEl(session, "#hot_preview")
+    return()
+  }
+  #hideEl(session, "#hot_preview")
+  return(renderDTable(data, dtOptions, render = FALSE))
+})
 
 observeEvent(input$hot_height, {
   if(is.na(input$hot_height))
@@ -389,6 +555,70 @@ observe({
   })
 }, priority = -1000)
 
+
+observeEvent(input$table_alias, {
+  if(length(input$table_alias))
+    rv$tableWidgetConfig$alias <<- input$table_alias
+  else
+    rv$tableWidgetConfig$alias <<- NULL
+})
+observeEvent(input$table_bigdata, {
+  if(input$table_bigdata == TRUE){
+    rv$tableWidgetConfig$bigData <<- TRUE
+    rv$tableWidgetConfig$heatmap <<- FALSE
+  }else{
+    rv$tableWidgetConfig$bigData <<- FALSE
+    rv$tableWidgetConfig$heatmap <<- input$table_heatmap
+  }
+})
+observeEvent(input$table_readonly, {
+  rv$tableWidgetConfig$readonly <<- input$table_readonly
+})
+observeEvent(input$table_readonlyCols, ignoreNULL = FALSE, {
+  if(!length(input$table_readonlyCols)){
+    configJSON$tableWidgetConfig$readonlyCols <<- NULL
+  }
+  rv$tableWidgetConfig$readonlyCols <<- input$table_readonlyCols
+})
+observeEvent(input$table_pivotCols, {
+  rv$tableWidgetConfig$pivotCols <<- input$table_pivotCols
+})
+observeEvent(input$table_heatmap, {
+  rv$tableWidgetConfig$heatmap <<- input$table_heatmap
+})
+observeEvent(c(input$table_pivotCols, input$table_readonly, input$table_heatmap), {
+  if(!identical(input$table_pivotCols, "_")){
+    if(isTRUE(input$table_readonly) || isTRUE(input$table_heatmap))
+      showEl(session, "#pivotColsRestriction")
+    else
+      hideEl(session, "#pivotColsRestriction")
+  }else{
+    hideEl(session, "#pivotColsRestriction")
+  }
+})
+
+
+validateTableConfig <- function(configJSON){
+  if(!length(configJSON$alias) || identical(nchar(trimws(configJSON$alias)), 0L)){
+    return(lang$adminMode$widgets$validate[["val1"]])
+  }
+  if(identical(grepl("\\s", currentWidgetSymbolName), TRUE)){
+    return(lang$adminMode$widgets$validate$val39)
+  }
+  
+  if(!is.logical(configJSON$readonly)){
+    return(lang$adminMode$widgets$validate$val32)
+  }
+  if(!is.logical(configJSON$heatmap)){
+    return(lang$adminMode$widgets$validate$val33)
+  }
+  if(any(!configJSON$readonlyCols %in% inputSymHeaders[[currentWidgetSymbolName]])){
+    return(lang$adminMode$widgets$validate$val34)
+  }
+  return("")
+}
+  
+  
 #  =======================================
 #          SAVE JSON (automatically)
 #  =======================================
@@ -410,4 +640,67 @@ observeEvent(rv$tableConfig, {
            return()
          })
   write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+})
+
+observeEvent(input$saveTableWidget, {
+  req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
+  errMsg <- validateTableConfig(rv$tableWidgetConfig)
+  if(nchar(errMsg)){
+    showHideEl(session, "#tableValidationErr", 5000L, errMsg)
+    return()
+  }
+  rv$saveTableConfirm <- rv$saveTableConfirm + 1L
+})
+observeEvent(virtualActionButton(input$saveTableConfirm, rv$saveTableConfirm), {
+  req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
+
+  configJSON$inputWidgets[[currentTableSymbolName]] <<- rv$tableWidgetConfig
+  if(!length(configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols)){
+    configJSON$inputWidgets[[currentTableSymbolName]]$readonlyCols <<- NULL
+  }
+  if(identical(configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols, "_")){
+    configJSON$inputWidgets[[currentTableSymbolName]]$pivotCols <<- NULL
+  }
+  
+  currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)
+  if(!is.na(currentTableSymbolID) && 
+     !identical(names(tableSymbols)[[currentTableSymbolID]], paste(currentTableSymbolName, ": ",
+                                                                   rv$tableWidgetConfig$alias))){
+    names(tableSymbols)[[currentTableSymbolID]] <<- paste0(currentTableSymbolName, ": ", 
+                                                           rv$tableWidgetConfig$alias)
+    updateSelectInput(session, "table_symbol", choices = tableSymbols)
+  }
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  
+  if(noTableSymbols){
+    hideEl(session, "#noTableSymbolMsg")
+    noTableSymbols <<- FALSE
+  }
+  removeModal()
+  showHideEl(session, "#tableWidgetUpdateSuccess", 4000L)
+})
+observeEvent(input$deleteTableWidget, {
+  req(length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
+  
+  showModal(modalDialog(title = lang$adminMode$tables$symbol$removeDialog$title, lang$adminMode$tables$symbol$removeDialog$message, 
+                        footer = tagList(modalButton(lang$adminMode$tables$symbol$removeDialog$cancel), 
+                                         actionButton("deleteTableWidgetConfirm", lang$adminMode$tables$symbol$removeDialog$confirm))))
+})
+observeEvent(input$deleteTableWidgetConfirm, {
+  req(length(currentTableSymbolName) > 0L, nchar(currentTableSymbolName) > 0L)
+  
+  configJSON$inputWidgets[[currentTableSymbolName]] <<- NULL
+  write_json(configJSON, configJSONFileName, pretty = TRUE, auto_unbox = TRUE, null = "null")
+  removeModal()
+  showHideEl(session, "#tableWidgetUpdateSuccess", 4000L)
+  hideEl(session, "#noTableSymbolMsg")
+  if(!length(tableSymbols)){
+    if(!noTableSymbols){
+      showEl(session, "#noTableSymbolMsg")
+      noTableSymbols <<- TRUE
+    }
+    currentTableSymbolName <<- character(0L)
+  }else{
+    updateSelectInput(session, "table_symbol", choices = tableSymbols)
+  }
 })
