@@ -225,7 +225,8 @@ getDtOptions <- reactive({
 })
 
 observeEvent({input$table_symbol
-  input$table_type}, {
+  input$table_type
+  rv$reset_table_input}, {
     req(identical(input$table_type, "symbol"), length(input$table_symbol) > 0L, nchar(input$table_symbol) > 0L)
     currentTableSymbolName <<- input$table_symbol
     pivotCols <- NULL
@@ -701,6 +702,9 @@ observeEvent(input$deleteTableWidgetConfirm, {
     }
     currentTableSymbolName <<- character(0L)
   }else{
+    currentTableSymbolID <- match(currentTableSymbolName, tableSymbols)
+    names(tableSymbols)[[currentTableSymbolID]] <<- inputSymMultiDimChoices[[currentTableSymbolID]]
     updateSelectInput(session, "table_symbol", choices = tableSymbols)
+    rv$reset_table_input <- rv$reset_table_input + 1L
   }
 })
