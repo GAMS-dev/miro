@@ -7,14 +7,64 @@ configJSONFileName <- file.path(currentModelDir, "conf",
                                 modelName %+% ".json")
 dateFormatChoices <- c("1910-06-22" = "yyyy-mm-dd", "22.06.1910" = "dd.mm.yyyy")
 
-inputSymMultiDim <- setNames(names(modelInRaw), vapply(modelInRaw, "[[", character(1L), "alias", USE.NAMES = FALSE))
+outputSymMultiDimChoices <- setNames(names(modelOut), 
+                                     paste0(names(modelOut), ": ", modelOutAlias))
+
+inputSymMultiDim <- setNames(names(modelInRaw), 
+                             vapply(modelInRaw, "[[", 
+                                    character(1L), "alias", USE.NAMES = FALSE))
+inputSymMultiDimChoices <- setNames(names(modelInRaw), vapply(seq_along(modelInRaw), function(idx){
+  paste0(names(modelInRaw)[[idx]], ": ", modelInRaw[[idx]][["alias"]])}, character(1L), USE.NAMES = FALSE))
+
 inputSymHeaders <- lapply(inputSymMultiDim, function(el){
   headers <- modelInRaw[[el]]$headers
-  return(setNames(names(headers), vapply(headers, "[[", character(1L), "alias", USE.NAMES = FALSE)))
+  return(setNames(names(headers), 
+                  vapply(headers, 
+                         "[[", character(1L), "alias", USE.NAMES = FALSE)))
 })
+inputSymHeaderChoices <- lapply(inputSymMultiDim, function(el){
+  headers <- modelInRaw[[el]]$headers
+  return(setNames(names(headers), vapply(seq_along(headers), function(idx){
+    paste0(names(headers)[idx], ": ", headers[[idx]][["alias"]])}, character(1L),  USE.NAMES = FALSE)))
+})
+
+widgetSymbols <- c(unlist(lapply(seq_along(modelIn), function(idx){
+  if(identical(modelIn[[idx]][["type"]], "set") &&
+     length(modelIn[[idx]]$headers) == 2L){
+    return(names(modelIn)[idx])
+  }else if(length(modelIn[[idx]][["headers"]])){
+    return(NULL)
+  }
+  return(names(modelIn)[idx])
+}), use.names = FALSE),
+if(length(modelIn[[scalarsFileName]]))
+  modelIn[[scalarsFileName]]$symnames)
+
+widgetSymbolIds <- match(widgetSymbols, names(modelIn))
+widgetSymbolIds <- widgetSymbolIds[!is.na(widgetSymbolIds)]
+
+widgetSymbolsChoices <- setNames(widgetSymbols, paste0(widgetSymbols, ": ", c(
+  modelInAlias[widgetSymbolIds], 
+  if(length(modelIn[[scalarsFileName]]))
+    modelIn[[scalarsFileName]]$symtext
+)))
+
+widgetSymbols <- setNames(widgetSymbols, c(
+  modelInAlias[widgetSymbolIds], 
+  if(length(modelIn[[scalarsFileName]]))
+    modelIn[[scalarsFileName]]$symtext
+))
+
 names(inputSymHeaders) <- unname(inputSymMultiDim)
+
 outputSymHeaders <- lapply(modelOut, function(el){
-  vapply(el$headers, "[[", character(1L), "alias", USE.NAMES = FALSE)
+  vapply(el$headers, "[[", 
+    character(1L), "alias", USE.NAMES = FALSE)
+})
+outputSymHeaderChoices <- lapply(modelOut, function(el){
+  vapply(seq_along(el$headers),  function(idx){
+    paste0(names(el$headers)[[idx]], ": ", el$headers[[idx]][["alias"]])}, 
+    character(1L), USE.NAMES = FALSE)
 })
 allInputSymHeaders <- setNames(unlist(inputSymHeaders, use.names = FALSE), 
                                unlist(lapply(inputSymHeaders, names), use.names = FALSE))
@@ -29,7 +79,9 @@ server_admin <- function(input, output, session){
                        graphConfig = list(outType = "graph", graph = list()), 
                        widgetConfig = list(), generalConfig = list(), customLogoChanged = 1L,
                        initData = FALSE, refreshContent = 0L, widget_type = 0L, widget_symbol = 0L, 
-                       saveWidgetConfirm = 0L, updateLeafletGroups = 0L)
+                       saveWidgetConfirm = 0L, updateLeafletGroups = 0L, 
+                       saveTableConfirm = 0L, widgetTableConfig = list(), table_symbol = 0L,
+                       reset_table_input = 0L)
   session$sendCustomMessage("gms-setGAMSSymbols", list(gamsSymbols = list(inSym = unname(inputSymMultiDim), 
                                                                           inAlias = names(inputSymMultiDim),
                                                                           outSym = names(modelOut),
@@ -40,6 +92,10 @@ server_admin <- function(input, output, session){
   # ------------------------------------------------------
   source(file.path("tools", "admin", "cg_general.R"), local = TRUE)  
   # ------------------------------------------------------
+  #     Input widgets
+  # ------------------------------------------------------
+  source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
+  # ------------------------------------------------------
   #     Table settings
   # ------------------------------------------------------
   source(file.path("tools", "admin", "cg_tables.R"), local = TRUE)  
@@ -47,11 +103,6 @@ server_admin <- function(input, output, session){
   #     CUSTOMIZE GRAPHS
   # ------------------------------------------------------
   source(file.path("tools", "admin", "cg_graphs.R"), local = TRUE)
-  # ------------------------------------------------------
-  #     Input widgets
-  # ------------------------------------------------------
-  source(file.path("tools", "admin", "cg_widgets.R"), local = TRUE)
-  
   # ------------------------------------------------------
   #     DB MANAGEMENT
   # ------------------------------------------------------

@@ -791,7 +791,7 @@
     "uiR":{
       "adminPanel": "GAMS MIRO admin panel",
       "general": "General settings",
-      "table": "Table settings",
+      "table": "Configure tables",
       "widgets": "Configure widgets",
       "graphs": "Configure graphs",
       "database": "Database management",
@@ -945,9 +945,12 @@
     },
     "tables":{
       "ui":{
-        "title": "General table settings",
-        "input": "input table",
-        "output": "output table"
+        "title": "Table settings",
+        "input": "input tables (global)",
+        "output": "output tables (global)",
+        "symbol": "symbol tables",
+        "resetTable": "Reset",
+        "saveTable": "Save"
       },
       "hot":{
         "height": "Height of input tables (in px)",
@@ -989,12 +992,21 @@
           "choices": ["copy", "CSV", "Excel", "PDF", "print"],
           "select": "Select buttons to use. Note: All button functions only affect the visible table page."
         }
+      },
+      "symbol":{
+        "removeDialog":{
+          "title": "Please confirm",
+          "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
       }
     },
     "widgets":{
       "ui":{
         "title":"Configure input widgets",
         "widgetUpdateSuccess": "Widget configuration was updated successfully",
+        "widgetTableUpdateSuccess": "Table configuration was updated successfully",
         "gams": "Symbol",
         "go": "New GAMS option",
         "dd": "New double-dash parameter",
@@ -1008,10 +1020,12 @@
         "widgetGo": "GAMS option",
         "widgetDd": "Double-dash parameter",
         "inputSymbolTooltip": "Select input symbol to create a widget for",
+        "tableTooltip": "Select the input symbol whose table you want to configure",
         "widgetGoTooltip": "Name of the GAMS option (e.g. 'LP' or 'OptCR')",
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "Select widget type",
-        "alias": "Name of the widget tab (no live preview)"
+        "alias": "Name of the widget tab (no live preview)",
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
       },
       "validate":{
         "val1": "The alias of the element must not be empty!",

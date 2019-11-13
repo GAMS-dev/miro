@@ -947,7 +947,10 @@
       "ui":{
         "title": "通用表格设置",
         "input": "输入表格",
-        "output": "输出表格"
+        "output": "输出表格",
+        "symbol": "symbol tables",
+        "resetTable": "Reset",
+        "saveTable": "Save"
       },
       "hot":{
         "height": "输入表格的高度（以px为单位）",
@@ -989,12 +992,21 @@
           "choices": ["copy", "CSV文件", "Excel工作簿", "PDF", "打印"],
           "select": "选择要使用的按钮。 注意：所有按钮功能仅对可见的表格页面有效。"
         }
+      },
+      "symbol":{
+        "removeDialog":{
+          "title": "Please confirm",
+          "message": "Are you sure that you want to reset the existing configuration for this symbol? This cannot be undone!",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
       }
     },
     "widgets":{
       "ui":{
         "title":"配置输入小部件",
         "widgetUpdateSuccess": "小部件配置已更新",
+        "widgetTableUpdateSuccess": "Table configuration was updated successfully",
         "gams": "GAMS符号",
         "go": "新建GAMS option",
         "dd": "新建double-dash parameter",
@@ -1008,10 +1020,12 @@
         "widgetGo": "GAMS option",
         "widgetDd": "double-dash parameter",
         "inputSymbolTooltip": "为哪个输入符号创建一个小部件？",
+        "tableTooltip": "Select the input symbol whose table you want to configure",
         "widgetGoTooltip": "GAMS option的名称（例如：'LP'或者'OptCR'）",
         "widgetDdTooltip": "Name of the double-dash parameter (no '--')",
         "widgetType": "选择要使用的小部件类型",
-        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）"
+        "alias": "输入要在选项卡中显示的元素名称（不支持实时预览）",
+        "pivotColsRestriction": "Note: It is not possible to add or delete columns in the symbol table if it is set to readonly or displayed as a heatmap."
       },
       "validate":{
         "val1": "元素的别名不能为空！",

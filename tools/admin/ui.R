@@ -404,9 +404,7 @@ body_admin <- dashboardBody({
                                                             style = "width:100px;"),
                                                actionButton("saveWidget", "Save", icon("save"), class = "save-delete-save-btn",
                                                             style = "width:100px;")),
-                                      uiOutput("widget_preview"),
-                                      DTOutput("dt_preview"),
-                                      rHandsontableOutput("hot_preview")
+                                      uiOutput("widget_preview")
                              ))
                 )
               )
@@ -552,27 +550,52 @@ body_admin <- dashboardBody({
       tabItem(tabName = "tables_gen",
               fluidRow(
                 box(title = lang$adminMode$tables$ui$title, status="primary", solidHeader = TRUE, width = 12,
+                    tags$div(id = "tableWidgetUpdateSuccess", class = "gmsalert gmsalert-success", lang$adminMode$widgets$ui$widgetTableUpdateSuccess),
+                     tags$div(id = "tableValidationErr", class = "gmsalert gmsalert-error"),
+                    # tags$div(id = "unknownErrorTables", class = "gmsalert gmsalert-error",
+                    #          lang$errMsg$unknownError),
                     tags$div(class = "space"),
-                             tags$div(style = "padding-bottom: 20px;",
-                                      tabsetPanel(id="table_type",
-                                                  tabPanel(lang$adminMode$tables$ui$input, value = "hot"),
-                                                  tabPanel(lang$adminMode$tables$ui$output, value = "dt")
-                                      )),
-                             tags$div(class = "col-sm-6",
-                                      tags$div(class="main-tab",
-                                               tags$div(id = "table_wrapper"),
-                                               tags$div(class = "space")
-                                      )
-                             ),
-                             tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
-                                      tags$div(id = "preview-output-hot", 
-                                               rHandsontableOutput("table_preview_hot")),
-                                      tags$div(id = "preview-output-dt", style = "display:none;",
-                                               renderDataUI("table_preview_dt", type = "datatable", 
-                                                            graphTool = "plotly", 
-                                                            height = 700, 
-                                                            noDataTxt = lang$nav$outputScreen$boxResults$noData))
+                    tags$div(style = "padding-bottom: 20px;",
+                             tabsetPanel(id="table_type",
+                                         tabPanel(lang$adminMode$tables$ui$input, value = "hot"),
+                                         tabPanel(lang$adminMode$tables$ui$output, value = "dt"),
+                                         tabPanel(lang$adminMode$tables$ui$symbol, value = "symbol")
+                             )),
+                    tags$div(class = "col-sm-6",
+                             tags$div(id = "noTableSymbolMsg", class="config-message", 
+                                      lang$adminMode$widgets$ui$noSymbolMsg),
+                             tags$div(class="main-tab table-tab",
+                                      tags$div(
+                                        conditionalPanel(
+                                          condition = "input.table_type == 'symbol'",
+                                          tags$div(title = lang$adminMode$widgets$ui$tableTooltip, class = "option-wrapper",
+                                                   selectInput("table_symbol", lang$adminMode$widgets$ui$inputSymbol, 
+                                                               choices = c())),
+                                          tags$hr()
+                                        )),
+                                      tags$div(id = "table_wrapper"),
+                                      tags$div(id = "pivotColsRestriction", class="config-message", 
+                                               lang$adminMode$widgets$ui$pivotColsRestriction),
+                                      tags$div(class = "space")
                              )
+                    ),
+                    tags$div(class = "col-sm-6", style = "text-align:right;overflow:auto;",
+                             tags$div(id = "preview-output-hot", 
+                                      rHandsontableOutput("table_preview_hot")),
+                             tags$div(id = "preview-output-dt", style = "display:none;",
+                                      renderDataUI("table_preview_dt", type = "datatable", 
+                                                   graphTool = "plotly", 
+                                                   height = 700, 
+                                                   noDataTxt = lang$nav$outputScreen$boxResults$noData)),
+                             tags$div(id = "preview-output-tableWidget", style = "display:none;",
+                                      tags$div(style = "margin-bottom:50px;text-align:right;",
+                                               actionButton("deleteTableWidget", lang$adminMode$tables$ui$resetTable, icon("undo"), class = "save-delete-delete-btn",
+                                                            style = "width:100px;"),
+                                               actionButton("saveTableWidget", lang$adminMode$tables$ui$saveTable, icon("save"), class = "save-delete-save-btn",
+                                                            style = "width:100px;")),
+                                      DTOutput("dt_preview"),
+                                      rHandsontableOutput("hot_preview"))
+                    )
                 )
               )
       )
