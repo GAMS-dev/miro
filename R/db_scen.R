@@ -301,7 +301,8 @@ Scenario <- R6Class("Scenario",
                             stop("duplicateException", call. = FALSE)
                           fnToOverwrite <- fileNames %in% fileNamesDb
                           fileNamesDb   <- fileNamesDb[!fnToOverwrite]
-                          self$removeAttachments(fileNames[fnToOverwrite])
+                          self$removeAttachments(fileNames[fnToOverwrite], 
+                                                 removeLocal = FALSE)
                         }
                         if(length(fileNamesDb) + length(filePaths) > private$attachmentConfig[["maxNo"]]){
                           stop("maxNoException", call. = FALSE)
@@ -508,11 +509,12 @@ Scenario <- R6Class("Scenario",
                         
                         invisible(self)
                       },
-                      removeAttachments = function(fileNames){
+                      removeAttachments = function(fileNames, removeLocal = TRUE){
                         # Deletes attachments from scenario
                         # 
                         # Args:
                         #   fileNames:   file names of attachments to remove
+                        #   removeLocal: whether to remove file from disk
                         #
                         # Returns:
                         #   R6 object (reference to itself)
@@ -528,11 +530,14 @@ Scenario <- R6Class("Scenario",
                           localFilesToRemove <- private$localAttachments$
                             filePaths[localFilesToRemoveId]
                           
-                          removedLocalFiles <- file.remove(localFilesToRemove)
-                          if(any(!removedLocalFiles))
-                            flog.warn("Some local attachments could not be removed: '%s'.",
-                                      paste(localFilesToRemove[!removedLocalFiles], 
-                                            collapse = "', '"))
+                          if(removeLocal){
+                            removedLocalFiles <- file.remove(localFilesToRemove)
+                            if(any(!removedLocalFiles))
+                              flog.warn("Some local attachments could not be removed: '%s'.",
+                                        paste(localFilesToRemove[!removedLocalFiles], 
+                                              collapse = "', '"))
+                          }
+                          
                           private$localAttachments$filePaths <- private$localAttachments$filePaths[-localFilesToRemoveId]
                           private$localAttachments$execPerm  <- private$localAttachments$execPerm[-localFilesToRemoveId]
                           
