@@ -866,14 +866,14 @@ Worker <- R6Class("Worker", public = list(
     error = function(e){
       private$log <- ""
     })
+    if(!identical(private$log, "")){
+      private$updateLog <- private$updateLog + 1L
+    }
     if(length(private$gamsRet)){
       private$status <- private$gamsRet
       return(private$status)
     }
     exitStatus  <- private$process$get_exit_status()
-    if(!identical(private$log, "")){
-      private$updateLog <- private$updateLog + 1L
-    }
     if(length(exitStatus)){
       private$gamsRet <- exitStatus
     }
