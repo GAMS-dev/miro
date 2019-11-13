@@ -35,5 +35,135 @@ Since the objective function minimizes the absolute deviation between the DJ ind
 
 ### Optimization model: 
 Select a subset (≤ maxstock) of Dow Jones stocks, along with weights, so that this portfolio behaves similarly to the overall index (in the training phase).
+The model is based on a linear regression over the time series, but it minimizes the loss using the L1-norm (absolute value), and allows only a fixed number of weights to take nonzero variable.
 
 ![Pickstock model](static/model.png =500x217)
+
+Important Sets and Parameters:
+```
+Set       date                 'date'
+          symbol               'stock symbol';
+
+Parameter price(date<,symbol<) 'Price';
+
+Scalar    maxstock             'maximum number of stocks to select'  /  2 /
+          trainingdays         'number of days for training'         / 99 /;
+
+Alias (d,date), (s,symbol);
+```
+
+The price data is provided by a CSV file:
+```
+$setNames "%gams.input%" fp fn fe
+$if not set fileName $set fileName %fp%dowjones2016.csv
+$call.errorlevel csv2gdx "%fileName%" output=stockdata.gdx ValueDim=0 id=price Index="(1,2)" Value=3 UseHeader=y
+$gdxin stockdata
+$load price
+```
+
+
+Definition of the two phases training days and testing (non-training) days:
+```
+Set td(date)    'training days'
+    ntd(date)   'none-training days';
+
+td(d) = ord(d)<=trainingdays;
+ntd(d) = not td(d);
+```
+
+The mean price per stock is calculated which can be used in order to calculate weights:
+```
+Parameter
+    avgprice(symbol)          'average price of stock'
+    weight(symbol)            'weight of stock';
+    
+avgprice(s)       = sum(d, price(d,s))/card(d);
+weight(symbol)    = avgprice(symbol)/sum(s, avgprice(s));
+```
+
+Computation of the contributions using weight and price:
+
+```
+Parameter contribution(date,symbol) 'contribution of stock on date';
+    
+contribution(d,s) = weight(s)*price(d,s);
+```
+
+Computation of index values:
+```
+Parameter index(date) 'Dow Jones index';
+    
+index(d)          = sum(s, contribution(d,s));
+```
+
+Variables and equations:
+```GAMS
+Variable
+    p(symbol)       'is stock included?'
+    w(symbol)       'what part of the portfolio'
+    slpos(date)     'positive slack'
+    slneg(date)     'negative slack'
+    obj             'objective';
+
+Positive variables w, slpos, slneg;
+Binary variable p;
+
+Equation
+    deffit(date)    'fit to Dow Jones index'
+    defpick(symbol) 'can only use stock if picked'
+    defnumstock     'few stocks allowed'
+    defobj          'absolute violation (L1 norm) from index';
+
+deffit(td)  ..  sum(s, price(td,s)*w(s)) =e= index(td) + slpos(td) - slneg(td);
+
+defpick(s)  ..  w(s) =l= p(s);
+
+defnumstock ..  sum(s, p(s)) =l= maxstock;
+
+defobj      ..  obj =e= sum(td, slpos(td) + slneg(td));
+```
+
+Model declaration and solve statement:
+```
+Model pickStock /all/;
+
+option optCR=0.01;
+
+solve pickStock min obj using mip;
+```
+
+Reporting parameters:
+```
+Parameter
+    fund(date)                'Index fund report parameter'
+    error(date)               'Absolute error';
+    
+fund(d)  = sum(s, price(d, s)*w.l(s));
+error(d) = abs(index(d)-fund(d));
+
+Set fHdr      'fund header'            / dj 'dow jones','index fund'  /
+    errHdr    'stock symbol header'    / 'absolute error train', 'absolute error test' /;
+    
+Scalar error_train                     'Absolute error in entire training phase'
+       error_test                      'Absolute error in entire testing phase'
+       error_ratio                     'Ratio between error test and error train'
+Parameter
+       stock_weight(symbol)            'weight'   
+       dowVSindex(date,fHdr)           'dow jones vs. index fund'     
+       abserror(date,errHdr)           'absolute error'
+       priceMerge(date,*)              'Price (stocks & dow jones)';
+
+stock_weight(s)                        = w.l(s);
+dowVSindex(d,'dj')                     = index(d);
+dowVSindex(d,'index fund')             = fund(d);
+abserror(td, 'absolute error train')   = error(td);
+abserror(ntd,'absolute error test')    = error(ntd);
+priceMerge(d,symbol)                   = price(d,symbol);
+priceMerge(d,'DowJones')               = index(d);
+error_train                            = obj.l;
+error_test                             = sum(ntd, error(ntd));
+if(error_train > 0,
+   error_ratio = error_test/error_train;
+else
+   error_ratio = inf;);
+```
