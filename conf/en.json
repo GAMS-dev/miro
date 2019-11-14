@@ -932,8 +932,8 @@
       "remoteExecution":{
         "label": "Remote Job execution (GAMS MIRO Server only)"
       },
-      "hcubeSwitch":{
-        "label": "Should it be possible to start the Hypercube mode from the MIRO base mode?"
+      "downloadTempFiles":{
+        "label": "Allow access to the temporary directory?"
       },
       "saveTrace":{
         "title": "For performance analysis with the integrated analysis tool PAVER, this option needs to be activated.",

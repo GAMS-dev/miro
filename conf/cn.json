@@ -932,8 +932,8 @@
       "remoteExecution":{
         "label": "远程执行作业（仅适用于GAMS MIRO Server）"
       },
-      "hcubeSwitch":{
-        "label": "是否允许用户从MIRO基本模式启动Hypercube模式？"
+      "downloadTempFiles":{
+        "label": "Allow access to the temporary directory?"
       },
       "saveTrace":{
         "title": "对于使用集成分析工具PAVER进行性能分析，需要激活此选项。",

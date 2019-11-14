@@ -4218,7 +4218,7 @@
                 }
               }
             },
-            "hcubeSwitch":{          
+            "downloadTempFiles":{          
               "type":"object",
               "additionalProperties":false,
               "required":true,
