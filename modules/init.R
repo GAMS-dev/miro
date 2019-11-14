@@ -1276,6 +1276,17 @@ if(is.null(errMsg)){
     config$hasSymbolLinks <- TRUE
     config[["symbolLinks"]] <- NULL
   }
+  if(length(config$scripts)){
+    if(config$activateModules$hcubeMode){
+      if(any(duplicated(vapply(config$scripts$hcube, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+        errMsg <- paste(errMsg, "Some of your Hypercube analysis scripts share the same id. Please make sure the ID is unique.")
+      }
+    }else{
+      if(any(duplicated(vapply(config$scripts$base, "[[", character(1L), "id", USE.NAMES = FALSE)))){
+        errMsg <- paste(errMsg, "Some of your analysis scripts share the same id. Please make sure the ID is unique.")
+      }
+    }
+  }
 }
 if(is.null(errMsg)){
   # define table names (format: modelName_scen.prefix_table.name) where "name" is the name of the dataset
@@ -1324,6 +1335,7 @@ if(is.null(errMsg)){
                                '_scenLock' = scenLockTablePrefix %+% modelName,
                                '_scenTrc' = tableNameTracePrefix %+% modelName,
                                '_scenAttach' = tableNameAttachPrefix %+% modelName,
+                               '_scenScripts' = tableNameScriptsPrefix %+% modelName,
                                '_jobMeta' = tableNameJobPrefix %+% modelName),
                    colNames = list('_scenMeta' = c(sid = sidIdentifier, uid = uidIdentifier, sname = snameIdentifier,
                                                    stime = stimeIdentifier, stag = stagIdentifier, accessR = accessIdentifier %+% "r",
@@ -1336,6 +1348,8 @@ if(is.null(errMsg)){
                                                      execPerm = "execPerm",
                                                      content = "fileContent",
                                                      time = "timestamp"),
+                                   '_scenScripts' = c(sid = sidIdentifier, id = "id",
+                                                     content = "scriptContent"),
                                    '_jobMeta' = c(jid = '_jid', uid = uidIdentifier,  
                                                   status = '_status', time = '_jtime', 
                                                   tag = stagIdentifier, pid = '_pid', 
@@ -1343,7 +1357,7 @@ if(is.null(errMsg)){
                                                   scode = scodeIdentifier, sname = snameIdentifier)),
                    colTypes = c('_scenMeta' = "iccTcccci",
                                 '_scenLock' = "ciT", '_scenTrc' = "cccccdidddddiiiddddddc",
-                                '_scenAttach' = "icclbT", '_jobMeta' = "iciTcciiic"))
+                                '_scenAttach' = "icclbT", '_scenScripts' = "icc", '_jobMeta' = "iciTcciiic"))
   
   dbSchema$tabName  <- c(dbSchema$tabName, scenTableNames)
   scenColNamesTmp   <- lapply(c(modelOut, modelIn), function(el) return(names(el$headers)))

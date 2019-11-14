@@ -57,9 +57,8 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                                                                                "', '#btSolve', 'btSubmitJob');"),
                                                   lang$nav$sidebarButtons$submitJob))))
                 else
-                  tagAppendAttributes(actionButton("btSolve", lang$nav$sidebarButtons$solve, 
-                                                   width = "85%", class = "bt-highlight-2 btSolve", style = "display:block;"), 
-                                      disabled = ""),
+                  actionButton("btSolve", lang$nav$sidebarButtons$solve, 
+                               width = "85%", class = "bt-highlight-2 btSolve", style = "display:block;"), 
                 tagAppendAttributes(actionButton("btInterrupt", lang$nav$sidebarButtons$interrupt, 
                                                  width = "85%", class = "bt-highlight-2", style = "display:block;"), 
                                     disabled = ""),

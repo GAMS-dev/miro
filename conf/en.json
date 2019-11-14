@@ -585,6 +585,16 @@
       "title": "PAVER is already in use",
       "desc": "Please wait until the process is finished.",
       "closeButton": "Close"
+    },
+    "scriptOutput": {
+      "runButton": "Run script",
+      "interruptButton": "Interrupt script",
+      "errMsg": {
+        "noScript": "Script file could not be found.",
+        "noOutput": "Script output file could not found.",
+        "timeout": "Script timed out.",
+        "crash": "Script crashed."
+      }
     }
   },
   "progressBar":{  

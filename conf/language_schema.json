@@ -2707,6 +2707,50 @@
               "required":true
             }
           }
+        },
+        "scriptOutput": {
+          "type":"object",
+          "additionalProperties":false,
+          "required":true,
+          "properties":{  
+            "runButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "interruptButton":{  
+              "type":"string",
+              "minLength":1,
+              "required":true
+            },
+            "errMsg": {
+              "type":"object",
+              "additionalProperties":false,
+              "required":true,
+              "properties":{
+                "noScript":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "noOutput":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "timeout":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                },
+                "crash":{  
+                  "type":"string",
+                  "minLength":1,
+                  "required":true
+                }
+              }
+            }
+          }
         }
       }
     },

@@ -585,6 +585,16 @@
       "title": "Paver wird bereits verwendet",
       "desc": "Bitte warten Sie, bis der Prozess beendet ist.",
       "closeButton": "Schließen"
+    },
+    "scriptOutput": {
+      "runButton": "Skript ausführen",
+      "interruptButton": "Skript abbrechen",
+      "errMsg": {
+        "noScript": "Skriptdatei konnte nicht gefunden werden.",
+        "noOutput": "Skript-Ausgabedatei konnte nicht gefunden werden.",
+        "timeout": "Skript-Timeout abgelaufen.",
+        "crash": "Das Skript ist abgestürzt."
+      }
     }
   },
   "progressBar":{  

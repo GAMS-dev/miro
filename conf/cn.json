@@ -585,6 +585,16 @@
       "title" :"正在使用PAVER",
       "desc":"请等待。",
       "closeButton" :"关闭"
+    },
+    "scriptOutput": {
+      "runButton": "Run script",
+      "interruptButton": "Interrupt script",
+      "errMsg": {
+        "noScript": "Script file could not be found.",
+        "noOutput": "Script output file could not found.",
+        "timeout": "Script timed out.",
+        "crash": "Script crashed."
+      }
     }
   },
   "progressBar":{
