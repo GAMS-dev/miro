@@ -163,7 +163,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
     }else if(names(modelIn)[id] %in% inputDsNames){
       return(paste0("--HCUBE_STATIC_", names(modelIn)[id]))
     }else{
-      return(paste0("--HCUBE_SCALAR_", names(modelIn)[id]))
+      return(paste0("--HCUBE_SCALARV_", names(modelIn)[id]))
     }
   }
   noScenToSolve <- reactive({
@@ -280,7 +280,7 @@ if(identical(config$activateModules$hcubeMode, TRUE)){
                value <- strsplit(input[["dropdown_" %+% i]], "||", fixed = TRUE)
                text <- vapply(value, function(valEl){
                  if(length(valEl) > 1L) 
-                   return(paste0(" --HCUBE_SCALARD_", tolower(names(modelIn)[i]), 
+                   return(paste0(" --HCUBE_SCALART_", tolower(names(modelIn)[i]), 
                                  "=", paste(valEl[-1], collapse = "||")))
                  return("")}, character(1L), USE.NAMES = FALSE)
                value <- paste0(vapply(value, "[[", character(1L), 1L, USE.NAMES = FALSE),
@@ -744,7 +744,8 @@ observeEvent(virtualActionButton(input$btSolve, rv$btSolve), {
       if(length(logFilePath)){
         write_file(logText, logFilePath, append = TRUE)
       }
-      return(appendEl(session, "#logStatus", logText, scroll = identical(input$logUpdate, TRUE)))
+      return(appendEl(session, "#logStatus", logText, 
+                      scroll = identical(isolate(input$logUpdate), TRUE)))
     })
   }
   # reset listing file when new solve is started
