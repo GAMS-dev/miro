@@ -27,8 +27,6 @@
     <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- alpaca -->
-    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
 <!--<script>
 $(document).ready(function(){
     $('#dropdown-option-choices')[0].click();
@@ -780,105 +778,6 @@ $offExternalInput
                                     </code></pre>
                                 </div><!--//section-block-->
                             </section>
-                            <section id="widget-table" class="doc-section">
-                                <h2 class="section-title">Table</h2>
-                                <div class="section-block" id="widget-table-configuration">
-                                  <h3 class="block-title">Configuration</h3>
-                                    <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
-                                    <p>By default, every cell in the table is editable and rows can be inserted and removed. 
-                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter:</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
-                                    </div>
-                                    <p>In the above configuration we specified for the tabular representation of the parameter <i>Price</i> that not the entire table, but only the two columns <i>date</i> and <i>symbol</i> should be readonly. 
-                                    Furthermore, the values in the table should be presented as a heatmap in order to visually illustrate strong price differences. 
-                                    </p>
-                                </div><!--//section-block-->
-                                <div class="section-block" id = "widget-table-options">
-                                  <h3 class="block-title">Available Options</h3>
-                                    <p>The following options are available for a table widget:</p>
-                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enter the element name as it should be displayed in a tab</h6>
-                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined, see screenshot below. 
-                                    The default value of the element name is the explanatory text of the symbol.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_name.png" alt="Element name"/>
-                                    </div>
-                                    </div>
-                                    <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
-                                    <div class="collapsed"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
-                                    If it is active, a table consisting of several pages is displayed instead of a long, 1-page table. In this table only the currently visible data is loaded on the client side. <br>
-                                    This type of tabular representation corresponds to that of output data.</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
-                                    </div>
-                                    </div>
-                                    <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should table be readonly?</h6>
-                                    <div class="collapsed"><p>This option prevents the user from making manual changes in the input table of a scenario. 
-                                    If active, the table can only be filled with scenario data from the database.</p></div>
-                                    <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot</h6>
-                                    <div class="collapsed"><p>This option allows you to expand a table column of a symbol, i.e. to have a new column from each of the elements in this column:</p> 
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_pivot.png" alt="Pivot column"/>
-                                    </div>
-                                    <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./start.html#data-contract">data contract</a> between GAMS and MIRO. 
-                                    Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. 
-                                    The pivoting of the configured column then happens "live" in the MIRO application.</br>
-                                    Variable columns do not only mean that the column elements can change their names. It is also possible to add or delete whole columns. 
-                                    On the GAMS model side, this is equivalent to adding or deleting a set element of the affected index.</p>
-                                    <p>When using the pivot option, note the following:
-                                    <ul>
-                                      <li>The table columns displayed with the pivot option can no longer be sorted alphabetically or numerically.</li>
-                                      <li>It is not possible to add or delete columns in the symbol table if it is write-protected or displayed as a heatmap.</li>
-                                    </ul>
-                                    </p>
-                                    <p id = "avoid-table">Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: 
-                                    For this we take a look at the Parameter <code class="language-gams">Price</code> of the <i>Pickstock</i> model:</p>
-                                    <pre><code class="language-gams">Set date   'date'
-    symbol 'stockSymbol';
-
-$onExternalInput
-Parameter price(date,symbol) 'Price';
-$offExternalInput
-</pre></code>
-                                    If we decide to pivot the index <span class="code">symbol</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:</p>
-                                    <div class="section-block" style="text-align:center;">
-                                        <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
-                                    </div>
-                                    <p>A table width quickly increases when the number of set elements of the header index gets large. 
-                                    A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. 
-                                    In this case we should stick to the <i>parameter view</i>.</p>
-                                    </div>
-                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select certain columns to be readonly</h6>
-                                    <div class="collapsed"><p>This option prevents the user from making manual changes in selected columns of the input table. 
-                                    Note that this option is only available for table columns that have not been pivoted (see option above).</p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_readonlycols.png" alt="Heatmap"/>
-                                    </div></div>
-                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
-                                    <div class="collapsed"><p>Colors cells with numeric content according to the relative value. 
-                                    </p>
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
-                                    </div>
-                                    </div>
-                                </div><!--//section-block-->
-                                <div class="section-block" id="widget-table-json">
-                                  <h3 class="block-title">JSON example</h3>
-                                    <pre><code class="language-json">
-{
-  "inputWidgets": {
-    "price": {
-      "widgetType": "table",
-      "alias": "Price",
-      "readonly": false,
-      "readonlyCols": ["date", "symbol"],
-      "heatmap": true,
-      "bigData": false
-    }
-}
-                                    </code></pre>
-                                </div><!--//section-block-->
-                            </section>
                         </div><!--//content-inner-->
                     </div><!--//doc-content-->
                     <div class="doc-sidebar col-md-3 col-12 order-0 d-none d-md-flex">
@@ -938,12 +837,6 @@ $offExternalInput
                                  <a class="nav-link scrollto" href="#widget-numeric-options">Available options</a>
                                  <a class="nav-link scrollto" href="#widget-numeric-json">JSON example</a>
                              </nav>
-                             <a class="nav-link scrollto" href="#widget-table">Table</a>
-                             <nav class="doc-sub-menu nav flex-column">
-                                 <a class="nav-link scrollto" href="#widget-table-configuration">Configuration</a>
-                                 <a class="nav-link scrollto" href="#widget-table-options">Available options</a>
-                                 <a class="nav-link scrollto" href="#widget-table-json">JSON example</a>
-                             </nav>
                             </nav><!--//doc-menu-->
                         </div>
                     </div><!--//doc-sidebar-->
@@ -972,12 +865,8 @@ $offExternalInput
     <!-- dependencies (jquery, handlebars and bootstrap) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
 
-    <!-- alpaca -->
-    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
     <!-- AJV -->
     <script type="text/javascript" src="assets/js/ajv.min.js"></script>
-    <!-- config generator -->
-    <script type="text/javascript" src="assets/js/config-gen.js"></script>
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>

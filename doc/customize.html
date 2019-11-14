@@ -27,8 +27,6 @@
     <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
-    <!-- alpaca -->
-    <link type="text/css" href="assets/css/alpaca.min.css" rel="stylesheet"/>
     <!-- Cookie consent by https://cookieconsent.osano.com -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
@@ -111,7 +109,7 @@
                                     Optically, this mode is very similar to a classic MIRO app. The overview on the left side leads to the following categories:</p>
                                     <ul>
                                     <li><a href="#general-settings" class="scrollto">General settings</a></li>
-                                    <li><a href="#table-settings" class="scrollto">Table settings</a></li>
+                                    <li><a href="#table-settings" class="scrollto">Configure tables</a></li>
                                     <li><a href="#configure-widgets" class="scrollto">Configure widgets</a></li>
                                     <li><a href="#configure-graphs" class="scrollto">Configure graphs</a></li>
                                     <li><a href="#database-management" class="scrollto">Database management</a></li>
@@ -130,7 +128,7 @@
                                   <h3 class="block-title">General settings</h3>
                                   <p>As the name suggests, general options can be set in this section (click on an item to see more information).</p>
                                   <h4 class="docu-general-header">General</h4>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Application title</h6>
+                                  <h6 id = "application-title" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Application title</h6>
                                   <div class="collapsed"><p>With this option the title of the application can be adjusted, which is displayed in the browser window. 
                                   If a <a href = "https://www.gams.com/latest/docs/UG_DollarControlOptions.html#DOLLARtitle" target = "_blank">$title</a> has been 
                                   defined in the GAMS model, this is used by default. </p>
@@ -298,16 +296,6 @@ putclose log;
                                       <p></p>
                                   </div>
                                   <h4 class="docu-general-header">Scalars</h4>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the input scalars table</h6>
-                                  <p class="collapsed"><a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">Scalars</a> 
-                                  and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> 
-                                  are special in the sense that they will not be displayed in one separate table for each scalar value. Instead, they are combined 
-                                  into a single table. You can specify a custom name for this table here.</p>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Alias for the output scalars table</h6>
-                                  <p class="collapsed">Like for input data, <a href="https://www.gams.com/latest/docs/UG_DataEntry.html#UG_DataEntry_Scalars" target="_blank">scalars</a> 
-                                  and <a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a> 
-                                  are special in the sense that they will not be displayed in one separate table for each scalar value. 
-                                  Instead, they are combined into a single table. You can specify a custom name for this table here.</p>
                                   <h6 id="hidden-scalars" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Scalars that should 
                                   not be displayed in the scalars table but can be used in graphs etc.</h6>
                                   <div class="collapsed"><p>For some graphs it may be useful to include scalar data from another GAMS symbol. 
@@ -339,11 +327,14 @@ putclose log;
                                   sees after starting the application. This separate and individual starting page can be used by the developer 
                                   to introduce and explain the MIRO application or the underlying GAMS model before the user starts working 
                                   with it.</p>
+                                  <div class="section-block">
+                                      <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
+                                  </div>
                                   <p><b>Usage:</b><br>
                                   The readme file must be a <a href = "https://guides.github.com/features/mastering-markdown/" target = "_blank">markdown</a> 
                                   document and has to be located in your model directory. If MIRO finds a READEME.md file there, it is included 
                                   without the need for configuration.</p> 
-                                  <p>Two options are available in the configuraiton mode: 
+                                  <p>Two options are available in the configuration mode: 
                                   <ul>
                                     <li><b>README tab title</b><br>
                                     With this option you can customize the title of the README tab in the input seciton. Default: <i>README</i></li>
@@ -354,10 +345,6 @@ putclose log;
                                   <p><b>Note:</b><br>
                                   If images are used, they have to be located in the <i>static</i> folder of your model directory. In the markdown file 
                                   the path of used images has to be prefixed with "static".</p>
-                                      <div class="section-block">
-                                          <img class="img-fluid" style= "max-height:300pt;" src="assets/images/configuration_mode/readme.png" alt="README file" />
-                                      </div>
-                                      <p></p>
                                   </div>
                                   <h4 class="docu-general-header">Symbol configuration: Naming, ordering, grouping</h4>
                                   <h6 id="naming" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Naming</h6>
@@ -411,8 +398,6 @@ putclose log;
                                   </div>
                                   </div>
                                   <h4 class="docu-general-header">Scenario & data</h4>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate scenario functionality</h6>
-                                  <p class="collapsed">If enabled, scenario data can be saved.</p>
                                   <h6 id="local-upload" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Activate local data upload module?</h6>
                                   <div class="collapsed"><p>If enabled, scenario data can be loaded via local files.</p>
                                   <div class="section-block">
@@ -429,7 +414,10 @@ putclose log;
                                       <img class="img-fluid" style= "max-height:50pt;" src="assets/images/configuration_mode/general_export_metadata.png" alt="Metadata sheet" />
                                   </div>
                                   </div>
-                                  
+                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include empty sheets in the Excel file?</h6>
+                                  <div class="collapsed"><p>This option specifies whether empty sheets should be included when exporting a scenario. 
+                                  Sheets can be empty e.g. when a scenario contains only input data.</p>
+                                  </div>
                                   <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should users be allowed to add attachments to scenarios?</h6>
                                   <p class="collapsed">Enables to save file attachments for scenarios. Read more about this in the <i>File attachments</i> section <a href="./start.html#file-attachments">here</a>.</p>
                                   <h6 id="general-duration" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Duration the GAMS log and lst files are stored in the database (in days)</h6>
@@ -465,22 +453,191 @@ putclose log;
                                   <br>For command line parameters that can be set from MIRO using widgets like sliders, dropdown menus, checkboxes etc. click <a href="./model.html#command-line">here</a>.</p>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="table-settings">
-                                  <h3 class="block-title">Table settings</h3>
-                                    <p>Here you can define the general configuration of input and output tables, e.g. the design, (de-)activating the table search or the integration of certain add-ons. The settings made here always affect all input or output tables.
-                                    If, for example, the editing of input tables is disabled here, all input tables can no longer be edited. 
-                                    If instead only individual tables or even individual table columns shall be <i>readonly</i>, this must be configured in section <i>Configure widgets</i>.
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Example: Input tables</h6>
-                                  <div class="collapsed">
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings.png" alt="Settings for input tables" />
+                                  <h3 class="block-title">Configure tables</h3>
+                                    <p>In this section you can customize the general configuration of input and output tables (global settings) 
+                                    as well as the individual settings of multi-dimensional input symbol tables.
+                                    <h4 class="docu-general-header">Input tables (global settings)</h4>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Height of input tables (in px)</h6>
+                                    <div class="collapsed"><p>Sets the height of the table. If the table content is higher than the configured height, a scroll bar is displayed. </p>
                                     </div>
-                                  </div>
-                                  <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Example: Output tables</h6>
-                                  <div class="collapsed">
-                                    <div class="section-block">
-                                        <img class="img-fluid" style= "max-height:400pt; display: block; margin:auto;" src="assets/images/configuration_mode/table_settings2.png" alt="Settings for output tables" />
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Restrict editing of tables? If activated, tables can not be modified by the user.</h6>
+                                    <div class="collapsed"><p>Sets all input tables to readonly. No manual edits can be made by the user. Database scenarios or local data can still be loaded.</p>
                                     </div>
-                                  </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Highlight the column/row of current active cell</h6>
+                                    <div class="collapsed"><p>With these options you can enable/disable the highlighting of selected rows/columns in the table.
+                                    Note, that there is no live preview available for these options.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_highlight.png" alt="Highlighting of columsn/rows" />
+                                    </div>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Default column stretching</h6>
+                                    <div class="collapsed"><p>Sets the general stretch behavior of columns. Available options are <i>no stretch</i>, 
+                                    <i>stretch last column</i> and <i>stretch all columns</i>. Stretched columns mean that the table always fills the 
+                                    entire window width. With large tables, this can have a negative effect on the performance of the application. 
+                                    Columns that are not set to stretch have a default column with
+                                    of 300px.</p>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Set custom column width</h6>
+                                    <div class="collapsed"><p>Here, the default column with of 300px can be adjusted. It is recommended 
+                                    not to select too thin column widths, otherwise the table contents might not be displayed correctly. </p>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable column sorting in ascending/descending order</h6>
+                                    <div class="collapsed"><p>If activated, table columns can be sorted in ascending and descending order.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_column_sorting.png" alt="Column sorting" />
+                                    </div>
+                                    <div class="callout-block callout-warning">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Note:</b>
+                                            <p>This functionality is not available in a table if the <a href = "#table-option-pivot" class = "scrollto">pivot</a> option is used.</p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable manual column resizing</h6>
+                                    <div class="collapsed"><p>Enables/disables the manual setting of the column width by the user. </p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:150pt;" src="assets/images/configuration_mode/tables_resize.png" alt="Manual column resizing" />
+                                    </div>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Enable table context menu (accessible via right mouse click)</h6>
+                                    <div class="collapsed"><p>The context menu (accessible by right-clicking in the table) allows you to access various functions, such 
+                                    as adding or deleting a table row, or undoing the last modifications.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_context_menu.png" alt="Context menu" />
+                                    </div>
+                                    </div>
+                                    <h4 class="docu-general-header">Output tables (global settings)</h4>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Table style</h6>
+                                    <div class="collapsed"><p>Output tables can be changed regarding their design. Different designs are available. Example:</p>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                              <h6>Table style: <i>display</i> (default)</h6>
+                                              <img class="img-fluid" src="assets/images/configuration_mode/tables_style_display.png" alt="Table style: display (default)" />
+                                        </div>
+                                        <div class="col-md-6">
+                                              <h6>Table style: <i>compact</i></h6>
+                                              <img class="img-fluid" src="assets/images/configuration_mode/tables_style_compact.png" alt="Table style: compact" />
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Include column filters</h6>
+                                    <div class="collapsed"><p>Table filters can be used to search each table column individually for entries. If there are strings 
+                                    in the column, the filter is based on a text search. For exclusively numeric values, a numeric range can be specified 
+                                    as the filter with the help of a slider. The filters can be displayed above or below the table or can be deactivated completely.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_filters.png" alt="Table filter" />
+                                    </div>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Number of items to display per page</h6>
+                                    <div class="collapsed"><p>Specifies the default value of how many rows should be displayed per table sheet. The value can be 
+                                    adjusted in the running applicaiton.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_entries.png" alt="Numer of items to show" />
+                                    </div>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Show row numbers?</h6>
+                                    <div class="collapsed"><p>Determines whether line numbers should be displayed or not. </p>
+                                    </div>
+                                    <h6 class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Add export buttons?</h6>
+                                    <div class="collapsed"><p>The export buttons <i>copy</i>, <i>CSV</i>, <i>Excel</i>, <i>PDF</i> and <i>print</i> are available. 
+                                    Note, that only the data of the visible table sheet will be exported!</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:200pt;" src="assets/images/configuration_mode/tables_buttons.png" alt="Export buttons" />
+                                    </div>
+                                    </div>
+                                    <h4 id="symbol-table" class="docu-general-header">Symbol tables</h4>
+                                    <p>Example: Model <i>Pickstock</i>, parameter <i>price</i></p>
+                                    <p>By default, every cell in the table is editable and rows can be inserted and removed. 
+                                    If you only want to allow your users to edit certain tables or even only certain columns within a table, you can customize the visualization for the underlying GAMS parameter:</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_config.png" alt="Input table configuration"/>
+                                    </div>
+                                    <p>In the above configuration we specified for the tabular representation of the parameter <i>Price</i> that not the entire table, but only the two columns <i>date</i> and <i>symbol</i> should be readonly. 
+                                    Furthermore, the values in the table should be presented as a heatmap in order to visually illustrate strong price differences. 
+                                    </p>
+                                    <h5 class="block-title">Available Options</h5>
+                                    <p>The following options are available for a symbol table:</p>
+                                    <h6 id="table-option-name" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Name of the widget tab</h6>
+                                    <div class="collapsed"><p>With this option the tab name of the symbol is defined, see screenshot below. 
+                                    The default value of the element name is the explanatory text of the symbol.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_name.png" alt="Element name"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="table-option-large" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Are large amounts of data stored in the table (i.e. more than 20,000 records)?</h6>
+                                    <div class="collapsed"><p>This option is intended for situations in which large amounts of data are to be displayed within a table. 
+                                    If it is active, a table consisting of several pages is displayed instead of a long, 1-page table. In this table only the currently visible data is loaded on the client side. <br>
+                                    This type of tabular representation corresponds to that of output data.</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_big.png" alt="Big data table"/>
+                                    </div>
+                                    </div>
+                                    <h6 id="table-option-readonly" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Should table be readonly?</h6>
+                                    <div class="collapsed"><p>This option prevents the user from making manual changes in the input table of a scenario. 
+                                    If active, the table can only be filled with scenario data from the database.</p></div>
+                                    <h6 id="table-option-pivot" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select a column to pivot</h6>
+                                    <div class="collapsed"><p>This option allows you to expand a table column of a symbol, i.e. to have a new column from each of the elements in this column:</p> 
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_pivot.png" alt="Pivot column"/>
+                                    </div>
+                                    <p>Unlike the <a href = "./model.html#table-miro">table statement</a> in the GAMS model itself (<code class="language-gams">Table symbolname;</code>), this option does not affect the <a href = "./start.html#data-contract">data contract</a> between GAMS and MIRO. 
+                                    Hence, the columns of the symbol remain variable, since the symbol itself is communicated in list format. 
+                                    The pivoting of the configured column then happens "live" in the MIRO application.</br>
+                                    Variable columns do not only mean that the column elements can change their names. It is also possible to add or delete whole columns. 
+                                    On the GAMS model side, this is equivalent to adding or deleting a set element of the affected index.</p>
+                                    <p>When using the pivot option, note the following:
+                                    <ul>
+                                      <li>The table columns displayed with the pivot option can no longer be sorted alphabetically or numerically.</li>
+                                      <li>It is not possible to add or delete columns in the symbol table if it is write-protected or displayed as a heatmap.</li>
+                                    </ul>
+                                    </p>
+                                    <p id = "avoid-table">Let's now take a look at a case where you want to <b>avoid</b> using this type of pivot functionality: 
+                                    For this we take a look at the Parameter <code class="language-gams">Price</code> of the <i>Pickstock</i> model:</p>
+                                    <pre><code class="language-gams">Set date   'date'
+    symbol 'stockSymbol';
+
+$onExternalInput
+Parameter price(date,symbol) 'Price';
+$offExternalInput
+</pre></code>
+                                    If we decide to pivot the index <span class="code">symbol</span>, we would end up with a table where all stock symbols (<span class="code">AAPL</span>, <span class="code">AXP</span>, <span class="code">BA</span>, etc.) are displayed in a separate column:</p>
+                                    <div class="section-block" style="text-align:center;">
+                                        <img class="img-fluid" style="max-height:175pt;" src="assets/images/expand-table.png" alt="Visualization of expanded table" />
+                                    </div>
+                                    <p>A table width quickly increases when the number of set elements of the header index gets large. 
+                                    A total of, for example, 30 stocks to be represented in a table would lead to 30 additional columns. 
+                                    In this case we should stick to the <i>parameter view</i>.</p>
+                                    </div>
+                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Select columns to be readonly</h6>
+                                    <div class="collapsed"><p>This option prevents the user from making manual changes in selected columns of the input table. 
+                                    Note that this option is only available for table columns that have not been pivoted (see option above).</p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui_readonlycols.png" alt="Heatmap"/>
+                                    </div></div>
+                                    <h6 id="table-option-readonlycol" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Turn table into a heatmap?</h6>
+                                    <div class="collapsed"><p>Colors cells with numeric content according to the relative value. 
+                                    </p>
+                                    <div class="section-block">
+                                        <img class="img-fluid" style= "max-height:400pt;" src="assets/images/configuration_mode/widget_table_ui.png" alt="Heatmap"/>
+                                    </div>
+                                    </div>
+                                    <h5 class="block-title" style="margin-top:15px;">JSON example</h5>
+                                    <pre><code class="language-json">
+{
+  "inputWidgets": {
+    "price": {
+      "widgetType": "table",
+      "alias": "Price",
+      "readonly": false,
+      "heatmap": true,
+      "bigData": false,
+      "readonlyCols": ["date", "symbol"]
+    }
+}
+                                    </code></pre>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="configure-widgets">
                                   <h3 class="block-title">Configure widgets</h3>
@@ -492,7 +649,6 @@ putclose log;
                                     <li><a href="https://www.gams.com/latest/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="_blank">Singleton Sets</a></li>
                                     <li><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a></li>
                                     <li><a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameters</a></li>
-                                    <li>Also the individual table settings of multi-dimensional Symbols can be customized here.</li>
                                   </ul>  
                                   <p>The <i>Configure widgets</i> section looks like this:</p>
                                   <div class="section-block">
@@ -515,7 +671,7 @@ putclose log;
                                       </div><!--//callout-block-->
                                     </li>
                                     <li><p><b>New GAMS option</b> / <b>New double dash parameter</b>
-                                      <br>As the name suggests, <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameterss</a>can be configured here as an input widget. All widget types are available. 
+                                      <br>As the name suggests, <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_SpecifyingOptionsThroughTheCommandLine" target="_blank">GAMS options</a> and <a href="https://www.gams.com/latest/docs/UG_GamsCall.html#UG_GamsCall_DoubleDashParametersEtcSimpleExample" target="_blank">double-dash parameterss</a> can be configured here as an input widget. All widget types are available. 
                                       <br>Since those parameters are specified via the command line in GAMS, they can not be tagged in the GAMS code with <code class="language-gams">$onExternalInput
                                      </code> / <code class="language-gams">$offExternalInput
                                      </code>. In order that they can be set via MIRO for a GAMS run, they must be given explicitly in the configuration.</p>
@@ -530,8 +686,8 @@ putclose log;
                                               <b class="callout-title">Note:</b>
                                               <p>GAMS options and double-dash parameters associated with a scenario are stored in the 
                                               MIRO internal database. However, the information about them is lost when a scenario is 
-                                              exported as a GDX or Excel spreadsheet. We therefore recommend the use of GAMS Singleton 
-                                              Sets instead of command line parameters, whose explanatory text in the model can then 
+                                              exported as a GDX file. We therefore recommend the use of GAMS Singleton 
+                                              Sets instead of command line parameters, whose element text in the model can then 
                                               be migrated to compile-time variables using the Dollar Control Options 
                                               <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                               <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
@@ -642,38 +798,17 @@ putclose log;
                                          </div><!--//item-inner-->
                                      </div><!--//item-->
                                  </div><!--//widgets-wrapper-->
-                                 <p>As already mentioned, the table settings of individual multi-dimensional symbols can also be customized here:</p>
-                                 <div id="table-wrapper" class="cards-section text-center cards-wrapper row" style="background:white;padding-top:20px;">
-                                      <div class="item col-lg-4 col-6">
-                                         <div class="item-inner" style="padding-bottom: 10px;">
-                                             <div style="height:150px;">
-                                                 <img class="img-fluid" style= "max-height:150px; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_table2.png" alt="Table" />
-                                             </div>
-                                             <h3 class="title" style="text-align:left;margin-top:15pt;">Table</h3>
-                                             <a class="link" href="./widgets.html#widget-table"><span></span></a>
-                                         </div><!--//item-inner-->
-                                     </div><!--//item-->
-                                 </div><!--//widgets-wrapper-->
                                   <p><b>Example:</b><br>Let's now configure a widget for our <i>transport</i> model. For the scalar value <i>freight</i> a slider is the best choice. 
-                                  <br>From the list of available symbols we choose the desired scalar, select <i>slider</i> as widget tye and give it a label, which then appears above the slider.</p>
+                                  <br>From the list of available symbols we choose the desired scalar, select <i>slider</i> as widget tye and give it a label, which then appears above the slider.
+                                  <br>Next we specify the upper and lower bound of the slider, the default value and the step size of selectable values.</p>
                                   <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:275pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider1.png" alt="Configuration of a slider (1)" />
-                                  </div>
-                                  <p>Next we specify the upper and lower bound of the slider, the default value and the step size of selectable values.</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:275pt; display: block; margin:auto;" src="assets/images/configuration_mode/slider2.png" alt="Configuration of a slider (2)" />
+                                      <img class="img-fluid" style= "display: block; margin:auto;" src="assets/images/configuration_mode/slider1.png" alt="Configuration of a slider (1)" />
                                   </div>
                                   <p>When we are satisfied with the selected configuration, click save. A confirmation that the configuration has been updated successfully will appear:</p>
                                   <div class="section-block">
                                       <img class="img-fluid" style= "max-height:40pt; display: block; margin:auto;" src="assets/images/configuration_mode/widget_updated.png" alt="Successful update of widget configuration" />
                                   </div>
                                   <p>Done!</p>
-                                  <p>In addition to widgets for scalar values, Configure Widgets can also be used to customize the tables of individual, multidimensional symbols. 
-                                  In the following screenshot, for example, the table of the GAMS parameter <i>distance in thousands of miles</i> is customized. 
-                                  Here the last table column is marked as readonly, i.e. it is not editable in the MIRO app later.</p>
-                                  <div class="section-block">
-                                      <img class="img-fluid" style= "max-height:350pt; display: block; margin:auto;" src="assets/images/configuration_mode/widgets_table.png" alt="Configuration of a slider (5)" />
-                                  </div>
                                 </div><!--//section-block-->
                                 <div class="section-block" id="configure-graphs">
                                   <h3 class="block-title">Configure graphs</h3>
@@ -836,6 +971,81 @@ putclose log;
                                 </div>
                                 </div>
                             </section>   
+                            <section id="not-in-configuration-mode" class="doc-section">
+                                <h2 class="section-title">Options not available in configuration mode</h2>
+                                <div class="section-block">
+                                    <p>With the <a href = "#configurationMode" class="scrollto">configuration mode</a> we pursue the goal that a user can completely configure a MIRO application 
+                                    without having to write any JSON code. Due to the continuous development of MIRO and new functionalities 
+                                    and options in this context, however, it may happen that not all of them are available in the configuration mode
+                                    immediately. This section gives an overview of those options. </p>
+                                    <h6 id = "remote-import-export" class="block-title" onclick="$(this).next().slideToggle()" style="cursor:pointer;">+ Remote data import and export</h6>
+                                  <div class="collapsed"><p>A MIRO application can be supplied with data from various sources:</p>
+                                  <ul>
+                                    <li>Internal database: Import existing scenario data</li>
+                                    <li>local files: GDX, Excel</li>
+                                    <li>Manual entered data</li>
+                                  </ul>
+                                  <p>In addition to these standard interfaces, the data can also come from or go to <b>external sources</b>. </p>
+                                  The data connector is implemented as a REST service. To exchanges data from external sources with the web client, the 
+                                  corresponding information must be stored in the <a href = "./faqs.html#file-config"><i>modelname.json</i></a> file.
+                                  External data sources are configured symbol-based. In the following example, an external data 
+                                  connector is used to import data for the symbol <i>price</i>:
+                                  </p><pre><code class="language-json">"remoteImport": [
+    {
+    "name": "Importer",
+      "templates": [
+        {
+          "symNames": "price",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "GET",
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/admin/Documents/products/miro/model/pickstock/price_data.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                                  <p>The setup is pretty simple: Besides the symbol name (<i>price</i>) and the method (<i>GET</i>), the url of the web server to connect
+                                  is configured. In the section <i>httpBody</i> key-value pairs can be specified, which have to be interpreted by the server.
+                                  This simple example server uses a Python/Flask interface together with pandas data connectors to retrieve data from a CSV file 
+                                  (<i>price_data.csv</i>).
+                                  </p>
+                                  
+                                  <p>The same logic is also true for the export of data. In the example the data of the symbol stock_weight should be exported 
+                                  to a CSV file (<i>export_stock_weight.csv</i>). The only difference to importing data is the method, which is now <i>POST</i> 
+                                  instead of <i>GET</i>:</p><pre><code class="language-json">"remoteExport": [
+    {
+      "name": "Exporter",
+      "templates": [
+        {
+          "symNames": "stock_weight",
+          "url": "http://127.0.0.1:5000/io",
+          "method": "POST",
+          "httpBody": [
+            {
+              "key": "filename",
+              "value": "/Users/admin/Documents/products/miro/model/pickstock/export_stock_weight.csv"
+            }
+          ]
+        }
+      ]
+    }
+  ]</code></pre>
+                                  <div class="callout-block callout-success">
+                                        <div class="icon-holder">
+                                            <i class="fas fa-thumbs-up"></i>
+                                        </div><!--//icon-holder-->
+                                        <div class="content">
+                                            <b class="callout-title">Tip:</b>
+                                            <p>The data import via such a data connector happens automatically when the MIRO application is started. The corresponding symbol table is then filled directly with the external data. A data export is carried out automatically after a model run. </p>
+                                        </div><!--//content-->
+                                    </div><!--//callout-block-->
+                                  </div>
+                                </div>
+                            </section>
                             <section id="jsonfiles" class="doc-section">
                                 <h2 class="section-title">Configuration via JSON files</h2>
                                 <div class="section-block">
@@ -1226,6 +1436,7 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
                                     <a class="nav-link scrollto" href="#configure-graphs">Configure graphs</a>
                                     <a class="nav-link scrollto" href="#database-management">Database management</a>
                                 </nav>
+                                <a class="nav-link scrollto" href="#not-in-configuration-mode">Options not available in configuration mode</a>
                                 <a class="nav-link scrollto" href="#jsonfiles">Configuration via JSON files</a>
                                 <nav class="doc-sub-menu nav flex-column">
                                     <a class="nav-link scrollto" href="#widgets-tables">Example: tables</a>
@@ -1268,12 +1479,8 @@ renderTransportMap &#x3C;- function(input, output, session, data, options = NULL
     <!-- dependencies (jquery, handlebars and bootstrap) -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
 
-    <!-- alpaca -->
-    <script type="text/javascript" src="assets/js/alpaca.min.js"></script>
     <!-- AJV -->
     <script type="text/javascript" src="assets/js/ajv.min.js"></script>
-    <!-- config generator -->
-    <script type="text/javascript" src="assets/js/config-gen.js"></script>
     <!-- gifplayer plugin -->
     <script type="text/javascript" src="assets/js/gifplayer.js"></script>
     <script>

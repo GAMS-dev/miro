@@ -626,7 +626,7 @@ $onExternalOutput
                                     <p>They are merged in a joint table in the interface by default. This means that all scalars defined in the GAMS model within the <span class="code">$on</span>/<span class="code">offExternalInput</span> and -<span class="code">output</span> are shown in MIRO in one single table called <span class="code">scalars</span>. 
                                     The same is also true for output scalars. These are summarized in the results section in a table called <span class="code">scalars_out</span>.
                                     This saves screen real estate and also makes adding new scalars easy as all you have to do is add a new row to the <span class="code">scalars</span> table. 
-                                  Thus, it improves compactness and flexibility - especially when MIRO is connected to a database as the schema stays fixed even when you add or remove certain scalars.</p>
+                                    Thus, it improves compactness and flexibility - the database schema stays fixed even when you add or remove certain scalars.</p>
                                     <p>Example:</p>
                                     <pre><code class="language-gams">$onExternalInput
 Scalar f    'freight in dollars per case per thousand miles' / 90 /
@@ -635,7 +635,7 @@ Scalar f    'freight in dollars per case per thousand miles' / 90 /
 Singleton Set  single  'Singleton Set'    / element  /;
 $offExternalInput
 </pre></code>
-                                    <p>Here we have declared the scalar input data <span class="code">f</span>, <span class="code">minS</span> and <span class="code">beta</span> as well as a singleton set <span class="code">single</span> between the input tags. In MIRO, they are all displayed in a single table:
+                                    <p>Here we have declared the scalar input data <span class="code">f</span>, <span class="code">minS</span> and <span class="code">beta</span> as well as a singleton set <span class="code">single</span> between the input tags. In MIRO, they are all displayed in the same table:
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:200pt;" src="assets/images/scalars-table.png" alt="Visualization of scalars and singleton sets in a table" />
                                     </div>
@@ -656,8 +656,8 @@ $offExternalInput
                                     <p>A <a href="https://www.gams.com/26/docs/UG_SetDefinition.html#UG_SetDefinition_SingletonSets" target="scrollto">singleton set</a> in GAMS is a special set that has at most one element (zero elements are allowed as well).
                                     Like other sets, singleton sets may have a domain with several dimensions.
                                     As already explained <a href="#display-scalars" class="scrollto">here</a>, 0- and 1-dimensional singleton sets are displayed together with scalars in a joint table.
-                                    Multi-dimensional singleton sets, on the other hand, are each displayed in a separate table.
-                                    <br>Example:</p>
+                                    Multi-dimensional singleton sets, on the other hand, are each displayed in a separate table.</p>
+                                    <p>Example:</p>
                                     <pre><code class="language-gams">$onExternalInput
 Singleton Set
    multidim(i,j)  'multidimensional singleton set'  / seattle.topeka 'this is an explanatory text'/
@@ -667,6 +667,54 @@ $offExternalInput
                                     <div class="section-block" style="text-align:center;">
                                           <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-multi-table.png" alt="Visualization of multidimensional singleton sets in a table" />
                                     </div>
+                                    <p><b>How to use singleton sets for the creation of compile-time variables:</b>
+                                    <br>What singleton sets and scalar values have in common is a symbol name and an 
+                                    explanatory text. However, the value is different. Unlike scalars (a numeric value), singleton sets 
+                                    can have a label and an element text. To be able to display both in the scalars table in MIRO, label 
+                                    and element text are shown in the value column and separated with a double pipe ('||'). </p>
+                                    
+                                    <pre><code class="language-gams">$onExternalInput
+Singleton Set i 'set description'    / 'label' elementtext /;
+Scalar        a 'scalar description' / 5 /;
+$offExternalInput
+</pre></code>
+                                    
+                                    <div class="section-block" style="text-align:center;">
+                                          <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-set.png" alt="Singleton set in MIRO" />
+                                    </div>
+                                    <p>The element text of singleton sets can be used to create compile-time variables by using the Dollar Control Options 
+                                    <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
+                                    <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
+                                    and <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevallocalset" target = "__blank">evalLocal.Set</a> 
+                                    during compile time:</p>
+<pre><code class="language-gams">$onExternalInput
+Singleton Set i 'set description'    / 'label' elementtext /;
+Scalar        a 'scalar description' / 5 /;
+$offExternalInput
+
+$eval.set fn i.te
+
+$log What you see here is the %fn%
+</pre></code>                       
+                                    <div class="section-block" style="text-align:center;">
+                                          <img class="img-fluid" style="max-height:150pt;" src="assets/images/singleton-set-log.png" alt="Singleton set in MIRO" />
+                                    </div>                                   
+                                    <p>You can <a href = "./model.html#command-line">configure</a> GAMS options and double-dash parameters in the MIRO configuration mode.
+                                    When saving a scenario, those compile-time parameters are also stored in the 
+                                    MIRO internal database. However, the information about them is lost when a scenario is 
+                                    exported as a GDX file. This is especially relevant in Hypercube mode, because the data 
+                                    exchange there is done via GDX files. Double -dash parameters and GAMS options can only 
+                                    be communicated in Hypercube mode using the singleton set method described here.</p>
+                                    <div class="callout-block callout-warning">
+                                       <div class="icon-holder">
+                                           <i class="fas fa-info-circle"></i>
+                                       </div><!--//icon-holder-->
+                                       <div class="content">
+                                           <b class="callout-title">Note:</b>
+                                           <p>We recommend the use of GAMS Singleton Sets instead of double-dash parameters 
+                                           and GAMS options configured via configuration mode. </p> 
+                                       </div><!--//content-->
+                                   </div><!--//callout-block-->
                                 </div><!--//section-block-->
                                 <div  id="display-var"  class="section-block">
                                     <h3 class="block-title">Variables</h3>
@@ -727,8 +775,8 @@ $offExternalInput
                                            <b class="callout-title">Note:</b>
                                            <p>GAMS options and double-dash parameters associated with a scenario are stored in the 
                                            MIRO internal database. However, the information about them is lost when a scenario is 
-                                           exported as a GDX or Excel spreadsheet. We therefore recommend the use of GAMS Singleton 
-                                           Sets instead of command line parameters, whose explanatory text in the model can then 
+                                           exported as a GDX file. We therefore recommend the use of GAMS Singleton 
+                                           Sets instead of command line parameters, whose element text in the model can then 
                                            be migrated to compile-time variables using the Dollar Control Options 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalset" target = "__blank">eval.Set</a>, 
                                            <a href = "https://www.gams.com/29/docs/UG_DollarControlOptions.html#DOLLARevalglobalset" target = "__blank">evalGlobal.Set</a>, 
