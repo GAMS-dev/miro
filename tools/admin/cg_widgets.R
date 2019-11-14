@@ -332,8 +332,6 @@ observeEvent({input$widget_symbol
     currentWidgetSymbolName <<- input$widget_symbol
     if(length(modelInRaw[[input$widget_symbol]]$headers) == 2L){
       widgetOptions <- langSpecificWidget$widgetOptionsSet
-    }else{
-      widgetOptions <- langSpecificWidget$widgetOptionsTable
     }
   }else{
     flog.error("Unknown input symbol: '%s'.", input$widget_symbol)

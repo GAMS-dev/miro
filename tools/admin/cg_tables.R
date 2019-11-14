@@ -1,6 +1,3 @@
-langSpecificWidget$widgetOptionsTable <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
-langSpecificWidget$widgetOptionsSet <- setNames("table", lang$adminMode$widgets$widgetOptions$table)
-
 tableSymbols <- inputSymMultiDimChoices
 if(length(tableSymbols)){
   updateSelectInput(session, "table_symbol", choices = tableSymbols)
