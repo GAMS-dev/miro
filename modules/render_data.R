@@ -22,7 +22,7 @@ renderDataUI <- function(id, type, graphTool = NULL, height= NULL, customOptions
         dataGraph <- plotlyOutput(ns("graph"), height = height)
       }else{
         dataGraph <- tags$div(class = "renderer-wrapper", 
-                              genSpinner(externalStyle = TRUE),
+                              genSpinner(externalStyle = character(0L)),
                               plotlyOutput(ns("graph"), height = height))
       }
     }else if(graphTool == "dygraphs"){
